@@ -13,7 +13,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	agentstate "github.com/domainry/domainry-agent-sdk/state"
-	agentstore "github.com/domainry/domainry-agent/persistence"
+	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/server"
 	_ "modernc.org/sqlite"
 )

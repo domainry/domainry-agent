@@ -1,4 +1,4 @@
-package persistence
+package agent
 
 import agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 

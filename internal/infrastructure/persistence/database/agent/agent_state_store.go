@@ -1,5 +1,5 @@
 // Agent state persistence.
-package persistence
+package agent
 
 import (
 	"context"

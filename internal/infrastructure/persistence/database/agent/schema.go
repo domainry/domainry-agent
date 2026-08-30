@@ -1,4 +1,4 @@
-package persistence
+package agent
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 
 const SchemaVersion uint = 1
 
-var definitionTables = []string{
+var schemaDefinitionTables = []string{
 	"skill_definitions",
 	"agent_definitions",
 	"agent_task_definitions",
@@ -31,23 +31,29 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		return nil, fmt.Errorf("create Agent database dialect: %w", err)
 	}
 	renderer := dialect.WithSchema(schema)
-	statements := make([]string, 0, len(definitionTables)+7)
-	for _, table := range definitionTables {
+	statements := make([]string, 0, len(schemaDefinitionTables)+7)
+	for _, table := range schemaDefinitionTables {
 		statement, _, buildErr := definitionTable(renderer, table).Build()
 		if buildErr != nil {
 			return nil, fmt.Errorf("build Agent definition table %s: %w", table, buildErr)
 		}
 		statements = append(statements, statement)
 	}
-	for name, builder := range map[string]*ormbuilder.CreateTableBuilder{
-		"agent_runtime_state":    runtimeStateTable(renderer),
-		"agent_task_runs":        taskRunTable(renderer),
-		"agent_interactive_runs": interactiveRunTable(renderer),
-		"agent_worker_scopes":    workerScopeTable(renderer),
+	// Migration statement order is part of the host-owned checksum. Keep this
+	// source-owned history deterministic; ranging over a map here made the same
+	// migration drift between Runtime instances sharing one ledger.
+	for _, table := range []struct {
+		name    string
+		builder *ormbuilder.CreateTableBuilder
+	}{
+		{name: "agent_runtime_state", builder: runtimeStateTable(renderer)},
+		{name: "agent_task_runs", builder: taskRunTable(renderer)},
+		{name: "agent_interactive_runs", builder: interactiveRunTable(renderer)},
+		{name: "agent_worker_scopes", builder: workerScopeTable(renderer)},
 	} {
-		statement, _, buildErr := builder.Build()
+		statement, _, buildErr := table.builder.Build()
 		if buildErr != nil {
-			return nil, fmt.Errorf("build Agent state table %s: %w", name, buildErr)
+			return nil, fmt.Errorf("build Agent state table %s: %w", table.name, buildErr)
 		}
 		statements = append(statements, statement)
 	}

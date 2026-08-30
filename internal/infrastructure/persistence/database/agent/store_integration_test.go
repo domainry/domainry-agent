@@ -1,4 +1,4 @@
-package persistence
+package agent
 
 import (
 	"database/sql"
@@ -8,7 +8,6 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
-	schemastore "github.com/domainry/domainry-agent/internal/persistence"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	_ "modernc.org/sqlite"
 )
@@ -20,7 +19,7 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = database.Close() })
-	migrations, err := schemastore.SchemaMigrations("sqlite", "")
+	migrations, err := SchemaMigrations("sqlite", "")
 	if err != nil {
 		t.Fatal(err)
 	}

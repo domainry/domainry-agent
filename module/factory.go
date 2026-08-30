@@ -12,9 +12,8 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
-	schemastore "github.com/domainry/domainry-agent/internal/persistence"
+	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/provider"
-	agentstore "github.com/domainry/domainry-agent/persistence"
 )
 
 type Options struct {
@@ -45,7 +44,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if host.Database() == nil || host.Dialect() == nil || host.Migrations() == nil {
 		return nil, fmt.Errorf("Agent Module persistence host is incomplete")
 	}
-	migrations, err := schemastore.SchemaMigrations(host.Migrations().Driver(), host.Migrations().Schema())
+	migrations, err := agentstore.SchemaMigrations(host.Migrations().Driver(), host.Migrations().Schema())
 	if err != nil {
 		return nil, err
 	}

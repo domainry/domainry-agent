@@ -11,7 +11,7 @@ import (
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
-	agentstore "github.com/domainry/domainry-agent/persistence"
+	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	ormbuilder "github.com/domainry/domainry-orm/builder"
 )
 

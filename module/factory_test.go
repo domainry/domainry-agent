@@ -11,7 +11,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/contracttest"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
-	schemastore "github.com/domainry/domainry-agent/internal/persistence"
+	schemastore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	_ "modernc.org/sqlite"
 	"testing"

@@ -13,8 +13,8 @@ import (
 	"syscall"
 	"time"
 
+	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/provider"
-	agentstore "github.com/domainry/domainry-agent/persistence"
 	"github.com/domainry/domainry-agent/server"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "modernc.org/sqlite"

@@ -3,8 +3,8 @@ module github.com/domainry/domainry-agent
 go 1.26.0
 
 require (
-	github.com/domainry/domainry-agent-sdk v0.0.0
-	github.com/domainry/domainry-orm v0.1.25-0.20260829222221-e316e284305e
+	github.com/domainry/domainry-agent-sdk v0.1.0
+	github.com/domainry/domainry-orm v0.1.25
 	github.com/jackc/pgx/v5 v5.10.0
 	modernc.org/sqlite v1.57.0
 )
@@ -25,7 +25,3 @@ require (
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 )
-
-replace github.com/domainry/domainry-agent-sdk => ../domainry-agent-sdk
-
-replace github.com/domainry/domainry-orm => ../domainry-orm

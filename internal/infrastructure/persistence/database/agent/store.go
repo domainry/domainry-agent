@@ -1,4 +1,4 @@
-package persistence
+package agent
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
-	schemastore "github.com/domainry/domainry-agent/internal/persistence"
 	ormbuilder "github.com/domainry/domainry-orm/builder"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	ormdriver "github.com/domainry/domainry-orm/driver"
@@ -61,13 +60,6 @@ func Renderer(driver, schema string) (modulehost.Dialect, error) {
 		return nil, err
 	}
 	return dialect.WithSchema(schema), nil
-}
-
-// SchemaMigrations returns the source-owned Agent migration history for hosts
-// that need to register it explicitly. Embedded production assembly normally
-// performs this through module.Factory.OpenModule.
-func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, error) {
-	return schemastore.SchemaMigrations(driver, schema)
 }
 
 // EnsureSchema applies Agent-owned migrations to a standalone SaaS database.
