@@ -9,7 +9,7 @@ import (
 
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
-	ormbuilder "github.com/domainry/domainry-orm/builder"
+	ormbuilder "github.com/domainry/domainry-orm/query"
 )
 
 func (s *AgentTaskRunStore) CreateInteractiveRun(ctx context.Context, run agentmodel.AgentInteractiveRun) (agentmodel.AgentInteractiveRun, bool, error) {

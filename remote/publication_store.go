@@ -6,13 +6,14 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	ormschema "github.com/domainry/domainry-orm/schema"
 	"sync"
 	"time"
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
-	ormbuilder "github.com/domainry/domainry-orm/builder"
+	ormbuilder "github.com/domainry/domainry-orm/query"
 )
 
 const publicationTable = "agent_saas_task_publications"
@@ -33,20 +34,20 @@ type taskPublication struct {
 }
 
 func publicationMigrations(renderer modulehost.Dialect) ([]modulehost.SchemaMigration, error) {
-	statement, _, err := ormbuilder.NewCreateTableBuilder(renderer, publicationTable).WithoutSystemColumns().IfNotExists().Columns(
-		ormbuilder.DefineColumn("id", ormbuilder.TextKeyType(255)).NotNull(),
-		ormbuilder.DefineColumn("workspace_id", ormbuilder.TextKeyType(255)).NotNull(),
-		ormbuilder.DefineColumn("run_id", ormbuilder.TextKeyType(255)).NotNull(),
-		ormbuilder.DefineColumn("operation", ormbuilder.TextKeyType(32)).NotNull(),
-		ormbuilder.DefineColumn("payload_json", ormbuilder.LongTextType()).NotNull(),
-		ormbuilder.DefineColumn("status", ormbuilder.TextKeyType(32)).NotNull(),
-		ormbuilder.DefineColumn("attempts", ormbuilder.IntegerType()).NotNull(),
-		ormbuilder.DefineColumn("next_attempt_at", ormbuilder.BigIntType()).NotNull(),
-		ormbuilder.DefineColumn("lease_owner", ormbuilder.TextKeyType(255)).NotNull(),
-		ormbuilder.DefineColumn("lease_expires_at", ormbuilder.BigIntType()).NotNull(),
-		ormbuilder.DefineColumn("last_error", ormbuilder.TextType()).NotNull(),
-		ormbuilder.DefineColumn("created_at", ormbuilder.BigIntType()).NotNull(),
-		ormbuilder.DefineColumn("updated_at", ormbuilder.BigIntType()).NotNull(),
+	statement, _, err := ormschema.NewTable(renderer, publicationTable).IfNotExists().Columns(
+		ormschema.Column("id", ormschema.TextKey(255)).NotNull(),
+		ormschema.Column("workspace_id", ormschema.TextKey(255)).NotNull(),
+		ormschema.Column("run_id", ormschema.TextKey(255)).NotNull(),
+		ormschema.Column("operation", ormschema.TextKey(32)).NotNull(),
+		ormschema.Column("payload_json", ormschema.LongText()).NotNull(),
+		ormschema.Column("status", ormschema.TextKey(32)).NotNull(),
+		ormschema.Column("attempts", ormschema.Integer()).NotNull(),
+		ormschema.Column("next_attempt_at", ormschema.BigInt()).NotNull(),
+		ormschema.Column("lease_owner", ormschema.TextKey(255)).NotNull(),
+		ormschema.Column("lease_expires_at", ormschema.BigInt()).NotNull(),
+		ormschema.Column("last_error", ormschema.Text()).NotNull(),
+		ormschema.Column("created_at", ormschema.BigInt()).NotNull(),
+		ormschema.Column("updated_at", ormschema.BigInt()).NotNull(),
 	).PrimaryKey("id").Build()
 	if err != nil {
 		return nil, err

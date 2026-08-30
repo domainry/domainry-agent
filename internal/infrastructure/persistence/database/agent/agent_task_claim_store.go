@@ -10,7 +10,7 @@ import (
 
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
-	ormbuilder "github.com/domainry/domainry-orm/builder"
+	ormbuilder "github.com/domainry/domainry-orm/query"
 )
 
 func (s *AgentTaskRunStore) ClaimNext(ctx context.Context, workspaceID string, owner string, now time.Time, duration time.Duration) (agentrepository.AgentTaskClaim, bool, error) {

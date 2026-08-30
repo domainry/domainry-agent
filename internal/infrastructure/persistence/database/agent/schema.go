@@ -2,9 +2,9 @@ package agent
 
 import (
 	"fmt"
+	ormschema "github.com/domainry/domainry-orm/schema"
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
-	ormbuilder "github.com/domainry/domainry-orm/builder"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 )
 
@@ -44,7 +44,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	// migration drift between Runtime instances sharing one ledger.
 	for _, table := range []struct {
 		name    string
-		builder *ormbuilder.CreateTableBuilder
+		builder *ormschema.TableBuilder
 	}{
 		{name: "agent_runtime_state", builder: runtimeStateTable(renderer)},
 		{name: "agent_task_runs", builder: taskRunTable(renderer)},
@@ -65,7 +65,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		{name: "idx_agent_owned_task_process_v1", columns: []string{"workspace_id", "process_id", "status"}},
 		{name: "idx_agent_owned_task_key_v1", columns: []string{"workspace_id", "task_key", "status"}},
 	} {
-		statement, _, buildErr := ormbuilder.NewCreateIndexBuilder(renderer, index.name, "agent_task_runs").Columns(index.columns...).Build()
+		statement, _, buildErr := ormschema.NewIndex(renderer, index.name, "agent_task_runs").Columns(index.columns...).Build()
 		if buildErr != nil {
 			return nil, fmt.Errorf("build Agent task index %s: %w", index.name, buildErr)
 		}
@@ -74,66 +74,66 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}}, nil
 }
 
-func workerScopeTable(renderer modulehost.Dialect) *ormbuilder.CreateTableBuilder {
-	return ormbuilder.NewCreateTableBuilder(renderer, "agent_worker_scopes").WithoutSystemColumns().IfNotExists().Columns(
-		required("workspace_id", ormbuilder.TextKeyType(255)), required("updated_at", ormbuilder.BigIntType()),
+func workerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
+	return ormschema.NewTable(renderer, "agent_worker_scopes").IfNotExists().Columns(
+		required("workspace_id", ormschema.TextKey(255)), required("updated_at", ormschema.BigInt()),
 	).PrimaryKey("workspace_id")
 }
 
-func definitionTable(renderer modulehost.Dialect, name string) *ormbuilder.CreateTableBuilder {
-	return ormbuilder.NewCreateTableBuilder(renderer, name).WithoutSystemColumns().IfNotExists().Columns(
-		required("id", ormbuilder.TextKeyType(255)),
-		required("resource_key", ormbuilder.TextKeyType(255)),
-		required("object_key", ormbuilder.TextKeyType(255)),
-		required("name", ormbuilder.TextType()),
-		required("payload_json", ormbuilder.LongTextType()),
-		required("schema_version", ormbuilder.TextKeyType(255)),
-		required("schema_hash", ormbuilder.TextKeyType(255)),
-		required("source_kind", ormbuilder.TextKeyType(255)),
-		required("source_id", ormbuilder.TextKeyType(255)),
-		optional("disabled_at", ormbuilder.TextKeyType(255)),
-		required("created_at", ormbuilder.TextKeyType(255)),
-		required("updated_at", ormbuilder.TextKeyType(255)),
+func definitionTable(renderer modulehost.Dialect, name string) *ormschema.TableBuilder {
+	return ormschema.NewTable(renderer, name).IfNotExists().Columns(
+		required("id", ormschema.TextKey(255)),
+		required("resource_key", ormschema.TextKey(255)),
+		required("object_key", ormschema.TextKey(255)),
+		required("name", ormschema.Text()),
+		required("payload_json", ormschema.LongText()),
+		required("schema_version", ormschema.TextKey(255)),
+		required("schema_hash", ormschema.TextKey(255)),
+		required("source_kind", ormschema.TextKey(255)),
+		required("source_id", ormschema.TextKey(255)),
+		optional("disabled_at", ormschema.TextKey(255)),
+		required("created_at", ormschema.TextKey(255)),
+		required("updated_at", ormschema.TextKey(255)),
 	).PrimaryKey("id").Unique("resource_key")
 }
 
-func runtimeStateTable(renderer modulehost.Dialect) *ormbuilder.CreateTableBuilder {
-	return ormbuilder.NewCreateTableBuilder(renderer, "agent_runtime_state").WithoutSystemColumns().IfNotExists().Columns(
-		required("kind", ormbuilder.TextKeyType(255)), required("state_key", ormbuilder.TextKeyType(255)),
-		required("workspace_id", ormbuilder.TextKeyType(255)), required("user_id", ormbuilder.TextKeyType(255)),
-		required("role_key", ormbuilder.TextKeyType(255)), required("payload_json", ormbuilder.LongTextType()),
-		required("updated_at", ormbuilder.BigIntType()),
+func runtimeStateTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
+	return ormschema.NewTable(renderer, "agent_runtime_state").IfNotExists().Columns(
+		required("kind", ormschema.TextKey(255)), required("state_key", ormschema.TextKey(255)),
+		required("workspace_id", ormschema.TextKey(255)), required("user_id", ormschema.TextKey(255)),
+		required("role_key", ormschema.TextKey(255)), required("payload_json", ormschema.LongText()),
+		required("updated_at", ormschema.BigInt()),
 	).PrimaryKey("workspace_id", "kind", "state_key")
 }
 
-func taskRunTable(renderer modulehost.Dialect) *ormbuilder.CreateTableBuilder {
-	return ormbuilder.NewCreateTableBuilder(renderer, "agent_task_runs").WithoutSystemColumns().IfNotExists().Columns(
-		required("workspace_id", ormbuilder.TextKeyType(255)), required("run_id", ormbuilder.TextKeyType(255)),
-		required("idempotency_key", ormbuilder.TextKeyType(255)), required("task_key", ormbuilder.TextKeyType(255)),
-		required("process_id", ormbuilder.TextKeyType(255)), required("status", ormbuilder.TextKeyType(255)),
-		required("lease_owner", ormbuilder.TextKeyType(255)), required("fencing_token", ormbuilder.BigIntType()),
-		required("lease_expires_at", ormbuilder.BigIntType()), required("next_attempt_at", ormbuilder.BigIntType()),
-		required("payload_json", ormbuilder.LongTextType()), required("created_at", ormbuilder.BigIntType()),
-		required("updated_at", ormbuilder.BigIntType()),
+func taskRunTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
+	return ormschema.NewTable(renderer, "agent_task_runs").IfNotExists().Columns(
+		required("workspace_id", ormschema.TextKey(255)), required("run_id", ormschema.TextKey(255)),
+		required("idempotency_key", ormschema.TextKey(255)), required("task_key", ormschema.TextKey(255)),
+		required("process_id", ormschema.TextKey(255)), required("status", ormschema.TextKey(255)),
+		required("lease_owner", ormschema.TextKey(255)), required("fencing_token", ormschema.BigInt()),
+		required("lease_expires_at", ormschema.BigInt()), required("next_attempt_at", ormschema.BigInt()),
+		required("payload_json", ormschema.LongText()), required("created_at", ormschema.BigInt()),
+		required("updated_at", ormschema.BigInt()),
 	).PrimaryKey("workspace_id", "run_id").Unique("workspace_id", "idempotency_key")
 }
 
-func interactiveRunTable(renderer modulehost.Dialect) *ormbuilder.CreateTableBuilder {
-	return ormbuilder.NewCreateTableBuilder(renderer, "agent_interactive_runs").WithoutSystemColumns().IfNotExists().Columns(
-		required("workspace_id", ormbuilder.TextKeyType(255)), required("run_id", ormbuilder.TextKeyType(255)),
-		required("session_id", ormbuilder.TextKeyType(255)), required("user_id", ormbuilder.TextKeyType(255)),
-		required("role_key", ormbuilder.TextKeyType(255)), required("surface", ormbuilder.TextKeyType(255)),
-		required("status", ormbuilder.TextKeyType(255)), required("idempotency_key", ormbuilder.TextKeyType(255)),
-		required("process_id", ormbuilder.TextKeyType(255)), required("task_run_id", ormbuilder.TextKeyType(255)),
-		required("payload_json", ormbuilder.LongTextType()), required("created_at", ormbuilder.BigIntType()),
-		required("updated_at", ormbuilder.BigIntType()),
+func interactiveRunTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
+	return ormschema.NewTable(renderer, "agent_interactive_runs").IfNotExists().Columns(
+		required("workspace_id", ormschema.TextKey(255)), required("run_id", ormschema.TextKey(255)),
+		required("session_id", ormschema.TextKey(255)), required("user_id", ormschema.TextKey(255)),
+		required("role_key", ormschema.TextKey(255)), required("surface", ormschema.TextKey(255)),
+		required("status", ormschema.TextKey(255)), required("idempotency_key", ormschema.TextKey(255)),
+		required("process_id", ormschema.TextKey(255)), required("task_run_id", ormschema.TextKey(255)),
+		required("payload_json", ormschema.LongText()), required("created_at", ormschema.BigInt()),
+		required("updated_at", ormschema.BigInt()),
 	).PrimaryKey("workspace_id", "run_id").Unique("workspace_id", "idempotency_key")
 }
 
-func required(name string, kind ormbuilder.ColumnType) ormbuilder.SchemaColumn {
-	return ormbuilder.DefineColumn(name, kind).NotNull()
+func required(name string, kind ormschema.ColumnType) ormschema.ColumnDefinition {
+	return ormschema.Column(name, kind).NotNull()
 }
 
-func optional(name string, kind ormbuilder.ColumnType) ormbuilder.SchemaColumn {
-	return ormbuilder.DefineColumn(name, kind)
+func optional(name string, kind ormschema.ColumnType) ormschema.ColumnDefinition {
+	return ormschema.Column(name, kind)
 }

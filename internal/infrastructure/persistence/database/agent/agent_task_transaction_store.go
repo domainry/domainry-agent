@@ -8,7 +8,7 @@ import (
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
-	ormbuilder "github.com/domainry/domainry-orm/builder"
+	ormbuilder "github.com/domainry/domainry-orm/query"
 )
 
 func (s *AgentTaskRunStore) InsertAgentTask(ctx context.Context, executor modulehost.Executor, run agentrepository.AgentTaskMutation) error {

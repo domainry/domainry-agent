@@ -9,7 +9,7 @@ import (
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
-	ormbuilder "github.com/domainry/domainry-orm/builder"
+	ormbuilder "github.com/domainry/domainry-orm/query"
 )
 
 type AgentStateStore struct {

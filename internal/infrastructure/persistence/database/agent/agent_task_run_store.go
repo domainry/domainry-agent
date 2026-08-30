@@ -11,7 +11,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
-	ormbuilder "github.com/domainry/domainry-orm/builder"
+	ormbuilder "github.com/domainry/domainry-orm/query"
 )
 
 type AgentTaskRunStore struct {

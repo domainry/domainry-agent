@@ -7,12 +7,12 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
-	ormbuilder "github.com/domainry/domainry-orm/builder"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	ormdriver "github.com/domainry/domainry-orm/driver"
 	ormmigration "github.com/domainry/domainry-orm/migration"
 	ormmysql "github.com/domainry/domainry-orm/mysql"
 	ormpostgres "github.com/domainry/domainry-orm/postgres"
+	ormbuilder "github.com/domainry/domainry-orm/query"
 	ormsqlite "github.com/domainry/domainry-orm/sqlite"
 )
 

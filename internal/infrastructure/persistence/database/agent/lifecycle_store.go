@@ -9,7 +9,7 @@ import (
 
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	agentstate "github.com/domainry/domainry-agent-sdk/state"
-	ormbuilder "github.com/domainry/domainry-orm/builder"
+	ormbuilder "github.com/domainry/domainry-orm/query"
 )
 
 type LifecycleStore struct{ store *Store }

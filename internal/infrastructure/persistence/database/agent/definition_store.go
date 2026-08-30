@@ -11,7 +11,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
-	ormbuilder "github.com/domainry/domainry-orm/builder"
+	ormbuilder "github.com/domainry/domainry-orm/query"
 )
 
 type DefinitionStore struct{ store *Store }
