@@ -9,14 +9,16 @@ import (
 	"strings"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 )
 
 const maxRequestBytes = 2 << 20
 
 type Config struct {
-	APIKey      string
-	Runner      agentsdk.TaskRunner
-	Interactive agentsdk.InteractiveRunner
+	APIKey       string
+	Runner       agentsdk.TaskRunner
+	Interactive  agentsdk.InteractiveRunner
+	Repositories agentrepository.Binding
 }
 type Server struct {
 	config  Config
@@ -32,11 +34,14 @@ func New(config Config) *Server {
 	mux.HandleFunc("GET /api/v1/task-runs/{id}", s.poll)
 	mux.HandleFunc("POST /api/v1/task-runs/{id}/cancel", s.cancel)
 	mux.HandleFunc("POST /api/v1/interactive-runs", s.interactive)
+	mux.HandleFunc("POST /api/v1/repository/{operation}", s.repository)
 	s.handler = mux
 	return s
 }
 func (s *Server) ready(w http.ResponseWriter, _ *http.Request) {
-	if s.config.Runner == nil || s.config.Interactive == nil {
+	definitions, hasDefinitions := s.config.Repositories.(agentrepository.DefinitionBinding)
+	lifecycle, hasLifecycle := s.config.Repositories.(agentrepository.LifecycleBinding)
+	if s.config.Runner == nil || s.config.Interactive == nil || s.config.Repositories == nil || s.config.Repositories.AgentStateRepository() == nil || s.config.Repositories.AgentTaskRunRepository() == nil || !hasDefinitions || definitions.DefinitionRepository() == nil || !hasLifecycle || lifecycle.AgentLifecycleRepository() == nil {
 		writeError(w, http.StatusServiceUnavailable, "agent.saas.not_ready", "runner unavailable")
 		return
 	}

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent/definition"
 )
 
 const maxResponseBytes = 2 << 20
@@ -44,6 +45,9 @@ func (r *Runner) validate() error {
 func (r *Runner) Validate() error { return r.validate() }
 
 func (r *Runner) Start(ctx context.Context, request agentsdk.TaskRequest) (agentsdk.TaskResult, error) {
+	if err := definition.ValidateTaskRequest(request); err != nil {
+		return agentsdk.TaskResult{ErrorClass: "request_contract", ErrorCode: "agent.runner.request_invalid"}, err
+	}
 	input, err := json.Marshal(request.Input)
 	if err != nil {
 		return agentsdk.TaskResult{}, err
@@ -60,6 +64,9 @@ func (r *Runner) Cancel(ctx context.Context, id, key string) (agentsdk.TaskResul
 
 func (r *Runner) Run(ctx context.Context, request agentsdk.InteractiveRequest) (agentsdk.InteractiveResult, error) {
 	if err := r.validate(); err != nil {
+		return agentsdk.InteractiveResult{}, err
+	}
+	if err := definition.ValidateInteractiveRequest(request); err != nil {
 		return agentsdk.InteractiveResult{}, err
 	}
 	payload := map[string]any{"agent_id": r.config.AgentID, "message": request.Message, "response_mode": "blocking", "external_session_id": request.SessionID, "metadata": map[string]any{"source": "domainry-interactive-agent", "interactive_run_id": request.RunID, "idempotency_key": request.IdempotencyKey, "runtime_context": request.Context, "route_candidates": request.Candidates, "max_steps": request.MaxSteps, "max_tool_calls": request.MaxToolCalls, "execution_credential": request.ExecutionCredential}}

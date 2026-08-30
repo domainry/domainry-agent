@@ -13,6 +13,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	"github.com/domainry/domainry-agent-sdk/saashost"
 )
 
@@ -41,6 +42,17 @@ func (f *Factory) OpenSaaS(ctx context.Context, app agentsdk.ApplicationRef, hos
 	if host == nil || host.RuntimeID() != app.RuntimeID {
 		return nil, fmt.Errorf("Agent SaaS host identity mismatch")
 	}
+	persistenceHost, ok := host.(saashost.PersistenceHost)
+	if !ok || persistenceHost.Database() == nil || persistenceHost.Dialect() == nil || persistenceHost.Migrations() == nil {
+		return nil, fmt.Errorf("Agent SaaS persistence host is incomplete")
+	}
+	migrations, err := publicationMigrations(persistenceHost.Dialect())
+	if err != nil {
+		return nil, err
+	}
+	if err := persistenceHost.Migrations().ApplyOwnedMigrations(ctx, "agent-saas-adapter", migrations); err != nil {
+		return nil, fmt.Errorf("apply Agent SaaS adapter migrations: %w", err)
+	}
 	client := newClient(f.options)
 	descriptor, err := client.descriptor(ctx)
 	if err != nil {
@@ -52,18 +64,38 @@ func (f *Factory) OpenSaaS(ctx context.Context, app agentsdk.ApplicationRef, hos
 	if descriptor.Mode != agentsdk.DeploymentModeSaaS {
 		return nil, fmt.Errorf("Agent SaaS endpoint returned mode %q", descriptor.Mode)
 	}
-	return &binding{client: client, descriptor: descriptor}, nil
+	publications, err := newPublicationStore(persistenceHost, client, fmt.Sprintf("%s:%d", app.RuntimeID, time.Now().UnixNano()))
+	if err != nil {
+		return nil, err
+	}
+	publications.start(ctx)
+	return &binding{client: client, descriptor: descriptor, tasks: taskRepository{client: client, publications: publications}, publications: publications}, nil
 }
 
 type binding struct {
-	client     *client
-	descriptor agentsdk.Descriptor
+	client       *client
+	descriptor   agentsdk.Descriptor
+	tasks        taskRepository
+	publications *publicationStore
 }
 
-func (b *binding) Descriptor() agentsdk.Descriptor               { return b.descriptor }
-func (b *binding) TaskRunner() agentsdk.TaskRunner               { return b.client }
-func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner { return b.client }
-func (*binding) Close(context.Context) error                     { return nil }
+func (b *binding) Descriptor() agentsdk.Descriptor                            { return b.descriptor }
+func (b *binding) TaskRunner() agentsdk.TaskRunner                            { return b.client }
+func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner              { return b.client }
+func (b *binding) DefinitionRepository() agentrepository.DefinitionRepository { return b.client }
+func (b *binding) AgentStateRepository() agentrepository.AgentStateRepository { return b.client }
+func (b *binding) AgentTaskRunRepository() agentrepository.AgentTaskRunRepository {
+	return b.tasks
+}
+func (b *binding) AgentLifecycleRepository() agentrepository.AgentLifecycleRepository {
+	return b.client
+}
+func (b *binding) Close(ctx context.Context) error {
+	if b.publications != nil {
+		return b.publications.close(ctx)
+	}
+	return nil
+}
 
 type client struct {
 	baseURL, apiKey string

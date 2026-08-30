@@ -22,7 +22,7 @@ func TestTaskRunnerMapsDomainryRequestAndIdempotency(t *testing.T) {
 	}))
 	defer upstream.Close()
 	runner := New(Config{BaseURL: upstream.URL, APIKey: "secret", AgentID: 7, Client: upstream.Client()})
-	result, err := runner.Start(t.Context(), agentsdk.TaskRequest{TaskRunID: "task", ProcessID: "process", WorkspaceID: "workspace", Task: agentsdk.TaskDefinition{Key: "review", Version: "1", Instruction: "Review"}, Input: map[string]any{"id": 1}, ExecutionCredential: "credential", IdempotencyKey: "key"})
+	result, err := runner.Start(t.Context(), agentsdk.TaskRequest{TaskRunID: "task", ProcessID: "process", WorkspaceID: "workspace", Task: agentsdk.AgentTaskDefinition{ContractVersion: agentsdk.AgentTaskContractVersion, Key: "review", Version: "1", AgentKey: "reviewer", Instruction: "Review", InputSchema: map[string]any{"type": "object"}, OutputSchema: map[string]any{"type": "object"}, AllowedOutcomes: []string{"success"}, SideEffectMode: agentsdk.AgentTaskSideEffectAnalysisOnly, Enabled: true}, Input: map[string]any{"id": 1}, ExecutionCredential: "credential", IdempotencyKey: "key"})
 	if err != nil || result.ExternalRunID != "provider-1" || key != "key" {
 		t.Fatalf("result=%+v key=%q err=%v", result, key, err)
 	}

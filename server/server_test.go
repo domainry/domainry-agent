@@ -32,7 +32,7 @@ func TestServerAuthenticationAndIdempotency(t *testing.T) {
 	if response.Code != http.StatusUnauthorized {
 		t.Fatalf("status=%d", response.Code)
 	}
-	body := `{"task_run_id":"task","workspace_id":"workspace","task":{"key":"task","version":"1","instruction":"run"},"identity":{},"idempotency_key":"key","deadline":"0001-01-01T00:00:00Z"}`
+	body := `{"task_run_id":"task","workspace_id":"workspace","task":{"contract_version":"agent-task-v1","key":"task","version":"1","agent_key":"runner","instruction":"run","input_schema":{"type":"object"},"output_schema":{"type":"object"},"allowed_outcomes":["success"],"side_effect_mode":"analysis_only","enabled":true},"identity":{},"idempotency_key":"key","deadline":"0001-01-01T00:00:00Z"}`
 	request = httptest.NewRequest(http.MethodPost, "/api/v1/task-runs", strings.NewReader(body))
 	request.Header.Set("Authorization", "Bearer secret")
 	request.Header.Set("Idempotency-Key", "other")
