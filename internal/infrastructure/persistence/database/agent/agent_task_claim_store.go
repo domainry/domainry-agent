@@ -67,7 +67,7 @@ func (s *AgentTaskRunStore) claimAgentTaskRunOnce(ctx context.Context, workspace
 		return agentrepository.AgentTaskClaim{}, false, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "agent_task_runs", workspaceID).
+	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
 		Columns("payload_json", "fencing_token").Where(ormbuilder.And(
 		ormbuilder.Equal("run_id", runID), agentTaskEligiblePredicate(now),
 	)).Limit(1).Build()
@@ -116,7 +116,7 @@ func (s *AgentTaskRunStore) claimNextOnce(ctx context.Context, workspaceID strin
 		return agentrepository.AgentTaskClaim{}, false, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "agent_task_runs", workspaceID).
+	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
 		Columns("run_id", "payload_json", "fencing_token").Where(agentTaskEligiblePredicate(now)).
 		OrderBy(ormbuilder.Ascending("created_at")).Limit(1).Build()
 	if buildErr != nil {

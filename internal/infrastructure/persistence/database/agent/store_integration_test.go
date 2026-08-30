@@ -80,7 +80,7 @@ func TestAgentTaskStoreOwnsIdempotencyClaimFenceAndWorkerScope(t *testing.T) {
 		t.Fatalf("second found=%v err=%v", found, err)
 	}
 	var scopes int
-	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM agent_worker_scopes WHERE workspace_id=?`, run.WorkspaceID).Scan(&scopes); err != nil || scopes != 1 {
+	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_worker_scopes WHERE workspace_id=?`, run.WorkspaceID).Scan(&scopes); err != nil || scopes != 1 {
 		t.Fatalf("scopes=%d err=%v", scopes, err)
 	}
 }
@@ -125,7 +125,7 @@ func TestAgentDefinitionStoreOwnsSyncRestoreAndDisable(t *testing.T) {
 		t.Fatalf("loaded=%#v err=%v", loaded, err)
 	}
 	var disabled int
-	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM skill_definitions WHERE disabled_at IS NOT NULL`).Scan(&disabled); err != nil || disabled != 1 {
+	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_skill_definitions WHERE disabled_at IS NOT NULL`).Scan(&disabled); err != nil || disabled != 1 {
 		t.Fatalf("disabled=%d err=%v", disabled, err)
 	}
 }

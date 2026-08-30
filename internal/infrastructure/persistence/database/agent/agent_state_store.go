@@ -57,7 +57,7 @@ func (r AgentStateStore) PutBatch(ctx context.Context, workspaceID string, value
 	columns := []string{"kind", "state_key", "user_id", "role_key", "payload_json", "updated_at"}
 	for start := 0; start < len(order); start += 50 {
 		end := min(start+50, len(order))
-		insert := ormbuilder.NewWorkspaceInsertBuilder(r.store.Renderer(), "agent_runtime_state", workspaceID).Columns(columns...)
+		insert := ormbuilder.NewWorkspaceInsertBuilder(r.store.Renderer(), "_agent_runtime_states", workspaceID).Columns(columns...)
 		for _, key := range order[start:end] {
 			value := byKey[key]
 			insert.Values(strings.TrimSpace(value.Kind), strings.TrimSpace(value.Key), strings.TrimSpace(value.UserID), strings.TrimSpace(value.RoleKey), []byte(value.Payload), value.UpdatedAt)
@@ -91,7 +91,7 @@ func (r AgentStateStore) CompareAndSwap(ctx context.Context, workspaceID string,
 	if strings.TrimSpace(value.WorkspaceID) != workspaceID {
 		return false, fmt.Errorf("agent state workspace %q does not match repository workspace %q", value.WorkspaceID, workspaceID)
 	}
-	statement, args, buildErr := ormbuilder.NewWorkspaceUpdateBuilder(r.store.Renderer(), "agent_runtime_state", workspaceID).
+	statement, args, buildErr := ormbuilder.NewWorkspaceUpdateBuilder(r.store.Renderer(), "_agent_runtime_states", workspaceID).
 		Set("payload_json", []byte(value.Payload)).Set("updated_at", value.UpdatedAt).Where(ormbuilder.And(
 		ormbuilder.Equal("kind", strings.TrimSpace(value.Kind)),
 		ormbuilder.Equal("state_key", strings.TrimSpace(value.Key)),
@@ -117,7 +117,7 @@ func (r AgentStateStore) Get(ctx context.Context, workspaceID, kind, key string)
 		return agentmodel.AgentStateRecord{}, false, err
 	}
 	workspaceID = workspace
-	statement, args, buildErr := ormbuilder.NewWorkspaceSelectBuilder(r.store.Renderer(), "agent_runtime_state", workspaceID).
+	statement, args, buildErr := ormbuilder.NewWorkspaceSelectBuilder(r.store.Renderer(), "_agent_runtime_states", workspaceID).
 		Columns("workspace_id", "user_id", "role_key", "payload_json", "updated_at").Where(ormbuilder.And(
 		ormbuilder.Equal("kind", strings.TrimSpace(kind)), ormbuilder.Equal("state_key", strings.TrimSpace(key)),
 	)).Limit(1).Build()
@@ -150,7 +150,7 @@ func (r AgentStateStore) List(ctx context.Context, workspaceID, kind, userID, ro
 		}
 		predicates = append(predicates, ormbuilder.Equal(filter.column, strings.TrimSpace(filter.value)))
 	}
-	statement, args, buildErr := ormbuilder.NewWorkspaceSelectBuilder(r.store.Renderer(), "agent_runtime_state", workspaceID).
+	statement, args, buildErr := ormbuilder.NewWorkspaceSelectBuilder(r.store.Renderer(), "_agent_runtime_states", workspaceID).
 		Columns("state_key", "workspace_id", "user_id", "role_key", "payload_json", "updated_at").
 		Where(ormbuilder.And(predicates...)).OrderBy(ormbuilder.Descending("updated_at")).Build()
 	if buildErr != nil {

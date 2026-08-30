@@ -45,7 +45,7 @@ func (s LifecycleStore) ListLifecycleCandidates(ctx context.Context, workspaceID
 	}
 	result := []agentrepository.LifecycleCandidate{}
 	for _, item := range kinds {
-		builder := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "agent_runtime_state", workspaceID).
+		builder := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_runtime_states", workspaceID).
 			Columns("state_key", "user_id", "role_key", "payload_json", "updated_at").
 			Where(ormbuilder.And(ormbuilder.Equal("kind", item.kind), ormbuilder.LessThanOrEqual("updated_at", query.Now.Add(-item.retention).UTC().UnixNano()))).
 			OrderBy(ormbuilder.Ascending("updated_at"), ormbuilder.Ascending("state_key"))
@@ -111,7 +111,7 @@ func (s LifecycleStore) LifecycleCandidateReferenced(ctx context.Context, worksp
 	if childKind == "" {
 		return false, nil
 	}
-	statement, args, err := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "agent_runtime_state", workspaceID).
+	statement, args, err := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_runtime_states", workspaceID).
 		Projections(ormbuilder.Project(ormbuilder.CountAll())).Where(ormbuilder.And(ormbuilder.Equal("kind", childKind), ormbuilder.Equal("state_key", candidate.State.Key))).Build()
 	if err != nil {
 		return false, err
@@ -124,7 +124,7 @@ func (s LifecycleStore) LifecycleCandidateReferenced(ctx context.Context, worksp
 }
 
 func (s LifecycleStore) DeleteLifecycleCandidate(ctx context.Context, workspaceID string, candidate agentrepository.LifecycleCandidate) (bool, error) {
-	statement, args, err := ormbuilder.NewWorkspaceDeleteBuilder(s.store.Renderer(), "agent_runtime_state", workspaceID).
+	statement, args, err := ormbuilder.NewWorkspaceDeleteBuilder(s.store.Renderer(), "_agent_runtime_states", workspaceID).
 		Where(ormbuilder.And(ormbuilder.Equal("kind", candidate.State.Kind), ormbuilder.Equal("state_key", candidate.State.Key), ormbuilder.Equal("updated_at", candidate.State.UpdatedAt))).Build()
 	if err != nil {
 		return false, err

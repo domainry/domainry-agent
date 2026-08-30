@@ -107,7 +107,7 @@ func (s *Store) registerWorkerScope(ctx context.Context, executor modulehost.Exe
 	if workspaceID == "" {
 		return fmt.Errorf("Agent workspace is required")
 	}
-	insert := ormbuilder.NewInsertBuilder(s.renderer, "agent_worker_scopes").Columns("workspace_id", "updated_at").Values(workspaceID, updatedAt)
+	insert := ormbuilder.NewInsertBuilder(s.renderer, "_agent_worker_scopes").Columns("workspace_id", "updated_at").Values(workspaceID, updatedAt)
 	insert, err := s.profile.ApplyUpsert(insert, []string{"workspace_id"}, ormbuilder.AssignExpression("updated_at", ormbuilder.InsertedValue("updated_at")))
 	if err != nil {
 		return err
@@ -127,7 +127,7 @@ func (s *Store) workerScopePage(ctx context.Context, limit int) ([]string, error
 	if limit <= 0 || limit > 500 {
 		limit = 64
 	}
-	statement, args, err := ormbuilder.NewSelectBuilder(s.renderer, "agent_worker_scopes").Columns("workspace_id").OrderBy(ormbuilder.Descending("updated_at")).Limit(limit).Build()
+	statement, args, err := ormbuilder.NewSelectBuilder(s.renderer, "_agent_worker_scopes").Columns("workspace_id").OrderBy(ormbuilder.Descending("updated_at")).Limit(limit).Build()
 	if err != nil {
 		return nil, err
 	}

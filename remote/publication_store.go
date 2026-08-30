@@ -16,7 +16,7 @@ import (
 	ormbuilder "github.com/domainry/domainry-orm/query"
 )
 
-const publicationTable = "agent_saas_task_publications"
+const publicationTable = "_agent_task_publications"
 
 type publicationStore struct {
 	store    *agentstore.Store
@@ -52,7 +52,7 @@ func publicationMigrations(renderer modulehost.Dialect) ([]modulehost.SchemaMigr
 	if err != nil {
 		return nil, err
 	}
-	return []modulehost.SchemaMigration{{Version: 1, Name: "agent_saas_task_publications", Statements: []string{statement}}}, nil
+	return []modulehost.SchemaMigration{{Version: 1, Name: "agent_task_publications", Statements: []string{statement}}}, nil
 }
 
 func newPublicationStore(host interface {

@@ -39,7 +39,7 @@ func NewAgentTaskRunStore(store *Store) *AgentTaskRunStore {
 // startup. It is deliberately not part of EnsureSchema: ordinary Agent reads
 // and writes must not perform a global workspace inventory.
 func (s *AgentTaskRunStore) BackfillWorkerScopes(ctx context.Context) error {
-	query, args, buildErr := query.NewSelectBuilder(s.store.Renderer(), "agent_task_runs").Projections(
+	query, args, buildErr := query.NewSelectBuilder(s.store.Renderer(), "_agent_task_runs").Projections(
 		query.Project(query.Column("workspace_id")),
 		query.Project(query.Max(query.Column("updated_at"))),
 	).GroupBy(query.Column("workspace_id")).Build()
@@ -83,7 +83,7 @@ func (s *AgentTaskRunStore) Create(ctx context.Context, run agentmodel.AgentTask
 	if err != nil {
 		return agentmodel.AgentTaskRun{}, false, err
 	}
-	statement, args, buildErr := query.NewWorkspaceInsertBuilder(s.store.Renderer(), "agent_task_runs", run.WorkspaceID).
+	statement, args, buildErr := query.NewWorkspaceInsertBuilder(s.store.Renderer(), "_agent_task_runs", run.WorkspaceID).
 		Columns(agentTaskRunColumns()...).Values(run.ID, run.IdempotencyKey, run.TaskKey, run.ProcessID, string(run.Status), "", int64(0), int64(0), timeMillis(run.NextAttemptAt), payload, run.CreatedAt.UnixMilli(), run.UpdatedAt.UnixMilli()).Build()
 	if buildErr != nil {
 		return agentmodel.AgentTaskRun{}, false, buildErr
@@ -106,7 +106,7 @@ func (s *AgentTaskRunStore) Create(ctx context.Context, run agentmodel.AgentTask
 }
 
 func (s *AgentTaskRunStore) Get(ctx context.Context, workspaceID, runID string) (agentmodel.AgentTaskRun, bool, error) {
-	statement, args, err := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "agent_task_runs", strings.TrimSpace(workspaceID)).
+	statement, args, err := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", strings.TrimSpace(workspaceID)).
 		Columns("payload_json").Where(query.Equal("run_id", strings.TrimSpace(runID))).Limit(1).Build()
 	if err != nil {
 		return agentmodel.AgentTaskRun{}, false, err
@@ -115,7 +115,7 @@ func (s *AgentTaskRunStore) Get(ctx context.Context, workspaceID, runID string) 
 }
 
 func (s *AgentTaskRunStore) getByIdempotency(ctx context.Context, workspaceID, key string) (agentmodel.AgentTaskRun, bool, error) {
-	statement, args, err := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "agent_task_runs", workspaceID).
+	statement, args, err := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
 		Columns("payload_json").Where(query.Equal("idempotency_key", key)).Limit(1).Build()
 	if err != nil {
 		return agentmodel.AgentTaskRun{}, false, err
@@ -158,7 +158,7 @@ func (s *AgentTaskRunStore) List(ctx context.Context, workspaceID string, filter
 	if limit <= 0 || limit > 500 {
 		limit = 100
 	}
-	builder := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "agent_task_runs", strings.TrimSpace(workspaceID)).Columns("payload_json")
+	builder := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", strings.TrimSpace(workspaceID)).Columns("payload_json")
 	if len(predicates) > 0 {
 		builder = builder.Where(query.And(predicates...))
 	}
@@ -212,7 +212,7 @@ func agentTaskEligiblePredicate(now time.Time) query.Predicate {
 }
 
 func agentTaskClaimUpdate(store *Store, workspaceID, runID, owner string, token, priorToken int64, expires, now time.Time, payload []byte) (string, []any, error) {
-	return query.NewWorkspaceUpdateBuilder(store.Renderer(), "agent_task_runs", workspaceID).
+	return query.NewWorkspaceUpdateBuilder(store.Renderer(), "_agent_task_runs", workspaceID).
 		Set("status", string(agentmodel.AgentTaskRunRunning)).Set("lease_owner", owner).Set("fencing_token", token).
 		Set("lease_expires_at", expires.UnixMilli()).Set("payload_json", payload).Set("updated_at", now.UnixMilli()).
 		Where(query.And(
@@ -221,14 +221,14 @@ func agentTaskClaimUpdate(store *Store, workspaceID, runID, owner string, token,
 }
 
 func agentTaskPayloadSelect(store *Store, workspaceID, runID, status string) (string, []any, error) {
-	return query.NewWorkspaceSelectBuilder(store.Renderer(), "agent_task_runs", workspaceID).
+	return query.NewWorkspaceSelectBuilder(store.Renderer(), "_agent_task_runs", workspaceID).
 		Columns("payload_json").Where(query.And(
 		query.Equal("run_id", runID), query.Equal("status", status),
 	)).Limit(1).Build()
 }
 
 func agentTaskStatusUpdate(store *Store, run agentmodel.AgentTaskRun, payload []byte, expectedStatus agentmodel.AgentTaskRunStatus) (string, []any, error) {
-	return query.NewWorkspaceUpdateBuilder(store.Renderer(), "agent_task_runs", run.WorkspaceID).
+	return query.NewWorkspaceUpdateBuilder(store.Renderer(), "_agent_task_runs", run.WorkspaceID).
 		Set("status", string(run.Status)).Set("payload_json", payload).Set("updated_at", run.UpdatedAt.UnixMilli()).
 		Where(agentTaskStatusPredicate(run.ID, expectedStatus)).Build()
 }

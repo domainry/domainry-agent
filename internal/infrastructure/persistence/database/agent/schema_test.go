@@ -16,7 +16,7 @@ func TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects(t *testing.
 				t.Fatalf("migrations=%+v", migrations)
 			}
 			joined := strings.Join(migrations[0].Statements, "\n")
-			for _, table := range append(append([]string(nil), schemaDefinitionTables...), "agent_runtime_state", "agent_task_runs", "agent_interactive_runs", "agent_worker_scopes") {
+			for _, table := range append(append([]string(nil), schemaDefinitionTables...), "_agent_runtime_states", "_agent_task_runs", "_agent_interactive_runs", "_agent_worker_scopes") {
 				if !strings.Contains(joined, table) {
 					t.Errorf("%s migration does not own %s", driver, table)
 				}

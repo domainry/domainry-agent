@@ -11,11 +11,11 @@ import (
 const SchemaVersion uint = 1
 
 var schemaDefinitionTables = []string{
-	"skill_definitions",
-	"agent_definitions",
-	"agent_task_definitions",
-	"agent_entrypoint_definitions",
-	"agent_service_principal_definitions",
+	"_agent_skill_definitions",
+	"_agent_definitions",
+	"_agent_task_definitions",
+	"_agent_entrypoint_definitions",
+	"_agent_service_principal_definitions",
 }
 
 // SchemaMigrations is the sole source of Agent-owned DDL. Embedded modules
@@ -46,10 +46,10 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		name    string
 		builder *ormschema.TableBuilder
 	}{
-		{name: "agent_runtime_state", builder: runtimeStateTable(renderer)},
-		{name: "agent_task_runs", builder: taskRunTable(renderer)},
-		{name: "agent_interactive_runs", builder: interactiveRunTable(renderer)},
-		{name: "agent_worker_scopes", builder: workerScopeTable(renderer)},
+		{name: "_agent_runtime_states", builder: runtimeStateTable(renderer)},
+		{name: "_agent_task_runs", builder: taskRunTable(renderer)},
+		{name: "_agent_interactive_runs", builder: interactiveRunTable(renderer)},
+		{name: "_agent_worker_scopes", builder: workerScopeTable(renderer)},
 	} {
 		statement, _, buildErr := table.builder.Build()
 		if buildErr != nil {
@@ -65,7 +65,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		{name: "idx_agent_owned_task_process_v1", columns: []string{"workspace_id", "process_id", "status"}},
 		{name: "idx_agent_owned_task_key_v1", columns: []string{"workspace_id", "task_key", "status"}},
 	} {
-		statement, _, buildErr := ormschema.NewIndex(renderer, index.name, "agent_task_runs").Columns(index.columns...).Build()
+		statement, _, buildErr := ormschema.NewIndex(renderer, index.name, "_agent_task_runs").Columns(index.columns...).Build()
 		if buildErr != nil {
 			return nil, fmt.Errorf("build Agent task index %s: %w", index.name, buildErr)
 		}
@@ -75,7 +75,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 }
 
 func workerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
-	return ormschema.NewTable(renderer, "agent_worker_scopes").IfNotExists().Columns(
+	return ormschema.NewTable(renderer, "_agent_worker_scopes").IfNotExists().Columns(
 		required("workspace_id", ormschema.TextKey(255)), required("updated_at", ormschema.BigInt()),
 	).PrimaryKey("workspace_id")
 }
@@ -98,7 +98,7 @@ func definitionTable(renderer modulehost.Dialect, name string) *ormschema.TableB
 }
 
 func runtimeStateTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
-	return ormschema.NewTable(renderer, "agent_runtime_state").IfNotExists().Columns(
+	return ormschema.NewTable(renderer, "_agent_runtime_states").IfNotExists().Columns(
 		required("kind", ormschema.TextKey(255)), required("state_key", ormschema.TextKey(255)),
 		required("workspace_id", ormschema.TextKey(255)), required("user_id", ormschema.TextKey(255)),
 		required("role_key", ormschema.TextKey(255)), required("payload_json", ormschema.LongText()),
@@ -107,7 +107,7 @@ func runtimeStateTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
 }
 
 func taskRunTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
-	return ormschema.NewTable(renderer, "agent_task_runs").IfNotExists().Columns(
+	return ormschema.NewTable(renderer, "_agent_task_runs").IfNotExists().Columns(
 		required("workspace_id", ormschema.TextKey(255)), required("run_id", ormschema.TextKey(255)),
 		required("idempotency_key", ormschema.TextKey(255)), required("task_key", ormschema.TextKey(255)),
 		required("process_id", ormschema.TextKey(255)), required("status", ormschema.TextKey(255)),
@@ -119,7 +119,7 @@ func taskRunTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
 }
 
 func interactiveRunTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
-	return ormschema.NewTable(renderer, "agent_interactive_runs").IfNotExists().Columns(
+	return ormschema.NewTable(renderer, "_agent_interactive_runs").IfNotExists().Columns(
 		required("workspace_id", ormschema.TextKey(255)), required("run_id", ormschema.TextKey(255)),
 		required("session_id", ormschema.TextKey(255)), required("user_id", ormschema.TextKey(255)),
 		required("role_key", ormschema.TextKey(255)), required("surface", ormschema.TextKey(255)),

@@ -21,7 +21,7 @@ func (s *AgentTaskRunStore) BeginAgentToolCall(ctx context.Context, start agentr
 		return "", 0, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "agent_task_runs", start.WorkspaceID).
+	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", start.WorkspaceID).
 		Columns("payload_json", "status", "lease_owner", "fencing_token").Where(ormbuilder.Equal("run_id", start.TaskRunID)).Limit(1).Build()
 	if buildErr != nil {
 		return "", 0, buildErr
@@ -57,7 +57,7 @@ func (s *AgentTaskRunStore) BeginAgentToolCall(ctx context.Context, start agentr
 	run.Evidence.ToolInvocationRefs = append(run.Evidence.ToolInvocationRefs, ref)
 	run.Evidence.ToolInvocations = append(run.Evidence.ToolInvocations, agentmodel.AgentTaskToolInvocationEvidence{Ref: ref, Tool: start.Tool, InputHash: start.InputHash, Status: "running", Authorization: start.Authorization, StartedAt: run.UpdatedAt, CostUnits: start.CostUnits})
 	updated, _ := json.Marshal(run)
-	update, updateArgs, buildErr := ormbuilder.NewWorkspaceUpdateBuilder(s.store.Renderer(), "agent_task_runs", start.WorkspaceID).
+	update, updateArgs, buildErr := ormbuilder.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", start.WorkspaceID).
 		Set("payload_json", updated).Set("updated_at", run.UpdatedAt.UnixMilli()).Where(agentTaskLeasePredicate(start.TaskRunID, start.Owner, start.FencingToken)).Build()
 	if buildErr != nil {
 		return "", 0, buildErr
@@ -85,7 +85,7 @@ func (s *AgentTaskRunStore) FinishAgentToolCall(ctx context.Context, finish agen
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "agent_task_runs", finish.WorkspaceID).
+	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", finish.WorkspaceID).
 		Columns("payload_json", "status", "lease_owner", "fencing_token").Where(ormbuilder.Equal("run_id", finish.TaskRunID)).Limit(1).Build()
 	if buildErr != nil {
 		return buildErr
@@ -125,7 +125,7 @@ func (s *AgentTaskRunStore) FinishAgentToolCall(ctx context.Context, finish agen
 	run.UpdatedAt = now
 	run.Revision++
 	updated, _ := json.Marshal(run)
-	update, updateArgs, buildErr := ormbuilder.NewWorkspaceUpdateBuilder(s.store.Renderer(), "agent_task_runs", finish.WorkspaceID).
+	update, updateArgs, buildErr := ormbuilder.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", finish.WorkspaceID).
 		Set("payload_json", updated).Set("updated_at", now.UnixMilli()).Where(agentTaskLeasePredicate(finish.TaskRunID, finish.Owner, finish.FencingToken)).Build()
 	if buildErr != nil {
 		return buildErr

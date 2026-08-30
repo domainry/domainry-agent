@@ -116,7 +116,7 @@ func TestSaaSBindingPersistsDefinitionsStateAndWorkerRunsRemotely(t *testing.T) 
 		t.Fatal(err)
 	}
 	var rolledBackPublications int
-	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM agent_saas_task_publications WHERE run_id=?`, rolledBack.RunID).Scan(&rolledBackPublications); err != nil || rolledBackPublications != 0 {
+	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_task_publications WHERE run_id=?`, rolledBack.RunID).Scan(&rolledBackPublications); err != nil || rolledBackPublications != 0 {
 		t.Fatalf("rolled back publications=%d err=%v", rolledBackPublications, err)
 	}
 	tx, err := host.database.BeginTx(t.Context(), nil)
@@ -146,7 +146,7 @@ func TestSaaSBindingPersistsDefinitionsStateAndWorkerRunsRemotely(t *testing.T) 
 		time.Sleep(25 * time.Millisecond)
 	}
 	var delivered, attempts int
-	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*), MAX(attempts) FROM agent_saas_task_publications WHERE status='delivered'`).Scan(&delivered, &attempts); err != nil || delivered != 1 || attempts < 2 || mutationAttempts.Load() < 2 {
+	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*), MAX(attempts) FROM _agent_task_publications WHERE status='delivered'`).Scan(&delivered, &attempts); err != nil || delivered != 1 || attempts < 2 || mutationAttempts.Load() < 2 {
 		t.Fatalf("delivered=%d attempts=%d remote attempts=%d err=%v", delivered, attempts, mutationAttempts.Load(), err)
 	}
 }

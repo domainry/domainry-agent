@@ -31,16 +31,16 @@ func TestModuleMigrationAdoptsLegacyRuntimeAgentIndexes(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, statement := range migrations[0].Statements {
-		if strings.Contains(statement, `CREATE TABLE IF NOT EXISTS "agent_task_runs"`) {
+		if strings.Contains(statement, `CREATE TABLE IF NOT EXISTS "_agent_task_runs"`) {
 			if _, err := host.database.ExecContext(t.Context(), statement); err != nil {
 				t.Fatal(err)
 			}
 		}
 	}
 	for _, statement := range []string{
-		`CREATE INDEX idx_agent_task_claim ON agent_task_runs (workspace_id,status,next_attempt_at,lease_expires_at,created_at)`,
-		`CREATE INDEX idx_agent_task_process ON agent_task_runs (workspace_id,process_id,status)`,
-		`CREATE INDEX idx_agent_task_key ON agent_task_runs (workspace_id,task_key,status)`,
+		`CREATE INDEX idx_agent_task_claim ON _agent_task_runs (workspace_id,status,next_attempt_at,lease_expires_at,created_at)`,
+		`CREATE INDEX idx_agent_task_process ON _agent_task_runs (workspace_id,process_id,status)`,
+		`CREATE INDEX idx_agent_task_key ON _agent_task_runs (workspace_id,task_key,status)`,
 	} {
 		if _, err := host.database.ExecContext(t.Context(), statement); err != nil {
 			t.Fatal(err)

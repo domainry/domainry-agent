@@ -17,11 +17,11 @@ import (
 type DefinitionStore struct{ store *Store }
 
 var definitionTables = []string{
-	"skill_definitions",
-	"agent_definitions",
-	"agent_task_definitions",
-	"agent_entrypoint_definitions",
-	"agent_service_principal_definitions",
+	"_agent_skill_definitions",
+	"_agent_definitions",
+	"_agent_task_definitions",
+	"_agent_entrypoint_definitions",
+	"_agent_service_principal_definitions",
 }
 
 func NewDefinitionStore(store *Store) DefinitionStore { return DefinitionStore{store: store} }
@@ -34,19 +34,19 @@ type definitionSeed struct {
 func definitionSeeds(snapshot agentrepository.DefinitionSnapshot) []definitionSeed {
 	values := make([]definitionSeed, 0, len(snapshot.Skills)+len(snapshot.Agents)+len(snapshot.Tasks)+len(snapshot.Entrypoints)+len(snapshot.Principals))
 	for _, value := range snapshot.Skills {
-		values = append(values, definitionSeed{"skill_definitions", "skill", strings.TrimSpace(value.Key), value.Name, value})
+		values = append(values, definitionSeed{"_agent_skill_definitions", "skill", strings.TrimSpace(value.Key), value.Name, value})
 	}
 	for _, value := range snapshot.Agents {
-		values = append(values, definitionSeed{"agent_definitions", "agent", strings.TrimSpace(value.Key), value.Name, value})
+		values = append(values, definitionSeed{"_agent_definitions", "agent", strings.TrimSpace(value.Key), value.Name, value})
 	}
 	for _, value := range snapshot.Tasks {
-		values = append(values, definitionSeed{"agent_task_definitions", "agent_task", strings.TrimSpace(value.Key) + "@" + strings.TrimSpace(value.Version), value.Name, value})
+		values = append(values, definitionSeed{"_agent_task_definitions", "agent_task", strings.TrimSpace(value.Key) + "@" + strings.TrimSpace(value.Version), value.Name, value})
 	}
 	for _, value := range snapshot.Entrypoints {
-		values = append(values, definitionSeed{"agent_entrypoint_definitions", "agent_entrypoint", strings.TrimSpace(value.Key), value.Key, value})
+		values = append(values, definitionSeed{"_agent_entrypoint_definitions", "agent_entrypoint", strings.TrimSpace(value.Key), value.Key, value})
 	}
 	for _, value := range snapshot.Principals {
-		values = append(values, definitionSeed{"agent_service_principal_definitions", "agent_service_principal", strings.TrimSpace(value.Key), value.Key, value})
+		values = append(values, definitionSeed{"_agent_service_principal_definitions", "agent_service_principal", strings.TrimSpace(value.Key), value.Key, value})
 	}
 	return values
 }
@@ -132,23 +132,23 @@ func loadDefinitions[T any](ctx context.Context, store *Store, table string) ([]
 func (s DefinitionStore) DefinitionSnapshot(ctx context.Context) (agentrepository.DefinitionSnapshot, error) {
 	var result agentrepository.DefinitionSnapshot
 	var err error
-	result.Skills, result.SchemaVersion, result.SourceKind, result.SourceID, err = loadDefinitions[agentsdk.SkillSchema](ctx, s.store, "skill_definitions")
+	result.Skills, result.SchemaVersion, result.SourceKind, result.SourceID, err = loadDefinitions[agentsdk.SkillSchema](ctx, s.store, "_agent_skill_definitions")
 	if err != nil {
 		return result, err
 	}
-	result.Agents, _, _, _, err = loadDefinitions[agentsdk.AgentSchema](ctx, s.store, "agent_definitions")
+	result.Agents, _, _, _, err = loadDefinitions[agentsdk.AgentSchema](ctx, s.store, "_agent_definitions")
 	if err != nil {
 		return result, err
 	}
-	result.Tasks, _, _, _, err = loadDefinitions[agentsdk.AgentTaskDefinition](ctx, s.store, "agent_task_definitions")
+	result.Tasks, _, _, _, err = loadDefinitions[agentsdk.AgentTaskDefinition](ctx, s.store, "_agent_task_definitions")
 	if err != nil {
 		return result, err
 	}
-	result.Entrypoints, _, _, _, err = loadDefinitions[agentsdk.AgentEntrypointAssignment](ctx, s.store, "agent_entrypoint_definitions")
+	result.Entrypoints, _, _, _, err = loadDefinitions[agentsdk.AgentEntrypointAssignment](ctx, s.store, "_agent_entrypoint_definitions")
 	if err != nil {
 		return result, err
 	}
-	result.Principals, _, _, _, err = loadDefinitions[agentsdk.AgentServicePrincipalBinding](ctx, s.store, "agent_service_principal_definitions")
+	result.Principals, _, _, _, err = loadDefinitions[agentsdk.AgentServicePrincipalBinding](ctx, s.store, "_agent_service_principal_definitions")
 	if err != nil {
 		return result, err
 	}
