@@ -3,8 +3,8 @@ module github.com/domainry/domainry-agent
 go 1.26.0
 
 require (
-	github.com/domainry/domainry-agent-sdk v0.1.2-0.20260831225723-3deb0b82904d
-	github.com/domainry/domainry-foundation v0.1.0-dev.7.0.20260831223551-434fc77cbea9
+	github.com/domainry/domainry-agent-sdk v0.1.2
+	github.com/domainry/domainry-foundation v0.1.0-dev.8
 	github.com/domainry/domainry-identity-sdk v0.1.1-dev7
 	github.com/domainry/domainry-lifecycle-sdk v0.1.6
 	github.com/domainry/domainry-orm v0.1.29
