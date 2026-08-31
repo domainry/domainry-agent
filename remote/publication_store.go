@@ -12,8 +12,9 @@ import (
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
-	ormbuilder "github.com/domainry/domainry-orm/query"
+	"github.com/domainry/domainry-orm/query"
 )
 
 const publicationTable = "_agent_task_publications"
@@ -60,7 +61,7 @@ func newPublicationStore(host interface {
 	Dialect() modulehost.Dialect
 	Migrations() modulehost.MigrationRegistrar
 }, client *client, workerID string) (*publicationStore, error) {
-	store, err := agentstore.NewStore(host.Database(), host.Dialect(), host.Migrations().Driver())
+	store, err := agentpersistence.NewAgentStore(host.Database(), host.Dialect(), host.Migrations().Driver())
 	if err != nil {
 		return nil, err
 	}
@@ -85,10 +86,10 @@ func (s *publicationStore) enqueue(ctx context.Context, executor modulehost.Exec
 		return err
 	}
 	now := time.Now().UTC().UnixMilli()
-	insert := ormbuilder.NewInsertBuilder(s.store.Renderer(), publicationTable).Columns("id", "workspace_id", "run_id", "operation", "payload_json", "status", "attempts", "next_attempt_at", "lease_owner", "lease_expires_at", "last_error", "created_at", "updated_at").Values(publicationID(operation, mutation), mutation.WorkspaceID, mutation.RunID, operation, raw, "pending", 0, now, "", 0, "", now, now)
+	insert := query.NewInsertBuilder(s.store.Renderer(), publicationTable).Columns("id", "workspace_id", "run_id", "operation", "payload_json", "status", "attempts", "next_attempt_at", "lease_owner", "lease_expires_at", "last_error", "created_at", "updated_at").Values(publicationID(operation, mutation), mutation.WorkspaceID, mutation.RunID, operation, raw, "pending", 0, now, "", 0, "", now, now)
 	insert, err = s.store.Profile().ApplyUpsert(insert, []string{"id"},
-		ormbuilder.AssignExpression("payload_json", ormbuilder.InsertedValue("payload_json")),
-		ormbuilder.AssignExpression("updated_at", ormbuilder.InsertedValue("updated_at")))
+		query.AssignExpression("payload_json", query.InsertedValue("payload_json")),
+		query.AssignExpression("updated_at", query.InsertedValue("updated_at")))
 	if err != nil {
 		return err
 	}
@@ -141,10 +142,10 @@ func (s *publicationStore) close(ctx context.Context) error {
 
 func (s *publicationStore) relay(ctx context.Context) error {
 	now := time.Now().UTC().UnixMilli()
-	statement, args, err := ormbuilder.NewSelectBuilder(s.store.Renderer(), publicationTable).Columns("id", "operation", "payload_json", "attempts").Where(ormbuilder.Or(
-		ormbuilder.And(ormbuilder.Equal("status", "pending"), ormbuilder.LessThanOrEqual("next_attempt_at", now)),
-		ormbuilder.And(ormbuilder.Equal("status", "processing"), ormbuilder.LessThanOrEqual("lease_expires_at", now)),
-	)).OrderBy(ormbuilder.Ascending("created_at")).Limit(32).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), publicationTable).Columns("id", "operation", "payload_json", "attempts").Where(query.Or(
+		query.And(query.Equal("status", "pending"), query.LessThanOrEqual("next_attempt_at", now)),
+		query.And(query.Equal("status", "processing"), query.LessThanOrEqual("lease_expires_at", now)),
+	)).OrderBy(query.Ascending("created_at")).Limit(32).Build()
 	if err != nil {
 		return err
 	}
@@ -180,7 +181,7 @@ func (s *publicationStore) relay(ctx context.Context) error {
 }
 
 func (s *publicationStore) deliver(ctx context.Context, value taskPublication, now int64) error {
-	claim, args, err := ormbuilder.NewUpdateBuilder(s.store.Renderer(), publicationTable).Set("status", "processing").Set("lease_owner", s.workerID).Set("lease_expires_at", now+30000).Set("updated_at", now).Where(ormbuilder.And(ormbuilder.Equal("id", value.ID), ormbuilder.Or(ormbuilder.Equal("status", "pending"), ormbuilder.And(ormbuilder.Equal("status", "processing"), ormbuilder.LessThanOrEqual("lease_expires_at", now))))).Build()
+	claim, args, err := query.NewUpdateBuilder(s.store.Renderer(), publicationTable).Set("status", "processing").Set("lease_owner", s.workerID).Set("lease_expires_at", now+30000).Set("updated_at", now).Where(query.And(query.Equal("id", value.ID), query.Or(query.Equal("status", "pending"), query.And(query.Equal("status", "processing"), query.LessThanOrEqual("lease_expires_at", now))))).Build()
 	if err != nil {
 		return err
 	}
@@ -205,7 +206,7 @@ func (s *publicationStore) deliver(ctx context.Context, value taskPublication, n
 		next = time.Now().Add(delay).UnixMilli()
 		lastError = deliveryErr.Error()
 	}
-	finish, finishArgs, buildErr := ormbuilder.NewUpdateBuilder(s.store.Renderer(), publicationTable).Set("status", status).Set("attempts", attempts).Set("next_attempt_at", next).Set("lease_owner", "").Set("lease_expires_at", 0).Set("last_error", lastError).Set("updated_at", time.Now().UnixMilli()).Where(ormbuilder.And(ormbuilder.Equal("id", value.ID), ormbuilder.Equal("status", "processing"), ormbuilder.Equal("lease_owner", s.workerID))).Build()
+	finish, finishArgs, buildErr := query.NewUpdateBuilder(s.store.Renderer(), publicationTable).Set("status", status).Set("attempts", attempts).Set("next_attempt_at", next).Set("lease_owner", "").Set("lease_expires_at", 0).Set("last_error", lastError).Set("updated_at", time.Now().UnixMilli()).Where(query.And(query.Equal("id", value.ID), query.Equal("status", "processing"), query.Equal("lease_owner", s.workerID))).Build()
 	if buildErr != nil {
 		return buildErr
 	}

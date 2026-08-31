@@ -12,6 +12,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/provider"
 )
@@ -51,7 +52,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if err := host.Migrations().ApplyOwnedMigrations(ctx, "agent", migrations); err != nil {
 		return nil, fmt.Errorf("apply Agent Module migrations: %w", err)
 	}
-	store, err := agentstore.NewStore(host.Database(), host.Dialect(), host.Migrations().Driver())
+	store, err := agentpersistence.NewAgentStore(host.Database(), host.Dialect(), host.Migrations().Driver())
 	if err != nil {
 		return nil, err
 	}

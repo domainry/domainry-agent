@@ -35,18 +35,15 @@ func NewAgentTaskRunStore(store *Store) *AgentTaskRunStore {
 	return &AgentTaskRunStore{store: store, db: store.Database()}
 }
 
-// BackfillWorkerScopes inventories legacy Agent tasks once during Runtime
-// startup. It is deliberately not part of EnsureSchema: ordinary Agent reads
-// and writes must not perform a global workspace inventory.
 func (s *AgentTaskRunStore) BackfillWorkerScopes(ctx context.Context) error {
-	query, args, buildErr := query.NewSelectBuilder(s.store.Renderer(), "_agent_task_runs").Projections(
+	queryValue, args, buildErr := query.NewSelectBuilder(s.store.Renderer(), "_agent_task_runs").Projections(
 		query.Project(query.Column("workspace_id")),
 		query.Project(query.Max(query.Column("updated_at"))),
 	).GroupBy(query.Column("workspace_id")).Build()
 	if buildErr != nil {
 		return buildErr
 	}
-	rows, err := s.db.QueryContext(ctx, query, args...)
+	rows, err := s.db.QueryContext(ctx, queryValue, args...)
 	if err != nil {
 		return err
 	}

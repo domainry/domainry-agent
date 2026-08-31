@@ -13,6 +13,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	agentstate "github.com/domainry/domainry-agent-sdk/state"
+	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/server"
 	_ "modernc.org/sqlite"
@@ -39,14 +40,14 @@ func TestSaaSBindingPersistsDefinitionsStateAndWorkerRunsRemotely(t *testing.T) 
 		t.Fatal(err)
 	}
 	defer db.Close()
-	if err := agentstore.EnsureSchema(t.Context(), db, "sqlite", ""); err != nil {
+	if err := agentpersistence.EnsureSchema(t.Context(), db, "sqlite", ""); err != nil {
 		t.Fatal(err)
 	}
-	renderer, err := agentstore.Renderer("sqlite", "")
+	renderer, err := agentpersistence.Renderer("sqlite", "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	store, err := agentstore.NewStore(db, renderer, "sqlite")
+	store, err := agentpersistence.NewAgentStore(db, renderer, "sqlite")
 	if err != nil {
 		t.Fatal(err)
 	}

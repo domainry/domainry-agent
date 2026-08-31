@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/provider"
 	"github.com/domainry/domainry-agent/server"
@@ -51,14 +52,14 @@ func run() error {
 		return err
 	}
 	schema := strings.TrimSpace(os.Getenv("AGENT_SAAS_DB_SCHEMA"))
-	if err := agentstore.EnsureSchema(context.Background(), database, driver, schema); err != nil {
+	if err := agentpersistence.EnsureSchema(context.Background(), database, driver, schema); err != nil {
 		return err
 	}
-	renderer, err := agentstore.Renderer(driver, schema)
+	renderer, err := agentpersistence.Renderer(driver, schema)
 	if err != nil {
 		return err
 	}
-	store, err := agentstore.NewStore(database, renderer, driver)
+	store, err := agentpersistence.NewAgentStore(database, renderer, driver)
 	if err != nil {
 		return err
 	}

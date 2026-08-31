@@ -9,7 +9,7 @@ import (
 
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
-	ormbuilder "github.com/domainry/domainry-orm/query"
+	"github.com/domainry/domainry-orm/query"
 )
 
 func (s *AgentTaskRunStore) CreateInteractiveRun(ctx context.Context, run agentmodel.AgentInteractiveRun) (agentmodel.AgentInteractiveRun, bool, error) {
@@ -18,7 +18,7 @@ func (s *AgentTaskRunStore) CreateInteractiveRun(ctx context.Context, run agentm
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
 	columns := []string{"run_id", "session_id", "user_id", "role_key", "surface", "status", "idempotency_key", "process_id", "task_run_id", "payload_json", "created_at", "updated_at"}
-	statement, args, buildErr := ormbuilder.NewWorkspaceInsertBuilder(s.store.Renderer(), "_agent_interactive_runs", run.WorkspaceID).Columns(columns...).Values(
+	statement, args, buildErr := query.NewWorkspaceInsertBuilder(s.store.Renderer(), "_agent_interactive_runs", run.WorkspaceID).Columns(columns...).Values(
 		run.ID, run.SessionID, run.UserID, run.RoleKey, run.Surface, string(run.Status), run.IdempotencyKey, run.ProcessID, run.TaskRunID, payload, run.CreatedAt.UnixMilli(), run.UpdatedAt.UnixMilli(),
 	).Build()
 	if buildErr != nil {
@@ -36,8 +36,8 @@ func (s *AgentTaskRunStore) CreateInteractiveRun(ctx context.Context, run agentm
 }
 
 func (s *AgentTaskRunStore) GetInteractiveRun(ctx context.Context, workspaceID, runID string) (agentmodel.AgentInteractiveRun, bool, error) {
-	statement, args, err := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_interactive_runs", strings.TrimSpace(workspaceID)).
-		Columns("payload_json").Where(ormbuilder.Equal("run_id", strings.TrimSpace(runID))).Limit(1).Build()
+	statement, args, err := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_interactive_runs", strings.TrimSpace(workspaceID)).
+		Columns("payload_json").Where(query.Equal("run_id", strings.TrimSpace(runID))).Limit(1).Build()
 	if err != nil {
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
@@ -45,8 +45,8 @@ func (s *AgentTaskRunStore) GetInteractiveRun(ctx context.Context, workspaceID, 
 }
 
 func (s *AgentTaskRunStore) getInteractiveByIdempotency(ctx context.Context, workspaceID, key string) (agentmodel.AgentInteractiveRun, bool, error) {
-	statement, args, err := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_interactive_runs", strings.TrimSpace(workspaceID)).
-		Columns("payload_json").Where(ormbuilder.Equal("idempotency_key", strings.TrimSpace(key))).Limit(1).Build()
+	statement, args, err := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_interactive_runs", strings.TrimSpace(workspaceID)).
+		Columns("payload_json").Where(query.Equal("idempotency_key", strings.TrimSpace(key))).Limit(1).Build()
 	if err != nil {
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
@@ -68,20 +68,20 @@ func scanInteractiveRun(row *sql.Row) (agentmodel.AgentInteractiveRun, bool, err
 }
 
 func (s *AgentTaskRunStore) ListInteractiveRuns(ctx context.Context, workspaceID, userID, roleKey string, filter agentrepository.AgentInteractiveRunFilter) ([]agentmodel.AgentInteractiveRun, error) {
-	predicates := []ormbuilder.Predicate{ormbuilder.Equal("user_id", strings.TrimSpace(userID)), ormbuilder.Equal("role_key", strings.TrimSpace(roleKey))}
+	predicates := []query.Predicate{query.Equal("user_id", strings.TrimSpace(userID)), query.Equal("role_key", strings.TrimSpace(roleKey))}
 	if len(filter.Statuses) > 0 {
 		values := make([]any, len(filter.Statuses))
 		for index, status := range filter.Statuses {
 			values[index] = string(status)
 		}
-		predicates = append(predicates, ormbuilder.In("status", values...))
+		predicates = append(predicates, query.In("status", values...))
 	}
 	limit := filter.Limit
 	if limit <= 0 || limit > 100 {
 		limit = 100
 	}
-	statement, args, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_interactive_runs", strings.TrimSpace(workspaceID)).
-		Columns("payload_json").Where(ormbuilder.And(predicates...)).OrderBy(ormbuilder.Descending("created_at")).Limit(limit).Build()
+	statement, args, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_interactive_runs", strings.TrimSpace(workspaceID)).
+		Columns("payload_json").Where(query.And(predicates...)).OrderBy(query.Descending("created_at")).Limit(limit).Build()
 	if buildErr != nil {
 		return nil, buildErr
 	}
@@ -135,13 +135,13 @@ func (s *AgentTaskRunStore) CommitInteractiveTaskHandoff(ctx context.Context, ru
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_interactive_runs", run.WorkspaceID).
-		Columns("payload_json").Where(ormbuilder.Equal("run_id", run.ID)).Limit(1).Build()
+	queryValue, queryArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_interactive_runs", run.WorkspaceID).
+		Columns("payload_json").Where(query.Equal("run_id", run.ID)).Limit(1).Build()
 	if buildErr != nil {
 		return agentmodel.AgentInteractiveRun{}, false, buildErr
 	}
 	var payload []byte
-	if err := tx.QueryRowContext(ctx, query, queryArgs...).Scan(&payload); err != nil {
+	if err := tx.QueryRowContext(ctx, queryValue, queryArgs...).Scan(&payload); err != nil {
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
 	var current agentmodel.AgentInteractiveRun
@@ -159,7 +159,7 @@ func (s *AgentTaskRunStore) CommitInteractiveTaskHandoff(ctx context.Context, ru
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
 	columns := []string{"run_id", "idempotency_key", "task_key", "process_id", "status", "lease_owner", "fencing_token", "lease_expires_at", "next_attempt_at", "payload_json", "created_at", "updated_at"}
-	insert, insertArgs, buildErr := ormbuilder.NewWorkspaceInsertBuilder(s.store.Renderer(), "_agent_task_runs", task.WorkspaceID).Columns(columns...).Values(
+	insert, insertArgs, buildErr := query.NewWorkspaceInsertBuilder(s.store.Renderer(), "_agent_task_runs", task.WorkspaceID).Columns(columns...).Values(
 		task.ID, task.IdempotencyKey, task.TaskKey, task.ProcessID, string(task.Status), "", int64(0), int64(0), timeMillis(task.NextAttemptAt), taskPayload, task.CreatedAt.UnixMilli(), task.UpdatedAt.UnixMilli(),
 	).Build()
 	if buildErr != nil {
@@ -196,11 +196,11 @@ func (s *AgentTaskRunStore) CommitInteractiveTaskHandoff(ctx context.Context, ru
 	return current, false, nil
 }
 
-func interactiveRunUpdateBuilder(store *Store, run agentmodel.AgentInteractiveRun, payload []byte, expectedUpdatedAt int64) *ormbuilder.UpdateBuilder {
-	return ormbuilder.NewWorkspaceUpdateBuilder(store.Renderer(), "_agent_interactive_runs", run.WorkspaceID).
+func interactiveRunUpdateBuilder(store *Store, run agentmodel.AgentInteractiveRun, payload []byte, expectedUpdatedAt int64) *query.UpdateBuilder {
+	return query.NewWorkspaceUpdateBuilder(store.Renderer(), "_agent_interactive_runs", run.WorkspaceID).
 		Set("status", string(run.Status)).Set("process_id", run.ProcessID).Set("task_run_id", run.TaskRunID).
-		Set("payload_json", payload).Set("updated_at", run.UpdatedAt.UnixMilli()).Where(ormbuilder.And(
-		ormbuilder.Equal("run_id", run.ID), ormbuilder.Equal("updated_at", expectedUpdatedAt),
+		Set("payload_json", payload).Set("updated_at", run.UpdatedAt.UnixMilli()).Where(query.And(
+		query.Equal("run_id", run.ID), query.Equal("updated_at", expectedUpdatedAt),
 	))
 }
 

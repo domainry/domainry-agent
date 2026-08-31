@@ -11,7 +11,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
-	ormbuilder "github.com/domainry/domainry-orm/query"
+	"github.com/domainry/domainry-orm/query"
 )
 
 type DefinitionStore struct{ store *Store }
@@ -52,20 +52,20 @@ func definitionSeeds(snapshot agentrepository.DefinitionSnapshot) []definitionSe
 }
 
 func (s DefinitionStore) SyncDefinitions(ctx context.Context, snapshot agentrepository.DefinitionSnapshot) error {
-	if s.store == nil || s.store.database == nil {
+	if s.store == nil || s.store.Database() == nil {
 		return fmt.Errorf("Agent definition store is unavailable")
 	}
 	if strings.TrimSpace(snapshot.SchemaVersion) == "" || strings.TrimSpace(snapshot.SchemaHash) == "" || strings.TrimSpace(snapshot.SourceKind) == "" || strings.TrimSpace(snapshot.SourceID) == "" {
 		return fmt.Errorf("Agent definition snapshot identity is required")
 	}
-	tx, err := s.store.database.BeginTx(ctx, nil)
+	tx, err := s.store.Database().BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
 	now := time.Now().UTC().Format(time.RFC3339Nano)
 	for _, table := range definitionTables {
-		statement, args, err := ormbuilder.NewUpdateBuilder(s.store.renderer, table).Set("disabled_at", now).Where(ormbuilder.IsNotNull("resource_key")).Build()
+		statement, args, err := query.NewUpdateBuilder(s.store.Renderer(), table).Set("disabled_at", now).Where(query.IsNotNull("resource_key")).Build()
 		if err != nil {
 			return err
 		}
@@ -83,8 +83,8 @@ func (s DefinitionStore) SyncDefinitions(ctx context.Context, snapshot agentrepo
 		}
 		hash := sha256.Sum256(raw)
 		columns := []string{"id", "resource_key", "object_key", "name", "payload_json", "schema_version", "schema_hash", "source_kind", "source_id", "disabled_at", "created_at", "updated_at"}
-		insert := ormbuilder.NewInsertBuilder(s.store.renderer, seed.table).Columns(columns...).Values(seed.kind+":"+seed.key, seed.key, "", seed.name, raw, snapshot.SchemaVersion, hex.EncodeToString(hash[:]), snapshot.SourceKind, snapshot.SourceID, nil, now, now)
-		insert, err = s.store.profile.ApplyUpsert(insert, []string{"resource_key"}, ormbuilder.AssignExpression("name", ormbuilder.InsertedValue("name")), ormbuilder.AssignExpression("payload_json", ormbuilder.InsertedValue("payload_json")), ormbuilder.AssignExpression("schema_version", ormbuilder.InsertedValue("schema_version")), ormbuilder.AssignExpression("schema_hash", ormbuilder.InsertedValue("schema_hash")), ormbuilder.AssignExpression("source_kind", ormbuilder.InsertedValue("source_kind")), ormbuilder.AssignExpression("source_id", ormbuilder.InsertedValue("source_id")), ormbuilder.AssignExpression("disabled_at", ormbuilder.InsertedValue("disabled_at")), ormbuilder.AssignExpression("updated_at", ormbuilder.InsertedValue("updated_at")))
+		insert := query.NewInsertBuilder(s.store.Renderer(), seed.table).Columns(columns...).Values(seed.kind+":"+seed.key, seed.key, "", seed.name, raw, snapshot.SchemaVersion, hex.EncodeToString(hash[:]), snapshot.SourceKind, snapshot.SourceID, nil, now, now)
+		insert, err = s.store.Profile().ApplyUpsert(insert, []string{"resource_key"}, query.AssignExpression("name", query.InsertedValue("name")), query.AssignExpression("payload_json", query.InsertedValue("payload_json")), query.AssignExpression("schema_version", query.InsertedValue("schema_version")), query.AssignExpression("schema_hash", query.InsertedValue("schema_hash")), query.AssignExpression("source_kind", query.InsertedValue("source_kind")), query.AssignExpression("source_id", query.InsertedValue("source_id")), query.AssignExpression("disabled_at", query.InsertedValue("disabled_at")), query.AssignExpression("updated_at", query.InsertedValue("updated_at")))
 		if err != nil {
 			return err
 		}
@@ -100,11 +100,11 @@ func (s DefinitionStore) SyncDefinitions(ctx context.Context, snapshot agentrepo
 }
 
 func loadDefinitions[T any](ctx context.Context, store *Store, table string) ([]T, string, string, string, error) {
-	statement, args, err := ormbuilder.NewSelectBuilder(store.renderer, table).Columns("payload_json", "schema_version", "source_kind", "source_id").Where(ormbuilder.IsNull("disabled_at")).OrderBy(ormbuilder.Ascending("resource_key")).Build()
+	statement, args, err := query.NewSelectBuilder(store.Renderer(), table).Columns("payload_json", "schema_version", "source_kind", "source_id").Where(query.IsNull("disabled_at")).OrderBy(query.Ascending("resource_key")).Build()
 	if err != nil {
 		return nil, "", "", "", err
 	}
-	rows, err := store.database.QueryContext(ctx, statement, args...)
+	rows, err := store.Database().QueryContext(ctx, statement, args...)
 	if err != nil {
 		return nil, "", "", "", err
 	}

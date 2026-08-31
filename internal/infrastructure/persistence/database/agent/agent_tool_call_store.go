@@ -10,7 +10,7 @@ import (
 
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
-	ormbuilder "github.com/domainry/domainry-orm/query"
+	"github.com/domainry/domainry-orm/query"
 )
 
 var _ agentrepository.AgentToolCallLedger = (*AgentTaskRunStore)(nil)
@@ -21,15 +21,15 @@ func (s *AgentTaskRunStore) BeginAgentToolCall(ctx context.Context, start agentr
 		return "", 0, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", start.WorkspaceID).
-		Columns("payload_json", "status", "lease_owner", "fencing_token").Where(ormbuilder.Equal("run_id", start.TaskRunID)).Limit(1).Build()
+	queryValue, queryArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", start.WorkspaceID).
+		Columns("payload_json", "status", "lease_owner", "fencing_token").Where(query.Equal("run_id", start.TaskRunID)).Limit(1).Build()
 	if buildErr != nil {
 		return "", 0, buildErr
 	}
 	var payload []byte
 	var status, owner string
 	var token int64
-	if err := tx.QueryRowContext(ctx, query, queryArgs...).Scan(&payload, &status, &owner, &token); err != nil {
+	if err := tx.QueryRowContext(ctx, queryValue, queryArgs...).Scan(&payload, &status, &owner, &token); err != nil {
 		return "", 0, err
 	}
 	if status != string(agentmodel.AgentTaskRunRunning) || owner != start.Owner || token != start.FencingToken {
@@ -57,7 +57,7 @@ func (s *AgentTaskRunStore) BeginAgentToolCall(ctx context.Context, start agentr
 	run.Evidence.ToolInvocationRefs = append(run.Evidence.ToolInvocationRefs, ref)
 	run.Evidence.ToolInvocations = append(run.Evidence.ToolInvocations, agentmodel.AgentTaskToolInvocationEvidence{Ref: ref, Tool: start.Tool, InputHash: start.InputHash, Status: "running", Authorization: start.Authorization, StartedAt: run.UpdatedAt, CostUnits: start.CostUnits})
 	updated, _ := json.Marshal(run)
-	update, updateArgs, buildErr := ormbuilder.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", start.WorkspaceID).
+	update, updateArgs, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", start.WorkspaceID).
 		Set("payload_json", updated).Set("updated_at", run.UpdatedAt.UnixMilli()).Where(agentTaskLeasePredicate(start.TaskRunID, start.Owner, start.FencingToken)).Build()
 	if buildErr != nil {
 		return "", 0, buildErr
@@ -85,15 +85,15 @@ func (s *AgentTaskRunStore) FinishAgentToolCall(ctx context.Context, finish agen
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", finish.WorkspaceID).
-		Columns("payload_json", "status", "lease_owner", "fencing_token").Where(ormbuilder.Equal("run_id", finish.TaskRunID)).Limit(1).Build()
+	queryValue, queryArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", finish.WorkspaceID).
+		Columns("payload_json", "status", "lease_owner", "fencing_token").Where(query.Equal("run_id", finish.TaskRunID)).Limit(1).Build()
 	if buildErr != nil {
 		return buildErr
 	}
 	var payload []byte
 	var status, owner string
 	var token int64
-	if err := tx.QueryRowContext(ctx, query, queryArgs...).Scan(&payload, &status, &owner, &token); err != nil {
+	if err := tx.QueryRowContext(ctx, queryValue, queryArgs...).Scan(&payload, &status, &owner, &token); err != nil {
 		return err
 	}
 	if status != string(agentmodel.AgentTaskRunRunning) || owner != finish.Owner || token != finish.FencingToken {
@@ -125,7 +125,7 @@ func (s *AgentTaskRunStore) FinishAgentToolCall(ctx context.Context, finish agen
 	run.UpdatedAt = now
 	run.Revision++
 	updated, _ := json.Marshal(run)
-	update, updateArgs, buildErr := ormbuilder.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", finish.WorkspaceID).
+	update, updateArgs, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", finish.WorkspaceID).
 		Set("payload_json", updated).Set("updated_at", now.UnixMilli()).Where(agentTaskLeasePredicate(finish.TaskRunID, finish.Owner, finish.FencingToken)).Build()
 	if buildErr != nil {
 		return buildErr

@@ -1,4 +1,3 @@
-// Agent state persistence.
 package agent
 
 import (
@@ -9,7 +8,7 @@ import (
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
-	ormbuilder "github.com/domainry/domainry-orm/query"
+	"github.com/domainry/domainry-orm/query"
 )
 
 type AgentStateStore struct {
@@ -57,16 +56,16 @@ func (r AgentStateStore) PutBatch(ctx context.Context, workspaceID string, value
 	columns := []string{"kind", "state_key", "user_id", "role_key", "payload_json", "updated_at"}
 	for start := 0; start < len(order); start += 50 {
 		end := min(start+50, len(order))
-		insert := ormbuilder.NewWorkspaceInsertBuilder(r.store.Renderer(), "_agent_runtime_states", workspaceID).Columns(columns...)
+		insert := query.NewWorkspaceInsertBuilder(r.store.Renderer(), "_agent_runtime_states", workspaceID).Columns(columns...)
 		for _, key := range order[start:end] {
 			value := byKey[key]
 			insert.Values(strings.TrimSpace(value.Kind), strings.TrimSpace(value.Key), strings.TrimSpace(value.UserID), strings.TrimSpace(value.RoleKey), []byte(value.Payload), value.UpdatedAt)
 		}
 		insert, buildErr := r.store.Profile().ApplyUpsert(insert, []string{"workspace_id", "kind", "state_key"},
-			ormbuilder.AssignExpression("user_id", ormbuilder.InsertedValue("user_id")),
-			ormbuilder.AssignExpression("role_key", ormbuilder.InsertedValue("role_key")),
-			ormbuilder.AssignExpression("payload_json", ormbuilder.InsertedValue("payload_json")),
-			ormbuilder.AssignExpression("updated_at", ormbuilder.InsertedValue("updated_at")),
+			query.AssignExpression("user_id", query.InsertedValue("user_id")),
+			query.AssignExpression("role_key", query.InsertedValue("role_key")),
+			query.AssignExpression("payload_json", query.InsertedValue("payload_json")),
+			query.AssignExpression("updated_at", query.InsertedValue("updated_at")),
 		)
 		if buildErr != nil {
 			return buildErr
@@ -91,11 +90,11 @@ func (r AgentStateStore) CompareAndSwap(ctx context.Context, workspaceID string,
 	if strings.TrimSpace(value.WorkspaceID) != workspaceID {
 		return false, fmt.Errorf("agent state workspace %q does not match repository workspace %q", value.WorkspaceID, workspaceID)
 	}
-	statement, args, buildErr := ormbuilder.NewWorkspaceUpdateBuilder(r.store.Renderer(), "_agent_runtime_states", workspaceID).
-		Set("payload_json", []byte(value.Payload)).Set("updated_at", value.UpdatedAt).Where(ormbuilder.And(
-		ormbuilder.Equal("kind", strings.TrimSpace(value.Kind)),
-		ormbuilder.Equal("state_key", strings.TrimSpace(value.Key)),
-		ormbuilder.Equal("updated_at", expectedUpdatedAt),
+	statement, args, buildErr := query.NewWorkspaceUpdateBuilder(r.store.Renderer(), "_agent_runtime_states", workspaceID).
+		Set("payload_json", []byte(value.Payload)).Set("updated_at", value.UpdatedAt).Where(query.And(
+		query.Equal("kind", strings.TrimSpace(value.Kind)),
+		query.Equal("state_key", strings.TrimSpace(value.Key)),
+		query.Equal("updated_at", expectedUpdatedAt),
 	)).Build()
 	if buildErr != nil {
 		return false, buildErr
@@ -117,9 +116,9 @@ func (r AgentStateStore) Get(ctx context.Context, workspaceID, kind, key string)
 		return agentmodel.AgentStateRecord{}, false, err
 	}
 	workspaceID = workspace
-	statement, args, buildErr := ormbuilder.NewWorkspaceSelectBuilder(r.store.Renderer(), "_agent_runtime_states", workspaceID).
-		Columns("workspace_id", "user_id", "role_key", "payload_json", "updated_at").Where(ormbuilder.And(
-		ormbuilder.Equal("kind", strings.TrimSpace(kind)), ormbuilder.Equal("state_key", strings.TrimSpace(key)),
+	statement, args, buildErr := query.NewWorkspaceSelectBuilder(r.store.Renderer(), "_agent_runtime_states", workspaceID).
+		Columns("workspace_id", "user_id", "role_key", "payload_json", "updated_at").Where(query.And(
+		query.Equal("kind", strings.TrimSpace(kind)), query.Equal("state_key", strings.TrimSpace(key)),
 	)).Limit(1).Build()
 	if buildErr != nil {
 		return agentmodel.AgentStateRecord{}, false, buildErr
@@ -143,16 +142,16 @@ func (r AgentStateStore) List(ctx context.Context, workspaceID, kind, userID, ro
 		return nil, err
 	}
 	workspaceID = workspace
-	predicates := []ormbuilder.Predicate{ormbuilder.Equal("kind", strings.TrimSpace(kind))}
+	predicates := []query.Predicate{query.Equal("kind", strings.TrimSpace(kind))}
 	for _, filter := range []struct{ column, value string }{{"user_id", userID}, {"role_key", roleKey}} {
 		if strings.TrimSpace(filter.value) == "" {
 			continue
 		}
-		predicates = append(predicates, ormbuilder.Equal(filter.column, strings.TrimSpace(filter.value)))
+		predicates = append(predicates, query.Equal(filter.column, strings.TrimSpace(filter.value)))
 	}
-	statement, args, buildErr := ormbuilder.NewWorkspaceSelectBuilder(r.store.Renderer(), "_agent_runtime_states", workspaceID).
+	statement, args, buildErr := query.NewWorkspaceSelectBuilder(r.store.Renderer(), "_agent_runtime_states", workspaceID).
 		Columns("state_key", "workspace_id", "user_id", "role_key", "payload_json", "updated_at").
-		Where(ormbuilder.And(predicates...)).OrderBy(ormbuilder.Descending("updated_at")).Build()
+		Where(query.And(predicates...)).OrderBy(query.Descending("updated_at")).Build()
 	if buildErr != nil {
 		return nil, buildErr
 	}

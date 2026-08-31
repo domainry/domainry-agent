@@ -7,99 +7,24 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
-	ormdialect "github.com/domainry/domainry-orm/dialect"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/base"
 	ormdriver "github.com/domainry/domainry-orm/driver"
-	ormmigration "github.com/domainry/domainry-orm/migration"
-	ormmysql "github.com/domainry/domainry-orm/mysql"
-	ormpostgres "github.com/domainry/domainry-orm/postgres"
-	ormbuilder "github.com/domainry/domainry-orm/query"
-	ormsqlite "github.com/domainry/domainry-orm/sqlite"
+	"github.com/domainry/domainry-orm/query"
 )
 
 func agentError(class, code string) error {
 	return &agentsdk.Error{Class: class, Code: code, Message: code, Retryable: class == "rate_limited"}
 }
 
-// Store is the Agent-owned persistence façade shared by Module and SaaS. It
-// contains no Runtime repository or service dependency.
 type Store struct {
-	database modulehost.Database
-	renderer modulehost.Dialect
-	profile  ormdriver.Profile
+	*base.SQLDatabase
 }
 
-func NewStore(database modulehost.Database, renderer modulehost.Dialect, driver string) (*Store, error) {
-	if database == nil || renderer == nil {
-		return nil, fmt.Errorf("Agent database and dialect are required")
+func NewStore(database modulehost.Database, renderer modulehost.Dialect, profile ormdriver.Profile) (*Store, error) {
+	if database == nil || renderer == nil || profile == nil {
+		return nil, fmt.Errorf("Agent database, dialect and engine profile are required")
 	}
-	parsed, err := ormdialect.Parse(driver)
-	if err != nil {
-		return nil, fmt.Errorf("Agent database driver %q is unsupported: %w", driver, err)
-	}
-	var profile ormdriver.Profile
-	switch parsed.Name() {
-	case ormdialect.SQLite:
-		profile = ormsqlite.NewProfile()
-	case ormdialect.MySQL:
-		profile = ormmysql.NewProfile()
-	case ormdialect.Postgres:
-		profile = ormpostgres.NewProfile()
-	default:
-		return nil, fmt.Errorf("Agent database driver %q is unsupported", driver)
-	}
-	return &Store{database: database, renderer: renderer, profile: profile}, nil
-}
-
-func Renderer(driver, schema string) (modulehost.Dialect, error) {
-	parsed, err := ormdialect.Parse(driver)
-	if err != nil {
-		return nil, err
-	}
-	dialect, err := ormdialect.New(parsed.Name())
-	if err != nil {
-		return nil, err
-	}
-	return dialect.WithSchema(schema), nil
-}
-
-// EnsureSchema applies Agent-owned migrations to a standalone SaaS database.
-// Embedded Module deployments must use the host MigrationRegistrar instead.
-func EnsureSchema(ctx context.Context, database modulehost.Database, driver, schema string) error {
-	renderer, err := Renderer(driver, schema)
-	if err != nil {
-		return err
-	}
-	runner, err := ormmigration.NewRunner(database, renderer, ormmigration.Options{InsertConflict: func(err error) bool {
-		if err == nil {
-			return false
-		}
-		value := strings.ToLower(err.Error())
-		return strings.Contains(value, "unique") || strings.Contains(value, "duplicate") || strings.Contains(value, "constraint")
-	}})
-	if err != nil {
-		return err
-	}
-	migrations, err := SchemaMigrations(driver, schema)
-	if err != nil {
-		return err
-	}
-	return runner.Apply(ctx, migrations)
-}
-
-func (s *Store) Database() modulehost.Database { return s.database }
-func (s *Store) Renderer() modulehost.Dialect  { return s.renderer }
-func (s *Store) Profile() ormdriver.Profile    { return s.profile }
-
-func (s *Store) IsTransientError(err error) bool {
-	if s == nil || s.profile == nil || err == nil {
-		return false
-	}
-	switch s.profile.ClassifyError(err) {
-	case ormdriver.ErrorSerialization, ormdriver.ErrorDeadlock, ormdriver.ErrorUnavailable, ormdriver.ErrorTimeout:
-		return true
-	default:
-		return false
-	}
+	return &Store{SQLDatabase: base.NewSQLDatabase(database, renderer, profile)}, nil
 }
 
 func (s *Store) registerWorkerScope(ctx context.Context, executor modulehost.Executor, workspaceID string, updatedAt int64) error {
@@ -107,8 +32,8 @@ func (s *Store) registerWorkerScope(ctx context.Context, executor modulehost.Exe
 	if workspaceID == "" {
 		return fmt.Errorf("Agent workspace is required")
 	}
-	insert := ormbuilder.NewInsertBuilder(s.renderer, "_agent_worker_scopes").Columns("workspace_id", "updated_at").Values(workspaceID, updatedAt)
-	insert, err := s.profile.ApplyUpsert(insert, []string{"workspace_id"}, ormbuilder.AssignExpression("updated_at", ormbuilder.InsertedValue("updated_at")))
+	insert := query.NewInsertBuilder(s.Renderer(), "_agent_worker_scopes").Columns("workspace_id", "updated_at").Values(workspaceID, updatedAt)
+	insert, err := s.Profile().ApplyUpsert(insert, []string{"workspace_id"}, query.AssignExpression("updated_at", query.InsertedValue("updated_at")))
 	if err != nil {
 		return err
 	}
@@ -117,7 +42,7 @@ func (s *Store) registerWorkerScope(ctx context.Context, executor modulehost.Exe
 		return err
 	}
 	if executor == nil {
-		executor = s.database
+		executor = s.Database()
 	}
 	_, err = executor.ExecContext(ctx, statement, args...)
 	return err
@@ -127,11 +52,11 @@ func (s *Store) workerScopePage(ctx context.Context, limit int) ([]string, error
 	if limit <= 0 || limit > 500 {
 		limit = 64
 	}
-	statement, args, err := ormbuilder.NewSelectBuilder(s.renderer, "_agent_worker_scopes").Columns("workspace_id").OrderBy(ormbuilder.Descending("updated_at")).Limit(limit).Build()
+	statement, args, err := query.NewSelectBuilder(s.Renderer(), "_agent_worker_scopes").Columns("workspace_id").OrderBy(query.Descending("updated_at")).Limit(limit).Build()
 	if err != nil {
 		return nil, err
 	}
-	rows, err := s.database.QueryContext(ctx, statement, args...)
+	rows, err := s.Database().QueryContext(ctx, statement, args...)
 	if err != nil {
 		return nil, err
 	}

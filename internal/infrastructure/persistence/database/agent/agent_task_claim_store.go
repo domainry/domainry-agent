@@ -10,7 +10,7 @@ import (
 
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
-	ormbuilder "github.com/domainry/domainry-orm/query"
+	"github.com/domainry/domainry-orm/query"
 )
 
 func (s *AgentTaskRunStore) ClaimNext(ctx context.Context, workspaceID string, owner string, now time.Time, duration time.Duration) (agentrepository.AgentTaskClaim, bool, error) {
@@ -67,16 +67,16 @@ func (s *AgentTaskRunStore) claimAgentTaskRunOnce(ctx context.Context, workspace
 		return agentrepository.AgentTaskClaim{}, false, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
-		Columns("payload_json", "fencing_token").Where(ormbuilder.And(
-		ormbuilder.Equal("run_id", runID), agentTaskEligiblePredicate(now),
+	queryValue, queryArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
+		Columns("payload_json", "fencing_token").Where(query.And(
+		query.Equal("run_id", runID), agentTaskEligiblePredicate(now),
 	)).Limit(1).Build()
 	if buildErr != nil {
 		return agentrepository.AgentTaskClaim{}, false, buildErr
 	}
 	var payload []byte
 	var priorToken int64
-	err = tx.QueryRowContext(ctx, query, queryArgs...).Scan(&payload, &priorToken)
+	err = tx.QueryRowContext(ctx, queryValue, queryArgs...).Scan(&payload, &priorToken)
 	if err == sql.ErrNoRows {
 		return agentrepository.AgentTaskClaim{}, false, nil
 	}
@@ -116,16 +116,16 @@ func (s *AgentTaskRunStore) claimNextOnce(ctx context.Context, workspaceID strin
 		return agentrepository.AgentTaskClaim{}, false, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	query, queryArgs, buildErr := ormbuilder.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
+	queryValue, queryArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
 		Columns("run_id", "payload_json", "fencing_token").Where(agentTaskEligiblePredicate(now)).
-		OrderBy(ormbuilder.Ascending("created_at")).Limit(1).Build()
+		OrderBy(query.Ascending("created_at")).Limit(1).Build()
 	if buildErr != nil {
 		return agentrepository.AgentTaskClaim{}, false, buildErr
 	}
 	var runID string
 	var payload []byte
 	var priorToken int64
-	err = tx.QueryRowContext(ctx, query, queryArgs...).Scan(&runID, &payload, &priorToken)
+	err = tx.QueryRowContext(ctx, queryValue, queryArgs...).Scan(&runID, &payload, &priorToken)
 	if err == sql.ErrNoRows {
 		return agentrepository.AgentTaskClaim{}, false, nil
 	}

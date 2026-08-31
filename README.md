@@ -12,7 +12,9 @@ contracts; Runtime does not redeclare them.
 - `cmd/domainry-agent`: standalone SaaS process entrypoint.
 - `internal/provider`: provider HTTP protocol, result normalization and stable error classification.
 - `definition`: Agent-owned validation before provider translation.
-- `persistence`: Agent-owned definition, runtime-state, task-run, interactive-run, worker and lifecycle repositories.
+- `internal/infrastructure/persistence/base`: engine-neutral database foundation.
+- `internal/infrastructure/persistence/{mysql,postgres,sqlite}`: database engine profiles.
+- `internal/infrastructure/persistence/database/agent`: Agent-owned definition, runtime-state, task-run, interactive-run, worker and lifecycle repositories.
 
 This module owns Agent definitions and provider-execution state, including task
 claim/lease/fencing persistence. In Module mode it borrows the host database and

@@ -8,6 +8,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	_ "modernc.org/sqlite"
 )
@@ -31,7 +32,7 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 		}
 	}
 	dialect, _ := ormdialect.New(ormdialect.SQLite)
-	store, err := NewStore(database, dialect.WithSchema(""), "sqlite")
+	store, err := NewStore(database, dialect.WithSchema(""), sqlite.NewEngine())
 	if err != nil {
 		t.Fatal(err)
 	}
