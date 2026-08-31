@@ -8,7 +8,7 @@ import (
 	agentstate "github.com/domainry/domainry-agent-sdk/state"
 )
 
-func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
+func (s *Server) repositoryOperation(w http.ResponseWriter, r *http.Request, operation string) {
 	if s.config.Repositories == nil {
 		writeError(w, http.StatusServiceUnavailable, "agent.saas.repository_unavailable", "repository unavailable")
 		return
@@ -20,7 +20,7 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 	fail := func(err error) {
 		writeError(w, http.StatusInternalServerError, "agent.saas.repository_failed", err.Error())
 	}
-	switch r.PathValue("operation") {
+	switch operation {
 	case "definitions.sync":
 		var input agentpersistence.DefinitionSnapshot
 		if err := decode(r, &input); err != nil {
@@ -232,28 +232,6 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		writeJSON(w, 200, map[string]any{"value": value, "changed": changed})
-	case "task.mutation_insert", "task.mutation_update":
-		var input agentpersistence.AgentTaskMutation
-		if err := decode(r, &input); err != nil {
-			bad(err)
-			return
-		}
-		repository, ok := tasks.(agentpersistence.AgentTaskMutationRepository)
-		if !ok {
-			writeError(w, http.StatusServiceUnavailable, "agent.saas.repository_unavailable", "task mutation repository unavailable")
-			return
-		}
-		var err error
-		if r.PathValue("operation") == "task.mutation_insert" {
-			err = repository.ApplyAgentTaskInsert(r.Context(), input)
-		} else {
-			err = repository.ApplyAgentTaskUpdate(r.Context(), input)
-		}
-		if err != nil {
-			fail(err)
-			return
-		}
-		writeJSON(w, http.StatusOK, struct{}{})
 	case "task.worker_list":
 		var input struct {
 			Scope  agentpersistence.SystemScope        `json:"scope"`
@@ -484,7 +462,7 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 			writeError(w, 503, "agent.saas.repository_unavailable", "lifecycle repository unavailable")
 			return
 		}
-		if r.PathValue("operation") == "lifecycle.referenced" {
+		if operation == "lifecycle.referenced" {
 			value, err := lifecycles.AgentLifecycleRepository().LifecycleCandidateReferenced(r.Context(), input.WorkspaceID, input.Value)
 			if err != nil {
 				fail(err)
@@ -501,6 +479,50 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, map[string]bool{"deleted": value})
 	default:
 		writeError(w, http.StatusNotFound, "agent.saas.operation_unknown", "unknown repository operation")
+	}
+}
+
+func (s *Server) repositoryHandler(operation string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		s.repositoryOperation(w, r, operation)
+	}
+}
+
+func (s *Server) registerPersistenceRoutes(mux *http.ServeMux) {
+	routes := map[string]string{
+		"/api/v1/definitions/sync":                                   "definitions.sync",
+		"/api/v1/definitions/snapshot":                               "definitions.snapshot",
+		"/api/v1/internal/dialog-state/records/query":                "state.list",
+		"/api/v1/internal/dialog-state/records/get":                  "state.get",
+		"/api/v1/internal/dialog-state/records/put":                  "state.put",
+		"/api/v1/internal/dialog-state/records/put-batch":            "state.put_batch",
+		"/api/v1/internal/dialog-state/records/compare-and-swap":     "state.compare_and_swap",
+		"/api/v1/internal/execution-state/task-runs/create":          "task.create",
+		"/api/v1/internal/execution-state/task-runs/get":             "task.get",
+		"/api/v1/internal/execution-state/task-runs/query":           "task.list",
+		"/api/v1/internal/execution-state/task-runs/claim-next":      "task.claim_next",
+		"/api/v1/internal/execution-state/task-runs/heartbeat":       "task.heartbeat",
+		"/api/v1/internal/execution-state/task-runs/save-running":    "task.save_running",
+		"/api/v1/internal/execution-state/task-runs/save-waiting":    "task.save_waiting_approval",
+		"/api/v1/internal/execution-state/task-runs/override":        "task.save_terminal_override",
+		"/api/v1/internal/execution-state/task-runs/operate":         "task.save_operational_transition",
+		"/api/v1/internal/execution-state/task-runs/request-cancel":  "task.request_cancel",
+		"/api/v1/internal/execution-state/task-runs/worker/query":    "task.worker_list",
+		"/api/v1/internal/execution-state/task-runs/worker/claim":    "task.worker_claim",
+		"/api/v1/internal/execution-state/task-runs/claim":           "task.direct_claim",
+		"/api/v1/internal/execution-state/interactive-runs/create":   "interactive.create",
+		"/api/v1/internal/execution-state/interactive-runs/get":      "interactive.get",
+		"/api/v1/internal/execution-state/interactive-runs/query":    "interactive.list",
+		"/api/v1/internal/execution-state/interactive-runs/save":     "interactive.save",
+		"/api/v1/internal/execution-state/interactive-runs/handoff":  "interactive.handoff",
+		"/api/v1/internal/execution-state/tool-invocations/begin":    "tool.begin",
+		"/api/v1/internal/execution-state/tool-invocations/finish":   "tool.finish",
+		"/api/v1/lifecycle/executions/query":                         "lifecycle.list",
+		"/api/v1/lifecycle/executions/referenced":                    "lifecycle.referenced",
+		"/api/v1/lifecycle/executions/delete":                        "lifecycle.delete",
+	}
+	for path, operation := range routes {
+		mux.HandleFunc("POST "+path, s.repositoryHandler(operation))
 	}
 }
 

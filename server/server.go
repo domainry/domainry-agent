@@ -18,6 +18,7 @@ type Config struct {
 	APIKey       string
 	Runner       agentsdk.TaskRunner
 	Interactive  agentsdk.InteractiveRunner
+	DialogState  agentsdk.AgentDialogStateService
 	Repositories agentpersistence.Binding
 }
 type Server struct {
@@ -34,18 +35,36 @@ func New(config Config) *Server {
 	mux.HandleFunc("GET /api/v1/task-runs/{id}", s.poll)
 	mux.HandleFunc("POST /api/v1/task-runs/{id}/cancel", s.cancel)
 	mux.HandleFunc("POST /api/v1/interactive-runs", s.interactive)
-	mux.HandleFunc("POST /api/v1/repository/{operation}", s.repository)
+	mux.HandleFunc("POST /api/v1/dialog-state/sessions/query", s.listSessions)
+	mux.HandleFunc("POST /api/v1/dialog-state/sessions/upsert", s.upsertSession)
+	mux.HandleFunc("POST /api/v1/dialog-state/sessions/{id}/archive", s.setSessionArchived)
+	mux.HandleFunc("POST /api/v1/dialog-state/proposals/query", s.listProposals)
+	mux.HandleFunc("POST /api/v1/dialog-state/proposals/{id}/get", s.getProposal)
+	mux.HandleFunc("POST /api/v1/dialog-state/proposals/store", s.storeProposal)
+	mux.HandleFunc("POST /api/v1/dialog-state/proposals/decide", s.decideProposal)
+	s.registerPersistenceRoutes(mux)
 	s.handler = mux
 	return s
 }
 func (s *Server) ready(w http.ResponseWriter, _ *http.Request) {
 	definitions, hasDefinitions := s.config.Repositories.(agentpersistence.DefinitionBinding)
 	lifecycle, hasLifecycle := s.config.Repositories.(agentpersistence.LifecycleBinding)
-	if s.config.Runner == nil || s.config.Interactive == nil || s.config.Repositories == nil || s.config.Repositories.AgentStateRepository() == nil || s.config.Repositories.AgentTaskRunRepository() == nil || !hasDefinitions || definitions.DefinitionRepository() == nil || !hasLifecycle || lifecycle.AgentLifecycleRepository() == nil {
-		writeError(w, http.StatusServiceUnavailable, "agent.saas.not_ready", "runner unavailable")
+	if s.config.Runner == nil || s.config.Interactive == nil || s.config.DialogState == nil || s.config.Repositories == nil || s.config.Repositories.AgentStateRepository() == nil || !agentExecutionRepositoriesReady(s.config.Repositories.AgentTaskRunRepository()) || !hasDefinitions || definitions.DefinitionRepository() == nil || !hasLifecycle || lifecycle.AgentLifecycleRepository() == nil {
+		writeError(w, http.StatusServiceUnavailable, "agent.saas.not_ready", "required Agent capability unavailable")
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ready"})
+}
+
+func agentExecutionRepositoriesReady(repository agentpersistence.AgentTaskRunRepository) bool {
+	if repository == nil {
+		return false
+	}
+	_, systemWorker := repository.(agentpersistence.AgentTaskRunSystemWorkerRepository)
+	_, directClaim := repository.(agentpersistence.AgentTaskRunDirectClaimRepository)
+	_, interactive := repository.(agentpersistence.AgentInteractiveRunRepository)
+	_, toolLedger := repository.(agentpersistence.AgentToolCallLedger)
+	return systemWorker && directClaim && interactive && toolLedger
 }
 func (s *Server) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +78,7 @@ func (s *Server) Handler() http.Handler {
 	})
 }
 func (s *Server) descriptor(w http.ResponseWriter, _ *http.Request) {
-	writeJSON(w, http.StatusOK, agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: agentsdk.DeploymentModeSaaS, Capabilities: []string{"task.start", "task.poll", "task.cancel", "interactive.run", "structured_output", "usage", "tool_callback"}})
+	writeJSON(w, http.StatusOK, agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: agentsdk.DeploymentModeSaaS, Capabilities: []string{"task.start", "task.poll", "task.cancel", "interactive.run", "dialog.state", "execution.state", "structured_output", "usage", "tool_callback"}})
 }
 func (s *Server) start(w http.ResponseWriter, r *http.Request) {
 	if s.config.Runner == nil {

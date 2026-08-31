@@ -72,7 +72,7 @@ func TestAgentTaskStoreOwnsIdempotencyClaimFenceAndWorkerScope(t *testing.T) {
 	if err != nil || !replay || created.ID != run.ID {
 		t.Fatalf("replay=%+v replay=%v err=%v", created, replay, err)
 	}
-	scope := agentpersistence.SystemScope{Kind: "runtime_global", Purpose: "test worker"}
+	scope := agentpersistence.SystemScope{Kind: agentpersistence.AgentSystemScopeKindGlobal, Purpose: "test worker"}
 	claim, found, err := repository.ClaimNextAgentTaskRunForWorker(t.Context(), scope, "worker-a", now, time.Minute)
 	if err != nil || !found || claim.Lease.FencingToken != 1 {
 		t.Fatalf("claim=%+v found=%v err=%v", claim, found, err)
@@ -90,7 +90,7 @@ func TestAgentInteractiveHandoffCommitsTaskAtomically(t *testing.T) {
 	store, _ := openAgentStore(t)
 	repository := NewAgentTaskRunStore(store)
 	now := time.Date(2026, 8, 30, 12, 0, 0, 0, time.UTC)
-	interactive := agentmodel.AgentInteractiveRun{ID: "interactive-a", SessionID: "session-a", WorkspaceID: "workspace-a", UserID: "user-a", RoleKey: "operator", Surface: "workspace", AgentKey: "assistant", EntrypointKey: "chat", ContextRevision: "ctx-1", Status: agentmodel.AgentInteractiveRunRunning, IdempotencyKey: "interactive-idem", CreatedAt: now, UpdatedAt: now, Context: agentsdk.GlobalContext{ContextRevision: "ctx-1", EntrypointKey: "chat", AgentKey: "assistant"}}
+	interactive := agentmodel.AgentInteractiveRun{ID: "interactive-a", SessionID: "session-a", WorkspaceID: "workspace-a", UserID: "user-a", RoleKey: "operator", AgentKey: "assistant", EntrypointKey: "chat", ContextRevision: "ctx-1", Status: agentmodel.AgentInteractiveRunRunning, IdempotencyKey: "interactive-idem", CreatedAt: now, UpdatedAt: now, Context: agentsdk.GlobalContext{ContextRevision: "ctx-1", EntrypointKey: "chat", AgentKey: "assistant"}}
 	if _, _, err := repository.CreateInteractiveRun(t.Context(), interactive); err != nil {
 		t.Fatal(err)
 	}

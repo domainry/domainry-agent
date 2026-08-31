@@ -12,9 +12,13 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
+	agentapplication "github.com/domainry/domainry-agent/internal/application"
+	agentcomposition "github.com/domainry/domainry-agent/internal/composition"
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/provider"
+	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
+	"github.com/domainry/domainry-foundation/modulehttp"
 )
 
 type Options struct {
@@ -60,35 +64,80 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if err := runner.Validate(); err != nil {
 		return nil, err
 	}
-	return newBinding(runner, store, agentsdk.DeploymentModeModule), nil
+	binding := newBinding(runner, store, agentsdk.DeploymentModeModule)
+	binding.taskExecution.StartWorker(ctx)
+	surface, err := agenthttp.NewSurface(binding)
+	if err != nil {
+		return nil, err
+	}
+	binding.surfaces = []modulehttp.Surface{surface}
+	return binding, nil
 }
 
 type binding struct {
-	runner      *provider.Runner
-	definitions agentpersistence.DefinitionRepository
-	state       agentpersistence.AgentStateRepository
-	runs        agentpersistence.AgentTaskRunRepository
-	lifecycle   agentpersistence.AgentLifecycleRepository
-	mode        agentsdk.DeploymentMode
+	runner        *provider.Runner
+	taskExecution *agentapplication.TaskExecutionService
+	definitions   agentpersistence.DefinitionRepository
+	state         agentpersistence.AgentStateRepository
+	runs          agentpersistence.AgentTaskRunRepository
+	lifecycle     agentpersistence.AgentLifecycleRepository
+	dialogState   agentsdk.AgentDialogStateService
+	taskState     agentpersistence.AgentTaskStateService
+	interactive   agentpersistence.AgentInteractiveStateService
+	surfaces      []modulehttp.Surface
+	mode          agentsdk.DeploymentMode
 }
 
 func newBinding(r *provider.Runner, store *agentstore.Store, m agentsdk.DeploymentMode) *binding {
 	repositories := agentstore.NewRepositories(store)
-	return &binding{runner: r, definitions: repositories.DefinitionRepository(), state: repositories.AgentStateRepository(), runs: repositories.AgentTaskRunRepository(), lifecycle: repositories.AgentLifecycleRepository(), mode: m}
+	state := repositories.AgentStateRepository()
+	runs := repositories.AgentTaskRunRepository()
+	interactiveRuns, _ := runs.(agentpersistence.AgentInteractiveRunRepository)
+	taskState := agentapplication.NewTaskStateService(runs)
+	return &binding{runner: r, taskExecution: agentapplication.NewTaskExecutionService(taskState, r, ""), definitions: repositories.DefinitionRepository(), state: state, runs: runs, lifecycle: repositories.AgentLifecycleRepository(), dialogState: agentapplication.NewDialogStateService(state), taskState: taskState, interactive: agentapplication.NewInteractiveStateService(interactiveRuns), mode: m}
 }
 func (b *binding) Descriptor() agentsdk.Descriptor {
-	return agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: b.mode, Capabilities: []string{"task.start", "task.poll", "task.cancel", "interactive.run", "structured_output", "usage", "tool_callback"}}
+	return agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: b.mode, Capabilities: []string{"task.start", "task.poll", "task.cancel", "interactive.run", "dialog.state", "execution.state", "structured_output", "usage", "tool_callback"}}
 }
-func (b *binding) TaskRunner() agentsdk.TaskRunner                                 { return b.runner }
-func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner                   { return b.runner }
+func (b *binding) TaskRunner() agentsdk.TaskRunner                        { return b.taskExecution }
+func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner          { return b.runner }
+func (b *binding) DialogState() agentsdk.AgentDialogStateService          { return b.dialogState }
+func (b *binding) AgentTaskState() agentpersistence.AgentTaskStateService { return b.taskState }
+func (b *binding) AgentInteractiveState() agentpersistence.AgentInteractiveStateService {
+	return b.interactive
+}
+func (b *binding) HTTPSurfaces() []modulehttp.Surface {
+	return append([]modulehttp.Surface(nil), b.surfaces...)
+}
+func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
+	ledger, _ := b.runs.(agentpersistence.AgentToolCallLedger)
+	surface, err := agentcomposition.BindApplicationSurface(agentcomposition.ApplicationSurfaceDependencies{
+		Binding: b, DialogState: b.dialogState, TaskState: b.taskState, InteractiveState: b.interactive,
+		ToolLedger: ledger, TaskExecution: b.taskExecution, InteractiveRunner: b.runner, Host: host,
+	})
+	if err != nil {
+		return err
+	}
+	b.surfaces = []modulehttp.Surface{surface}
+	return nil
+}
 func (b *binding) AgentStateRepository() agentpersistence.AgentStateRepository     { return b.state }
 func (b *binding) AgentTaskRunRepository() agentpersistence.AgentTaskRunRepository { return b.runs }
 func (b *binding) DefinitionRepository() agentpersistence.DefinitionRepository     { return b.definitions }
 func (b *binding) AgentLifecycleRepository() agentpersistence.AgentLifecycleRepository {
 	return b.lifecycle
 }
-func (*binding) Close(context.Context) error { return nil }
+func (b *binding) Close(context.Context) error {
+	if b != nil && b.taskExecution != nil {
+		b.taskExecution.Close()
+	}
+	return nil
+}
 
 var _ agentsdk.Factory = (*Factory)(nil)
 var _ modulehost.Factory = (*Factory)(nil)
+var _ modulehost.ApplicationHostBinder = (*binding)(nil)
 var _ agentpersistence.Binding = (*binding)(nil)
+var _ agentsdk.AgentDialogStateBinding = (*binding)(nil)
+var _ agentpersistence.ExecutionStateBinding = (*binding)(nil)
+var _ modulehttp.Provider = (*binding)(nil)

@@ -122,7 +122,7 @@ func interactiveRunTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
 	return ormschema.NewTable(renderer, "_agent_interactive_runs").IfNotExists().Columns(
 		required("workspace_id", ormschema.TextKey(255)), required("run_id", ormschema.TextKey(255)),
 		required("session_id", ormschema.TextKey(255)), required("user_id", ormschema.TextKey(255)),
-		required("role_key", ormschema.TextKey(255)), required("surface", ormschema.TextKey(255)),
+		required("role_key", ormschema.TextKey(255)),
 		required("status", ormschema.TextKey(255)), required("idempotency_key", ormschema.TextKey(255)),
 		required("process_id", ormschema.TextKey(255)), required("task_run_id", ormschema.TextKey(255)),
 		required("payload_json", ormschema.LongText()), required("created_at", ormschema.BigInt()),

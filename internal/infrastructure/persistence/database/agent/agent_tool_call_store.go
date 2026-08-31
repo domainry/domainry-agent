@@ -116,6 +116,10 @@ func (s *AgentTaskRunStore) FinishAgentToolCall(ctx context.Context, finish agen
 		item.Status, item.ErrorCode, item.FinishedAt = finish.Status, finish.ErrorCode, &now
 		item.DurationMilliseconds = now.Sub(item.StartedAt).Milliseconds()
 		item.OutputHash = strings.TrimSpace(fmt.Sprint(finish.Evidence["output_hash"]))
+		if strings.TrimSpace(finish.Authorization.AuthorizationRevision) != "" {
+			item.Authorization = finish.Authorization
+			run.Evidence.Authorization = append(run.Evidence.Authorization, finish.Authorization)
+		}
 		found = true
 		break
 	}

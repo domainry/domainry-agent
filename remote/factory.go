@@ -13,8 +13,13 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent-sdk/saashost"
+	agentapplication "github.com/domainry/domainry-agent/internal/application"
+	agentcomposition "github.com/domainry/domainry-agent/internal/composition"
+	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
+	"github.com/domainry/domainry-foundation/modulehttp"
 )
 
 const maxResponseBytes = 2 << 20
@@ -42,17 +47,6 @@ func (f *Factory) OpenSaaS(ctx context.Context, app agentsdk.ApplicationRef, hos
 	if host == nil || host.RuntimeID() != app.RuntimeID {
 		return nil, fmt.Errorf("Agent SaaS host identity mismatch")
 	}
-	persistenceHost, ok := host.(saashost.PersistenceHost)
-	if !ok || persistenceHost.Database() == nil || persistenceHost.Dialect() == nil || persistenceHost.Migrations() == nil {
-		return nil, fmt.Errorf("Agent SaaS persistence host is incomplete")
-	}
-	migrations, err := publicationMigrations(persistenceHost.Dialect())
-	if err != nil {
-		return nil, err
-	}
-	if err := persistenceHost.Migrations().ApplyOwnedMigrations(ctx, "agent-saas-adapter", migrations); err != nil {
-		return nil, fmt.Errorf("apply Agent SaaS adapter migrations: %w", err)
-	}
 	client := newClient(f.options)
 	descriptor, err := client.descriptor(ctx)
 	if err != nil {
@@ -64,24 +58,51 @@ func (f *Factory) OpenSaaS(ctx context.Context, app agentsdk.ApplicationRef, hos
 	if descriptor.Mode != agentsdk.DeploymentModeSaaS {
 		return nil, fmt.Errorf("Agent SaaS endpoint returned mode %q", descriptor.Mode)
 	}
-	publications, err := newPublicationStore(persistenceHost, client, fmt.Sprintf("%s:%d", app.RuntimeID, time.Now().UnixNano()))
+	tasks := taskRepository{client: client}
+	taskState := agentapplication.NewTaskStateService(tasks)
+	taskExecution := agentapplication.NewTaskExecutionService(taskState, client, "")
+	binding := &binding{client: client, descriptor: descriptor, tasks: tasks, taskExecution: taskExecution, taskState: taskState, interactive: agentapplication.NewInteractiveStateService(tasks)}
+	surface, err := agenthttp.NewSurface(binding)
 	if err != nil {
 		return nil, err
 	}
-	publications.start(ctx)
-	return &binding{client: client, descriptor: descriptor, tasks: taskRepository{client: client, publications: publications}, publications: publications}, nil
+	binding.surfaces = []modulehttp.Surface{surface}
+	binding.taskExecution.StartWorker(ctx)
+	return binding, nil
 }
 
 type binding struct {
-	client       *client
-	descriptor   agentsdk.Descriptor
-	tasks        taskRepository
-	publications *publicationStore
+	client        *client
+	descriptor    agentsdk.Descriptor
+	tasks         taskRepository
+	taskExecution *agentapplication.TaskExecutionService
+	taskState     agentpersistence.AgentTaskStateService
+	interactive   agentpersistence.AgentInteractiveStateService
+	surfaces      []modulehttp.Surface
 }
 
-func (b *binding) Descriptor() agentsdk.Descriptor                             { return b.descriptor }
-func (b *binding) TaskRunner() agentsdk.TaskRunner                             { return b.client }
-func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner               { return b.client }
+func (b *binding) Descriptor() agentsdk.Descriptor                        { return b.descriptor }
+func (b *binding) TaskRunner() agentsdk.TaskRunner                        { return b.taskExecution }
+func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner          { return b.client }
+func (b *binding) DialogState() agentsdk.AgentDialogStateService          { return b.client }
+func (b *binding) AgentTaskState() agentpersistence.AgentTaskStateService { return b.taskState }
+func (b *binding) AgentInteractiveState() agentpersistence.AgentInteractiveStateService {
+	return b.interactive
+}
+func (b *binding) HTTPSurfaces() []modulehttp.Surface {
+	return append([]modulehttp.Surface(nil), b.surfaces...)
+}
+func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
+	surface, err := agentcomposition.BindApplicationSurface(agentcomposition.ApplicationSurfaceDependencies{
+		Binding: b, DialogState: b.client, TaskState: b.taskState, InteractiveState: b.interactive,
+		ToolLedger: b.tasks, TaskExecution: b.taskExecution, InteractiveRunner: b.client, Host: host,
+	})
+	if err != nil {
+		return err
+	}
+	b.surfaces = []modulehttp.Surface{surface}
+	return nil
+}
 func (b *binding) DefinitionRepository() agentpersistence.DefinitionRepository { return b.client }
 func (b *binding) AgentStateRepository() agentpersistence.AgentStateRepository { return b.client }
 func (b *binding) AgentTaskRunRepository() agentpersistence.AgentTaskRunRepository {
@@ -91,11 +112,14 @@ func (b *binding) AgentLifecycleRepository() agentpersistence.AgentLifecycleRepo
 	return b.client
 }
 func (b *binding) Close(ctx context.Context) error {
-	if b.publications != nil {
-		return b.publications.close(ctx)
+	_ = ctx
+	if b != nil && b.taskExecution != nil {
+		b.taskExecution.Close()
 	}
 	return nil
 }
+
+var _ modulehost.ApplicationHostBinder = (*binding)(nil)
 
 type client struct {
 	baseURL, apiKey string
@@ -136,6 +160,65 @@ func (c *client) Cancel(ctx context.Context, id, key string) (agentsdk.TaskResul
 func (c *client) Run(ctx context.Context, request agentsdk.InteractiveRequest) (agentsdk.InteractiveResult, error) {
 	var value agentsdk.InteractiveResult
 	err := c.call(ctx, http.MethodPost, "/api/v1/interactive-runs", request, request.IdempotencyKey, &value)
+	return value, err
+}
+
+func (c *client) ListSessions(ctx context.Context, query agentsdk.AgentSessionQuery, authority agentsdk.AgentAuthority) ([]agentsdk.AgentSession, error) {
+	var value []agentsdk.AgentSession
+	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/sessions/query", struct {
+		Query     agentsdk.AgentSessionQuery `json:"query"`
+		Authority agentsdk.AgentAuthority    `json:"authority"`
+	}{Query: query, Authority: authority}, "", &value)
+	return value, err
+}
+
+func (c *client) UpsertSession(ctx context.Context, input agentsdk.AgentSessionUpsertRequest, authority agentsdk.AgentAuthority) (agentsdk.AgentSession, error) {
+	var value agentsdk.AgentSession
+	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/sessions/upsert", struct {
+		Input     agentsdk.AgentSessionUpsertRequest `json:"input"`
+		Authority agentsdk.AgentAuthority            `json:"authority"`
+	}{Input: input, Authority: authority}, "", &value)
+	return value, err
+}
+
+func (c *client) SetSessionArchived(ctx context.Context, externalID string, archived bool, authority agentsdk.AgentAuthority) (agentsdk.AgentSession, error) {
+	var value agentsdk.AgentSession
+	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/sessions/"+url.PathEscape(strings.TrimSpace(externalID))+"/archive", struct {
+		Archived  bool                    `json:"archived"`
+		Authority agentsdk.AgentAuthority `json:"authority"`
+	}{Archived: archived, Authority: authority}, "", &value)
+	return value, err
+}
+
+func (c *client) ListProposals(ctx context.Context, status string, authority agentsdk.AgentAuthority) ([]agentsdk.AgentProposal, error) {
+	var value []agentsdk.AgentProposal
+	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/proposals/query", struct {
+		Status    string                  `json:"status,omitempty"`
+		Authority agentsdk.AgentAuthority `json:"authority"`
+	}{Status: status, Authority: authority}, "", &value)
+	return value, err
+}
+
+func (c *client) GetProposal(ctx context.Context, proposalID string, authority agentsdk.AgentAuthority) (agentsdk.AgentProposal, error) {
+	var value agentsdk.AgentProposal
+	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/proposals/"+url.PathEscape(strings.TrimSpace(proposalID))+"/get", struct {
+		Authority agentsdk.AgentAuthority `json:"authority"`
+	}{Authority: authority}, "", &value)
+	return value, err
+}
+
+func (c *client) StoreProposal(ctx context.Context, proposal agentsdk.AgentProposal) (agentsdk.AgentProposal, error) {
+	var value agentsdk.AgentProposal
+	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/proposals/store", proposal, "", &value)
+	return value, err
+}
+
+func (c *client) DecideProposal(ctx context.Context, decision agentsdk.AgentProposalDecision, authority agentsdk.AgentAuthority) (agentsdk.AgentProposal, error) {
+	var value agentsdk.AgentProposal
+	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/proposals/decide", struct {
+		Decision  agentsdk.AgentProposalDecision `json:"decision"`
+		Authority agentsdk.AgentAuthority        `json:"authority"`
+	}{Decision: decision, Authority: authority}, "", &value)
 	return value, err
 }
 func (c *client) call(ctx context.Context, method, path string, payload any, key string, out any) error {
@@ -193,3 +276,7 @@ var _ agentsdk.Factory = (*Factory)(nil)
 var _ saashost.Factory = (*Factory)(nil)
 var _ agentsdk.TaskRunner = (*client)(nil)
 var _ agentsdk.InteractiveRunner = (*client)(nil)
+var _ agentsdk.AgentDialogStateService = (*client)(nil)
+var _ agentsdk.AgentDialogStateBinding = (*binding)(nil)
+var _ agentpersistence.ExecutionStateBinding = (*binding)(nil)
+var _ modulehttp.Provider = (*binding)(nil)

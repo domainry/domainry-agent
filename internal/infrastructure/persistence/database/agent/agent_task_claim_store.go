@@ -61,6 +61,8 @@ func (s *AgentTaskRunStore) ClaimAgentTaskRun(ctx context.Context, workspaceID, 
 	return agentpersistence.AgentTaskClaim{}, false, fmt.Errorf("agent task direct claim retry exhausted: %w", lastErr)
 }
 
+var _ agentpersistence.AgentTaskRunDirectClaimRepository = (*AgentTaskRunStore)(nil)
+
 func (s *AgentTaskRunStore) claimAgentTaskRunOnce(ctx context.Context, workspaceID, runID, owner string, now time.Time, duration time.Duration) (agentpersistence.AgentTaskClaim, bool, error) {
 	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {

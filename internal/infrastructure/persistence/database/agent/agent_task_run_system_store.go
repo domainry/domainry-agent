@@ -50,7 +50,7 @@ func (s *AgentTaskRunStore) ClaimNextAgentTaskRunForWorker(ctx context.Context, 
 }
 
 func requireAgentTaskWorkerScope(scope agentpersistence.SystemScope) error {
-	if strings.TrimSpace(scope.Purpose) == "" || scope.Kind != "runtime_global" {
+	if strings.TrimSpace(scope.Purpose) == "" || scope.Kind != agentpersistence.AgentSystemScopeKindGlobal {
 		return agentpersistence.ErrSystemScopeRequired
 	}
 	return nil

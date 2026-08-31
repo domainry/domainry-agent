@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/provider"
@@ -73,7 +74,7 @@ func run() error {
 	if saasKey == "" {
 		return errors.New("AGENT_SAAS_API_KEY is required")
 	}
-	service := server.New(server.Config{APIKey: saasKey, Runner: runner, Interactive: runner, Repositories: repositories})
+	service := server.New(server.Config{APIKey: saasKey, Runner: runner, Interactive: runner, DialogState: agentapplication.NewDialogStateService(repositories.AgentStateRepository()), Repositories: repositories})
 	address := strings.TrimSpace(os.Getenv("AGENT_SAAS_ADDRESS"))
 	if address == "" {
 		address = ":8090"

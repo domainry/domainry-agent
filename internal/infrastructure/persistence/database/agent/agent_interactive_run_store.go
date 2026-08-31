@@ -17,9 +17,9 @@ func (s *AgentTaskRunStore) CreateInteractiveRun(ctx context.Context, run agentm
 	if err != nil {
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
-	columns := []string{"run_id", "session_id", "user_id", "role_key", "surface", "status", "idempotency_key", "process_id", "task_run_id", "payload_json", "created_at", "updated_at"}
+	columns := []string{"run_id", "session_id", "user_id", "role_key", "status", "idempotency_key", "process_id", "task_run_id", "payload_json", "created_at", "updated_at"}
 	statement, args, buildErr := query.NewWorkspaceInsertBuilder(s.store.Renderer(), "_agent_interactive_runs", run.WorkspaceID).Columns(columns...).Values(
-		run.ID, run.SessionID, run.UserID, run.RoleKey, run.Surface, string(run.Status), run.IdempotencyKey, run.ProcessID, run.TaskRunID, payload, run.CreatedAt.UnixMilli(), run.UpdatedAt.UnixMilli(),
+		run.ID, run.SessionID, run.UserID, run.RoleKey, string(run.Status), run.IdempotencyKey, run.ProcessID, run.TaskRunID, payload, run.CreatedAt.UnixMilli(), run.UpdatedAt.UnixMilli(),
 	).Build()
 	if buildErr != nil {
 		return agentmodel.AgentInteractiveRun{}, false, buildErr
