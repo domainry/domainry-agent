@@ -50,7 +50,7 @@ func TestSaaSBindingPersistsDefinitionsStateAndWorkerRunsRemotely(t *testing.T) 
 	}
 	repositories := agentstore.NewRepositories(store)
 	runner := repositoryRunner{}
-	repositoryHandler := server.New(server.Config{APIKey: "secret", Runner: runner, Interactive: runner, Repositories: repositories}).Handler()
+	repositoryHandler := server.New(server.Config{APIKey: "secret", Runner: runner, Interactive: runner, Repositories: repositories, Lifecycle: repositories.AgentLifecycleRepository()}).Handler()
 	httpServer := httptest.NewServer(repositoryHandler)
 	defer httpServer.Close()
 	host := newRemoteHost(t, "runtime-a")

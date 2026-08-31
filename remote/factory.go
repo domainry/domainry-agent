@@ -13,6 +13,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	agentlifecycle "github.com/domainry/domainry-agent-sdk/lifecycle"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent-sdk/saashost"
@@ -20,6 +21,7 @@ import (
 	agentcomposition "github.com/domainry/domainry-agent/internal/composition"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
 	"github.com/domainry/domainry-foundation/modulehttp"
+	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
 )
 
 const maxResponseBytes = 2 << 20
@@ -108,8 +110,8 @@ func (b *binding) AgentStateRepository() agentpersistence.AgentStateRepository {
 func (b *binding) AgentTaskRunRepository() agentpersistence.AgentTaskRunRepository {
 	return b.tasks
 }
-func (b *binding) AgentLifecycleRepository() agentpersistence.AgentLifecycleRepository {
-	return b.client
+func (b *binding) LifecycleExecutor(archives lifecyclecontract.ArchiveWriter) lifecyclecontract.OwnerLifecycleExecutor {
+	return agentapplication.NewLifecycleExecutor(b.client, archives)
 }
 func (b *binding) Close(ctx context.Context) error {
 	_ = ctx
@@ -120,6 +122,7 @@ func (b *binding) Close(ctx context.Context) error {
 }
 
 var _ modulehost.ApplicationHostBinder = (*binding)(nil)
+var _ agentlifecycle.Binding = (*binding)(nil)
 
 type client struct {
 	baseURL, apiKey string

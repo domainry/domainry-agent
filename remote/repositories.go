@@ -105,13 +105,6 @@ func (c *client) ListLifecycleCandidates(ctx context.Context, workspaceID string
 	err := c.persistenceCall(ctx, "/api/v1/lifecycle/executions/query", map[string]any{"workspace_id": workspaceID, "query": query}, &out)
 	return out, err
 }
-func (c *client) LifecycleCandidateReferenced(ctx context.Context, workspaceID string, value agentpersistence.LifecycleCandidate) (bool, error) {
-	var out struct {
-		Referenced bool `json:"referenced"`
-	}
-	err := c.persistenceCall(ctx, "/api/v1/lifecycle/executions/referenced", map[string]any{"workspace_id": workspaceID, "value": value}, &out)
-	return out.Referenced, err
-}
 func (c *client) DeleteLifecycleCandidate(ctx context.Context, workspaceID string, value agentpersistence.LifecycleCandidate) (bool, error) {
 	var out struct {
 		Deleted bool `json:"deleted"`
@@ -222,6 +215,7 @@ func (r taskRepository) BeginAgentToolCall(c context.Context, v agentpersistence
 func (r taskRepository) FinishAgentToolCall(c context.Context, v agentpersistence.AgentToolCallFinish) error {
 	return r.client.persistenceCall(c, "/api/v1/internal/execution-state/tool-invocations/finish", v, &struct{}{})
 }
+
 var _ agentpersistence.DefinitionRepository = (*client)(nil)
 var _ agentpersistence.AgentStateRepository = (*client)(nil)
 var _ agentpersistence.AgentTaskRunRepository = taskRepository{}

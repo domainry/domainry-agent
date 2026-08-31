@@ -141,29 +141,15 @@ func TestAgentLifecycleStoreOwnsEligibilityReferencesAndDeleteFence(t *testing.T
 		{Kind: "session", Key: "archived", WorkspaceID: "workspace-a", Payload: []byte(`{"archived":true}`), UpdatedAt: old},
 		{Kind: "session", Key: "active", WorkspaceID: "workspace-a", Payload: []byte(`{"archived":false}`), UpdatedAt: old},
 		{Kind: "proposal", Key: "decided", WorkspaceID: "workspace-a", Payload: []byte(`{"status":"approved"}`), UpdatedAt: old},
-		{Kind: "report_query_run", Key: "report-1", WorkspaceID: "workspace-a", Payload: []byte(`{}`), UpdatedAt: old},
-		{Kind: "report_export_audit", Key: "report-1", WorkspaceID: "workspace-a", Payload: []byte(`{}`), UpdatedAt: old},
 	}
 	if err := states.PutBatch(t.Context(), "workspace-a", values); err != nil {
 		t.Fatal(err)
 	}
-	candidates, err := lifecycle.ListLifecycleCandidates(t.Context(), "workspace-a", agentpersistence.LifecycleQuery{Owner: "agent", PolicyKey: "agent.dialog.v1", Now: now, Retention: time.Hour})
+	candidates, err := lifecycle.ListLifecycleCandidates(t.Context(), "workspace-a", agentpersistence.LifecycleQuery{PolicyKey: "agent.dialog.v1", Now: now, Retention: time.Hour})
 	if err != nil || len(candidates) != 2 {
 		t.Fatalf("candidates=%#v err=%v", candidates, err)
 	}
-	reports, err := lifecycle.ListLifecycleCandidates(t.Context(), "workspace-a", agentpersistence.LifecycleQuery{Owner: "report", PolicyKey: "report.export.v1", Now: now, Retention: time.Hour})
-	if err != nil || len(reports) != 2 {
-		t.Fatalf("reports=%#v err=%v", reports, err)
-	}
-	var query agentpersistence.LifecycleCandidate
-	for _, value := range reports {
-		if value.State.Kind == "report_query_run" {
-			query = value
-		}
-	}
-	if referenced, err := lifecycle.LifecycleCandidateReferenced(t.Context(), "workspace-a", query); err != nil || !referenced {
-		t.Fatalf("referenced=%v err=%v", referenced, err)
-	}
+	query := candidates[0]
 	query.State.UpdatedAt++
 	if deleted, err := lifecycle.DeleteLifecycleCandidate(t.Context(), "workspace-a", query); err != nil || deleted {
 		t.Fatalf("stale deleted=%v err=%v", deleted, err)

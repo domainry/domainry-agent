@@ -20,6 +20,7 @@ type Config struct {
 	Interactive  agentsdk.InteractiveRunner
 	DialogState  agentsdk.AgentDialogStateService
 	Repositories agentpersistence.Binding
+	Lifecycle    agentpersistence.AgentLifecycleRepository
 }
 type Server struct {
 	config  Config
@@ -48,8 +49,7 @@ func New(config Config) *Server {
 }
 func (s *Server) ready(w http.ResponseWriter, _ *http.Request) {
 	definitions, hasDefinitions := s.config.Repositories.(agentpersistence.DefinitionBinding)
-	lifecycle, hasLifecycle := s.config.Repositories.(agentpersistence.LifecycleBinding)
-	if s.config.Runner == nil || s.config.Interactive == nil || s.config.DialogState == nil || s.config.Repositories == nil || s.config.Repositories.AgentStateRepository() == nil || !agentExecutionRepositoriesReady(s.config.Repositories.AgentTaskRunRepository()) || !hasDefinitions || definitions.DefinitionRepository() == nil || !hasLifecycle || lifecycle.AgentLifecycleRepository() == nil {
+	if s.config.Runner == nil || s.config.Interactive == nil || s.config.DialogState == nil || s.config.Repositories == nil || s.config.Repositories.AgentStateRepository() == nil || !agentExecutionRepositoriesReady(s.config.Repositories.AgentTaskRunRepository()) || !hasDefinitions || definitions.DefinitionRepository() == nil || s.config.Lifecycle == nil {
 		writeError(w, http.StatusServiceUnavailable, "agent.saas.not_ready", "required Agent capability unavailable")
 		return
 	}
@@ -78,7 +78,7 @@ func (s *Server) Handler() http.Handler {
 	})
 }
 func (s *Server) descriptor(w http.ResponseWriter, _ *http.Request) {
-	writeJSON(w, http.StatusOK, agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: agentsdk.DeploymentModeSaaS, Capabilities: []string{"task.start", "task.poll", "task.cancel", "interactive.run", "dialog.state", "execution.state", "structured_output", "usage", "tool_callback"}})
+	writeJSON(w, http.StatusOK, agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: agentsdk.DeploymentModeSaaS, Capabilities: []string{agentsdk.CapabilityTaskStart, agentsdk.CapabilityTaskPoll, agentsdk.CapabilityTaskCancel, agentsdk.CapabilityInteractiveRun, "dialog.state", "execution.state", "structured_output", "usage", "tool_callback", agentsdk.CapabilityLifecycleExecute}})
 }
 func (s *Server) start(w http.ResponseWriter, r *http.Request) {
 	if s.config.Runner == nil {

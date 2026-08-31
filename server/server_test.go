@@ -40,7 +40,6 @@ type readyRepositoriesStub struct {
 	state       agentpersistence.AgentStateRepository
 	tasks       agentpersistence.AgentTaskRunRepository
 	definitions agentpersistence.DefinitionRepository
-	lifecycle   agentpersistence.AgentLifecycleRepository
 }
 
 func (s readyRepositoriesStub) AgentStateRepository() agentpersistence.AgentStateRepository {
@@ -51,9 +50,6 @@ func (s readyRepositoriesStub) AgentTaskRunRepository() agentpersistence.AgentTa
 }
 func (s readyRepositoriesStub) DefinitionRepository() agentpersistence.DefinitionRepository {
 	return s.definitions
-}
-func (s readyRepositoriesStub) AgentLifecycleRepository() agentpersistence.AgentLifecycleRepository {
-	return s.lifecycle
 }
 
 type runnerStub struct{}
@@ -122,9 +118,8 @@ func TestReadyRequiresEveryAdvertisedAgentCapability(t *testing.T) {
 		state:       &readyStateRepositoryStub{},
 		tasks:       &completeExecutionRepositoryStub{},
 		definitions: &readyDefinitionRepositoryStub{},
-		lifecycle:   &readyLifecycleRepositoryStub{},
 	}
-	config := Config{APIKey: "secret", Runner: runnerStub{}, Interactive: runnerStub{}, Repositories: repositories}
+	config := Config{APIKey: "secret", Runner: runnerStub{}, Interactive: runnerStub{}, Repositories: repositories, Lifecycle: &readyLifecycleRepositoryStub{}}
 	call := func(dialog agentsdk.AgentDialogStateService) int {
 		config.DialogState = dialog
 		request := httptest.NewRequest(http.MethodGet, "/readyz", nil)

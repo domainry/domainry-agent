@@ -10,6 +10,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	agentlifecycle "github.com/domainry/domainry-agent-sdk/lifecycle"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
@@ -19,6 +20,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/provider"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
 	"github.com/domainry/domainry-foundation/modulehttp"
+	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
 )
 
 type Options struct {
@@ -97,7 +99,7 @@ func newBinding(r *provider.Runner, store *agentstore.Store, m agentsdk.Deployme
 	return &binding{runner: r, taskExecution: agentapplication.NewTaskExecutionService(taskState, r, ""), definitions: repositories.DefinitionRepository(), state: state, runs: runs, lifecycle: repositories.AgentLifecycleRepository(), dialogState: agentapplication.NewDialogStateService(state), taskState: taskState, interactive: agentapplication.NewInteractiveStateService(interactiveRuns), mode: m}
 }
 func (b *binding) Descriptor() agentsdk.Descriptor {
-	return agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: b.mode, Capabilities: []string{"task.start", "task.poll", "task.cancel", "interactive.run", "dialog.state", "execution.state", "structured_output", "usage", "tool_callback"}}
+	return agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: b.mode, Capabilities: []string{agentsdk.CapabilityTaskStart, agentsdk.CapabilityTaskPoll, agentsdk.CapabilityTaskCancel, agentsdk.CapabilityInteractiveRun, "dialog.state", "execution.state", "structured_output", "usage", "tool_callback", agentsdk.CapabilityLifecycleExecute}}
 }
 func (b *binding) TaskRunner() agentsdk.TaskRunner                        { return b.taskExecution }
 func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner          { return b.runner }
@@ -124,8 +126,8 @@ func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
 func (b *binding) AgentStateRepository() agentpersistence.AgentStateRepository     { return b.state }
 func (b *binding) AgentTaskRunRepository() agentpersistence.AgentTaskRunRepository { return b.runs }
 func (b *binding) DefinitionRepository() agentpersistence.DefinitionRepository     { return b.definitions }
-func (b *binding) AgentLifecycleRepository() agentpersistence.AgentLifecycleRepository {
-	return b.lifecycle
+func (b *binding) LifecycleExecutor(archives lifecyclecontract.ArchiveWriter) lifecyclecontract.OwnerLifecycleExecutor {
+	return agentapplication.NewLifecycleExecutor(b.lifecycle, archives)
 }
 func (b *binding) Close(context.Context) error {
 	if b != nil && b.taskExecution != nil {
@@ -141,3 +143,4 @@ var _ agentpersistence.Binding = (*binding)(nil)
 var _ agentsdk.AgentDialogStateBinding = (*binding)(nil)
 var _ agentpersistence.ExecutionStateBinding = (*binding)(nil)
 var _ modulehttp.Provider = (*binding)(nil)
+var _ agentlifecycle.Binding = (*binding)(nil)

@@ -26,22 +26,9 @@ func (s LifecycleStore) ListLifecycleCandidates(ctx context.Context, workspaceID
 		retention time.Duration
 	}
 	kinds := []kindRetention{}
-	switch strings.TrimSpace(queryValue.Owner) {
-	case "agent":
+	switch strings.TrimSpace(queryValue.PolicyKey) {
+	case "agent.dialog.v1":
 		kinds = []kindRetention{{"session", queryValue.Retention}, {"proposal", queryValue.Retention}}
-	case "report":
-		switch strings.TrimSpace(queryValue.PolicyKey) {
-		case "report.download.v1":
-			kinds = []kindRetention{{"report_download_task", queryValue.Retention}}
-		case "report.export.v1":
-			retention := queryValue.StatusRetention["succeeded"]
-			if retention <= 0 {
-				retention = queryValue.Retention
-			}
-			kinds = []kindRetention{{"report_export_audit", retention}, {"report_query_run", retention}}
-		}
-	default:
-		return nil, fmt.Errorf("unsupported Agent lifecycle owner %q", queryValue.Owner)
 	}
 	result := []agentpersistence.LifecycleCandidate{}
 	for _, item := range kinds {
@@ -65,7 +52,7 @@ func (s LifecycleStore) ListLifecycleCandidates(ctx context.Context, workspaceID
 				return nil, scanErr
 			}
 			value.Payload = payload
-			if queryValue.Owner == "agent" && !agentLifecycleEligible(value.Kind, payload) {
+			if !agentLifecycleEligible(value.Kind, payload) {
 				continue
 			}
 			result = append(result, agentpersistence.LifecycleCandidate{State: value, ResourceID: value.Kind + ":" + value.Key})
@@ -98,29 +85,6 @@ func agentLifecycleEligible(kind string, payload []byte) bool {
 	default:
 		return false
 	}
-}
-
-func (s LifecycleStore) LifecycleCandidateReferenced(ctx context.Context, workspaceID string, candidate agentpersistence.LifecycleCandidate) (bool, error) {
-	childKind := ""
-	switch candidate.State.Kind {
-	case "report_export_audit":
-		childKind = "report_download_task"
-	case "report_query_run":
-		childKind = "report_export_audit"
-	}
-	if childKind == "" {
-		return false, nil
-	}
-	statement, args, err := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_runtime_states", workspaceID).
-		Projections(query.Project(query.CountAll())).Where(query.And(query.Equal("kind", childKind), query.Equal("state_key", candidate.State.Key))).Build()
-	if err != nil {
-		return false, err
-	}
-	var count int
-	if err := s.store.Database().QueryRowContext(ctx, statement, args...).Scan(&count); err != nil {
-		return false, err
-	}
-	return count > 0, nil
 }
 
 func (s LifecycleStore) DeleteLifecycleCandidate(ctx context.Context, workspaceID string, candidate agentpersistence.LifecycleCandidate) (bool, error) {

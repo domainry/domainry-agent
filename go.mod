@@ -3,16 +3,16 @@ module github.com/domainry/domainry-agent
 go 1.26.0
 
 require (
-	github.com/domainry/domainry-agent-sdk v0.1.1
-	github.com/domainry/domainry-foundation v0.1.0-dev.7
+	github.com/domainry/domainry-agent-sdk v0.1.2-0.20260831225723-3deb0b82904d
+	github.com/domainry/domainry-foundation v0.1.0-dev.7.0.20260831223551-434fc77cbea9
 	github.com/domainry/domainry-identity-sdk v0.1.1-dev7
+	github.com/domainry/domainry-lifecycle-sdk v0.1.6
 	github.com/domainry/domainry-orm v0.1.29
 	github.com/jackc/pgx/v5 v5.10.0
 	modernc.org/sqlite v1.57.0
 )
 
 require (
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -20,7 +20,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	golang.org/x/mod v0.40.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
