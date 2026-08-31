@@ -11,8 +11,8 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
-	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
+	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/provider"
 )
@@ -52,7 +52,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if err := host.Migrations().ApplyOwnedMigrations(ctx, "agent", migrations); err != nil {
 		return nil, fmt.Errorf("apply Agent Module migrations: %w", err)
 	}
-	store, err := agentpersistence.NewAgentStore(host.Database(), host.Dialect(), host.Migrations().Driver())
+	store, err := agentinfra.NewAgentStore(host.Database(), host.Dialect(), host.Migrations().Driver())
 	if err != nil {
 		return nil, err
 	}
@@ -65,10 +65,10 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 
 type binding struct {
 	runner      *provider.Runner
-	definitions agentrepository.DefinitionRepository
-	state       agentrepository.AgentStateRepository
-	runs        agentrepository.AgentTaskRunRepository
-	lifecycle   agentrepository.AgentLifecycleRepository
+	definitions agentpersistence.DefinitionRepository
+	state       agentpersistence.AgentStateRepository
+	runs        agentpersistence.AgentTaskRunRepository
+	lifecycle   agentpersistence.AgentLifecycleRepository
 	mode        agentsdk.DeploymentMode
 }
 
@@ -79,16 +79,16 @@ func newBinding(r *provider.Runner, store *agentstore.Store, m agentsdk.Deployme
 func (b *binding) Descriptor() agentsdk.Descriptor {
 	return agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: b.mode, Capabilities: []string{"task.start", "task.poll", "task.cancel", "interactive.run", "structured_output", "usage", "tool_callback"}}
 }
-func (b *binding) TaskRunner() agentsdk.TaskRunner                                { return b.runner }
-func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner                  { return b.runner }
-func (b *binding) AgentStateRepository() agentrepository.AgentStateRepository     { return b.state }
-func (b *binding) AgentTaskRunRepository() agentrepository.AgentTaskRunRepository { return b.runs }
-func (b *binding) DefinitionRepository() agentrepository.DefinitionRepository     { return b.definitions }
-func (b *binding) AgentLifecycleRepository() agentrepository.AgentLifecycleRepository {
+func (b *binding) TaskRunner() agentsdk.TaskRunner                                 { return b.runner }
+func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner                   { return b.runner }
+func (b *binding) AgentStateRepository() agentpersistence.AgentStateRepository     { return b.state }
+func (b *binding) AgentTaskRunRepository() agentpersistence.AgentTaskRunRepository { return b.runs }
+func (b *binding) DefinitionRepository() agentpersistence.DefinitionRepository     { return b.definitions }
+func (b *binding) AgentLifecycleRepository() agentpersistence.AgentLifecycleRepository {
 	return b.lifecycle
 }
 func (*binding) Close(context.Context) error { return nil }
 
 var _ agentsdk.Factory = (*Factory)(nil)
 var _ modulehost.Factory = (*Factory)(nil)
-var _ agentrepository.Binding = (*binding)(nil)
+var _ agentpersistence.Binding = (*binding)(nil)

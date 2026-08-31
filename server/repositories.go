@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentstate "github.com/domainry/domainry-agent-sdk/state"
 )
 
@@ -14,15 +14,15 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	state, tasks := s.config.Repositories.AgentStateRepository(), s.config.Repositories.AgentTaskRunRepository()
-	definitions, _ := s.config.Repositories.(agentrepository.DefinitionBinding)
-	lifecycles, _ := s.config.Repositories.(agentrepository.LifecycleBinding)
+	definitions, _ := s.config.Repositories.(agentpersistence.DefinitionBinding)
+	lifecycles, _ := s.config.Repositories.(agentpersistence.LifecycleBinding)
 	bad := func(err error) { writeError(w, http.StatusBadRequest, "agent.saas.request_invalid", err.Error()) }
 	fail := func(err error) {
 		writeError(w, http.StatusInternalServerError, "agent.saas.repository_failed", err.Error())
 	}
 	switch r.PathValue("operation") {
 	case "definitions.sync":
-		var input agentrepository.DefinitionSnapshot
+		var input agentpersistence.DefinitionSnapshot
 		if err := decode(r, &input); err != nil {
 			bad(err)
 			return
@@ -158,8 +158,8 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, map[string]any{"value": value, "found": found})
 	case "task.list":
 		var input struct {
-			WorkspaceID string                             `json:"workspace_id"`
-			Filter      agentrepository.AgentTaskRunFilter `json:"filter"`
+			WorkspaceID string                              `json:"workspace_id"`
+			Filter      agentpersistence.AgentTaskRunFilter `json:"filter"`
 		}
 		if err := decode(r, &input); err != nil {
 			bad(err)
@@ -233,12 +233,12 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 		}
 		writeJSON(w, 200, map[string]any{"value": value, "changed": changed})
 	case "task.mutation_insert", "task.mutation_update":
-		var input agentrepository.AgentTaskMutation
+		var input agentpersistence.AgentTaskMutation
 		if err := decode(r, &input); err != nil {
 			bad(err)
 			return
 		}
-		repository, ok := tasks.(agentrepository.AgentTaskMutationRepository)
+		repository, ok := tasks.(agentpersistence.AgentTaskMutationRepository)
 		if !ok {
 			writeError(w, http.StatusServiceUnavailable, "agent.saas.repository_unavailable", "task mutation repository unavailable")
 			return
@@ -256,14 +256,14 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, struct{}{})
 	case "task.worker_list":
 		var input struct {
-			Scope  agentrepository.SystemScope        `json:"scope"`
-			Filter agentrepository.AgentTaskRunFilter `json:"filter"`
+			Scope  agentpersistence.SystemScope        `json:"scope"`
+			Filter agentpersistence.AgentTaskRunFilter `json:"filter"`
 		}
 		if err := decode(r, &input); err != nil {
 			bad(err)
 			return
 		}
-		repository, ok := tasks.(agentrepository.AgentTaskRunSystemWorkerRepository)
+		repository, ok := tasks.(agentpersistence.AgentTaskRunSystemWorkerRepository)
 		if !ok {
 			writeError(w, 503, "agent.saas.repository_unavailable", "worker repository unavailable")
 			return
@@ -276,16 +276,16 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, value)
 	case "task.worker_claim":
 		var input struct {
-			Scope agentrepository.SystemScope `json:"scope"`
-			Owner string                      `json:"owner"`
-			Now   time.Time                   `json:"now"`
-			Lease time.Duration               `json:"lease"`
+			Scope agentpersistence.SystemScope `json:"scope"`
+			Owner string                       `json:"owner"`
+			Now   time.Time                    `json:"now"`
+			Lease time.Duration                `json:"lease"`
 		}
 		if err := decode(r, &input); err != nil {
 			bad(err)
 			return
 		}
-		repository, ok := tasks.(agentrepository.AgentTaskRunSystemWorkerRepository)
+		repository, ok := tasks.(agentpersistence.AgentTaskRunSystemWorkerRepository)
 		if !ok {
 			writeError(w, 503, "agent.saas.repository_unavailable", "worker repository unavailable")
 			return
@@ -308,7 +308,7 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 			bad(err)
 			return
 		}
-		repository, ok := tasks.(agentrepository.AgentTaskRunDirectClaimRepository)
+		repository, ok := tasks.(agentpersistence.AgentTaskRunDirectClaimRepository)
 		if !ok {
 			writeError(w, 503, "agent.saas.repository_unavailable", "direct claim repository unavailable")
 			return
@@ -325,7 +325,7 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 			bad(err)
 			return
 		}
-		repository, ok := tasks.(agentrepository.AgentInteractiveRunRepository)
+		repository, ok := tasks.(agentpersistence.AgentInteractiveRunRepository)
 		if !ok {
 			writeError(w, 503, "agent.saas.repository_unavailable", "interactive repository unavailable")
 			return
@@ -345,7 +345,7 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 			bad(err)
 			return
 		}
-		repository, ok := tasks.(agentrepository.AgentInteractiveRunRepository)
+		repository, ok := tasks.(agentpersistence.AgentInteractiveRunRepository)
 		if !ok {
 			writeError(w, 503, "agent.saas.repository_unavailable", "interactive repository unavailable")
 			return
@@ -358,16 +358,16 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, map[string]any{"value": value, "found": found})
 	case "interactive.list":
 		var input struct {
-			WorkspaceID string                                    `json:"workspace_id"`
-			SessionID   string                                    `json:"session_id"`
-			UserID      string                                    `json:"user_id"`
-			Filter      agentrepository.AgentInteractiveRunFilter `json:"filter"`
+			WorkspaceID string                                     `json:"workspace_id"`
+			SessionID   string                                     `json:"session_id"`
+			UserID      string                                     `json:"user_id"`
+			Filter      agentpersistence.AgentInteractiveRunFilter `json:"filter"`
 		}
 		if err := decode(r, &input); err != nil {
 			bad(err)
 			return
 		}
-		repository, ok := tasks.(agentrepository.AgentInteractiveRunRepository)
+		repository, ok := tasks.(agentpersistence.AgentInteractiveRunRepository)
 		if !ok {
 			writeError(w, 503, "agent.saas.repository_unavailable", "interactive repository unavailable")
 			return
@@ -387,7 +387,7 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 			bad(err)
 			return
 		}
-		repository, ok := tasks.(agentrepository.AgentInteractiveRunRepository)
+		repository, ok := tasks.(agentpersistence.AgentInteractiveRunRepository)
 		if !ok {
 			writeError(w, 503, "agent.saas.repository_unavailable", "interactive repository unavailable")
 			return
@@ -408,7 +408,7 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 			bad(err)
 			return
 		}
-		repository, ok := tasks.(agentrepository.AgentInteractiveRunRepository)
+		repository, ok := tasks.(agentpersistence.AgentInteractiveRunRepository)
 		if !ok {
 			writeError(w, 503, "agent.saas.repository_unavailable", "interactive repository unavailable")
 			return
@@ -420,12 +420,12 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 		}
 		writeJSON(w, 200, map[string]any{"value": value, "replay": replay})
 	case "tool.begin":
-		var input agentrepository.AgentToolCallStart
+		var input agentpersistence.AgentToolCallStart
 		if err := decode(r, &input); err != nil {
 			bad(err)
 			return
 		}
-		repository, ok := tasks.(agentrepository.AgentToolCallLedger)
+		repository, ok := tasks.(agentpersistence.AgentToolCallLedger)
 		if !ok {
 			writeError(w, 503, "agent.saas.repository_unavailable", "tool ledger unavailable")
 			return
@@ -437,12 +437,12 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 		}
 		writeJSON(w, 200, map[string]any{"ref": ref, "attempt": attempt})
 	case "tool.finish":
-		var input agentrepository.AgentToolCallFinish
+		var input agentpersistence.AgentToolCallFinish
 		if err := decode(r, &input); err != nil {
 			bad(err)
 			return
 		}
-		repository, ok := tasks.(agentrepository.AgentToolCallLedger)
+		repository, ok := tasks.(agentpersistence.AgentToolCallLedger)
 		if !ok {
 			writeError(w, 503, "agent.saas.repository_unavailable", "tool ledger unavailable")
 			return
@@ -454,8 +454,8 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, struct{}{})
 	case "lifecycle.list":
 		var input struct {
-			WorkspaceID string                         `json:"workspace_id"`
-			Query       agentrepository.LifecycleQuery `json:"query"`
+			WorkspaceID string                          `json:"workspace_id"`
+			Query       agentpersistence.LifecycleQuery `json:"query"`
 		}
 		if err := decode(r, &input); err != nil {
 			bad(err)
@@ -473,8 +473,8 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, value)
 	case "lifecycle.referenced", "lifecycle.delete":
 		var input struct {
-			WorkspaceID string                             `json:"workspace_id"`
-			Value       agentrepository.LifecycleCandidate `json:"value"`
+			WorkspaceID string                              `json:"workspace_id"`
+			Value       agentpersistence.LifecycleCandidate `json:"value"`
 		}
 		if err := decode(r, &input); err != nil {
 			bad(err)
@@ -504,7 +504,7 @@ func (s *Server) repository(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (*Server) saveTask(w http.ResponseWriter, r *http.Request, tasks agentrepository.AgentTaskRunRepository, kind string, bad, fail func(error)) {
+func (*Server) saveTask(w http.ResponseWriter, r *http.Request, tasks agentpersistence.AgentTaskRunRepository, kind string, bad, fail func(error)) {
 	var input struct {
 		Value    agentstate.AgentTaskRun       `json:"value"`
 		Owner    string                        `json:"owner"`

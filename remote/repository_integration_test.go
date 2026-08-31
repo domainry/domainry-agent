@@ -11,9 +11,9 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentstate "github.com/domainry/domainry-agent-sdk/state"
-	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
+	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/server"
 	_ "modernc.org/sqlite"
@@ -40,14 +40,14 @@ func TestSaaSBindingPersistsDefinitionsStateAndWorkerRunsRemotely(t *testing.T) 
 		t.Fatal(err)
 	}
 	defer db.Close()
-	if err := agentpersistence.EnsureSchema(t.Context(), db, "sqlite", ""); err != nil {
+	if err := agentinfra.EnsureSchema(t.Context(), db, "sqlite", ""); err != nil {
 		t.Fatal(err)
 	}
-	renderer, err := agentpersistence.Renderer("sqlite", "")
+	renderer, err := agentinfra.Renderer("sqlite", "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	store, err := agentpersistence.NewAgentStore(db, renderer, "sqlite")
+	store, err := agentinfra.NewAgentStore(db, renderer, "sqlite")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +71,7 @@ func TestSaaSBindingPersistsDefinitionsStateAndWorkerRunsRemotely(t *testing.T) 
 	binding := bindingValue.(*binding)
 	t.Cleanup(func() { _ = binding.Close(context.Background()) })
 	definitions := binding.DefinitionRepository()
-	snapshot := agentrepository.DefinitionSnapshot{SchemaVersion: "1", SchemaHash: "hash", SourceKind: "manifest", SourceID: "app-a", Agents: []agentsdk.AgentSchema{{Key: "assistant", Name: "Assistant"}}}
+	snapshot := agentpersistence.DefinitionSnapshot{SchemaVersion: "1", SchemaHash: "hash", SourceKind: "manifest", SourceID: "app-a", Agents: []agentsdk.AgentSchema{{Key: "assistant", Name: "Assistant"}}}
 	if err := definitions.SyncDefinitions(t.Context(), snapshot); err != nil {
 		t.Fatal(err)
 	}
@@ -93,15 +93,15 @@ func TestSaaSBindingPersistsDefinitionsStateAndWorkerRunsRemotely(t *testing.T) 
 	if _, replay, err := tasks.Create(t.Context(), run); err != nil || replay {
 		t.Fatalf("replay=%v err=%v", replay, err)
 	}
-	worker := tasks.(agentrepository.AgentTaskRunSystemWorkerRepository)
-	claim, found, err := worker.ClaimNextAgentTaskRunForWorker(t.Context(), agentrepository.SystemScope{Kind: "runtime_global", Purpose: "test"}, "worker", now, time.Minute)
+	worker := tasks.(agentpersistence.AgentTaskRunSystemWorkerRepository)
+	claim, found, err := worker.ClaimNextAgentTaskRunForWorker(t.Context(), agentpersistence.SystemScope{Kind: "runtime_global", Purpose: "test"}, "worker", now, time.Minute)
 	if err != nil || !found || claim.Run.ID != "run-a" {
 		t.Fatalf("claim=%#v found=%v err=%v", claim, found, err)
 	}
-	transactional := tasks.(agentrepository.AgentTaskTransactionRepository)
+	transactional := tasks.(agentpersistence.AgentTaskTransactionRepository)
 	workflowRun := agentstate.AgentTaskRun{ID: "workflow-run", WorkspaceID: "workspace-a", TaskKey: "workflow.review", TaskVersion: "1", Status: agentstate.AgentTaskRunPending, IdempotencyKey: "workflow-idem", MaxAttempts: 2, CreatedAt: now, UpdatedAt: now}
 	payload, _ := json.Marshal(workflowRun)
-	mutation := agentrepository.AgentTaskMutation{WorkspaceID: workflowRun.WorkspaceID, RunID: workflowRun.ID, IdempotencyKey: workflowRun.IdempotencyKey, TaskKey: workflowRun.TaskKey, ProcessID: "process-a", Status: string(workflowRun.Status), Payload: payload, CreatedAtMillis: now.UnixMilli(), UpdatedAtMillis: now.UnixMilli()}
+	mutation := agentpersistence.AgentTaskMutation{WorkspaceID: workflowRun.WorkspaceID, RunID: workflowRun.ID, IdempotencyKey: workflowRun.IdempotencyKey, TaskKey: workflowRun.TaskKey, ProcessID: "process-a", Status: string(workflowRun.Status), Payload: payload, CreatedAtMillis: now.UnixMilli(), UpdatedAtMillis: now.UnixMilli()}
 	rolledBack := mutation
 	rolledBack.RunID = "rolled-back-run"
 	rolledBack.IdempotencyKey = "rolled-back-idem"

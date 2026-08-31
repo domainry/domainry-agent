@@ -6,12 +6,12 @@ import (
 	"encoding/json"
 	"time"
 
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-orm/query"
 )
 
-func (s *AgentTaskRunStore) Heartbeat(ctx context.Context, workspaceID, runID string, owner string, token int64, now time.Time, duration time.Duration) (agentrepository.AgentTaskHeartbeatResult, error) {
+func (s *AgentTaskRunStore) Heartbeat(ctx context.Context, workspaceID, runID string, owner string, token int64, now time.Time, duration time.Duration) (agentpersistence.AgentTaskHeartbeatResult, error) {
 	expires := now.Add(duration)
 	statement, args, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
 		Set("lease_expires_at", expires.UnixMilli()).Set("updated_at", now.UnixMilli()).Where(query.And(
@@ -19,34 +19,34 @@ func (s *AgentTaskRunStore) Heartbeat(ctx context.Context, workspaceID, runID st
 		query.Equal("lease_owner", owner), query.Equal("fencing_token", token), query.GreaterThan("lease_expires_at", now.UnixMilli()),
 	)).Build()
 	if buildErr != nil {
-		return agentrepository.AgentTaskHeartbeatResult{}, buildErr
+		return agentpersistence.AgentTaskHeartbeatResult{}, buildErr
 	}
 	result, err := s.db.ExecContext(ctx, statement, args...)
 	if err != nil {
-		return agentrepository.AgentTaskHeartbeatResult{}, err
+		return agentpersistence.AgentTaskHeartbeatResult{}, err
 	}
 	oneRow, rowsErr := agentTaskExactlyOneRow(result)
 	if rowsErr != nil {
-		return agentrepository.AgentTaskHeartbeatResult{}, rowsErr
+		return agentpersistence.AgentTaskHeartbeatResult{}, rowsErr
 	}
 	if !oneRow {
-		return agentrepository.AgentTaskHeartbeatResult{Lost: true}, nil
+		return agentpersistence.AgentTaskHeartbeatResult{Lost: true}, nil
 	}
 	run, found, err := s.Get(ctx, workspaceID, runID)
 	if err != nil || !found {
-		return agentrepository.AgentTaskHeartbeatResult{}, err
+		return agentpersistence.AgentTaskHeartbeatResult{}, err
 	}
 	run.Lease.ExpiresAt, run.UpdatedAt, run.Revision = expires, now, run.Revision+1
 	payload, _ := json.Marshal(run)
 	persist, persistArgs, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
 		Set("payload_json", payload).Where(agentTaskLeasePredicate(runID, owner, token)).Build()
 	if buildErr != nil {
-		return agentrepository.AgentTaskHeartbeatResult{}, buildErr
+		return agentpersistence.AgentTaskHeartbeatResult{}, buildErr
 	}
 	if _, err := s.db.ExecContext(ctx, persist, persistArgs...); err != nil {
-		return agentrepository.AgentTaskHeartbeatResult{}, err
+		return agentpersistence.AgentTaskHeartbeatResult{}, err
 	}
-	return agentrepository.AgentTaskHeartbeatResult{Lease: agentmodel.AgentTaskLease{Owner: owner, FencingToken: token, ExpiresAt: expires}}, nil
+	return agentpersistence.AgentTaskHeartbeatResult{Lease: agentmodel.AgentTaskLease{Owner: owner, FencingToken: token, ExpiresAt: expires}}, nil
 }
 
 func (s *AgentTaskRunStore) SaveRunning(ctx context.Context, run agentmodel.AgentTaskRun, owner string, token int64) error {

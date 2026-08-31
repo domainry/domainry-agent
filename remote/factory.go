@@ -13,7 +13,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent-sdk/saashost"
 )
 
@@ -79,15 +79,15 @@ type binding struct {
 	publications *publicationStore
 }
 
-func (b *binding) Descriptor() agentsdk.Descriptor                            { return b.descriptor }
-func (b *binding) TaskRunner() agentsdk.TaskRunner                            { return b.client }
-func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner              { return b.client }
-func (b *binding) DefinitionRepository() agentrepository.DefinitionRepository { return b.client }
-func (b *binding) AgentStateRepository() agentrepository.AgentStateRepository { return b.client }
-func (b *binding) AgentTaskRunRepository() agentrepository.AgentTaskRunRepository {
+func (b *binding) Descriptor() agentsdk.Descriptor                             { return b.descriptor }
+func (b *binding) TaskRunner() agentsdk.TaskRunner                             { return b.client }
+func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner               { return b.client }
+func (b *binding) DefinitionRepository() agentpersistence.DefinitionRepository { return b.client }
+func (b *binding) AgentStateRepository() agentpersistence.AgentStateRepository { return b.client }
+func (b *binding) AgentTaskRunRepository() agentpersistence.AgentTaskRunRepository {
 	return b.tasks
 }
-func (b *binding) AgentLifecycleRepository() agentrepository.AgentLifecycleRepository {
+func (b *binding) AgentLifecycleRepository() agentpersistence.AgentLifecycleRepository {
 	return b.client
 }
 func (b *binding) Close(ctx context.Context) error {

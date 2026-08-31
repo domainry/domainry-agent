@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 )
 
 const maxRequestBytes = 2 << 20
@@ -18,7 +18,7 @@ type Config struct {
 	APIKey       string
 	Runner       agentsdk.TaskRunner
 	Interactive  agentsdk.InteractiveRunner
-	Repositories agentrepository.Binding
+	Repositories agentpersistence.Binding
 }
 type Server struct {
 	config  Config
@@ -39,8 +39,8 @@ func New(config Config) *Server {
 	return s
 }
 func (s *Server) ready(w http.ResponseWriter, _ *http.Request) {
-	definitions, hasDefinitions := s.config.Repositories.(agentrepository.DefinitionBinding)
-	lifecycle, hasLifecycle := s.config.Repositories.(agentrepository.LifecycleBinding)
+	definitions, hasDefinitions := s.config.Repositories.(agentpersistence.DefinitionBinding)
+	lifecycle, hasLifecycle := s.config.Repositories.(agentpersistence.LifecycleBinding)
 	if s.config.Runner == nil || s.config.Interactive == nil || s.config.Repositories == nil || s.config.Repositories.AgentStateRepository() == nil || s.config.Repositories.AgentTaskRunRepository() == nil || !hasDefinitions || definitions.DefinitionRepository() == nil || !hasLifecycle || lifecycle.AgentLifecycleRepository() == nil {
 		writeError(w, http.StatusServiceUnavailable, "agent.saas.not_ready", "runner unavailable")
 		return

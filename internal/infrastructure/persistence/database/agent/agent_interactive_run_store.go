@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-orm/query"
 )
@@ -67,7 +67,7 @@ func scanInteractiveRun(row *sql.Row) (agentmodel.AgentInteractiveRun, bool, err
 	return run, true, nil
 }
 
-func (s *AgentTaskRunStore) ListInteractiveRuns(ctx context.Context, workspaceID, userID, roleKey string, filter agentrepository.AgentInteractiveRunFilter) ([]agentmodel.AgentInteractiveRun, error) {
+func (s *AgentTaskRunStore) ListInteractiveRuns(ctx context.Context, workspaceID, userID, roleKey string, filter agentpersistence.AgentInteractiveRunFilter) ([]agentmodel.AgentInteractiveRun, error) {
 	predicates := []query.Predicate{query.Equal("user_id", strings.TrimSpace(userID)), query.Equal("role_key", strings.TrimSpace(roleKey))}
 	if len(filter.Statuses) > 0 {
 		values := make([]any, len(filter.Statuses))
@@ -204,4 +204,4 @@ func interactiveRunUpdateBuilder(store *Store, run agentmodel.AgentInteractiveRu
 	))
 }
 
-var _ agentrepository.AgentInteractiveRunRepository = (*AgentTaskRunStore)(nil)
+var _ agentpersistence.AgentInteractiveRunRepository = (*AgentTaskRunStore)(nil)

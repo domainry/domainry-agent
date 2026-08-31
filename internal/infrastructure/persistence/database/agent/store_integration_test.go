@@ -6,7 +6,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
@@ -72,7 +72,7 @@ func TestAgentTaskStoreOwnsIdempotencyClaimFenceAndWorkerScope(t *testing.T) {
 	if err != nil || !replay || created.ID != run.ID {
 		t.Fatalf("replay=%+v replay=%v err=%v", created, replay, err)
 	}
-	scope := agentrepository.SystemScope{Kind: "runtime_global", Purpose: "test worker"}
+	scope := agentpersistence.SystemScope{Kind: "runtime_global", Purpose: "test worker"}
 	claim, found, err := repository.ClaimNextAgentTaskRunForWorker(t.Context(), scope, "worker-a", now, time.Minute)
 	if err != nil || !found || claim.Lease.FencingToken != 1 {
 		t.Fatalf("claim=%+v found=%v err=%v", claim, found, err)
@@ -107,7 +107,7 @@ func TestAgentInteractiveHandoffCommitsTaskAtomically(t *testing.T) {
 func TestAgentDefinitionStoreOwnsSyncRestoreAndDisable(t *testing.T) {
 	store, database := openAgentStore(t)
 	repository := NewDefinitionStore(store)
-	first := agentrepository.DefinitionSnapshot{SchemaVersion: "1", SchemaHash: "hash-1", SourceKind: "manifest", SourceID: "crm", Skills: []agentsdk.SkillSchema{{Key: "lookup", Name: "Lookup"}}, Agents: []agentsdk.AgentSchema{{Key: "assistant", Name: "Assistant"}}}
+	first := agentpersistence.DefinitionSnapshot{SchemaVersion: "1", SchemaHash: "hash-1", SourceKind: "manifest", SourceID: "crm", Skills: []agentsdk.SkillSchema{{Key: "lookup", Name: "Lookup"}}, Agents: []agentsdk.AgentSchema{{Key: "assistant", Name: "Assistant"}}}
 	if err := repository.SyncDefinitions(t.Context(), first); err != nil {
 		t.Fatal(err)
 	}
@@ -147,15 +147,15 @@ func TestAgentLifecycleStoreOwnsEligibilityReferencesAndDeleteFence(t *testing.T
 	if err := states.PutBatch(t.Context(), "workspace-a", values); err != nil {
 		t.Fatal(err)
 	}
-	candidates, err := lifecycle.ListLifecycleCandidates(t.Context(), "workspace-a", agentrepository.LifecycleQuery{Owner: "agent", PolicyKey: "agent.dialog.v1", Now: now, Retention: time.Hour})
+	candidates, err := lifecycle.ListLifecycleCandidates(t.Context(), "workspace-a", agentpersistence.LifecycleQuery{Owner: "agent", PolicyKey: "agent.dialog.v1", Now: now, Retention: time.Hour})
 	if err != nil || len(candidates) != 2 {
 		t.Fatalf("candidates=%#v err=%v", candidates, err)
 	}
-	reports, err := lifecycle.ListLifecycleCandidates(t.Context(), "workspace-a", agentrepository.LifecycleQuery{Owner: "report", PolicyKey: "report.export.v1", Now: now, Retention: time.Hour})
+	reports, err := lifecycle.ListLifecycleCandidates(t.Context(), "workspace-a", agentpersistence.LifecycleQuery{Owner: "report", PolicyKey: "report.export.v1", Now: now, Retention: time.Hour})
 	if err != nil || len(reports) != 2 {
 		t.Fatalf("reports=%#v err=%v", reports, err)
 	}
-	var query agentrepository.LifecycleCandidate
+	var query agentpersistence.LifecycleCandidate
 	for _, value := range reports {
 		if value.State.Kind == "report_query_run" {
 			query = value

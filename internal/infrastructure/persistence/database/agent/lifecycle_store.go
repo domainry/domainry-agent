@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentstate "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-orm/query"
 )
@@ -16,7 +16,7 @@ type LifecycleStore struct{ store *Store }
 
 func NewLifecycleStore(store *Store) LifecycleStore { return LifecycleStore{store: store} }
 
-func (s LifecycleStore) ListLifecycleCandidates(ctx context.Context, workspaceID string, queryValue agentrepository.LifecycleQuery) ([]agentrepository.LifecycleCandidate, error) {
+func (s LifecycleStore) ListLifecycleCandidates(ctx context.Context, workspaceID string, queryValue agentpersistence.LifecycleQuery) ([]agentpersistence.LifecycleCandidate, error) {
 	workspaceID, err := normalizeWorkspaceID(workspaceID)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (s LifecycleStore) ListLifecycleCandidates(ctx context.Context, workspaceID
 	default:
 		return nil, fmt.Errorf("unsupported Agent lifecycle owner %q", queryValue.Owner)
 	}
-	result := []agentrepository.LifecycleCandidate{}
+	result := []agentpersistence.LifecycleCandidate{}
 	for _, item := range kinds {
 		builder := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_runtime_states", workspaceID).
 			Columns("state_key", "user_id", "role_key", "payload_json", "updated_at").
@@ -68,7 +68,7 @@ func (s LifecycleStore) ListLifecycleCandidates(ctx context.Context, workspaceID
 			if queryValue.Owner == "agent" && !agentLifecycleEligible(value.Kind, payload) {
 				continue
 			}
-			result = append(result, agentrepository.LifecycleCandidate{State: value, ResourceID: value.Kind + ":" + value.Key})
+			result = append(result, agentpersistence.LifecycleCandidate{State: value, ResourceID: value.Kind + ":" + value.Key})
 			if queryValue.Limit > 0 && len(result) >= queryValue.Limit {
 				_ = rows.Close()
 				return result, nil
@@ -100,7 +100,7 @@ func agentLifecycleEligible(kind string, payload []byte) bool {
 	}
 }
 
-func (s LifecycleStore) LifecycleCandidateReferenced(ctx context.Context, workspaceID string, candidate agentrepository.LifecycleCandidate) (bool, error) {
+func (s LifecycleStore) LifecycleCandidateReferenced(ctx context.Context, workspaceID string, candidate agentpersistence.LifecycleCandidate) (bool, error) {
 	childKind := ""
 	switch candidate.State.Kind {
 	case "report_export_audit":
@@ -123,7 +123,7 @@ func (s LifecycleStore) LifecycleCandidateReferenced(ctx context.Context, worksp
 	return count > 0, nil
 }
 
-func (s LifecycleStore) DeleteLifecycleCandidate(ctx context.Context, workspaceID string, candidate agentrepository.LifecycleCandidate) (bool, error) {
+func (s LifecycleStore) DeleteLifecycleCandidate(ctx context.Context, workspaceID string, candidate agentpersistence.LifecycleCandidate) (bool, error) {
 	statement, args, err := query.NewWorkspaceDeleteBuilder(s.store.Renderer(), "_agent_runtime_states", workspaceID).
 		Where(query.And(query.Equal("kind", candidate.State.Kind), query.Equal("state_key", candidate.State.Key), query.Equal("updated_at", candidate.State.UpdatedAt))).Build()
 	if err != nil {
@@ -137,4 +137,4 @@ func (s LifecycleStore) DeleteLifecycleCandidate(ctx context.Context, workspaceI
 	return rows == 1, err
 }
 
-var _ agentrepository.AgentLifecycleRepository = LifecycleStore{}
+var _ agentpersistence.AgentLifecycleRepository = LifecycleStore{}

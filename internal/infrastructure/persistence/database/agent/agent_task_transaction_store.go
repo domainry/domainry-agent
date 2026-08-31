@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-orm/query"
 )
 
-func (s *AgentTaskRunStore) InsertAgentTask(ctx context.Context, executor modulehost.Executor, run agentrepository.AgentTaskMutation) error {
+func (s *AgentTaskRunStore) InsertAgentTask(ctx context.Context, executor modulehost.Executor, run agentpersistence.AgentTaskMutation) error {
 	if s == nil || executor == nil {
 		return fmt.Errorf("Agent task transaction store is unavailable")
 	}
@@ -28,7 +28,7 @@ func (s *AgentTaskRunStore) InsertAgentTask(ctx context.Context, executor module
 	return RegisterAgentTaskWorkerScope(ctx, s.store, executor, run.WorkspaceID, time.UnixMilli(run.UpdatedAtMillis))
 }
 
-func (s *AgentTaskRunStore) UpdateAgentTask(ctx context.Context, executor modulehost.Executor, run agentrepository.AgentTaskMutation) error {
+func (s *AgentTaskRunStore) UpdateAgentTask(ctx context.Context, executor modulehost.Executor, run agentpersistence.AgentTaskMutation) error {
 	if s == nil || executor == nil {
 		return fmt.Errorf("Agent task transaction store is unavailable")
 	}
@@ -59,20 +59,20 @@ func (s *AgentTaskRunStore) UpdateAgentTask(ctx context.Context, executor module
 	return nil
 }
 
-var _ agentrepository.AgentTaskTransactionRepository = (*AgentTaskRunStore)(nil)
+var _ agentpersistence.AgentTaskTransactionRepository = (*AgentTaskRunStore)(nil)
 
-func (s *AgentTaskRunStore) ApplyAgentTaskInsert(ctx context.Context, run agentrepository.AgentTaskMutation) error {
+func (s *AgentTaskRunStore) ApplyAgentTaskInsert(ctx context.Context, run agentpersistence.AgentTaskMutation) error {
 	if s == nil || s.store == nil {
 		return fmt.Errorf("Agent task mutation store is unavailable")
 	}
 	return s.InsertAgentTask(ctx, s.store.Database(), run)
 }
 
-func (s *AgentTaskRunStore) ApplyAgentTaskUpdate(ctx context.Context, run agentrepository.AgentTaskMutation) error {
+func (s *AgentTaskRunStore) ApplyAgentTaskUpdate(ctx context.Context, run agentpersistence.AgentTaskMutation) error {
 	if s == nil || s.store == nil {
 		return fmt.Errorf("Agent task mutation store is unavailable")
 	}
 	return s.UpdateAgentTask(ctx, s.store.Database(), run)
 }
 
-var _ agentrepository.AgentTaskMutationRepository = (*AgentTaskRunStore)(nil)
+var _ agentpersistence.AgentTaskMutationRepository = (*AgentTaskRunStore)(nil)

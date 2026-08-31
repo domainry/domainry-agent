@@ -10,7 +10,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-orm/query"
 )
 
@@ -31,7 +31,7 @@ type definitionSeed struct {
 	payload                any
 }
 
-func definitionSeeds(snapshot agentrepository.DefinitionSnapshot) []definitionSeed {
+func definitionSeeds(snapshot agentpersistence.DefinitionSnapshot) []definitionSeed {
 	values := make([]definitionSeed, 0, len(snapshot.Skills)+len(snapshot.Agents)+len(snapshot.Tasks)+len(snapshot.Entrypoints)+len(snapshot.Principals))
 	for _, value := range snapshot.Skills {
 		values = append(values, definitionSeed{"_agent_skill_definitions", "skill", strings.TrimSpace(value.Key), value.Name, value})
@@ -51,7 +51,7 @@ func definitionSeeds(snapshot agentrepository.DefinitionSnapshot) []definitionSe
 	return values
 }
 
-func (s DefinitionStore) SyncDefinitions(ctx context.Context, snapshot agentrepository.DefinitionSnapshot) error {
+func (s DefinitionStore) SyncDefinitions(ctx context.Context, snapshot agentpersistence.DefinitionSnapshot) error {
 	if s.store == nil || s.store.Database() == nil {
 		return fmt.Errorf("Agent definition store is unavailable")
 	}
@@ -129,8 +129,8 @@ func loadDefinitions[T any](ctx context.Context, store *Store, table string) ([]
 	return values, version, sourceKind, sourceID, rows.Err()
 }
 
-func (s DefinitionStore) DefinitionSnapshot(ctx context.Context) (agentrepository.DefinitionSnapshot, error) {
-	var result agentrepository.DefinitionSnapshot
+func (s DefinitionStore) DefinitionSnapshot(ctx context.Context) (agentpersistence.DefinitionSnapshot, error) {
+	var result agentpersistence.DefinitionSnapshot
 	var err error
 	result.Skills, result.SchemaVersion, result.SourceKind, result.SourceID, err = loadDefinitions[agentsdk.SkillSchema](ctx, s.store, "_agent_skill_definitions")
 	if err != nil {
@@ -164,4 +164,4 @@ func (s DefinitionStore) DefinitionSnapshot(ctx context.Context) (agentrepositor
 	return result, nil
 }
 
-var _ agentrepository.DefinitionRepository = DefinitionStore{}
+var _ agentpersistence.DefinitionRepository = DefinitionStore{}

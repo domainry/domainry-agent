@@ -5,11 +5,11 @@ import (
 	"strings"
 	"time"
 
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 )
 
-func (s *AgentTaskRunStore) ListAgentTaskRunsForWorker(ctx context.Context, scope agentrepository.SystemScope, filter agentrepository.AgentTaskRunFilter) ([]agentmodel.AgentTaskRun, error) {
+func (s *AgentTaskRunStore) ListAgentTaskRunsForWorker(ctx context.Context, scope agentpersistence.SystemScope, filter agentpersistence.AgentTaskRunFilter) ([]agentmodel.AgentTaskRun, error) {
 	if err := requireAgentTaskWorkerScope(scope); err != nil {
 		return nil, err
 	}
@@ -32,13 +32,13 @@ func (s *AgentTaskRunStore) ListAgentTaskRunsForWorker(ctx context.Context, scop
 	return fairAgentRuns(out, limit), nil
 }
 
-func (s *AgentTaskRunStore) ClaimNextAgentTaskRunForWorker(ctx context.Context, scope agentrepository.SystemScope, owner string, now time.Time, duration time.Duration) (agentrepository.AgentTaskClaim, bool, error) {
+func (s *AgentTaskRunStore) ClaimNextAgentTaskRunForWorker(ctx context.Context, scope agentpersistence.SystemScope, owner string, now time.Time, duration time.Duration) (agentpersistence.AgentTaskClaim, bool, error) {
 	if err := requireAgentTaskWorkerScope(scope); err != nil {
-		return agentrepository.AgentTaskClaim{}, false, err
+		return agentpersistence.AgentTaskClaim{}, false, err
 	}
 	workspaces, err := s.store.workerScopePage(ctx, 64)
 	if err != nil {
-		return agentrepository.AgentTaskClaim{}, false, err
+		return agentpersistence.AgentTaskClaim{}, false, err
 	}
 	for _, workspaceID := range workspaces {
 		claim, found, err := s.ClaimNext(ctx, workspaceID, owner, now, duration)
@@ -46,12 +46,12 @@ func (s *AgentTaskRunStore) ClaimNextAgentTaskRunForWorker(ctx context.Context, 
 			return claim, found, err
 		}
 	}
-	return agentrepository.AgentTaskClaim{}, false, nil
+	return agentpersistence.AgentTaskClaim{}, false, nil
 }
 
-func requireAgentTaskWorkerScope(scope agentrepository.SystemScope) error {
+func requireAgentTaskWorkerScope(scope agentpersistence.SystemScope) error {
 	if strings.TrimSpace(scope.Purpose) == "" || scope.Kind != "runtime_global" {
-		return agentrepository.ErrSystemScopeRequired
+		return agentpersistence.ErrSystemScopeRequired
 	}
 	return nil
 }
@@ -89,4 +89,4 @@ func fairAgentRuns(values []agentmodel.AgentTaskRun, limit int) []agentmodel.Age
 	return out
 }
 
-var _ agentrepository.AgentTaskRunSystemWorkerRepository = (*AgentTaskRunStore)(nil)
+var _ agentpersistence.AgentTaskRunSystemWorkerRepository = (*AgentTaskRunStore)(nil)

@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
-	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
+	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-orm/query"
 )
@@ -30,7 +30,7 @@ type publicationStore struct {
 
 type taskPublication struct {
 	ID, Operation string
-	Mutation      agentrepository.AgentTaskMutation
+	Mutation      agentpersistence.AgentTaskMutation
 	Attempts      int
 }
 
@@ -61,23 +61,23 @@ func newPublicationStore(host interface {
 	Dialect() modulehost.Dialect
 	Migrations() modulehost.MigrationRegistrar
 }, client *client, workerID string) (*publicationStore, error) {
-	store, err := agentpersistence.NewAgentStore(host.Database(), host.Dialect(), host.Migrations().Driver())
+	store, err := agentinfra.NewAgentStore(host.Database(), host.Dialect(), host.Migrations().Driver())
 	if err != nil {
 		return nil, err
 	}
 	return &publicationStore{store: store, client: client, workerID: workerID, done: make(chan struct{})}, nil
 }
 
-func publicationID(operation string, mutation agentrepository.AgentTaskMutation) string {
+func publicationID(operation string, mutation agentpersistence.AgentTaskMutation) string {
 	raw, _ := json.Marshal(struct {
 		Operation string
-		Mutation  agentrepository.AgentTaskMutation
+		Mutation  agentpersistence.AgentTaskMutation
 	}{operation, mutation})
 	hash := sha256.Sum256(raw)
 	return "agent-task-publication:" + hex.EncodeToString(hash[:])
 }
 
-func (s *publicationStore) enqueue(ctx context.Context, executor modulehost.Executor, operation string, mutation agentrepository.AgentTaskMutation) error {
+func (s *publicationStore) enqueue(ctx context.Context, executor modulehost.Executor, operation string, mutation agentpersistence.AgentTaskMutation) error {
 	if s == nil || s.store == nil || executor == nil {
 		return fmt.Errorf("Agent SaaS publication store is unavailable")
 	}
@@ -101,10 +101,10 @@ func (s *publicationStore) enqueue(ctx context.Context, executor modulehost.Exec
 	return err
 }
 
-func (s *publicationStore) InsertAgentTask(ctx context.Context, executor modulehost.Executor, mutation agentrepository.AgentTaskMutation) error {
+func (s *publicationStore) InsertAgentTask(ctx context.Context, executor modulehost.Executor, mutation agentpersistence.AgentTaskMutation) error {
 	return s.enqueue(ctx, executor, "insert", mutation)
 }
-func (s *publicationStore) UpdateAgentTask(ctx context.Context, executor modulehost.Executor, mutation agentrepository.AgentTaskMutation) error {
+func (s *publicationStore) UpdateAgentTask(ctx context.Context, executor modulehost.Executor, mutation agentpersistence.AgentTaskMutation) error {
 	return s.enqueue(ctx, executor, "update", mutation)
 }
 
@@ -217,4 +217,4 @@ func (s *publicationStore) deliver(ctx context.Context, value taskPublication, n
 	return nil
 }
 
-var _ agentrepository.AgentTaskTransactionRepository = (*publicationStore)(nil)
+var _ agentpersistence.AgentTaskTransactionRepository = (*publicationStore)(nil)

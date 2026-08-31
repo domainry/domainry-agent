@@ -8,14 +8,14 @@ import (
 	"strings"
 	"time"
 
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-orm/query"
 )
 
-var _ agentrepository.AgentToolCallLedger = (*AgentTaskRunStore)(nil)
+var _ agentpersistence.AgentToolCallLedger = (*AgentTaskRunStore)(nil)
 
-func (s *AgentTaskRunStore) BeginAgentToolCall(ctx context.Context, start agentrepository.AgentToolCallStart) (string, int, error) {
+func (s *AgentTaskRunStore) BeginAgentToolCall(ctx context.Context, start agentpersistence.AgentToolCallStart) (string, int, error) {
 	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return "", 0, err
@@ -79,7 +79,7 @@ func (s *AgentTaskRunStore) BeginAgentToolCall(ctx context.Context, start agentr
 	return ref, run.ToolCallCount, nil
 }
 
-func (s *AgentTaskRunStore) FinishAgentToolCall(ctx context.Context, finish agentrepository.AgentToolCallFinish) error {
+func (s *AgentTaskRunStore) FinishAgentToolCall(ctx context.Context, finish agentpersistence.AgentToolCallFinish) error {
 	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return err

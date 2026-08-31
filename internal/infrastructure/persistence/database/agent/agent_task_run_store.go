@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
-	agentrepository "github.com/domainry/domainry-agent-sdk/repository"
+	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-orm/query"
 )
@@ -136,7 +136,7 @@ func (s *AgentTaskRunStore) scanRun(row rowScanner) (agentmodel.AgentTaskRun, bo
 	return run, true, nil
 }
 
-func (s *AgentTaskRunStore) List(ctx context.Context, workspaceID string, filter agentrepository.AgentTaskRunFilter) ([]agentmodel.AgentTaskRun, error) {
+func (s *AgentTaskRunStore) List(ctx context.Context, workspaceID string, filter agentpersistence.AgentTaskRunFilter) ([]agentmodel.AgentTaskRun, error) {
 	predicates := []query.Predicate{}
 	if filter.ProcessID != "" {
 		predicates = append(predicates, query.Equal("process_id", strings.TrimSpace(filter.ProcessID)))
@@ -245,4 +245,4 @@ func agentTaskExactlyOneRow(result sql.Result) (bool, error) {
 	return rows == 1, nil
 }
 
-var _ agentrepository.AgentTaskRunRepository = (*AgentTaskRunStore)(nil)
+var _ agentpersistence.AgentTaskRunRepository = (*AgentTaskRunStore)(nil)
