@@ -30,8 +30,8 @@ type surface struct {
 }
 
 func (*surface) ContractVersion() string { return modulehttp.ContractVersion }
-func (*surface) Owner() string           { return "agent" }
-func (*surface) Name() string            { return "dialog_state" }
+func (*surface) Owner() string           { return agentsdk.AgentHTTPSurfaceContract().Owner }
+func (*surface) Name() string            { return agentsdk.AgentHTTPSurfaceContract().Name }
 func (s *surface) Handler() http.Handler { return s.mux }
 func (s *surface) Routes() []modulehttp.Route {
 	return append([]modulehttp.Route(nil), s.routes...)
@@ -135,67 +135,53 @@ func NewOwnedSurface(binding agentsdk.Binding, applications SurfaceApplications)
 }
 
 func dialogExecutionRoute(pattern string) modulehttp.Route {
-	return modulehttp.Route{
-		Pattern: pattern, Exposures: []modulehttp.Exposure{modulehttp.ExposurePublic},
-		Authentication: modulehttp.AuthenticationAuthenticated, PrincipalOnly: true,
-		Governance: &modulehttp.Governance{EffectClass: modulehttp.EffectWrite, HighRiskPolicy: modulehttp.HighRiskNone, IdempotencyDecision: "caller_key_required", AuditClass: "mutation_audit_required"},
-	}
+	return agentHTTPRoute(pattern)
 }
 
 func taskToolCallbackRoute(pattern string) modulehttp.Route {
-	return modulehttp.Route{
-		Pattern: pattern, Exposures: []modulehttp.Exposure{modulehttp.ExposurePublic},
-		Authentication: modulehttp.AuthenticationAnonymous,
-		Governance:     &modulehttp.Governance{EffectClass: modulehttp.EffectWrite, HighRiskPolicy: modulehttp.HighRiskNone, IdempotencyDecision: "credential_payload_key_required", AuditClass: "credential_scoped_tool_audit"},
-	}
+	return agentHTTPRoute(pattern)
 }
 
 func dialogAnalysisRoute(pattern string) modulehttp.Route {
-	return modulehttp.Route{
-		Pattern: pattern, Exposures: []modulehttp.Exposure{modulehttp.ExposurePublic},
-		Authentication: modulehttp.AuthenticationAuthenticated, PrincipalOnly: true,
-		Governance: &modulehttp.Governance{EffectClass: modulehttp.EffectRead, HighRiskPolicy: modulehttp.HighRiskNone, IdempotencyDecision: "not_applicable", AuditClass: "owner_read_audit_policy"},
-	}
+	return agentHTTPRoute(pattern)
 }
 
 func agentDiagnosticsRoute(pattern string) modulehttp.Route {
-	return modulehttp.Route{
-		Pattern: pattern, Exposures: []modulehttp.Exposure{modulehttp.ExposureTenantAdmin, modulehttp.ExposureOps},
-		Authentication: modulehttp.AuthenticationAuthenticated, AnyPermissions: []string{"workspace.admin"},
-		Governance: &modulehttp.Governance{EffectClass: modulehttp.EffectRead, HighRiskPolicy: modulehttp.HighRiskNone, IdempotencyDecision: "not_applicable", AuditClass: "owner_read_audit_policy"},
-	}
+	return agentHTTPRoute(pattern)
 }
 
 func agentTaskOperationsReadRoute(pattern string) modulehttp.Route {
-	return modulehttp.Route{
-		Pattern: pattern, Exposures: []modulehttp.Exposure{modulehttp.ExposureTenantAdmin, modulehttp.ExposureOps},
-		Authentication: modulehttp.AuthenticationAuthenticated, AnyPermissions: []string{"agent.task.read", "workspace.admin"},
-		Governance: &modulehttp.Governance{EffectClass: modulehttp.EffectRead, HighRiskPolicy: modulehttp.HighRiskNone, IdempotencyDecision: "not_applicable", AuditClass: "owner_read_audit_policy"},
-	}
+	return agentHTTPRoute(pattern)
 }
 
 func agentTaskOperationsWriteRoute(pattern string) modulehttp.Route {
-	return modulehttp.Route{
-		Pattern: pattern, Exposures: []modulehttp.Exposure{modulehttp.ExposureTenantAdmin, modulehttp.ExposureOps},
-		Authentication: modulehttp.AuthenticationAuthenticated, AnyPermissions: []string{"agent.task.operate", "workspace.admin"},
-		Governance: &modulehttp.Governance{EffectClass: modulehttp.EffectWrite, HighRiskPolicy: modulehttp.HighRiskNone, IdempotencyDecision: "caller_key_required", AuditClass: "mutation_audit_required"},
-	}
+	return agentHTTPRoute(pattern)
 }
 
 func dialogReadRoute(pattern string) modulehttp.Route {
-	return modulehttp.Route{
-		Pattern: pattern, Exposures: []modulehttp.Exposure{modulehttp.ExposurePublic},
-		Authentication: modulehttp.AuthenticationAuthenticated, PrincipalOnly: true,
-		Governance: &modulehttp.Governance{EffectClass: modulehttp.EffectRead, HighRiskPolicy: modulehttp.HighRiskNone, IdempotencyDecision: "not_applicable", AuditClass: "owner_read_audit_policy"},
-	}
+	return agentHTTPRoute(pattern)
 }
 
 func dialogWriteRoute(pattern string) modulehttp.Route {
-	return modulehttp.Route{
-		Pattern: pattern, Exposures: []modulehttp.Exposure{modulehttp.ExposurePublic},
-		Authentication: modulehttp.AuthenticationAuthenticated, PrincipalOnly: true,
-		Governance: &modulehttp.Governance{EffectClass: modulehttp.EffectWrite, HighRiskPolicy: modulehttp.HighRiskNone, IdempotencyDecision: "caller_key_required", AuditClass: "mutation_audit_required"},
+	return agentHTTPRoute(pattern)
+}
+
+func agentHTTPRoute(pattern string) modulehttp.Route {
+	for _, route := range agentsdk.AgentHTTPSurfaceContract().Routes {
+		if route.Pattern != pattern {
+			continue
+		}
+		exposures := make([]modulehttp.Exposure, len(route.Exposures))
+		for index, exposure := range route.Exposures {
+			exposures[index] = modulehttp.Exposure(exposure)
+		}
+		return modulehttp.Route{
+			Pattern: route.Pattern, Exposures: exposures, Authentication: modulehttp.Authentication(route.Authentication), Permission: route.Permission,
+			AnyPermissions: append([]string(nil), route.AnyPermissions...), PrincipalOnly: route.PrincipalOnly,
+			Governance: &modulehttp.Governance{EffectClass: modulehttp.EffectClass(route.EffectClass), HighRiskPolicy: modulehttp.HighRiskPolicy(route.HighRiskPolicy), IdempotencyDecision: route.IdempotencyDecision, AuditClass: route.AuditClass},
+		}
 	}
+	panic("Agent SDK HTTP route is unavailable: " + pattern)
 }
 
 func requestAuthority(r *http.Request) (agentsdk.AgentAuthority, error) {

@@ -4,12 +4,15 @@ import (
 	"crypto/subtle"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
+	agentcapability "github.com/domainry/domainry-agent/capability"
+	"github.com/domainry/domainry-foundation/modulecapability"
 )
 
 const maxRequestBytes = 2 << 20
@@ -27,7 +30,7 @@ type Server struct {
 	handler http.Handler
 }
 
-func New(config Config) *Server {
+func New(config Config) (*Server, error) {
 	s := &Server{config: config}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/v1/descriptor", s.descriptor)
@@ -44,8 +47,17 @@ func New(config Config) *Server {
 	mux.HandleFunc("POST /api/v1/dialog-state/proposals/store", s.storeProposal)
 	mux.HandleFunc("POST /api/v1/dialog-state/proposals/decide", s.decideProposal)
 	s.registerPersistenceRoutes(mux)
+	capabilityBinding, err := agentcapability.Open(agentcapability.Inputs{})
+	if err != nil {
+		return nil, fmt.Errorf("build Agent capability binding: %w", err)
+	}
+	capabilityHandler, err := modulecapability.NewHTTPHandler(capabilityBinding, func(*http.Request) error { return nil })
+	if err != nil {
+		return nil, err
+	}
+	mux.Handle(modulecapability.HTTPPrefix+"/", capabilityHandler)
 	s.handler = mux
-	return s
+	return s, nil
 }
 func (s *Server) ready(w http.ResponseWriter, _ *http.Request) {
 	definitions, hasDefinitions := s.config.Repositories.(agentpersistence.DefinitionBinding)

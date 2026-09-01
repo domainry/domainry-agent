@@ -17,9 +17,11 @@ import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent-sdk/saashost"
+	agentcapability "github.com/domainry/domainry-agent/capability"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	agentcomposition "github.com/domainry/domainry-agent/internal/composition"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
+	"github.com/domainry/domainry-foundation/modulecapability"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
 )
@@ -60,10 +62,28 @@ func (f *Factory) OpenSaaS(ctx context.Context, app agentsdk.ApplicationRef, hos
 	if descriptor.Mode != agentsdk.DeploymentModeSaaS {
 		return nil, fmt.Errorf("Agent SaaS endpoint returned mode %q", descriptor.Mode)
 	}
+	expectedCapability, err := agentcapability.Open(agentcapability.Inputs{})
+	if err != nil {
+		return nil, fmt.Errorf("build Agent capability expectation: %w", err)
+	}
+	expectedSummary, err := expectedCapability.CapabilitySummary(ctx)
+	if err != nil {
+		return nil, err
+	}
+	remoteCapability, err := modulecapability.OpenRemote(ctx, modulecapability.RemoteConfig{
+		BaseURL: f.options.BaseURL, Client: client.http, ExpectedModuleKey: "agent", ExpectedContractSHA256: expectedSummary.Identity.ContractSHA256,
+		Authorize: func(request *http.Request) error {
+			request.Header.Set("Authorization", "Bearer "+strings.TrimSpace(f.options.APIKey))
+			return nil
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
 	tasks := taskRepository{client: client}
 	taskState := agentapplication.NewTaskStateService(tasks)
 	taskExecution := agentapplication.NewTaskExecutionService(taskState, client, "")
-	binding := &binding{client: client, descriptor: descriptor, tasks: tasks, taskExecution: taskExecution, taskState: taskState, interactive: agentapplication.NewInteractiveStateService(tasks)}
+	binding := &binding{Binding: remoteCapability, client: client, descriptor: descriptor, tasks: tasks, taskExecution: taskExecution, taskState: taskState, interactive: agentapplication.NewInteractiveStateService(tasks)}
 	surface, err := agenthttp.NewSurface(binding)
 	if err != nil {
 		return nil, err
@@ -74,6 +94,7 @@ func (f *Factory) OpenSaaS(ctx context.Context, app agentsdk.ApplicationRef, hos
 }
 
 type binding struct {
+	modulecapability.Binding
 	client        *client
 	descriptor    agentsdk.Descriptor
 	tasks         taskRepository
@@ -123,6 +144,7 @@ func (b *binding) Close(ctx context.Context) error {
 
 var _ modulehost.ApplicationHostBinder = (*binding)(nil)
 var _ agentlifecycle.Binding = (*binding)(nil)
+var _ agentsdk.Binding = (*binding)(nil)
 
 type client struct {
 	baseURL, apiKey string

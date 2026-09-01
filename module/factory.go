@@ -13,12 +13,14 @@ import (
 	agentlifecycle "github.com/domainry/domainry-agent-sdk/lifecycle"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
+	agentcapability "github.com/domainry/domainry-agent/capability"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	agentcomposition "github.com/domainry/domainry-agent/internal/composition"
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/provider"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
+	"github.com/domainry/domainry-foundation/modulecapability"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
 )
@@ -66,7 +68,12 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if err := runner.Validate(); err != nil {
 		return nil, err
 	}
+	capabilityBinding, err := agentcapability.Open(agentcapability.Inputs{})
+	if err != nil {
+		return nil, fmt.Errorf("build Agent capability binding: %w", err)
+	}
 	binding := newBinding(runner, store, agentsdk.DeploymentModeModule)
+	binding.Binding = capabilityBinding
 	binding.taskExecution.StartWorker(ctx)
 	surface, err := agenthttp.NewSurface(binding)
 	if err != nil {
@@ -77,6 +84,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 }
 
 type binding struct {
+	modulecapability.Binding
 	runner        *provider.Runner
 	taskExecution *agentapplication.TaskExecutionService
 	definitions   agentpersistence.DefinitionRepository
@@ -137,6 +145,7 @@ func (b *binding) Close(context.Context) error {
 }
 
 var _ agentsdk.Factory = (*Factory)(nil)
+var _ agentsdk.Binding = (*binding)(nil)
 var _ modulehost.Factory = (*Factory)(nil)
 var _ modulehost.ApplicationHostBinder = (*binding)(nil)
 var _ agentpersistence.Binding = (*binding)(nil)

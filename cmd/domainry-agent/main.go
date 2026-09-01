@@ -74,7 +74,10 @@ func run() error {
 	if saasKey == "" {
 		return errors.New("AGENT_SAAS_API_KEY is required")
 	}
-	service := server.New(server.Config{APIKey: saasKey, Runner: runner, Interactive: runner, DialogState: agentapplication.NewDialogStateService(repositories.AgentStateRepository()), Repositories: repositories, Lifecycle: repositories.AgentLifecycleRepository()})
+	service, err := server.New(server.Config{APIKey: saasKey, Runner: runner, Interactive: runner, DialogState: agentapplication.NewDialogStateService(repositories.AgentStateRepository()), Repositories: repositories, Lifecycle: repositories.AgentLifecycleRepository()})
+	if err != nil {
+		return err
+	}
 	address := strings.TrimSpace(os.Getenv("AGENT_SAAS_ADDRESS"))
 	if address == "" {
 		address = ":8090"

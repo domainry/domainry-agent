@@ -67,7 +67,11 @@ func (runnerStub) Run(context.Context, agentsdk.InteractiveRequest) (agentsdk.In
 	return agentsdk.InteractiveResult{Status: "completed"}, nil
 }
 func TestServerAuthenticationAndIdempotency(t *testing.T) {
-	handler := New(Config{APIKey: "secret", Runner: runnerStub{}, Interactive: runnerStub{}}).Handler()
+	service, err := New(Config{APIKey: "secret", Runner: runnerStub{}, Interactive: runnerStub{}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	handler := service.Handler()
 	request := httptest.NewRequest(http.MethodGet, "/api/v1/descriptor", nil)
 	response := httptest.NewRecorder()
 	handler.ServeHTTP(response, request)
@@ -94,7 +98,11 @@ func TestServerAuthenticationAndIdempotency(t *testing.T) {
 }
 
 func TestServerDoesNotExposeGenericRepositoryOperationRoute(t *testing.T) {
-	handler := New(Config{APIKey: "secret", Runner: runnerStub{}, Interactive: runnerStub{}}).Handler()
+	service, err := New(Config{APIKey: "secret", Runner: runnerStub{}, Interactive: runnerStub{}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	handler := service.Handler()
 	request := httptest.NewRequest(http.MethodPost, "/api/v1/repository/task.get", strings.NewReader(`{}`))
 	request.Header.Set("Authorization", "Bearer secret")
 	response := httptest.NewRecorder()
@@ -125,7 +133,11 @@ func TestReadyRequiresEveryAdvertisedAgentCapability(t *testing.T) {
 		request := httptest.NewRequest(http.MethodGet, "/readyz", nil)
 		request.Header.Set("Authorization", "Bearer secret")
 		response := httptest.NewRecorder()
-		New(config).Handler().ServeHTTP(response, request)
+		service, err := New(config)
+		if err != nil {
+			t.Fatal(err)
+		}
+		service.Handler().ServeHTTP(response, request)
 		return response.Code
 	}
 	if status := call(nil); status != http.StatusServiceUnavailable {

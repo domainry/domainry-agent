@@ -12,11 +12,13 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	agenttestsupport "github.com/domainry/domainry-agent/testsupport"
+	"github.com/domainry/domainry-foundation/modulecapability"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
 
 type surfaceBindingStub struct {
+	modulecapability.Binding
 	state       agentsdk.AgentDialogStateService
 	tasks       agentpersistence.AgentTaskStateService
 	interactive agentpersistence.AgentInteractiveStateService
