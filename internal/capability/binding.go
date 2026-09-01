@@ -89,7 +89,7 @@ func httpCategory(contract agentsdk.HTTPSurfaceContract, key, name, description 
 	patterns := categoryPatterns[key]
 	routesByPattern := map[string]agentsdk.HTTPRouteContract{}
 	for _, route := range contract.Routes {
-		routesByPattern[route.Pattern] = route
+		routesByPattern[route.Pattern()] = route
 	}
 	routes := make([]modulehttp.Route, 0, len(patterns))
 	operations := make(map[string]map[string]any, len(patterns))
@@ -117,40 +117,32 @@ func httpCategory(contract agentsdk.HTTPSurfaceContract, key, name, description 
 }
 
 func projectHTTPRoute(source agentsdk.HTTPRouteContract) modulehttp.Route {
-	exposures := make([]modulehttp.Exposure, len(source.Exposures))
-	for index, exposure := range source.Exposures {
-		exposures[index] = modulehttp.Exposure(exposure)
-	}
-	return modulehttp.Route{
-		Pattern: source.Pattern, Exposures: exposures, Authentication: modulehttp.Authentication(source.Authentication), Permission: source.Permission,
-		AnyPermissions: append([]string(nil), source.AnyPermissions...), PrincipalOnly: source.PrincipalOnly,
-		Governance: &modulehttp.Governance{EffectClass: modulehttp.EffectClass(source.EffectClass), HighRiskPolicy: modulehttp.HighRiskPolicy(source.HighRiskPolicy), IdempotencyDecision: source.IdempotencyDecision, AuditClass: source.AuditClass},
-	}
+	return modulehttp.Route{Action: source.Action}
 }
 
 func agentOperationOverride(route modulehttp.Route) (modulecapability.OperationExtension, bool) {
-	pattern := route.Pattern
-	policy, scope := "", "authenticated_workspace"
+	pattern := route.Pattern()
+	override, scope := false, "authenticated_workspace"
 	switch {
 	case pattern == "POST /agent-dialog/runs" || pattern == "POST /agent-dialog/runs/stream":
-		policy = "agent.runtime_authorization"
+		override = true
 	case strings.Contains(pattern, "/agent-dialog/sessions"):
-		policy = "agent.dialog_owner"
+		override = true
 	case strings.Contains(pattern, "/agent-dialog/proposals"):
-		policy = "agent.proposal_owner_and_policy"
+		override = true
 	case pattern == "GET /agent-dialog/runs/{runID}":
-		policy = "agent.interactive_run_owner"
+		override = true
 	case pattern == "GET /agent-dialog/task-runs/{taskRunID}":
-		policy = "agent.task_run_initiator"
+		override = true
 	case pattern == "POST /agent-dialog/analysis/query":
-		policy = "agent.analysis_catalog"
+		override = true
 	case pattern == "POST /agent-dialog/task-tools/invoke":
-		policy, scope = "agent.task_tool_credential", "credential_workspace"
+		override, scope = true, "credential_workspace"
 	}
-	if policy == "" {
+	if !override {
 		return modulecapability.OperationExtension{}, false
 	}
-	idempotency := modulecapability.Idempotency{Mode: route.Governance.IdempotencyDecision}
+	idempotency := modulecapability.Idempotency{Mode: route.Action.IdempotencyDecision}
 	switch pattern {
 	case "POST /agent-dialog/runs", "POST /agent-dialog/runs/stream":
 		idempotency.KeySource = "header.Idempotency-Key_or_body.idempotency_key"
@@ -165,9 +157,16 @@ func agentOperationOverride(route modulehttp.Route) (modulecapability.OperationE
 	case "POST /agent-dialog/task-tools/invoke":
 		idempotency.KeySource = "body.idempotency_key"
 	}
+	authorization := modulecapability.Authorization{
+		Strategy: route.Action.Authorization.Strategy, PolicyKey: route.Action.Authorization.PolicyKey,
+		Audiences: append([]string(nil), route.Action.Authorization.Audiences...), WorkspaceScope: scope,
+	}
+	if route.Action.Permission != nil {
+		authorization.Permission = route.Action.Permission.Key
+	}
 	extension := modulecapability.OperationExtension{
-		Owner: "agent", Authorization: modulecapability.Authorization{Mode: modulecapability.AuthorizationDynamic, PolicyKey: policy, WorkspaceScope: scope},
-		Effect: modulecapability.EffectClass(route.Governance.EffectClass), Idempotency: idempotency,
+		Owner: "agent", Authorization: authorization,
+		Effect: modulecapability.EffectClass(route.Action.EffectClass), Idempotency: idempotency,
 	}
 	if pattern == "POST /agent-dialog/runs/stream" {
 		extension.Transport = &modulecapability.Transport{Mode: "sse", ResumeSemantics: "Last-Event-ID must match the deterministic accepted event cursor", DeliveryOrdering: "accepted_then_terminal"}

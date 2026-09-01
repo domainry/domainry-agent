@@ -123,8 +123,8 @@ func TestSurfaceOwnsDialogStateRoutesAndUsesAuthenticatedIdentity(t *testing.T) 
 		t.Fatalf("OpenAPI operations=%d routes=%d", len(operations), len(surface.Routes()))
 	}
 	for _, route := range surface.Routes() {
-		if route.Pattern == "GET /operations/agent/tasks" {
-			if len(route.Exposures) != 2 || route.Exposures[0] != modulehttp.ExposureTenantAdmin || route.Exposures[1] != modulehttp.ExposureOps || len(route.AnyPermissions) != 2 {
+		if route.Pattern() == "GET /operations/agent/tasks" {
+			if len(route.Action.Exposures) != 2 || route.Action.Exposures[0] != modulehttp.ExposureTenantAdmin || route.Action.Exposures[1] != modulehttp.ExposureOps || route.Action.Permission == nil || route.Action.Permission.Key != "agent.tasks.list" {
 				t.Fatalf("operator route contract=%+v", route)
 			}
 		}

@@ -168,18 +168,10 @@ func dialogWriteRoute(pattern string) modulehttp.Route {
 
 func agentHTTPRoute(pattern string) modulehttp.Route {
 	for _, route := range agentsdk.AgentHTTPSurfaceContract().Routes {
-		if route.Pattern != pattern {
+		if route.Pattern() != pattern {
 			continue
 		}
-		exposures := make([]modulehttp.Exposure, len(route.Exposures))
-		for index, exposure := range route.Exposures {
-			exposures[index] = modulehttp.Exposure(exposure)
-		}
-		return modulehttp.Route{
-			Pattern: route.Pattern, Exposures: exposures, Authentication: modulehttp.Authentication(route.Authentication), Permission: route.Permission,
-			AnyPermissions: append([]string(nil), route.AnyPermissions...), PrincipalOnly: route.PrincipalOnly,
-			Governance: &modulehttp.Governance{EffectClass: modulehttp.EffectClass(route.EffectClass), HighRiskPolicy: modulehttp.HighRiskPolicy(route.HighRiskPolicy), IdempotencyDecision: route.IdempotencyDecision, AuditClass: route.AuditClass},
-		}
+		return modulehttp.Route{Action: route.Action}
 	}
 	panic("Agent SDK HTTP route is unavailable: " + pattern)
 }

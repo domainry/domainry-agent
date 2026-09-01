@@ -10,8 +10,9 @@ func (s *surface) OpenAPIOperations() map[string]map[string]any {
 	all := agentsdk.HTTPSurfaceOpenAPIOperations()
 	owned := make(map[string]map[string]any, len(s.routes))
 	for _, route := range s.routes {
-		if operation := all[strings.TrimSpace(route.Pattern)]; len(operation) != 0 {
-			owned[route.Pattern] = operation
+		pattern := strings.TrimSpace(route.Pattern())
+		if operation := all[pattern]; len(operation) != 0 {
+			owned[pattern] = operation
 		}
 	}
 	return owned
