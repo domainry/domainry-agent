@@ -11,6 +11,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
+	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	agenttestsupport "github.com/domainry/domainry-agent/testsupport"
 	"github.com/domainry/domainry-foundation/modulecapability"
 	"github.com/domainry/domainry-foundation/modulehttp"
@@ -22,6 +23,12 @@ type surfaceBindingStub struct {
 	state       agentsdk.AgentDialogStateService
 	tasks       agentpersistence.AgentTaskStateService
 	interactive agentpersistence.AgentInteractiveStateService
+}
+
+type singleSurfaceProvider struct{ surface modulehttp.Surface }
+
+func (provider singleSurfaceProvider) HTTPSurfaces() []modulehttp.Surface {
+	return []modulehttp.Surface{provider.surface}
 }
 
 func (surfaceBindingStub) Descriptor() agentsdk.Descriptor                 { return agentsdk.Descriptor{} }
@@ -116,18 +123,11 @@ func TestSurfaceOwnsDialogStateRoutesAndUsesAuthenticatedIdentity(t *testing.T) 
 	if err := modulehttp.ValidateSurface(surface); err != nil {
 		t.Fatal(err)
 	}
-	if surface.Owner() != "agent" || surface.Name() != "dialog_state" || len(surface.Routes()) != 10 {
+	if surface.Owner() != "agent" || surface.Name() != "dialog_state" || len(surface.Routes()) != 8 {
 		t.Fatalf("surface=%s/%s routes=%d", surface.Owner(), surface.Name(), len(surface.Routes()))
 	}
 	if operations := surface.(modulehttp.OpenAPIProvider).OpenAPIOperations(); len(operations) != len(surface.Routes()) {
 		t.Fatalf("OpenAPI operations=%d routes=%d", len(operations), len(surface.Routes()))
-	}
-	for _, route := range surface.Routes() {
-		if route.Pattern() == "GET /operations/agent/tasks" {
-			if len(route.Action.Exposures) != 2 || route.Action.Exposures[0] != modulehttp.ExposureTenantAdmin || route.Action.Exposures[1] != modulehttp.ExposureOps || route.Action.Permission == nil || route.Action.Permission.Key != "agent.tasks.list" {
-				t.Fatalf("operator route contract=%+v", route)
-			}
-		}
 	}
 	request := httptest.NewRequest(http.MethodGet, "/agent-dialog/sessions", nil)
 	request = request.WithContext(identitysdk.WithRequestIdentity(request.Context(), identitysdk.RequestIdentity{Principal: identitysdk.Principal{Known: true, WorkspaceID: "workspace-1", UserID: "user-1", RoleKey: "operator"}}))
@@ -155,6 +155,32 @@ func TestAgentOwnsOpenAPIForEveryHTTPRoute(t *testing.T) {
 	tool := operations["POST /agent-dialog/task-tools/invoke"]
 	if security, ok := tool["security"].([]any); !ok || len(security) != 0 {
 		t.Fatalf("tool callback must override inherited auth security: %#v", tool["security"])
+	}
+}
+
+func TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest(t *testing.T) {
+	state := &dialogStateStub{}
+	tasks := &taskStateSurfaceStub{}
+	surface, err := NewOwnedSurface(surfaceBindingStub{state: state, tasks: tasks}, SurfaceApplications{
+		Interactive:    agentapplication.NewInteractiveExecutionService(agentapplication.InteractiveExecutionDependencies{}),
+		Proposals:      agentapplication.NewProposalService(nil, nil, nil, nil),
+		TaskOperations: agentapplication.NewTaskOperationsService(tasks, nil, nil),
+		TaskTools:      agentapplication.NewTaskToolService(tasks, nil, nil),
+		Analysis:       agentapplication.NewAnalysisService(nil, nil),
+		Diagnostics:    agentapplication.NewDiagnosticsService(state, nil),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	actions, err := agentsdk.AgentAuthorizationActions()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(actions) != 25 || len(surface.Routes()) != 22 {
+		t.Fatalf("actions=%d routes=%d", len(actions), len(surface.Routes()))
+	}
+	if err := modulehttp.ValidateAuthorizationProjection(actions, singleSurfaceProvider{surface: surface}); err != nil {
+		t.Fatal(err)
 	}
 }
 
@@ -226,11 +252,16 @@ func TestSurfaceOwnsInteractiveAndPrincipalTaskReads(t *testing.T) {
 
 func TestSurfaceOwnsOperatorTaskQueries(t *testing.T) {
 	tasks := &taskStateSurfaceStub{runs: []agentmodel.AgentTaskRun{{ID: "task-1", WorkspaceID: "workspace-1", TaskKey: "review", Status: agentmodel.AgentTaskRunRunning}}, run: agentmodel.AgentTaskRun{ID: "task-1", WorkspaceID: "workspace-1", TaskKey: "review", Status: agentmodel.AgentTaskRunRunning}, found: true}
-	surface, err := NewSurface(surfaceBindingStub{state: &dialogStateStub{}, tasks: tasks})
+	surface, err := NewOwnedSurface(surfaceBindingStub{state: &dialogStateStub{}, tasks: tasks}, SurfaceApplications{TaskOperations: agentapplication.NewTaskOperationsService(tasks, nil, nil)})
 	if err != nil {
 		t.Fatal(err)
 	}
-	identity := identitysdk.RequestIdentity{Principal: identitysdk.Principal{Known: true, WorkspaceID: "workspace-1", UserID: "operator", RoleKey: "admin"}}
+	for _, route := range surface.Routes() {
+		if route.Action.Key == agentsdk.ActionAgentTasksList && (len(route.Action.Exposures) != 2 || route.Action.Permission == nil || route.Action.Permission.Key != route.Action.Key) {
+			t.Fatalf("operator route contract=%+v", route)
+		}
+	}
+	identity := actionRequestIdentity(agentsdk.ActionAgentTasksList)
 	request := httptest.NewRequest(http.MethodGet, "/operations/agent/tasks?status=running&process_id=process-1&task_key=review&limit=7", nil)
 	request = request.WithContext(identitysdk.WithRequestIdentity(request.Context(), identity))
 	response := httptest.NewRecorder()
@@ -246,7 +277,26 @@ func TestSurfaceOwnsOperatorTaskQueries(t *testing.T) {
 	request = request.WithContext(identitysdk.WithRequestIdentity(request.Context(), identity))
 	response = httptest.NewRecorder()
 	surface.Handler().ServeHTTP(response, request)
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("list grant reached get Action: status=%d body=%s", response.Code, response.Body.String())
+	}
+
+	identity = actionRequestIdentity(agentsdk.ActionAgentTasksGet)
+	request = httptest.NewRequest(http.MethodGet, "/operations/agent/tasks/task-1", nil)
+	request = request.WithContext(identitysdk.WithRequestIdentity(request.Context(), identity))
+	response = httptest.NewRecorder()
+	surface.Handler().ServeHTTP(response, request)
 	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "task-1") {
 		t.Fatalf("get status=%d body=%s", response.Code, response.Body.String())
 	}
+}
+
+func actionRequestIdentity(actionKey string) identitysdk.RequestIdentity {
+	separator := strings.LastIndex(actionKey, ".")
+	bundle := identitysdk.AccessBundle{FunctionGrants: []identitysdk.FunctionGrant{{
+		Resource: identitysdk.ResourceType(actionKey[:separator]), Action: identitysdk.Action(actionKey[separator+1:]), Effect: identitysdk.EffectAllow,
+	}}}
+	return identitysdk.RequestIdentity{Principal: identitysdk.Principal{
+		Known: true, WorkspaceID: "workspace-1", UserID: "operator", RoleKey: "admin", AccessBundle: &bundle,
+	}}
 }

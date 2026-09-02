@@ -479,43 +479,6 @@ func (s *Server) repositoryHandler(operation string) http.HandlerFunc {
 	}
 }
 
-func (s *Server) registerPersistenceRoutes(mux *http.ServeMux) {
-	routes := map[string]string{
-		"/api/v1/definitions/sync":                                  "definitions.sync",
-		"/api/v1/definitions/snapshot":                              "definitions.snapshot",
-		"/api/v1/internal/dialog-state/records/query":               "state.list",
-		"/api/v1/internal/dialog-state/records/get":                 "state.get",
-		"/api/v1/internal/dialog-state/records/put":                 "state.put",
-		"/api/v1/internal/dialog-state/records/put-batch":           "state.put_batch",
-		"/api/v1/internal/dialog-state/records/compare-and-swap":    "state.compare_and_swap",
-		"/api/v1/internal/execution-state/task-runs/create":         "task.create",
-		"/api/v1/internal/execution-state/task-runs/get":            "task.get",
-		"/api/v1/internal/execution-state/task-runs/query":          "task.list",
-		"/api/v1/internal/execution-state/task-runs/claim-next":     "task.claim_next",
-		"/api/v1/internal/execution-state/task-runs/heartbeat":      "task.heartbeat",
-		"/api/v1/internal/execution-state/task-runs/save-running":   "task.save_running",
-		"/api/v1/internal/execution-state/task-runs/save-waiting":   "task.save_waiting_approval",
-		"/api/v1/internal/execution-state/task-runs/override":       "task.save_terminal_override",
-		"/api/v1/internal/execution-state/task-runs/operate":        "task.save_operational_transition",
-		"/api/v1/internal/execution-state/task-runs/request-cancel": "task.request_cancel",
-		"/api/v1/internal/execution-state/task-runs/worker/query":   "task.worker_list",
-		"/api/v1/internal/execution-state/task-runs/worker/claim":   "task.worker_claim",
-		"/api/v1/internal/execution-state/task-runs/claim":          "task.direct_claim",
-		"/api/v1/internal/execution-state/interactive-runs/create":  "interactive.create",
-		"/api/v1/internal/execution-state/interactive-runs/get":     "interactive.get",
-		"/api/v1/internal/execution-state/interactive-runs/query":   "interactive.list",
-		"/api/v1/internal/execution-state/interactive-runs/save":    "interactive.save",
-		"/api/v1/internal/execution-state/interactive-runs/handoff": "interactive.handoff",
-		"/api/v1/internal/execution-state/tool-invocations/begin":   "tool.begin",
-		"/api/v1/internal/execution-state/tool-invocations/finish":  "tool.finish",
-		"/api/v1/lifecycle/executions/query":                        "lifecycle.list",
-		"/api/v1/lifecycle/executions/delete":                       "lifecycle.delete",
-	}
-	for path, operation := range routes {
-		mux.HandleFunc("POST "+path, s.repositoryHandler(operation))
-	}
-}
-
 func (*Server) saveTask(w http.ResponseWriter, r *http.Request, tasks agentpersistence.AgentTaskRunRepository, kind string, bad, fail func(error)) {
 	var input struct {
 		Value    agentstate.AgentTaskRun       `json:"value"`

@@ -29,6 +29,9 @@ func (s *DiagnosticsService) Inspect(ctx context.Context, request DiagnosticsReq
 	if s == nil || s.state == nil || s.audit == nil {
 		return nil, unavailable("agent.diagnostics.unavailable")
 	}
+	if !request.Principal.HasAuthorizedAction(agentsdk.ActionAgentDiagnosticsRead) {
+		return nil, forbidden("agent.authorization.action_denied")
+	}
 	events, eventErr := s.audit.ListAgentAudit(ctx, request.Principal, 50)
 	filtered := make([]modulehost.AuditEvent, 0, len(events))
 	for _, event := range events {

@@ -20,6 +20,7 @@ import (
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/provider"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
+	actioncontract "github.com/domainry/domainry-foundation/action"
 	"github.com/domainry/domainry-foundation/modulecapability"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
@@ -119,6 +120,9 @@ func (b *binding) AgentInteractiveState() agentpersistence.AgentInteractiveState
 func (b *binding) HTTPSurfaces() []modulehttp.Surface {
 	return append([]modulehttp.Surface(nil), b.surfaces...)
 }
+func (*binding) AuthorizationActions() ([]actioncontract.ActionDefinition, error) {
+	return agentsdk.AgentAuthorizationActions()
+}
 func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
 	ledger, _ := b.runs.(agentpersistence.AgentToolCallLedger)
 	surface, err := agentcomposition.BindApplicationSurface(agentcomposition.ApplicationSurfaceDependencies{
@@ -152,4 +156,5 @@ var _ agentpersistence.Binding = (*binding)(nil)
 var _ agentsdk.AgentDialogStateBinding = (*binding)(nil)
 var _ agentpersistence.ExecutionStateBinding = (*binding)(nil)
 var _ modulehttp.Provider = (*binding)(nil)
+var _ actioncontract.Provider = (*binding)(nil)
 var _ agentlifecycle.Binding = (*binding)(nil)

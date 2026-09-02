@@ -9,6 +9,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
+	actioncontract "github.com/domainry/domainry-foundation/action"
 )
 
 type incompleteExecutionRepositoryStub struct {
@@ -66,6 +67,56 @@ func (runnerStub) Cancel(context.Context, string, string) (agentsdk.TaskResult, 
 func (runnerStub) Run(context.Context, agentsdk.InteractiveRequest) (agentsdk.InteractiveResult, error) {
 	return agentsdk.InteractiveResult{Status: "completed"}, nil
 }
+
+type serviceActionRunnerStub struct{ startAuthorized bool }
+
+func (runner *serviceActionRunnerStub) Start(ctx context.Context, _ agentsdk.TaskRequest) (agentsdk.TaskResult, error) {
+	runner.startAuthorized = agentsdk.HasAuthorizedServiceAction(ctx, actionAgentSaaSTaskProviderStart, agentsdk.AgentRuntimeServiceAudience)
+	return agentsdk.TaskResult{ExternalRunID: "run", Status: agentsdk.ProviderRunAccepted}, nil
+}
+func (*serviceActionRunnerStub) Poll(context.Context, string, string) (agentsdk.TaskResult, error) {
+	return agentsdk.TaskResult{}, nil
+}
+func (*serviceActionRunnerStub) Cancel(context.Context, string, string) (agentsdk.TaskResult, error) {
+	return agentsdk.TaskResult{}, nil
+}
+
+func TestSaaSManifestOwnsEveryServiceRouteAndInjectsCurrentAction(t *testing.T) {
+	actions, err := SaaSAuthorizationActions()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(actions) != 45 {
+		t.Fatalf("Agent SaaS actions=%d, want 45", len(actions))
+	}
+	patterns := map[string]bool{}
+	for _, action := range actions {
+		if action.Owner != agentsdk.AgentAuthorizationOwner || action.SourceKind != "service_protocol" || action.HTTP == nil || action.Permission != nil || action.Authorization.Strategy != actioncontract.AuthorizationServiceIdentity || action.Authorization.PolicyKey != "agent.saas_api_key" || len(action.Authorization.Audiences) != 1 || action.Authorization.Audiences[0] != agentsdk.AgentRuntimeServiceAudience {
+			t.Fatalf("invalid Agent SaaS Action: %+v", action)
+		}
+		pattern := action.HTTP.Method + " " + action.HTTP.RouteTemplate
+		if patterns[pattern] {
+			t.Fatalf("duplicate Agent SaaS route %q", pattern)
+		}
+		patterns[pattern] = true
+	}
+
+	runner := &serviceActionRunnerStub{}
+	service, err := New(Config{APIKey: "secret", Runner: runner, Interactive: runnerStub{}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	body := `{"task_run_id":"task","workspace_id":"workspace","task":{"contract_version":"agent-task-v1","key":"task","version":"1","agent_key":"runner","instruction":"run","input_schema":{"type":"object"},"output_schema":{"type":"object"},"allowed_outcomes":["success"],"side_effect_mode":"analysis_only","enabled":true},"identity":{},"idempotency_key":"key","deadline":"0001-01-01T00:00:00Z"}`
+	request := httptest.NewRequest(http.MethodPost, "/api/v1/task-runs", strings.NewReader(body))
+	request.Header.Set("Authorization", "Bearer secret")
+	request.Header.Set("Idempotency-Key", "key")
+	response := httptest.NewRecorder()
+	service.Handler().ServeHTTP(response, request)
+	if response.Code != http.StatusOK || !runner.startAuthorized {
+		t.Fatalf("status=%d action_authorized=%t body=%s", response.Code, runner.startAuthorized, response.Body.String())
+	}
+}
+
 func TestServerAuthenticationAndIdempotency(t *testing.T) {
 	service, err := New(Config{APIKey: "secret", Runner: runnerStub{}, Interactive: runnerStub{}})
 	if err != nil {

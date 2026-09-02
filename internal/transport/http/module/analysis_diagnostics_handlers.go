@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
 )
 
@@ -36,9 +37,9 @@ func (s *surface) queryAnalysis(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *surface) inspectDiagnostics(w http.ResponseWriter, r *http.Request) {
-	principal, ok := proposalPrincipal(r)
+	principal, ok := authorizedActionPrincipal(r, agentsdk.ActionAgentDiagnosticsRead)
 	if !ok {
-		writeCode(w, http.StatusForbidden, "backend.workspace_scope_required")
+		writeCode(w, http.StatusForbidden, "agent.authorization.action_denied")
 		return
 	}
 	values := r.URL.Query()

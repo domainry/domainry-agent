@@ -82,7 +82,8 @@ func TestSaaSBindingPersistsDefinitionsStateAndWorkerRunsRemotely(t *testing.T) 
 		t.Fatalf("found=%v err=%v", found, err)
 	}
 	tasks := binding.AgentTaskRunRepository()
-	result, err := binding.TaskRunner().Start(t.Context(), agentsdk.TaskRequest{
+	ctx := agentsdk.WithAuthorizedServiceAction(t.Context(), agentsdk.ActionAgentTaskExecutionStart, agentsdk.AgentRuntimeServiceAudience)
+	result, err := binding.TaskRunner().Start(ctx, agentsdk.TaskRequest{
 		TaskRunID: "run-a", WorkspaceID: "workspace-a", IdempotencyKey: "idem-a", MaxAttempts: 2,
 		Task: agentsdk.AgentTaskDefinition{
 			ContractVersion: agentsdk.AgentTaskContractVersion, Key: "review", Version: "1", AgentKey: "reviewer", Instruction: "review",

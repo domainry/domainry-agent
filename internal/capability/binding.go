@@ -4,39 +4,27 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentdefinition "github.com/domainry/domainry-agent/definition"
+	actioncontract "github.com/domainry/domainry-foundation/action"
 	"github.com/domainry/domainry-foundation/modulecapability"
 	"github.com/domainry/domainry-foundation/modulehttp"
 )
 
 const (
 	AuthoringCategory   = "agent.authoring"
-	DialogCategory      = "agent.dialog"
-	OperationsCategory  = "agent.operations"
-	ProposalsCategory   = "agent.proposals"
-	ToolGatewayCategory = "agent.tool_gateway"
+	DialogCategory      = agentsdk.AgentCapabilityDialog
+	OperationsCategory  = agentsdk.AgentCapabilityOperations
+	ProposalsCategory   = agentsdk.AgentCapabilityProposals
+	ToolGatewayCategory = agentsdk.AgentCapabilityToolGateway
 )
 
-var categoryPatterns = map[string][]string{
-	DialogCategory: {
-		"POST /agent-dialog/runs", "POST /agent-dialog/runs/stream",
-		"GET /agent-dialog/sessions", "POST /agent-dialog/sessions", "POST /agent-dialog/sessions/{externalSessionID}/archive", "POST /agent-dialog/sessions/{externalSessionID}/restore",
-		"GET /agent-dialog/runs/{runID}", "GET /agent-dialog/task-runs/{taskRunID}", "POST /agent-dialog/analysis/query", "GET /agent-dialog/diagnostics",
-	},
-	ProposalsCategory: {
-		"GET /agent-dialog/proposals", "GET /agent-dialog/proposals/{proposalID}", "POST /agent-dialog/proposals", "POST /agent-dialog/proposals/{proposalID}/approve", "POST /agent-dialog/proposals/{proposalID}/reject",
-	},
-	OperationsCategory: {
-		"GET /operations/agent/tasks", "GET /operations/agent/tasks/{taskRunID}", "POST /operations/agent/tasks/{taskRunID}/retry", "POST /operations/agent/tasks/{taskRunID}/cancel", "POST /operations/agent/tasks/{taskRunID}/resolve", "POST /operations/agent/tasks/{taskRunID}/reconcile",
-	},
-	ToolGatewayCategory: {"POST /agent-dialog/task-tools/invoke"},
-}
-
 func NewBinding() (*modulecapability.StaticBinding, error) {
-	contract := agentsdk.AgentHTTPSurfaceContract()
+	contract, err := agentsdk.CompileAgentHTTPSurfaceContract()
+	if err != nil {
+		return nil, err
+	}
 	categories := make([]modulecapability.CategoryDocument, 0, 5)
 	for _, specification := range []struct {
 		key, name, description string
@@ -86,25 +74,26 @@ func NewBinding() (*modulecapability.StaticBinding, error) {
 }
 
 func httpCategory(contract agentsdk.HTTPSurfaceContract, key, name, description string, chains []string) (modulecapability.CategoryDocument, error) {
-	patterns := categoryPatterns[key]
-	routesByPattern := map[string]agentsdk.HTTPRouteContract{}
-	for _, route := range contract.Routes {
-		routesByPattern[route.Pattern()] = route
-	}
-	routes := make([]modulehttp.Route, 0, len(patterns))
-	operations := make(map[string]map[string]any, len(patterns))
-	overrides := make(map[string]modulecapability.OperationExtension, len(patterns))
-	for _, pattern := range patterns {
-		source, found := routesByPattern[pattern]
-		if !found {
-			return modulecapability.CategoryDocument{}, fmt.Errorf("Agent capability route %q is absent from the SDK contract", pattern)
+	routes := []modulehttp.Route{}
+	operations := map[string]map[string]any{}
+	overrides := map[string]modulecapability.OperationExtension{}
+	for _, source := range contract.Routes {
+		if source.Action.CapabilityKey != key {
+			continue
 		}
-		route := projectHTTPRoute(source)
+		route, err := projectHTTPRoute(source)
+		if err != nil {
+			return modulecapability.CategoryDocument{}, fmt.Errorf("project Agent capability Action %q: %w", source.Action.Key, err)
+		}
+		pattern := route.Pattern()
 		routes = append(routes, route)
 		operations[pattern] = contract.OpenAPI[pattern]
 		if extension, override := agentOperationOverride(route); override {
 			overrides[pattern] = extension
 		}
+	}
+	if len(routes) == 0 {
+		return modulecapability.CategoryDocument{}, fmt.Errorf("Agent capability %q has no HTTP Actions", key)
 	}
 	category, err := modulecapability.CategoryFromHTTPRoutes(modulecapability.HTTPRouteCategory{
 		Owner: "agent", Category: modulecapability.CategorySummary{Key: key, Name: name, Description: description, AssemblyChains: chains}, Routes: routes, Operations: operations,
@@ -116,45 +105,34 @@ func httpCategory(contract agentsdk.HTTPSurfaceContract, key, name, description 
 	return category, nil
 }
 
-func projectHTTPRoute(source agentsdk.HTTPRouteContract) modulehttp.Route {
-	return modulehttp.Route{Action: source.Action}
+func projectHTTPRoute(source agentsdk.HTTPRouteContract) (modulehttp.Route, error) {
+	return modulehttp.RouteFromAction(source.Action)
 }
 
 func agentOperationOverride(route modulehttp.Route) (modulecapability.OperationExtension, bool) {
-	pattern := route.Pattern()
 	override, scope := false, "authenticated_workspace"
-	switch {
-	case pattern == "POST /agent-dialog/runs" || pattern == "POST /agent-dialog/runs/stream":
+	switch route.Action.Authorization.Strategy {
+	case actioncontract.AuthorizationAuthenticatedPrincipal:
 		override = true
-	case strings.Contains(pattern, "/agent-dialog/sessions"):
-		override = true
-	case strings.Contains(pattern, "/agent-dialog/proposals"):
-		override = true
-	case pattern == "GET /agent-dialog/runs/{runID}":
-		override = true
-	case pattern == "GET /agent-dialog/task-runs/{taskRunID}":
-		override = true
-	case pattern == "POST /agent-dialog/analysis/query":
-		override = true
-	case pattern == "POST /agent-dialog/task-tools/invoke":
+	case actioncontract.AuthorizationDelegatedCredential:
 		override, scope = true, "credential_workspace"
 	}
 	if !override {
 		return modulecapability.OperationExtension{}, false
 	}
 	idempotency := modulecapability.Idempotency{Mode: route.Action.IdempotencyDecision}
-	switch pattern {
-	case "POST /agent-dialog/runs", "POST /agent-dialog/runs/stream":
+	switch route.Action.Key {
+	case agentsdk.ActionAgentRunsExecute, agentsdk.ActionAgentRunsStream:
 		idempotency.KeySource = "header.Idempotency-Key_or_body.idempotency_key"
-	case "POST /agent-dialog/sessions/{externalSessionID}/archive":
+	case agentsdk.ActionAgentSessionsArchive:
 		idempotency.KeySource = "path.externalSessionID+archive"
-	case "POST /agent-dialog/sessions/{externalSessionID}/restore":
+	case agentsdk.ActionAgentSessionsRestore:
 		idempotency.KeySource = "path.externalSessionID+restore"
-	case "POST /agent-dialog/proposals/{proposalID}/approve":
+	case agentsdk.ActionAgentProposalsApprove:
 		idempotency.KeySource = "path.proposalID+approve"
-	case "POST /agent-dialog/proposals/{proposalID}/reject":
+	case agentsdk.ActionAgentProposalsReject:
 		idempotency.KeySource = "path.proposalID+reject"
-	case "POST /agent-dialog/task-tools/invoke":
+	case agentsdk.ActionAgentTaskToolsInvoke:
 		idempotency.KeySource = "body.idempotency_key"
 	}
 	authorization := modulecapability.Authorization{
@@ -168,7 +146,7 @@ func agentOperationOverride(route modulehttp.Route) (modulecapability.OperationE
 		Owner: "agent", Authorization: authorization,
 		Effect: modulecapability.EffectClass(route.Action.EffectClass), Idempotency: idempotency,
 	}
-	if pattern == "POST /agent-dialog/runs/stream" {
+	if route.Action.Key == agentsdk.ActionAgentRunsStream {
 		extension.Transport = &modulecapability.Transport{Mode: "sse", ResumeSemantics: "Last-Event-ID must match the deterministic accepted event cursor", DeliveryOrdering: "accepted_then_terminal"}
 	}
 	return extension, true

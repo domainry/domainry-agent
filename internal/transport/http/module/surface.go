@@ -3,7 +3,9 @@ package module
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -27,11 +29,12 @@ type surface struct {
 	diagnostics *agentapplication.DiagnosticsService
 	mux         *http.ServeMux
 	routes      []modulehttp.Route
+	openAPI     map[string]map[string]any
 }
 
 func (*surface) ContractVersion() string { return modulehttp.ContractVersion }
-func (*surface) Owner() string           { return agentsdk.AgentHTTPSurfaceContract().Owner }
-func (*surface) Name() string            { return agentsdk.AgentHTTPSurfaceContract().Name }
+func (*surface) Owner() string           { return agentsdk.AgentHTTPSurfaceOwner }
+func (*surface) Name() string            { return agentsdk.AgentHTTPSurfaceName }
 func (s *surface) Handler() http.Handler { return s.mux }
 func (s *surface) Routes() []modulehttp.Route {
 	return append([]modulehttp.Route(nil), s.routes...)
@@ -71,109 +74,79 @@ func NewOwnedSurface(binding agentsdk.Binding, applications SurfaceApplications)
 	if !ok || executionBinding.AgentTaskState() == nil || executionBinding.AgentInteractiveState() == nil {
 		return nil, errors.New("Agent execution state binding is unavailable")
 	}
-	s := &surface{state: stateBinding.DialogState(), tasks: executionBinding.AgentTaskState(), interactive: executionBinding.AgentInteractiveState(), execution: applications.Interactive, proposals: applications.Proposals, operations: applications.TaskOperations, taskTools: applications.TaskTools, analysis: applications.Analysis, diagnostics: applications.Diagnostics, mux: http.NewServeMux()}
-	s.routes = []modulehttp.Route{
-		dialogReadRoute("GET /agent-dialog/sessions"),
-		dialogWriteRoute("POST /agent-dialog/sessions"),
-		dialogWriteRoute("POST /agent-dialog/sessions/{externalSessionID}/archive"),
-		dialogWriteRoute("POST /agent-dialog/sessions/{externalSessionID}/restore"),
-		dialogReadRoute("GET /agent-dialog/proposals"),
-		dialogReadRoute("GET /agent-dialog/proposals/{proposalID}"),
-		dialogReadRoute("GET /agent-dialog/runs/{runID}"),
-		dialogReadRoute("GET /agent-dialog/task-runs/{taskRunID}"),
-		agentTaskOperationsReadRoute("GET /operations/agent/tasks"),
-		agentTaskOperationsReadRoute("GET /operations/agent/tasks/{taskRunID}"),
+	s := &surface{
+		state: stateBinding.DialogState(), tasks: executionBinding.AgentTaskState(), interactive: executionBinding.AgentInteractiveState(),
+		execution: applications.Interactive, proposals: applications.Proposals, operations: applications.TaskOperations,
+		taskTools: applications.TaskTools, analysis: applications.Analysis, diagnostics: applications.Diagnostics,
+		mux: http.NewServeMux(), openAPI: map[string]map[string]any{},
+	}
+	handlers := map[string]http.HandlerFunc{
+		agentsdk.ActionAgentSessionsList:    s.listSessions,
+		agentsdk.ActionAgentSessionsUpsert:  s.upsertSession,
+		agentsdk.ActionAgentSessionsArchive: s.archiveSession,
+		agentsdk.ActionAgentSessionsRestore: s.restoreSession,
+		agentsdk.ActionAgentProposalsList:   s.listProposals,
+		agentsdk.ActionAgentProposalsGet:    s.getProposal,
+		agentsdk.ActionAgentRunsGet:         s.getInteractiveRun,
+		agentsdk.ActionAgentTaskRunsGet:     s.getPrincipalTaskRun,
 	}
 	if s.execution != nil {
-		s.routes = append([]modulehttp.Route{dialogExecutionRoute("POST /agent-dialog/runs"), dialogExecutionRoute("POST /agent-dialog/runs/stream")}, s.routes...)
-		s.mux.HandleFunc("POST /agent-dialog/runs", s.runInteractive)
-		s.mux.HandleFunc("POST /agent-dialog/runs/stream", s.streamInteractive)
+		handlers[agentsdk.ActionAgentRunsExecute] = s.runInteractive
+		handlers[agentsdk.ActionAgentRunsStream] = s.streamInteractive
 	}
 	if s.proposals != nil {
-		s.routes = append(s.routes,
-			dialogWriteRoute("POST /agent-dialog/proposals"),
-			dialogWriteRoute("POST /agent-dialog/proposals/{proposalID}/approve"),
-			dialogWriteRoute("POST /agent-dialog/proposals/{proposalID}/reject"),
-		)
-		s.mux.HandleFunc("POST /agent-dialog/proposals", s.createProposal)
-		s.mux.HandleFunc("POST /agent-dialog/proposals/{proposalID}/approve", s.approveProposal)
-		s.mux.HandleFunc("POST /agent-dialog/proposals/{proposalID}/reject", s.rejectProposal)
+		handlers[agentsdk.ActionAgentProposalsCreate] = s.createProposal
+		handlers[agentsdk.ActionAgentProposalsApprove] = s.approveProposal
+		handlers[agentsdk.ActionAgentProposalsReject] = s.rejectProposal
 	}
 	if s.operations != nil {
-		for _, operation := range []string{"retry", "cancel", "resolve", "reconcile"} {
-			pattern := "POST /operations/agent/tasks/{taskRunID}/" + operation
-			s.routes = append(s.routes, agentTaskOperationsWriteRoute(pattern))
-		}
-		s.mux.HandleFunc("POST /operations/agent/tasks/{taskRunID}/retry", s.retryTask)
-		s.mux.HandleFunc("POST /operations/agent/tasks/{taskRunID}/cancel", s.cancelTask)
-		s.mux.HandleFunc("POST /operations/agent/tasks/{taskRunID}/resolve", s.resolveTask)
-		s.mux.HandleFunc("POST /operations/agent/tasks/{taskRunID}/reconcile", s.reconcileTask)
+		handlers[agentsdk.ActionAgentTasksList] = s.listTaskRuns
+		handlers[agentsdk.ActionAgentTasksGet] = s.getTaskRun
+		handlers[agentsdk.ActionAgentTasksRetry] = s.retryTask
+		handlers[agentsdk.ActionAgentTasksCancel] = s.cancelTask
+		handlers[agentsdk.ActionAgentTasksResolve] = s.resolveTask
+		handlers[agentsdk.ActionAgentTasksReconcile] = s.reconcileTask
 	}
 	if s.taskTools != nil {
-		s.routes = append(s.routes, taskToolCallbackRoute("POST /agent-dialog/task-tools/invoke"))
-		s.mux.HandleFunc("POST /agent-dialog/task-tools/invoke", s.invokeTaskTool)
+		handlers[agentsdk.ActionAgentTaskToolsInvoke] = s.invokeTaskTool
 	}
 	if s.analysis != nil {
-		s.routes = append(s.routes, dialogAnalysisRoute("POST /agent-dialog/analysis/query"))
-		s.mux.HandleFunc("POST /agent-dialog/analysis/query", s.queryAnalysis)
+		handlers[agentsdk.ActionAgentAnalysisQuery] = s.queryAnalysis
 	}
 	if s.diagnostics != nil {
-		s.routes = append(s.routes, agentDiagnosticsRoute("GET /agent-dialog/diagnostics"))
-		s.mux.HandleFunc("GET /agent-dialog/diagnostics", s.inspectDiagnostics)
+		handlers[agentsdk.ActionAgentDiagnosticsRead] = s.inspectDiagnostics
 	}
-	s.mux.HandleFunc("GET /agent-dialog/sessions", s.listSessions)
-	s.mux.HandleFunc("POST /agent-dialog/sessions", s.upsertSession)
-	s.mux.HandleFunc("POST /agent-dialog/sessions/{externalSessionID}/archive", s.archiveSession)
-	s.mux.HandleFunc("POST /agent-dialog/sessions/{externalSessionID}/restore", s.restoreSession)
-	s.mux.HandleFunc("GET /agent-dialog/proposals", s.listProposals)
-	s.mux.HandleFunc("GET /agent-dialog/proposals/{proposalID}", s.getProposal)
-	s.mux.HandleFunc("GET /agent-dialog/runs/{runID}", s.getInteractiveRun)
-	s.mux.HandleFunc("GET /agent-dialog/task-runs/{taskRunID}", s.getPrincipalTaskRun)
-	s.mux.HandleFunc("GET /operations/agent/tasks", s.listTaskRuns)
-	s.mux.HandleFunc("GET /operations/agent/tasks/{taskRunID}", s.getTaskRun)
-	return s, nil
-}
-
-func dialogExecutionRoute(pattern string) modulehttp.Route {
-	return agentHTTPRoute(pattern)
-}
-
-func taskToolCallbackRoute(pattern string) modulehttp.Route {
-	return agentHTTPRoute(pattern)
-}
-
-func dialogAnalysisRoute(pattern string) modulehttp.Route {
-	return agentHTTPRoute(pattern)
-}
-
-func agentDiagnosticsRoute(pattern string) modulehttp.Route {
-	return agentHTTPRoute(pattern)
-}
-
-func agentTaskOperationsReadRoute(pattern string) modulehttp.Route {
-	return agentHTTPRoute(pattern)
-}
-
-func agentTaskOperationsWriteRoute(pattern string) modulehttp.Route {
-	return agentHTTPRoute(pattern)
-}
-
-func dialogReadRoute(pattern string) modulehttp.Route {
-	return agentHTTPRoute(pattern)
-}
-
-func dialogWriteRoute(pattern string) modulehttp.Route {
-	return agentHTTPRoute(pattern)
-}
-
-func agentHTTPRoute(pattern string) modulehttp.Route {
-	for _, route := range agentsdk.AgentHTTPSurfaceContract().Routes {
-		if route.Pattern() != pattern {
+	contract, err := agentsdk.CompileAgentHTTPSurfaceContract()
+	if err != nil {
+		return nil, err
+	}
+	for _, source := range contract.Routes {
+		handler, found := handlers[source.Action.Key]
+		if !found {
 			continue
 		}
-		return modulehttp.Route{Action: route.Action}
+		route, err := modulehttp.RouteFromAction(source.Action)
+		if err != nil {
+			return nil, fmt.Errorf("project Agent HTTP Action %q: %w", source.Action.Key, err)
+		}
+		operation := contract.OpenAPI[route.Pattern()]
+		if len(operation) == 0 {
+			return nil, fmt.Errorf("Agent HTTP Action %q has no OpenAPI operation", source.Action.Key)
+		}
+		s.routes = append(s.routes, route)
+		s.openAPI[route.Pattern()] = operation
+		s.mux.HandleFunc(route.Pattern(), handler)
+		delete(handlers, source.Action.Key)
 	}
-	panic("Agent SDK HTTP route is unavailable: " + pattern)
+	if len(handlers) != 0 {
+		keys := make([]string, 0, len(handlers))
+		for key := range handlers {
+			keys = append(keys, key)
+		}
+		sort.Strings(keys)
+		return nil, fmt.Errorf("Agent handlers have no source Actions: %s", strings.Join(keys, ", "))
+	}
+	return s, nil
 }
 
 func requestAuthority(r *http.Request) (agentsdk.AgentAuthority, error) {
@@ -305,9 +278,9 @@ func (s *surface) getPrincipalTaskRun(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *surface) listTaskRuns(w http.ResponseWriter, r *http.Request) {
-	authority, err := requestAuthority(r)
-	if err != nil {
-		writeError(w, err)
+	principal, ok := authorizedActionPrincipal(r, agentsdk.ActionAgentTasksList)
+	if !ok {
+		writeCode(w, http.StatusForbidden, "agent.authorization.action_denied")
 		return
 	}
 	query := r.URL.Query()
@@ -318,7 +291,7 @@ func (s *surface) listTaskRuns(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	limit, _ := strconv.Atoi(query.Get("limit"))
-	runs, err := s.tasks.List(r.Context(), authority.WorkspaceID, agentpersistence.AgentTaskRunFilter{Statuses: statuses, ProcessID: strings.TrimSpace(query.Get("process_id")), TaskKey: strings.TrimSpace(query.Get("task_key")), Limit: limit})
+	runs, err := s.operations.List(r.Context(), principal.WorkspaceID, agentpersistence.AgentTaskRunFilter{Statuses: statuses, ProcessID: strings.TrimSpace(query.Get("process_id")), TaskKey: strings.TrimSpace(query.Get("task_key")), Limit: limit}, principal)
 	if err != nil {
 		writeError(w, err)
 		return
@@ -331,12 +304,12 @@ func (s *surface) listTaskRuns(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *surface) getTaskRun(w http.ResponseWriter, r *http.Request) {
-	authority, err := requestAuthority(r)
-	if err != nil {
-		writeError(w, err)
+	principal, ok := authorizedActionPrincipal(r, agentsdk.ActionAgentTasksGet)
+	if !ok {
+		writeCode(w, http.StatusForbidden, "agent.authorization.action_denied")
 		return
 	}
-	run, found, err := s.tasks.Get(r.Context(), authority.WorkspaceID, strings.TrimSpace(r.PathValue("taskRunID")))
+	run, found, err := s.operations.Get(r.Context(), principal.WorkspaceID, strings.TrimSpace(r.PathValue("taskRunID")), principal)
 	if err != nil {
 		writeError(w, err)
 		return

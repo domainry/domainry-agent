@@ -103,6 +103,19 @@ func proposalPrincipal(r *http.Request) (modulehost.Principal, bool) {
 	}, true
 }
 
+func authorizedActionPrincipal(r *http.Request, actionKey string) (modulehost.Principal, bool) {
+	identity, ok := identitysdk.RequestIdentityFromContext(r.Context())
+	if !ok || !identity.Principal.Known || !identity.Principal.HasPermission(actionKey) {
+		return modulehost.Principal{}, false
+	}
+	principal, ok := proposalPrincipal(r)
+	if !ok {
+		return modulehost.Principal{}, false
+	}
+	principal.AuthorizedActionKey = actionKey
+	return principal, true
+}
+
 func proposalWritePolicy(action string, metadata map[string]any) string {
 	runMode := stringValue(metadata["run_mode"])
 	if runMode == "" {

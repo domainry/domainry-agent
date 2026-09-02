@@ -21,6 +21,7 @@ import (
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	agentcomposition "github.com/domainry/domainry-agent/internal/composition"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
+	actioncontract "github.com/domainry/domainry-foundation/action"
 	"github.com/domainry/domainry-foundation/modulecapability"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
@@ -115,6 +116,9 @@ func (b *binding) AgentInteractiveState() agentpersistence.AgentInteractiveState
 func (b *binding) HTTPSurfaces() []modulehttp.Surface {
 	return append([]modulehttp.Surface(nil), b.surfaces...)
 }
+func (*binding) AuthorizationActions() ([]actioncontract.ActionDefinition, error) {
+	return agentsdk.AgentAuthorizationActions()
+}
 func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
 	surface, err := agentcomposition.BindApplicationSurface(agentcomposition.ApplicationSurfaceDependencies{
 		Binding: b, DialogState: b.client, TaskState: b.taskState, InteractiveState: b.interactive,
@@ -145,6 +149,8 @@ func (b *binding) Close(ctx context.Context) error {
 var _ modulehost.ApplicationHostBinder = (*binding)(nil)
 var _ agentlifecycle.Binding = (*binding)(nil)
 var _ agentsdk.Binding = (*binding)(nil)
+var _ modulehttp.Provider = (*binding)(nil)
+var _ actioncontract.Provider = (*binding)(nil)
 
 type client struct {
 	baseURL, apiKey string

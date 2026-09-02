@@ -87,6 +87,9 @@ func (s *TaskExecutionService) Close() {
 }
 
 func (s *TaskExecutionService) Start(ctx context.Context, request agentsdk.TaskRequest) (agentsdk.TaskResult, error) {
+	if !agentsdk.HasAuthorizedServiceAction(ctx, agentsdk.ActionAgentTaskExecutionStart, agentsdk.AgentRuntimeServiceAudience) {
+		return taskFailure("authorization", "agent.authorization.service_action_denied", false), forbidden("agent.authorization.service_action_denied")
+	}
 	if s == nil || s.state == nil || s.provider == nil {
 		return taskFailure("configuration", "agent.task.capability_unavailable", false), unavailable("agent.task.capability_unavailable")
 	}
@@ -135,6 +138,9 @@ func (s *TaskExecutionService) Start(ctx context.Context, request agentsdk.TaskR
 }
 
 func (s *TaskExecutionService) Poll(ctx context.Context, externalRunID, idempotencyKey string) (agentsdk.TaskResult, error) {
+	if !agentsdk.HasAuthorizedServiceAction(ctx, agentsdk.ActionAgentTaskExecutionPoll, agentsdk.AgentRuntimeServiceAudience) {
+		return taskFailure("authorization", "agent.authorization.service_action_denied", false), forbidden("agent.authorization.service_action_denied")
+	}
 	workspaceID, runID, ok := decodeTaskLocator(externalRunID)
 	if !ok || s == nil || s.state == nil {
 		return taskFailure("request_contract", "agent.task.locator_invalid", false), badRequest("agent.task.locator_invalid")
@@ -156,6 +162,9 @@ func (s *TaskExecutionService) Poll(ctx context.Context, externalRunID, idempote
 }
 
 func (s *TaskExecutionService) Cancel(ctx context.Context, externalRunID, idempotencyKey string) (agentsdk.TaskResult, error) {
+	if !agentsdk.HasAuthorizedServiceAction(ctx, agentsdk.ActionAgentTaskExecutionCancel, agentsdk.AgentRuntimeServiceAudience) {
+		return taskFailure("authorization", "agent.authorization.service_action_denied", false), forbidden("agent.authorization.service_action_denied")
+	}
 	workspaceID, runID, ok := decodeTaskLocator(externalRunID)
 	if !ok || s == nil || s.state == nil {
 		return taskFailure("request_contract", "agent.task.locator_invalid", false), badRequest("agent.task.locator_invalid")

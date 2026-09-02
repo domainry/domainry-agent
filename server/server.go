@@ -13,6 +13,7 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentcapability "github.com/domainry/domainry-agent/capability"
 	"github.com/domainry/domainry-foundation/modulecapability"
+	"github.com/domainry/domainry-foundation/modulehttp"
 )
 
 const maxRequestBytes = 2 << 20
@@ -33,20 +34,6 @@ type Server struct {
 func New(config Config) (*Server, error) {
 	s := &Server{config: config}
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /api/v1/descriptor", s.descriptor)
-	mux.HandleFunc("GET /readyz", s.ready)
-	mux.HandleFunc("POST /api/v1/task-runs", s.start)
-	mux.HandleFunc("GET /api/v1/task-runs/{id}", s.poll)
-	mux.HandleFunc("POST /api/v1/task-runs/{id}/cancel", s.cancel)
-	mux.HandleFunc("POST /api/v1/interactive-runs", s.interactive)
-	mux.HandleFunc("POST /api/v1/dialog-state/sessions/query", s.listSessions)
-	mux.HandleFunc("POST /api/v1/dialog-state/sessions/upsert", s.upsertSession)
-	mux.HandleFunc("POST /api/v1/dialog-state/sessions/{id}/archive", s.setSessionArchived)
-	mux.HandleFunc("POST /api/v1/dialog-state/proposals/query", s.listProposals)
-	mux.HandleFunc("POST /api/v1/dialog-state/proposals/{id}/get", s.getProposal)
-	mux.HandleFunc("POST /api/v1/dialog-state/proposals/store", s.storeProposal)
-	mux.HandleFunc("POST /api/v1/dialog-state/proposals/decide", s.decideProposal)
-	s.registerPersistenceRoutes(mux)
 	capabilityBinding, err := agentcapability.Open(agentcapability.Inputs{})
 	if err != nil {
 		return nil, fmt.Errorf("build Agent capability binding: %w", err)
@@ -55,7 +42,37 @@ func New(config Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	mux.Handle(modulecapability.HTTPPrefix+"/", capabilityHandler)
+	handlers := map[string]http.Handler{
+		actionAgentSaaSDescriptorRead: http.HandlerFunc(s.descriptor), actionAgentSaaSReadinessRead: http.HandlerFunc(s.ready),
+		actionAgentSaaSTaskProviderStart: http.HandlerFunc(s.start), actionAgentSaaSTaskProviderPoll: http.HandlerFunc(s.poll), actionAgentSaaSTaskProviderCancel: http.HandlerFunc(s.cancel),
+		actionAgentSaaSInteractiveRun: http.HandlerFunc(s.interactive),
+		actionAgentSaaSSessionsQuery:  http.HandlerFunc(s.listSessions), actionAgentSaaSSessionsUpsert: http.HandlerFunc(s.upsertSession), actionAgentSaaSSessionsSetArchived: http.HandlerFunc(s.setSessionArchived),
+		actionAgentSaaSProposalsQuery: http.HandlerFunc(s.listProposals), actionAgentSaaSProposalsGet: http.HandlerFunc(s.getProposal), actionAgentSaaSProposalsStore: http.HandlerFunc(s.storeProposal), actionAgentSaaSProposalsDecide: http.HandlerFunc(s.decideProposal),
+		actionAgentSaaSCapabilitySummary: capabilityHandler, actionAgentSaaSCapabilityCategory: capabilityHandler, actionAgentSaaSCapabilityValidation: capabilityHandler,
+	}
+	actions, err := SaaSAuthorizationActions()
+	if err != nil {
+		return nil, err
+	}
+	for _, action := range actions {
+		handler, found := handlers[action.Key]
+		if strings.HasPrefix(action.Key, agentSaaSRepositoryActionPrefix) {
+			operation := strings.TrimPrefix(action.Key, agentSaaSRepositoryActionPrefix)
+			handler, found = http.HandlerFunc(s.repositoryHandler(operation)), operation != ""
+		}
+		if !found || handler == nil {
+			return nil, fmt.Errorf("Agent SaaS Action %q has no handler", action.Key)
+		}
+		route, err := modulehttp.RouteFromAction(action)
+		if err != nil {
+			return nil, fmt.Errorf("project Agent SaaS Action %q: %w", action.Key, err)
+		}
+		mux.Handle(route.Pattern(), s.authorizeServiceAction(action.Key, handler))
+		delete(handlers, action.Key)
+	}
+	if len(handlers) != 0 {
+		return nil, fmt.Errorf("Agent SaaS handlers have no source Action")
+	}
 	s.handler = mux
 	return s, nil
 }
@@ -79,6 +96,10 @@ func agentExecutionRepositoriesReady(repository agentpersistence.AgentTaskRunRep
 	return systemWorker && directClaim && interactive && toolLedger
 }
 func (s *Server) Handler() http.Handler {
+	return s.handler
+}
+
+func (s *Server) authorizeServiceAction(actionKey string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		expected := strings.TrimSpace(s.config.APIKey)
 		actual := strings.TrimSpace(strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer "))
@@ -86,7 +107,8 @@ func (s *Server) Handler() http.Handler {
 			writeError(w, http.StatusUnauthorized, "agent.saas.unauthorized", "unauthorized")
 			return
 		}
-		s.handler.ServeHTTP(w, r)
+		ctx := agentsdk.WithAuthorizedServiceAction(r.Context(), actionKey, agentsdk.AgentRuntimeServiceAudience)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 func (s *Server) descriptor(w http.ResponseWriter, _ *http.Request) {

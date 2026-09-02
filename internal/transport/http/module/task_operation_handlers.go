@@ -4,18 +4,23 @@ import (
 	"net/http"
 	"strings"
 
+	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 )
 
-func (s *surface) retryTask(w http.ResponseWriter, r *http.Request)   { s.operateTask(w, r, "retry") }
-func (s *surface) resolveTask(w http.ResponseWriter, r *http.Request) { s.operateTask(w, r, "resolve") }
+func (s *surface) retryTask(w http.ResponseWriter, r *http.Request) {
+	s.operateTask(w, r, "retry", agentsdk.ActionAgentTasksRetry)
+}
+func (s *surface) resolveTask(w http.ResponseWriter, r *http.Request) {
+	s.operateTask(w, r, "resolve", agentsdk.ActionAgentTasksResolve)
+}
 func (s *surface) reconcileTask(w http.ResponseWriter, r *http.Request) {
-	s.operateTask(w, r, "reconcile")
+	s.operateTask(w, r, "reconcile", agentsdk.ActionAgentTasksReconcile)
 }
 
 func (s *surface) cancelTask(w http.ResponseWriter, r *http.Request) {
-	principal, request, ok := taskOperationRequest(w, r)
+	principal, request, ok := taskOperationRequest(w, r, agentsdk.ActionAgentTasksCancel)
 	if !ok {
 		return
 	}
@@ -27,8 +32,8 @@ func (s *surface) cancelTask(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"task": agentpersistence.ProjectAgentTaskRun(run), "replayed": replayed, "idempotency_key": strings.TrimSpace(r.Header.Get("Idempotency-Key"))})
 }
 
-func (s *surface) operateTask(w http.ResponseWriter, r *http.Request, kind string) {
-	principal, request, ok := taskOperationRequest(w, r)
+func (s *surface) operateTask(w http.ResponseWriter, r *http.Request, kind, actionKey string) {
+	principal, request, ok := taskOperationRequest(w, r, actionKey)
 	if !ok {
 		return
 	}
@@ -40,10 +45,10 @@ func (s *surface) operateTask(w http.ResponseWriter, r *http.Request, kind strin
 	writeJSON(w, http.StatusOK, map[string]any{"task": agentpersistence.ProjectAgentTaskRun(run), "replayed": replayed})
 }
 
-func taskOperationRequest(w http.ResponseWriter, r *http.Request) (principal modulehost.Principal, request struct{ Reason string }, ok bool) {
-	principal, ok = proposalPrincipal(r)
+func taskOperationRequest(w http.ResponseWriter, r *http.Request, actionKey string) (principal modulehost.Principal, request struct{ Reason string }, ok bool) {
+	principal, ok = authorizedActionPrincipal(r, actionKey)
 	if !ok {
-		writeCode(w, http.StatusForbidden, "backend.workspace_scope_required")
+		writeCode(w, http.StatusForbidden, "agent.authorization.action_denied")
 		return principal, request, false
 	}
 	if strings.TrimSpace(r.Header.Get("Idempotency-Key")) == "" {
