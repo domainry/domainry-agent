@@ -13,11 +13,14 @@ import (
 )
 
 const (
-	AuthoringCategory   = "agent.authoring"
-	DialogCategory      = agentsdk.AgentCapabilityDialog
-	OperationsCategory  = agentsdk.AgentCapabilityOperations
-	ProposalsCategory   = agentsdk.AgentCapabilityProposals
-	ToolGatewayCategory = agentsdk.AgentCapabilityToolGateway
+	AuthoringCategory             = "agent.authoring"
+	DialogCategory                = agentsdk.AgentCapabilityDialog
+	OperationsCategory            = agentsdk.AgentCapabilityOperations
+	ProposalsCategory             = agentsdk.AgentCapabilityProposals
+	ToolGatewayCategory           = agentsdk.AgentCapabilityToolGateway
+	agentInitialDefinitionVersion = "1.0.0"
+	agentDefaultSelectedRecords   = 20
+	agentDefaultContextBytes      = 65536
 )
 
 func NewBinding() (*modulecapability.StaticBinding, error) {
@@ -207,17 +210,48 @@ func applyAgentSchemaConstraints(kind string, schema map[string]any) {
 	}
 	switch kind {
 	case "agent.skill":
+		removeAgentBackendDefault(schema, "version")
 		properties["allowed_tools"] = stringArrayWithEnum(toolEnum)
 	case "agent.agent":
+		removeAgentBackendDefault(schema, "version")
 		properties["tools"] = stringArrayWithEnum(toolEnum)
 	case "agent.task":
-		properties["contract_version"] = map[string]any{"type": "string", "enum": []string{agentsdk.AgentTaskContractVersion}}
+		removeAgentBackendDefault(schema, "contract_version")
+		removeAgentBackendDefault(schema, "version")
 		properties["allowed_outcomes"] = stringArrayWithEnum(append([]string(nil), agentsdk.AgentTaskOutcomes...))
 		properties["side_effect_mode"] = map[string]any{"type": "string", "enum": []string{agentsdk.AgentTaskSideEffectAnalysisOnly, agentsdk.AgentTaskSideEffectProposalOnly, agentsdk.AgentTaskSideEffectActionAllowed}}
 	case "agent.entrypoint":
-		properties["contract_version"] = map[string]any{"type": "string", "enum": []string{agentsdk.AgentEntrypointContractVersion}}
+		removeAgentBackendDefault(schema, "contract_version")
+		removeAgentNestedBackendDefault(properties, "context_contract", "contract_version")
+		removeAgentNestedBackendDefault(properties, "context_contract", "max_selected_records")
+		removeAgentNestedBackendDefault(properties, "context_contract", "max_context_bytes")
+		removeAgentNestedBackendDefault(properties, "routing_contract", "contract_version")
+		removeAgentNestedBackendDefault(properties, "routing_contract", "allow_recursive")
 	case "agent.service_principal":
-		properties["contract_version"] = map[string]any{"type": "string", "enum": []string{agentsdk.AgentServicePrincipalContractVersion}}
+		removeAgentBackendDefault(schema, "contract_version")
+		removeAgentBackendDefault(schema, "rotation_version")
+	}
+}
+
+func removeAgentNestedBackendDefault(properties map[string]any, objectKey, fieldKey string) {
+	object, _ := properties[objectKey].(map[string]any)
+	removeAgentBackendDefault(object, fieldKey)
+}
+
+func removeAgentBackendDefault(schema map[string]any, field string) {
+	properties, _ := schema["properties"].(map[string]any)
+	delete(properties, field)
+	required, _ := schema["required"].([]string)
+	kept := required[:0]
+	for _, key := range required {
+		if key != field {
+			kept = append(kept, key)
+		}
+	}
+	if len(kept) == 0 {
+		delete(schema, "required")
+	} else {
+		schema["required"] = kept
 	}
 }
 
@@ -231,26 +265,47 @@ func validator() modulecapability.Validator {
 		case "agent.skill":
 			var candidate agentsdk.SkillSchema
 			if err = modulecapability.DecodeKeyedAuthoringValue(request.Candidate, "key", &candidate); err == nil {
+				candidate.Version = agentInitialDefinitionVersion
 				err = agentdefinition.ValidateSkillDefinition(candidate)
 			}
 		case "agent.agent":
 			var candidate agentsdk.AgentSchema
 			if err = modulecapability.DecodeKeyedAuthoringValue(request.Candidate, "key", &candidate); err == nil {
+				candidate.Version = agentInitialDefinitionVersion
 				err = agentdefinition.ValidateAgentDefinition(candidate)
 			}
 		case "agent.task":
 			var candidate agentsdk.AgentTaskDefinition
 			if err = modulecapability.DecodeKeyedAuthoringValue(request.Candidate, "key", &candidate); err == nil {
+				if candidate.ContractVersion == "" {
+					candidate.ContractVersion = agentsdk.AgentTaskContractVersion
+				}
+				candidate.Version = agentInitialDefinitionVersion
 				err = agentdefinition.ValidateTaskDefinition(candidate)
 			}
 		case "agent.entrypoint":
 			var candidate agentsdk.AgentEntrypointAssignment
 			if err = modulecapability.DecodeKeyedAuthoringValue(request.Candidate, "key", &candidate); err == nil {
+				if candidate.ContractVersion == "" {
+					candidate.ContractVersion = agentsdk.AgentEntrypointContractVersion
+				}
+				if candidate.ContextContract.ContractVersion == "" {
+					candidate.ContextContract.ContractVersion = agentsdk.GlobalAgentContextContractVersion
+				}
+				candidate.ContextContract.MaxSelectedRecord = agentDefaultSelectedRecords
+				candidate.ContextContract.MaxContextBytes = agentDefaultContextBytes
+				if candidate.RoutingContract.ContractVersion == "" {
+					candidate.RoutingContract.ContractVersion = agentsdk.AgentRoutingContractVersion
+				}
 				err = agentdefinition.ValidateEntrypointDefinition(candidate)
 			}
 		case "agent.service_principal":
 			var candidate agentsdk.AgentServicePrincipalBinding
 			if err = modulecapability.DecodeKeyedAuthoringValue(request.Candidate, "key", &candidate); err == nil {
+				if candidate.ContractVersion == "" {
+					candidate.ContractVersion = agentsdk.AgentServicePrincipalContractVersion
+				}
+				candidate.RotationVersion = 1
 				err = agentdefinition.ValidateServicePrincipalDefinition(candidate)
 			}
 		default:

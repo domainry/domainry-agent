@@ -39,6 +39,87 @@ func TestAgentCapabilityOwnsAllProductRoutesAndAuthoringValidation(t *testing.T)
 	contracttest.VerifyModuleRemoteParity(t, binding, contracttest.ValidationCase{Name: "skill requires object scope", Request: request})
 }
 
+func TestAgentAuthoringContractHidesAndDefaultsProtocolVersions(t *testing.T) {
+	binding, err := NewBinding()
+	if err != nil {
+		t.Fatal(err)
+	}
+	category, err := binding.CapabilityCategory(t.Context(), AuthoringCategory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, projection := range category.Projections {
+		if projection.Kind != "agent.validation_schema" {
+			continue
+		}
+		var schema map[string]any
+		if err := json.Unmarshal(projection.Payload, &schema); err != nil {
+			t.Fatalf("decode %s schema: %v", projection.Key, err)
+		}
+		properties, _ := schema["properties"].(map[string]any)
+		if projection.Key == "agent.task" || projection.Key == "agent.entrypoint" || projection.Key == "agent.service_principal" {
+			if _, exposed := properties["contract_version"]; exposed {
+				t.Fatalf("%s exposes compiler-owned contract_version", projection.Key)
+			}
+		}
+		if projection.Key == "agent.skill" || projection.Key == "agent.agent" || projection.Key == "agent.task" {
+			if _, exposed := properties["version"]; exposed {
+				t.Fatalf("%s exposes backend-owned initial version", projection.Key)
+			}
+		}
+		if projection.Key == "agent.service_principal" {
+			if _, exposed := properties["rotation_version"]; exposed {
+				t.Fatal("agent.service_principal exposes backend-owned initial rotation version")
+			}
+		}
+		if projection.Key == "agent.entrypoint" {
+			for _, nestedKey := range []string{"context_contract", "routing_contract"} {
+				nested, _ := properties[nestedKey].(map[string]any)
+				nestedProperties, _ := nested["properties"].(map[string]any)
+				if _, exposed := nestedProperties["contract_version"]; exposed {
+					t.Fatalf("agent.entrypoint.%s exposes compiler-owned contract_version", nestedKey)
+				}
+				if nestedKey == "routing_contract" {
+					if _, exposed := nestedProperties["allow_recursive"]; exposed {
+						t.Fatal("agent.entrypoint.routing_contract exposes backend-fixed allow_recursive")
+					}
+				}
+				if nestedKey == "context_contract" {
+					for _, backendOwned := range []string{"max_selected_records", "max_context_bytes"} {
+						if _, exposed := nestedProperties[backendOwned]; exposed {
+							t.Fatalf("agent.entrypoint.context_contract exposes backend-owned %s", backendOwned)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	summary, err := binding.CapabilitySummary(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, test := range []struct {
+		kind, collection, key, value string
+	}{
+		{kind: "agent.task", collection: "agent_tasks", key: "review", value: `{"key":"review","agent_key":"reviewer","instruction":"review","input_schema":{"type":"object"},"output_schema":{"type":"object"},"allowed_outcomes":["success"],"side_effect_mode":"analysis_only","enabled":true}`},
+		{kind: "agent.entrypoint", collection: "agent_entrypoints", key: "assistant", value: `{"key":"assistant","agent_key":"reviewer","required_permissions":["agent.task.operate"],"route_patterns":["workspace"],"context_contract":{},"routing_contract":{"allowed_route_types":["agent_task"]},"enabled":true}`},
+		{kind: "agent.service_principal", collection: "agent_service_principals", key: "reviewer_service", value: `{"key":"reviewer_service","user_id":"reviewer_user","role_key":"reviewer","enabled":true}`},
+	} {
+		result, err := binding.ValidateCapabilityCandidate(t.Context(), modulecapability.ValidationRequest{
+			ContractVersion: modulecapability.ValidationContractVersion,
+			ModuleKey:       "agent",
+			CategoryKey:     AuthoringCategory,
+			ContractSHA256:  summary.Identity.ContractSHA256,
+			Kind:            test.kind,
+			Candidate:       modulecapability.AuthoringFragment{Collection: test.collection, Key: test.key, Value: json.RawMessage(test.value)},
+		})
+		if err != nil || len(result.Diagnostics) != 0 {
+			t.Fatalf("%s diagnostics=%+v err=%v", test.kind, result.Diagnostics, err)
+		}
+	}
+}
+
 func TestAgentToolGatewayDisclosesDelegatedCredentialBoundary(t *testing.T) {
 	binding, err := NewBinding()
 	if err != nil {
