@@ -138,7 +138,7 @@ func TestAgentToolGatewayDisclosesDelegatedCredentialBoundary(t *testing.T) {
 	if err := json.Unmarshal(payload, &extension); err != nil {
 		t.Fatal(err)
 	}
-	if extension.Authorization.Strategy != actioncontract.AuthorizationDelegatedCredential || extension.Authorization.PolicyKey != "agent.task_tool_credential" || extension.Authorization.WorkspaceScope != "credential_workspace" {
+	if extension.Authorization.Strategy != actioncontract.AuthorizationSigned || extension.Authorization.PolicyKey != "agent.task_tool_credential" || extension.Authorization.WorkspaceScope != "credential_workspace" {
 		t.Fatalf("Agent tool gateway extension=%+v", extension)
 	}
 }
@@ -162,7 +162,7 @@ func TestAgentStreamCapabilityDisclosesResumeTransport(t *testing.T) {
 	if err := json.Unmarshal(payload, &extension); err != nil {
 		t.Fatal(err)
 	}
-	if extension.Transport == nil || extension.Transport.Mode != "sse" || extension.Idempotency.KeySource == "" || extension.Authorization.Strategy != actioncontract.AuthorizationAuthenticatedPrincipal || extension.Authorization.PolicyKey != "" {
+	if extension.Transport == nil || extension.Transport.Mode != "sse" || extension.Idempotency.KeySource == "" || extension.Authorization.Strategy != actioncontract.AuthorizationAuthenticated || extension.Authorization.PolicyKey != "" {
 		t.Fatalf("Agent stream extension=%+v", extension)
 	}
 }

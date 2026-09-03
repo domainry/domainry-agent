@@ -91,7 +91,7 @@ func TestSaaSManifestOwnsEveryServiceRouteAndInjectsCurrentAction(t *testing.T) 
 	}
 	patterns := map[string]bool{}
 	for _, action := range actions {
-		if action.Owner != agentsdk.AgentAuthorizationOwner || action.SourceKind != "service_protocol" || action.HTTP == nil || action.Permission != nil || action.Authorization.Strategy != actioncontract.AuthorizationServiceIdentity || action.Authorization.PolicyKey != "agent.saas_api_key" || len(action.Authorization.Audiences) != 1 || action.Authorization.Audiences[0] != agentsdk.AgentRuntimeServiceAudience {
+		if action.Owner != agentsdk.AgentAuthorizationOwner || action.SourceKind != "service_protocol" || action.HTTP == nil || action.Permission != nil || action.Authorization.Strategy != actioncontract.AuthorizationSigned || action.Authorization.PolicyKey != "agent.saas_api_key" || len(action.Authorization.Audiences) != 1 || action.Authorization.Audiences[0] != agentsdk.AgentRuntimeServiceAudience {
 			t.Fatalf("invalid Agent SaaS Action: %+v", action)
 		}
 		pattern := action.HTTP.Method + " " + action.HTTP.RouteTemplate

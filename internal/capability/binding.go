@@ -115,9 +115,9 @@ func projectHTTPRoute(source agentsdk.HTTPRouteContract) (modulehttp.Route, erro
 func agentOperationOverride(route modulehttp.Route) (modulecapability.OperationExtension, bool) {
 	override, scope := false, "authenticated_workspace"
 	switch route.Action.Authorization.Strategy {
-	case actioncontract.AuthorizationAuthenticatedPrincipal:
-		override = true
-	case actioncontract.AuthorizationDelegatedCredential:
+	case actioncontract.AuthorizationAuthenticated:
+		override = route.Action.Permission == nil
+	case actioncontract.AuthorizationSigned:
 		override, scope = true, "credential_workspace"
 	}
 	if !override {
