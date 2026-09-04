@@ -315,7 +315,7 @@ func (s *TaskExecutionService) executeClaim(parent context.Context, claim agentp
 		if len(run.Attempts) > 0 {
 			run.Attempts[len(run.Attempts)-1].ExternalRunID = externalRunID
 		}
-		s.failClaim(parent, run, claim.Lease, "provider", errorCode(executeErr, "agent.task.execution_failed"), providerRetryable(result, executeErr))
+		s.failClaim(parent, run, claim.Lease, "provider", valueOrDefault(result.ErrorCode, errorCode(executeErr, "agent.task.execution_failed")), providerRetryable(result, executeErr))
 		return
 	}
 	completion, completionErr := taskCompletion(authorization, result, externalRunID, run.Evidence)

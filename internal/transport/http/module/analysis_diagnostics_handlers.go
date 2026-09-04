@@ -16,7 +16,7 @@ type analysisQueryRequest struct {
 	MaxRows    int            `json:"max_rows,omitempty"`
 }
 
-func (s *surface) queryAnalysis(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) queryAnalysis(w http.ResponseWriter, r *http.Request) {
 	var payload analysisQueryRequest
 	if !decode(w, r, &payload) {
 		return
@@ -36,7 +36,7 @@ func (s *surface) queryAnalysis(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, result)
 }
 
-func (s *surface) inspectDiagnostics(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) inspectDiagnostics(w http.ResponseWriter, r *http.Request) {
 	principal, ok := authorizedActionPrincipal(r, agentsdk.ActionAgentDiagnosticsRead)
 	if !ok {
 		writeCode(w, http.StatusForbidden, "agent.authorization.action_denied")

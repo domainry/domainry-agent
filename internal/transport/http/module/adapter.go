@@ -17,7 +17,7 @@ import (
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
 
-type surface struct {
+type adapter struct {
 	state       agentsdk.AgentDialogStateService
 	tasks       agentpersistence.AgentTaskStateService
 	interactive agentpersistence.AgentInteractiveStateService
@@ -32,31 +32,31 @@ type surface struct {
 	openAPI     map[string]map[string]any
 }
 
-func (*surface) ContractVersion() string { return modulehttp.ContractVersion }
-func (*surface) Owner() string           { return agentsdk.AgentHTTPSurfaceOwner }
-func (*surface) Name() string            { return agentsdk.AgentHTTPSurfaceName }
-func (s *surface) Handler() http.Handler { return s.mux }
-func (s *surface) Routes() []modulehttp.Route {
+func (*adapter) ContractVersion() string { return modulehttp.ContractVersion }
+func (*adapter) Owner() string           { return agentsdk.AgentHTTPAdapterOwner }
+func (*adapter) Name() string            { return agentsdk.AgentHTTPAdapterName }
+func (s *adapter) Handler() http.Handler { return s.mux }
+func (s *adapter) Routes() []modulehttp.Route {
 	return append([]modulehttp.Route(nil), s.routes...)
 }
 
-func NewSurface(binding agentsdk.Binding, executions ...*agentapplication.InteractiveExecutionService) (modulehttp.Surface, error) {
+func NewAdapter(binding agentsdk.Binding, executions ...*agentapplication.InteractiveExecutionService) (modulehttp.Adapter, error) {
 	var execution *agentapplication.InteractiveExecutionService
 	if len(executions) > 0 {
 		execution = executions[0]
 	}
-	return NewOwnedSurface(binding, SurfaceApplications{Interactive: execution})
+	return NewOwnedAdapter(binding, AdapterApplications{Interactive: execution})
 }
 
-func NewApplicationSurface(binding agentsdk.Binding, execution *agentapplication.InteractiveExecutionService, proposals *agentapplication.ProposalService, taskOperations ...*agentapplication.TaskOperationsService) (modulehttp.Surface, error) {
-	applications := SurfaceApplications{Interactive: execution, Proposals: proposals}
+func NewApplicationAdapter(binding agentsdk.Binding, execution *agentapplication.InteractiveExecutionService, proposals *agentapplication.ProposalService, taskOperations ...*agentapplication.TaskOperationsService) (modulehttp.Adapter, error) {
+	applications := AdapterApplications{Interactive: execution, Proposals: proposals}
 	if len(taskOperations) > 0 {
 		applications.TaskOperations = taskOperations[0]
 	}
-	return NewOwnedSurface(binding, applications)
+	return NewOwnedAdapter(binding, applications)
 }
 
-type SurfaceApplications struct {
+type AdapterApplications struct {
 	Interactive    *agentapplication.InteractiveExecutionService
 	Proposals      *agentapplication.ProposalService
 	TaskOperations *agentapplication.TaskOperationsService
@@ -65,7 +65,7 @@ type SurfaceApplications struct {
 	Diagnostics    *agentapplication.DiagnosticsService
 }
 
-func NewOwnedSurface(binding agentsdk.Binding, applications SurfaceApplications) (modulehttp.Surface, error) {
+func NewOwnedAdapter(binding agentsdk.Binding, applications AdapterApplications) (modulehttp.Adapter, error) {
 	stateBinding, ok := binding.(agentsdk.AgentDialogStateBinding)
 	if !ok || stateBinding.DialogState() == nil {
 		return nil, errors.New("Agent dialog state binding is unavailable")
@@ -74,7 +74,7 @@ func NewOwnedSurface(binding agentsdk.Binding, applications SurfaceApplications)
 	if !ok || executionBinding.AgentTaskState() == nil || executionBinding.AgentInteractiveState() == nil {
 		return nil, errors.New("Agent execution state binding is unavailable")
 	}
-	s := &surface{
+	s := &adapter{
 		state: stateBinding.DialogState(), tasks: executionBinding.AgentTaskState(), interactive: executionBinding.AgentInteractiveState(),
 		execution: applications.Interactive, proposals: applications.Proposals, operations: applications.TaskOperations,
 		taskTools: applications.TaskTools, analysis: applications.Analysis, diagnostics: applications.Diagnostics,
@@ -116,7 +116,7 @@ func NewOwnedSurface(binding agentsdk.Binding, applications SurfaceApplications)
 	if s.diagnostics != nil {
 		handlers[agentsdk.ActionAgentDiagnosticsRead] = s.inspectDiagnostics
 	}
-	contract, err := agentsdk.CompileAgentHTTPSurfaceContract()
+	contract, err := agentsdk.CompileAgentHTTPAdapterContract()
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +157,7 @@ func requestAuthority(r *http.Request) (agentsdk.AgentAuthority, error) {
 	return agentsdk.AgentAuthority{WorkspaceID: strings.TrimSpace(identity.Principal.WorkspaceID), UserID: strings.TrimSpace(identity.Principal.UserID), RoleKey: strings.TrimSpace(identity.Principal.RoleKey)}, nil
 }
 
-func (s *surface) listSessions(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) listSessions(w http.ResponseWriter, r *http.Request) {
 	authority, err := requestAuthority(r)
 	if err != nil {
 		writeError(w, err)
@@ -172,7 +172,7 @@ func (s *surface) listSessions(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"sessions": value})
 }
 
-func (s *surface) upsertSession(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) upsertSession(w http.ResponseWriter, r *http.Request) {
 	authority, err := requestAuthority(r)
 	if err != nil {
 		writeError(w, err)
@@ -190,15 +190,15 @@ func (s *surface) upsertSession(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, value)
 }
 
-func (s *surface) archiveSession(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) archiveSession(w http.ResponseWriter, r *http.Request) {
 	s.setSessionArchived(w, r, true)
 }
 
-func (s *surface) restoreSession(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) restoreSession(w http.ResponseWriter, r *http.Request) {
 	s.setSessionArchived(w, r, false)
 }
 
-func (s *surface) setSessionArchived(w http.ResponseWriter, r *http.Request, archived bool) {
+func (s *adapter) setSessionArchived(w http.ResponseWriter, r *http.Request, archived bool) {
 	authority, err := requestAuthority(r)
 	if err != nil {
 		writeError(w, err)
@@ -212,7 +212,7 @@ func (s *surface) setSessionArchived(w http.ResponseWriter, r *http.Request, arc
 	writeJSON(w, http.StatusOK, value)
 }
 
-func (s *surface) listProposals(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) listProposals(w http.ResponseWriter, r *http.Request) {
 	authority, err := requestAuthority(r)
 	if err != nil {
 		writeError(w, err)
@@ -226,7 +226,7 @@ func (s *surface) listProposals(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"proposals": value})
 }
 
-func (s *surface) getProposal(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) getProposal(w http.ResponseWriter, r *http.Request) {
 	authority, err := requestAuthority(r)
 	if err != nil {
 		writeError(w, err)
@@ -240,7 +240,7 @@ func (s *surface) getProposal(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, value)
 }
 
-func (s *surface) getInteractiveRun(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) getInteractiveRun(w http.ResponseWriter, r *http.Request) {
 	authority, err := requestInteractiveAuthority(r)
 	if err != nil {
 		writeError(w, err)
@@ -258,7 +258,7 @@ func (s *surface) getInteractiveRun(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, run)
 }
 
-func (s *surface) getPrincipalTaskRun(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) getPrincipalTaskRun(w http.ResponseWriter, r *http.Request) {
 	identity, ok := identitysdk.RequestIdentityFromContext(r.Context())
 	if !ok {
 		writeCode(w, http.StatusForbidden, "backend.workspace_scope_required")
@@ -277,7 +277,7 @@ func (s *surface) getPrincipalTaskRun(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, agentpersistence.ProjectAgentTaskRun(run))
 }
 
-func (s *surface) listTaskRuns(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) listTaskRuns(w http.ResponseWriter, r *http.Request) {
 	principal, ok := authorizedActionPrincipal(r, agentsdk.ActionAgentTasksList)
 	if !ok {
 		writeCode(w, http.StatusForbidden, "agent.authorization.action_denied")
@@ -303,7 +303,7 @@ func (s *surface) listTaskRuns(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"items": items, "count": len(items)})
 }
 
-func (s *surface) getTaskRun(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) getTaskRun(w http.ResponseWriter, r *http.Request) {
 	principal, ok := authorizedActionPrincipal(r, agentsdk.ActionAgentTasksGet)
 	if !ok {
 		writeCode(w, http.StatusForbidden, "agent.authorization.action_denied")
@@ -387,5 +387,5 @@ func sessionLimit(raw string) int {
 	return limit
 }
 
-var _ modulehttp.Surface = (*surface)(nil)
-var _ modulehttp.OpenAPIProvider = (*surface)(nil)
+var _ modulehttp.Adapter = (*adapter)(nil)
+var _ modulehttp.OpenAPIProvider = (*adapter)(nil)

@@ -130,7 +130,7 @@ func TestAgentToolGatewayDisclosesDelegatedCredentialBoundary(t *testing.T) {
 		t.Fatal(err)
 	}
 	var operation map[string]any
-	if err := json.Unmarshal(category.OpenAPI.Paths["/agent-dialog/task-tools/invoke"]["post"], &operation); err != nil {
+	if err := json.Unmarshal(category.OpenAPI.Paths["/agent/task-tools/invoke"]["post"], &operation); err != nil {
 		t.Fatal(err)
 	}
 	payload, _ := json.Marshal(operation[modulecapability.OperationExtensionKey])
@@ -153,7 +153,7 @@ func TestAgentStreamCapabilityDisclosesResumeTransport(t *testing.T) {
 		t.Fatal(err)
 	}
 	var operation map[string]any
-	if err := json.Unmarshal(category.OpenAPI.Paths["/agent-dialog/runs/stream"]["post"], &operation); err != nil {
+	if err := json.Unmarshal(category.OpenAPI.Paths["/agent/runs/stream"]["post"], &operation); err != nil {
 		t.Fatal(err)
 	}
 	raw := operation[modulecapability.OperationExtensionKey]

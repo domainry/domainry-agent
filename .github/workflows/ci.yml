@@ -1,0 +1,65 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: domainry-agent
+      # These source contracts are being released together. Keep CI on the
+      # same coordinated source graph that developers exercise via go.work.
+      - uses: actions/checkout@v4
+        with:
+          repository: domainry/domainry-agent-sdk
+          path: domainry-agent-sdk
+      - uses: actions/checkout@v4
+        with:
+          repository: domainry/domainry-foundation
+          path: domainry-foundation
+      - uses: actions/checkout@v4
+        with:
+          repository: domainry/domainry-identity-sdk
+          path: domainry-identity-sdk
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.6"
+          cache: true
+          cache-dependency-path: domainry-agent/go.sum
+      - name: Prepare coordinated Go workspace
+        run: go work init ./domainry-agent ./domainry-agent-sdk ./domainry-foundation ./domainry-identity-sdk
+      - name: Check Go formatting
+        working-directory: domainry-agent
+        run: |
+          unformatted="$(find . -name '*.go' -not -path './.git/*' -print0 | xargs -0 gofmt -l)"
+          if [ -n "$unformatted" ]; then
+            printf 'gofmt required:\n%s\n' "$unformatted"
+            exit 1
+          fi
+      - name: Test all Agent packages
+        working-directory: domainry-agent
+        run: go test ./...
+      - name: Race-check task and protocol boundaries
+        working-directory: domainry-agent
+        run: >-
+          go test -race
+          ./integration
+          ./module
+          ./remote
+          ./server
+          ./internal/application
+          ./internal/provider
+          ./internal/infrastructure/persistence/database/agent
+      - name: Vet Agent packages
+        working-directory: domainry-agent
+        run: go vet ./...
+      - name: Build Agent packages
+        working-directory: domainry-agent
+        run: go build ./...

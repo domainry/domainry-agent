@@ -9,17 +9,17 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 )
 
-func (s *surface) retryTask(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) retryTask(w http.ResponseWriter, r *http.Request) {
 	s.operateTask(w, r, "retry", agentsdk.ActionAgentTasksRetry)
 }
-func (s *surface) resolveTask(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) resolveTask(w http.ResponseWriter, r *http.Request) {
 	s.operateTask(w, r, "resolve", agentsdk.ActionAgentTasksResolve)
 }
-func (s *surface) reconcileTask(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) reconcileTask(w http.ResponseWriter, r *http.Request) {
 	s.operateTask(w, r, "reconcile", agentsdk.ActionAgentTasksReconcile)
 }
 
-func (s *surface) cancelTask(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) cancelTask(w http.ResponseWriter, r *http.Request) {
 	principal, request, ok := taskOperationRequest(w, r, agentsdk.ActionAgentTasksCancel)
 	if !ok {
 		return
@@ -32,7 +32,7 @@ func (s *surface) cancelTask(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"task": agentpersistence.ProjectAgentTaskRun(run), "replayed": replayed, "idempotency_key": strings.TrimSpace(r.Header.Get("Idempotency-Key"))})
 }
 
-func (s *surface) operateTask(w http.ResponseWriter, r *http.Request, kind, actionKey string) {
+func (s *adapter) operateTask(w http.ResponseWriter, r *http.Request, kind, actionKey string) {
 	principal, request, ok := taskOperationRequest(w, r, actionKey)
 	if !ok {
 		return

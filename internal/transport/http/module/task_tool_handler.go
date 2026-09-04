@@ -16,7 +16,7 @@ type taskToolInvokeRequest struct {
 	IdempotencyKey string         `json:"idempotency_key"`
 }
 
-func (s *surface) invokeTaskTool(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) invokeTaskTool(w http.ResponseWriter, r *http.Request) {
 	var payload taskToolInvokeRequest
 	if !decode(w, r, &payload) {
 		return

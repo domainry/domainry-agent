@@ -2,7 +2,7 @@ package module
 
 import agentsdk "github.com/domainry/domainry-agent-sdk"
 
-func (s *surface) OpenAPIOperations() map[string]map[string]any {
+func (s *adapter) OpenAPIOperations() map[string]map[string]any {
 	owned := make(map[string]map[string]any, len(s.openAPI))
 	for pattern, operation := range s.openAPI {
 		owned[pattern] = operation
@@ -11,7 +11,7 @@ func (s *surface) OpenAPIOperations() map[string]map[string]any {
 }
 
 func agentOpenAPIOperations() map[string]map[string]any {
-	contract, err := agentsdk.CompileAgentHTTPSurfaceContract()
+	contract, err := agentsdk.CompileAgentHTTPAdapterContract()
 	if err != nil {
 		panic(err)
 	}

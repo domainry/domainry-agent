@@ -24,7 +24,7 @@ No frontend source is present or in scope.
 | AGENT-OWN-004 | Agent SaaS persists the same Agent-owned state in its own database and never accesses the Runtime database. | Agent SaaS | restart/idempotency and isolation tests |
 | AGENT-OWN-005 | Persistence DDL/DML uses `github.com/domainry/domainry-orm`; raw SQL is allowed only where the ORM lacks an equivalent and carries local justification plus dialect tests. | Agent | dependency and dialect tests |
 | AGENT-OWN-006 | Runtime retains Workflow state, current authorization, concrete host effects, Host adapters and composition only; it must not redeclare or persist Agent-owned state. | Runtime | ownership-boundary tests and full Runtime tests |
-| AGENT-OWN-007 | Every `/agent-dialog/*` and `/operations/agent/tasks*` product endpoint, route declaration and OpenAPI operation is owned by the Agent source Surface. Runtime only mounts and governs that Surface. | Agent + Runtime host | Surface contract, route-registration, route-absence and OpenAPI composition tests |
+| AGENT-OWN-007 | Every `/agent/*` product endpoint, route declaration and OpenAPI operation is owned by the Agent source Adapter. Runtime only mounts and governs that Adapter. | Agent + Runtime host | Adapter contract, route-registration, route-absence and OpenAPI composition tests |
 | AGENT-OWN-008 | Workflow dispatch and completion use an asynchronous state-first protocol: Runtime receives `accepted`, Agent later commits terminal state then invokes an idempotent Runtime callback; neither side performs synchronous reentry or a cross-owner transaction. | Agent + Runtime Workflow | deterministic-correlation, callback replay and ownership tests |
 
 ## 3. State and invariants
@@ -58,7 +58,7 @@ Every persisted row is scoped by application/runtime and workspace where applica
 | AGENT-OWN-004 | former stateless `domainry-agent/server` baseline | Agent SaaS assembly/persistence | restart and isolation test |
 | AGENT-OWN-005 | existing Runtime Agent stores use ORM builders | Agent persistence | dialect tests and source search |
 | AGENT-OWN-006 | Runtime Workflow, authorization, audit and business-effect services | `runtime/application/agenthost` plus composition; no Agent repository mutation in Runtime application | Runtime Host adapter tests and architecture boundary search |
-| AGENT-OWN-007 | former Runtime session/proposal/interactive/task handlers | `domainry-agent/internal/transport/http/module`; Runtime host Surface mounting | Agent Surface tests, Runtime route absence test and composed OpenAPI test |
+| AGENT-OWN-007 | former Runtime session/proposal/interactive/task handlers | `domainry-agent/internal/transport/http/module`; Runtime host Adapter mounting | Agent Adapter tests, Runtime route absence test and composed OpenAPI test |
 | AGENT-OWN-008 | former shared task mutation transaction and SaaS publication outbox | SDK `TaskRunner`/`TaskHost`, Agent task worker, Runtime Workflow dispatch/completion | callback replay, deterministic identity and repository-boundary tests |
 
 ## 8. Accepted verification flows

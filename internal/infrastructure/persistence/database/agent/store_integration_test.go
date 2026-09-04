@@ -1,7 +1,10 @@
 package agent
 
 import (
+	"context"
 	"database/sql"
+	"strconv"
+	"sync"
 	"testing"
 	"time"
 
@@ -19,6 +22,7 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	database.SetMaxOpenConns(1)
 	t.Cleanup(func() { _ = database.Close() })
 	migrations, err := SchemaMigrations("sqlite", "")
 	if err != nil {
@@ -83,6 +87,81 @@ func TestAgentTaskStoreOwnsIdempotencyClaimFenceAndWorkerScope(t *testing.T) {
 	var scopes int
 	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_worker_scopes WHERE workspace_id=?`, run.WorkspaceID).Scan(&scopes); err != nil || scopes != 1 {
 		t.Fatalf("scopes=%d err=%v", scopes, err)
+	}
+}
+
+func TestAgentTaskStoreSerializesConcurrentClaimsAndTerminalTransitions(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repository := NewAgentTaskRunStore(store)
+	now := time.Date(2026, 8, 30, 13, 0, 0, 0, time.UTC)
+	run := agentmodel.AgentTaskRun{ID: "run-concurrent", WorkspaceID: "workspace-a", TaskKey: "review", TaskVersion: "1", Status: agentmodel.AgentTaskRunPending, IdempotencyKey: "idem-concurrent", MaxAttempts: 3, CreatedAt: now, UpdatedAt: now, Revision: 1}
+	if _, replay, err := repository.Create(t.Context(), run); err != nil || replay {
+		t.Fatalf("create replay=%v err=%v", replay, err)
+	}
+
+	const contenders = 12
+	claims := make(chan agentpersistence.AgentTaskClaim, contenders)
+	errors := make(chan error, contenders)
+	var wait sync.WaitGroup
+	for index := 0; index < contenders; index++ {
+		wait.Add(1)
+		go func(index int) {
+			defer wait.Done()
+			claim, found, err := repository.ClaimAgentTaskRun(context.Background(), run.WorkspaceID, run.ID, "worker-"+strconv.Itoa(index), now, time.Minute)
+			if err != nil {
+				errors <- err
+				return
+			}
+			if found {
+				claims <- claim
+			}
+		}(index)
+	}
+	wait.Wait()
+	close(claims)
+	close(errors)
+	for err := range errors {
+		t.Error(err)
+	}
+	claimed := make([]agentpersistence.AgentTaskClaim, 0, contenders)
+	for claim := range claims {
+		claimed = append(claimed, claim)
+	}
+	if len(claimed) != 1 || claimed[0].Run.Attempt != 1 || claimed[0].Lease.FencingToken != 1 {
+		t.Fatalf("claims=%+v", claimed)
+	}
+
+	claim := claimed[0]
+	transitionErrors := make(chan error, contenders)
+	for index := 0; index < contenders; index++ {
+		wait.Add(1)
+		go func(index int) {
+			defer wait.Done()
+			candidate := claim.Run
+			candidate.Status = agentmodel.AgentTaskRunSucceeded
+			candidate.Outcome = "success"
+			candidate.UpdatedAt = now.Add(time.Duration(index+1) * time.Millisecond)
+			completedAt := candidate.UpdatedAt
+			candidate.CompletedAt = &completedAt
+			transitionErrors <- repository.SaveRunning(context.Background(), candidate, claim.Lease.Owner, claim.Lease.FencingToken)
+		}(index)
+	}
+	wait.Wait()
+	close(transitionErrors)
+	succeeded, rejected := 0, 0
+	for err := range transitionErrors {
+		if err == nil {
+			succeeded++
+		} else {
+			rejected++
+		}
+	}
+	if succeeded != 1 || rejected != contenders-1 {
+		t.Fatalf("terminal transitions succeeded=%d rejected=%d", succeeded, rejected)
+	}
+	stored, found, err := repository.Get(t.Context(), run.WorkspaceID, run.ID)
+	if err != nil || !found || stored.Status != agentmodel.AgentTaskRunSucceeded || stored.Outcome != "success" {
+		t.Fatalf("stored=%+v found=%v err=%v", stored, found, err)
 	}
 }
 

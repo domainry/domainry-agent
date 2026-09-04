@@ -24,7 +24,7 @@ const (
 )
 
 func NewBinding() (*modulecapability.StaticBinding, error) {
-	contract, err := agentsdk.CompileAgentHTTPSurfaceContract()
+	contract, err := agentsdk.CompileAgentHTTPAdapterContract()
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func NewBinding() (*modulecapability.StaticBinding, error) {
 	return modulecapability.NewStaticBinding(summary, categories, validator())
 }
 
-func httpCategory(contract agentsdk.HTTPSurfaceContract, key, name, description string, chains []string) (modulecapability.CategoryDocument, error) {
+func httpCategory(contract agentsdk.HTTPAdapterContract, key, name, description string, chains []string) (modulecapability.CategoryDocument, error) {
 	routes := []modulehttp.Route{}
 	operations := map[string]map[string]any{}
 	overrides := map[string]modulecapability.OperationExtension{}
@@ -100,7 +100,7 @@ func httpCategory(contract agentsdk.HTTPSurfaceContract, key, name, description 
 	}
 	category, err := modulecapability.CategoryFromHTTPRoutes(modulecapability.HTTPRouteCategory{
 		Owner: "agent", Category: modulecapability.CategorySummary{Key: key, Name: name, Description: description, AssemblyChains: chains}, Routes: routes, Operations: operations,
-		Components: agentsdk.HTTPSurfaceReferencedComponents(operations), WorkspaceScope: "authenticated_workspace", ExtensionOverrides: overrides,
+		Components: agentsdk.HTTPAdapterReferencedComponents(operations), WorkspaceScope: "authenticated_workspace", ExtensionOverrides: overrides,
 	})
 	if err != nil {
 		return modulecapability.CategoryDocument{}, fmt.Errorf("project Agent category %q: %w", key, err)

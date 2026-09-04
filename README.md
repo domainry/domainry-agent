@@ -11,9 +11,9 @@ contracts; Runtime does not redeclare them.
 - `server`: authenticated SaaS protocol endpoint with Descriptor handshake.
 - `cmd/domainry-agent`: standalone SaaS process entrypoint.
 - `internal/application`: Agent-owned dialog and execution-state use cases.
-- `internal/composition`: the shared Module/SaaS Agent application and HTTP Surface assembly.
+- `internal/composition`: the shared Module/SaaS Agent application and HTTP Adapter assembly.
 - `internal/provider`: provider HTTP protocol, result normalization and stable error classification.
-- `internal/transport/http/module`: source-owned product HTTP Surface shared by Module and SaaS bindings.
+- `internal/transport/http/module`: source-owned product HTTP Adapter shared by Module and SaaS bindings.
 - `definition`: Agent-owned validation before provider translation.
 - `internal/infrastructure/persistence/base`: engine-neutral database foundation.
 - `internal/infrastructure/persistence/{mysql,postgres,sqlite}`: database engine profiles.
@@ -32,9 +32,8 @@ Workflow state, current business authorization and the concrete Record/Action/
 Workflow/Report effects exposed through narrow Host Ports.
 
 Both bindings expose the same `dialog.state` and `execution.state`
-capabilities and the same Agent-owned HTTP Surface. All `/agent-dialog/*` and
-`/operations/agent/tasks*` handlers, route metadata and OpenAPI operations come
-from Agent; Runtime mounts the Surface and applies host middleware without
+capabilities and the same Agent-owned HTTP Adapter. All `/agent/*` handlers,
+route metadata and OpenAPI operations come from Agent; Runtime mounts the Adapter and applies host middleware without
 duplicating Agent handlers. Host authorization, audit and business effects are
 requested internally through `InteractiveHost`, `TaskHost`, `ProposalHost`,
 `AuditHost` and `AnalysisHost`.

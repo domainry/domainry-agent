@@ -72,7 +72,7 @@ func (s *AgentTaskRunStore) SaveRunning(ctx context.Context, run agentmodel.Agen
 	}
 
 	run.ToolCallCount = current.ToolCallCount
-	run.Evidence.Authorization = current.Evidence.Authorization
+	run.Evidence.Authorization = mergeAgentAuthorizationEvidence(current.Evidence.Authorization, run.Evidence.Authorization)
 	run.Evidence.ToolInvocationRefs = current.Evidence.ToolInvocationRefs
 	run.Evidence.ToolInvocations = current.Evidence.ToolInvocations
 	if run.Revision <= current.Revision {
@@ -101,6 +101,23 @@ func (s *AgentTaskRunStore) SaveRunning(ctx context.Context, run agentmodel.Agen
 		return agentError("conflict", "agent.task.terminal_fence_rejected")
 	}
 	return tx.Commit()
+}
+
+func mergeAgentAuthorizationEvidence(current, incoming []agentmodel.AgentAuthorizationEvidence) []agentmodel.AgentAuthorizationEvidence {
+	merged := make([]agentmodel.AgentAuthorizationEvidence, 0, len(current)+len(incoming))
+	seen := make(map[string]struct{}, len(current)+len(incoming))
+	for _, values := range [][]agentmodel.AgentAuthorizationEvidence{current, incoming} {
+		for _, value := range values {
+			raw, _ := json.Marshal(value)
+			key := string(raw)
+			if _, found := seen[key]; found {
+				continue
+			}
+			seen[key] = struct{}{}
+			merged = append(merged, value)
+		}
+	}
+	return merged
 }
 
 func (s *AgentTaskRunStore) SaveWaitingApproval(ctx context.Context, run agentmodel.AgentTaskRun, expectedRevision int64) error {

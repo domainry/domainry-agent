@@ -12,7 +12,7 @@ import (
 	"github.com/domainry/domainry-foundation/modulehttp"
 )
 
-type ApplicationSurfaceDependencies struct {
+type ApplicationAdapterDependencies struct {
 	Binding           agentsdk.Binding
 	DialogState       agentsdk.AgentDialogStateService
 	TaskState         agentpersistence.AgentTaskStateService
@@ -23,10 +23,10 @@ type ApplicationSurfaceDependencies struct {
 	Host              modulehost.ApplicationHost
 }
 
-// BindApplicationSurface is the single Module/SaaS composition path for all
+// BindApplicationAdapter is the single Module/SaaS composition path for all
 // Agent-owned product use cases. Deployment bindings supply storage/provider
 // adapters; the application graph and Host Port boundary remain identical.
-func BindApplicationSurface(dependencies ApplicationSurfaceDependencies) (modulehttp.Surface, error) {
+func BindApplicationAdapter(dependencies ApplicationAdapterDependencies) (modulehttp.Adapter, error) {
 	host := dependencies.Host
 	if host == nil || host.InteractiveAgent() == nil || host.TaskAgent() == nil || host.ProposalAgent() == nil || host.AuditAgent() == nil || host.AnalysisAgent() == nil {
 		return nil, fmt.Errorf("Agent application host is incomplete")
@@ -44,7 +44,7 @@ func BindApplicationSurface(dependencies ApplicationSurfaceDependencies) (module
 			dependencies.TaskExecution.Wake(workspaceID, runID)
 		},
 	})
-	applications := agenthttp.SurfaceApplications{
+	applications := agenthttp.AdapterApplications{
 		Interactive: execution,
 		Proposals:   proposals,
 		TaskOperations: agentapplication.NewTaskOperationsService(
@@ -54,5 +54,5 @@ func BindApplicationSurface(dependencies ApplicationSurfaceDependencies) (module
 		Analysis:    agentapplication.NewAnalysisService(host.AnalysisAgent(), host.AuditAgent()),
 		Diagnostics: agentapplication.NewDiagnosticsService(dependencies.DialogState, host.AuditAgent()),
 	}
-	return agenthttp.NewOwnedSurface(dependencies.Binding, applications)
+	return agenthttp.NewOwnedAdapter(dependencies.Binding, applications)
 }

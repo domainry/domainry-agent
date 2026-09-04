@@ -98,6 +98,9 @@ func TestSaaSManifestOwnsEveryServiceRouteAndInjectsCurrentAction(t *testing.T) 
 		if patterns[pattern] {
 			t.Fatalf("duplicate Agent SaaS route %q", pattern)
 		}
+		if route := action.HTTP.RouteTemplate; route != "/readyz" && !strings.HasPrefix(route, "/.well-known/") && !strings.HasPrefix(route, "/agent/") {
+			t.Fatalf("Agent SaaS route escapes the Agent namespace: %q", route)
+		}
 		patterns[pattern] = true
 	}
 
@@ -107,7 +110,7 @@ func TestSaaSManifestOwnsEveryServiceRouteAndInjectsCurrentAction(t *testing.T) 
 		t.Fatal(err)
 	}
 	body := `{"task_run_id":"task","workspace_id":"workspace","task":{"contract_version":"agent-task-v1","key":"task","version":"1","agent_key":"runner","instruction":"run","input_schema":{"type":"object"},"output_schema":{"type":"object"},"allowed_outcomes":["success"],"side_effect_mode":"analysis_only","enabled":true},"identity":{},"idempotency_key":"key","deadline":"0001-01-01T00:00:00Z"}`
-	request := httptest.NewRequest(http.MethodPost, "/api/v1/task-runs", strings.NewReader(body))
+	request := httptest.NewRequest(http.MethodPost, "/agent/v1/task-runs", strings.NewReader(body))
 	request.Header.Set("Authorization", "Bearer secret")
 	request.Header.Set("Idempotency-Key", "key")
 	response := httptest.NewRecorder()
@@ -123,14 +126,14 @@ func TestServerAuthenticationAndIdempotency(t *testing.T) {
 		t.Fatal(err)
 	}
 	handler := service.Handler()
-	request := httptest.NewRequest(http.MethodGet, "/api/v1/descriptor", nil)
+	request := httptest.NewRequest(http.MethodGet, "/agent/v1/descriptor", nil)
 	response := httptest.NewRecorder()
 	handler.ServeHTTP(response, request)
 	if response.Code != http.StatusUnauthorized {
 		t.Fatalf("status=%d", response.Code)
 	}
 	body := `{"task_run_id":"task","workspace_id":"workspace","task":{"contract_version":"agent-task-v1","key":"task","version":"1","agent_key":"runner","instruction":"run","input_schema":{"type":"object"},"output_schema":{"type":"object"},"allowed_outcomes":["success"],"side_effect_mode":"analysis_only","enabled":true},"identity":{},"idempotency_key":"key","deadline":"0001-01-01T00:00:00Z"}`
-	request = httptest.NewRequest(http.MethodPost, "/api/v1/task-runs", strings.NewReader(body))
+	request = httptest.NewRequest(http.MethodPost, "/agent/v1/task-runs", strings.NewReader(body))
 	request.Header.Set("Authorization", "Bearer secret")
 	request.Header.Set("Idempotency-Key", "other")
 	response = httptest.NewRecorder()
@@ -138,7 +141,7 @@ func TestServerAuthenticationAndIdempotency(t *testing.T) {
 	if response.Code != http.StatusBadRequest {
 		t.Fatalf("status=%d body=%s", response.Code, response.Body.String())
 	}
-	request = httptest.NewRequest(http.MethodPost, "/api/v1/task-runs", strings.NewReader(body))
+	request = httptest.NewRequest(http.MethodPost, "/agent/v1/task-runs", strings.NewReader(body))
 	request.Header.Set("Authorization", "Bearer secret")
 	request.Header.Set("Idempotency-Key", "key")
 	response = httptest.NewRecorder()
@@ -154,7 +157,7 @@ func TestServerDoesNotExposeGenericRepositoryOperationRoute(t *testing.T) {
 		t.Fatal(err)
 	}
 	handler := service.Handler()
-	request := httptest.NewRequest(http.MethodPost, "/api/v1/repository/task.get", strings.NewReader(`{}`))
+	request := httptest.NewRequest(http.MethodPost, "/agent/v1/repository/task.get", strings.NewReader(`{}`))
 	request.Header.Set("Authorization", "Bearer secret")
 	response := httptest.NewRecorder()
 	handler.ServeHTTP(response, request)

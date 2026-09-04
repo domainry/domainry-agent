@@ -121,3 +121,15 @@ func TestModuleDescriptor(t *testing.T) {
 		t.Fatalf("result=%+v err=%v", result, err)
 	}
 }
+
+func TestModuleCanPublishDefinitionsBeforeProviderConfiguration(t *testing.T) {
+	host := newHost(t, "runtime-unconfigured")
+	binding, err := NewFactory(Options{}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime-unconfigured"}, host)
+	if err != nil {
+		t.Fatalf("open unconfigured Agent module: %v", err)
+	}
+	t.Cleanup(func() { _ = binding.Close(t.Context()) })
+	if _, err := binding.InteractiveRunner().Run(t.Context(), agentsdk.InteractiveRequest{}); err == nil || !strings.Contains(err.Error(), "provider is not configured") {
+		t.Fatalf("unconfigured provider invocation error=%v", err)
+	}
+}

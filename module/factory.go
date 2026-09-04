@@ -66,9 +66,6 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		return nil, err
 	}
 	runner := provider.New(provider.Config{BaseURL: f.options.BaseURL, APIKey: f.options.APIKey, AgentID: f.options.AgentID, Timeout: f.options.Timeout, Client: f.options.Client})
-	if err := runner.Validate(); err != nil {
-		return nil, err
-	}
 	capabilityBinding, err := agentcapability.Open(agentcapability.Inputs{})
 	if err != nil {
 		return nil, fmt.Errorf("build Agent capability binding: %w", err)
@@ -76,11 +73,11 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	binding := newBinding(runner, store, agentsdk.DeploymentModeModule)
 	binding.Binding = capabilityBinding
 	binding.taskExecution.StartWorker(ctx)
-	surface, err := agenthttp.NewSurface(binding)
+	adapter, err := agenthttp.NewAdapter(binding)
 	if err != nil {
 		return nil, err
 	}
-	binding.surfaces = []modulehttp.Surface{surface}
+	binding.adapters = []modulehttp.Adapter{adapter}
 	return binding, nil
 }
 
@@ -95,7 +92,7 @@ type binding struct {
 	dialogState   agentsdk.AgentDialogStateService
 	taskState     agentpersistence.AgentTaskStateService
 	interactive   agentpersistence.AgentInteractiveStateService
-	surfaces      []modulehttp.Surface
+	adapters      []modulehttp.Adapter
 	mode          agentsdk.DeploymentMode
 }
 
@@ -117,22 +114,22 @@ func (b *binding) AgentTaskState() agentpersistence.AgentTaskStateService { retu
 func (b *binding) AgentInteractiveState() agentpersistence.AgentInteractiveStateService {
 	return b.interactive
 }
-func (b *binding) HTTPSurfaces() []modulehttp.Surface {
-	return append([]modulehttp.Surface(nil), b.surfaces...)
+func (b *binding) HTTPAdapters() []modulehttp.Adapter {
+	return append([]modulehttp.Adapter(nil), b.adapters...)
 }
 func (*binding) AuthorizationActions() ([]actioncontract.ActionDefinition, error) {
 	return agentsdk.AgentAuthorizationActions()
 }
 func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
 	ledger, _ := b.runs.(agentpersistence.AgentToolCallLedger)
-	surface, err := agentcomposition.BindApplicationSurface(agentcomposition.ApplicationSurfaceDependencies{
+	adapter, err := agentcomposition.BindApplicationAdapter(agentcomposition.ApplicationAdapterDependencies{
 		Binding: b, DialogState: b.dialogState, TaskState: b.taskState, InteractiveState: b.interactive,
 		ToolLedger: ledger, TaskExecution: b.taskExecution, InteractiveRunner: b.runner, Host: host,
 	})
 	if err != nil {
 		return err
 	}
-	b.surfaces = []modulehttp.Surface{surface}
+	b.adapters = []modulehttp.Adapter{adapter}
 	return nil
 }
 func (b *binding) AgentStateRepository() agentpersistence.AgentStateRepository     { return b.state }

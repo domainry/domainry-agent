@@ -85,11 +85,11 @@ func (f *Factory) OpenSaaS(ctx context.Context, app agentsdk.ApplicationRef, hos
 	taskState := agentapplication.NewTaskStateService(tasks)
 	taskExecution := agentapplication.NewTaskExecutionService(taskState, client, "")
 	binding := &binding{Binding: remoteCapability, client: client, descriptor: descriptor, tasks: tasks, taskExecution: taskExecution, taskState: taskState, interactive: agentapplication.NewInteractiveStateService(tasks)}
-	surface, err := agenthttp.NewSurface(binding)
+	adapter, err := agenthttp.NewAdapter(binding)
 	if err != nil {
 		return nil, err
 	}
-	binding.surfaces = []modulehttp.Surface{surface}
+	binding.adapters = []modulehttp.Adapter{adapter}
 	binding.taskExecution.StartWorker(ctx)
 	return binding, nil
 }
@@ -102,7 +102,7 @@ type binding struct {
 	taskExecution *agentapplication.TaskExecutionService
 	taskState     agentpersistence.AgentTaskStateService
 	interactive   agentpersistence.AgentInteractiveStateService
-	surfaces      []modulehttp.Surface
+	adapters      []modulehttp.Adapter
 }
 
 func (b *binding) Descriptor() agentsdk.Descriptor                        { return b.descriptor }
@@ -113,21 +113,21 @@ func (b *binding) AgentTaskState() agentpersistence.AgentTaskStateService { retu
 func (b *binding) AgentInteractiveState() agentpersistence.AgentInteractiveStateService {
 	return b.interactive
 }
-func (b *binding) HTTPSurfaces() []modulehttp.Surface {
-	return append([]modulehttp.Surface(nil), b.surfaces...)
+func (b *binding) HTTPAdapters() []modulehttp.Adapter {
+	return append([]modulehttp.Adapter(nil), b.adapters...)
 }
 func (*binding) AuthorizationActions() ([]actioncontract.ActionDefinition, error) {
 	return agentsdk.AgentAuthorizationActions()
 }
 func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
-	surface, err := agentcomposition.BindApplicationSurface(agentcomposition.ApplicationSurfaceDependencies{
+	adapter, err := agentcomposition.BindApplicationAdapter(agentcomposition.ApplicationAdapterDependencies{
 		Binding: b, DialogState: b.client, TaskState: b.taskState, InteractiveState: b.interactive,
 		ToolLedger: b.tasks, TaskExecution: b.taskExecution, InteractiveRunner: b.client, Host: host,
 	})
 	if err != nil {
 		return err
 	}
-	b.surfaces = []modulehttp.Surface{surface}
+	b.adapters = []modulehttp.Adapter{adapter}
 	return nil
 }
 func (b *binding) DefinitionRepository() agentpersistence.DefinitionRepository { return b.client }
@@ -170,33 +170,33 @@ func newClient(options Options) *client {
 }
 func (c *client) descriptor(ctx context.Context) (agentsdk.Descriptor, error) {
 	var value agentsdk.Descriptor
-	err := c.call(ctx, http.MethodGet, "/api/v1/descriptor", nil, "", &value)
+	err := c.call(ctx, http.MethodGet, "/agent/v1/descriptor", nil, "", &value)
 	return value, err
 }
 func (c *client) Start(ctx context.Context, request agentsdk.TaskRequest) (agentsdk.TaskResult, error) {
 	var value agentsdk.TaskResult
-	err := c.call(ctx, http.MethodPost, "/api/v1/task-runs", request, request.IdempotencyKey, &value)
+	err := c.call(ctx, http.MethodPost, "/agent/v1/task-runs", request, request.IdempotencyKey, &value)
 	return value, err
 }
 func (c *client) Poll(ctx context.Context, id, key string) (agentsdk.TaskResult, error) {
 	var value agentsdk.TaskResult
-	err := c.call(ctx, http.MethodGet, "/api/v1/task-runs/"+url.PathEscape(strings.TrimSpace(id)), nil, key, &value)
+	err := c.call(ctx, http.MethodGet, "/agent/v1/task-runs/"+url.PathEscape(strings.TrimSpace(id)), nil, key, &value)
 	return value, err
 }
 func (c *client) Cancel(ctx context.Context, id, key string) (agentsdk.TaskResult, error) {
 	var value agentsdk.TaskResult
-	err := c.call(ctx, http.MethodPost, "/api/v1/task-runs/"+url.PathEscape(strings.TrimSpace(id))+"/cancel", map[string]any{}, key, &value)
+	err := c.call(ctx, http.MethodPost, "/agent/v1/task-runs/"+url.PathEscape(strings.TrimSpace(id))+"/cancel", map[string]any{}, key, &value)
 	return value, err
 }
 func (c *client) Run(ctx context.Context, request agentsdk.InteractiveRequest) (agentsdk.InteractiveResult, error) {
 	var value agentsdk.InteractiveResult
-	err := c.call(ctx, http.MethodPost, "/api/v1/interactive-runs", request, request.IdempotencyKey, &value)
+	err := c.call(ctx, http.MethodPost, "/agent/v1/interactive-runs", request, request.IdempotencyKey, &value)
 	return value, err
 }
 
 func (c *client) ListSessions(ctx context.Context, query agentsdk.AgentSessionQuery, authority agentsdk.AgentAuthority) ([]agentsdk.AgentSession, error) {
 	var value []agentsdk.AgentSession
-	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/sessions/query", struct {
+	err := c.call(ctx, http.MethodPost, "/agent/v1/dialog-state/sessions/query", struct {
 		Query     agentsdk.AgentSessionQuery `json:"query"`
 		Authority agentsdk.AgentAuthority    `json:"authority"`
 	}{Query: query, Authority: authority}, "", &value)
@@ -205,7 +205,7 @@ func (c *client) ListSessions(ctx context.Context, query agentsdk.AgentSessionQu
 
 func (c *client) UpsertSession(ctx context.Context, input agentsdk.AgentSessionUpsertRequest, authority agentsdk.AgentAuthority) (agentsdk.AgentSession, error) {
 	var value agentsdk.AgentSession
-	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/sessions/upsert", struct {
+	err := c.call(ctx, http.MethodPost, "/agent/v1/dialog-state/sessions/upsert", struct {
 		Input     agentsdk.AgentSessionUpsertRequest `json:"input"`
 		Authority agentsdk.AgentAuthority            `json:"authority"`
 	}{Input: input, Authority: authority}, "", &value)
@@ -214,7 +214,7 @@ func (c *client) UpsertSession(ctx context.Context, input agentsdk.AgentSessionU
 
 func (c *client) SetSessionArchived(ctx context.Context, externalID string, archived bool, authority agentsdk.AgentAuthority) (agentsdk.AgentSession, error) {
 	var value agentsdk.AgentSession
-	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/sessions/"+url.PathEscape(strings.TrimSpace(externalID))+"/archive", struct {
+	err := c.call(ctx, http.MethodPost, "/agent/v1/dialog-state/sessions/"+url.PathEscape(strings.TrimSpace(externalID))+"/archive", struct {
 		Archived  bool                    `json:"archived"`
 		Authority agentsdk.AgentAuthority `json:"authority"`
 	}{Archived: archived, Authority: authority}, "", &value)
@@ -223,7 +223,7 @@ func (c *client) SetSessionArchived(ctx context.Context, externalID string, arch
 
 func (c *client) ListProposals(ctx context.Context, status string, authority agentsdk.AgentAuthority) ([]agentsdk.AgentProposal, error) {
 	var value []agentsdk.AgentProposal
-	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/proposals/query", struct {
+	err := c.call(ctx, http.MethodPost, "/agent/v1/dialog-state/proposals/query", struct {
 		Status    string                  `json:"status,omitempty"`
 		Authority agentsdk.AgentAuthority `json:"authority"`
 	}{Status: status, Authority: authority}, "", &value)
@@ -232,7 +232,7 @@ func (c *client) ListProposals(ctx context.Context, status string, authority age
 
 func (c *client) GetProposal(ctx context.Context, proposalID string, authority agentsdk.AgentAuthority) (agentsdk.AgentProposal, error) {
 	var value agentsdk.AgentProposal
-	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/proposals/"+url.PathEscape(strings.TrimSpace(proposalID))+"/get", struct {
+	err := c.call(ctx, http.MethodPost, "/agent/v1/dialog-state/proposals/"+url.PathEscape(strings.TrimSpace(proposalID))+"/get", struct {
 		Authority agentsdk.AgentAuthority `json:"authority"`
 	}{Authority: authority}, "", &value)
 	return value, err
@@ -240,13 +240,13 @@ func (c *client) GetProposal(ctx context.Context, proposalID string, authority a
 
 func (c *client) StoreProposal(ctx context.Context, proposal agentsdk.AgentProposal) (agentsdk.AgentProposal, error) {
 	var value agentsdk.AgentProposal
-	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/proposals/store", proposal, "", &value)
+	err := c.call(ctx, http.MethodPost, "/agent/v1/dialog-state/proposals/store", proposal, "", &value)
 	return value, err
 }
 
 func (c *client) DecideProposal(ctx context.Context, decision agentsdk.AgentProposalDecision, authority agentsdk.AgentAuthority) (agentsdk.AgentProposal, error) {
 	var value agentsdk.AgentProposal
-	err := c.call(ctx, http.MethodPost, "/api/v1/dialog-state/proposals/decide", struct {
+	err := c.call(ctx, http.MethodPost, "/agent/v1/dialog-state/proposals/decide", struct {
 		Decision  agentsdk.AgentProposalDecision `json:"decision"`
 		Authority agentsdk.AgentAuthority        `json:"authority"`
 	}{Decision: decision, Authority: authority}, "", &value)
@@ -290,6 +290,13 @@ func (c *client) call(ctx context.Context, method, path string, payload any, key
 	}
 	if response.StatusCode/100 != 2 {
 		_ = json.Unmarshal(raw, out)
+		if task, ok := out.(*agentsdk.TaskResult); ok && strings.TrimSpace(task.ErrorCode) != "" {
+			return &agentsdk.Error{
+				Class:     strings.TrimSpace(task.ErrorClass),
+				Code:      strings.TrimSpace(task.ErrorCode),
+				Retryable: task.Retryable || response.StatusCode == http.StatusTooManyRequests || response.StatusCode >= 500,
+			}
+		}
 		var failure struct{ Code, Message string }
 		_ = json.Unmarshal(raw, &failure)
 		if failure.Code != "" {

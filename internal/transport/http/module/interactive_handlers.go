@@ -25,7 +25,7 @@ type interactiveRunRequest struct {
 	IdempotencyKey    string         `json:"idempotency_key,omitempty"`
 }
 
-func (s *surface) runInteractive(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) runInteractive(w http.ResponseWriter, r *http.Request) {
 	var payload interactiveRunRequest
 	if !decode(w, r, &payload) {
 		return
@@ -51,7 +51,7 @@ func (s *surface) runInteractive(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, result)
 }
 
-func (s *surface) streamInteractive(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) streamInteractive(w http.ResponseWriter, r *http.Request) {
 	var payload interactiveRunRequest
 	if !decode(w, r, &payload) {
 		return
@@ -88,7 +88,7 @@ func (s *surface) streamInteractive(w http.ResponseWriter, r *http.Request) {
 	flushInteractiveEvent(w)
 }
 
-func (s *surface) interactiveExecutionRequest(r *http.Request, payload interactiveRunRequest) (agentapplication.InteractiveExecutionRequest, error) {
+func (s *adapter) interactiveExecutionRequest(r *http.Request, payload interactiveRunRequest) (agentapplication.InteractiveExecutionRequest, error) {
 	identity, ok := identitysdk.RequestIdentityFromContext(r.Context())
 	if !ok || !identity.Principal.Known {
 		return agentapplication.InteractiveExecutionRequest{}, &agentsdk.Error{Class: "forbidden", Code: "backend.workspace_scope_required"}

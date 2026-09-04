@@ -21,7 +21,7 @@ type proposalDecisionRequest struct {
 	Metadata map[string]any
 }
 
-func (s *surface) createProposal(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) createProposal(w http.ResponseWriter, r *http.Request) {
 	var payload createProposalRequest
 	if !decode(w, r, &payload) {
 		return
@@ -48,15 +48,15 @@ func (s *surface) createProposal(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, proposal)
 }
 
-func (s *surface) approveProposal(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) approveProposal(w http.ResponseWriter, r *http.Request) {
 	s.decideProposal(w, r, "approved")
 }
 
-func (s *surface) rejectProposal(w http.ResponseWriter, r *http.Request) {
+func (s *adapter) rejectProposal(w http.ResponseWriter, r *http.Request) {
 	s.decideProposal(w, r, "rejected")
 }
 
-func (s *surface) decideProposal(w http.ResponseWriter, r *http.Request, decision string) {
+func (s *adapter) decideProposal(w http.ResponseWriter, r *http.Request, decision string) {
 	proposalID := strings.TrimSpace(r.PathValue("proposalID"))
 	if proposalID == "" {
 		writeCode(w, http.StatusBadRequest, "agent_dialog.proposal_id_required")

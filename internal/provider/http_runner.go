@@ -52,14 +52,14 @@ func (r *Runner) Start(ctx context.Context, request agentsdk.TaskRequest) (agent
 	if err != nil {
 		return agentsdk.TaskResult{}, err
 	}
-	payload := map[string]any{"agent_id": r.config.AgentID, "message": strings.TrimSpace(request.Task.Instruction) + "\n\nReturn only the declared structured result.\nInput:\n" + string(input), "response_mode": "async", "external_session_id": "agent-task:" + request.WorkspaceID + ":" + request.TaskRunID, "metadata": map[string]any{"source": "domainry-agent-task-worker", "workspace_id": request.WorkspaceID, "process_id": request.ProcessID, "task_run_id": request.TaskRunID, "task_key": request.Task.Key, "task_version": request.Task.Version, "identity": request.Identity, "correlation_id": request.CorrelationID, "idempotency_key": request.IdempotencyKey, "execution_credential": request.ExecutionCredential, "tool_endpoint": "/agent-dialog/task-tools/invoke"}}
-	return r.call(ctx, http.MethodPost, "/api/v1/agent-runs", payload, request.IdempotencyKey)
+	payload := map[string]any{"agent_id": r.config.AgentID, "message": strings.TrimSpace(request.Task.Instruction) + "\n\nReturn only the declared structured result.\nInput:\n" + string(input), "response_mode": "async", "external_session_id": "agent-task:" + request.WorkspaceID + ":" + request.TaskRunID, "metadata": map[string]any{"source": "domainry-agent-task-worker", "workspace_id": request.WorkspaceID, "process_id": request.ProcessID, "task_run_id": request.TaskRunID, "task_key": request.Task.Key, "task_version": request.Task.Version, "identity": request.Identity, "correlation_id": request.CorrelationID, "idempotency_key": request.IdempotencyKey, "execution_credential": request.ExecutionCredential, "tool_endpoint": "/agent/task-tools/invoke"}}
+	return r.call(ctx, http.MethodPost, "/agent/v1/agent-runs", payload, request.IdempotencyKey)
 }
 func (r *Runner) Poll(ctx context.Context, id, key string) (agentsdk.TaskResult, error) {
-	return r.call(ctx, http.MethodGet, "/api/v1/agent-runs/"+url.PathEscape(strings.TrimSpace(id)), nil, key)
+	return r.call(ctx, http.MethodGet, "/agent/v1/agent-runs/"+url.PathEscape(strings.TrimSpace(id)), nil, key)
 }
 func (r *Runner) Cancel(ctx context.Context, id, key string) (agentsdk.TaskResult, error) {
-	return r.call(ctx, http.MethodPost, "/api/v1/agent-runs/"+url.PathEscape(strings.TrimSpace(id))+"/cancel", map[string]any{}, key)
+	return r.call(ctx, http.MethodPost, "/agent/v1/agent-runs/"+url.PathEscape(strings.TrimSpace(id))+"/cancel", map[string]any{}, key)
 }
 
 func (r *Runner) Run(ctx context.Context, request agentsdk.InteractiveRequest) (agentsdk.InteractiveResult, error) {
@@ -70,7 +70,7 @@ func (r *Runner) Run(ctx context.Context, request agentsdk.InteractiveRequest) (
 		return agentsdk.InteractiveResult{}, err
 	}
 	payload := map[string]any{"agent_id": r.config.AgentID, "message": request.Message, "response_mode": "blocking", "external_session_id": request.SessionID, "metadata": map[string]any{"source": "domainry-interactive-agent", "interactive_run_id": request.RunID, "idempotency_key": request.IdempotencyKey, "runtime_context": request.Context, "route_candidates": request.Candidates, "max_steps": request.MaxSteps, "max_tool_calls": request.MaxToolCalls, "execution_credential": request.ExecutionCredential}}
-	raw, status, err := r.request(ctx, http.MethodPost, "/api/v1/agent-runs", payload, request.IdempotencyKey)
+	raw, status, err := r.request(ctx, http.MethodPost, "/agent/v1/agent-runs", payload, request.IdempotencyKey)
 	if err != nil {
 		return agentsdk.InteractiveResult{}, err
 	}

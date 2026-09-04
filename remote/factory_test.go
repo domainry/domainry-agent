@@ -2,6 +2,7 @@ package remote
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -116,5 +117,32 @@ func TestSaaSFactoryFailsClosed(t *testing.T) {
 	defer staleService.Close()
 	if _, err := NewFactory(Options{BaseURL: staleService.URL, APIKey: "right", Client: staleService.Client()}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime"}, newRemoteHost(t, "runtime")); err == nil {
 		t.Fatal("Agent Remote accepted a different source capability digest")
+	}
+}
+
+func TestRemoteClientPreservesStructuredAndGenericHTTPErrors(t *testing.T) {
+	service := httptest.NewServer(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
+		response.Header().Set("Content-Type", "application/json")
+		if request.URL.Path == "/agent/v1/task-runs" {
+			response.WriteHeader(http.StatusBadGateway)
+			_, _ = response.Write([]byte(`{"status":"failed","error_class":"provider_http","error_code":"agent.runner.provider_http_429","retryable":true}`))
+			return
+		}
+		response.WriteHeader(http.StatusServiceUnavailable)
+		_, _ = response.Write([]byte(`{"code":"agent.saas.overloaded","message":"temporarily unavailable"}`))
+	}))
+	defer service.Close()
+	client := newClient(Options{BaseURL: service.URL, APIKey: "secret", Client: service.Client()})
+
+	result, err := client.Start(t.Context(), agentsdk.TaskRequest{IdempotencyKey: "key"})
+	var structured *agentsdk.Error
+	if !errors.As(err, &structured) || structured.Class != "provider_http" || structured.Code != "agent.runner.provider_http_429" || !structured.Retryable || result.ErrorCode != structured.Code {
+		t.Fatalf("structured result=%+v error=%+v", result, structured)
+	}
+
+	_, err = client.descriptor(t.Context())
+	var generic *agentsdk.Error
+	if !errors.As(err, &generic) || generic.Class != "saas_http" || generic.Code != "agent.saas.overloaded" || generic.Message != "temporarily unavailable" || !generic.Retryable {
+		t.Fatalf("generic error=%+v", generic)
 	}
 }
