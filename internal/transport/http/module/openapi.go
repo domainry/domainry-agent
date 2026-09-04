@@ -11,9 +11,5 @@ func (s *adapter) OpenAPIOperations() map[string]map[string]any {
 }
 
 func agentOpenAPIOperations() map[string]map[string]any {
-	contract, err := agentsdk.CompileAgentHTTPAdapterContract()
-	if err != nil {
-		panic(err)
-	}
-	return contract.OpenAPI
+	return agentsdk.HTTPAdapterResolvedOpenAPIOperations()
 }

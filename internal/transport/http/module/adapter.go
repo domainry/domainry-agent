@@ -120,6 +120,7 @@ func NewOwnedAdapter(binding agentsdk.Binding, applications AdapterApplications)
 	if err != nil {
 		return nil, err
 	}
+	resolvedOperations := agentsdk.HTTPAdapterResolvedOpenAPIOperations()
 	for _, source := range contract.Routes {
 		handler, found := handlers[source.Action.Key]
 		if !found {
@@ -129,7 +130,7 @@ func NewOwnedAdapter(binding agentsdk.Binding, applications AdapterApplications)
 		if err != nil {
 			return nil, fmt.Errorf("project Agent HTTP Action %q: %w", source.Action.Key, err)
 		}
-		operation := contract.OpenAPI[route.Pattern()]
+		operation := resolvedOperations[route.Pattern()]
 		if len(operation) == 0 {
 			return nil, fmt.Errorf("Agent HTTP Action %q has no OpenAPI operation", source.Action.Key)
 		}
