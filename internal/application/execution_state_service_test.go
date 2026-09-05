@@ -92,6 +92,23 @@ func TestTaskStateServiceOwnsCreateFenceApprovalAndOperatorTransitions(t *testin
 	}
 }
 
+func TestTaskStateServiceRejectsOperationsForMissingRuns(t *testing.T) {
+	repository := &taskStateRepositoryStub{}
+	service := NewTaskStateServiceWithClock(repository, time.Now)
+	actor := agentpersistence.AgentTaskActor{Known: true, WorkspaceID: "workspace-1", UserID: "operator"}
+	audit := &taskAuditStub{}
+
+	if _, _, err := service.Operate(t.Context(), "workspace-1", "missing", "retry", "retry-missing", "operator evidence", actor, audit); executionErrorCode(err) != "agent.task.not_found" {
+		t.Fatalf("missing retry error=%v", err)
+	}
+	if _, _, err := service.RequestCancel(t.Context(), "workspace-1", "missing", "operator evidence"); executionErrorCode(err) != "agent.task.not_found" {
+		t.Fatalf("missing cancel error=%v", err)
+	}
+	if _, err := service.OverrideOutput(t.Context(), "workspace-1", "missing", map[string]any{"status": "resolved"}, actor, "operator evidence", audit); executionErrorCode(err) != "agent.task.not_found" {
+		t.Fatalf("missing override error=%v", err)
+	}
+}
+
 type interactiveStateRepositoryStub struct {
 	run     agentmodel.AgentInteractiveRun
 	updated bool

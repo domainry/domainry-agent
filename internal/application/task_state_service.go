@@ -284,6 +284,11 @@ func (s *TaskStateService) RequestCancel(ctx context.Context, workspaceID, runID
 	if s == nil || s.repository == nil {
 		return agentmodel.AgentTaskRun{}, false, unavailable("agent.task.repository_unavailable")
 	}
+	if run, found, err := s.Get(ctx, workspaceID, runID); err != nil {
+		return run, false, err
+	} else if !found {
+		return run, false, notFound("agent.task.not_found")
+	}
 	run, replayed, err := s.repository.RequestCancel(ctx, strings.TrimSpace(workspaceID), strings.TrimSpace(runID), strings.TrimSpace(reason), s.now().UTC())
 	if err != nil || run.Status != agentmodel.AgentTaskRunWaitingApproval || run.Approval == nil {
 		return run, replayed, err
@@ -321,8 +326,11 @@ func (s *TaskStateService) OverrideOutput(ctx context.Context, workspaceID, runI
 		return agentmodel.AgentTaskRun{}, badRequest("agent.task.override_evidence_required")
 	}
 	run, found, err := s.Get(ctx, workspaceID, runID)
-	if err != nil || !found {
+	if err != nil {
 		return run, err
+	}
+	if !found {
+		return run, notFound("agent.task.not_found")
 	}
 	if !run.Status.Terminal() {
 		return run, conflict("agent.task.override_terminal_required")
@@ -355,8 +363,11 @@ func (s *TaskStateService) Operate(ctx context.Context, workspaceID, runID, kind
 		return agentmodel.AgentTaskRun{}, false, badRequest("agent.task.operation_evidence_required")
 	}
 	run, found, err := s.Get(ctx, workspaceID, runID)
-	if err != nil || !found {
+	if err != nil {
 		return run, false, err
+	}
+	if !found {
+		return run, false, notFound("agent.task.not_found")
 	}
 	for _, operation := range run.Operations {
 		if operation.IdempotencyKey == idempotencyKey {
