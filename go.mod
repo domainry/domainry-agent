@@ -3,10 +3,10 @@ module github.com/domainry/domainry-agent
 go 1.26.0
 
 require (
-	github.com/domainry/domainry-agent-sdk v0.1.3
-	github.com/domainry/domainry-foundation v0.1.0-dev.9
-	github.com/domainry/domainry-identity-sdk v0.1.1-dev8
-	github.com/domainry/domainry-lifecycle-sdk v0.1.7
+	github.com/domainry/domainry-agent-sdk v0.1.4
+	github.com/domainry/domainry-foundation v0.1.0
+	github.com/domainry/domainry-identity-sdk v0.1.2
+	github.com/domainry/domainry-lifecycle-sdk v0.1.8
 	github.com/domainry/domainry-orm v0.1.30
 	github.com/jackc/pgx/v5 v5.10.0
 	modernc.org/sqlite v1.57.0
