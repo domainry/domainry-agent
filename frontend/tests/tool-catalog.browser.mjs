@@ -15,7 +15,7 @@ const browser = await chromium.launch({ headless: true, channel: "chrome" });
 const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
 const page = await context.newPage();
 page.setDefaultTimeout(30000);
-const report = { steps: [], javascriptErrors: [], runs: [] };
+const report = { steps: [], javascriptErrors: [], runs: [], completedRuns: [] };
 page.on("response", async response => {
   if (!/\/agent\/conversations\/[^/]+\/runs\/[^/?]+$/.test(response.url())) return;
   try {
@@ -27,6 +27,25 @@ page.on("response", async response => {
 page.on("pageerror", error => report.javascriptErrors.push(String(error)));
 const step = name => { report.steps.push(name); console.log(`PASS ${name}`); };
 const control = async name => assert.equal((await fetch(`${origin}/__acceptance/${name}`, { method: "POST" })).status, 204, name);
+const readServerState = () => page.evaluate(async () => {
+  const session = await (await fetch("/app/session")).json();
+  const base = `/agent/conversations/${location.hash.slice(1)}`;
+  const get = path => fetch(path, { headers: { "X-Agent-Scope": session.scope } }).then(r => r.json());
+  const conversation = await get(base), messages = await get(`${base}/messages`);
+  const id = conversation.active_run_id || messages.items?.at(-1)?.run_id;
+  return { conversation, messages, run: id ? await get(`${base}/runs/${id}`) : null };
+});
+async function completed() {
+  // A tool result or text delta is not a committed final answer. Verify both
+  // the actual UI terminal label and the stored run/message through HTTP.
+  await page.locator(".run-status").filter({ hasText: /^已保存$/ }).waitFor({ timeout: 60000 });
+  const stored = await readServerState();
+  assert.equal(stored.run.status, "completed");
+  assert.equal(stored.messages.items.at(-1).role, "assistant");
+  assert.equal(stored.messages.items.at(-1).run_id, stored.run.id);
+  report.completedRuns.push({ id: stored.run.id, attempt: stored.run.attempt, assistantMessageID: stored.messages.items.at(-1).id, calls: stored.run.steps.flatMap(step => step.calls).map(call => ({ id: call.id, name: call.name, status: call.status })) });
+  return stored.run;
+}
 async function sendFresh(title, message) {
   await page.getByRole("button", { name: "新建会话", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "新建会话", exact: true });
@@ -39,7 +58,7 @@ async function sendFresh(title, message) {
 async function catalog() {
   const answer = page.getByText(/^当前可用工具：/).last();
   await answer.waitFor();
-  await page.getByRole("button", { name: "停止生成", exact: true }).waitFor({ state: "hidden" });
+  await completed();
   return (await answer.innerText()).replace("当前可用工具：", "").split("、");
 }
 try {
@@ -62,6 +81,7 @@ try {
   assert(keys.includes("time_now") && keys.includes("calculate"));
   await sendFresh("连接断开仍可计算", "计算");
   await page.getByText("计算已完成：0.30 元。", { exact: true }).waitFor({ timeout: 60000 });
+  await completed();
   await page.locator('[data-tool-status="completed"]').filter({ hasText: "计算" }).waitFor();
   step("disconnected knowledge is omitted while a local tool still executes");
 
@@ -77,6 +97,8 @@ try {
 
   await sendFresh("执行前连接变化", "执行前停用计算");
   await page.getByRole("status").filter({ hasText: /当前工具不可用：权限可能已被撤销/ }).first().waitFor();
+  const paused = (await readServerState()).run;
+  assert.equal(paused.status, "failed");
   assert.equal(await page.locator('[data-tool-status="completed"]').count(), 0);
   await page.screenshot({ path: join(output, "disabled-before-execution.png") });
   await control("restart_catalog_host");
@@ -85,6 +107,9 @@ try {
   await control("restore_connections");
   await page.getByRole("button", { name: "继续处理", exact: true }).click();
   await page.getByText("计算已完成：0.30 元。", { exact: true }).waitFor();
+  const resumed = await completed();
+  assert.equal(resumed.id, paused.id);
+  assert.equal(resumed.attempt, paused.attempt + 1);
   assert.equal(await page.locator('[data-tool-status="completed"]').filter({ hasText: "计算" }).count(), 1);
   await page.locator('[data-tool-status="completed"] summary').click();
   await page.getByText("0.1+0.2 = 0.30 CNY", { exact: true }).waitFor();
@@ -103,6 +128,7 @@ try {
 
   await sendFresh("恢复连接后真实调用", "检索");
   await page.getByText("已通过当前连接取得验收资料。", { exact: true }).waitFor();
+  await completed();
   await page.locator('[data-tool-status="completed"]').filter({ hasText: "搜索知识库" }).waitFor();
   await control("restart_catalog_host");
   await page.reload();
@@ -124,14 +150,7 @@ try {
   await writeFile(join(output, "report.json"), JSON.stringify(report, null, 2));
 } catch (error) {
   report.failure = String(error);
-  report.lastServerState = await page.evaluate(async () => {
-    const session = await (await fetch("/app/session")).json();
-    const base = `/agent/conversations/${location.hash.slice(1)}`;
-    const get = path => fetch(path, { headers: { "X-Agent-Scope": session.scope } }).then(r => r.json());
-    const conversation = await get(base), messages = await get(`${base}/messages`);
-    const id = conversation.active_run_id || messages.items?.at(-1)?.run_id;
-    return { conversation, messages, run: id ? await get(`${base}/runs/${id}`) : null };
-  }).catch(error => ({ diagnosticError: String(error) }));
+  report.lastServerState = await readServerState().catch(error => ({ diagnosticError: String(error) }));
   await page.screenshot({ path: join(output, "failure.png") }).catch(() => {});
   await writeFile(join(output, "report.json"), JSON.stringify(report, null, 2));
   throw error;
