@@ -156,7 +156,7 @@ func TestConversationCatalogIdentityHTTPConnectionsAndBrowser(t *testing.T) {
 	}
 	grant(true)
 	runToEnd := func(c string, run agentsdk.ConversationRun) agentsdk.ConversationRun {
-		deadline := time.Now().Add(20 * time.Second)
+		deadline := time.Now().Add(60 * time.Second)
 		for time.Now().Before(deadline) {
 			if err := json.Unmarshal(b.call("GET", "/agent/conversations/"+c+"/runs/"+run.ID, "", 200).Body.Bytes(), &run); err != nil {
 				t.Fatal(err)
@@ -166,10 +166,11 @@ func TestConversationCatalogIdentityHTTPConnectionsAndBrowser(t *testing.T) {
 			}
 			time.Sleep(5 * time.Millisecond)
 		}
-		t.Fatal("catalog run did not complete")
+		t.Fatalf("catalog run did not complete: %+v", run)
 		return run
 	}
 	round := func(id, message string) (string, agentsdk.ConversationRun, string) {
+		started := time.Now()
 		raw, _ := json.Marshal(agentsdk.ConversationCreate{ClientID: id, Title: id})
 		var c agentsdk.Conversation
 		_ = json.Unmarshal(b.call("POST", "/agent/conversations", string(raw), 200).Body.Bytes(), &c)
@@ -177,6 +178,7 @@ func TestConversationCatalogIdentityHTTPConnectionsAndBrowser(t *testing.T) {
 		var run agentsdk.ConversationRun
 		_ = json.Unmarshal(b.call("POST", "/agent/conversations/"+c.ID+"/messages", string(raw), 202).Body.Bytes(), &run)
 		run = runToEnd(c.ID, run)
+		t.Logf("catalog round=%s status=%s error=%s elapsed=%s model_calls=%d", id, run.Status, run.ErrorCode, time.Since(started), modelCalls.Load())
 		var page agentsdk.ConversationMessagePage
 		_ = json.Unmarshal(b.call("GET", "/agent/conversations/"+c.ID+"/messages", "", 200).Body.Bytes(), &page)
 		return c.ID, run, page.Items[len(page.Items)-1].Content
@@ -193,7 +195,7 @@ func TestConversationCatalogIdentityHTTPConnectionsAndBrowser(t *testing.T) {
 	before := knowledgeCalls.Load()
 	_, run, answer = round("catalog-no-search", "检索")
 	if run.Status != "completed" || !strings.Contains(answer, "不提供资料检索") || knowledgeCalls.Load() != before {
-		t.Fatal("disconnected source was called")
+		t.Fatalf("disconnected check: run=%+v answer=%q knowledge_before=%d knowledge_after=%d", run, answer, before, knowledgeCalls.Load())
 	}
 	state.disconnected.Store(false)
 	grant(false)

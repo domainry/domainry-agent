@@ -65,8 +65,6 @@ func validateToolJSON(schema *jsonschema.Schema, raw []byte) error {
 }
 
 func (s *ConversationService) executionCatalog(ctx context.Context, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, map[string]conversationCompiledTool, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
 	definitions, err := s.options.ToolHost.ConversationTools(ctx, a)
 	if err != nil {
 		return nil, nil, err
@@ -97,6 +95,13 @@ func (s *ConversationService) executionCatalog(ctx context.Context, a agentsdk.C
 	if err != nil {
 		return nil, nil, err
 	}
+	if s.options.ToolAvailability == nil {
+		return definitions, compiled, nil
+	}
+	// Bound the new connection checks, not the host's existing Identity/catalog
+	// resolution. Legacy hosts keep the caller's original execution deadline.
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 	available := make([]agentsdk.ConversationToolDefinition, 0, len(definitions))
 	for _, definition := range definitions {
 		ready, err := s.conversationToolAvailable(ctx, a, definition.Key)

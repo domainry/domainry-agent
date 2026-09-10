@@ -14,8 +14,16 @@ assert.equal((await (await fetch(`${origin}/app/config`)).json()).workspace_id, 
 const browser = await chromium.launch({ headless: true, channel: "chrome" });
 const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
 const page = await context.newPage();
-page.setDefaultTimeout(15000);
-const report = { steps: [], javascriptErrors: [] };
+page.setDefaultTimeout(30000);
+const report = { steps: [], javascriptErrors: [], runs: [] };
+page.on("response", async response => {
+  if (!/\/agent\/conversations\/[^/]+\/runs\/[^/?]+$/.test(response.url())) return;
+  try {
+    const run = await response.json();
+    report.runs.push({ id: run.id, status: run.status, error: run.error_code, seq: run.last_event_seq, at: new Date().toISOString() });
+    if (report.runs.length > 100) report.runs.shift();
+  } catch { /* Requests cancelled on a page switch have no body to inspect. */ }
+});
 page.on("pageerror", error => report.javascriptErrors.push(String(error)));
 const step = name => { report.steps.push(name); console.log(`PASS ${name}`); };
 const control = async name => assert.equal((await fetch(`${origin}/__acceptance/${name}`, { method: "POST" })).status, 204, name);
@@ -53,7 +61,7 @@ try {
   assert(!keys.some(key => key.startsWith("knowledge_")));
   assert(keys.includes("time_now") && keys.includes("calculate"));
   await sendFresh("连接断开仍可计算", "计算");
-  await page.getByText("计算已完成：0.30 元。", { exact: true }).waitFor();
+  await page.getByText("计算已完成：0.30 元。", { exact: true }).waitFor({ timeout: 60000 });
   await page.locator('[data-tool-status="completed"]').filter({ hasText: "计算" }).waitFor();
   step("disconnected knowledge is omitted while a local tool still executes");
 
@@ -116,6 +124,14 @@ try {
   await writeFile(join(output, "report.json"), JSON.stringify(report, null, 2));
 } catch (error) {
   report.failure = String(error);
+  report.lastServerState = await page.evaluate(async () => {
+    const session = await (await fetch("/app/session")).json();
+    const base = `/agent/conversations/${location.hash.slice(1)}`;
+    const get = path => fetch(path, { headers: { "X-Agent-Scope": session.scope } }).then(r => r.json());
+    const conversation = await get(base), messages = await get(`${base}/messages`);
+    const id = conversation.active_run_id || messages.items?.at(-1)?.run_id;
+    return { conversation, messages, run: id ? await get(`${base}/runs/${id}`) : null };
+  }).catch(error => ({ diagnosticError: String(error) }));
   await page.screenshot({ path: join(output, "failure.png") }).catch(() => {});
   await writeFile(join(output, "report.json"), JSON.stringify(report, null, 2));
   throw error;

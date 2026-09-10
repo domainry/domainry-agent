@@ -19,11 +19,39 @@ func (f catalogAvailabilityFunc) ConversationToolAvailable(ctx context.Context, 
 
 type catalogOnlyHost struct {
 	agentsdk.ConversationToolHost
-	definitions []agentsdk.ConversationToolDefinition
+	definitions    []agentsdk.ConversationToolDefinition
+	inspectContext func(context.Context)
 }
 
-func (h catalogOnlyHost) ConversationTools(context.Context, agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, error) {
+func (h catalogOnlyHost) ConversationTools(ctx context.Context, _ agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, error) {
+	if h.inspectContext != nil {
+		h.inspectContext(ctx)
+	}
 	return h.definitions, nil
+}
+
+func TestConversationCatalogKeepsHostAuthorizationDeadline(t *testing.T) {
+	ctx, cancel := context.WithTimeout(t.Context(), time.Minute)
+	defer cancel()
+	expected, _ := ctx.Deadline()
+	host := catalogOnlyHost{definitions: []agentsdk.ConversationToolDefinition{agentsdk.PersonalConversationTools()[1]}, inspectContext: func(actual context.Context) {
+		if got, _ := actual.Deadline(); !got.Equal(expected) {
+			t.Error("connection check shortened Identity/catalog authorization deadline")
+		}
+	}}
+	s := &ConversationService{options: ConversationOptions{ToolHost: host}}
+	if _, _, err := s.executionCatalog(ctx, agentsdk.ConversationAuthority{}); err != nil {
+		t.Fatal(err)
+	}
+	s.options.ToolAvailability = catalogAvailabilityFunc(func(check context.Context, _ agentsdk.ConversationAuthority, _ string) (bool, error) {
+		if deadline, ok := check.Deadline(); !ok || time.Until(deadline) > 5*time.Second {
+			t.Error("connection check was not bounded")
+		}
+		return true, nil
+	})
+	if _, _, err := s.executionCatalog(ctx, agentsdk.ConversationAuthority{}); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestConversationCatalogAvailabilityPreservesRegisteredContractAndOwnedSnapshot(t *testing.T) {
