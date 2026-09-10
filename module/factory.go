@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
@@ -18,7 +19,7 @@ import (
 	agentcomposition "github.com/domainry/domainry-agent/internal/composition"
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
-	"github.com/domainry/domainry-agent/internal/provider"
+	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
 	actioncontract "github.com/domainry/domainry-foundation/action"
 	"github.com/domainry/domainry-foundation/modulecapability"
@@ -26,21 +27,44 @@ import (
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
 )
 
+type ConversationOptions = agentapplication.ConversationOptions
+type KnowledgeConfig = provider.KnowledgeConfig
+type KnowledgeResponseMapping = provider.KnowledgeResponseMapping
+type KnowledgeCitationMapping = provider.KnowledgeCitationMapping
+
 type Options struct {
-	BaseURL, APIKey string
-	AgentID         int
-	Timeout         time.Duration
-	Client          *http.Client
+	KnowledgeLibraries                                     []KnowledgeLibraryConfig
+	KnowledgeLibraryBindingsJSON                           string
+	ConversationEnabled                                    bool
+	ConversationTimezone                                   string
+	ConversationBaseURL                                    string
+	BaseURL, APIKey                                        string
+	AgentID                                                int
+	Timeout                                                time.Duration
+	Client                                                 *http.Client
+	ConversationURL, ConversationAPIKey, ConversationModel string
+	ConversationProviderName, ConversationProtocol         string
+	ConversationProvider                                   agentsdk.ConversationModel
+	ConversationOptions                                    ConversationOptions
+	Knowledge                                              KnowledgeConfig
 }
 
 func OptionsFromEnvironment() Options {
 	id, _ := strconv.Atoi(strings.TrimSpace(os.Getenv("AGENT_HTTP_AGENT_ID")))
-	return Options{BaseURL: os.Getenv("AGENT_HTTP_BASE_URL"), APIKey: os.Getenv("AGENT_HTTP_API_KEY"), AgentID: id, Timeout: 120 * time.Second}
+	model := provider.ConversationModelConfigFromEnvironment()
+	return Options{KnowledgeLibraryBindingsJSON: os.Getenv("AGENT_KNOWLEDGE_LIBRARY_BINDINGS"), ConversationEnabled: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_ENABLED")), "true"), BaseURL: os.Getenv("AGENT_HTTP_BASE_URL"), APIKey: os.Getenv("AGENT_HTTP_API_KEY"), AgentID: id, Timeout: 120 * time.Second, ConversationTimezone: os.Getenv("AGENT_CONVERSATION_TIMEZONE"), ConversationBaseURL: model.BaseURL, ConversationURL: model.URL, ConversationAPIKey: model.APIKey, ConversationModel: model.Model, ConversationProviderName: model.Provider, ConversationProtocol: model.Protocol, Knowledge: provider.KnowledgeConfigFromEnvironment()}
 }
 
 type Factory struct{ options Options }
 
 func NewFactory(options Options) *Factory { return &Factory{options: options} }
+
+func (f *Factory) ConversationEnabled() bool {
+	if f == nil {
+		return false
+	}
+	return f.options.ConversationEnabled || f.options.ConversationProvider != nil || (provider.ConversationModelConfig{Provider: f.options.ConversationProviderName, Protocol: f.options.ConversationProtocol, BaseURL: f.options.ConversationBaseURL, URL: f.options.ConversationURL, APIKey: f.options.ConversationAPIKey, Model: f.options.ConversationModel}).Configured()
+}
 func (f *Factory) Open(context.Context, agentsdk.ApplicationRef) (agentsdk.Binding, error) {
 	return nil, fmt.Errorf("Agent Module host is required")
 }
@@ -71,29 +95,87 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		return nil, fmt.Errorf("build Agent capability binding: %w", err)
 	}
 	binding := newBinding(runner, store, agentsdk.DeploymentModeModule)
+	model := f.options.ConversationProvider
+	modelConfig := provider.ConversationModelConfig{Provider: f.options.ConversationProviderName, Protocol: f.options.ConversationProtocol, BaseURL: f.options.ConversationBaseURL, URL: f.options.ConversationURL, APIKey: f.options.ConversationAPIKey, Model: f.options.ConversationModel, Client: f.options.Client}
+	if model == nil && modelConfig.Configured() {
+		model, err = provider.NewConversationModel(modelConfig)
+		if err != nil {
+			return nil, err
+		}
+	}
+	conversationOptions := f.options.ConversationOptions
+	deferConversations := false
+	if deferred, ok := host.(modulehost.DeferredConversationHost); ok {
+		deferConversations = deferred.DeferConversationHostBinding()
+	}
+	if conversationOptions.PersonalAuthorizer == nil {
+		conversationOptions.PersonalAuthorizer, _ = host.(agentsdk.ConversationToolAuthorizer)
+	}
+	conversationRepository := agentstore.NewConversationStore(store)
+	if conversationOptions.ToolHost == nil {
+		if authorizer, ok := host.(agentsdk.ConversationToolAuthorizer); ok {
+			if _, capable := model.(agentsdk.ConversationAgentModel); capable {
+				conversationOptions.ToolHost, err = agentapplication.NewPersonalConversationHost(conversationRepository, authorizer, f.options.ConversationTimezone)
+				if err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	if conversationOptions.ToolHost != nil && conversationOptions.ToolAvailability == nil {
+		conversationOptions.ToolAvailability, _ = host.(agentsdk.ConversationToolAvailability)
+	}
+	if f.options.Knowledge.Configured() {
+		if conversationOptions.Knowledge != nil {
+			return nil, fmt.Errorf("configure only one conversation knowledge source")
+		}
+		knowledge, err := provider.NewKnowledge(f.options.Knowledge)
+		if err != nil {
+			return nil, err
+		}
+		conversationOptions.Knowledge = knowledge
+	}
+	if err := assembleLibraryKnowledge(&conversationOptions, f.options.KnowledgeLibraries, f.options.KnowledgeLibraryBindingsJSON, f.options.Knowledge); err != nil {
+		return nil, err
+	}
+	assembly := &conversationAssembly{repository: conversationRepository, model: model, runtimeID: app.RuntimeID, timezone: f.options.ConversationTimezone, options: conversationOptions}
+	if deferConversations {
+		binding.pendingConversations = assembly
+	} else if err := binding.openConversations(assembly, nil); err != nil {
+		return nil, err
+	}
 	binding.Binding = capabilityBinding
 	binding.taskExecution.StartWorker(ctx)
 	adapter, err := agenthttp.NewAdapter(binding)
 	if err != nil {
+		_ = binding.Close(ctx)
 		return nil, err
 	}
 	binding.adapters = []modulehttp.Adapter{adapter}
+	if binding.conversationAdapter != nil {
+		binding.adapters = append(binding.adapters, binding.conversationAdapter)
+	}
 	return binding, nil
 }
 
 type binding struct {
 	modulecapability.Binding
-	runner        *provider.Runner
-	taskExecution *agentapplication.TaskExecutionService
-	definitions   agentpersistence.DefinitionRepository
-	state         agentpersistence.AgentStateRepository
-	runs          agentpersistence.AgentTaskRunRepository
-	lifecycle     agentpersistence.AgentLifecycleRepository
-	dialogState   agentsdk.AgentDialogStateService
-	taskState     agentpersistence.AgentTaskStateService
-	interactive   agentpersistence.AgentInteractiveStateService
-	adapters      []modulehttp.Adapter
-	mode          agentsdk.DeploymentMode
+	assemblyMu           sync.Mutex
+	runner               *provider.Runner
+	taskExecution        *agentapplication.TaskExecutionService
+	definitions          agentpersistence.DefinitionRepository
+	state                agentpersistence.AgentStateRepository
+	runs                 agentpersistence.AgentTaskRunRepository
+	lifecycle            agentpersistence.AgentLifecycleRepository
+	dialogState          agentsdk.AgentDialogStateService
+	taskState            agentpersistence.AgentTaskStateService
+	interactive          agentpersistence.AgentInteractiveStateService
+	adapters             []modulehttp.Adapter
+	mode                 agentsdk.DeploymentMode
+	conversations        *agentapplication.ConversationService
+	conversationAdapter  modulehttp.Adapter
+	pendingConversations *conversationAssembly
+	closed               bool
 }
 
 func newBinding(r *provider.Runner, store *agentstore.Store, m agentsdk.DeploymentMode) *binding {
@@ -105,7 +187,14 @@ func newBinding(r *provider.Runner, store *agentstore.Store, m agentsdk.Deployme
 	return &binding{runner: r, taskExecution: agentapplication.NewTaskExecutionService(taskState, r, ""), definitions: repositories.DefinitionRepository(), state: state, runs: runs, lifecycle: repositories.AgentLifecycleRepository(), dialogState: agentapplication.NewDialogStateService(state), taskState: taskState, interactive: agentapplication.NewInteractiveStateService(interactiveRuns), mode: m}
 }
 func (b *binding) Descriptor() agentsdk.Descriptor {
-	return agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: b.mode, Capabilities: []string{agentsdk.CapabilityTaskStart, agentsdk.CapabilityTaskPoll, agentsdk.CapabilityTaskCancel, agentsdk.CapabilityInteractiveRun, "dialog.state", "execution.state", "structured_output", "usage", "tool_callback", agentsdk.CapabilityLifecycleExecute}}
+	descriptor := agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: b.mode, Capabilities: []string{agentsdk.CapabilityConversationV1, agentsdk.CapabilityTaskStart, agentsdk.CapabilityTaskPoll, agentsdk.CapabilityTaskCancel, agentsdk.CapabilityInteractiveRun, "dialog.state", "execution.state", "structured_output", "usage", "tool_callback", agentsdk.CapabilityLifecycleExecute}}
+	if b.conversations != nil && b.conversations.ConversationStreaming() {
+		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationStreamV1)
+	}
+	if b.conversations != nil && b.conversations.ConversationExecutionEnabled() {
+		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationExecutionV1)
+	}
+	return descriptor
 }
 func (b *binding) TaskRunner() agentsdk.TaskRunner                        { return b.taskExecution }
 func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner          { return b.runner }
@@ -121,6 +210,19 @@ func (*binding) AuthorizationActions() ([]actioncontract.ActionDefinition, error
 	return agentsdk.AgentAuthorizationActions()
 }
 func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
+	b.assemblyMu.Lock()
+	defer b.assemblyMu.Unlock()
+	if b.closed {
+		return fmt.Errorf("Agent Module binding is closed")
+	}
+	var conversationHost modulehost.ConversationApplicationHost
+	if b.pendingConversations != nil {
+		var ok bool
+		conversationHost, ok = host.(modulehost.ConversationApplicationHost)
+		if !ok || conversationHost.ConversationAuthorizer() == nil {
+			return fmt.Errorf("deferred Agent conversations require a current application authorizer")
+		}
+	}
 	ledger, _ := b.runs.(agentpersistence.AgentToolCallLedger)
 	adapter, err := agentcomposition.BindApplicationAdapter(agentcomposition.ApplicationAdapterDependencies{
 		Binding: b, DialogState: b.dialogState, TaskState: b.taskState, InteractiveState: b.interactive,
@@ -129,7 +231,16 @@ func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
 	if err != nil {
 		return err
 	}
+	if b.pendingConversations != nil {
+		if err := b.openConversations(b.pendingConversations, conversationHost); err != nil {
+			return err
+		}
+		b.pendingConversations = nil
+	}
 	b.adapters = []modulehttp.Adapter{adapter}
+	if b.conversationAdapter != nil {
+		b.adapters = append(b.adapters, b.conversationAdapter)
+	}
 	return nil
 }
 func (b *binding) AgentStateRepository() agentpersistence.AgentStateRepository     { return b.state }
@@ -138,7 +249,23 @@ func (b *binding) DefinitionRepository() agentpersistence.DefinitionRepository  
 func (b *binding) LifecycleExecutor(archives lifecyclecontract.ArchiveWriter) lifecyclecontract.OwnerLifecycleExecutor {
 	return agentapplication.NewLifecycleExecutor(b.lifecycle, archives)
 }
+func (b *binding) Conversations() agentsdk.ConversationService {
+	if b.conversations == nil {
+		return nil
+	}
+	return b.conversations
+}
 func (b *binding) Close(context.Context) error {
+	if b == nil {
+		return nil
+	}
+	b.assemblyMu.Lock()
+	defer b.assemblyMu.Unlock()
+	b.closed = true
+	b.pendingConversations = nil
+	if b != nil && b.conversations != nil {
+		b.conversations.Close()
+	}
 	if b != nil && b.taskExecution != nil {
 		b.taskExecution.Close()
 	}

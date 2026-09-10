@@ -1,0 +1,100 @@
+[
+  {
+    "key": "personal_owner",
+    "name": "Personal owner",
+    "permissions": [
+      {
+        "permission_key": "agent.conversation_tools.ask_user",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.time_now",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.calculate",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.history_search",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.history_read",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.memory_search",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.memory_save",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.memory_forget",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.tool_result_read",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.execution_read",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.todo_create",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.todo_list",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.todo_get",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.todo_update",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.todo_delete",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.artifact_list",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.artifact_read",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.artifact_versions",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.artifact_create",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.artifact_edit",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversation_tools.artifact_export",
+        "data_scope": "owner"
+      },
+      {
+        "permission_key": "agent.conversations.respond",
+        "data_scope": "owner"
+      }
+    ],
+    "audience": "user",
+    "assignment_mode": "manual",
+    "provision_to_workspaces": true,
+    "schema_hash": ""
+  }
+]

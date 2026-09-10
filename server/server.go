@@ -19,12 +19,14 @@ import (
 const maxRequestBytes = 2 << 20
 
 type Config struct {
-	APIKey       string
-	Runner       agentsdk.TaskRunner
-	Interactive  agentsdk.InteractiveRunner
-	DialogState  agentsdk.AgentDialogStateService
-	Repositories agentpersistence.Binding
-	Lifecycle    agentpersistence.AgentLifecycleRepository
+	APIKey                string
+	Conversations         agentsdk.ConversationService
+	ConversationRuntimeID string
+	Runner                agentsdk.TaskRunner
+	Interactive           agentsdk.InteractiveRunner
+	DialogState           agentsdk.AgentDialogStateService
+	Repositories          agentpersistence.Binding
+	Lifecycle             agentpersistence.AgentLifecycleRepository
 }
 type Server struct {
 	config  Config
@@ -32,6 +34,9 @@ type Server struct {
 }
 
 func New(config Config) (*Server, error) {
+	if config.Conversations != nil && strings.TrimSpace(config.ConversationRuntimeID) == "" {
+		return nil, fmt.Errorf("conversation runtime identity required")
+	}
 	s := &Server{config: config}
 	mux := http.NewServeMux()
 	capabilityBinding, err := agentcapability.Open(agentcapability.Inputs{})
@@ -60,6 +65,9 @@ func New(config Config) (*Server, error) {
 			operation := strings.TrimPrefix(action.Key, agentSaaSRepositoryActionPrefix)
 			handler, found = http.HandlerFunc(s.repositoryHandler(operation)), operation != ""
 		}
+		if strings.HasPrefix(action.Key, conversationSaaSActionPrefix) {
+			handler, found = http.HandlerFunc(s.conversationHandler(strings.TrimPrefix(action.Key, conversationSaaSActionPrefix))), true
+		}
 		if !found || handler == nil {
 			return nil, fmt.Errorf("Agent SaaS Action %q has no handler", action.Key)
 		}
@@ -76,11 +84,22 @@ func New(config Config) (*Server, error) {
 	s.handler = mux
 	return s, nil
 }
-func (s *Server) ready(w http.ResponseWriter, _ *http.Request) {
+func (s *Server) ready(w http.ResponseWriter, r *http.Request) {
 	definitions, hasDefinitions := s.config.Repositories.(agentpersistence.DefinitionBinding)
-	if s.config.Runner == nil || s.config.Interactive == nil || s.config.DialogState == nil || s.config.Repositories == nil || s.config.Repositories.AgentStateRepository() == nil || !agentExecutionRepositoriesReady(s.config.Repositories.AgentTaskRunRepository()) || !hasDefinitions || definitions.DefinitionRepository() == nil || s.config.Lifecycle == nil {
+	legacy := s.config.Runner != nil || s.config.Interactive != nil
+	if legacy && (s.config.Runner == nil || s.config.Interactive == nil || s.config.DialogState == nil || s.config.Repositories == nil || s.config.Repositories.AgentStateRepository() == nil || !agentExecutionRepositoriesReady(s.config.Repositories.AgentTaskRunRepository()) || !hasDefinitions || definitions.DefinitionRepository() == nil || s.config.Lifecycle == nil) {
 		writeError(w, http.StatusServiceUnavailable, "agent.saas.not_ready", "required Agent capability unavailable")
 		return
+	}
+	if !legacy && s.config.Conversations == nil {
+		writeError(w, 503, "agent.saas.not_ready", "no execution capability configured")
+		return
+	}
+	if status, ok := s.config.Conversations.(agentsdk.ConversationStatusProvider); ok {
+		if err := status.ConversationReady(r.Context()); err != nil {
+			writeError(w, 503, "agent.saas.conversation_not_ready", "conversation configuration, persistence or worker unavailable")
+			return
+		}
 	}
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ready"})
 }
@@ -112,7 +131,35 @@ func (s *Server) authorizeServiceAction(actionKey string, next http.Handler) htt
 	})
 }
 func (s *Server) descriptor(w http.ResponseWriter, _ *http.Request) {
-	writeJSON(w, http.StatusOK, agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: agentsdk.DeploymentModeSaaS, Capabilities: []string{agentsdk.CapabilityTaskStart, agentsdk.CapabilityTaskPoll, agentsdk.CapabilityTaskCancel, agentsdk.CapabilityInteractiveRun, "dialog.state", "execution.state", "structured_output", "usage", "tool_callback", agentsdk.CapabilityLifecycleExecute}})
+	descriptor := agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: agentsdk.DeploymentModeSaaS, Capabilities: []string{}}
+	if s.config.Runner != nil {
+		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityTaskStart, agentsdk.CapabilityTaskPoll, agentsdk.CapabilityTaskCancel)
+	}
+	if s.config.Interactive != nil {
+		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityInteractiveRun)
+	}
+	if s.config.DialogState != nil {
+		descriptor.Capabilities = append(descriptor.Capabilities, "dialog.state")
+	}
+	if s.config.Repositories != nil && agentExecutionRepositoriesReady(s.config.Repositories.AgentTaskRunRepository()) {
+		descriptor.Capabilities = append(descriptor.Capabilities, "execution.state")
+	}
+	if s.config.Lifecycle != nil {
+		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityLifecycleExecute)
+	}
+	if s.config.Runner != nil || s.config.Interactive != nil {
+		descriptor.Capabilities = append(descriptor.Capabilities, "structured_output", "usage", "tool_callback")
+	}
+	if s.config.Conversations != nil {
+		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationV1)
+		if status, ok := s.config.Conversations.(agentsdk.ConversationStatusProvider); ok && status.ConversationStreaming() {
+			descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationStreamV1)
+		}
+		if status, ok := s.config.Conversations.(agentsdk.ConversationExecutionStatusProvider); ok && status.ConversationExecutionEnabled() {
+			descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationExecutionV1)
+		}
+	}
+	writeJSON(w, http.StatusOK, descriptor)
 }
 func (s *Server) start(w http.ResponseWriter, r *http.Request) {
 	if s.config.Runner == nil {
@@ -180,7 +227,10 @@ func writeRunnerResult(w http.ResponseWriter, result agentsdk.TaskResult, err er
 	writeJSON(w, http.StatusOK, result)
 }
 func decode(r *http.Request, out any) error {
-	reader := http.MaxBytesReader(nil, r.Body, maxRequestBytes)
+	return decodeLimit(r, out, maxRequestBytes)
+}
+func decodeLimit(r *http.Request, out any, limit int64) error {
+	reader := http.MaxBytesReader(nil, r.Body, limit)
 	decoder := json.NewDecoder(reader)
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(out); err != nil {

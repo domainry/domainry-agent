@@ -13,6 +13,7 @@ import (
 	agentmodulehost "github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
+	"github.com/domainry/domainry-agent/internal/execution"
 )
 
 type InteractiveExecutionDependencies struct {
@@ -225,14 +226,19 @@ func (s *InteractiveExecutionService) invokeTool(ctx context.Context, run agentm
 		tool = agentsdk.AgentToolInvokeAction
 	}
 	costUnits := agentToolCostUnits(tool)
-	if run.ToolCallCount >= agentTaskMaxToolCalls(authorized.Agent.ExecutionLimits.MaxToolCalls) {
-		return agentmodel.AgentInteractiveRun{}, interactiveToolInvocationResult{}, sdkError("rate_limited", "agent.task.tool_call_limit")
-	}
 	usedCost := 0
 	for _, invocation := range run.ToolInvocations {
-		usedCost += invocation.CostUnits
+		var err error
+		usedCost, err = execution.AddCost(usedCost, invocation.CostUnits)
+		if err != nil {
+			return agentmodel.AgentInteractiveRun{}, interactiveToolInvocationResult{}, sdkError("rate_limited", "agent.task.cost_budget_exceeded")
+		}
 	}
-	if usedCost+costUnits > agentTaskCostBudgetUnits(authorized.Agent.ExecutionLimits.CostBudget) {
+	_, err := (execution.Budget{Calls: agentTaskMaxToolCalls(authorized.Agent.ExecutionLimits.MaxToolCalls), Cost: agentTaskCostBudgetUnits(authorized.Agent.ExecutionLimits.CostBudget)}).Reserve(execution.Usage{Calls: run.ToolCallCount, Cost: usedCost}, execution.Usage{Calls: 1, Cost: costUnits})
+	if err == execution.ErrCallLimit {
+		return agentmodel.AgentInteractiveRun{}, interactiveToolInvocationResult{}, sdkError("rate_limited", "agent.task.tool_call_limit")
+	}
+	if err != nil {
 		return agentmodel.AgentInteractiveRun{}, interactiveToolInvocationResult{}, sdkError("rate_limited", "agent.task.cost_budget_exceeded")
 	}
 	started := s.now().UTC()

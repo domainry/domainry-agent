@@ -18,7 +18,7 @@ func (s *Server) repositoryOperation(w http.ResponseWriter, r *http.Request, ope
 	lifecycles := s.config.Lifecycle
 	bad := func(err error) { writeError(w, http.StatusBadRequest, "agent.saas.request_invalid", err.Error()) }
 	fail := func(err error) {
-		writeError(w, http.StatusInternalServerError, "agent.saas.repository_failed", err.Error())
+		writeRepositoryError(w, err)
 	}
 	switch operation {
 	case "definitions.sync":

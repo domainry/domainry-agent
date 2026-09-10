@@ -12,8 +12,8 @@ func TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects(t *testing.
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 1 || migrations[0].Version != SchemaVersion {
-				t.Fatalf("migrations=%+v", migrations)
+			if len(migrations) != 10 || migrations[0].Version != SchemaVersion || migrations[1].Version != 2 || migrations[2].Version != 3 || migrations[3].Version != 4 || migrations[4].Version != 5 || migrations[5].Version != 6 || migrations[6].Version != 7 || migrations[7].Version != 8 || migrations[8].Version != 9 || migrations[9].Version != 10 {
+				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
 			joined := strings.Join(migrations[0].Statements, "\n")
 			for _, table := range append(append([]string(nil), schemaDefinitionTables...), "_agent_runtime_states", "_agent_task_runs", "_agent_interactive_runs", "_agent_worker_scopes") {

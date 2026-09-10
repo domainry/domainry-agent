@@ -71,7 +71,43 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		}
 		statements = append(statements, statement)
 	}
-	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}}, nil
+	conversation, err := conversationMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	execution, err := conversationExecutionMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	interactions, err := conversationInteractionMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	todos, err := conversationTodoMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	artifacts, err := conversationArtifactMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	attachments, err := conversationAttachmentMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	attachmentCleanup, err := conversationAttachmentCleanupMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	libraries, err := knowledgeLibraryMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	documents, err := knowledgeDocumentMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, attachments, attachmentCleanup, libraries, documents}, nil
 }
 
 func workerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {

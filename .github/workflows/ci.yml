@@ -28,13 +28,21 @@ jobs:
         with:
           repository: domainry/domainry-identity-sdk
           path: domainry-identity-sdk
+      - uses: actions/checkout@v4
+        with:
+          repository: domainry/domainry-connectors
+          path: domainry-connectors
+      - uses: actions/checkout@v4
+        with:
+          repository: domainry/domainry-identity
+          path: domainry-identity
       - uses: actions/setup-go@v5
         with:
           go-version: "1.26.6"
           cache: true
           cache-dependency-path: domainry-agent/go.sum
       - name: Prepare coordinated Go workspace
-        run: go work init ./domainry-agent ./domainry-agent-sdk ./domainry-foundation ./domainry-identity-sdk
+        run: go work init ./domainry-agent ./domainry-agent-sdk ./domainry-foundation ./domainry-identity-sdk ./domainry-connectors ./domainry-identity
       - name: Check Go formatting
         working-directory: domainry-agent
         run: |
@@ -46,6 +54,9 @@ jobs:
       - name: Test all Agent packages
         working-directory: domainry-agent
         run: go test ./...
+      - name: Test Identity publication regression
+        working-directory: domainry-identity
+        run: go test ./internal/infrastructure/persistence/database/metadata
       - name: Race-check task and protocol boundaries
         working-directory: domainry-agent
         run: >-
@@ -55,11 +66,28 @@ jobs:
           ./remote
           ./server
           ./internal/application
-          ./internal/provider
+          ./internal/infrastructure/provider
           ./internal/infrastructure/persistence/database/agent
+          ./internal/assembly/web
+          ./internal/infrastructure/persistence/webhost
       - name: Vet Agent packages
         working-directory: domainry-agent
         run: go vet ./...
       - name: Build Agent packages
         working-directory: domainry-agent
         run: go build ./...
+  playground-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install playground UI dependencies
+        run: npm --prefix frontend ci
+      - name: Test conversation draft and error behavior
+        run: npm --prefix frontend test
+      - name: Type-check and build playground UI
+        run: npm --prefix frontend run build

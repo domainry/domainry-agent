@@ -366,6 +366,8 @@ func writeError(w http.ResponseWriter, err error) {
 			status = http.StatusNotFound
 		case "conflict":
 			status = http.StatusConflict
+		case "rate_limited":
+			status = http.StatusTooManyRequests
 		case "unavailable":
 			status = http.StatusServiceUnavailable
 		}

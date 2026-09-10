@@ -33,6 +33,11 @@ func NewBinding() (*modulecapability.StaticBinding, error) {
 		key, name, description string
 		chains                 []string
 	}{
+		{agentsdk.AgentCapabilityConversation, "Persistent personal conversations", "Own durable messages, explicit personal memory, context compaction and resumable tool execution, independently of business routing.", []string{"identity_principal_to_persistent_conversation"}},
+		{agentsdk.AgentCapabilityPersonalTodos, "Personal todos", "Manage owner-scoped work items, ordered batches, deadlines and completion independently of Agent execution and scheduled jobs.", []string{"identity_principal_to_persistent_conversation"}},
+		{agentsdk.AgentCapabilityKnowledgeLibraries, "Knowledge libraries", "Personal and shared libraries with live Identity authorization and library membership roles.", []string{"identity_principal_to_knowledge_library_membership"}},
+		{agentsdk.AgentCapabilityAttachments, "Private conversation attachments", "Upload, inspect, download and delete owner-scoped original files without exposing host paths or treating stored files as indexed knowledge.", []string{"identity_principal_to_private_conversation_attachment"}},
+		{agentsdk.AgentCapabilityArtifacts, "Saved artifacts", "Create, read, edit and export owner-scoped artifacts with immutable versions and current source authorization.", []string{"conversation_to_versioned_artifact_and_download"}},
 		{DialogCategory, "Agent dialog and analysis", "Run principal-scoped conversations, retain sessions and execution state, query permitted business data, and inspect Agent diagnostics.", []string{"identity_principal_to_agent_context", "agent_route_to_task_or_workflow", "agent_analysis_to_report_or_proposal"}},
 		{OperationsCategory, "Agent task operations", "Inspect and recover durable Agent task runs with operator evidence and idempotent commands.", []string{"agent_task_to_operator_recovery", "agent_task_to_workflow_reconciliation"}},
 		{ProposalsCategory, "Agent proposals", "Create, inspect, approve, and reject suggested business changes without granting the model direct write authority.", []string{"agent_suggestion_to_approval_to_business_action"}},
@@ -60,10 +65,10 @@ func NewBinding() (*modulecapability.StaticBinding, error) {
 			UseWhen:              []string{"A PRD needs natural-language interaction, model-assisted reasoning, semi-autonomous multi-step work, structured Agent tasks, governed tool use, or proposals that require human approval"},
 			DoNotUseWhen:         []string{"The requirement is deterministic CRUD, a fixed workflow, a scheduled trigger, a static report, or a notification delivery with no model reasoning or conversational interaction"},
 			RequirementSignals:   []string{"AI assistant", "copilot", "natural language", "agent task", "tool calling", "reasoning", "human approval", "proposal", "conversation", "autonomous analysis"},
-			ProvidedCapabilities: []string{"agent.interactive_dialog", "agent.asynchronous_task", "agent.guarded_tool_call", "agent.proposal_approval", "agent.principal_scoped_analysis", "agent.execution_evidence", "agent.operator_recovery"},
+			ProvidedCapabilities: []string{"agent.persistent_conversation", "agent.interactive_dialog", "agent.asynchronous_task", "agent.guarded_tool_call", "agent.proposal_approval", "agent.principal_scoped_analysis", "agent.execution_evidence", "agent.operator_recovery"},
 			RequiredModules:      []string{"audit", "identity"}, OptionalModules: []string{"integration", "notification", "report", "scheduler"}, ConflictingModules: []string{},
 			AssemblyChains: []string{
-				"identity_principal_to_agent_context", "agent_route_to_task_or_workflow", "agent_task_credential_to_runtime_guarded_tool",
+				"identity_principal_to_persistent_conversation", "identity_principal_to_agent_context", "agent_route_to_task_or_workflow", "agent_task_credential_to_runtime_guarded_tool",
 				"agent_suggestion_to_approval_to_business_action", "agent_analysis_to_report_or_proposal",
 				"agent_task_to_operator_recovery", "agent_task_to_workflow_reconciliation",
 				"agent_skill_to_agent_to_task", "agent_entrypoint_to_identity_permission", "agent_task_to_object_action_or_workflow",

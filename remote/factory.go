@@ -81,34 +81,76 @@ func (f *Factory) OpenSaaS(ctx context.Context, app agentsdk.ApplicationRef, hos
 	if err != nil {
 		return nil, err
 	}
-	tasks := taskRepository{client: client}
-	taskState := agentapplication.NewTaskStateService(tasks)
-	taskExecution := agentapplication.NewTaskExecutionService(taskState, client, "")
-	binding := &binding{Binding: remoteCapability, client: client, descriptor: descriptor, tasks: tasks, taskExecution: taskExecution, taskState: taskState, interactive: agentapplication.NewInteractiveStateService(tasks)}
-	adapter, err := agenthttp.NewAdapter(binding)
-	if err != nil {
-		return nil, err
+	binding := &binding{Binding: remoteCapability, client: client, descriptor: descriptor, tasks: taskRepository{client: client}}
+	if binding.descriptor.HasCapability("execution.state") {
+		binding.taskState = agentapplication.NewTaskStateService(binding.tasks)
+		binding.interactive = agentapplication.NewInteractiveStateService(binding.tasks)
 	}
-	binding.adapters = []modulehttp.Adapter{adapter}
-	binding.taskExecution.StartWorker(ctx)
+	if binding.descriptor.HasCapability(agentsdk.CapabilityTaskStart) {
+		// Legacy provider RPC remains callable for old descriptors, but the
+		// durable worker only starts when its storage capability is advertised.
+		state := binding.taskState
+		if state == nil {
+			state = agentapplication.NewTaskStateService(binding.tasks)
+		}
+		binding.taskExecution = agentapplication.NewTaskExecutionService(state, client, "")
+	}
+	if binding.descriptor.HasCapability("dialog.state") && binding.descriptor.HasCapability("execution.state") {
+		adapter, err := agenthttp.NewAdapter(binding)
+		if err != nil {
+			return nil, err
+		}
+		binding.adapters = []modulehttp.Adapter{adapter}
+	}
+	for _, capability := range descriptor.Capabilities {
+		if capability == agentsdk.CapabilityConversationV1 {
+			binding.conversations = &conversationClient{client: client, runtimeID: app.RuntimeID}
+			binding.conversationAdapter, err = agenthttp.NewConversationAdapter(binding.conversations, app.RuntimeID)
+			if err != nil {
+				return nil, err
+			}
+			binding.adapters = append(binding.adapters, binding.conversationAdapter)
+		}
+	}
+	if binding.taskExecution != nil && binding.descriptor.HasCapability("execution.state") {
+		binding.taskExecution.StartWorker(ctx)
+	}
 	return binding, nil
 }
 
 type binding struct {
 	modulecapability.Binding
-	client        *client
-	descriptor    agentsdk.Descriptor
-	tasks         taskRepository
-	taskExecution *agentapplication.TaskExecutionService
-	taskState     agentpersistence.AgentTaskStateService
-	interactive   agentpersistence.AgentInteractiveStateService
-	adapters      []modulehttp.Adapter
+	client              *client
+	descriptor          agentsdk.Descriptor
+	tasks               taskRepository
+	taskExecution       *agentapplication.TaskExecutionService
+	taskState           agentpersistence.AgentTaskStateService
+	interactive         agentpersistence.AgentInteractiveStateService
+	adapters            []modulehttp.Adapter
+	conversations       agentsdk.ConversationService
+	conversationAdapter modulehttp.Adapter
 }
 
-func (b *binding) Descriptor() agentsdk.Descriptor                        { return b.descriptor }
-func (b *binding) TaskRunner() agentsdk.TaskRunner                        { return b.taskExecution }
-func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner          { return b.client }
-func (b *binding) DialogState() agentsdk.AgentDialogStateService          { return b.client }
+func (b *binding) Conversations() agentsdk.ConversationService { return b.conversations }
+func (b *binding) Descriptor() agentsdk.Descriptor             { return b.descriptor }
+func (b *binding) TaskRunner() agentsdk.TaskRunner {
+	if b.taskExecution == nil {
+		return nil
+	}
+	return b.taskExecution
+}
+func (b *binding) InteractiveRunner() agentsdk.InteractiveRunner {
+	if !b.descriptor.HasCapability(agentsdk.CapabilityInteractiveRun) {
+		return nil
+	}
+	return b.client
+}
+func (b *binding) DialogState() agentsdk.AgentDialogStateService {
+	if !b.descriptor.HasCapability("dialog.state") {
+		return nil
+	}
+	return b.client
+}
 func (b *binding) AgentTaskState() agentpersistence.AgentTaskStateService { return b.taskState }
 func (b *binding) AgentInteractiveState() agentpersistence.AgentInteractiveStateService {
 	return b.interactive
@@ -120,6 +162,9 @@ func (*binding) AuthorizationActions() ([]actioncontract.ActionDefinition, error
 	return agentsdk.AgentAuthorizationActions()
 }
 func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
+	if !b.descriptor.HasCapability(agentsdk.CapabilityTaskStart) && !b.descriptor.HasCapability(agentsdk.CapabilityInteractiveRun) {
+		return nil
+	}
 	adapter, err := agentcomposition.BindApplicationAdapter(agentcomposition.ApplicationAdapterDependencies{
 		Binding: b, DialogState: b.client, TaskState: b.taskState, InteractiveState: b.interactive,
 		ToolLedger: b.tasks, TaskExecution: b.taskExecution, InteractiveRunner: b.client, Host: host,
@@ -128,6 +173,9 @@ func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
 		return err
 	}
 	b.adapters = []modulehttp.Adapter{adapter}
+	if b.conversationAdapter != nil {
+		b.adapters = append(b.adapters, b.conversationAdapter)
+	}
 	return nil
 }
 func (b *binding) DefinitionRepository() agentpersistence.DefinitionRepository { return b.client }
@@ -281,12 +329,16 @@ func (c *client) call(ctx context.Context, method, path string, payload any, key
 		return err
 	}
 	defer response.Body.Close()
-	raw, err := io.ReadAll(io.LimitReader(response.Body, maxResponseBytes+1))
+	responseLimit := maxResponseBytes
+	if (path == "/agent/v1/conversations/attachments_download" || path == "/agent/v1/conversations/documents_download") && response.StatusCode/100 == 2 {
+		responseLimit = 24 << 20
+	}
+	raw, err := io.ReadAll(io.LimitReader(response.Body, int64(responseLimit)+1))
 	if err != nil {
 		return err
 	}
-	if len(raw) > maxResponseBytes {
-		return fmt.Errorf("Agent SaaS response exceeds %d bytes", maxResponseBytes)
+	if len(raw) > responseLimit {
+		return fmt.Errorf("Agent SaaS response exceeds %d bytes", responseLimit)
 	}
 	if response.StatusCode/100 != 2 {
 		_ = json.Unmarshal(raw, out)
@@ -297,9 +349,36 @@ func (c *client) call(ctx context.Context, method, path string, payload any, key
 				Retryable: task.Retryable || response.StatusCode == http.StatusTooManyRequests || response.StatusCode >= 500,
 			}
 		}
-		var failure struct{ Code, Message string }
+		var failure struct {
+			Code, Message, Class string
+			Retryable            *bool
+		}
 		_ = json.Unmarshal(raw, &failure)
 		if failure.Code != "" {
+			// New repository responses preserve a validated class and an explicit
+			// retry decision; older endpoints retain their existing fallback.
+			classStatus := map[string]int{"bad_request": 400, "forbidden": 403, "not_found": 404, "conflict": 409, "rate_limited": 429, "unavailable": 503, "internal": 500}
+			if status, known := classStatus[failure.Class]; known && status == response.StatusCode && failure.Retryable != nil {
+				return &agentsdk.Error{Class: failure.Class, Code: failure.Code, Retryable: *failure.Retryable}
+			}
+			if strings.HasPrefix(failure.Code, "agent.conversation.") {
+				class := "internal"
+				switch response.StatusCode {
+				case 400:
+					class = "bad_request"
+				case 403:
+					class = "forbidden"
+				case 404:
+					class = "not_found"
+				case 409:
+					class = "conflict"
+				case 429:
+					class = "rate_limited"
+				case 503:
+					class = "unavailable"
+				}
+				return &agentsdk.Error{Class: class, Code: failure.Code}
+			}
 			return &agentsdk.Error{Class: "saas_http", Code: failure.Code, Message: failure.Message, Retryable: response.StatusCode == http.StatusTooManyRequests || response.StatusCode >= 500}
 		}
 		return &agentsdk.Error{Class: "saas_http", Code: fmt.Sprintf("agent.saas.http_%d", response.StatusCode), Message: fmt.Sprintf("Agent SaaS returned HTTP %d", response.StatusCode), Retryable: response.StatusCode == http.StatusTooManyRequests || response.StatusCode >= 500}

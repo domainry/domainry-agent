@@ -8,8 +8,10 @@ import (
 	"strings"
 	"time"
 
+	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
+	"github.com/domainry/domainry-agent/internal/execution"
 	"github.com/domainry/domainry-orm/query"
 )
 
@@ -39,17 +41,24 @@ func (s *AgentTaskRunStore) BeginAgentToolCall(ctx context.Context, start agentp
 	if err := json.Unmarshal(payload, &run); err != nil {
 		return "", 0, err
 	}
-	if start.MaxToolCalls <= 0 || run.ToolCallCount >= start.MaxToolCalls {
-		return "", run.ToolCallCount, agentError("rate_limited", "agent.task.tool_call_limit")
-	}
 	usedCost := 0
 	for _, invocation := range run.Evidence.ToolInvocations {
-		usedCost += invocation.CostUnits
+		usedCost, err = execution.AddCost(usedCost, invocation.CostUnits)
+		if err != nil {
+			return "", run.ToolCallCount, agentToolBudgetError("agent.task.cost_budget_exceeded")
+		}
 	}
-	if start.CostUnits <= 0 || start.MaxCostUnits <= 0 || usedCost+start.CostUnits > start.MaxCostUnits {
-		return "", run.ToolCallCount, agentError("rate_limited", "agent.task.cost_budget_exceeded")
+	if start.CostUnits <= 0 || start.MaxCostUnits <= 0 {
+		return "", run.ToolCallCount, agentToolBudgetError("agent.task.cost_budget_exceeded")
 	}
-	run.ToolCallCount++
+	next, err := (execution.Budget{Calls: start.MaxToolCalls, Cost: start.MaxCostUnits}).Reserve(execution.Usage{Calls: run.ToolCallCount, Cost: usedCost}, execution.Usage{Calls: 1, Cost: start.CostUnits})
+	if err == execution.ErrCallLimit {
+		return "", run.ToolCallCount, agentToolBudgetError("agent.task.tool_call_limit")
+	}
+	if err != nil {
+		return "", run.ToolCallCount, agentToolBudgetError("agent.task.cost_budget_exceeded")
+	}
+	run.ToolCallCount = next.Calls
 	run.Revision++
 	run.UpdatedAt = time.Now().UTC()
 	ref := fmt.Sprintf("agent_tool_%s_%d", run.ID, run.ToolCallCount)
@@ -146,4 +155,9 @@ func (s *AgentTaskRunStore) FinishAgentToolCall(ctx context.Context, finish agen
 		return agentError("conflict", "agent.task.tool_fence_rejected")
 	}
 	return tx.Commit()
+}
+
+// A per-run execution budget does not replenish by retrying the same call.
+func agentToolBudgetError(code string) error {
+	return &agentsdk.Error{Class: "rate_limited", Code: code, Message: code, Retryable: false}
 }

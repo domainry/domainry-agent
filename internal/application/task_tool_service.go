@@ -8,6 +8,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
+	"github.com/domainry/domainry-agent/internal/execution"
 )
 
 type TaskToolInvocation struct {
@@ -47,11 +48,18 @@ func (s *TaskToolService) Invoke(ctx context.Context, request TaskToolInvocation
 	if err != nil {
 		return TaskToolResult{}, err
 	}
-	if !found || run.Status != agentmodel.AgentTaskRunRunning || strings.TrimSpace(run.Lease.Owner) == "" || run.Lease.FencingToken <= 0 {
+	if !found || run.Status != agentmodel.AgentTaskRunRunning || run.CancelRequestedAt != nil || strings.TrimSpace(run.Lease.Owner) == "" || run.Lease.FencingToken <= 0 {
 		return TaskToolResult{}, forbidden("agent.tool.task_scope_denied")
 	}
 	tool := strings.TrimSpace(request.Tool)
-	authorization := latestTaskAuthorization(run.Evidence.Authorization)
+	current, err := authorizeTaskRun(ctx, s.host, run)
+	if err != nil {
+		return TaskToolResult{}, err
+	}
+	if !containsString(current.AllowedTools, tool) {
+		return TaskToolResult{}, forbidden("agent.tool.tool_scope_denied")
+	}
+	authorization := current.Evidence
 	callRef, _, err := s.ledger.BeginAgentToolCall(ctx, agentpersistence.AgentToolCallStart{
 		WorkspaceID: run.WorkspaceID, ProcessID: run.ProcessID, TaskRunID: run.ID,
 		Tool: tool, InputHash: stableHash(request.Input), Owner: run.Lease.Owner, FencingToken: run.Lease.FencingToken,
@@ -63,9 +71,9 @@ func (s *TaskToolService) Invoke(ctx context.Context, request TaskToolInvocation
 	}
 	hostResult, err := s.host.InvokeTaskTool(ctx, modulehost.TaskToolRequest{
 		Credential: request.Credential, WorkspaceID: run.WorkspaceID, ProcessID: run.ProcessID, TaskRunID: run.ID,
-		Owner: run.Lease.Owner, FencingToken: run.Lease.FencingToken, Identity: run.Identity,
+		Owner: run.Lease.Owner, FencingToken: run.Lease.FencingToken, Identity: current.Identity,
 		TaskKey: run.TaskKey, TaskVersion: run.TaskVersion, Tool: tool, Input: cloneTaskMap(request.Input),
-		IdempotencyKey: strings.TrimSpace(request.IdempotencyKey), PreviousEvidence: append([]agentmodel.AgentAuthorizationEvidence(nil), run.Evidence.Authorization...),
+		IdempotencyKey: strings.TrimSpace(request.IdempotencyKey), PreviousEvidence: append(append([]agentmodel.AgentAuthorizationEvidence(nil), run.Evidence.Authorization...), current.Evidence),
 	})
 	result := TaskToolResult{Status: hostResult.Status, Tool: hostResult.Tool, CallRef: callRef, Output: hostResult.Output, Proposal: hostResult.Proposal, Authorization: hostResult.Authorization}
 	if err != nil {
@@ -85,11 +93,8 @@ func (s *TaskToolService) Invoke(ctx context.Context, request TaskToolInvocation
 		_ = s.finishToolCall(ctx, run, result, callRef, unavailable("agent.tool.proposal_unavailable"))
 		return TaskToolResult{}, unavailable("agent.tool.proposal_unavailable")
 	}
-	principal := modulehost.Principal{
-		Known: true, WorkspaceID: run.Identity.Execution.WorkspaceID, UserID: run.Identity.Execution.UserID,
-		RoleKey: run.Identity.Execution.RoleKey, AuthorizationRevision: run.Identity.Execution.AuthorizationRevision,
-		CorrelationID: run.CorrelationID,
-	}
+	principal := current.Principal
+	principal.CorrelationID = run.CorrelationID
 	proposal, err := s.proposals.CreateHostDraft(ctx, result.Proposal, principal)
 	if err != nil {
 		_ = s.finishToolCall(ctx, run, result, callRef, err)
@@ -117,18 +122,11 @@ func (s *TaskToolService) finishToolCall(ctx context.Context, run agentmodel.Age
 	})
 }
 
-func latestTaskAuthorization(values []agentmodel.AgentAuthorizationEvidence) agentmodel.AgentAuthorizationEvidence {
-	if len(values) == 0 {
-		return agentmodel.AgentAuthorizationEvidence{}
-	}
-	return values[len(values)-1]
-}
-
 func agentTaskMaxToolCalls(value int) int {
 	if value > 0 {
 		return value
 	}
-	return 20
+	return execution.DefaultMaxToolCalls
 }
 
 func agentTaskMaxCostUnits(value int) int {

@@ -13,6 +13,7 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-agent/definition"
+	"github.com/domainry/domainry-agent/internal/execution"
 )
 
 type taskLocator struct{ workspaceID, runID string }
@@ -276,11 +277,7 @@ func (s *TaskExecutionService) executeClaim(parent context.Context, claim agentp
 	if host == nil {
 		return
 	}
-	authorization, err := host.AuthorizeTask(parent, modulehost.TaskAuthorizationRequest{
-		TaskRunID: run.ID, WorkspaceID: run.WorkspaceID, ProcessID: run.ProcessID, NodeInstanceID: run.NodeInstanceID,
-		TaskKey: run.TaskKey, TaskVersion: run.TaskVersion, Identity: run.Identity, CorrelationID: run.CorrelationID,
-		PreviousEvidence: append([]agentmodel.AgentAuthorizationEvidence(nil), run.Evidence.Authorization...),
-	})
+	authorization, err := authorizeTaskRun(parent, host, run)
 	if err != nil {
 		s.failClaim(parent, run, claim.Lease, "authorization", errorCode(err, "agent.task.authorization_failed"), false)
 		return
@@ -557,26 +554,15 @@ func validateTaskOutput(schema map[string]any, output map[string]any, maxBytes i
 	if strings.TrimSpace(fmt.Sprint(schema["type"])) != "object" {
 		return fmt.Errorf("Agent task output schema must be an object")
 	}
-	for _, field := range stringSlice(schema["required"]) {
-		if _, found := output[field]; !found {
-			return fmt.Errorf("Agent task output field %s is required", field)
-		}
+	schemaRaw, err := json.Marshal(schema)
+	if err != nil {
+		return err
 	}
-	return nil
-}
-
-func stringSlice(value any) []string {
-	items, _ := value.([]any)
-	if direct, ok := value.([]string); ok {
-		return append([]string(nil), direct...)
+	compiled, err := execution.CompileSchema(schemaRaw)
+	if err != nil {
+		return err
 	}
-	result := make([]string, 0, len(items))
-	for _, item := range items {
-		if text := strings.TrimSpace(fmt.Sprint(item)); text != "" {
-			result = append(result, text)
-		}
-	}
-	return result
+	return execution.ValidateJSON(compiled, raw)
 }
 
 func containsString(values []string, target string) bool {

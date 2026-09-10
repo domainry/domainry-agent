@@ -25,9 +25,15 @@ type surfaceBindingStub struct {
 	interactive agentpersistence.AgentInteractiveStateService
 }
 
-type singleSurfaceProvider struct{ adapter modulehttp.Adapter }
+type singleSurfaceProvider struct {
+	adapter      modulehttp.Adapter
+	conversation modulehttp.Adapter
+}
 
 func (provider singleSurfaceProvider) HTTPAdapters() []modulehttp.Adapter {
+	if provider.conversation != nil {
+		return []modulehttp.Adapter{provider.adapter, provider.conversation}
+	}
 	return []modulehttp.Adapter{provider.adapter}
 }
 
@@ -143,7 +149,7 @@ func TestSurfaceOwnsDialogStateRoutesAndUsesAuthenticatedIdentity(t *testing.T) 
 
 func TestAgentOwnsOpenAPIForEveryHTTPRoute(t *testing.T) {
 	operations := agentOpenAPIOperations()
-	if len(operations) != 22 {
+	if len(operations) != 69 {
 		t.Fatalf("Agent OpenAPI operations=%d", len(operations))
 	}
 	stream := operations["POST /agent/runs/stream"]
@@ -176,10 +182,14 @@ func TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(actions) != 25 || len(adapter.Routes()) != 22 {
+	if len(actions) != 72+len(agentsdk.ConversationToolActions()) || len(adapter.Routes()) != 22 {
 		t.Fatalf("actions=%d routes=%d", len(actions), len(adapter.Routes()))
 	}
-	if err := modulehttp.ValidateAuthorizationProjection(actions, singleSurfaceProvider{adapter: adapter}); err != nil {
+	conversation, err := NewConversationAdapter(conversationSurfaceStub{}, "runtime")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := modulehttp.ValidateAuthorizationProjection(actions, singleSurfaceProvider{adapter: adapter, conversation: conversation}); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -302,3 +312,6 @@ func actionRequestIdentity(actionKey string) identitysdk.RequestIdentity {
 		Known: true, WorkspaceID: "workspace-1", UserID: "operator", RoleKey: "admin", AccessBundle: &bundle,
 	}}
 }
+
+// The projection check needs metadata only; invocation is covered separately.
+type conversationSurfaceStub struct{ agentsdk.ConversationService }

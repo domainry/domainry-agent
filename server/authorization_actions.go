@@ -92,6 +92,16 @@ func SaaSAuthorizationActions() ([]actioncontract.ActionDefinition, error) {
 		{agentSaaSRepositoryActionPrefix + "lifecycle.delete", "POST /agent/v1/lifecycle/executions/delete", "agent.saas.repository.lifecycle", "Agent lifecycle repository", "Delete lifecycle execution", write, high, "request_contract"},
 	}
 
+	for _, d := range agentsdk.ConversationHTTPDefinitions() {
+		if d.Operation == "stream" {
+			continue
+		}
+		effect, risk := write, medium
+		if strings.HasPrefix(d.Pattern, "GET ") {
+			effect, risk = read, low
+		}
+		specs = append(specs, saasHTTPActionSpec{conversationSaaSActionPrefix + d.Operation, "POST /agent/v1/conversations/" + d.Operation, "agent.saas.conversations", "Agent persistent conversations", d.Operation, effect, risk, "request_contract"})
+	}
 	registry := actioncontract.NewRegistry()
 	for _, spec := range specs {
 		definition, err := buildSaaSAction(spec)

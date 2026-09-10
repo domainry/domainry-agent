@@ -23,7 +23,7 @@ import (
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
-	agentprovider "github.com/domainry/domainry-agent/internal/provider"
+	agentprovider "github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	agentremote "github.com/domainry/domainry-agent/remote"
 	agentserver "github.com/domainry/domainry-agent/server"

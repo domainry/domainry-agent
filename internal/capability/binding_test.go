@@ -2,8 +2,10 @@ package capability
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 
+	agentsdk "github.com/domainry/domainry-agent-sdk"
 	actioncontract "github.com/domainry/domainry-foundation/action"
 	"github.com/domainry/domainry-foundation/modulecapability"
 	"github.com/domainry/domainry-foundation/modulecapability/contracttest"
@@ -24,8 +26,22 @@ func TestAgentCapabilityOwnsAllProductRoutesAndAuthoringValidation(t *testing.T)
 		operations += category.OperationCount
 		projections += category.ProjectionCount
 	}
-	if operations != 22 || projections != 15 {
+	if operations != 69 || projections != 15 {
 		t.Fatalf("Agent operations=%d projections=%d", operations, projections)
+	}
+	contract, err := agentsdk.CompileAgentHTTPAdapterContract()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, route := range contract.Routes {
+		category, err := binding.CapabilityCategory(t.Context(), route.Action.CapabilityKey)
+		if err != nil {
+			t.Fatalf("route %s has no published capability: %v", route.Pattern(), err)
+		}
+		parts := strings.SplitN(route.Pattern(), " ", 2)
+		if len(category.OpenAPI.Paths[parts[1]][strings.ToLower(parts[0])]) == 0 {
+			t.Fatalf("route %s missing from its capability", route.Pattern())
+		}
 	}
 	request := modulecapability.ValidationRequest{
 		ContractVersion: modulecapability.ValidationContractVersion, ModuleKey: "agent", CategoryKey: AuthoringCategory,

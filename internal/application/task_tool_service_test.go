@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"testing"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
@@ -41,21 +42,32 @@ func (s *taskToolLedgerStub) FinishAgentToolCall(_ context.Context, finish agent
 }
 
 type taskToolHostStub struct {
-	request       modulehost.TaskToolRequest
-	result        modulehost.TaskToolResult
-	err           error
-	completion    modulehost.WorkflowTaskCompletion
-	completionErr error
+	request                     modulehost.TaskToolRequest
+	result                      modulehost.TaskToolResult
+	err                         error
+	completion                  modulehost.WorkflowTaskCompletion
+	completionErr               error
+	authorization               *modulehost.TaskAuthorization
+	authorizationErr            error
+	authorizationCalls, invokes int
 }
 
-func (taskToolHostStub) AuthorizeTask(context.Context, modulehost.TaskAuthorizationRequest) (modulehost.TaskAuthorization, error) {
-	return modulehost.TaskAuthorization{}, nil
+func (h *taskToolHostStub) AuthorizeTask(_ context.Context, in modulehost.TaskAuthorizationRequest) (modulehost.TaskAuthorization, error) {
+	h.authorizationCalls++
+	if h.authorizationErr != nil {
+		return modulehost.TaskAuthorization{}, h.authorizationErr
+	}
+	if h.authorization != nil {
+		return *h.authorization, nil
+	}
+	return modulehost.TaskAuthorization{Principal: modulehost.Principal{Known: true, UserID: "user", WorkspaceID: in.WorkspaceID}, Identity: in.Identity, Task: agentsdk.AgentTaskDefinition{Key: in.TaskKey, Version: in.TaskVersion}, AllowedTools: []string{agentsdk.AgentToolQueryRecords}, Evidence: agentmodel.AgentAuthorizationEvidence{AuthorizationRevision: "fresh-auth", AllowedTools: []string{agentsdk.AgentToolQueryRecords}}}, nil
 }
 func (taskToolHostStub) IssueTaskCredential(context.Context, modulehost.TaskCredentialRequest) (string, error) {
 	return "", nil
 }
 func (s *taskToolHostStub) InvokeTaskTool(_ context.Context, request modulehost.TaskToolRequest) (modulehost.TaskToolResult, error) {
 	s.request = request
+	s.invokes++
 	return s.result, s.err
 }
 func (s *taskToolHostStub) CompleteWorkflowTask(_ context.Context, completion modulehost.WorkflowTaskCompletion) error {
@@ -81,7 +93,7 @@ func TestTaskToolServiceOwnsFencedLedgerAndBudget(t *testing.T) {
 	if result.CallRef != "agent_tool_task-1_1" || host.request.Owner != "worker-1" || host.request.FencingToken != 3 {
 		t.Fatalf("result=%#v host request=%#v", result, host.request)
 	}
-	if ledger.start.MaxToolCalls != 7 || ledger.start.MaxCostUnits != 9 || ledger.start.CostUnits != 2 || ledger.start.Authorization.AuthorizationRevision != "auth-1" || ledger.start.InputHash == "" {
+	if ledger.start.MaxToolCalls != 7 || ledger.start.MaxCostUnits != 9 || ledger.start.CostUnits != 2 || ledger.start.Authorization.AuthorizationRevision != "fresh-auth" || ledger.start.InputHash == "" {
 		t.Fatalf("ledger start=%#v", ledger.start)
 	}
 	if ledger.finish.CallRef != result.CallRef || ledger.finish.Status != "executed" || ledger.finish.Authorization.AuthorizationRevision != "auth-2" || ledger.finish.Evidence["output_hash"] == "" {
@@ -116,5 +128,37 @@ func TestTaskExecutionNotifiesWorkflowAfterAgentTerminalState(t *testing.T) {
 	}
 	if !state.marked {
 		t.Fatal("Agent callback delivery was not recorded after Runtime acknowledgement")
+	}
+}
+
+func TestTaskToolChecksLiveScopeBeforeReservingOrInvoking(t *testing.T) {
+	for _, mode := range []string{"revoked", "wrong workspace", "wrong version", "unknown principal", "cancel requested", "cancelled context"} {
+		t.Run(mode, func(t *testing.T) {
+			current := modulehost.TaskAuthorization{Principal: modulehost.Principal{Known: true, UserID: "user", WorkspaceID: "workspace"}, Task: agentsdk.AgentTaskDefinition{Key: "review", Version: "1"}, AllowedTools: []string{agentsdk.AgentToolQueryRecords}}
+			state := &taskToolStateStub{run: agentmodel.AgentTaskRun{ID: "run", WorkspaceID: "workspace", TaskKey: "review", TaskVersion: "1", Status: agentmodel.AgentTaskRunRunning, Lease: agentmodel.AgentTaskLease{Owner: "worker", FencingToken: 1}, Evidence: agentmodel.AgentTaskExecutionEvidence{Authorization: []agentmodel.AgentAuthorizationEvidence{{AllowedTools: []string{agentsdk.AgentToolQueryRecords}}}}}}
+			ctx, cancel := context.WithCancel(t.Context())
+			defer cancel()
+			switch mode {
+			case "revoked":
+				current.AllowedTools = nil
+			case "wrong workspace":
+				current.Principal.WorkspaceID = "other"
+			case "wrong version":
+				current.Task.Version = "2"
+			case "unknown principal":
+				current.Principal.Known = false
+			case "cancel requested":
+				now := time.Now()
+				state.run.CancelRequestedAt = &now
+			case "cancelled context":
+				cancel()
+			}
+			host := &taskToolHostStub{authorization: &current}
+			ledger := &taskToolLedgerStub{}
+			_, err := NewTaskToolService(state, ledger, host).Invoke(ctx, TaskToolInvocation{WorkspaceID: "workspace", TaskRunID: "run", Tool: agentsdk.AgentToolQueryRecords})
+			if err == nil || ledger.start.TaskRunID != "" || host.invokes != 0 {
+				t.Fatalf("invalid scope reached budget/effect: err=%v invokes=%d", err, host.invokes)
+			}
+		})
 	}
 }
