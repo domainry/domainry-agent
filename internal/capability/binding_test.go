@@ -21,6 +21,17 @@ func TestAgentCapabilityOwnsAllProductRoutesAndAuthoringValidation(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
+	declaredChains := map[string]bool{}
+	for _, chain := range summary.Scenarios.AssemblyChains {
+		declaredChains[chain] = true
+	}
+	for _, category := range summary.Categories {
+		for _, chain := range category.AssemblyChains {
+			if !declaredChains[chain] {
+				t.Errorf("category %s references undeclared assembly chain %s", category.Key, chain)
+			}
+		}
+	}
 	operations, projections := 0, 0
 	for _, category := range summary.Categories {
 		operations += category.OperationCount

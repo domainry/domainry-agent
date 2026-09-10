@@ -68,6 +68,7 @@ func NewBinding() (*modulecapability.StaticBinding, error) {
 			ProvidedCapabilities: []string{"agent.persistent_conversation", "agent.interactive_dialog", "agent.asynchronous_task", "agent.guarded_tool_call", "agent.proposal_approval", "agent.principal_scoped_analysis", "agent.execution_evidence", "agent.operator_recovery"},
 			RequiredModules:      []string{"audit", "identity"}, OptionalModules: []string{"integration", "notification", "report", "scheduler"}, ConflictingModules: []string{},
 			AssemblyChains: []string{
+				"identity_principal_to_knowledge_library_membership", "identity_principal_to_private_conversation_attachment", "conversation_to_versioned_artifact_and_download",
 				"identity_principal_to_persistent_conversation", "identity_principal_to_agent_context", "agent_route_to_task_or_workflow", "agent_task_credential_to_runtime_guarded_tool",
 				"agent_suggestion_to_approval_to_business_action", "agent_analysis_to_report_or_proposal",
 				"agent_task_to_operator_recovery", "agent_task_to_workflow_reconciliation",

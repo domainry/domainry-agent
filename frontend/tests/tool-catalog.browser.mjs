@@ -104,7 +104,8 @@ try {
 
   await control("disconnect_knowledge");
   await page.reload();
-  await page.getByText("这条历史回复的资料来源当前无法验证，内容暂不提供。", { exact: true }).waitFor();
+  await page.getByRole("status").filter({ hasText: "相关内容已隐藏" }).first().waitFor();
+  await page.screenshot({ path: join(output, "disconnected-history.png") });
   assert.equal(await page.getByText("已通过当前连接取得验收资料。", { exact: true }).count(), 0);
   await control("restore_connections");
   await page.reload();

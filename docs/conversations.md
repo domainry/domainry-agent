@@ -80,6 +80,16 @@ SaaS 的一个 API key 对应配置的一个 `AGENT_SAAS_RUNTIME_ID`；请求中
 
 个人记忆不是聊天模型自动写入的。网页设置或调用方显式调用记忆 API，用户可以审阅和删除；每位用户每个 workspace 最多 32 条，每条标题 128 字节、内容 512 字节。新会话默认 `memory_enabled=false`，开启后注入 enabled 的偏好。关闭开关只影响未来组装，已写入历史的内容不会被追溯移除。
 
+## 当前工具目录与连接开关
+
+每一步先由已挂载的 `ConversationToolHost.ConversationTools` 按当前权限生成目录，再校验工具版本、输入／输出 Schema、动作权限键、读写影响、超时、结果字节上限和幂等方式。目录按工具键排序并复制为独立快照；宿主后续修改注册缓冲区不会改写已保存的模型输入。
+
+宿主可通过 `ConversationOptions.ToolAvailability` 绑定 SDK 的 `ConversationToolAvailability`。直接工具宿主、普通 Module 宿主或延迟装配的 `ConversationApplicationHost` 实现该可选接口时也会自动接入；显式选项优先。回调接受服务端的 runtime／workspace／user 身份及已注册工具键，工具未启用、连接断开／过期或状态未知时返回 `false`；不需要连接的本地工具返回 `true`。回调仅检查状态，凭证刷新与账号管理属于后续 F01。
+
+检查覆盖新步骤目录、冻结步骤恢复、实际调用前以及业务／知识历史来源复核。目录检查共享 5 秒上限，实际调用前检查也有 5 秒上限，宿主须响应 Context。连接检查发生故障时返回统一 `tool_availability_failed`，内部错误文本不进入模型、历史或网页。目录变化不会替换冻结输入；连接恢复后可继续原步骤，已完成工具结果按原幂等记录复用。没有该可选策略的旧宿主继续自行通过目录和具体动作授权负责可用性；这不代表系统自动探测任意远端服务健康状况。
+
+实现与实际 Identity／HTTP／浏览器证据见 [A03 工具目录验收](testing-2026-09-10-tool-catalog.md)。
+
 ## 产品接口
 
 全部路径由 SDK 清单生成授权元数据及 OpenAPI。

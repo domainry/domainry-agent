@@ -138,7 +138,7 @@ const messages: Record<string, string> = {
   knowledge_response_invalid: "知识库返回了无法读取的结果，请检查检索服务后重新生成。",
   knowledge_context_exceeded: "检索结果超过上下文预算，请缩小问题范围或调低检索条数后重新生成。",
   knowledge_source_changed: "知识资料或可见范围已变化，无法继续使用旧结果。请重新生成以获取当前资料。",
-  source_access_unavailable: "这次处理使用的资料当前无权读取或暂时无法验证，相关内容已隐藏。可在权限恢复后刷新查看。",
+  source_access_unavailable: "这次处理使用的资料当前无权读取或暂时无法验证，相关内容已隐藏。可在权限或连接恢复后刷新查看。",
   source_reference_invalid: "资料来源记录无法验证，请重新查询资料后再处理。",
   source_read_unavailable: "当前服务无法验证历史资料来源，请检查服务配置。",
   source_limit_exceeded: "资料来源过多，无法在本次读取范围内完成验证。请缩小资料范围。",
