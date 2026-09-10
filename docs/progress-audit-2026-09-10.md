@@ -8,6 +8,7 @@
 | --- | --- |
 | A01 | SDK `conversation_execution.go` 的可选模型 / 工具 / 流式契约；纯文本模型测试和工具协议测试均通过，原 Conversation 文本路径保留。 |
 | A02 | `internal/infrastructure/provider/conversation_execution.go` 支持三种协议工具往返；`TestConversationExecutionProtocolsContinueToolsWithoutProviderSession`、流式截断与配对校验通过。摘要仍走无工具请求。三协议适配的夹具验证与 Responses 真实联调已通过；更多真实部署验收仍在 H08。 |
+| A03 | 已补可选的实时连接／工具开关策略，目录、实际调用前和业务／知识历史复核均检查；保留元数据和冻结输入。实际 Identity／HTTP／SQLite 的 7 个网页场景与 8 个已提交 Run 通过，两次恢复复用原 Run，最终宿主 race 通过（141.25 秒）。代码、日志、失败修正和范围见 [A03 验收](testing-2026-09-10-tool-catalog.md)。F01 的账号授权／刷新／管理页面仍未完成。 |
 | A04 | `conversation_execution.go` 顺序执行模型、校验、授权、工具及结果保存；Schema 校验、重新授权、续接集成测试通过，真实模型完成多步流程。 |
 | A05 | 同一执行器落实步数、调用、耗时、参数 / 输出预算及重复参数调用限制；无效和截断流在工具效果前拒绝，相关执行与预算测试通过。 |
 | A06 | `conversation_interaction.go` / `ask_user` 持久提问；问题重启续接、单独步骤约束、HTTP / SSE 和实际浏览器答复通过。 |
@@ -39,7 +40,6 @@
 
 继续保留未完成的关键项目：
 
-- A03：已有按当前授权和挂载能力生成目录；外部账号连接状态与开关尚未接 F01。
 - A08：已提取通用预算和参数校验，Conversation 宿主不依赖旧 Task 字段；其他适用授权 / 执行机制的公共化核对仍未完成。
 - B06：本地取消与 Context 传播、取消后保留账本已有验证；真实外部 Connector 的在途停止能力尚未接入验收。
 - C03、C04：会话恢复重授权及个人记忆 / 待办 / 成果的本次操作授权已实现；计划任务触发和业务资源操作范围未完成。
