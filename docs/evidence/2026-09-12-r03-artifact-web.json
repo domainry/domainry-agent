@@ -1,0 +1,200 @@
+{
+  "schema": "domainry-todo-evidence-v1",
+  "date": "2026-09-12",
+  "todo": "R03",
+  "status": "passed",
+  "progress_after": "59/81",
+  "behavior": {
+    "preview_types": [
+      "markdown",
+      "table",
+      "chart"
+    ],
+    "edit_creates_version": 3,
+    "downloaded_version": 1,
+    "source_navigation": [
+      "conversation",
+      "persisted conversation run/message/tool record"
+    ],
+    "current_permission_rechecked": true
+  },
+  "safe_rendering": {
+    "script_elements": 0,
+    "image_elements": 0,
+    "executed_global": false,
+    "allowed_anchor_hrefs": [
+      "https://example.com/"
+    ],
+    "javascript_anchor_present": false,
+    "raw_html_enabled": false
+  },
+  "browser_e2e": {
+    "host": "real Agent Web Host + Identity + SQLite + persistent conversation worker",
+    "model": "deterministic local protocol fixture",
+    "host_test_seconds": 240.86,
+    "source_run_opened": true,
+    "version_3_saved": true,
+    "version_1_selected_and_downloaded": true,
+    "large_decimal_visible": "9007199254740993.01",
+    "formula_text_visible": "=SUM(A1:A2)",
+    "revoked_source_bound_artifact_hidden": true,
+    "restored_artifact_visible": true
+  },
+  "architecture": {
+    "path": "2026-09-12-r03-artifact-web/architecture-audit.json",
+    "bytes": 2488,
+    "sha256": "915d00c77968dff48afc9a2928bfa94277d7bcb977afb74a4cf6181a15807a2a"
+  },
+  "repository_state": {
+    "path": "2026-09-12-r03-artifact-web/repository-state.json",
+    "bytes": 9370,
+    "sha256": "6712ed4f59097ed7d34eb34a53445e90a8aa7657bc8eff86ebf7dcf904f2b816"
+  },
+  "sources": [
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/App.tsx",
+      "bytes": 45155,
+      "sha256": "19a944fe35612e3520d3008b40316441f66f39c7d9d1f25a9f74d3a5613f8fb1"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/ArtifactDialog.tsx",
+      "bytes": 15567,
+      "sha256": "98fc2ab7cc9bf151d94e17eaa542edada4fff0a453ce9a8cfce66789a5d7d2c2"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/ArtifactPreview.tsx",
+      "bytes": 5464,
+      "sha256": "79b76ebaba22b7c32acb4f57b2971ba56bdd6d9561d4a87a789e07ee34dad3c9"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_artifact_tools_test.go",
+      "bytes": 12777,
+      "sha256": "ad2825c266b9c9830c9d7bcb4b04029f2d288643dc4a657750d6c5920f1ca32a"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_artifact_tools.go",
+      "bytes": 11251,
+      "sha256": "a59f6414d74fabebc5015cc2cd2eb21696bcb38f08e1beefe41146642b8f857d"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_artifact_sources.go",
+      "bytes": 7829,
+      "sha256": "7d60affc8e7458e392591fbae79e1fba4fc4043e1a952b3cb0a2e049bff3da37"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/integration/conversation_artifact_integration_test.go",
+      "bytes": 12994,
+      "sha256": "d13f1ce35d9b09aa4566cfe37225cad24b4091ac24ca24694875f4d9b93592d5"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent-sdk/conversation_artifact.go",
+      "bytes": 7455,
+      "sha256": "e2e386ad2bb4fe1be1d09af764bc3a430df49aa560394d1de1003e501ad56123"
+    }
+  ],
+  "checks": [
+    {
+      "name": "artifact_http_race",
+      "status": "passed",
+      "summary": "real Identity/HTTP/SQLite/worker artifact workflow passed",
+      "log": {
+        "path": "2026-09-12-r03-artifact-web/logs/artifact-http-race.log",
+        "bytes": 178,
+        "sha256": "95f27a124c468aebb1aed58ff73f625b9dc1c038eab0f589eb181226219a84c3"
+      }
+    },
+    {
+      "name": "artifact_integration_race",
+      "status": "passed",
+      "summary": "versions, receipts, provenance, restart and current authorization passed",
+      "log": {
+        "path": "2026-09-12-r03-artifact-web/logs/artifact-integration-race.log",
+        "bytes": 378,
+        "sha256": "01aede71a81d8e3f92af650c0dd12022184bb9f008a94ab7f290abee1c2bd351"
+      }
+    },
+    {
+      "name": "browser_e2e",
+      "status": "passed",
+      "summary": "compiled UI acceptance host passed in 240.86s",
+      "log": {
+        "path": "2026-09-12-r03-artifact-web/logs/browser-host.log",
+        "bytes": 283,
+        "sha256": "a8b7185c276df1c430ca4a66ab1821cdcb3978e8f23238cc0428cddcd664adb5"
+      }
+    },
+    {
+      "name": "browser_observation",
+      "status": "passed",
+      "summary": "source navigation, editing, old-version download, safe DOM and revocation observed",
+      "log": {
+        "path": "2026-09-12-r03-artifact-web/logs/browser-observation.log",
+        "bytes": 2102,
+        "sha256": "2337dd5093459551c40561f1c79169b03cde4d473f2d5cb0a7069d0dd7a6519c"
+      }
+    },
+    {
+      "name": "frontend_test",
+      "status": "passed",
+      "summary": "53 tests passed",
+      "log": {
+        "path": "2026-09-12-r03-artifact-web/logs/frontend-test.log",
+        "bytes": 7518,
+        "sha256": "1623f58227d4449f873fbd380330a804a23af8b967761cb416dca3b6d91c232c"
+      }
+    },
+    {
+      "name": "frontend_build",
+      "status": "passed",
+      "summary": "TypeScript and Vite production build passed",
+      "log": {
+        "path": "2026-09-12-r03-artifact-web/logs/frontend-build.log",
+        "bytes": 32521,
+        "sha256": "9b63c13f7e0f13bf20b5dc044062f0cc07b954c2c0d5abf21764b3c367485887"
+      }
+    },
+    {
+      "name": "web_vet",
+      "status": "passed",
+      "summary": "relevant web and integration packages passed",
+      "log": {
+        "path": "2026-09-12-r03-artifact-web/logs/web-vet.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "diff_check",
+      "status": "passed",
+      "summary": "agent diff check passed",
+      "log": {
+        "path": "2026-09-12-r03-artifact-web/logs/diff-check.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "llm_proxy_state",
+      "status": "passed",
+      "summary": "clean at expected HEAD",
+      "log": {
+        "path": "2026-09-12-r03-artifact-web/logs/llm-proxy-state.log",
+        "bytes": 41,
+        "sha256": "ccbff0535e197768e58ace2f4cee304a356e7eb2658f1acf99478bfc35e53eed"
+      }
+    }
+  ],
+  "llm_proxy": {
+    "modified": false,
+    "head": "a32407a678ea7f96d70b7557765e2a01262184d4",
+    "consumed_interfaces_only": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ]
+  },
+  "limitations": [
+    "Generic task_start/task_get/task_list contracts remain in L01-L02; R03 links artifacts to the persisted conversation run that created them.",
+    "Browser acceptance uses a deterministic local model protocol fixture and does not claim cloud model deployment.",
+    "No browser console error count is claimed; executable-content isolation was verified from the actual DOM and global variable state."
+  ]
+}

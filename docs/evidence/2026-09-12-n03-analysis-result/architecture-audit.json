@@ -1,0 +1,119 @@
+{
+  "schema": "domainry-architecture-audit-v1",
+  "date": "2026-09-12",
+  "todo": "N03",
+  "status": "passed",
+  "dependency_direction": [
+    {
+      "layer": "report_sdk_contract",
+      "files": [
+        "/Users/tiger/Projects/domainry-report-sdk/model/analysis.go"
+      ],
+      "forbidden": [
+        "github.com/domainry/domainry-report/",
+        "github.com/domainry/domainry-runtime/",
+        "github.com/domainry/domainry-tools/",
+        "github.com/domainry/domainry-agent/",
+        "github.com/domainry/domainry-knowledge/"
+      ],
+      "matches": [],
+      "status": "passed"
+    },
+    {
+      "layer": "report_owner",
+      "files": [
+        "/Users/tiger/Projects/domainry-report/internal/domain/report/service/analysis/result_metadata.go",
+        "/Users/tiger/Projects/domainry-report/internal/application/report/analysis_service.go",
+        "/Users/tiger/Projects/domainry-report/internal/application/report/analysis_catalog.go",
+        "/Users/tiger/Projects/domainry-report/internal/domain/report/service/analysis/compile.go"
+      ],
+      "forbidden": [
+        "github.com/domainry/domainry-runtime/",
+        "github.com/domainry/domainry-tools/",
+        "github.com/domainry/domainry-agent/",
+        "github.com/domainry/domainry-knowledge/",
+        "github.com/codeck-backend/kb-search-api"
+      ],
+      "matches": [],
+      "status": "passed"
+    },
+    {
+      "layer": "runtime_source_adapter",
+      "files": [
+        "/Users/tiger/Projects/domainry-runtime/runtime/modulehost/report/report_analysis_sources.go"
+      ],
+      "forbidden": [
+        "github.com/domainry/domainry-report/",
+        "github.com/domainry/domainry-tools/",
+        "github.com/domainry/domainry-agent/",
+        "github.com/domainry/domainry-knowledge/",
+        "github.com/codeck-backend/kb-search-api"
+      ],
+      "matches": [],
+      "status": "passed"
+    },
+    {
+      "layer": "knowledge_source_adapter",
+      "files": [
+        "/Users/tiger/Projects/domainry-knowledge/internal/infrastructure/provider/analysis_tables.go"
+      ],
+      "forbidden": [
+        "github.com/domainry/domainry-report/",
+        "github.com/domainry/domainry-runtime/",
+        "github.com/domainry/domainry-tools/",
+        "github.com/codeck-backend/kb-search-api"
+      ],
+      "matches": [],
+      "status": "passed"
+    },
+    {
+      "layer": "tools_neutral_contract",
+      "files": [
+        "/Users/tiger/Projects/domainry-tools-sdk/analysis.go"
+      ],
+      "forbidden": [
+        "github.com/domainry/domainry-report-sdk/",
+        "github.com/domainry/domainry-report/",
+        "github.com/domainry/domainry-runtime/",
+        "github.com/domainry/domainry-agent/",
+        "github.com/domainry/domainry-knowledge/"
+      ],
+      "matches": [],
+      "status": "passed"
+    },
+    {
+      "layer": "tools_analysis_adapter",
+      "files": [
+        "/Users/tiger/Projects/domainry-tools/internal/adapter/analysistools/adapter.go"
+      ],
+      "forbidden": [
+        "github.com/domainry/domainry-report/",
+        "github.com/domainry/domainry-runtime/",
+        "github.com/domainry/domainry-agent/",
+        "github.com/domainry/domainry-knowledge/"
+      ],
+      "matches": [],
+      "status": "passed"
+    }
+  ],
+  "analysis_input_contract": {
+    "closed_object_test": "TestAnalysisInputSchemaIsClosedAndHasNoExecutableEscapeHatch",
+    "forbidden_property_scan": [],
+    "arithmetic_expression": "bounded reference/decimal/add/subtract/multiply/divide/negate tree only",
+    "status": "passed"
+  },
+  "presentation_boundary": {
+    "chart": "bar or line with returned column keys only",
+    "frontend": "hash-checked completed tool receipt parsed into ArtifactPreview; raw content is never executed",
+    "status": "passed"
+  },
+  "llm_proxy": {
+    "path": "/Users/tiger/Projects/anti/llm-proxy",
+    "modified": false,
+    "head": "a32407a678ea7f96d70b7557765e2a01262184d4",
+    "consumed_interfaces_only": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ]
+  }
+}

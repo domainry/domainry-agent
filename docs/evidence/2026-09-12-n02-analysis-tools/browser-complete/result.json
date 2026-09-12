@@ -1,0 +1,956 @@
+{
+  "model": "in-process deterministic SDK model; real Report analysis/Identity/Runtime/Tools/Agent/SQLite",
+  "phases": [
+    "closing result details clears complete data; reopening requires current authorization",
+    "UI complete-result reads and SHA256 verification; login/create/send; catalog + explicit output-limit failure + corrected aggregate/compare/trend/table; actual numbers, counts, methods, rules and source versions",
+    "full owner/module/Identity disk restart restores actual saved analysis answer",
+    "field permission revoked hides prior answer and tool content",
+    "restored permission requires fresh query; mobile 390px no document overflow",
+    "customer read revoked removes its dataset; one catalog request and no analysis execution"
+  ],
+  "runs": [
+    {
+      "conversation": "conv_e69055bbcbe69eaa37db0a97d3c32915",
+      "id": "crun_9f9eaa98f95d0ad89fa0a79a79dd58cd",
+      "status": "completed",
+      "calls": [
+        {
+          "name": "analysis_run",
+          "status": "completed",
+          "arguments": "{\"dataset_key\":\"customer\",\"operation\":\"catalog\"}",
+          "result_preview": "{\"operation\":\"catalog\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"f14c650afb84f4ed343383f925b91fb441ef298504d166c4827391459158aa88\",\"catalog\":{\"datasets\":[{\"key\":\"customer\",\"name\":\"Customer\",\"kind\":\"business_object\",\"version\":\"55b6bc9da2c8ba82668084a60c54423e6ef09f8200693e90c6c5200aec1da27a\",\"columns\":[{\"key\":\"balance\",\"type\":\"integer\",\"unit\":\"\"},{\"key\":\"created_at\",\"type\":\"datetime\",\"unit\":\"\"},{\"key\":\"id\",\"type\":\"text\",\"unit\":\"\"},{\"key\":\"name\",\"type\":\"text\",\"unit\":\"\"},{\"key\":\"status\",\"type\":\"text\",\"unit\":\"\"},{\"key\":\"updated_at\",\"type\":\"datetime\",\"unit\":\"\"}]}],\"truncated\":false}}",
+          "result_reference": {
+            "conversation_id": "conv_e69055bbcbe69eaa37db0a97d3c32915",
+            "run_id": "crun_9f9eaa98f95d0ad89fa0a79a79dd58cd",
+            "step": 0,
+            "call_id": "analysis-catalog",
+            "sha256": "941987b907bbc4070635516bb775fa7ce4097ad1ff722b503d343113b128ec9b"
+          }
+        },
+        {
+          "name": "analysis_run",
+          "status": "failed",
+          "error_code": "backend.report.analysis.result_limit_exceeded",
+          "arguments": "{\"operation\":\"run\",\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"aggregate\",\"group_by\":[\"name\"],\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"max_rows\":1}}",
+          "result_preview": "{\"error\":\"backend.report.analysis.result_limit_exceeded\",\"recovery\":\"Narrow the filters or grouping and run a complete analysis again. Never substitute sampled query pages.\"}",
+          "result_reference": {
+            "conversation_id": "conv_e69055bbcbe69eaa37db0a97d3c32915",
+            "run_id": "crun_9f9eaa98f95d0ad89fa0a79a79dd58cd",
+            "step": 1,
+            "call_id": "analysis-output-limit",
+            "sha256": "c3bb79e9146c6d7c72f5810c27b9e08a22c06d99b3f0235a0480f66a665799d4"
+          }
+        },
+        {
+          "name": "analysis_run",
+          "status": "completed",
+          "arguments": "{\"operation\":\"run\",\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"aggregate\",\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"max_rows\":100}}",
+          "result_preview": "{\"operation\":\"run\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"ebd8cffdb2ab362389fce98cf6e3afeec82b82e39cff5770a20ed68c3a839957\",\"result\":{\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"aggregate\",\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"max_rows\":100},\"columns\":[{\"key\":\"total\",\"type\":\"integer\",\"unit\":\"unspecified\"},{\"key\":\"mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"rows\",\"type\":\"integer\",\"unit\":\"records\"}],\"rows\":[{\"input_counts\":{\"dataset\":\"3\"},\"non_null_counts\":{\"mean\":\"3\",\"rows\":\"3\",\"total\":\"3\"},\"values\":{\"mean\":\"20.000000\",\"rows\":\"3\",\"total\":\"60\"},\"anomalies\":[],\"issues\":[]}],\"methods\":[{\"numerics\":\"exact_integer_or_decimal; rational_postprocessing\",\"column\":\"total\",\"method\":\"sum\",\"nulls\":\"ignore_null_inputs\"},{\"numerics\":\"exact_integer_or_decimal; rational_postprocessing\",\"column\":\"mean\",\"method\":\"sum_divided_by_non_null_count\",\"nulls\":\"ignore_null_inputs\",\"rounding\":\"half_even_6_decimal_places\"},{\"numerics\":\"exact_integer_or_decimal; rational_postprocessing\",\"column\":\"rows\",\"method\":\"count\",\"nulls\":\"include_rows\"}],\"source\":{\"dataset_key\":\"customer\",\"definition_version\":\"4599a3b635043fca4fed7147a12dd85b55a3ea606840fdda5dcd84e7c060b43a\",\"data_version\":\"ab9d10500d8bf04db16e52483f125c2f0f5acf606dd52eefa92567a263cacf2e\",\"queried_at\":\"2026-09-12T00:49:08.336227Z\",\"input_counts\":{\"dataset\":\"3\"},\"scope\":\"current_subject_filtered_dataset\",\"complete\":true,\"proof\":\"45b9890352168b5c2cb11a203eb407718be540a3cbc177ad4032c5fc170f68fd\"}}}",
+          "result_reference": {
+            "conversation_id": "conv_e69055bbcbe69eaa37db0a97d3c32915",
+            "run_id": "crun_9f9eaa98f95d0ad89fa0a79a79dd58cd",
+            "step": 2,
+            "call_id": "analysis-aggregate",
+            "sha256": "ede877144ecd8d8466bba42c5ab025ac3674f48178592dde93326fc7a9b61e07"
+          },
+          "complete_result": {
+            "content": {
+              "operation": "run",
+              "source_identity": "runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428",
+              "request_sha256": "ebd8cffdb2ab362389fce98cf6e3afeec82b82e39cff5770a20ed68c3a839957",
+              "result": {
+                "spec": {
+                  "dataset_key": "customer",
+                  "mode": "aggregate",
+                  "measures": [
+                    {
+                      "key": "total",
+                      "function": "sum",
+                      "field": "balance"
+                    },
+                    {
+                      "key": "mean",
+                      "function": "avg",
+                      "field": "balance"
+                    },
+                    {
+                      "key": "rows",
+                      "function": "count"
+                    }
+                  ],
+                  "max_rows": 100
+                },
+                "columns": [
+                  {
+                    "key": "total",
+                    "type": "integer",
+                    "unit": "unspecified"
+                  },
+                  {
+                    "key": "mean",
+                    "type": "decimal",
+                    "unit": "unspecified",
+                    "scale": 6
+                  },
+                  {
+                    "key": "rows",
+                    "type": "integer",
+                    "unit": "records"
+                  }
+                ],
+                "rows": [
+                  {
+                    "input_counts": {
+                      "dataset": "3"
+                    },
+                    "non_null_counts": {
+                      "mean": "3",
+                      "rows": "3",
+                      "total": "3"
+                    },
+                    "values": {
+                      "mean": "20.000000",
+                      "rows": "3",
+                      "total": "60"
+                    },
+                    "anomalies": [],
+                    "issues": []
+                  }
+                ],
+                "methods": [
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "total",
+                    "method": "sum",
+                    "nulls": "ignore_null_inputs"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "mean",
+                    "method": "sum_divided_by_non_null_count",
+                    "nulls": "ignore_null_inputs",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "rows",
+                    "method": "count",
+                    "nulls": "include_rows"
+                  }
+                ],
+                "source": {
+                  "dataset_key": "customer",
+                  "definition_version": "4599a3b635043fca4fed7147a12dd85b55a3ea606840fdda5dcd84e7c060b43a",
+                  "data_version": "ab9d10500d8bf04db16e52483f125c2f0f5acf606dd52eefa92567a263cacf2e",
+                  "queried_at": "2026-09-12T00:49:08.336227Z",
+                  "input_counts": {
+                    "dataset": "3"
+                  },
+                  "scope": "current_subject_filtered_dataset",
+                  "complete": true,
+                  "proof": "45b9890352168b5c2cb11a203eb407718be540a3cbc177ad4032c5fc170f68fd"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "analysis_run",
+          "status": "completed",
+          "arguments": "{\"operation\":\"run\",\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"compare\",\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"comparison\":{\"baseline\":[{\"field\":\"name\",\"operator\":\"eq\",\"values\":[\"Beta\"]}],\"current\":[{\"field\":\"name\",\"operator\":\"eq\",\"values\":[\"Gamma\"]}]},\"max_rows\":100}}",
+          "result_preview": "{\"operation\":\"run\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"f46cb1c6b0756cdae050c8bc477951e0bf7119fa23aa821308540919d4ed8bda\",\"result\":{\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"compare\",\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"comparison\":{\"baseline\":[{\"field\":\"name\",\"operator\":\"eq\",\"values\":[\"Beta\"]}],\"current\":[{\"field\":\"name\",\"operator\":\"eq\",\"values\":[\"Gamma\"]}]},\"max_rows\":100},\"columns\":[{\"key\":\"baseline_total\",\"type\":\"integer\",\"unit\":\"unspecified\"},{\"key\":\"current_total\",\"type\":\"integer\",\"unit\":\"unspecified\"},{\"key\":\"delta_total\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"change_pct_total\",\"type\":\"decimal\",\"unit\":\"%\",\"scale\":6},{\"key\":\"baseline_mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"current_mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"delta_mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"change_pct_mean\",\"type\":\"decimal\",\"unit\":\"%\",\"scale\":6},{\"key\":\"baseline_rows\",\"type\":\"integer\",\"unit\":\"records\"},{\"key\":\"current_rows\",\"type\":\"integer\",\"unit\":\"records\"},{\"key\":\"delta_rows\",\"type\":\"decimal\",\"unit\":\"records\",\"scale\":6},{\"key\":\"change_pct_rows\",\"type\":\"decimal\",\"unit\":\"%\",\"scale\":6}],\"rows\":[{\"input_counts\":{\"baseline\":\"1\",\"current\":\"1\"},\"non_null_counts\":{\"baseline_mean\":\"1\",\"baseline_rows\":\"1\",\"baseline_total\":\"1\",\"current_mean\":\"1\",\"current_rows\":\"1\",\"current_total\":\"1\"},\"values\":{\"baseline_mean\":\"20.000000\",\"baseline_rows\":\"1\",\"baseline_total\":\"20\",\"change_pct_mean\":\"50.000000\",\"change_pct_rows\":\"0.000000\",\"change_pct_total\":\"50.000000\",\"current_mean\":\"30.000000\",\"current_rows\":\"1\",\"current_total\":\"30\",\"delta_mean\":\"10.000000\",\"delta_rows\":\"0.000000\",\"delta_total\":\"10.000000\"},\"anomalies\":[],\"issues\":[]}],\"methods\":[{\"numerics\":\"exact_integer_or_decimal; rational_postprocessing\",\"column\":\"baseline_total\",\"method\":\"sum\",\"nulls\":\"ignore_null_inputs\"}",
+          "result_truncated": true,
+          "result_reference": {
+            "conversation_id": "conv_e69055bbcbe69eaa37db0a97d3c32915",
+            "run_id": "crun_9f9eaa98f95d0ad89fa0a79a79dd58cd",
+            "step": 3,
+            "call_id": "analysis-compare",
+            "sha256": "0e17529f01045a8f08f4bdd129a488a3424f97ce4c7e4e7817864b2893f71c4f"
+          },
+          "complete_result": {
+            "status": "completed",
+            "content": {
+              "operation": "run",
+              "source_identity": "runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428",
+              "request_sha256": "f46cb1c6b0756cdae050c8bc477951e0bf7119fa23aa821308540919d4ed8bda",
+              "result": {
+                "spec": {
+                  "dataset_key": "customer",
+                  "mode": "compare",
+                  "measures": [
+                    {
+                      "key": "total",
+                      "function": "sum",
+                      "field": "balance"
+                    },
+                    {
+                      "key": "mean",
+                      "function": "avg",
+                      "field": "balance"
+                    },
+                    {
+                      "key": "rows",
+                      "function": "count"
+                    }
+                  ],
+                  "comparison": {
+                    "baseline": [
+                      {
+                        "field": "name",
+                        "operator": "eq",
+                        "values": [
+                          "Beta"
+                        ]
+                      }
+                    ],
+                    "current": [
+                      {
+                        "field": "name",
+                        "operator": "eq",
+                        "values": [
+                          "Gamma"
+                        ]
+                      }
+                    ]
+                  },
+                  "max_rows": 100
+                },
+                "columns": [
+                  {
+                    "key": "baseline_total",
+                    "type": "integer",
+                    "unit": "unspecified"
+                  },
+                  {
+                    "key": "current_total",
+                    "type": "integer",
+                    "unit": "unspecified"
+                  },
+                  {
+                    "key": "delta_total",
+                    "type": "decimal",
+                    "unit": "unspecified",
+                    "scale": 6
+                  },
+                  {
+                    "key": "change_pct_total",
+                    "type": "decimal",
+                    "unit": "%",
+                    "scale": 6
+                  },
+                  {
+                    "key": "baseline_mean",
+                    "type": "decimal",
+                    "unit": "unspecified",
+                    "scale": 6
+                  },
+                  {
+                    "key": "current_mean",
+                    "type": "decimal",
+                    "unit": "unspecified",
+                    "scale": 6
+                  },
+                  {
+                    "key": "delta_mean",
+                    "type": "decimal",
+                    "unit": "unspecified",
+                    "scale": 6
+                  },
+                  {
+                    "key": "change_pct_mean",
+                    "type": "decimal",
+                    "unit": "%",
+                    "scale": 6
+                  },
+                  {
+                    "key": "baseline_rows",
+                    "type": "integer",
+                    "unit": "records"
+                  },
+                  {
+                    "key": "current_rows",
+                    "type": "integer",
+                    "unit": "records"
+                  },
+                  {
+                    "key": "delta_rows",
+                    "type": "decimal",
+                    "unit": "records",
+                    "scale": 6
+                  },
+                  {
+                    "key": "change_pct_rows",
+                    "type": "decimal",
+                    "unit": "%",
+                    "scale": 6
+                  }
+                ],
+                "rows": [
+                  {
+                    "input_counts": {
+                      "baseline": "1",
+                      "current": "1"
+                    },
+                    "non_null_counts": {
+                      "baseline_mean": "1",
+                      "baseline_rows": "1",
+                      "baseline_total": "1",
+                      "current_mean": "1",
+                      "current_rows": "1",
+                      "current_total": "1"
+                    },
+                    "values": {
+                      "baseline_mean": "20.000000",
+                      "baseline_rows": "1",
+                      "baseline_total": "20",
+                      "change_pct_mean": "50.000000",
+                      "change_pct_rows": "0.000000",
+                      "change_pct_total": "50.000000",
+                      "current_mean": "30.000000",
+                      "current_rows": "1",
+                      "current_total": "30",
+                      "delta_mean": "10.000000",
+                      "delta_rows": "0.000000",
+                      "delta_total": "10.000000"
+                    },
+                    "anomalies": [],
+                    "issues": []
+                  }
+                ],
+                "methods": [
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "baseline_total",
+                    "method": "sum",
+                    "nulls": "ignore_null_inputs"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "current_total",
+                    "method": "sum",
+                    "nulls": "ignore_null_inputs"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "delta_total",
+                    "method": "current_minus_baseline",
+                    "nulls": "missing_operand_is_undefined",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "change_pct_total",
+                    "method": "100_times_delta_divided_by_abs_baseline",
+                    "nulls": "missing_operand_or_zero_denominator_is_undefined",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "baseline_mean",
+                    "method": "sum_divided_by_non_null_count",
+                    "nulls": "ignore_null_inputs",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "current_mean",
+                    "method": "sum_divided_by_non_null_count",
+                    "nulls": "ignore_null_inputs",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "delta_mean",
+                    "method": "current_minus_baseline",
+                    "nulls": "missing_operand_is_undefined",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "change_pct_mean",
+                    "method": "100_times_delta_divided_by_abs_baseline",
+                    "nulls": "missing_operand_or_zero_denominator_is_undefined",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "baseline_rows",
+                    "method": "count",
+                    "nulls": "include_rows"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "current_rows",
+                    "method": "count",
+                    "nulls": "include_rows"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "delta_rows",
+                    "method": "current_minus_baseline",
+                    "nulls": "missing_operand_is_undefined",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "change_pct_rows",
+                    "method": "100_times_delta_divided_by_abs_baseline",
+                    "nulls": "missing_operand_or_zero_denominator_is_undefined",
+                    "rounding": "half_even_6_decimal_places"
+                  }
+                ],
+                "source": {
+                  "dataset_key": "customer",
+                  "definition_version": "4599a3b635043fca4fed7147a12dd85b55a3ea606840fdda5dcd84e7c060b43a",
+                  "data_version": "c50aa2a38df1460876f95c3179935c48f91abf9de7c27b3cec353c858eb62640",
+                  "queried_at": "2026-09-12T00:49:11.024723Z",
+                  "input_counts": {
+                    "baseline": "1",
+                    "current": "1"
+                  },
+                  "scope": "current_subject_filtered_dataset",
+                  "complete": true,
+                  "proof": "aa1195d1a4c59c35a93a2d04bc575160bb8a114598c8cd9721391560e42a68ff"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "analysis_run",
+          "status": "completed",
+          "arguments": "{\"operation\":\"run\",\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"trend\",\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"time\":{\"field\":\"created_at\",\"grain\":\"day\",\"time_zone\":\"UTC\"},\"max_rows\":100}}",
+          "result_preview": "{\"operation\":\"run\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"c607e4c2f8e58d5c1219236e08d9a2e2600b1eb19efd5d36443824bda2977b06\",\"result\":{\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"trend\",\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"time\":{\"field\":\"created_at\",\"grain\":\"day\",\"time_zone\":\"UTC\"},\"max_rows\":100},\"columns\":[{\"key\":\"period\",\"type\":\"datetime\",\"unit\":\"calendar_period\"},{\"key\":\"total\",\"type\":\"integer\",\"unit\":\"unspecified\"},{\"key\":\"mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"rows\",\"type\":\"integer\",\"unit\":\"records\"},{\"key\":\"previous_total\",\"type\":\"integer\",\"unit\":\"unspecified\"},{\"key\":\"delta_total\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"change_pct_total\",\"type\":\"decimal\",\"unit\":\"%\",\"scale\":6},{\"key\":\"previous_mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"delta_mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"change_pct_mean\",\"type\":\"decimal\",\"unit\":\"%\",\"scale\":6},{\"key\":\"previous_rows\",\"type\":\"integer\",\"unit\":\"records\"},{\"key\":\"delta_rows\",\"type\":\"decimal\",\"unit\":\"records\",\"scale\":6},{\"key\":\"change_pct_rows\",\"type\":\"decimal\",\"unit\":\"%\",\"scale\":6}],\"rows\":[{\"input_counts\":{\"dataset\":\"3\"},\"non_null_counts\":{\"mean\":\"3\",\"rows\":\"3\",\"total\":\"3\"},\"values\":{\"change_pct_mean\":null,\"change_pct_rows\":null,\"change_pct_total\":null,\"delta_mean\":null,\"delta_rows\":null,\"delta_total\":null,\"mean\":\"20.000000\",\"period\":\"2026-09-12T00:00:00Z\",\"previous_mean\":null,\"previous_rows\":null,\"previous_total\":null,\"rows\":\"3\",\"total\":\"60\"},\"anomalies\":[],\"issues\":[{\"column\":\"delta_total\",\"code\":\"missing_comparison_value\"},{\"column\":\"change_pct_total\",\"code\":\"missing_comparison_value\"},{\"column\":\"delta_mean\",\"code\":\"missing_comparison_value\"},{\"column\":\"change_pct_mean\",\"code\":\"missing_comparison_value\"},{\"column\":\"delta_rows\",\"code\":\"missing_comparison_value\"},{\"column\":\"change_pct_rows\",\"cod",
+          "result_truncated": true,
+          "result_reference": {
+            "conversation_id": "conv_e69055bbcbe69eaa37db0a97d3c32915",
+            "run_id": "crun_9f9eaa98f95d0ad89fa0a79a79dd58cd",
+            "step": 4,
+            "call_id": "analysis-trend",
+            "sha256": "df2c7ab57975b68111bd904bfed618c7361d9a0c77c383f80348ffec515e17c8"
+          },
+          "complete_result": {
+            "status": "completed",
+            "content": {
+              "operation": "run",
+              "source_identity": "runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428",
+              "request_sha256": "c607e4c2f8e58d5c1219236e08d9a2e2600b1eb19efd5d36443824bda2977b06",
+              "result": {
+                "spec": {
+                  "dataset_key": "customer",
+                  "mode": "trend",
+                  "measures": [
+                    {
+                      "key": "total",
+                      "function": "sum",
+                      "field": "balance"
+                    },
+                    {
+                      "key": "mean",
+                      "function": "avg",
+                      "field": "balance"
+                    },
+                    {
+                      "key": "rows",
+                      "function": "count"
+                    }
+                  ],
+                  "time": {
+                    "field": "created_at",
+                    "grain": "day",
+                    "time_zone": "UTC"
+                  },
+                  "max_rows": 100
+                },
+                "columns": [
+                  {
+                    "key": "period",
+                    "type": "datetime",
+                    "unit": "calendar_period"
+                  },
+                  {
+                    "key": "total",
+                    "type": "integer",
+                    "unit": "unspecified"
+                  },
+                  {
+                    "key": "mean",
+                    "type": "decimal",
+                    "unit": "unspecified",
+                    "scale": 6
+                  },
+                  {
+                    "key": "rows",
+                    "type": "integer",
+                    "unit": "records"
+                  },
+                  {
+                    "key": "previous_total",
+                    "type": "integer",
+                    "unit": "unspecified"
+                  },
+                  {
+                    "key": "delta_total",
+                    "type": "decimal",
+                    "unit": "unspecified",
+                    "scale": 6
+                  },
+                  {
+                    "key": "change_pct_total",
+                    "type": "decimal",
+                    "unit": "%",
+                    "scale": 6
+                  },
+                  {
+                    "key": "previous_mean",
+                    "type": "decimal",
+                    "unit": "unspecified",
+                    "scale": 6
+                  },
+                  {
+                    "key": "delta_mean",
+                    "type": "decimal",
+                    "unit": "unspecified",
+                    "scale": 6
+                  },
+                  {
+                    "key": "change_pct_mean",
+                    "type": "decimal",
+                    "unit": "%",
+                    "scale": 6
+                  },
+                  {
+                    "key": "previous_rows",
+                    "type": "integer",
+                    "unit": "records"
+                  },
+                  {
+                    "key": "delta_rows",
+                    "type": "decimal",
+                    "unit": "records",
+                    "scale": 6
+                  },
+                  {
+                    "key": "change_pct_rows",
+                    "type": "decimal",
+                    "unit": "%",
+                    "scale": 6
+                  }
+                ],
+                "rows": [
+                  {
+                    "input_counts": {
+                      "dataset": "3"
+                    },
+                    "non_null_counts": {
+                      "mean": "3",
+                      "rows": "3",
+                      "total": "3"
+                    },
+                    "values": {
+                      "change_pct_mean": null,
+                      "change_pct_rows": null,
+                      "change_pct_total": null,
+                      "delta_mean": null,
+                      "delta_rows": null,
+                      "delta_total": null,
+                      "mean": "20.000000",
+                      "period": "2026-09-12T00:00:00Z",
+                      "previous_mean": null,
+                      "previous_rows": null,
+                      "previous_total": null,
+                      "rows": "3",
+                      "total": "60"
+                    },
+                    "anomalies": [],
+                    "issues": [
+                      {
+                        "column": "delta_total",
+                        "code": "missing_comparison_value"
+                      },
+                      {
+                        "column": "change_pct_total",
+                        "code": "missing_comparison_value"
+                      },
+                      {
+                        "column": "delta_mean",
+                        "code": "missing_comparison_value"
+                      },
+                      {
+                        "column": "change_pct_mean",
+                        "code": "missing_comparison_value"
+                      },
+                      {
+                        "column": "delta_rows",
+                        "code": "missing_comparison_value"
+                      },
+                      {
+                        "column": "change_pct_rows",
+                        "code": "missing_comparison_value"
+                      }
+                    ]
+                  }
+                ],
+                "methods": [
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "total",
+                    "method": "sum",
+                    "nulls": "ignore_null_inputs"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "mean",
+                    "method": "sum_divided_by_non_null_count",
+                    "nulls": "ignore_null_inputs",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "rows",
+                    "method": "count",
+                    "nulls": "include_rows"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "previous_total",
+                    "method": "previous_observed_period_within_group; no_zero_fill",
+                    "nulls": "null_period_has_no_comparison"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "delta_total",
+                    "method": "current_minus_previous",
+                    "nulls": "missing_operand_is_undefined",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "change_pct_total",
+                    "method": "100_times_delta_divided_by_abs_previous",
+                    "nulls": "missing_operand_or_zero_denominator_is_undefined",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "previous_mean",
+                    "method": "previous_observed_period_within_group; no_zero_fill",
+                    "nulls": "null_period_has_no_comparison"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "delta_mean",
+                    "method": "current_minus_previous",
+                    "nulls": "missing_operand_is_undefined",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "change_pct_mean",
+                    "method": "100_times_delta_divided_by_abs_previous",
+                    "nulls": "missing_operand_or_zero_denominator_is_undefined",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "previous_rows",
+                    "method": "previous_observed_period_within_group; no_zero_fill",
+                    "nulls": "null_period_has_no_comparison"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "delta_rows",
+                    "method": "current_minus_previous",
+                    "nulls": "missing_operand_is_undefined",
+                    "rounding": "half_even_6_decimal_places"
+                  },
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "change_pct_rows",
+                    "method": "100_times_delta_divided_by_abs_previous",
+                    "nulls": "missing_operand_or_zero_denominator_is_undefined",
+                    "rounding": "half_even_6_decimal_places"
+                  }
+                ],
+                "source": {
+                  "dataset_key": "customer",
+                  "definition_version": "4599a3b635043fca4fed7147a12dd85b55a3ea606840fdda5dcd84e7c060b43a",
+                  "data_version": "ab9d10500d8bf04db16e52483f125c2f0f5acf606dd52eefa92567a263cacf2e",
+                  "queried_at": "2026-09-12T00:49:14.502222Z",
+                  "input_counts": {
+                    "dataset": "3"
+                  },
+                  "scope": "current_subject_filtered_dataset",
+                  "complete": true,
+                  "proof": "b88eb884fe84c1facd3f418d5d4af54d8deb6193042dbd43c463277fd4b88205"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "analysis_run",
+          "status": "completed",
+          "arguments": "{\"operation\":\"run\",\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"table\",\"select\":[\"name\",\"balance\"],\"calculations\":[{\"key\":\"doubled\",\"expression\":{\"operator\":\"multiply\",\"arguments\":[{\"reference\":\"balance\"},{\"decimal\":\"2\"}]},\"scale\":2}],\"anomaly_rules\":[{\"key\":\"large\",\"column\":\"doubled\",\"operator\":\"ge\",\"values\":[\"40\"]}],\"max_rows\":100}}",
+          "result_preview": "{\"operation\":\"run\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"64d25066e275788368ee3dd5e255a495e71ecb2ddea8a0d9e5452e514b7b72b9\",\"result\":{\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"table\",\"select\":[\"name\",\"balance\"],\"calculations\":[{\"key\":\"doubled\",\"expression\":{\"operator\":\"multiply\",\"arguments\":[{\"reference\":\"balance\"},{\"decimal\":\"2\"}]},\"scale\":2}],\"anomaly_rules\":[{\"key\":\"large\",\"column\":\"doubled\",\"operator\":\"ge\",\"values\":[\"40\"]}],\"max_rows\":100},\"columns\":[{\"key\":\"name\",\"type\":\"text\",\"unit\":\"unspecified\"},{\"key\":\"balance\",\"type\":\"integer\",\"unit\":\"unspecified\"},{\"key\":\"doubled\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":2}],\"rows\":[{\"input_counts\":{\"dataset\":\"1\"},\"non_null_counts\":{},\"values\":{\"balance\":\"10\",\"doubled\":\"20.00\",\"name\":\"Acme\"},\"anomalies\":[],\"issues\":[]},{\"input_counts\":{\"dataset\":\"1\"},\"non_null_counts\":{},\"values\":{\"balance\":\"20\",\"doubled\":\"40.00\",\"name\":\"Beta\"},\"anomalies\":[\"large\"],\"issues\":[]},{\"input_counts\":{\"dataset\":\"1\"},\"non_null_counts\":{},\"values\":{\"balance\":\"30\",\"doubled\":\"60.00\",\"name\":\"Gamma\"},\"anomalies\":[\"large\"],\"issues\":[]}],\"methods\":[{\"numerics\":\"exact_integer_or_decimal; rational_postprocessing\",\"column\":\"doubled\",\"method\":\"structured_arithmetic_on_preceding_rounded_cells\",\"nulls\":\"propagate_null; division_by_zero_is_undefined\",\"rounding\":\"half_even_to_column_scale\"}],\"source\":{\"dataset_key\":\"customer\",\"definition_version\":\"4599a3b635043fca4fed7147a12dd85b55a3ea606840fdda5dcd84e7c060b43a\",\"data_version\":\"b812e26307c243af2f52e60117c92170981c08d27cf04165a0c038713bd52b57\",\"queried_at\":\"2026-09-12T00:49:18.375946Z\",\"input_counts\":{\"dataset\":\"3\"},\"scope\":\"current_subject_filtered_dataset\",\"complete\":true,\"proof\":\"b2cc2e68f5eb7ccf3afed76f64a2bb127e07cd6c353494195bf825dc0c3a5878\"}}}",
+          "result_reference": {
+            "conversation_id": "conv_e69055bbcbe69eaa37db0a97d3c32915",
+            "run_id": "crun_9f9eaa98f95d0ad89fa0a79a79dd58cd",
+            "step": 5,
+            "call_id": "analysis-table",
+            "sha256": "1257babaee9fd2f363589e805f2d35da56342562c556428b176ca2bce2986393"
+          },
+          "complete_result": {
+            "content": {
+              "operation": "run",
+              "source_identity": "runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428",
+              "request_sha256": "64d25066e275788368ee3dd5e255a495e71ecb2ddea8a0d9e5452e514b7b72b9",
+              "result": {
+                "spec": {
+                  "dataset_key": "customer",
+                  "mode": "table",
+                  "select": [
+                    "name",
+                    "balance"
+                  ],
+                  "calculations": [
+                    {
+                      "key": "doubled",
+                      "expression": {
+                        "operator": "multiply",
+                        "arguments": [
+                          {
+                            "reference": "balance"
+                          },
+                          {
+                            "decimal": "2"
+                          }
+                        ]
+                      },
+                      "scale": 2
+                    }
+                  ],
+                  "anomaly_rules": [
+                    {
+                      "key": "large",
+                      "column": "doubled",
+                      "operator": "ge",
+                      "values": [
+                        "40"
+                      ]
+                    }
+                  ],
+                  "max_rows": 100
+                },
+                "columns": [
+                  {
+                    "key": "name",
+                    "type": "text",
+                    "unit": "unspecified"
+                  },
+                  {
+                    "key": "balance",
+                    "type": "integer",
+                    "unit": "unspecified"
+                  },
+                  {
+                    "key": "doubled",
+                    "type": "decimal",
+                    "unit": "unspecified",
+                    "scale": 2
+                  }
+                ],
+                "rows": [
+                  {
+                    "input_counts": {
+                      "dataset": "1"
+                    },
+                    "non_null_counts": {},
+                    "values": {
+                      "balance": "10",
+                      "doubled": "20.00",
+                      "name": "Acme"
+                    },
+                    "anomalies": [],
+                    "issues": []
+                  },
+                  {
+                    "input_counts": {
+                      "dataset": "1"
+                    },
+                    "non_null_counts": {},
+                    "values": {
+                      "balance": "20",
+                      "doubled": "40.00",
+                      "name": "Beta"
+                    },
+                    "anomalies": [
+                      "large"
+                    ],
+                    "issues": []
+                  },
+                  {
+                    "input_counts": {
+                      "dataset": "1"
+                    },
+                    "non_null_counts": {},
+                    "values": {
+                      "balance": "30",
+                      "doubled": "60.00",
+                      "name": "Gamma"
+                    },
+                    "anomalies": [
+                      "large"
+                    ],
+                    "issues": []
+                  }
+                ],
+                "methods": [
+                  {
+                    "numerics": "exact_integer_or_decimal; rational_postprocessing",
+                    "column": "doubled",
+                    "method": "structured_arithmetic_on_preceding_rounded_cells",
+                    "nulls": "propagate_null; division_by_zero_is_undefined",
+                    "rounding": "half_even_to_column_scale"
+                  }
+                ],
+                "source": {
+                  "dataset_key": "customer",
+                  "definition_version": "4599a3b635043fca4fed7147a12dd85b55a3ea606840fdda5dcd84e7c060b43a",
+                  "data_version": "b812e26307c243af2f52e60117c92170981c08d27cf04165a0c038713bd52b57",
+                  "queried_at": "2026-09-12T00:49:18.375946Z",
+                  "input_counts": {
+                    "dataset": "3"
+                  },
+                  "scope": "current_subject_filtered_dataset",
+                  "complete": true,
+                  "proof": "b2cc2e68f5eb7ccf3afed76f64a2bb127e07cd6c353494195bf825dc0c3a5878"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "conversation": "conv_e8638ef993a176841d1b480072aa4e0d",
+      "id": "crun_33068e07f065d26a5a7532396665563c",
+      "status": "completed",
+      "calls": [
+        {
+          "name": "analysis_run",
+          "status": "completed",
+          "arguments": "{\"dataset_key\":\"customer\",\"operation\":\"catalog\"}",
+          "result_preview": "{\"operation\":\"catalog\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"f14c650afb84f4ed343383f925b91fb441ef298504d166c4827391459158aa88\",\"catalog\":{\"datasets\":[{\"key\":\"customer\",\"name\":\"Customer\",\"kind\":\"business_object\",\"version\":\"55b6bc9da2c8ba82668084a60c54423e6ef09f8200693e90c6c5200aec1da27a\",\"columns\":[{\"key\":\"balance\",\"type\":\"integer\",\"unit\":\"\"},{\"key\":\"created_at\",\"type\":\"datetime\",\"unit\":\"\"},{\"key\":\"id\",\"type\":\"text\",\"unit\":\"\"},{\"key\":\"name\",\"type\":\"text\",\"unit\":\"\"},{\"key\":\"status\",\"type\":\"text\",\"unit\":\"\"},{\"key\":\"updated_at\",\"type\":\"datetime\",\"unit\":\"\"}]}],\"truncated\":false}}",
+          "result_reference": {
+            "conversation_id": "conv_e8638ef993a176841d1b480072aa4e0d",
+            "run_id": "crun_33068e07f065d26a5a7532396665563c",
+            "step": 0,
+            "call_id": "analysis-catalog",
+            "sha256": "941987b907bbc4070635516bb775fa7ce4097ad1ff722b503d343113b128ec9b"
+          }
+        },
+        {
+          "name": "analysis_run",
+          "status": "failed",
+          "error_code": "backend.report.analysis.result_limit_exceeded",
+          "arguments": "{\"operation\":\"run\",\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"aggregate\",\"group_by\":[\"name\"],\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"max_rows\":1}}",
+          "result_preview": "{\"error\":\"backend.report.analysis.result_limit_exceeded\",\"recovery\":\"Narrow the filters or grouping and run a complete analysis again. Never substitute sampled query pages.\"}",
+          "result_reference": {
+            "conversation_id": "conv_e8638ef993a176841d1b480072aa4e0d",
+            "run_id": "crun_33068e07f065d26a5a7532396665563c",
+            "step": 1,
+            "call_id": "analysis-output-limit",
+            "sha256": "c3bb79e9146c6d7c72f5810c27b9e08a22c06d99b3f0235a0480f66a665799d4"
+          }
+        },
+        {
+          "name": "analysis_run",
+          "status": "completed",
+          "arguments": "{\"operation\":\"run\",\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"aggregate\",\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"max_rows\":100}}",
+          "result_preview": "{\"operation\":\"run\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"ebd8cffdb2ab362389fce98cf6e3afeec82b82e39cff5770a20ed68c3a839957\",\"result\":{\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"aggregate\",\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"max_rows\":100},\"columns\":[{\"key\":\"total\",\"type\":\"integer\",\"unit\":\"unspecified\"},{\"key\":\"mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"rows\",\"type\":\"integer\",\"unit\":\"records\"}],\"rows\":[{\"input_counts\":{\"dataset\":\"3\"},\"non_null_counts\":{\"mean\":\"3\",\"rows\":\"3\",\"total\":\"3\"},\"values\":{\"mean\":\"20.000000\",\"rows\":\"3\",\"total\":\"60\"},\"anomalies\":[],\"issues\":[]}],\"methods\":[{\"numerics\":\"exact_integer_or_decimal; rational_postprocessing\",\"column\":\"total\",\"method\":\"sum\",\"nulls\":\"ignore_null_inputs\"},{\"numerics\":\"exact_integer_or_decimal; rational_postprocessing\",\"column\":\"mean\",\"method\":\"sum_divided_by_non_null_count\",\"nulls\":\"ignore_null_inputs\",\"rounding\":\"half_even_6_decimal_places\"},{\"numerics\":\"exact_integer_or_decimal; rational_postprocessing\",\"column\":\"rows\",\"method\":\"count\",\"nulls\":\"include_rows\"}],\"source\":{\"dataset_key\":\"customer\",\"definition_version\":\"4599a3b635043fca4fed7147a12dd85b55a3ea606840fdda5dcd84e7c060b43a\",\"data_version\":\"ab9d10500d8bf04db16e52483f125c2f0f5acf606dd52eefa92567a263cacf2e\",\"queried_at\":\"2026-09-12T00:49:48.952234Z\",\"input_counts\":{\"dataset\":\"3\"},\"scope\":\"current_subject_filtered_dataset\",\"complete\":true,\"proof\":\"b42e2bb35a9fb49bd582687947392a7b40ebbd9fcadbf622fff4d50af1566133\"}}}",
+          "result_reference": {
+            "conversation_id": "conv_e8638ef993a176841d1b480072aa4e0d",
+            "run_id": "crun_33068e07f065d26a5a7532396665563c",
+            "step": 2,
+            "call_id": "analysis-aggregate",
+            "sha256": "cec48f4c179c6037a19bf914afaa0f0793562261ec6a3e40c9dea3771dba09aa"
+          }
+        },
+        {
+          "name": "analysis_run",
+          "status": "completed",
+          "arguments": "{\"operation\":\"run\",\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"compare\",\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"comparison\":{\"baseline\":[{\"field\":\"name\",\"operator\":\"eq\",\"values\":[\"Beta\"]}],\"current\":[{\"field\":\"name\",\"operator\":\"eq\",\"values\":[\"Gamma\"]}]},\"max_rows\":100}}",
+          "result_preview": "{\"operation\":\"run\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"f46cb1c6b0756cdae050c8bc477951e0bf7119fa23aa821308540919d4ed8bda\",\"result\":{\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"compare\",\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"comparison\":{\"baseline\":[{\"field\":\"name\",\"operator\":\"eq\",\"values\":[\"Beta\"]}],\"current\":[{\"field\":\"name\",\"operator\":\"eq\",\"values\":[\"Gamma\"]}]},\"max_rows\":100},\"columns\":[{\"key\":\"baseline_total\",\"type\":\"integer\",\"unit\":\"unspecified\"},{\"key\":\"current_total\",\"type\":\"integer\",\"unit\":\"unspecified\"},{\"key\":\"delta_total\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"change_pct_total\",\"type\":\"decimal\",\"unit\":\"%\",\"scale\":6},{\"key\":\"baseline_mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"current_mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"delta_mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"change_pct_mean\",\"type\":\"decimal\",\"unit\":\"%\",\"scale\":6},{\"key\":\"baseline_rows\",\"type\":\"integer\",\"unit\":\"records\"},{\"key\":\"current_rows\",\"type\":\"integer\",\"unit\":\"records\"},{\"key\":\"delta_rows\",\"type\":\"decimal\",\"unit\":\"records\",\"scale\":6},{\"key\":\"change_pct_rows\",\"type\":\"decimal\",\"unit\":\"%\",\"scale\":6}],\"rows\":[{\"input_counts\":{\"baseline\":\"1\",\"current\":\"1\"},\"non_null_counts\":{\"baseline_mean\":\"1\",\"baseline_rows\":\"1\",\"baseline_total\":\"1\",\"current_mean\":\"1\",\"current_rows\":\"1\",\"current_total\":\"1\"},\"values\":{\"baseline_mean\":\"20.000000\",\"baseline_rows\":\"1\",\"baseline_total\":\"20\",\"change_pct_mean\":\"50.000000\",\"change_pct_rows\":\"0.000000\",\"change_pct_total\":\"50.000000\",\"current_mean\":\"30.000000\",\"current_rows\":\"1\",\"current_total\":\"30\",\"delta_mean\":\"10.000000\",\"delta_rows\":\"0.000000\",\"delta_total\":\"10.000000\"},\"anomalies\":[],\"issues\":[]}],\"methods\":[{\"numerics\":\"exact_integer_or_decimal; rational_postprocessing\",\"column\":\"baseline_total\",\"method\":\"sum\",\"nulls\":\"ignore_null_inputs\"}",
+          "result_truncated": true,
+          "result_reference": {
+            "conversation_id": "conv_e8638ef993a176841d1b480072aa4e0d",
+            "run_id": "crun_33068e07f065d26a5a7532396665563c",
+            "step": 3,
+            "call_id": "analysis-compare",
+            "sha256": "95c27ff4125880fa8e3652aa0cbe8e04be6738212f1454d6bf3acfb243fcd856"
+          }
+        },
+        {
+          "name": "analysis_run",
+          "status": "completed",
+          "arguments": "{\"operation\":\"run\",\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"trend\",\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"time\":{\"field\":\"created_at\",\"grain\":\"day\",\"time_zone\":\"UTC\"},\"max_rows\":100}}",
+          "result_preview": "{\"operation\":\"run\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"c607e4c2f8e58d5c1219236e08d9a2e2600b1eb19efd5d36443824bda2977b06\",\"result\":{\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"trend\",\"measures\":[{\"key\":\"total\",\"function\":\"sum\",\"field\":\"balance\"},{\"key\":\"mean\",\"function\":\"avg\",\"field\":\"balance\"},{\"key\":\"rows\",\"function\":\"count\"}],\"time\":{\"field\":\"created_at\",\"grain\":\"day\",\"time_zone\":\"UTC\"},\"max_rows\":100},\"columns\":[{\"key\":\"period\",\"type\":\"datetime\",\"unit\":\"calendar_period\"},{\"key\":\"total\",\"type\":\"integer\",\"unit\":\"unspecified\"},{\"key\":\"mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"rows\",\"type\":\"integer\",\"unit\":\"records\"},{\"key\":\"previous_total\",\"type\":\"integer\",\"unit\":\"unspecified\"},{\"key\":\"delta_total\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"change_pct_total\",\"type\":\"decimal\",\"unit\":\"%\",\"scale\":6},{\"key\":\"previous_mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"delta_mean\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":6},{\"key\":\"change_pct_mean\",\"type\":\"decimal\",\"unit\":\"%\",\"scale\":6},{\"key\":\"previous_rows\",\"type\":\"integer\",\"unit\":\"records\"},{\"key\":\"delta_rows\",\"type\":\"decimal\",\"unit\":\"records\",\"scale\":6},{\"key\":\"change_pct_rows\",\"type\":\"decimal\",\"unit\":\"%\",\"scale\":6}],\"rows\":[{\"input_counts\":{\"dataset\":\"3\"},\"non_null_counts\":{\"mean\":\"3\",\"rows\":\"3\",\"total\":\"3\"},\"values\":{\"change_pct_mean\":null,\"change_pct_rows\":null,\"change_pct_total\":null,\"delta_mean\":null,\"delta_rows\":null,\"delta_total\":null,\"mean\":\"20.000000\",\"period\":\"2026-09-12T00:00:00Z\",\"previous_mean\":null,\"previous_rows\":null,\"previous_total\":null,\"rows\":\"3\",\"total\":\"60\"},\"anomalies\":[],\"issues\":[{\"column\":\"delta_total\",\"code\":\"missing_comparison_value\"},{\"column\":\"change_pct_total\",\"code\":\"missing_comparison_value\"},{\"column\":\"delta_mean\",\"code\":\"missing_comparison_value\"},{\"column\":\"change_pct_mean\",\"code\":\"missing_comparison_value\"},{\"column\":\"delta_rows\",\"code\":\"missing_comparison_value\"},{\"column\":\"change_pct_rows\",\"cod",
+          "result_truncated": true,
+          "result_reference": {
+            "conversation_id": "conv_e8638ef993a176841d1b480072aa4e0d",
+            "run_id": "crun_33068e07f065d26a5a7532396665563c",
+            "step": 4,
+            "call_id": "analysis-trend",
+            "sha256": "644c7d0f9084dac01fcc20e601cb9b93cfd67816262cce0a0818b1be325edcf2"
+          }
+        },
+        {
+          "name": "analysis_run",
+          "status": "completed",
+          "arguments": "{\"operation\":\"run\",\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"table\",\"select\":[\"name\",\"balance\"],\"calculations\":[{\"key\":\"doubled\",\"expression\":{\"operator\":\"multiply\",\"arguments\":[{\"reference\":\"balance\"},{\"decimal\":\"2\"}]},\"scale\":2}],\"anomaly_rules\":[{\"key\":\"large\",\"column\":\"doubled\",\"operator\":\"ge\",\"values\":[\"40\"]}],\"max_rows\":100}}",
+          "result_preview": "{\"operation\":\"run\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"64d25066e275788368ee3dd5e255a495e71ecb2ddea8a0d9e5452e514b7b72b9\",\"result\":{\"spec\":{\"dataset_key\":\"customer\",\"mode\":\"table\",\"select\":[\"name\",\"balance\"],\"calculations\":[{\"key\":\"doubled\",\"expression\":{\"operator\":\"multiply\",\"arguments\":[{\"reference\":\"balance\"},{\"decimal\":\"2\"}]},\"scale\":2}],\"anomaly_rules\":[{\"key\":\"large\",\"column\":\"doubled\",\"operator\":\"ge\",\"values\":[\"40\"]}],\"max_rows\":100},\"columns\":[{\"key\":\"name\",\"type\":\"text\",\"unit\":\"unspecified\"},{\"key\":\"balance\",\"type\":\"integer\",\"unit\":\"unspecified\"},{\"key\":\"doubled\",\"type\":\"decimal\",\"unit\":\"unspecified\",\"scale\":2}],\"rows\":[{\"input_counts\":{\"dataset\":\"1\"},\"non_null_counts\":{},\"values\":{\"balance\":\"10\",\"doubled\":\"20.00\",\"name\":\"Acme\"},\"anomalies\":[],\"issues\":[]},{\"input_counts\":{\"dataset\":\"1\"},\"non_null_counts\":{},\"values\":{\"balance\":\"20\",\"doubled\":\"40.00\",\"name\":\"Beta\"},\"anomalies\":[\"large\"],\"issues\":[]},{\"input_counts\":{\"dataset\":\"1\"},\"non_null_counts\":{},\"values\":{\"balance\":\"30\",\"doubled\":\"60.00\",\"name\":\"Gamma\"},\"anomalies\":[\"large\"],\"issues\":[]}],\"methods\":[{\"numerics\":\"exact_integer_or_decimal; rational_postprocessing\",\"column\":\"doubled\",\"method\":\"structured_arithmetic_on_preceding_rounded_cells\",\"nulls\":\"propagate_null; division_by_zero_is_undefined\",\"rounding\":\"half_even_to_column_scale\"}],\"source\":{\"dataset_key\":\"customer\",\"definition_version\":\"4599a3b635043fca4fed7147a12dd85b55a3ea606840fdda5dcd84e7c060b43a\",\"data_version\":\"b812e26307c243af2f52e60117c92170981c08d27cf04165a0c038713bd52b57\",\"queried_at\":\"2026-09-12T00:49:58.428543Z\",\"input_counts\":{\"dataset\":\"3\"},\"scope\":\"current_subject_filtered_dataset\",\"complete\":true,\"proof\":\"a4ec87f191175a213bbcf14f0f531c3df086bfef8c7daa4eef88a98fb0496c06\"}}}",
+          "result_reference": {
+            "conversation_id": "conv_e8638ef993a176841d1b480072aa4e0d",
+            "run_id": "crun_33068e07f065d26a5a7532396665563c",
+            "step": 5,
+            "call_id": "analysis-table",
+            "sha256": "a3eea3c9f8514353f362867f036ad92a74f6240573b6262dd3b43103f74a12da"
+          }
+        }
+      ]
+    },
+    {
+      "conversation": "conv_b0b79c3a6d145377127792246f96cce1",
+      "id": "crun_c6b52245d9e8ea04be9ef20bcad2b833",
+      "status": "completed",
+      "calls": [
+        {
+          "name": "analysis_run",
+          "status": "completed",
+          "arguments": "{\"dataset_key\":\"customer\",\"operation\":\"catalog\"}",
+          "result_preview": "{\"operation\":\"catalog\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"f14c650afb84f4ed343383f925b91fb441ef298504d166c4827391459158aa88\",\"catalog\":{\"datasets\":[],\"truncated\":false}}",
+          "result_reference": {
+            "conversation_id": "conv_b0b79c3a6d145377127792246f96cce1",
+            "run_id": "crun_c6b52245d9e8ea04be9ef20bcad2b833",
+            "step": 0,
+            "call_id": "analysis-catalog",
+            "sha256": "3985b11e61da9588c37e49abd4eed0b9c26237c79e8931888d333a613d8c992e"
+          }
+        }
+      ]
+    }
+  ],
+  "pageErrors": [],
+  "revokedFullResult": {
+    "status": 400,
+    "body": {
+      "code": "backend.report.analysis.spec_invalid"
+    }
+  },
+  "mobile": {
+    "width": 390,
+    "scroll": 390
+  },
+  "passed": true
+}

@@ -49,11 +49,7 @@ func (s *ConversationService) readConversationToolResult(ctx context.Context, in
 	if args.Reference.RunID == in.RunID && args.Reference.ConversationID == in.ConversationID && args.Reference.Step >= in.Step {
 		return personalToolFailure("result_reference_invalid")
 	}
-	_, current, err := s.executionCatalog(ctx, in.Authority)
-	if err != nil {
-		return personalToolFailure("result_read_failed")
-	}
-	result, err := s.authorizedConversationResult(ctx, args.Reference, in.Authority, current, map[string]bool{}, in.ConversationID)
+	slice, err := s.readResultSlice(ctx, args, in.Authority, in.ConversationID)
 	if err != nil {
 		var coded *agentsdk.Error
 		if errors.As(err, &coded) {
@@ -61,15 +57,47 @@ func (s *ConversationService) readConversationToolResult(ctx context.Context, in
 		}
 		return personalToolFailure("result_read_failed")
 	}
-	raw, err := json.Marshal(result)
+	out, err := personalToolResult(slice)
 	if err != nil {
 		return personalToolFailure("result_read_failed")
+	}
+	return out
+}
+
+// ReadResult is a generic read of already executed data, never a tool invocation.
+func (s *ConversationService) ReadResult(ctx context.Context, conversation, run string, args agentsdk.ConversationResultRead, a agentsdk.ConversationAuthority) (agentsdk.ConversationResultSlice, error) {
+	if err := s.authorize(a); err != nil {
+		return agentsdk.ConversationResultSlice{}, err
+	}
+	if args.Reference.ConversationID != conversation || args.Reference.RunID != run {
+		return agentsdk.ConversationResultSlice{}, conversationFailure("bad_request", "result_reference_invalid")
+	}
+	ctx, cancel := s.sourceAccessContext(ctx)
+	defer cancel()
+	return s.readResultSlice(ctx, args, a, conversation)
+}
+
+func (s *ConversationService) readResultSlice(ctx context.Context, args agentsdk.ConversationResultRead, a agentsdk.ConversationAuthority, recipient string) (agentsdk.ConversationResultSlice, error) {
+	fail := func(code string) (agentsdk.ConversationResultSlice, error) {
+		return agentsdk.ConversationResultSlice{}, conversationFailure("bad_request", code)
+	}
+	_, current, err := s.executionCatalog(ctx, a)
+	if err != nil {
+		return agentsdk.ConversationResultSlice{}, err
+	}
+	result, err := s.authorizedConversationResult(ctx, args.Reference, a, current, map[string]bool{}, recipient)
+	if err != nil {
+		return agentsdk.ConversationResultSlice{}, err
+	}
+	raw, err := json.Marshal(result)
+	if err != nil {
+		return fail("result_read_failed")
 	}
 	if args.MaxBytes == 0 {
 		args.MaxBytes = 4096
 	}
 	if args.MaxBytes < 256 || args.MaxBytes > 8192 || args.Offset < 0 || args.Offset > len(raw) || args.Offset < len(raw) && !utf8.RuneStart(raw[args.Offset]) {
-		return personalToolFailure("result_offset_invalid")
+		return fail("result_offset_invalid")
 	}
 	end := min(len(raw), args.Offset+args.MaxBytes)
 	// max_bytes is an upper bound. Escaped content may need a smaller slice
@@ -79,19 +107,20 @@ func (s *ConversationService) readConversationToolResult(ctx context.Context, in
 		for end < len(raw) && !utf8.RuneStart(raw[end]) {
 			end--
 		}
-		out, err := personalToolResult(agentsdk.ConversationResultSlice{Reference: args.Reference, JSONText: string(raw[args.Offset:end]), Offset: args.Offset, NextOffset: end, TotalBytes: len(raw), Complete: end == len(raw)})
+		slice := agentsdk.ConversationResultSlice{Reference: args.Reference, JSONText: string(raw[args.Offset:end]), Offset: args.Offset, NextOffset: end, TotalBytes: len(raw), Complete: end == len(raw)}
+		out, err := personalToolResult(slice)
 		if err != nil {
-			return personalToolFailure("result_read_failed")
+			return fail("result_read_failed")
 		}
 		encoded, err := json.Marshal(out)
 		if err != nil {
-			return personalToolFailure("result_read_failed")
+			return fail("result_read_failed")
 		}
 		if len(encoded) <= min(8192, s.options.ContextBytes/4) {
-			return out
+			return slice, nil
 		}
 		if end <= args.Offset {
-			return personalToolFailure("result_page_budget_exceeded")
+			return fail("result_page_budget_exceeded")
 		}
 		end = args.Offset + (end-args.Offset)/2
 	}

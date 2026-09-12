@@ -200,7 +200,7 @@ func (s *ConversationStore) RespondExecution(ctx context.Context, id, runID stri
 			return nil
 		}
 		i := &record.Interaction
-		if i.Status != "pending" || old.Run.Interaction == nil || old.Run.Interaction.ID != i.ID || !old.Run.Waiting() || c.ActiveRunID != runID {
+		if i.Status != "pending" || old.Run.Interaction == nil || old.Run.Interaction.ID != i.ID || !old.Run.Waiting() || old.Run.BackgroundTask == nil && c.ActiveRunID != runID {
 			return conversationError("conflict", "interaction_closed")
 		}
 		if i.Revision != response.ExpectedRevision {
@@ -239,6 +239,9 @@ func (s *ConversationStore) RespondExecution(ctx context.Context, id, runID stri
 			content = confirmationResponseMessage(*i, response)
 		}
 		message := agentsdk.ConversationMessage{ID: conversationID("msg_"), ConversationID: id, RunID: runID, InteractionID: i.ID, Seq: c.LastSeq + 1, Role: "user", Content: content, CreatedAt: now}
+		if old.Run.BackgroundTask != nil {
+			message.BackgroundTaskID = old.Run.BackgroundTask.TaskID
+		}
 		if err = s.insertMessage(ctx, tx, message, a); err != nil {
 			return err
 		}
@@ -252,7 +255,10 @@ func (s *ConversationStore) RespondExecution(ctx context.Context, id, runID stri
 		v.Fence++
 		c.LastSeq = message.Seq
 		if status == "rejected" {
-			v.Run.Status, v.Run.ErrorCode, c.ActiveRunID = "cancelled", "interaction_rejected", ""
+			v.Run.Status, v.Run.ErrorCode = "cancelled", "interaction_rejected"
+			if c.ActiveRunID == runID {
+				c.ActiveRunID = ""
+			}
 		}
 		if err = s.save(ctx, tx, c, c.Revision, a); err != nil {
 			return err

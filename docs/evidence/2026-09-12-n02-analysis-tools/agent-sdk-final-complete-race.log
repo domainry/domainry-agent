@@ -1,0 +1,12 @@
+# github.com/domainry/domainry-agent-sdk [github.com/domainry/domainry-agent-sdk.test]
+./http_adapter_test.go:21:69: action.Effect undefined (type action.ActionDefinition has no field or method Effect)
+FAIL	github.com/domainry/domainry-agent-sdk [build failed]
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	4.538s
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	4.250s
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+FAIL

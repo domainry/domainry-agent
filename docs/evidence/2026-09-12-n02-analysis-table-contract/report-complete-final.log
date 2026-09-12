@@ -1,0 +1,15 @@
+?   	github.com/domainry/domainry-report/capability	[no test files]
+ok  	github.com/domainry/domainry-report/contract	1.578s
+ok  	github.com/domainry/domainry-report/internal/adapter/reportsdk	2.507s
+ok  	github.com/domainry/domainry-report/internal/application/report	2.155s
+ok  	github.com/domainry/domainry-report/internal/architecture	3.628s
+?   	github.com/domainry/domainry-report/internal/assembly/module	[no test files]
+?   	github.com/domainry/domainry-report/internal/domain/report/repository	[no test files]
+ok  	github.com/domainry/domainry-report/internal/domain/report/service/analysis	3.345s
+ok  	github.com/domainry/domainry-report/internal/domain/report/service/export	4.389s
+?   	github.com/domainry/domainry-report/internal/domain/report/service/objectsql	[no test files]
+?   	github.com/domainry/domainry-report/internal/infrastructure/persistence/database/migration	[no test files]
+ok  	github.com/domainry/domainry-report/internal/infrastructure/persistence/database/report	4.015s
+ok  	github.com/domainry/domainry-report/internal/infrastructure/persistence/database/schema	2.876s
+ok  	github.com/domainry/domainry-report/module	4.764s
+?   	github.com/domainry/domainry-report/query/objectsql	[no test files]

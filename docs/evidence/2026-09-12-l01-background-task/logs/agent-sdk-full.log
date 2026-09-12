@@ -1,0 +1,13 @@
+ok  	github.com/domainry/domainry-agent-sdk	0.642s
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+--- FAIL: TestContractAndConfigurationFailBeforeIO (0.00s)
+    businessrpc_test.go:417: public contract changed without compatibility review: c19a21fafc9af80d76c6da2c0bf162c736d1db73c960815894e505f2b5f1a6c7
+FAIL
+FAIL	github.com/domainry/domainry-agent-sdk/businessrpc	1.100s
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	1.368s
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+FAIL

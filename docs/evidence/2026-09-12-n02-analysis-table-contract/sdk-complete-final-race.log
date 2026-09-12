@@ -1,0 +1,7 @@
+ok  	github.com/domainry/domainry-report-sdk	1.650s
+ok  	github.com/domainry/domainry-report-sdk/contract	2.027s
+ok  	github.com/domainry/domainry-report-sdk/model	2.405s
+?   	github.com/domainry/domainry-report-sdk/modulehost	[no test files]
+?   	github.com/domainry/domainry-report-sdk/persistence	[no test files]
+?   	github.com/domainry/domainry-report-sdk/query	[no test files]
+ok  	github.com/domainry/domainry-report-sdk/query/objectsql	2.912s

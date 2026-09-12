@@ -11,7 +11,7 @@ import (
 // a client-supplied target list becomes approval. The authenticated response
 // selects this exact, displayed list, and all policies are checked again then.
 func (s *ConversationService) confirmationOperations(ctx context.Context, claim persistence.ConversationClaim, step persistence.ConversationExecutionStep, currentCall string) []string {
-	_, catalog, err := s.executionCatalog(ctx, claim.Authority)
+	_, catalog, err := s.executionCatalogForRun(ctx, claim)
 	if err != nil || step.Result == nil {
 		return nil
 	}

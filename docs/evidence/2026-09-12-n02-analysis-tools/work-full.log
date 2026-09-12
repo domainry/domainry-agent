@@ -1,0 +1,7 @@
+?   	github.com/domainry/domainry-work/cmd/domainry-work	[no test files]
+?   	github.com/domainry/domainry-work/internal/application/office	[no test files]
+ok  	github.com/domainry/domainry-work/internal/architecture	1.047s
+ok  	github.com/domainry/domainry-work/internal/assembly/saas	4.635s
+?   	github.com/domainry/domainry-work/internal/domain/office/model	[no test files]
+?   	github.com/domainry/domainry-work/internal/domain/office/service	[no test files]
+?   	github.com/domainry/domainry-work/internal/infrastructure/config	[no test files]

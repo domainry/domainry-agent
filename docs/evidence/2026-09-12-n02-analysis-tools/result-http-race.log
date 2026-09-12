@@ -1,0 +1,6 @@
+=== RUN   TestCompactedResultReadThroughIdentityHTTP
+    conversation_result_test.go:145: full stored result lost
+--- FAIL: TestCompactedResultReadThroughIdentityHTTP (15.41s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	15.987s
+FAIL

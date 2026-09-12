@@ -1,0 +1,13 @@
+?   	github.com/domainry/domainry-runtime/runtime/domain/businessseed/contract	[no test files]
+?   	github.com/domainry/domainry-runtime/runtime/domain/businessseed/contract/legacy_v1	[no test files]
+ok  	github.com/domainry/domainry-runtime/runtime/domain/businessseed/model	2.076s
+ok  	github.com/domainry/domainry-runtime/runtime/domain/businessseed/validation	2.434s
+ok  	github.com/domainry/domainry-runtime/runtime/domain/manifest/model	2.489s
+ok  	github.com/domainry/domainry-runtime/runtime/application/seed/business	4.236s
+--- FAIL: TestRuntimeSeedSynchronizationBindsInstallationWorkspace (0.00s)
+    stage_failures_test.go:16: seed workspace="stale-workspace"
+--- FAIL: TestSynchronizeRuntimeSeedsDoesNotRequireIdentityProjection (0.22s)
+    stage_failures_test.go:84: business seed synchronization failed: sync generated business seeds: workspace authority is required
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/runtime	3.015s
+FAIL

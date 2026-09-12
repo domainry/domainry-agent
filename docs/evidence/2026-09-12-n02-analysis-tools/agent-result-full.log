@@ -1,0 +1,51 @@
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-12-n02-analysis-tools/seed-before
+found packages businessseedmodel (businessseed_decode.go) and businessseed (records.go) in /Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-n02-analysis-tools/seed-before
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-12-n02-analysis-tools/seed-before [setup failed]
+?   	github.com/domainry/domainry-agent/capability	[no test files]
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	1.416s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-playground	[no test files]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/definition	0.723s
+ok  	github.com/domainry/domainry-agent/integration	80.719s
+ok  	github.com/domainry/domainry-agent/internal/application	0.849s
+ok  	github.com/domainry/domainry-agent/internal/architecture	1.168s
+ok  	github.com/domainry/domainry-agent/internal/assembly/conversation	1.957s
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	1.629s
+?   	github.com/domainry/domainry-agent/internal/assembly/saas	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	147.156s
+--- FAIL: TestAgentCapabilityOwnsAllProductRoutesAndAuthoringValidation (0.04s)
+    binding_test.go:41: Agent operations=74 projections=15
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/capability	3.293s
+?   	github.com/domainry/domainry-agent/internal/composition	[no test files]
+?   	github.com/domainry/domainry-agent/internal/dataaccess	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/execution	2.821s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence	3.563s
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/base	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	4.879s
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost	4.483s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	4.547s
+--- FAIL: TestAgentOwnsOpenAPIForEveryHTTPRoute (0.00s)
+    adapter_test.go:153: Agent OpenAPI operations=74
+--- FAIL: TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest (0.01s)
+    adapter_test.go:186: actions=113 routes=22
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/transport/http/module	4.467s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/playground	5.068s
+?   	github.com/domainry/domainry-agent/internal/transport/http/product	[no test files]
+?   	github.com/domainry/domainry-agent/internal/transport/http/web	[no test files]
+ok  	github.com/domainry/domainry-agent/module	4.117s
+ok  	github.com/domainry/domainry-agent/remote	4.136s
+--- FAIL: TestSaaSManifestOwnsEveryServiceRouteAndInjectsCurrentAction (0.00s)
+    server_test.go:90: Agent SaaS actions=96, want 95
+FAIL
+FAIL	github.com/domainry/domainry-agent/server	4.041s
+?   	github.com/domainry/domainry-agent/testsupport	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/databasetest	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/producttest	[no test files]
+?   	github.com/domainry/domainry-agent/web	[no test files]
+?   	github.com/domainry/domainry-agent/webhost	[no test files]
+FAIL

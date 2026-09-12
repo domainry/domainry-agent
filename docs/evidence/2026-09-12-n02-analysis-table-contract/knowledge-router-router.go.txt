@@ -1,0 +1,151 @@
+package router
+
+import (
+	"errors"
+	"net/http"
+
+	"github.com/codeck-backend/common-utils/logs"
+	"github.com/codeck-backend/kb-search-api/constants"
+	"github.com/codeck-backend/kb-search-api/handler"
+	"github.com/codeck-backend/kb-search-api/middleware"
+	modelCommon "github.com/codeck-backend/kb-search-api/model/common"
+	modelConfig "github.com/codeck-backend/kb-search-api/model/config"
+	appMetrics "github.com/codeck-backend/kb-search-api/pkg/metrics"
+	"github.com/codeck-backend/kb-search-api/rpc"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+)
+
+type HandlerFunc func(c *gin.Context) (interface{}, error)
+
+func RegisterRouter(r *gin.Engine, xwikiServiceToken string, delegates ...[]modelConfig.PermissionDelegate) {
+	r.Use(middleware.RequestLogger())
+	r.Use(appMetrics.HTTPMiddleware())
+
+	// search/fetch 同时支持 Passport JWT 与团队平台 API Key。
+	// 两种方式都会把鉴权后的 teamID 注入 ctx；handler 不信请求体租户。
+	query := r.Group(constants.KB_ROUTE_GROUP)
+	query.Use(
+		appMetrics.QueryRequestMiddleware(appMetrics.DefaultRecorder()),
+		middleware.SearchFetchAuthMiddlewareWithMetrics(rpc.PassportRpcCli, rpc.PassportRpcCli, appMetrics.DefaultRecorder()),
+	)
+	query.POST(constants.SEARCH_ROUTE_PATH, WrapHandler(handler.Search))
+	query.POST(constants.FETCH_ROUTE_PATH, WrapHandler(handler.Fetch))
+
+	// 知识库控制面端点仍使用登录态 JWT + 团队成员校验。
+	v1 := r.Group(constants.KB_ROUTE_GROUP)
+	v1.Use(middleware.AuthMiddleware(), middleware.TeamAuthMiddleware(rpc.PassportRpcCli))
+	// 知识库实体
+	v1.POST(constants.KBS_ROUTE_PATH, WrapHandler(handler.CreateKb))
+	v1.GET(constants.KBS_ROUTE_PATH, WrapHandler(handler.ListKbs))
+	v1.GET(constants.KB_ROUTE_PATH, WrapHandler(handler.GetKb))
+	v1.DELETE(constants.KB_ROUTE_PATH, WrapHandler(handler.DeleteKb))
+	v1.PUT(constants.KB_FEISHU_BINDING_ROUTE_PATH, WrapHandler(handler.BindFeishuScope))
+	v1.POST(constants.KB_SYNC_ROUTE_PATH, WrapHandler(handler.SyncKbNow))
+	// 飞书凭据与目录树浏览
+	v1.PUT(constants.FEISHU_CREDENTIALS_ROUTE_PATH, WrapHandler(handler.PutFeishuCredentials))
+	v1.GET(constants.FEISHU_CREDENTIALS_ROUTE_PATH, WrapHandler(handler.GetFeishuCredentials))
+	v1.GET(constants.FEISHU_SPACES_ROUTE_PATH, WrapHandler(handler.ListFeishuSpaces))
+	v1.GET(constants.FEISHU_NODES_ROUTE_PATH, WrapHandler(handler.ListFeishuNodes))
+
+	// nav-access 仅 JWT 鉴权:白名单按环境全量返回,与具体 team 无关
+	// (个人账号也需要读取以决定侧边栏渲染),故不挂 TeamAuthMiddleware
+	nav := r.Group(constants.KB_ROUTE_GROUP)
+	nav.Use(middleware.AuthMiddleware())
+	nav.GET(constants.NAV_ACCESS_ROUTE_PATH, WrapHandler(handler.GetNavAccess))
+
+	// 外部 API 推送:平台 API Key 鉴权(server-to-server,teamID 从 key 反解),
+	// 与用户会话组隔离,不挂 AuthMiddleware/TeamAuthMiddleware
+	push := r.Group(constants.KB_ROUTE_GROUP)
+	push.Use(middleware.ApiKeyAuthMiddleware(rpc.PassportRpcCli, delegates...))
+	push.POST(constants.KB_PUSH_ROUTE_PATH, WrapHandler(handler.PushKbDocument))
+	push.DELETE(constants.KB_PUSH_ROUTE_PATH, WrapHandler(handler.DeleteKbDocument))
+
+	permissions := r.Group(constants.KB_ROUTE_GROUP)
+	permissions.Use(appMetrics.QueryRequestMiddleware(appMetrics.DefaultRecorder()), middleware.ApiKeyAuthMiddleware(rpc.PassportRpcCli, delegates...))
+	permissions.GET(constants.KB_DOCUMENT_PERMISSIONS_ROUTE_PATH, WrapInternalHandler(handler.GetDocumentPermissions))
+	permissions.PUT(constants.KB_DOCUMENT_PERMISSIONS_ROUTE_PATH, WrapInternalHandler(handler.UpdateDocumentPermissions))
+
+	// Private XWiki outbox/control-plane API. This is intentionally separate
+	// from Passport/API-key routes and returns meaningful HTTP error codes so a
+	// durable outbox can distinguish success, permanent rejection, and retry.
+	xwiki := r.Group(constants.XWIKI_INTERNAL_ROUTE_GROUP)
+	xwiki.Use(middleware.XWikiServiceAuthMiddleware(xwikiServiceToken))
+	xwiki.POST(constants.XWIKI_WIKIS_ROUTE_PATH, WrapInternalHandler(handler.RegisterXWiki))
+	xwiki.DELETE(constants.XWIKI_WIKI_ROUTE_PATH, WrapInternalHandler(handler.DecommissionXWiki))
+	xwiki.PUT(constants.XWIKI_DOCUMENT_ROUTE_PATH, WrapInternalHandler(handler.UpsertXWikiDocument))
+	xwiki.DELETE(constants.XWIKI_DOCUMENT_ROUTE_PATH, WrapInternalHandler(handler.DeleteXWikiDocument))
+	xwiki.GET(constants.XWIKI_DOCUMENT_STATUS_ROUTE_PATH, WrapInternalHandler(handler.GetXWikiDocumentStatus))
+
+	r.GET(constants.HEALTH_ROUTE_PATH, func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
+	// /metrics is intentionally unauthenticated inside the ClusterIP. No Ingress
+	// route is configured for it; ServiceMonitor is the only intended consumer.
+	r.GET("/metrics", gin.WrapH(appMetrics.Handler()))
+}
+
+// WrapInternalHandler keeps the standard response envelope but also exposes
+// transport-level failure semantics required by service retry loops.
+func WrapInternalHandler(h HandlerFunc) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		data, err := h(c)
+		appMetrics.SetSemanticOutcome(c, appMetrics.SemanticOutcome(err))
+		if err == nil {
+			c.JSON(http.StatusOK, modelCommon.StandardResponse{ErrCode: constants.ERR_CODE_SUCCESS, Data: data})
+			return
+		}
+		errCode := constants.ERR_CODE_FAIL
+		status := http.StatusInternalServerError
+		var handlerErr *modelCommon.HandlerError
+		if errors.As(err, &handlerErr) {
+			errCode = handlerErr.ErrCode
+			switch errCode {
+			case constants.ERR_CODE_INVALID_PARAM:
+				status = http.StatusBadRequest
+			case constants.ERR_CODE_AUTH:
+				status = http.StatusUnauthorized
+			case constants.ERR_CODE_TEAM_FORBIDDEN:
+				status = http.StatusForbidden
+			case constants.ERR_CODE_KB_NOT_FOUND, constants.ERR_CODE_DOC_NOT_FOUND:
+				status = http.StatusNotFound
+			case constants.ERR_CODE_KB_PROVISIONING, constants.ERR_CODE_PERMISSION_UNAVAILABLE:
+				status = http.StatusServiceUnavailable
+			case constants.ERR_CODE_PERMISSION_CONFLICT:
+				status = http.StatusConflict
+			}
+		}
+		logs.ErrorCtx(c.Request.Context(), "internal handler error",
+			zap.String("route", c.FullPath()), zap.Int("error_code", errCode))
+		c.JSON(status, modelCommon.StandardResponse{ErrCode: errCode, ErrMsg: err.Error()})
+	}
+}
+
+// WrapHandler 统一响应包裹(HTTP 恒 200,业务错误走 ErrCode,对齐 memory-api)。
+func WrapHandler(h HandlerFunc) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		data, err := h(c)
+		appMetrics.SetSemanticOutcome(c, appMetrics.SemanticOutcome(err))
+		if err != nil {
+			errCode := constants.ERR_CODE_FAIL
+			var handlerErr *modelCommon.HandlerError
+			if errors.As(err, &handlerErr) {
+				errCode = handlerErr.ErrCode
+			}
+			response := modelCommon.StandardResponse{
+				ErrCode: errCode,
+				ErrMsg:  err.Error(),
+				Data:    nil,
+			}
+			logs.ErrorCtx(c.Request.Context(), "handler error",
+				zap.String("path", c.Request.URL.Path), zap.Error(err))
+			c.JSON(http.StatusOK, response)
+			return
+		}
+		response := modelCommon.StandardResponse{
+			ErrCode: constants.ERR_CODE_SUCCESS,
+			Data:    data,
+		}
+		c.JSON(http.StatusOK, response)
+	}
+}

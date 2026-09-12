@@ -1,0 +1,378 @@
+{
+  "schema": "domainry-todo-evidence-v1",
+  "date": "2026-09-12",
+  "todo": "N03",
+  "status": "passed",
+  "progress_after": "58/81",
+  "result_contract": {
+    "visualization": [
+      "bar",
+      "line",
+      "explicit omitted_reason"
+    ],
+    "coverage": [
+      "complete",
+      "truncated",
+      "returned_rows",
+      "requested_max_rows",
+      "missing"
+    ],
+    "missing_count_type": "decimal string, arbitrary precision",
+    "reference_kinds": [
+      "business_object",
+      "knowledge_document",
+      "analysis_dataset"
+    ],
+    "default_arbitrary_sql": false,
+    "default_arbitrary_code": false
+  },
+  "file_e2e": {
+    "input_rows": 1205,
+    "total": "1000012.29",
+    "chart": {
+      "type": "bar",
+      "x_column": "region",
+      "y_columns": [
+        "total"
+      ]
+    },
+    "coverage_complete": true,
+    "truncated": false,
+    "missing_note_cells": "241",
+    "reference": {
+      "kind": "knowledge_document",
+      "id": "doc-1",
+      "version": "gen_current",
+      "subresource": "tbl_e9c83fb03919603b_0"
+    },
+    "permission_reads": 177,
+    "revoked_saved_result_rejected": true
+  },
+  "background_http_e2e": {
+    "send_deadline_millis": 1000,
+    "accepted_status": "queued",
+    "observed_worker_status": "running",
+    "rows": 80,
+    "stored_result_paginated": true,
+    "artifact_kind": "chart",
+    "export_format": "csv",
+    "revoked_saved_result_status": 403,
+    "revoked_existing_download_status": 503,
+    "revoked_new_export_status": 503
+  },
+  "browser_e2e": {
+    "structured_card_visible": true,
+    "chart_visible": true,
+    "coverage_visible": true,
+    "reference_visible": true,
+    "missing_visible": true,
+    "csv_download_notice_visible": true,
+    "revoked_download_denied_visible": true,
+    "console_errors": 0,
+    "console_warnings": 0
+  },
+  "architecture": {
+    "path": "2026-09-12-n03-analysis-result/architecture-audit.json",
+    "bytes": 4035,
+    "sha256": "76a6a63c40011991baae1192e7bd4691e2da5df35f588f945589c40f6a361b4a"
+  },
+  "repository_state": {
+    "path": "2026-09-12-n03-analysis-result/repository-state.json",
+    "bytes": 24596,
+    "sha256": "641e452eeb6c9cf07331899b167870ab388b7d80c7d75b36d3d23c1b48cd1294"
+  },
+  "sources": [
+    {
+      "path": "/Users/tiger/Projects/domainry-report-sdk/model/analysis.go",
+      "bytes": 7592,
+      "sha256": "48cf3afb8e25740190d0498460f159b369e45fbb032d388e7d153b04c7db7bdc"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-report/internal/domain/report/service/analysis/result_metadata.go",
+      "bytes": 4692,
+      "sha256": "47191d1556c1b59f172c774351bb106cca1922b14f1cbf39d1c8cb43ae3fdc8b"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-report/internal/application/report/analysis_service.go",
+      "bytes": 7159,
+      "sha256": "7096517b57013a6afd0234ca8799c60cfe646cccda37f1fec5f53c56afc398dd"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-runtime/runtime/modulehost/report/report_analysis_sources.go",
+      "bytes": 5621,
+      "sha256": "a225fd032dc25639385b6d7e000c60894815cdeafe62cd21daad8795f6c49a2e"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-knowledge/internal/infrastructure/provider/analysis_tables.go",
+      "bytes": 8169,
+      "sha256": "502c2020dd57b27bed8055c9cf4370c0e15b67d8a60ebd3bbb53d3752adcff38"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-tools-sdk/analysis.go",
+      "bytes": 6840,
+      "sha256": "719e525a4a9a300997d764690e5e7d9df58704bd63d67cb3eceb15554154e20e"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-tools-sdk/analysis_test.go",
+      "bytes": 1101,
+      "sha256": "f26d2118811795a56fc1af59cccf6e55d435a5ff820194b683bf3b360ec81f62"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-tools/internal/adapter/analysistools/adapter.go",
+      "bytes": 8136,
+      "sha256": "b8b6c6c65e1f3ef8b1beca9e882ccb0fb0c57234cf32157070eae0e55de3d09f"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/analysis-result.ts",
+      "bytes": 5432,
+      "sha256": "9790ca8d2252b7e86c3a0079a4cf54769d883eff681e1a1f0de27bec627f89ee"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/StoredResult.tsx",
+      "bytes": 3830,
+      "sha256": "eb1f190cafd95c235fc5c33b75f65052d3c975e65303807f83537542545bc07a"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_analysis_result_test.go",
+      "bytes": 17346,
+      "sha256": "b46397cc7db56f7d613d8f28a832914a202ccb32a3fc5e78a4cd938c7bbe01e1"
+    }
+  ],
+  "checks": [
+    {
+      "name": "report_sdk_race",
+      "status": "passed",
+      "summary": "7 packages passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/report-sdk-race.log",
+        "bytes": 457,
+        "sha256": "35b362080cd7b568b6b6e9f20b5654ca254685924b0457b8f68efb27a0948428"
+      }
+    },
+    {
+      "name": "report_sdk_vet",
+      "status": "passed",
+      "summary": "passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/report-sdk-vet.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "report_race",
+      "status": "passed",
+      "summary": "15 packages passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/report-race.log",
+        "bytes": 1231,
+        "sha256": "2995df7c9f7c6398d231b16a1be99bc7d2cf7937635a555b34460fb90e28115b"
+      }
+    },
+    {
+      "name": "report_vet",
+      "status": "passed",
+      "summary": "passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/report-vet.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "report_metadata_final_race",
+      "status": "passed",
+      "summary": "analysis metadata package passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/report-metadata-final-race.log",
+        "bytes": 88,
+        "sha256": "67c4b2b9be0a3fe4d6d8676d123aa4e8ee7ed0247cff26a65d64300da45013e8"
+      }
+    },
+    {
+      "name": "tools_sdk_race",
+      "status": "passed",
+      "summary": "contract test and all packages passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/tools-sdk-race.log",
+        "bytes": 189,
+        "sha256": "bee6f80b581f018dff2df79888f9dbb008ca4e3e3aa9514f4c9d7864231ef70d"
+      }
+    },
+    {
+      "name": "tools_sdk_vet",
+      "status": "passed",
+      "summary": "passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/tools-sdk-vet.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "tools_race",
+      "status": "passed",
+      "summary": "all packages passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/tools-race.log",
+        "bytes": 1268,
+        "sha256": "f7e2197442ac8fdd65e34be1a50f50603f10a8c56dfb808332b7bbfa89717cf5"
+      }
+    },
+    {
+      "name": "tools_vet",
+      "status": "passed",
+      "summary": "passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/tools-vet.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "knowledge_race",
+      "status": "passed",
+      "summary": "all packages passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/knowledge-race.log",
+        "bytes": 1178,
+        "sha256": "446497d8fa64db1032e6348403472881adb695720666728d97757d5bb9de5464"
+      }
+    },
+    {
+      "name": "knowledge_vet",
+      "status": "passed",
+      "summary": "passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/knowledge-vet.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "runtime_report_race",
+      "status": "passed",
+      "summary": "real SQLite analysis passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/runtime-report-race.log",
+        "bytes": 505,
+        "sha256": "3551d7006d13b475cf296f9ff5b1efac3650997be10ac3c296fb5188ae95c294"
+      }
+    },
+    {
+      "name": "runtime_related_vet",
+      "status": "passed",
+      "summary": "passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/runtime-related-vet.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "agent_http_race",
+      "status": "passed",
+      "summary": "queued background run, chart artifact, CSV and revocation passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/agent-http-race.log",
+        "bytes": 470,
+        "sha256": "da635a1e056684e39ae2e7594a6e5c958810c80bd8b3adf930f2f33e0692b55b"
+      }
+    },
+    {
+      "name": "agent_application_race",
+      "status": "passed",
+      "summary": "passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/agent-application-race.log",
+        "bytes": 68,
+        "sha256": "84b55f89123eb71c3e8a4ae1256dd5bb430467f4535596697f2c94b7ca558b68"
+      }
+    },
+    {
+      "name": "agent_conversation_persistence_race",
+      "status": "passed",
+      "summary": "conversation lease and storage package passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/agent-conversation-persistence-race.log",
+        "bytes": 98,
+        "sha256": "98bd99d27691b893a2fdb92b078fa7cddfa539d0a716b4f31b704786c9462db1"
+      }
+    },
+    {
+      "name": "agent_related_vet",
+      "status": "passed",
+      "summary": "passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/agent-related-vet.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "frontend_test",
+      "status": "passed",
+      "summary": "53 passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/frontend-test.log",
+        "bytes": 7514,
+        "sha256": "09b8499ac6161c8c5b1b93337a7ab9902e623862019a9fb4790da85ea5401261"
+      }
+    },
+    {
+      "name": "frontend_build",
+      "status": "passed",
+      "summary": "production build passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/frontend-build.log",
+        "bytes": 32521,
+        "sha256": "30496401c115cd2b0ff68fbd77db88bfee2f0458dade089cf167bdc4b91eb1db"
+      }
+    },
+    {
+      "name": "file_e2e_race",
+      "status": "passed",
+      "summary": "1205-row XLSX chain passed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/file-e2e-race.log",
+        "bytes": 903,
+        "sha256": "a260c9bc5c8c2203cb91b404dfb77ae20e3b3dfe9c0229a769637e28008ed9f0"
+      }
+    },
+    {
+      "name": "browser_acceptance_host",
+      "status": "passed",
+      "summary": "browser host test passed in 260.520s",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/browser-acceptance-host.log",
+        "bytes": 575,
+        "sha256": "19437d44c54d3cbaac88debdffdd75d9b5c8515583a4095de79c654b321c651d"
+      }
+    },
+    {
+      "name": "browser_observation",
+      "status": "passed",
+      "summary": "chart, coverage, references, missing, CSV and revoked download observed",
+      "log": {
+        "path": "2026-09-12-n03-analysis-result/logs/browser-observation.log",
+        "bytes": 1296,
+        "sha256": "7104dcb9d341e114fcdcaec25255b649daa86043d09e475c451e62fadd92ee9e"
+      }
+    }
+  ],
+  "llm_proxy": {
+    "path": "/Users/tiger/Projects/anti/llm-proxy",
+    "modified": false,
+    "head": "a32407a678ea7f96d70b7557765e2a01262184d4",
+    "consumed_interfaces_only": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ],
+    "model_service_integration": false
+  },
+  "limits": [
+    "real vendor/cloud deployment not claimed",
+    "immutable dependency publication remains H04",
+    "generic task_start/task_get/task_list/task_cancel/task_resume remain L01-L03"
+  ]
+}

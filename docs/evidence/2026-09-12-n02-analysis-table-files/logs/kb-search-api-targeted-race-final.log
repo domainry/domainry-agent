@@ -1,0 +1,5 @@
+ok  	github.com/codeck-backend/kb-search-api/handler	2.000s
+ok  	github.com/codeck-backend/kb-search-api/pkg/clients	(cached)
+?   	github.com/codeck-backend/kb-search-api/pkg/types	[no test files]
+ok  	github.com/codeck-backend/kb-search-api/router	1.523s
+?   	github.com/codeck-backend/kb-search-api/app	[no test files]

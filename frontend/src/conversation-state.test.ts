@@ -61,6 +61,22 @@ test("artifact scope survives uncertain send without borrowing memory/todo grant
   assert.equal(next.pending("chat", "修改记忆", true, true).artifactWrite, undefined);
 });
 
+test("background task scope is frozen on one logical send and cannot borrow other write grants", () => {
+  const disk = storage();
+  const first = new DraftStore(() => disk, "task-user");
+  first.writeBackgroundTaskScope("chat", true);
+  const pending = first.pending("chat", "后台核对发布", false, false, false, true);
+  const refreshed = new DraftStore(() => disk, "task-user");
+  assert.equal(refreshed.read("chat").backgroundTaskWrite, true);
+  assert.deepEqual(refreshed.pending("chat", "后台核对发布", true, true, true, false), pending);
+  assert.equal(pending.memoryWrite, undefined);
+  assert.equal(pending.todoWrite, undefined);
+  assert.equal(pending.artifactWrite, undefined);
+  refreshed.acknowledge("chat", pending);
+  assert.equal(refreshed.read("chat").backgroundTaskWrite, undefined);
+  assert.equal(refreshed.pending("chat", "另一个请求", true).backgroundTaskWrite, undefined);
+});
+
 test("artifact retry preserves exact version and decimal strings and cannot target unrelated paths", () => {
   const edit = { kind: "edit", artifactID: "artifact_a", body: { client_id: "edit-retry", expected_version: 3, patch: { cells: [{ row: 0, column: "amount", value: "9007199254740993.01" }] } } };
   assert.deepEqual(parseArtifactMutation(JSON.stringify(edit)), edit);

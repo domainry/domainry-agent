@@ -1,0 +1,14 @@
+?   	github.com/codeck-backend/kb-search-api	[no test files]
+?   	github.com/codeck-backend/kb-search-api/app	[no test files]
+?   	github.com/codeck-backend/kb-search-api/constants	[no test files]
+ok  	github.com/codeck-backend/kb-search-api/handler	6.067s
+ok  	github.com/codeck-backend/kb-search-api/middleware	4.326s
+?   	github.com/codeck-backend/kb-search-api/model/common	[no test files]
+ok  	github.com/codeck-backend/kb-search-api/model/config	3.917s
+ok  	github.com/codeck-backend/kb-search-api/pkg/clients	9.398s
+ok  	github.com/codeck-backend/kb-search-api/pkg/metrics	6.300s
+ok  	github.com/codeck-backend/kb-search-api/pkg/permissions	4.927s
+ok  	github.com/codeck-backend/kb-search-api/pkg/requestctx	5.472s
+?   	github.com/codeck-backend/kb-search-api/pkg/types	[no test files]
+ok  	github.com/codeck-backend/kb-search-api/router	5.199s
+?   	github.com/codeck-backend/kb-search-api/rpc	[no test files]

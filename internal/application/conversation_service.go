@@ -74,6 +74,7 @@ type ConversationService struct {
 	runtimeID, owner    string
 	options             ConversationOptions
 	wake                chan struct{}
+	taskWake            chan struct{}
 	attachmentWake      chan struct{}
 	attachmentIndexWake chan struct{}
 	documentWake        chan struct{}
@@ -225,11 +226,16 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	if err := activateDocumentSources(repo, runtimeID, options); err != nil {
 		return nil, err
 	}
-	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, wake: make(chan struct{}, options.Workers), attachmentWake: make(chan struct{}, 1), active: map[string]conversationActive{}}
+	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, wake: make(chan struct{}, options.Workers), taskWake: make(chan struct{}, 1), attachmentWake: make(chan struct{}, 1), active: map[string]conversationActive{}}
 	s.documentWake = make(chan struct{}, 1)
 	s.attachmentIndexWake = make(chan struct{}, 1)
 	if personalHost != nil {
 		personalHost.artifacts = s
+		if _, mutations := repo.(agentpersistence.ConversationTaskMutationRepository); mutations && model != nil && options.MaxInputBytes >= 32 && options.MaxOutputBytes >= 256 && options.RunTimeout >= time.Second {
+			if _, workers := repo.(agentpersistence.ConversationTaskWorkerRepository); workers {
+				personalHost.tasks = s
+			}
+		}
 	}
 	if options.ToolHost != nil && len(options.AttachmentKnowledge) > 0 {
 		s.options.ToolHost = &attachmentKnowledgeHost{base: options.ToolHost, service: s}
@@ -261,6 +267,10 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 		for i := 0; i < options.Workers; i++ {
 			s.wg.Add(1)
 			go s.worker(ctx)
+		}
+		if personalHost != nil && personalHost.tasks == s {
+			s.wg.Add(1)
+			go s.conversationTaskWorker(ctx, repo.(agentpersistence.ConversationTaskWorkerRepository))
 		}
 	}
 	return s, nil
@@ -535,7 +545,8 @@ func (s *ConversationService) worker(ctx context.Context) {
 	}
 }
 func (s *ConversationService) execute(parent context.Context, claim agentpersistence.ConversationClaim) {
-	ctx, cancel := context.WithTimeout(parent, s.options.RunTimeout)
+	_, _, maxOutputBytes, runTimeout := s.conversationRunLimits(claim)
+	ctx, cancel := context.WithTimeout(parent, runTimeout)
 	defer cancel()
 	// Keys are generated globally, while storage still fences every scoped write.
 	s.mu.Lock()
@@ -604,7 +615,7 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 		}
 		if err != nil {
 			code = conversationModelFailureCode(err, "provider_failed")
-		} else if !conversationText(result.Content, s.options.MaxOutputBytes, true) {
+		} else if !conversationText(result.Content, maxOutputBytes, true) {
 			code = "response_invalid"
 		}
 		if _, encodeErr := json.Marshal(result); encodeErr != nil {
@@ -629,6 +640,8 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 	defer finishCancel()
 	if err := s.repo.Finish(finishCtx, claim, result, code); err != nil {
 		slog.Debug("conversation finish fenced or unavailable", "run_id", claim.Run.ID, "error", err)
+	} else {
+		s.signalConversationTasks()
 	}
 }
 

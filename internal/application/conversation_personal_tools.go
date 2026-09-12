@@ -16,6 +16,7 @@ import (
 
 type PersonalConversationHost struct {
 	artifacts  *ConversationService
+	tasks      *ConversationService
 	knowledge  ConversationKnowledge
 	repo       persistence.ConversationRepository
 	history    persistence.ConversationHistoryRepository
@@ -132,6 +133,18 @@ func personalToolClaim(in agentsdk.ConversationToolRequest) persistence.Conversa
 }
 
 func (h *PersonalConversationHost) supportsPersonalTool(definition agentsdk.ConversationToolDefinition) bool {
+	if definition.Key == "task_start" {
+		if h.tasks == nil || !h.supportsConversationInteractions() {
+			return false
+		}
+		_, mutations := h.repo.(persistence.ConversationTaskMutationRepository)
+		_, workers := h.repo.(persistence.ConversationTaskWorkerRepository)
+		return mutations && workers
+	}
+	if definition.Key == "task_get" || definition.Key == "task_list" {
+		_, reads := h.repo.(persistence.ConversationTaskReadRepository)
+		return h.tasks != nil && reads
+	}
 	if strings.HasPrefix(definition.Key, "artifact_") {
 		if h.artifacts == nil || h.artifacts.options.ArtifactStorage == nil {
 			return false
@@ -202,6 +215,47 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		return h.invokeArtifactTool(ctx, in)
 	}
 	switch in.Call.Name {
+	case "task_start":
+		prepared, err := h.tasks.prepareConversationTask(ctx, in)
+		if err != nil {
+			return personalToolFailure(conversationTaskFailureCode(err)), nil
+		}
+		result, err := h.repo.(persistence.ConversationTaskMutationRepository).ApplyConversationTaskTool(ctx, in, prepared)
+		if err == nil && result.Status == "completed" && result.Completion == "accepted" {
+			h.tasks.signalConversationTasks()
+		}
+		return result, err
+	case "task_get":
+		var args struct {
+			ID string `json:"id"`
+		}
+		_ = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		task, err := h.tasks.ConversationTask(ctx, args.ID, in.Authority)
+		if err != nil {
+			return agentsdk.ConversationToolResult{}, err
+		}
+		return personalToolResult(map[string]any{"task": task})
+	case "task_list":
+		var args struct {
+			Query  string `json:"query"`
+			Status string `json:"status"`
+			Scope  string `json:"scope"`
+			Cursor string `json:"cursor"`
+			Limit  int    `json:"limit"`
+		}
+		_ = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		query := agentsdk.ConversationTaskQuery{Query: args.Query, Status: args.Status, Cursor: args.Cursor, Limit: args.Limit}
+		if args.Scope == "current_conversation" {
+			if in.ConversationID == "" {
+				return personalToolFailure("task_conversation_required"), nil
+			}
+			query.SourceConversationID = in.ConversationID
+		}
+		page, err := h.tasks.ConversationTasks(ctx, query, in.Authority)
+		if err != nil {
+			return agentsdk.ConversationToolResult{}, err
+		}
+		return personalToolResult(page)
 	case "memory_save", "memory_forget", "todo_create", "todo_update", "todo_delete":
 		return h.repo.(persistence.ConversationPersonalMutationRepository).ApplyPersonalTool(ctx, in)
 	case "todo_get":

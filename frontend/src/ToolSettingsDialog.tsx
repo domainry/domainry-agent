@@ -10,8 +10,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 
 const client = new ToolsClient({request: (path, options) => request(path, options?.method, options?.body, options?.signal)});
 const states = {available: "可用", disabled: "已关闭", connection_unavailable: "连接或授权范围不可用", connection_unknown: "连接状态暂时无法确认"};
-const names: Record<string,string> = {report_query:"查询报表",calendar_write_accounts:"发现日历写入账号",calendar_event_inspect:"核对日程修改目标",calendar_event_create:"创建日程",calendar_event_update:"修改日程",mail_write_accounts:"发现邮件发送账号",mail_send:"发送邮件",mail_reply:"回复邮件",calculate:"计算",time_now:"当前时间",knowledge_search:"检索知识",knowledge_read:"读取知识",todo_list:"查询待办",todo_create:"创建待办",todo_update:"更新待办",todo_delete:"删除待办",memory_list:"查询记忆",memory_save:"保存记忆",memory_delete:"删除记忆",web_search:"搜索公开网页",web_fetch:"读取网页正文",mail_accounts:"发现邮件账号",mail_list:"查看邮件列表",mail_search:"搜索邮件",mail_read:"读取邮件正文",calendar_accounts:"发现日历账号",calendar_list:"查看日历目录",calendar_events:"查询日历安排",calendar_event:"读取事件详情",calendar_availability:"查询共同空闲"};
+const names: Record<string,string> = {task_start:"创建后台任务",analysis_run:"分析数据",report_query:"查询报表",calendar_write_accounts:"发现日历写入账号",calendar_event_inspect:"核对日程修改目标",calendar_event_create:"创建日程",calendar_event_update:"修改日程",mail_write_accounts:"发现邮件发送账号",mail_send:"发送邮件",mail_reply:"回复邮件",calculate:"计算",time_now:"当前时间",knowledge_search:"检索知识",knowledge_read:"读取知识",todo_list:"查询待办",todo_create:"创建待办",todo_update:"更新待办",todo_delete:"删除待办",memory_list:"查询记忆",memory_save:"保存记忆",memory_delete:"删除记忆",web_search:"搜索公开网页",web_fetch:"读取网页正文",mail_accounts:"发现邮件账号",mail_list:"查看邮件列表",mail_search:"搜索邮件",mail_read:"读取邮件正文",calendar_accounts:"发现日历账号",calendar_list:"查看日历目录",calendar_events:"查询日历安排",calendar_event:"读取事件详情",calendar_availability:"查询共同空闲"};
 const descriptions: Record<string,string> = {
+ task_start:"按明确目标、输入、工具范围和预算创建可恢复的后台任务；返回任务 ID 后由独立执行继续处理。",
+ analysis_run:"对有权读取的数据进行分组汇总、对比、趋势与表格计算；保留筛选条件、统计口径、单位和来源版本。",
  report_query:"发现当前可见报表，按声明参数执行查询；保留来源、行数上限、分页及是否完整。",
  calendar_write_accounts:"发现当前获准创建或修改日程的账号，固定账号状态。",
  calendar_event_inspect:"修改前读取事件的准确版本、单次或系列类型，以及完整参与者。",

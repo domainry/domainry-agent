@@ -129,6 +129,7 @@ func assembleLibraryKnowledge(options *ConversationOptions, configured []Knowled
 			return err
 		}
 		binding.Knowledge.DocumentManagement = binding.ManageDocuments
+		binding.Knowledge.RuntimeID = runtimeID
 		source, err := provider.NewKnowledge(binding.Knowledge)
 		if err != nil || source == nil {
 			return fmt.Errorf("invalid library knowledge provider configuration")

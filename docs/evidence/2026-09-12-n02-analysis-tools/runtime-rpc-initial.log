@@ -1,0 +1,6 @@
+=== RUN   TestAnalysisToolRPCWithRealOwnerIdentityAndRestart
+    conversation_analysis_rpc_test.go:122: large integer, NULL denominator or owner scope lost {map[dataset:4] map[mean:3 rows:4 total:3] map[mean:0xc005508310 rows:0xc005508330 total:0xc005508350] [] []}
+--- FAIL: TestAnalysisToolRPCWithRealOwnerIdentityAndRestart (32.42s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	33.847s
+FAIL

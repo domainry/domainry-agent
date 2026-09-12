@@ -19,7 +19,7 @@ func personalMutationFixture(t *testing.T, repo *ConversationStore, key, name, a
 	}
 	send := agentsdk.ConversationSend{ClientMessageID: "send", Message: "请处理指定的个人事项"}
 	if scoped {
-		send.WriteScope = &agentsdk.ConversationWriteScope{PersonalMemory: !strings.HasPrefix(name, "todo_") && !strings.HasPrefix(name, "artifact_"), PersonalTodos: strings.HasPrefix(name, "todo_"), PersonalArtifacts: strings.HasPrefix(name, "artifact_")}
+		send.WriteScope = &agentsdk.ConversationWriteScope{PersonalMemory: !strings.HasPrefix(name, "todo_") && !strings.HasPrefix(name, "artifact_") && name != "task_start", PersonalTodos: strings.HasPrefix(name, "todo_"), PersonalArtifacts: strings.HasPrefix(name, "artifact_"), BackgroundTasks: name == "task_start"}
 	}
 	_, err = repo.Enqueue(t.Context(), c.ID, send, a)
 	if err != nil {

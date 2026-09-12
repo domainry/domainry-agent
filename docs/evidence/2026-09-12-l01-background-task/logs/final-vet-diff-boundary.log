@@ -1,0 +1,5 @@
+agent_toplevel=/Users/tiger/Projects/domainry-agent
+agent_git_dir=/Users/tiger/Projects/domainry-agent/.git
+sdk_toplevel=/Users/tiger/Projects/domainry-agent-sdk
+llm_proxy_head=a32407a678ea7f96d70b7557765e2a01262184d4
+llm_proxy_clean=true

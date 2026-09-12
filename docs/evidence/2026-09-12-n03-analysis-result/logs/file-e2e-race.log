@@ -1,0 +1,33 @@
+{
+  "chart_type": "bar",
+  "chart_x": "region",
+  "chart_y": [
+    "total"
+  ],
+  "columns": [
+    "active:boolean",
+    "amount:number",
+    "booked_at:date",
+    "note:text",
+    "region:text"
+  ],
+  "complete": true,
+  "coverage_complete": true,
+  "data_version": "efe3a344e86a004d0f259025726bee9c044757a0e52bd5809584cf0010e0b4ed",
+  "dataset_key": "table_d66069d5ed3f20c5e0270c9f18409ee2",
+  "definition_version": "a741121f01e0d0f1e4eea19a5f20b43f30d99d9099c24f8623c53bb13cc1e83a",
+  "missing_note_cells": 241,
+  "ok": true,
+  "permission_reads": 177,
+  "proof_present": true,
+  "reference_id": "doc-1",
+  "reference_kind": "knowledge_document",
+  "reference_subresource": "tbl_e9c83fb03919603b_0",
+  "reference_version": "gen_current",
+  "revoked_saved_result": true,
+  "row_count": "1205",
+  "tool_result_bytes": 1867,
+  "tool_status": "completed",
+  "total": "1000012.29",
+  "truncated": false
+}

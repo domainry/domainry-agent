@@ -1,0 +1,9 @@
+=== RUN   TestRuntimeSeedSynchronizationBindsInstallationWorkspace
+    stage_failures_test.go:16: seed workspace="stale-workspace"
+--- FAIL: TestRuntimeSeedSynchronizationBindsInstallationWorkspace (0.00s)
+=== RUN   TestSynchronizeRuntimeSeedsDoesNotRequireIdentityProjection
+    stage_failures_test.go:84: business seed synchronization failed: sync generated business seeds: workspace authority is required
+--- FAIL: TestSynchronizeRuntimeSeedsDoesNotRequireIdentityProjection (0.04s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/runtime	0.673s
+FAIL

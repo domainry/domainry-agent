@@ -1,0 +1,194 @@
+{
+  "commit": "dbf61406e55b8a446f026cde941ce7f9a9f33bda",
+  "scope": "Existing fixed source snapshot only; deployed service or upstream HEAD not inferred",
+  "files": {
+    "router/router.go": {
+      "path": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-n02-analysis-table-contract/knowledge-router-router.go.txt",
+      "sha256": "489f22a3d9e3b50a4425bf8df8d6c7bb3b4d1abee9cfeb540bbdc705cfe4f600",
+      "matches": [
+        {
+          "line": 8,
+          "text": "\"github.com/codeck-backend/kb-search-api/constants\""
+        },
+        {
+          "line": 9,
+          "text": "\"github.com/codeck-backend/kb-search-api/handler\""
+        },
+        {
+          "line": 10,
+          "text": "\"github.com/codeck-backend/kb-search-api/middleware\""
+        },
+        {
+          "line": 11,
+          "text": "modelCommon \"github.com/codeck-backend/kb-search-api/model/common\""
+        },
+        {
+          "line": 12,
+          "text": "modelConfig \"github.com/codeck-backend/kb-search-api/model/config\""
+        },
+        {
+          "line": 13,
+          "text": "appMetrics \"github.com/codeck-backend/kb-search-api/pkg/metrics\""
+        },
+        {
+          "line": 14,
+          "text": "\"github.com/codeck-backend/kb-search-api/rpc\""
+        },
+        {
+          "line": 25,
+          "text": "// search/fetch 同时支持 Passport JWT 与团队平台 API Key。"
+        }
+      ]
+    },
+    "handler/fetch.go": {
+      "path": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-n02-analysis-table-contract/knowledge-handler-fetch.go.txt",
+      "sha256": "076f846dae5b38aa4ebe145ebed42ae06f0722ff075d926d4e3c3527f7dca86c",
+      "matches": [
+        {
+          "line": 12,
+          "text": "\"github.com/codeck-backend/kb-search-api/constants\""
+        },
+        {
+          "line": 13,
+          "text": "modelCommon \"github.com/codeck-backend/kb-search-api/model/common\""
+        },
+        {
+          "line": 14,
+          "text": "\"github.com/codeck-backend/kb-search-api/pkg/clients\""
+        },
+        {
+          "line": 15,
+          "text": "appMetrics \"github.com/codeck-backend/kb-search-api/pkg/metrics\""
+        },
+        {
+          "line": 16,
+          "text": "\"github.com/codeck-backend/kb-search-api/pkg/permissions\""
+        },
+        {
+          "line": 17,
+          "text": "\"github.com/codeck-backend/kb-search-api/pkg/requestctx\""
+        },
+        {
+          "line": 18,
+          "text": "\"github.com/codeck-backend/kb-search-api/pkg/types\""
+        },
+        {
+          "line": 31,
+          "text": "// ChunkQuerier kb_chunks 当前 generation 全量 chunk 抽象。"
+        },
+        {
+          "line": 39,
+          "text": "FetchDocContent(ctx context.Context, tenantID, objToken string) (string, error)"
+        },
+        {
+          "line": 42,
+          "text": "// FDeps /v1/kb/fetch 的下游依赖(app.InitInfra 装配;单测打桩)。"
+        },
+        {
+          "line": 58,
+          "text": "// Fetch POST /v1/kb/fetch:文档详情 = 离线元数据 + chunks 全文 + 飞书实时层。"
+        },
+        {
+          "line": 59,
+          "text": "// 红线:tenant 只信 ctx teamID;chunk/live 内容与飞书凭据不落日志。"
+        },
+        {
+          "line": 74,
+          "text": "recorder := fetchRecorder(deps)"
+        },
+        {
+          "line": 126,
+          "text": "// chunks 查询与飞书实时回源并行(live 失败不阻塞离线数据)"
+        },
+        {
+          "line": 129,
+          "text": "includeContent := req.IncludeContent == nil || *req.IncludeContent"
+        },
+        {
+          "line": 130,
+          "text": "if includeContent && doc.CurrentGeneration != \"\" {"
+        },
+        {
+          "line": 131,
+          "text": "chunkStart := time.Now()"
+        },
+        {
+          "line": 133,
+          "text": "chunkOutcome := appMetrics.DependencyOutcome(err)"
+        },
+        {
+          "line": 134,
+          "text": "recorder.RecordDependency(appMetrics.OperationFetch, appMetrics.DependencyDynamoDB, appMetrics.ActionQueryChunks, chunkOutcome, time.Since(chunkStart))"
+        },
+        {
+          "line": 135,
+          "text": "recorder.RecordStage(appMetrics.OperationFetch, appMetrics.StageChunkLookup, chunkOutcome, time.Since(chunkStart))"
+        },
+        {
+          "line": 137,
+          "text": "logs.WarnCtx(ctx, \"query chunks failed\","
+        },
+        {
+          "line": 146,
+          "text": "Content:    r.Content,"
+        },
+        {
+          "line": 164,
+          "text": "// goroutine work after a chunk error or a client cancellation."
+        },
+        {
+          "line": 221,
+          "text": "func startLiveFetch(ctx context.Context, fetcher LiveFetcher, tenantID string, doc *clients.DocDetail, opts *types.LiveOptions, recorder appMetrics.Recorder) (<-chan liveFetchResult, liveFetchResult) {"
+        },
+        {
+          "line": 222,
+          "text": "if fetcher == nil {"
+        },
+        {
+          "line": 250,
+          "text": "ch <- runLiveFetch(ctx, fetcher, tenantID, objToken, aiOpts, recorder)"
+        },
+        {
+          "line": 255,
+          "text": "func runLiveFetch(ctx context.Context, fetcher LiveFetcher, tenantID, objToken string, opts clients.DocsAIOptions, recorder appMetrics.Recorder) liveFetchResult {"
+        },
+        {
+          "line": 259,
+          "text": "doc, err := fetcher.FetchDocsAI(aiCtx, tenantID, objToken, opts)"
+        },
+        {
+          "line": 264,
+          "text": "Content:    doc.Content,"
+        },
+        {
+          "line": 275,
+          "text": "logs.WarnCtx(ctx, \"docs_ai live fetch failed, trying fallback\","
+        },
+        {
+          "line": 284,
+          "text": "content, fbErr := fetcher.FetchDocContent(fbCtx, tenantID, objToken)"
+        },
+        {
+          "line": 285,
+          "text": "recorder.RecordDependency(appMetrics.OperationFetch, appMetrics.DependencyFeishu, appMetrics.ActionDocContent, appMetrics.DependencyOutcome(fbErr), time.Since(dependencyStart))"
+        },
+        {
+          "line": 289,
+          "text": "Content:    content,"
+        },
+        {
+          "line": 294,
+          "text": "result: result, outcome: appMetrics.FetchLiveDocsContent,"
+        },
+        {
+          "line": 305,
+          "text": "Error:      fmt.Sprintf(\"live fetch unavailable: %s\", primaryErr),"
+        },
+        {
+          "line": 326,
+          "text": "func fetchRecorder(deps *FDeps) appMetrics.Recorder {"
+        }
+      ]
+    }
+  }
+}

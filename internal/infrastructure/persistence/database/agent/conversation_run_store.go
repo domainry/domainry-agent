@@ -166,7 +166,7 @@ func (s *ConversationStore) Claim(ctx context.Context, runtimeID, owner string, 
 		if err != nil {
 			return err
 		}
-		if c.ActiveRunID != old.Run.ID {
+		if old.Run.BackgroundTask == nil && c.ActiveRunID != old.Run.ID {
 			return conversationError("conflict", "run_superseded")
 		}
 		v := old
@@ -266,7 +266,8 @@ func (s *ConversationStore) Finish(ctx context.Context, claim agentpersistence.C
 		if err != nil {
 			return err
 		}
-		if c.ActiveRunID != v.Run.ID {
+		background := v.Run.BackgroundTask != nil
+		if !background && c.ActiveRunID != v.Run.ID {
 			return conversationError("conflict", "run_superseded")
 		}
 		v.Run.Status = "failed"
@@ -281,6 +282,9 @@ func (s *ConversationStore) Finish(ctx context.Context, claim agentpersistence.C
 			}
 			v.Run.Status = "completed"
 			m := agentsdk.ConversationMessage{ID: conversationID("msg_"), ConversationID: c.ID, RunID: v.Run.ID, Seq: c.LastSeq + 1, Role: "assistant", Content: result.Content, CreatedAt: time.Now().UTC()}
+			if v.Run.BackgroundTask != nil {
+				m.BackgroundTaskID = v.Run.BackgroundTask.TaskID
+			}
 			if err = s.insertMessage(ctx, tx, m, v.Authority); err != nil {
 				return err
 			}
@@ -288,11 +292,16 @@ func (s *ConversationStore) Finish(ctx context.Context, claim agentpersistence.C
 			c.LastSeq = m.Seq
 			v.Run.DraftText, v.Run.DraftBytes = "", 0
 		}
-		c.ActiveRunID = ""
+		if !background {
+			c.ActiveRunID = ""
+		}
 		if err = s.save(ctx, tx, c, c.Revision, v.Authority); err != nil {
 			return err
 		}
 		if err = s.event(ctx, tx, &v, "run."+v.Run.Status, map[string]any{"attempt": v.Run.Attempt, "assistant_message_id": v.Run.AssistantMessageID, "error_code": code}); err != nil {
+			return err
+		}
+		if err = s.finishConversationTask(ctx, tx, v.Run, v.Authority); err != nil {
 			return err
 		}
 		return s.saveRun(ctx, tx, v, old)
@@ -351,7 +360,9 @@ func (s *ConversationStore) transition(ctx context.Context, id, runID string, a 
 				return err
 			}
 			v.Run.Status = "cancelled"
-			c.ActiveRunID = ""
+			if c.ActiveRunID == runID {
+				c.ActiveRunID = ""
+			}
 			if err = s.closeRunInteraction(ctx, tx, &v, "cancelled"); err != nil {
 				return err
 			}

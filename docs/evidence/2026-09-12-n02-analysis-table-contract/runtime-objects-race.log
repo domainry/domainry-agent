@@ -1,0 +1,9 @@
+# github.com/domainry/domainry-identity/internal/adapter/identitysdk
+../domainry-identity/internal/adapter/identitysdk/principal_resolver.go:70:76: undefined: http
+../domainry-identity/internal/adapter/identitysdk/principal_resolver.go:77:76: undefined: http
+../domainry-identity/internal/adapter/identitysdk/principal_resolver.go:80:76: undefined: http
+../domainry-identity/internal/adapter/identitysdk/principal_resolver.go:83:76: undefined: http
+../domainry-identity/internal/adapter/identitysdk/principal_resolver.go:86:76: undefined: http
+../domainry-identity/internal/adapter/identitysdk/principal_resolver.go:94:76: undefined: http
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/runtime [build failed]
+FAIL

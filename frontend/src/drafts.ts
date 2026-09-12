@@ -1,5 +1,5 @@
-export type PendingMessage = { id: string; text: string; memoryWrite?: boolean; todoWrite?: boolean; artifactWrite?: boolean };
-export type Draft = { text: string; memoryWrite?: boolean; todoWrite?: boolean; artifactWrite?: boolean; pending?: PendingMessage };
+export type PendingMessage = { id: string; text: string; memoryWrite?: boolean; todoWrite?: boolean; artifactWrite?: boolean; backgroundTaskWrite?: boolean };
+export type Draft = { text: string; memoryWrite?: boolean; todoWrite?: boolean; artifactWrite?: boolean; backgroundTaskWrite?: boolean; pending?: PendingMessage };
 type StoragePort = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 
 // Unsent text belongs to the local browser and conversation, not model history.
@@ -25,7 +25,7 @@ export class DraftStore {
           "text" in parsed &&
           typeof parsed.text === "string"
         ) {
-          const draft: Draft = { text: parsed.text, ...("artifactWrite" in parsed && parsed.artifactWrite === true ? { artifactWrite: true } : {}), ...("todoWrite" in parsed && parsed.todoWrite === true ? { todoWrite: true } : {}), ...("memoryWrite" in parsed && parsed.memoryWrite === true ? { memoryWrite: true } : {}) };
+          const draft: Draft = { text: parsed.text, ...("backgroundTaskWrite" in parsed && parsed.backgroundTaskWrite === true ? { backgroundTaskWrite: true } : {}), ...("artifactWrite" in parsed && parsed.artifactWrite === true ? { artifactWrite: true } : {}), ...("todoWrite" in parsed && parsed.todoWrite === true ? { todoWrite: true } : {}), ...("memoryWrite" in parsed && parsed.memoryWrite === true ? { memoryWrite: true } : {}) };
           if (
             "pending" in parsed &&
             typeof parsed.pending === "object" &&
@@ -38,6 +38,7 @@ export class DraftStore {
             draft.pending = {
               id: parsed.pending.id,
               text: parsed.pending.text,
+              ...("backgroundTaskWrite" in parsed.pending && parsed.pending.backgroundTaskWrite === true ? { backgroundTaskWrite: true } : {}),
               ...("artifactWrite" in parsed.pending && parsed.pending.artifactWrite === true ? { artifactWrite: true } : {}),
               ...("todoWrite" in parsed.pending && parsed.pending.todoWrite === true ? { todoWrite: true } : {}),
               ...("memoryWrite" in parsed.pending && parsed.pending.memoryWrite === true ? { memoryWrite: true } : {}),
@@ -53,7 +54,7 @@ export class DraftStore {
   private save(id: string, draft: Draft) {
     this.cache.set(id, draft);
     try {
-      if (!draft.text && !draft.pending && !draft.memoryWrite && !draft.todoWrite && !draft.artifactWrite)
+      if (!draft.text && !draft.pending && !draft.memoryWrite && !draft.todoWrite && !draft.artifactWrite && !draft.backgroundTaskWrite)
         this.storage().removeItem(this.prefix + (id || "new"));
       else
         this.storage().setItem(
@@ -76,12 +77,15 @@ export class DraftStore {
   writeArtifactScope(id: string, artifactWrite: boolean) {
     this.save(id, { ...this.read(id), artifactWrite });
   }
-  pending(id: string, text: string, memoryWrite = false, todoWrite = false, artifactWrite = false): PendingMessage {
+  writeBackgroundTaskScope(id: string, backgroundTaskWrite: boolean) {
+    this.save(id, { ...this.read(id), backgroundTaskWrite });
+  }
+  pending(id: string, text: string, memoryWrite = false, todoWrite = false, artifactWrite = false, backgroundTaskWrite = false): PendingMessage {
     const draft = this.read(id);
     const pending =
       draft.pending?.text === text
         ? draft.pending
-        : { id: crypto.randomUUID(), text, ...(artifactWrite ? { artifactWrite: true } : {}), ...(todoWrite ? { todoWrite: true } : {}), ...(memoryWrite ? { memoryWrite: true } : {}) };
+        : { id: crypto.randomUUID(), text, ...(backgroundTaskWrite ? { backgroundTaskWrite: true } : {}), ...(artifactWrite ? { artifactWrite: true } : {}), ...(todoWrite ? { todoWrite: true } : {}), ...(memoryWrite ? { memoryWrite: true } : {}) };
     this.save(id, { ...draft, pending });
     return pending;
   }

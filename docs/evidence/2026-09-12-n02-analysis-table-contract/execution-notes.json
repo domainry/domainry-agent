@@ -1,0 +1,15 @@
+{
+  "owned_source_count": 17,
+  "llm_proxy_scope": [
+    "POST /tool/web_search",
+    "POST /tool/web_fetch_jina"
+  ],
+  "dependency_collision": {
+    "file": "/Users/tiger/Projects/domainry-identity/internal/adapter/identitysdk/principal_resolver.go",
+    "current_sha256": "d80b7137f9b5fb3dfc232ce13939e2eae91374fd0d197e9ba733e92f1854e906",
+    "outcome": "Concurrent work added missing net/http before this task patch. This task briefly added a duplicate, observed compile failure, and removed only its duplicate. No final Identity change claimed.",
+    "initial_attempt": "Wrong Runtime selector; build failed before test execution, no pass claimed.",
+    "verified_selector": "^TestReportAnalysisRealOwnerFullSQLiteAggregationAndCurrentPermissions$"
+  },
+  "verification_scope": "Structured service fixture and public Report / SQLite composition; existing real Runtime business dataset regression. No actual Excel parsing, upstream table API, model or browser run in this increment."
+}

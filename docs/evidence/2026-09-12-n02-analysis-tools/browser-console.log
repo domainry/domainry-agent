@@ -1,0 +1,5 @@
+{
+  "passed": false,
+  "phases": [],
+  "error": "SyntaxError: Expected ',' or ']' after array element in JSON at position 2048 (line 1 column 2049)\n    at JSON.parse (<anonymous>)\n    at file:///Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-n02-analysis-tools/browser-script.mjs:81:23"
+}

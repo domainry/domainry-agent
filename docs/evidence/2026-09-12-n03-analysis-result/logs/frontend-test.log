@@ -1,0 +1,85 @@
+
+> domainry-agent-playground@0.0.0 test
+> node --experimental-strip-types --test src/conversation-state.test.ts src/external-session.test.ts src/knowledge-document-state.test.ts src/knowledge-datasource-state.test.ts src/execution-outcome.test.ts src/file-preview-state.test.ts src/attachment-index-state.test.ts src/account-write-state.test.ts src/stored-result.test.ts src/analysis-result.test.ts
+
+(node:9353) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ calendar preview retains exact target, exclusive all-day dates, series and explicit clears (11.169458ms)
+✔ mail preview retains every recipient, original ID and complete long text (1.019667ms)
+✔ unknown or omitted content cannot disappear from a confirmable preview (11.298042ms)
+✔ timed preview preserves both DST offsets instead of converting to the browser zone (3.148417ms)
+(node:9354) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ parses a closed analysis projection without rounding decimal strings (0.887125ms)
+✔ requires explicit complete coverage, source references and safe chart columns (14.62925ms)
+✔ accepts a declared chart omission and keeps the result table (0.224084ms)
+(node:9355) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ index receipt is bound to the exact conversation, attachment and original (1.33ms)
+✔ indexing and lookup are each one scoped request without original bytes (22.2715ms)
+✔ index response rejects another file or missing authoritative capabilities (0.321416ms)
+✔ unknown writes and cleanup are not shown as retryable uploads or completion (0.151209ms)
+✔ mutation response keeps the attachment list within its keyset window (7.681209ms)
+(node:9356) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ cancellation preserves effects, distinguishes unstarted calls and accepts the actual late receipt (2.268583ms)
+✔ only actual completed knowledge citations become verified links and revocation hides them (0.738625ms)
+✔ artifact scope survives uncertain send without borrowing memory/todo grants or carrying to the next request (1.738791ms)
+✔ artifact retry preserves exact version and decimal strings and cannot target unrelated paths (0.74975ms)
+✔ todo and memory scopes stay separate through refresh, uncertain retry and next send (0.255084ms)
+✔ todo retry preserves the exact target, revision and payload and rejects unrelated endpoints (0.288042ms)
+✔ todo date-only deadlines preserve the user's calendar day and precise times use the stored zone (29.9145ms)
+✔ waiting snapshots retain questions and reject cross-run or stale response events (0.310208ms)
+✔ a restricted snapshot ignores queued tool events and hides stale reply text (0.296375ms)
+✔ a completed run can show its saved final step after the server clears the draft (0.249ms)
+✔ tool argument fragments stay previews and reconnect resumes Unicode byte offsets (0.338875ms)
+✔ drafts survive refresh and stay isolated by conversation and scope (0.07125ms)
+✔ an uncertain send reuses its identity after refresh and acknowledgement clears only that draft (0.092958ms)
+✔ personal memory scope stays with one logical send and cannot expand on retry (0.095958ms)
+✔ late acknowledgement cannot erase newer text or another logical send from another tab (0.117708ms)
+✔ disabled or full storage retains current-page drafts without stale disk text overwriting them (0.089458ms)
+✔ provider errors explain the next action and unknown provider text is never displayed (0.116417ms)
+✔ HTTP, network and malformed successful responses retain distinct safe error categories (11.26925ms)
+✔ refresh retries the same scoped request once and never replays a mutation under another account (3.115375ms)
+✔ an in-flight response from a prior login is discarded after an account change (0.156667ms)
+(node:9357) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a saved reply does not hide a failed operation or mistake workflow acceptance for completion (15.861292ms)
+✔ failure projects actual effects and directs recovery to the first unfinished call (0.575208ms)
+✔ unfinished model generation can resume without repeating successful effects (0.087416ms)
+✔ waiting approval, denied evidence and closed interactions expose no retry (0.134042ms)
+✔ streamed completion disposition survives terminal projection and unknown terminal states are never successes (13.498083ms)
+(node:9358) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ external sessions never refresh Identity or replay writes after an account change (90.57125ms)
+(node:9359) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ preview accepts only managed document identities, never source URLs (0.970167ms)
+✔ download response controls filename, supports Unicode and rejects paths (0.231375ms)
+✔ private citations open only their scoped attachment original (0.131292ms)
+(node:9360) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ binding receipts contain only a bounded source key and frozen revision (1.542959ms)
+✔ a confirmed binding is one PUT and a lost response retries the same frozen assignment (18.203917ms)
+✔ catalog validates scope, pagination and effective permission flags (3.43825ms)
+(node:9361) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ document upload retry receipts remain bounded and pending/indexed/deleting states stay distinct (0.820458ms)
+✔ document upload sends one binary request with its persisted identity and rejects unrelated receipts (22.474083ms)
+✔ original downloads verify bytes and hash and discard body completion after an account change (7.866125ms)
+✔ attachment copy receipts bind a source and stable target without keeping file bytes (0.379167ms)
+✔ a pending transfer remains recoverable during a source outage without enabling new writes or bypassing target access (0.532667ms)
+(node:9363) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ reconstructs UTF-8 slices and verifies the original result digest (3.712083ms)
+✔ rejects corrupt, shifted, truncated and oversized pages before exposing content (0.728708ms)
+✔ revocation and cancellation discard previously read fragments (0.205708ms)
+✔ formatting retains unquoted large numbers and escaped source strings (0.525459ms)
+ℹ tests 53
+ℹ suites 0
+ℹ pass 53
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 442.133584

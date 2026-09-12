@@ -1,0 +1,6 @@
+# github.com/domainry/domainry-identity/internal/adapter/identitysdk
+../domainry-identity/internal/adapter/identitysdk/principal_resolver.go:6:2: http redeclared in this block
+	../domainry-identity/internal/adapter/identitysdk/principal_resolver.go:5:2: other declaration of http
+../domainry-identity/internal/adapter/identitysdk/principal_resolver.go:6:2: "net/http" imported and not used
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/runtime [build failed]
+FAIL

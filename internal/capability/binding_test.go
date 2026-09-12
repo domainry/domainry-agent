@@ -37,7 +37,7 @@ func TestAgentCapabilityOwnsAllProductRoutesAndAuthoringValidation(t *testing.T)
 		operations += category.OperationCount
 		projections += category.ProjectionCount
 	}
-	if operations != 73 || projections != 15 {
+	if operations != 74 || projections != 15 {
 		t.Fatalf("Agent operations=%d projections=%d", operations, projections)
 	}
 	contract, err := agentsdk.CompileAgentHTTPAdapterContract()

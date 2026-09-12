@@ -190,6 +190,9 @@ func TestArtifactToolsThroughIdentityHTTP(t *testing.T) {
 	if err = json.Unmarshal(b.call("GET", "/agent/artifacts", "", 200).Body.Bytes(), &page); err != nil || len(page.Items) != 1 {
 		t.Fatal("artifact create missing", err)
 	}
+	if page.Items[0].SourceConversationID != conversation.ID || page.Items[0].SourceRunID != created.ID {
+		t.Fatalf("artifact source relation missing: %+v", page.Items[0])
+	}
 	path := "/agent/artifacts/" + page.Items[0].ID
 	edit := send("edit", "把刚才周报的第二节改为已核对", false)
 	edit = wait(edit.ID, "waiting_confirmation")
@@ -254,5 +257,6 @@ func TestArtifactToolsThroughIdentityHTTP(t *testing.T) {
 	// Seed additional content types for the optional real browser acceptance.
 	b.call("POST", "/agent/artifacts", `{"client_id":"table-fixture","title":"费用精度表","content":{"kind":"table","table":{"columns":[{"key":"name","label":"项目","type":"text"},{"key":"amount","label":"金额","type":"number"}],"rows":[["=SUM(A1:A2)","9007199254740993.01"],["访谈费用","12.30"]]}}}`, 200)
 	b.call("POST", "/agent/artifacts", `{"client_id":"chart-fixture","title":"项目趋势图","content":{"kind":"chart","table":{"columns":[{"key":"week","label":"周次","type":"text"},{"key":"count","label":"完成事项","type":"number"}],"rows":[["第一周","3"],["第二周","7"],["第三周","5"]]},"chart":{"type":"bar","x_column":"week","y_columns":["count"]}}}`, 200)
+	b.call("POST", "/agent/artifacts", `{"client_id":"safe-render-fixture","title":"安全渲染验证","content":{"kind":"markdown","markdown":"# 安全渲染\\n\\n<script>window.__artifactExecuted=true</script>\\n\\n![远程图片](https://example.invalid/private.png)\\n\\n[危险链接](javascript:window.__artifactExecuted=true)\\n\\n[公开链接](https://example.com/)"}}`, 200)
 	servePersonalToolAcceptance(t, host, options, map[string]func(){"revoke-artifact-read": func() { grant("artifact_read") }, "restore-artifact-read": func() { grant("") }})
 }

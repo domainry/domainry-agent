@@ -1,0 +1,5 @@
+=== RUN   TestAnalysisBrowserWithRealOwner
+    conversation_analysis_tools_test.go:59: Browser acceptance ready: http://127.0.0.1:8093/#; synthetic login admin@example.com, password Business-Browser-Changed!2026
+--- PASS: TestAnalysisBrowserWithRealOwner (33.70s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	34.951s

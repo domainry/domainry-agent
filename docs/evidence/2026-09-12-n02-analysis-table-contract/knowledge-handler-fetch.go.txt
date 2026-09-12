@@ -1,0 +1,331 @@
+package handler
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"net/url"
+	"strings"
+	"time"
+
+	"github.com/codeck-backend/common-utils/logs"
+	"github.com/codeck-backend/kb-search-api/constants"
+	modelCommon "github.com/codeck-backend/kb-search-api/model/common"
+	"github.com/codeck-backend/kb-search-api/pkg/clients"
+	appMetrics "github.com/codeck-backend/kb-search-api/pkg/metrics"
+	"github.com/codeck-backend/kb-search-api/pkg/permissions"
+	"github.com/codeck-backend/kb-search-api/pkg/requestctx"
+	"github.com/codeck-backend/kb-search-api/pkg/types"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+)
+
+// liveFetchTimeout 单次实时回源预算(docs_ai 与降级 content 各一份,总 <7s)。
+const liveFetchTimeout = 3 * time.Second
+
+// DocDetailGetter kb_documents 单文档正排抽象。
+type DocDetailGetter interface {
+	GetDocument(ctx context.Context, tenantID, kbID, docID string) (*clients.DocDetail, error)
+}
+
+// ChunkQuerier kb_chunks 当前 generation 全量 chunk 抽象。
+type ChunkQuerier interface {
+	QueryChunks(ctx context.Context, tenantID, kbID, docID, generation string) ([]clients.ChunkRecord, error)
+}
+
+// LiveFetcher 飞书实时回源抽象(docs_ai 主路 + docs/v1/content 降级)。
+type LiveFetcher interface {
+	FetchDocsAI(ctx context.Context, tenantID, objToken string, opts clients.DocsAIOptions) (*clients.DocsAIResult, error)
+	FetchDocContent(ctx context.Context, tenantID, objToken string) (string, error)
+}
+
+// FDeps /v1/kb/fetch 的下游依赖(app.InitInfra 装配;单测打桩)。
+type FDeps struct {
+	Permissions DocumentPermissionReader
+	Doc         DocDetailGetter
+	Chunk       ChunkQuerier
+	Live        LiveFetcher
+	Metrics     appMetrics.Recorder
+}
+
+// FetchDeps 全局依赖(app.InitInfra 注入)。
+var FetchDeps *FDeps
+
+var validLiveScopes = map[string]bool{
+	"": true, "full": true, "outline": true, "section": true, "range": true, "keyword": true,
+}
+
+// Fetch POST /v1/kb/fetch:文档详情 = 离线元数据 + chunks 全文 + 飞书实时层。
+// 红线:tenant 只信 ctx teamID;chunk/live 内容与飞书凭据不落日志。
+func Fetch(c *gin.Context) (interface{}, error) {
+	ctx := c.Request.Context()
+	var req types.FetchRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		return nil, modelCommon.NewHandlerError(constants.ERR_CODE_INVALID_PARAM, "invalid request: "+err.Error())
+	}
+	if err := validateLive(req.Live); err != nil {
+		return nil, err
+	}
+	teamID := requestctx.TeamID(ctx)
+	if teamID == "" {
+		return nil, modelCommon.NewHandlerError(constants.ERR_CODE_TEAM_FORBIDDEN, "team not resolved")
+	}
+	deps := FetchDeps
+	recorder := fetchRecorder(deps)
+	permissionIDs, err := queryPermissions(ctx, req.KbID, req.PermissionIDs)
+	if err != nil {
+		return nil, err
+	}
+	if deps == nil || deps.Permissions == nil {
+		recorder.RecordPermission(appMetrics.OperationFetch, appMetrics.PermissionError, 1)
+		return nil, permissionUnavailable()
+	}
+	permissionStart := time.Now()
+	permission, err := deps.Permissions.GetDocumentPermissions(ctx, teamID, req.KbID, req.DocID)
+	permissionOutcome := appMetrics.DependencyOutcome(err)
+	recorder.RecordDependency(appMetrics.OperationFetch, appMetrics.DependencyDynamoDB, appMetrics.ActionGetPermissions, permissionOutcome, time.Since(permissionStart))
+	recorder.RecordStage(appMetrics.OperationFetch, appMetrics.StagePermissionCheck, permissionOutcome, time.Since(permissionStart))
+	if err != nil {
+		recorder.RecordPermission(appMetrics.OperationFetch, appMetrics.PermissionError, 1)
+		return nil, permissionUnavailable()
+	}
+	if permission == nil || !permissions.Allows(permission.PermissionIDs, permissionIDs) {
+		recorder.RecordPermission(appMetrics.OperationFetch, appMetrics.PermissionDenied, 1)
+		return nil, modelCommon.NewHandlerError(constants.ERR_CODE_DOC_NOT_FOUND, "document not found")
+	}
+	recorder.RecordPermission(appMetrics.OperationFetch, appMetrics.PermissionAllowed, 1)
+
+	docStart := time.Now()
+	doc, err := deps.Doc.GetDocument(ctx, teamID, req.KbID, req.DocID)
+	docOutcome := appMetrics.DependencyOutcome(err)
+	recorder.RecordDependency(appMetrics.OperationFetch, appMetrics.DependencyDynamoDB, appMetrics.ActionGetDocument, docOutcome, time.Since(docStart))
+	recorder.RecordStage(appMetrics.OperationFetch, appMetrics.StageDocumentLookup, docOutcome, time.Since(docStart))
+	if err != nil {
+		logs.WarnCtx(ctx, "get document failed",
+			zap.String("team_id", teamID), zap.String("doc_id", req.DocID), zap.Error(err))
+		return nil, modelCommon.NewHandlerError(constants.ERR_CODE_FAIL, "failed to load document")
+	}
+	if doc == nil || doc.Tombstone {
+		return nil, modelCommon.NewHandlerError(constants.ERR_CODE_DOC_NOT_FOUND, "document not found")
+	}
+
+	assembleStart := time.Now()
+	resp := &types.FetchResponse{
+		DocID:      req.DocID,
+		KbID:       req.KbID,
+		Title:      doc.Title,
+		Status:     doc.Status,
+		DocVersion: doc.LatestVersion,
+		Generation: doc.CurrentGeneration,
+		UpdatedAt:  doc.UpdatedAt,
+		Source:     doc.Source,
+		Chunks:     []types.ChunkDetail{},
+	}
+	assembleDuration := time.Since(assembleStart)
+
+	// chunks 查询与飞书实时回源并行(live 失败不阻塞离线数据)
+	liveCh, live := startLiveFetch(ctx, deps.Live, teamID, doc, req.Live, recorder)
+
+	includeContent := req.IncludeContent == nil || *req.IncludeContent
+	if includeContent && doc.CurrentGeneration != "" {
+		chunkStart := time.Now()
+		records, err := deps.Chunk.QueryChunks(ctx, teamID, req.KbID, req.DocID, doc.CurrentGeneration)
+		chunkOutcome := appMetrics.DependencyOutcome(err)
+		recorder.RecordDependency(appMetrics.OperationFetch, appMetrics.DependencyDynamoDB, appMetrics.ActionQueryChunks, chunkOutcome, time.Since(chunkStart))
+		recorder.RecordStage(appMetrics.OperationFetch, appMetrics.StageChunkLookup, chunkOutcome, time.Since(chunkStart))
+		if err != nil {
+			logs.WarnCtx(ctx, "query chunks failed",
+				zap.String("team_id", teamID), zap.String("doc_id", req.DocID), zap.Error(err))
+			return nil, modelCommon.NewHandlerError(constants.ERR_CODE_FAIL, "failed to load document content")
+		}
+		assembleStart = time.Now()
+		for _, r := range records {
+			resp.Chunks = append(resp.Chunks, types.ChunkDetail{
+				RecordID:   r.RecordID,
+				RecordKind: r.RecordKind,
+				Content:    r.Content,
+				Language:   r.Language,
+				AnchorRef:  r.AnchorRef,
+				AssetRef:   r.AssetRef,
+				Source:     r.Source,
+				SourceURL:  r.SourceURL,
+			})
+		}
+		assembleDuration += time.Since(assembleStart)
+	}
+
+	if liveCh != nil {
+		live = <-liveCh
+		assembleStart = time.Now()
+		resp.Live = live.result
+		assembleDuration += time.Since(assembleStart)
+	}
+	// Live semantic metrics describe successful Fetch responses, not detached
+	// goroutine work after a chunk error or a client cancellation.
+	if ctx.Err() == nil {
+		commitLiveMetrics(recorder, live)
+		recorder.ObserveFetchChunkCount(live.outcome, len(resp.Chunks))
+	}
+	recorder.RecordStage(appMetrics.OperationFetch, appMetrics.StageAssemble, appMetrics.DependencySuccess, assembleDuration)
+	return resp, nil
+}
+
+func validateLive(live *types.LiveOptions) error {
+	if live == nil {
+		return nil
+	}
+	if !validLiveScopes[live.Scope] {
+		return modelCommon.NewHandlerError(constants.ERR_CODE_INVALID_PARAM,
+			"invalid live.scope (expect full|outline|section|range|keyword)")
+	}
+	if live.Scope == "section" && live.StartBlockID == "" {
+		return modelCommon.NewHandlerError(constants.ERR_CODE_INVALID_PARAM,
+			"live.start_block_id is required when scope=section")
+	}
+	if live.Scope == "keyword" && live.Keyword == "" {
+		return modelCommon.NewHandlerError(constants.ERR_CODE_INVALID_PARAM,
+			"live.keyword is required when scope=keyword")
+	}
+	if f := live.Format; f != "" && f != "markdown" && f != "xml" {
+		return modelCommon.NewHandlerError(constants.ERR_CODE_INVALID_PARAM,
+			"invalid live.format (expect markdown|xml)")
+	}
+	return nil
+}
+
+// parseFeishuSourceURL 解析离线正排 source_url(feishu://{obj_type}/{obj_token}?node_token=…),
+// 仅 docx 支持文本实时回源。
+func parseFeishuSourceURL(raw string) (objToken string, ok bool) {
+	u, err := url.Parse(raw)
+	if err != nil || u.Scheme != "feishu" {
+		return "", false
+	}
+	objType := u.Host
+	token := strings.Trim(u.Path, "/")
+	if objType != "docx" || token == "" {
+		return "", false
+	}
+	return token, true
+}
+
+// startLiveFetch 判定是否需要实时回源;需要则异步执行并返回结果通道。
+// 降级链:docs_ai → (scope=full 且 format!=xml 时) docs/v1/content → offline_only。
+type liveFetchResult struct {
+	result       *types.LiveResult
+	outcome      string
+	stageOutcome string
+	duration     time.Duration
+	degradations []string
+}
+
+func startLiveFetch(ctx context.Context, fetcher LiveFetcher, tenantID string, doc *clients.DocDetail, opts *types.LiveOptions, recorder appMetrics.Recorder) (<-chan liveFetchResult, liveFetchResult) {
+	if fetcher == nil {
+		return nil, liveFetchResult{outcome: appMetrics.FetchLiveNotApplicable}
+	}
+	if opts != nil && opts.Enabled != nil && !*opts.Enabled {
+		return nil, liveFetchResult{outcome: appMetrics.FetchLiveDisabled}
+	}
+	// feishu://docx/{obj_token} 才可文本实时回源(file 等二进制类型不支持)
+	objToken, ok := parseFeishuSourceURL(doc.Source["source_url"])
+	if !ok {
+		return nil, liveFetchResult{outcome: appMetrics.FetchLiveNotApplicable}
+	}
+
+	aiOpts := clients.DocsAIOptions{MaxDepth: -1}
+	if opts != nil {
+		aiOpts.Format = opts.Format
+		aiOpts.Scope = opts.Scope
+		aiOpts.Keyword = opts.Keyword
+		aiOpts.StartBlockID = opts.StartBlockID
+		aiOpts.EndBlockID = opts.EndBlockID
+		aiOpts.RevisionID = opts.RevisionID
+		if opts.MaxDepth != nil {
+			aiOpts.MaxDepth = *opts.MaxDepth
+		}
+	}
+
+	ch := make(chan liveFetchResult, 1)
+	go func() {
+		defer close(ch)
+		ch <- runLiveFetch(ctx, fetcher, tenantID, objToken, aiOpts, recorder)
+	}()
+	return ch, liveFetchResult{}
+}
+
+func runLiveFetch(ctx context.Context, fetcher LiveFetcher, tenantID, objToken string, opts clients.DocsAIOptions, recorder appMetrics.Recorder) liveFetchResult {
+	liveStart := time.Now()
+	aiCtx, cancel := context.WithTimeout(ctx, liveFetchTimeout)
+	dependencyStart := time.Now()
+	doc, err := fetcher.FetchDocsAI(aiCtx, tenantID, objToken, opts)
+	recorder.RecordDependency(appMetrics.OperationFetch, appMetrics.DependencyFeishu, appMetrics.ActionDocsAI, appMetrics.DependencyOutcome(err), time.Since(dependencyStart))
+	cancel()
+	if err == nil {
+		result := &types.LiveResult{
+			Content:    doc.Content,
+			DocumentID: doc.DocumentID,
+			RevisionID: doc.RevisionID,
+			FetchedAt:  time.Now().UTC().Format(time.RFC3339),
+		}
+		return liveFetchResult{
+			result: result, outcome: appMetrics.FetchLiveDocsAI,
+			stageOutcome: appMetrics.DependencySuccess, duration: time.Since(liveStart),
+		}
+	}
+	primaryErr := err
+	logs.WarnCtx(ctx, "docs_ai live fetch failed, trying fallback",
+		zap.String("tenant_id", tenantID), zap.Error(err))
+
+	// 局部读取/xml 无等价老端点,不做全文降级(避免语义不一致)
+	fullScope := opts.Scope == "" || opts.Scope == "full"
+	canFallback := ctx.Err() == nil && !errors.Is(primaryErr, context.Canceled)
+	if canFallback && fullScope && opts.Format != "xml" && opts.RevisionID <= 0 {
+		fbCtx, cancel := context.WithTimeout(ctx, liveFetchTimeout)
+		dependencyStart = time.Now()
+		content, fbErr := fetcher.FetchDocContent(fbCtx, tenantID, objToken)
+		recorder.RecordDependency(appMetrics.OperationFetch, appMetrics.DependencyFeishu, appMetrics.ActionDocContent, appMetrics.DependencyOutcome(fbErr), time.Since(dependencyStart))
+		cancel()
+		if fbErr == nil {
+			result := &types.LiveResult{
+				Content:    content,
+				FetchedAt:  time.Now().UTC().Format(time.RFC3339),
+				DegradedTo: constants.LIVE_DEGRADED_DOCS_CONTENT,
+			}
+			return liveFetchResult{
+				result: result, outcome: appMetrics.FetchLiveDocsContent,
+				stageOutcome: appMetrics.DependencySuccess, duration: time.Since(liveStart),
+				degradations: []string{appMetrics.DegradedDocsAIUnavailable},
+			}
+		}
+		logs.WarnCtx(ctx, "docs content fallback failed",
+			zap.String("tenant_id", tenantID), zap.Error(fbErr))
+		err = fbErr
+	}
+	result := &types.LiveResult{
+		DegradedTo: constants.LIVE_DEGRADED_OFFLINE_ONLY,
+		Error:      fmt.Sprintf("live fetch unavailable: %s", primaryErr),
+	}
+	return liveFetchResult{
+		result: result, outcome: appMetrics.FetchLiveOfflineOnly,
+		stageOutcome: appMetrics.DependencyOutcome(err), duration: time.Since(liveStart),
+		degradations: []string{appMetrics.DegradedDocsAIUnavailable, appMetrics.DegradedLiveUnavailable},
+	}
+}
+
+func commitLiveMetrics(recorder appMetrics.Recorder, live liveFetchResult) {
+	if live.stageOutcome != "" {
+		recorder.RecordStage(appMetrics.OperationFetch, appMetrics.StageLiveFetch, live.stageOutcome, live.duration)
+	}
+	for _, reason := range live.degradations {
+		recorder.RecordDegradation(appMetrics.OperationFetch, reason)
+	}
+	if live.outcome != "" {
+		recorder.RecordFetchLive(live.outcome)
+	}
+}
+
+func fetchRecorder(deps *FDeps) appMetrics.Recorder {
+	if deps == nil || deps.Metrics == nil {
+		return appMetrics.NopRecorder()
+	}
+	return deps.Metrics
+}

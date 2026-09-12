@@ -1,0 +1,12 @@
+=== RUN   TestAgentOwnsLifecycleExecution
+--- PASS: TestAgentOwnsLifecycleExecution (0.11s)
+=== RUN   TestRuntimeDDDLayerImportBoundary
+--- PASS: TestRuntimeDDDLayerImportBoundary (0.07s)
+=== RUN   TestRuntimeProductionUsesExtractedOwnerSDKs
+--- PASS: TestRuntimeProductionUsesExtractedOwnerSDKs (0.07s)
+=== RUN   TestRuntimePublicPackagesDoNotImportInternalOwners
+--- PASS: TestRuntimePublicPackagesDoNotImportInternalOwners (0.01s)
+=== RUN   TestReportModuleOwnsProductHTTPAndApplicationBoundary
+--- PASS: TestReportModuleOwnsProductHTTPAndApplicationBoundary (0.03s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/boundary	1.431s

@@ -1,0 +1,5 @@
+{
+  "passed": false,
+  "phases": [],
+  "error": "locator.evaluate: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('details.execution-tool').last().getByLabel('完整工具结果', { exact: true })\u001b[22m\n\n    at /Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-n02-analysis-tools/browser-script.mjs:105:58"
+}

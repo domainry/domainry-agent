@@ -1,0 +1,9 @@
+{
+  "purpose": "reproduce two bootstrap workspace failures with pre-increment seed decoding, without changing the worktree",
+  "overlay": {
+    "Replace": {
+      "/Users/tiger/Projects/domainry-runtime/runtime/application/seed/business/records.go": "/tmp/n02-seed-before-overlay/records.go",
+      "/Users/tiger/Projects/domainry-runtime/runtime/domain/businessseed/model/businessseed_decode.go": "/tmp/n02-seed-before-overlay/businessseed_decode.go"
+    }
+  }
+}

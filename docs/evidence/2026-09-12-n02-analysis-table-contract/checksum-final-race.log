@@ -1,0 +1,4 @@
+ok  	github.com/domainry/domainry-report/internal/application/report	1.980s
+ok  	github.com/domainry/domainry-report/internal/domain/report/service/analysis	2.422s
+ok  	github.com/domainry/domainry-report/module	2.700s
+ok  	github.com/domainry/domainry-report/internal/architecture	2.002s

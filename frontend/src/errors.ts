@@ -1,4 +1,9 @@
 const messages: Record<string, string> = {
+  "backend.report.analysis.result_limit_exceeded": "分析结果超过上限，请缩小筛选范围或减少分组后重新分析。",
+  "analysis.result_too_large_narrow_spec": "分析结果过大，请减少结果列、分组或缩小筛选范围后重新分析。",
+  "backend.report.analysis.spec_invalid": "分析规格无效，请根据当前数据集的可用字段重新指定。",
+  "backend.report.analysis.arithmetic_limit": "计算超过数值范围，请简化公式或缩小输入范围。",
+  "backend.report.analysis.source_changed": "分析期间源数据发生变化，请重新分析以获取一致结果。",
   document_transfer_invalid: "文档来源、版本或目标不符合要求，请刷新后选择另一个资料库。",
   document_transfer_unavailable: "当前服务尚未启用跨资料库复制或移动。",
   document_transfer_pending: "另一窗口已有待确认的文档操作，请先核对该操作。",

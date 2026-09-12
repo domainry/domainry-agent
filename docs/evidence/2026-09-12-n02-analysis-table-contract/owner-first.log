@@ -1,0 +1,88 @@
+=== RUN   TestAnalysisTableCalculationsRulesNullAndApproximateMetadata
+--- PASS: TestAnalysisTableCalculationsRulesNullAndApproximateMetadata (0.00s)
+=== RUN   TestStructuredTableAggregatesAllRowsExactlyAndPreservesNullDenominators
+--- PASS: TestStructuredTableAggregatesAllRowsExactlyAndPreservesNullDenominators (0.00s)
+=== RUN   TestStructuredTableComparisonMergesTypedGroupsAndIndependentOverlaps
+--- PASS: TestStructuredTableComparisonMergesTypedGroupsAndIndependentOverlaps (0.00s)
+=== RUN   TestStructuredTableFiltersNullsCalculationsRulesAndSourceOrder
+--- PASS: TestStructuredTableFiltersNullsCalculationsRulesAndSourceOrder (0.00s)
+=== RUN   TestStructuredTableTrendPreservesDSTAndDoesNotInventMissingPeriods
+--- PASS: TestStructuredTableTrendPreservesDSTAndDoesNotInventMissingPeriods (0.00s)
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/missing
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/extra
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/bad_number
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/bad_boolean
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/bad_time
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/cell_limit
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/utf8
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/nul
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/output
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/cancel
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/input_rows
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/input_bytes
+=== RUN   TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/distinct_state
+--- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults (0.13s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/missing (0.00s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/extra (0.00s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/bad_number (0.00s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/bad_boolean (0.00s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/bad_time (0.00s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/cell_limit (0.00s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/utf8 (0.00s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/nul (0.00s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/output (0.00s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/cancel (0.00s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/input_rows (0.01s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/input_bytes (0.00s)
+    --- PASS: TestStructuredTableRejectsMalformedOrLimitedStreamsWithoutPartialResults/distinct_state (0.11s)
+=== RUN   TestStructuredTableEmptyInputAndAllNullAreDifferentFromZero
+--- PASS: TestStructuredTableEmptyInputAndAllNullAreDifferentFromZero (0.00s)
+PASS
+ok  	github.com/domainry/domainry-report/internal/domain/report/service/analysis	1.588s
+=== RUN   TestAnalysisTableOwnerCompleteStreamCurrentScopeAndReopen
+--- PASS: TestAnalysisTableOwnerCompleteStreamCurrentScopeAndReopen (0.00s)
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/catalog_only
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/incomplete
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/negative
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/too_many
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/empty_version
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/wrong_definition
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/wrong_dataset
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/short
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/long
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/bad_cell
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/ignored_consumer_error
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/during_revoke
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/during_version
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/during_partial
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/stream_error
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/cancel
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/subject
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/workspace
+=== RUN   TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/report_permission
+--- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource (0.02s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/catalog_only (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/incomplete (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/negative (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/too_many (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/empty_version (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/wrong_definition (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/wrong_dataset (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/short (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/long (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/bad_cell (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/ignored_consumer_error (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/during_revoke (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/during_version (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/during_partial (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/stream_error (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/cancel (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/subject (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/workspace (0.00s)
+    --- PASS: TestAnalysisTableOwnerFailsClosedOnIncompleteOrChangingSource/report_permission (0.00s)
+=== RUN   TestAnalysisObjectProofFingerprintRemainsCompatible
+--- PASS: TestAnalysisObjectProofFingerprintRemainsCompatible (0.00s)
+PASS
+ok  	github.com/domainry/domainry-report/internal/application/report	1.091s

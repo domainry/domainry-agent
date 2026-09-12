@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "phases": [
+    "closing result details clears complete data; reopening requires current authorization",
+    "UI complete-result reads and SHA256 verification; login/create/send; catalog + explicit output-limit failure + corrected aggregate/compare/trend/table; actual numbers, counts, methods, rules and source versions",
+    "full owner/module/Identity disk restart restores actual saved analysis answer",
+    "field permission revoked hides prior answer and tool content",
+    "restored permission requires fresh query; mobile 390px no document overflow",
+    "customer read revoked removes its dataset; one catalog request and no analysis execution"
+  ]
+}

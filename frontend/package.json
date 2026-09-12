@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --noEmit && vite build",
     "check": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/conversation-state.test.ts src/external-session.test.ts src/knowledge-document-state.test.ts src/knowledge-datasource-state.test.ts src/execution-outcome.test.ts src/file-preview-state.test.ts src/attachment-index-state.test.ts src/account-write-state.test.ts"
+    "test": "node --experimental-strip-types --test src/conversation-state.test.ts src/external-session.test.ts src/knowledge-document-state.test.ts src/knowledge-datasource-state.test.ts src/execution-outcome.test.ts src/file-preview-state.test.ts src/attachment-index-state.test.ts src/account-write-state.test.ts src/stored-result.test.ts src/analysis-result.test.ts src/task-state.test.ts"
   },
   "dependencies": {
     "@domainry/integration-client": "file:../../domainry-integration-sdk/browser",

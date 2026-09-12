@@ -122,6 +122,7 @@ func openService(store *agentstore.Store) (*server.Server, func(), error) {
 	runtimeID := strings.TrimSpace(os.Getenv("AGENT_SAAS_RUNTIME_ID"))
 	modelConfig := provider.ConversationModelConfigFromEnvironment()
 	knowledgeConfig := provider.KnowledgeConfigFromEnvironment()
+	knowledgeConfig.RuntimeID = runtimeID
 	if runtimeID == "" && (modelConfig.Configured() || knowledgeConfig.Configured()) {
 		return nil, closeService, errors.New("AGENT_SAAS_RUNTIME_ID is required for conversations")
 	}

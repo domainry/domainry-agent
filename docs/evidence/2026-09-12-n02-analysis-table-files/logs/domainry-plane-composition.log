@@ -1,0 +1,24 @@
+--- FAIL: TestGeneratedCrossWorkspaceAggregateConsumesCurrentRuntimeContract (0.60s)
+    cross_workspace_aggregate_generation_test.go:169: generated aggregate Runtime consumer failed: exit status 1
+        --- FAIL: TestCurrentRuntimeConsumer (0.00s)
+            cross_workspace_aggregate_test.go:28: Runtime contract=runtimeext-v34/d7d20947a89b9d2115d74676bca46678ec0e286e95d4119b49fbb7bb27030758
+        FAIL
+        FAIL	example.com/cross-workspace-aggregate/generated/capabilities	0.382s
+        FAIL
+--- FAIL: TestGeneratedSchemaCompilesOutsideRuntimeModule (4.94s)
+    generate_test.go:2097: generated schema does not compile with its current identity tag: exit status 1
+        --- FAIL: TestGeneratedBusinessHandlerWrapper (0.00s)
+            consumer_test.go:80: build identity: domain SDK runtimeext contract hash mismatch: sdk="af62e772348185bf02284647e6f543500c133b40d65456675f87e2026193a80f" runtime="d7d20947a89b9d2115d74676bca46678ec0e286e95d4119b49fbb7bb27030758"
+        FAIL
+        FAIL	example.com/generated-domain	0.841s
+        ?   	example.com/generated-domain/actions	[no test files]
+        ?   	example.com/generated-domain/generated/capabilities	[no test files]
+        ?   	example.com/generated-domain/generated/composition	[no test files]
+        ?   	example.com/generated-domain/generated/connectorapi	[no test files]
+        ok  	example.com/generated-domain/generated/data	0.388s
+        ?   	example.com/generated-domain/generated/schema	[no test files]
+        FAIL
+FAIL
+FAIL	github.com/domainry/domainry-plane/internal/controlplane/domaincodegen	50.043s
+ok  	github.com/domainry/domainry-plane/internal/builder/sourcefinalizer	3.362s
+FAIL

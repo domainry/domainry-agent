@@ -81,7 +81,9 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	knowledge, err := provider.NewKnowledge(provider.KnowledgeConfigFromEnvironment())
+	knowledgeConfig := provider.KnowledgeConfigFromEnvironment()
+	knowledgeConfig.RuntimeID = "agent-playground"
+	knowledge, err := provider.NewKnowledge(knowledgeConfig)
 	if err != nil {
 		return err
 	}

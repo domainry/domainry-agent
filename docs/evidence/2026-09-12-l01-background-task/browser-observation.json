@@ -1,0 +1,28 @@
+{
+  "acceptance": "compiled frontend with real Identity module, HTTP composition, SQLite and conversation worker; deterministic model fixture",
+  "url": "http://127.0.0.1:8092/#conv_8048fe65ce6cb8746a0c543c7e4a0c72",
+  "task_id": "task_8626f0d44642ddf603bfa21fb1620f4a",
+  "source_conversation_id": "conv_8048fe65ce6cb8746a0c543c7e4a0c72",
+  "source_run_id": "crun_ceb75d29388006873565c2949fa370e1",
+  "goal": "核对 build 42",
+  "input": "确认当前时间并给出完成说明",
+  "allowed_tools": [
+    "time_now"
+  ],
+  "budget": {
+    "max_steps": 3,
+    "max_tool_calls": 1,
+    "max_output_bytes": 1024,
+    "timeout_seconds": 30
+  },
+  "observed": [
+    "parent receipt labelled accepted and returned stable task ID",
+    "background input and result carry 后台任务 label",
+    "foreground message completed while first child attempt was blocked",
+    "child processing record contains only 查询时间",
+    "result is build 42 已在后台核对完成。",
+    "reload preserved conversation, task labels, execution record and result"
+  ],
+  "console_warning_error": [],
+  "host_test_seconds": 373.07
+}

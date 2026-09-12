@@ -1,0 +1,14 @@
+ok  	github.com/domainry/domainry-knowledge/artifact	(cached)
+?   	github.com/domainry/domainry-knowledge/contract	[no test files]
+ok  	github.com/domainry/domainry-knowledge/extraction	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/application/knowledge	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/architecture	3.485s
+?   	github.com/domainry/domainry-knowledge/internal/assembly/module	[no test files]
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/artifactstorage	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/attachmentstorage	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/connectortransport	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/documentstorage	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/persistence/database/knowledge	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/persistence/database/record	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/provider	4.549s
+?   	github.com/domainry/domainry-knowledge/module	[no test files]

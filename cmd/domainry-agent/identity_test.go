@@ -41,7 +41,7 @@ func configureIdentityFixture(t *testing.T) *identityFixture {
 	issuer := "http://" + server.Listener.Addr().String()
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /identity/discovery", func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(identitysdk.Descriptor{ProtocolVersion: identitysdk.CurrentProtocolVersion, BundleVersion: identitysdk.CurrentPolicyBundleVersion, AuthorizationVersion: identitysdk.CurrentAuthorizationContractVersion, Mode: identitysdk.DeploymentModeSaaS, Issuer: issuer, Capabilities: []string{"authentication", "challenge_authentication", "action_assurance", "token_verification", "authorization", "principal_resolution", "identity_projection", "application_registration", "permission_reconciliation"}})
+		json.NewEncoder(w).Encode(identitysdk.Descriptor{ProtocolVersion: identitysdk.CurrentProtocolVersion, BundleVersion: identitysdk.CurrentPolicyBundleVersion, AuthorizationVersion: identitysdk.CurrentAuthorizationContractVersion, Mode: identitysdk.DeploymentModeSaaS, Issuer: issuer, Capabilities: []string{"authentication", "challenge_authentication", "action_assurance", "token_verification", "authorization", "principal_resolution", "workflow_workload_identity", "identity_projection", "application_registration", "permission_reconciliation"}})
 	})
 	mux.HandleFunc("POST /identity/principal/resolve", func(w http.ResponseWriter, r *http.Request) {
 		var in identitysdk.PrincipalResolutionRequest

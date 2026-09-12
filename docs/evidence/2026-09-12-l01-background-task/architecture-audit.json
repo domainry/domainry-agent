@@ -1,0 +1,192 @@
+{
+  "todo": "L01",
+  "result": "pass",
+  "ownership": {
+    "public_contract": "domainry-agent-sdk owns conversation task DTO, tool definition and repository ports",
+    "orchestration": "domainry-agent internal/application owns task validation, exact child catalog, budgets and event-driven launch signaling",
+    "persistence_adapter": "domainry-agent infrastructure adapter owns _agent_conversation_tasks and atomic task/receipt/run state",
+    "execution": "background work is a normal ConversationRun using the existing claim, lease, execution ledger, current authorization and model adapter",
+    "transport_ui": "existing conversation HTTP/SSE contract carries provenance; frontend only renders public task/run fields"
+  },
+  "invariants": [
+    "task_start returns accepted plus a stable task ID after durable atomic insert",
+    "goal, input, selected tool version/action/definition hash/authorization revision and four budgets are frozen",
+    "child catalog contains only explicitly selected tools and excludes task_start",
+    "background run does not own Conversation.ActiveRunID, so foreground sends remain independent",
+    "startup recovers queued tasks once; later launchability is signaled by task mutation or foreground completion; empty queues do not poll SQLite",
+    "task storage is owner scoped and does not reuse legacy _agent_task_runs or ProcessID/TaskDefinition/TaskHost fields"
+  ],
+  "forbidden_legacy_dependency_scan": {
+    "files": [
+      "/Users/tiger/Projects/domainry-agent-sdk/conversation_task.go",
+      "/Users/tiger/Projects/domainry-agent-sdk/persistence/conversation_task.go",
+      "/Users/tiger/Projects/domainry-agent/internal/application/conversation_tasks.go",
+      "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go"
+    ],
+    "tokens": [
+      "ProcessID",
+      "TaskDefinition",
+      "TaskHost",
+      "AgentTask",
+      "task_execution_service",
+      "task_operations"
+    ],
+    "hits": {
+      "ProcessID": [],
+      "TaskDefinition": [],
+      "TaskHost": [],
+      "AgentTask": [],
+      "task_execution_service": [],
+      "task_operations": []
+    },
+    "pass": true
+  },
+  "implementation_files": [
+    {
+      "path": "/Users/tiger/Projects/domainry-agent-sdk/conversation_task.go",
+      "sha256": "cfee51737ef4eb6e1019d36202aff3c8fa78f83bacf1c6835dd03fb05105b8a5",
+      "bytes": 6374
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent-sdk/conversation_task_test.go",
+      "sha256": "0170f5ac1fbd0de0e9e4cccfe17f2d90953b1d45abbbeb7bbe9d49861d567eed",
+      "bytes": 2533
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent-sdk/persistence/conversation_task.go",
+      "sha256": "6b328eeb9155bc2b809c5014df1e496a6f39120895bc5a583d02b7064bd023ce",
+      "bytes": 1056
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent-sdk/conversation.go",
+      "sha256": "2580c1d538dd95012c616a2de54593694f546e698195b417f196c0a5142dcbf1",
+      "bytes": 12043
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent-sdk/conversation_personal_tools.go",
+      "sha256": "61c02058aaf9b8fadd77db17e79ebe107279c05f46bc4afdbdeff08845fade72",
+      "bytes": 10142
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_tasks.go",
+      "sha256": "f130a3002172a13f67abde82559ddb1a5c31144ca15d7b235183fccecdd4036a",
+      "bytes": 6705
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_tasks_test.go",
+      "sha256": "7e67bb11c44aa401f50bcc6a3729d245fd2fc7437695b45c3bc489c3a407e4ef",
+      "bytes": 8652
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go",
+      "sha256": "88850b2f361cdf4fcb6f882a6da75d99cb136b5c34aa32831fc7383d086ed4ce",
+      "bytes": 27675
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_personal_tools.go",
+      "sha256": "76be37d0af7ddc470c6993a03a5014dfbb24afefde4eb694ab489fe3ba466dce",
+      "bytes": 16676
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_execution.go",
+      "sha256": "8ac590b1d6ab5d9addaf452b002d23f33889266971c9858ede9cca621255c30b",
+      "bytes": 23529
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_context.go",
+      "sha256": "668a979101cf0ec11afa99286e9caa198bc0790426a3a55d8acd8b7bf108a6db",
+      "bytes": 13755
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_operation_scope.go",
+      "sha256": "4172f66493df60dcf96ec6675247de2e9407cab39aea5fec6dd494a3c23e29b1",
+      "bytes": 3265
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_task_schema.go",
+      "sha256": "476b4897dbb0c4ed3c835f0691b3915db538d059ee8fdcc8c61a00a26caedd4c",
+      "bytes": 1422
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go",
+      "sha256": "17652fc16a8f856f8a872142315ec6fd60098955aa49e6280918820704146717",
+      "bytes": 12187
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_task_store_test.go",
+      "sha256": "332ed972c4588853116e99cb694f5470d6f3b479ec93a887d78a81f49113c7ba",
+      "bytes": 8112
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_run_store.go",
+      "sha256": "8b575d89df75a9e605a47fd91733bbf7f494014b4b1dac2b832df6fbe936d9cf",
+      "bytes": 17262
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_memory_store.go",
+      "sha256": "d68a174dabbcc3a0705ff8d8d49d5be5cc99e4898b71c51e3a5026492636bed6",
+      "bytes": 7519
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_interaction_store.go",
+      "sha256": "e546b1f5131381a0334280f549a8b3d2b4fe741f7c55ccac9cd7a7f28e9f245d",
+      "bytes": 15771
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_store.go",
+      "sha256": "1c6e7b480f0e6fe3aa78f0507f03648c262a4f4b40909d48717a0fb73f28fb9f",
+      "bytes": 15331
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/schema.go",
+      "sha256": "e27390d5d8dede6c60df4c2aa3427ed7f975dcae935e6af1054bf371f76890dc",
+      "bytes": 8083
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/schema_test.go",
+      "sha256": "975eddd633793242f157a8282c8a786cb49ee9ec6acd9b82aaba19f5a01d907d",
+      "bytes": 1400
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_task_start_test.go",
+      "sha256": "6d0c6381305b73ba77b505a72602ab058d25b9396543344288b96045c7e4e2fa",
+      "bytes": 10160
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/App.tsx",
+      "sha256": "f3f67a07f417257588ae130c9e929de6ec23ff6749949794bb3bdc131b34b8a7",
+      "bytes": 46862
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/api.ts",
+      "sha256": "af2542aab218c5f584548aab3ef7587f89af2cc44c97213c1183739e20b5292c",
+      "bytes": 6898
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/drafts.ts",
+      "sha256": "dc9c1e0fc1d4cbd8256e4c81e8ccbbd5b430f4feb9acab29c10905276e2d2d57",
+      "bytes": 4761
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/ToolSettingsDialog.tsx",
+      "sha256": "f9c85110525f816631bc46ae6ff5f237ebe5beebbc486531f7986dc2c0c6ccd3",
+      "bytes": 9155
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/conversation-state.test.ts",
+      "sha256": "51c58a51caa440b8156e44535a158d48365e3fa53431a5700ffdaee5a232970a",
+      "bytes": 23193
+    }
+  ],
+  "llm_proxy": {
+    "path": "/Users/tiger/Projects/anti/llm-proxy",
+    "head": "a32407a678ea7f96d70b7557765e2a01262184d4",
+    "clean": true,
+    "scope": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ],
+    "model_proxy_used": false,
+    "modified": false
+  }
+}

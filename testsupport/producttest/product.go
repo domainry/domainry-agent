@@ -97,8 +97,8 @@ func verifyRecordProduct(t *testing.T, newProduct func() (webhost.Product, error
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !p.CalendarTools || !p.MailTools || !p.WebTools || !p.CalendarWriteTools || !p.MailWriteTools || !p.ReportTools {
-		t.Fatal("product did not select the configured account tool families")
+	if !p.CalendarTools || !p.MailTools || !p.WebTools || !p.CalendarWriteTools || !p.MailWriteTools || !p.ReportTools || !p.AnalysisTools {
+		t.Fatal("product did not select the configured account and business tools")
 	}
 	available := append(sdk.PersonalConversationTools(), sdk.ArtifactConversationTools()...)
 	available = append(available, sdk.KnowledgeConversationTools()...)
@@ -115,6 +115,7 @@ func verifyRecordProduct(t *testing.T, newProduct func() (webhost.Product, error
 	accountDefinitions = append(accountDefinitions, toolmodule.MailWriteDefinitions()...)
 	available = append(available, accountDefinitions...)
 	available = append(available, toolmodule.ReportDefinitions()...)
+	available = append(available, toolmodule.AnalysisDefinitions()...)
 	keys := []string{}
 	for _, d := range available {
 		keys = append(keys, d.Key)

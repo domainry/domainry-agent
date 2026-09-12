@@ -17,6 +17,7 @@ export type ConversationRecord = {
 export type MessageRecord = {
 	citations?: Citation[];
 	access_error?: string;
+	background_task_id?: string;
   id: string;
   run_id: string;
   seq: number;
@@ -39,7 +40,8 @@ export type Run = {
   model?: string;
   created_at?: string;
   updated_at?: string;
-  write_scope?: { personal_memory: boolean; personal_todos?: boolean; personal_artifacts?: boolean };
+  write_scope?: { personal_memory: boolean; personal_todos?: boolean; personal_artifacts?: boolean; background_tasks?: boolean };
+  background_task?: { task_id: string; tool_scope: { key: string; version: string; action_key: string; definition_hash: string; authorization_revision?: string }[]; budget: { max_steps: number; max_tool_calls: number; max_output_bytes: number; timeout_seconds: number } };
 };
 export type Memory = {
   id: string;

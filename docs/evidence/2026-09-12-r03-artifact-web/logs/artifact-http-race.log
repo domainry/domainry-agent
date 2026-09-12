@@ -1,0 +1,4 @@
+=== RUN   TestArtifactToolsThroughIdentityHTTP
+--- PASS: TestArtifactToolsThroughIdentityHTTP (43.98s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	45.564s

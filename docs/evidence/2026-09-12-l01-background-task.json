@@ -1,0 +1,128 @@
+{
+  "todo": "L01",
+  "status": "completed",
+  "date": "2026-09-12",
+  "progress_after": "60/81",
+  "next": "L02",
+  "automated_e2e": {
+    "test": "TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite",
+    "identity": "real module",
+    "http": "real product composition",
+    "database": "temporary SQLite with close/reopen",
+    "model": "deterministic protocol fixture",
+    "verified": [
+      "stable accepted task ID",
+      "exact catalog",
+      "foreground concurrency",
+      "host restart attempt 2",
+      "completed task payload and provenance"
+    ]
+  },
+  "browser": {
+    "acceptance": "compiled frontend with real Identity module, HTTP composition, SQLite and conversation worker; deterministic model fixture",
+    "url": "http://127.0.0.1:8092/#conv_8048fe65ce6cb8746a0c543c7e4a0c72",
+    "task_id": "task_8626f0d44642ddf603bfa21fb1620f4a",
+    "source_conversation_id": "conv_8048fe65ce6cb8746a0c543c7e4a0c72",
+    "source_run_id": "crun_ceb75d29388006873565c2949fa370e1",
+    "goal": "核对 build 42",
+    "input": "确认当前时间并给出完成说明",
+    "allowed_tools": [
+      "time_now"
+    ],
+    "budget": {
+      "max_steps": 3,
+      "max_tool_calls": 1,
+      "max_output_bytes": 1024,
+      "timeout_seconds": 30
+    },
+    "observed": [
+      "parent receipt labelled accepted and returned stable task ID",
+      "background input and result carry 后台任务 label",
+      "foreground message completed while first child attempt was blocked",
+      "child processing record contains only 查询时间",
+      "result is build 42 已在后台核对完成。",
+      "reload preserved conversation, task labels, execution record and result"
+    ],
+    "console_warning_error": [],
+    "host_test_seconds": 373.07
+  },
+  "architecture": "2026-09-12-l01-background-task/architecture-audit.json",
+  "validation_logs": [
+    {
+      "path": "2026-09-12-l01-background-task/logs/agent-core-race-vet.log",
+      "sha256": "8920029e2b401a0622401195b6e5fd3457244130e5b04b8bcfd48ef93d7c816e",
+      "bytes": 166
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/agent-core-web-race.log",
+      "sha256": "3a0bd0853ec1387fa7c612278af91cbe469d30b8c8836923ff4415eb1da0c8ff",
+      "bytes": 26232
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/agent-full.log",
+      "sha256": "22e8c2f82304bff78548463b78ea6164d3b47f0c63031c7d54db71c4c502b436",
+      "bytes": 2734
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/agent-sdk-full-race-vet.log",
+      "sha256": "f4ac439bebbef7faa535137a659854cf787da7005f33210e9e06d3395442d177",
+      "bytes": 601
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/agent-sdk-full.log",
+      "sha256": "1fd684a993110320e33fd7cfb985bfa57904ed5d9b68cadc168002ede2079fdd",
+      "bytes": 818
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/agent-sdk-race.log",
+      "sha256": "a589a6e868e42b73cc6e1576a25847b708a999d093dae42502dc3cf8c497c81e",
+      "bytes": 114
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/agent-sdk-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/browser-host.log",
+      "sha256": "88e20153f7bcaa77c51d37c8ab201b42ff0164dc9b5302b6cacd7fd18f061b4e",
+      "bytes": 520
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/final-vet-diff-boundary.log",
+      "sha256": "9880b902111ecbe675fee58812edaac24fccc51a5b8dc945095e1fa2392ef944",
+      "bytes": 239
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/frontend-test-build.log",
+      "sha256": "159b0ac433aa34952507dfd7227c7b3d47491b9801690bafb47cbdac224f2952",
+      "bytes": 40145
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/l01-focused-race.log",
+      "sha256": "ef186c3edafac7abd51280115e92c2d3724a608ff493114cbe0d20c232d01ca7",
+      "bytes": 1155
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/llm-proxy-state.log",
+      "sha256": "37b0f45e10d88fa2922954459fd88c2350195dd08b32696b19cae701022672a9",
+      "bytes": 56
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/preexisting-account-write-race-fixed.log",
+      "sha256": "038cf779d1191d96813e67fcfe0763b6a966a4ecd18876cb4687415b3df4f777",
+      "bytes": 1200
+    },
+    {
+      "path": "2026-09-12-l01-background-task/logs/preexisting-account-write-race.log",
+      "sha256": "db59542e20ee04bf6bc69d638662d9e76c7c12707fd7ca7fe24146ae87fc90d7",
+      "bytes": 71485
+    }
+  ],
+  "known_initial_failures_retained": [
+    "agent-core-web-race.log: full web race timed out in an existing long account-write scenario",
+    "preexisting-account-write-race.log: existing account-write scenario hit provider_failed under race contention",
+    "agent-sdk-full.log: N02 contract hash pin lagged the implemented roundtrip-bound contract"
+  ],
+  "final_verdict": "L01 requirements proven; L02 get/list is not claimed"
+}

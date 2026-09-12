@@ -136,6 +136,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		if conversationOptions.Knowledge != nil {
 			return nil, fmt.Errorf("configure only one conversation knowledge source")
 		}
+		f.options.Knowledge.RuntimeID = app.RuntimeID
 		knowledge, err := provider.NewKnowledge(f.options.Knowledge)
 		if err != nil {
 			return nil, err

@@ -1,0 +1,36 @@
+{
+  "runtime_imports_knowledge_implementation": {
+    "ok": true,
+    "matches": []
+  },
+  "report_imports_knowledge_or_builder": {
+    "ok": true,
+    "matches": []
+  },
+  "report_sdk_imports_knowledge_or_builder": {
+    "ok": true,
+    "matches": []
+  },
+  "tools_imports_knowledge_noncontract": {
+    "ok": true,
+    "matches": []
+  },
+  "agent_production_imports_builder_or_search": {
+    "ok": true,
+    "matches": []
+  },
+  "knowledge_imports_runtime_or_report_implementation": {
+    "ok": true,
+    "matches": []
+  },
+  "llm_proxy_untouched": {
+    "ok": true,
+    "head": "a32407a678ea7f96d70b7557765e2a01262184d4"
+  },
+  "allowed_boundaries": {
+    "tools_may_consume_knowledge_public_contract": "github.com/domainry/domainry-knowledge/contract",
+    "knowledge_consumes_report_sdk_modulehost_port": "github.com/domainry/domainry-report-sdk/modulehost",
+    "plane_generated_composition_may_import_knowledge_module": "composition root only",
+    "evidence_harness_may_import_concrete_layers": "docs/evidence test-only composition root"
+  }
+}

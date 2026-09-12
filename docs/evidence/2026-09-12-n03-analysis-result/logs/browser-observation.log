@@ -1,0 +1,26 @@
+2026-09-12 local Chrome acceptance at http://127.0.0.1:8092
+
+Conversation result:
+- user request: 分析销售区域，保存图表并导出 CSV
+- six completed tool calls: analysis_run, three tool_result_read calls, artifact_create, artifact_export
+- full result action: 查看完整结果
+- source/byte confirmation: 已核对来源权限与内容完整性。关闭或切换窗口后需重新读取。
+- structured card: 结构化分析结果
+- coverage: 完整：是；截断：否；80 / 最多 100 行
+- visualization: 柱状图；x=区域；series=金额
+- table: 80 行 / 2 列；第 1 行 区域-001 / 1.25；分页 1–25 / 80
+- source: 销售明细（business_object:sales@schema-1）
+- missing: total/null_value × 1；total/source_null_inputs × 1
+
+Artifact result:
+- artifact: 销售区域分析；版本 1；图表
+- version download action: 下载此版本 CSV
+- success notice: 已下载版本 1 · art_71582336ca6d2060379b72f780ee0493-v1.csv
+
+Current-permission recheck:
+- POST /__acceptance/revoke-analysis returned 204
+- repeated version download was denied in the product UI
+- notice: 工具已停用或所需连接不可用；恢复连接或工具开关后可继续。
+- source permission restored before the acceptance server stopped
+
+Browser console errors/warnings: none.

@@ -1,0 +1,6 @@
+=== RUN   TestArtifactsSaaSRoundTripVersionsReceiptsAndDownloadAuthority
+--- PASS: TestArtifactsSaaSRoundTripVersionsReceiptsAndDownloadAuthority (1.24s)
+=== RUN   TestArtifactProvenanceProtectsMetadataEditsAndExportsAfterRestart
+--- PASS: TestArtifactProvenanceProtectsMetadataEditsAndExportsAfterRestart (0.41s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	3.749s

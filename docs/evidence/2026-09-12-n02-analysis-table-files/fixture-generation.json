@@ -1,0 +1,15 @@
+{
+  "xlsx_sha256": "e9c83fb03919603b54b354961b0e4e1bbc9021777f77b10e62fe4029f00b9451",
+  "artifact_sha256": "330f98f83e412c06ab5c99def5a19c89ebae6e35f1bf1a8402be129d4646513b",
+  "dataset_key": "table_d66069d5ed3f20c5e0270c9f18409ee2",
+  "definition_version": "049ce8c8751626b0c4a08e2c36d6ef3e0a289f4ad3f2689378df67dbaccde6dc",
+  "data_version": "0965896936e099fd6646a142f1fca6092f918c76951534af78dfe64201b4d273",
+  "rows": 1205,
+  "column_types": [
+    "text",
+    "number",
+    "boolean",
+    "date",
+    "text"
+  ]
+}

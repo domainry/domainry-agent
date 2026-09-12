@@ -1,0 +1,20 @@
+ssss.................................................................... [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 34%]
+........................................................................ [ 45%]
+.............F...............................................s.......... [ 57%]
+........................................................................ [ 68%]
+........................................................................ [ 80%]
+......................................ss.ss............................. [ 91%]
+......................................................                   [100%]
+=================================== FAILURES ===================================
+______ test_milvus_protobuf_array_decodes_without_relaxing_wire_validator ______
+
+    def test_milvus_protobuf_array_decodes_without_relaxing_wire_validator():
+>       from pymilvus.grpc_gen import schema_pb2
+E       ModuleNotFoundError: No module named 'pymilvus'
+
+tests/test_permission_vectors.py:29: ModuleNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_permission_vectors.py::test_milvus_protobuf_array_decodes_without_relaxing_wire_validator
+1 failed, 620 passed, 10 skipped in 59.56s

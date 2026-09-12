@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-agent/internal/application	1.091s
+ok  	github.com/domainry/domainry-agent/remote	2.357s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	2.608s [no tests to run]

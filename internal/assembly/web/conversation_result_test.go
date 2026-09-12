@@ -2,6 +2,8 @@ package web
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -117,4 +119,42 @@ func TestCompactedResultReadThroughIdentityHTTP(t *testing.T) {
 	if strings.Contains(sse, "provider_state") || strings.Contains(sse, "authorization_revision") {
 		t.Fatal("private execution state reached SSE")
 	}
+	ref := run.Steps[0].Calls[0].ResultReference
+	if ref == nil {
+		t.Fatal("missing persisted result reference")
+	}
+	readPath := base + "/runs/" + run.ID + "/result"
+	read := func(in agentsdk.ConversationResultRead, status int) []byte {
+		raw, _ := json.Marshal(in)
+		return b.call("POST", readPath, string(raw), status).Body.Bytes()
+	}
+	whole := ""
+	for offset := 0; ; {
+		var page agentsdk.ConversationResultSlice
+		if err := json.Unmarshal(read(agentsdk.ConversationResultRead{Reference: *ref, Offset: offset, MaxBytes: 8192}, 200), &page); err != nil {
+			t.Fatal(err)
+		}
+		if page.Offset != offset || page.NextOffset != offset+len(page.JSONText) || page.Reference != *ref {
+			t.Fatal("invalid byte page", page)
+		}
+		whole += page.JSONText
+		if page.Complete {
+			break
+		}
+		offset = page.NextOffset
+	}
+	digest := sha256.Sum256([]byte(whole))
+	if !json.Valid([]byte(whole)) || !strings.Contains(whole, "memory-tail-") || hex.EncodeToString(digest[:]) != ref.SHA256 || len(whole) < 8192 {
+		t.Fatal("full stored result lost", len(whole), hex.EncodeToString(digest[:]), ref.SHA256)
+	}
+	read(agentsdk.ConversationResultRead{Reference: *ref, Offset: -1}, 400)
+	tampered := *ref
+	tampered.SHA256 = strings.Repeat("0", 64)
+	read(agentsdk.ConversationResultRead{Reference: tampered}, 409)
+	tampered = *ref
+	tampered.ConversationID = "another-conversation"
+	read(agentsdk.ConversationResultRead{Reference: tampered}, 400)
+	b.call("POST", readPath, `{"reference":{},"authority":{"user_id":"another"}}`, 400)
+	grantPersonalTools(t, host, b, false)
+	read(agentsdk.ConversationResultRead{Reference: *ref}, 403)
 }

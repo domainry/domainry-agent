@@ -1,0 +1,17 @@
+=== RUN   TestConversationTaskRunCatalogAndBudgetsStayFrozen
+--- PASS: TestConversationTaskRunCatalogAndBudgetsStayFrozen (0.01s)
+=== RUN   TestConversationTaskWorkerWaitsForStateTransitionWhenQueueIsEmpty
+--- PASS: TestConversationTaskWorkerWaitsForStateTransitionWhenQueueIsEmpty (0.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.494s
+=== RUN   TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable
+--- PASS: TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable (0.11s)
+=== RUN   TestConversationTaskFailureTracksTerminalRun
+--- PASS: TestConversationTaskFailureTracksTerminalRun (0.09s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	1.657s
+=== RUN   TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite
+    conversation_task_start_test.go:210: task_start returned task_dde1da5ecc6b5dddde4ad40d33751037; child run crun_6ce1b6b3d5175c92844fda876e7f35ab recovered at attempt 2 with exact catalog [time_now]
+--- PASS: TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite (15.40s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	17.007s

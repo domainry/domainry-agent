@@ -1,0 +1,19 @@
+[
+  "/Users/tiger/Projects/domainry-agent/docs/agent-capabilities-todo.md",
+  "/Users/tiger/Projects/domainry-agent/docs/analysis-boundaries.md",
+  "/Users/tiger/Projects/domainry-agent/docs/testing-2026-09-12-n02-analysis-table-contract.md",
+  "/Users/tiger/Projects/domainry-report-sdk/model/analysis_table.go",
+  "/Users/tiger/Projects/domainry-report-sdk/modulehost/analysis_table.go",
+  "/Users/tiger/Projects/domainry-report/internal/application/report/analysis_catalog.go",
+  "/Users/tiger/Projects/domainry-report/internal/application/report/analysis_evidence.go",
+  "/Users/tiger/Projects/domainry-report/internal/application/report/analysis_service.go",
+  "/Users/tiger/Projects/domainry-report/internal/application/report/analysis_table.go",
+  "/Users/tiger/Projects/domainry-report/internal/application/report/analysis_table_test.go",
+  "/Users/tiger/Projects/domainry-report/internal/application/report/query_service.go",
+  "/Users/tiger/Projects/domainry-report/internal/architecture/layout_test.go",
+  "/Users/tiger/Projects/domainry-report/internal/domain/report/service/analysis/compile.go",
+  "/Users/tiger/Projects/domainry-report/internal/domain/report/service/analysis/table.go",
+  "/Users/tiger/Projects/domainry-report/internal/domain/report/service/analysis/table_test.go",
+  "/Users/tiger/Projects/domainry-report/internal/domain/report/service/analysis/table_values.go",
+  "/Users/tiger/Projects/domainry-report/module/analysis_table_integration_test.go"
+]

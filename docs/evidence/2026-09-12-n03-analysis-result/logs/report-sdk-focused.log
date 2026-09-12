@@ -1,0 +1,7 @@
+ok  	github.com/domainry/domainry-report-sdk	(cached)
+ok  	github.com/domainry/domainry-report-sdk/contract	(cached)
+ok  	github.com/domainry/domainry-report-sdk/model	(cached)
+?   	github.com/domainry/domainry-report-sdk/modulehost	[no test files]
+?   	github.com/domainry/domainry-report-sdk/persistence	[no test files]
+?   	github.com/domainry/domainry-report-sdk/query	[no test files]
+ok  	github.com/domainry/domainry-report-sdk/query/objectsql	(cached)

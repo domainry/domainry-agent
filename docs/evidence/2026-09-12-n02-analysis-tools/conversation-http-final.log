@@ -1,0 +1,14 @@
+=== RUN   TestAnalysisConversationWithRealOwnerAndRevalidation
+=== RUN   TestAnalysisConversationWithRealOwnerAndRevalidation/module
+    conversation_analysis_tools_test.go:118: catalog plus all four owner analyses completed
+    conversation_analysis_tools_test.go:151: complete restart, field revocation, stale proof and fresh restored-permission analysis checked
+    conversation_analysis_tools_test.go:159: actual Report / Runtime / Identity / Tools / Agent / SQLite and public RPC; SDK model decisions are deterministic, no model vendor request
+=== RUN   TestAnalysisConversationWithRealOwnerAndRevalidation/service-product
+    conversation_analysis_tools_test.go:118: catalog plus all four owner analyses completed
+    conversation_analysis_tools_test.go:151: complete restart, field revocation, stale proof and fresh restored-permission analysis checked
+    conversation_analysis_tools_test.go:159: actual Report / Runtime / Identity / Tools / Agent / SQLite and public RPC; SDK model decisions are deterministic, no model vendor request
+--- PASS: TestAnalysisConversationWithRealOwnerAndRevalidation (139.10s)
+    --- PASS: TestAnalysisConversationWithRealOwnerAndRevalidation/module (52.21s)
+    --- PASS: TestAnalysisConversationWithRealOwnerAndRevalidation/service-product (86.88s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	140.334s

@@ -74,6 +74,7 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			}
 		}
 		in.TodoID = r.PathValue("todoID")
+		in.TaskID = r.PathValue("taskID")
 		in.ArtifactID = r.PathValue("artifactID")
 		in.ArtifactExportID = r.PathValue("exportID")
 		in.LibraryID = r.PathValue("libraryID")
@@ -123,6 +124,7 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		}
 		in.Query = agentsdk.ConversationQuery{Search: q.Get("search"), BeforeID: q.Get("before_id"), IncludeArchived: archived, Limit: in.Limit}
 		in.TodoQuery = agentsdk.ConversationTodoQuery{Query: q.Get("query"), Status: q.Get("status"), SourceConversationID: q.Get("source_conversation_id"), BatchID: q.Get("batch_id"), Cursor: q.Get("cursor"), Limit: in.Limit}
+		in.TaskQuery = agentsdk.ConversationTaskQuery{Query: q.Get("query"), Status: q.Get("status"), SourceConversationID: q.Get("source_conversation_id"), Cursor: q.Get("cursor"), Limit: in.Limit}
 		in.ArtifactQuery = agentsdk.ConversationArtifactQuery{Query: q.Get("query"), SourceConversationID: q.Get("source_conversation_id"), Cursor: q.Get("cursor"), Limit: in.Limit}
 		in.Messages = agentsdk.ConversationMessageQuery{BeforeSeq: number("before_seq"), AfterSeq: in.AfterSeq, Limit: in.Limit}
 		if op == "stream" && r.Header.Get("Last-Event-ID") != "" {
@@ -189,6 +191,8 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			body = &in.Send
 		case "respond":
 			body = &in.Response
+		case "result_read":
+			body = &in.ResultRead
 		case "memories_write":
 			body = &in.Memory
 		case "todos_create":

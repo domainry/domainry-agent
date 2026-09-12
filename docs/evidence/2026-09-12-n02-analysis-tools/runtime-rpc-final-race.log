@@ -1,0 +1,5 @@
+=== RUN   TestAnalysisToolRPCWithRealOwnerIdentityAndRestart
+    conversation_analysis_rpc_test.go:196: real Tools registry / SDK HTTP / Runtime / Report / Identity / SQLite: complete owner-scoped input, exact large integer and NULL denominator, result-limit error, current tool/field/read revocation, disk restart, source mutation and cross-workspace rejection
+--- PASS: TestAnalysisToolRPCWithRealOwnerIdentityAndRestart (119.17s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	121.025s

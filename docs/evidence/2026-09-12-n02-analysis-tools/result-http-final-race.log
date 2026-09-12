@@ -1,0 +1,4 @@
+=== RUN   TestCompactedResultReadThroughIdentityHTTP
+--- PASS: TestCompactedResultReadThroughIdentityHTTP (15.73s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	17.336s

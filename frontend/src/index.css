@@ -259,6 +259,23 @@ button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visib
 .memory-operation { padding: .75rem; border: 1px solid var(--border); border-radius: .5rem; margin: .5rem 0; }
 .memory-operation p { white-space: pre-wrap; overflow-wrap: anywhere; }
 .todo-dialog { width: min(92vw, 780px); max-width: 780px; max-height: 90vh; overflow-y: auto; }
+.task-dialog { width: min(94vw, 860px); max-width: 860px; max-height: 90dvh; overflow-y: auto; }
+.task-list { display: grid; gap: 7px; max-height: 220px; overflow-y: auto; }
+.task-list > button { display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; padding: 12px 14px; color: var(--foreground); background: #fafbf9; border: 1px solid var(--border); border-radius: 10px; text-align: left; }
+.task-list > button.selected { border-color: #9eb9a8; background: var(--accent); }
+.task-list > button > span:first-child { display: grid; gap: 4px; flex: 1; min-width: 0; }
+.task-list strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.task-list small { color: var(--muted-foreground); font-size: 12px; }
+.task-detail { display: grid; gap: 13px; border-top: 1px solid var(--border); padding-top: 17px; }
+.task-detail-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.task-detail-heading > div { min-width: 0; }
+.task-detail-heading h3 { margin: 8px 0 0; overflow-wrap: anywhere; font-size: 18px; }
+.task-detail-heading > small { color: var(--faint); overflow-wrap: anywhere; text-align: right; }
+.task-input, .task-result p, .task-waiting p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.75; }
+.task-input { color: var(--muted-foreground); }
+.task-waiting, .task-result { display: grid; gap: 7px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--muted); }
+.task-waiting { border-color: #dfc8a7; background: #fffaf1; }
+.task-artifacts { display: grid; gap: 8px; }
 .artifact-dialog { width: min(94vw, 960px); max-width: 960px; max-height: 90dvh; overflow-y: auto; }
 .artifact-list { display: flex; gap: .5rem; overflow-x: auto; padding: .25rem 0; }
 .artifact-list > button { flex: 0 0 auto; height: auto; max-width: 18rem; align-items: flex-start; flex-direction: column; padding: .6rem .8rem; }

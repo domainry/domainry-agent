@@ -1,0 +1,334 @@
+{
+  "schema": "domainry-todo-evidence-v1",
+  "date": "2026-09-12",
+  "todo": "N02",
+  "status": "passed",
+  "progress_after": "57/81",
+  "scope": {
+    "file_types_exercised": [
+      "xlsx"
+    ],
+    "source_limits": {
+      "rows": 100000,
+      "artifact_bytes": 16777216,
+      "columns": 256,
+      "cell_bytes": 16384,
+      "read_page_rows": 500,
+      "knowledge_stream_page_rows": 100,
+      "configured_documents": 50
+    },
+    "llm_proxy": {
+      "modified": false,
+      "consumed_interfaces_only": [
+        "POST /tool/web_search",
+        "POST /tool/web_fetch_jina"
+      ]
+    }
+  },
+  "e2e": {
+    "input_rows": 1205,
+    "dataset_kind": "table_file",
+    "columns": [
+      "active:boolean",
+      "amount:number",
+      "booked_at:date",
+      "note:text",
+      "region:text"
+    ],
+    "analysis_mode": "aggregate",
+    "measures": [
+      "sum(amount)",
+      "count(*)"
+    ],
+    "total": "1000012.29",
+    "complete": true,
+    "proof_present": true,
+    "tool_status": "completed",
+    "permission_reads": 93,
+    "revoked_saved_result_rejected": true,
+    "fixture": {
+      "path": "fixture/revenue.xlsx",
+      "bytes": 32204,
+      "sha256": "e9c83fb03919603b54b354961b0e4e1bbc9021777f77b10e62fe4029f00b9451"
+    },
+    "builder_artifact": {
+      "path": "fixture/analysis-table-artifact.json",
+      "bytes": 57185,
+      "sha256": "330f98f83e412c06ab5c99def5a19c89ebae6e35f1bf1a8402be129d4646513b"
+    },
+    "result": {
+      "path": "logs/e2e-final-race.log",
+      "bytes": 584,
+      "sha256": "fc4ed2bc5d15e6b3f81c6df77ed980d4cd189726720b9e1498f6103cc91414b4"
+    }
+  },
+  "checks": [
+    {
+      "name": "true_xlsx_multistate",
+      "status": "passed",
+      "summary": "1 passed, 42 deselected",
+      "log": {
+        "path": "logs/kb-builder-analysis-final.log",
+        "bytes": 113,
+        "sha256": "8344f04a33713eae898baa75d399a1430e0af62835dbd3bddbba4ab63f5473c8"
+      }
+    },
+    {
+      "name": "kb_builder_full",
+      "status": "passed",
+      "summary": "621 passed, 10 skipped",
+      "log": {
+        "path": "logs/kb-builder-pytest-with-milvus.log",
+        "bytes": 831,
+        "sha256": "b3912e8e2ef90d2f582329ea43b0c30738ca4a2bce59ad71c7b4bf3724e8295e"
+      }
+    },
+    {
+      "name": "kb_search_api_full_race",
+      "status": "passed",
+      "summary": "all packages",
+      "log": {
+        "path": "logs/kb-search-api-race.log",
+        "bytes": 917,
+        "sha256": "0162975dec4561d70fb44657fab4cff9c7cb2b4a9b9d18bd8445eb8104eae45b"
+      }
+    },
+    {
+      "name": "kb_search_api_vet",
+      "status": "passed",
+      "summary": "all packages",
+      "log": {
+        "path": "logs/kb-search-api-vet.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "connectors_full_race",
+      "status": "passed",
+      "summary": "all packages including knowledge_base/http_api",
+      "log": {
+        "path": "logs/domainry-connectors-race.log",
+        "bytes": 11354,
+        "sha256": "640430d8f4be18a26bafaf2540a967a06ef5a72d199dac9b8ef576a58d29742f"
+      }
+    },
+    {
+      "name": "connectors_vet",
+      "status": "passed",
+      "summary": "all packages",
+      "log": {
+        "path": "logs/domainry-connectors-vet.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "knowledge_full_race",
+      "status": "passed",
+      "summary": "all packages",
+      "log": {
+        "path": "logs/domainry-knowledge-race.log",
+        "bytes": 1160,
+        "sha256": "aa8c41043b91042ae5660bf9ea1147b3556f5389a780fb62069a63c6dcffcc7b"
+      }
+    },
+    {
+      "name": "knowledge_vet",
+      "status": "passed",
+      "summary": "all packages",
+      "log": {
+        "path": "logs/domainry-knowledge-vet.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "report_sdk_full_race",
+      "status": "passed",
+      "summary": "7 packages",
+      "log": {
+        "path": "logs/report-sdk-race.log",
+        "bytes": 451,
+        "sha256": "ea5332eb272d5a33baab5a411983b47612629ce427f9a601dde102cc68e0454e"
+      }
+    },
+    {
+      "name": "report_sdk_vet",
+      "status": "passed",
+      "summary": "all packages",
+      "log": {
+        "path": "logs/report-sdk-vet.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "runtime_source_factory_race",
+      "status": "passed",
+      "summary": "public runtimehost port and resolved Runtime ID",
+      "log": {
+        "path": "logs/runtime-source-factory-race.log",
+        "bytes": 65,
+        "sha256": "6f872a4931f6c07577d7ad31a0ce85527c50c458ae0b155e10f367f3ff35bb90"
+      }
+    },
+    {
+      "name": "runtime_report_host_race",
+      "status": "passed",
+      "summary": "Report host exposes composed SDK source",
+      "log": {
+        "path": "logs/runtime-report-source-race.log",
+        "bytes": 75,
+        "sha256": "43afa4f21567f2a5befbcfbd377e0605ae2f54145ffee02918bf58216fd57268"
+      }
+    },
+    {
+      "name": "runtime_composition_race",
+      "status": "passed",
+      "summary": "composition package",
+      "log": {
+        "path": "logs/runtime-composition-final-race.log",
+        "bytes": 79,
+        "sha256": "4f6ede0de3488733466ea38cb8a6a575de71c360a663b8e9c6a4e3dd347abf9a"
+      }
+    },
+    {
+      "name": "runtime_vet",
+      "status": "passed",
+      "summary": "runtimehost/composition/runtime",
+      "log": {
+        "path": "logs/runtime-vet-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "plane_generated_composition",
+      "status": "passed",
+      "summary": "module/saas topology external compilation",
+      "log": {
+        "path": "logs/domainry-plane-targeted-final.log",
+        "bytes": 83,
+        "sha256": "0212770f14be4cf2ab0dd7e78edcce49f742a0ec1bada6f0f7bb3fdeb5ef4d71"
+      }
+    },
+    {
+      "name": "plane_sourcefinalizer",
+      "status": "passed",
+      "summary": "generated template contract",
+      "log": {
+        "path": "logs/domainry-plane-sourcefinalizer-final.log",
+        "bytes": 80,
+        "sha256": "b927d2406cbfa28664197d526bba9a6624d441e191600b51c59fc17d41ac24e1"
+      }
+    },
+    {
+      "name": "plane_vet",
+      "status": "passed",
+      "summary": "generator and finalizer",
+      "log": {
+        "path": "logs/domainry-plane-vet-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "agent_analysis_race",
+      "status": "passed",
+      "summary": "analysis web assembly",
+      "log": {
+        "path": "logs/agent-analysis-race.log",
+        "bytes": 141,
+        "sha256": "1b10ef15f002e85618aefa7eeb7df4ee85ad104fecec0ebdca1a512926f4bc28"
+      }
+    },
+    {
+      "name": "agent_module_race",
+      "status": "passed",
+      "summary": "module package",
+      "log": {
+        "path": "logs/agent-module-final-race.log",
+        "bytes": 54,
+        "sha256": "59b5b9634f22b815956959ea91cea253efc5b802d6f24c532f71921c91aabdff"
+      }
+    },
+    {
+      "name": "agent_commands_compile",
+      "status": "passed",
+      "summary": "SaaS and playground commands",
+      "log": {
+        "path": "logs/agent-cmd-compile.log",
+        "bytes": 170,
+        "sha256": "bad48b6673cad61f153894fb047313b7ad181e9bc93b2062720b2a3cbc8402f3"
+      }
+    },
+    {
+      "name": "cross_layer_e2e_race",
+      "status": "passed",
+      "summary": "XLSX artifact -> API -> Connector -> Knowledge -> Report -> Tools",
+      "log": {
+        "path": "logs/e2e-final-race.log",
+        "bytes": 584,
+        "sha256": "fc4ed2bc5d15e6b3f81c6df77ed980d4cd189726720b9e1498f6103cc91414b4"
+      }
+    }
+  ],
+  "architecture": {
+    "path": "architecture-audit.json",
+    "bytes": 1051,
+    "sha256": "c73e7870184883903e84a738c6155c72775b333d9d01f0a588c66946f4cda8b4"
+  },
+  "repository_state": {
+    "path": "repository-state.json",
+    "bytes": 2714,
+    "sha256": "4abbdedc74959721c9d792557e78b7d24c55c2822bc17bc9e3f7cfdce837c901"
+  },
+  "known_non_n02_failures": [
+    {
+      "check": "kb-builder initial full run",
+      "cause": "pymilvus missing from the first ad-hoc test environment",
+      "resolution": "reran with pymilvus; 621 passed, 10 skipped",
+      "log": {
+        "path": "logs/kb-builder-pytest.log",
+        "bytes": 1356,
+        "sha256": "cb2e8f36c0b0fcc2eca02236e6fc6f83c3b02c2035d8e1a99c9597b5910bab83"
+      }
+    },
+    {
+      "check": "Runtime broad bootstrap package",
+      "cause": "concurrent Agent and Integration capability lock digests differ from working-tree contracts",
+      "n02_targeted_checks_passed": true,
+      "log": {
+        "path": "logs/runtime-composition-race.log",
+        "bytes": 5824,
+        "sha256": "63fdbaa2a48efb1c49621e8e312f0cf8a2d012f1b3b8048b12cc0c4bd778cc13"
+      }
+    },
+    {
+      "check": "Agent broad web race",
+      "cause": "pre-existing account write restart test timed out after 10 minutes while validating Integration capability data",
+      "n02_targeted_checks_passed": true,
+      "log": {
+        "path": "logs/agent-relevant-race.log",
+        "bytes": 16062,
+        "sha256": "3c7e8064f9035a49327488bfe20d0cc9ac3d4e2853fd276e9ba50e6a33ca0281"
+      }
+    },
+    {
+      "check": "Plane broad codegen package",
+      "cause": "concurrent Runtime runtimeext contract hash differs from generated fixture identity",
+      "n02_targeted_checks_passed": true,
+      "log": {
+        "path": "logs/domainry-plane-composition.log",
+        "bytes": 1676,
+        "sha256": "2acca7f85e653c8b224e2abc3b9fd2b9f25bd8da1b550b22cec4dd72ac979fc8"
+      }
+    }
+  ],
+  "not_claimed": [
+    "real cloud S3/Lambda deployment",
+    "H04 immutable published dependency gate",
+    "N03 chart/background/export work"
+  ]
+}

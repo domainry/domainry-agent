@@ -1,0 +1,71 @@
+{
+  "schema": "domainry-architecture-audit-v1",
+  "date": "2026-09-12",
+  "todo": "R03",
+  "status": "passed",
+  "production_change_scope": [
+    "/Users/tiger/Projects/domainry-agent/frontend/src/ArtifactDialog.tsx",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/App.tsx"
+  ],
+  "dependency_direction": {
+    "artifact_dialog": "consumes public artifact DTO and emits navigation callbacks only",
+    "app_shell": "owns conversation activation and persisted RunDialog navigation",
+    "artifact_preview": "pure renderer for public markdown/table/chart content",
+    "authorization": "server application service validates current action and ConversationSources; UI displays returned omissions",
+    "forbidden_imports": [
+      "github.com/domainry/",
+      "internal/application",
+      "internal/infrastructure",
+      "internal/assembly",
+      "domainry-knowledge",
+      "domainry-runtime",
+      "domainry-report"
+    ],
+    "matches": [],
+    "status": "passed"
+  },
+  "safe_rendering": {
+    "markdown_raw_html": "skipHtml=true",
+    "markdown_plugins": "empty",
+    "images": "replaced with text placeholder",
+    "links": "only http(s) anchors; all other schemes become spans",
+    "chart": "static React SVG from bar/line plus declared table columns",
+    "table_cells": "React text nodes; decimal strings are not converted",
+    "forbidden_execution_patterns": [
+      "dangerouslySetInnerHTML",
+      "eval(",
+      "new Function",
+      "<script"
+    ],
+    "matches": [],
+    "browser_dom": {
+      "script_elements": 0,
+      "image_elements": 0,
+      "executed_global": false,
+      "remaining_links": [
+        "https://example.com/"
+      ]
+    },
+    "status": "passed"
+  },
+  "source_association": {
+    "public_contract": "/Users/tiger/Projects/domainry-agent-sdk/conversation_artifact.go",
+    "fields": [
+      "source_conversation_id",
+      "source_run_id"
+    ],
+    "owner_record": "ConversationSources with persisted conversation Run references",
+    "browser_result": "source conversation navigation and exact persisted artifact_create RunDialog both opened",
+    "generic_task_contract": "deferred to L01; R03 does not create a direct task-service dependency",
+    "status": "passed"
+  },
+  "llm_proxy": {
+    "path": "/Users/tiger/Projects/anti/llm-proxy",
+    "modified": false,
+    "head": "a32407a678ea7f96d70b7557765e2a01262184d4",
+    "consumed_interfaces_only": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ]
+  }
+}

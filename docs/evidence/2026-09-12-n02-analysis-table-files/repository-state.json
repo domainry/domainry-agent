@@ -1,0 +1,92 @@
+{
+  "domainry-agent": {
+    "path": "/Users/tiger/Projects/domainry-agent",
+    "head": "57143029056a91d102961978efeec17614a76454",
+    "status_lines": 102,
+    "clean": false,
+    "diff_check_ok": true,
+    "diff_check_output": ""
+  },
+  "kb-builder": {
+    "path": "/Users/tiger/Projects/kb-builder",
+    "head": "504be6674ee4593ba740d1a409f2927f8bc6b2c6",
+    "status_lines": 8,
+    "clean": false,
+    "diff_check_ok": true,
+    "diff_check_output": ""
+  },
+  "kb-search-api": {
+    "path": "/Users/tiger/Projects/kb-search-api",
+    "head": "dbf61406e55b8a446f026cde941ce7f9a9f33bda",
+    "status_lines": 7,
+    "clean": false,
+    "diff_check_ok": true,
+    "diff_check_output": ""
+  },
+  "domainry-connectors": {
+    "path": "/Users/tiger/Projects/domainry-connectors",
+    "head": "57f83dcac3c81f9132dad518bccfe058be327e1f",
+    "status_lines": 6,
+    "clean": false,
+    "diff_check_ok": true,
+    "diff_check_output": ""
+  },
+  "domainry-knowledge": {
+    "path": "/Users/tiger/Projects/domainry-knowledge",
+    "head": "b397cdeb5cda10d699c2f2cb285851cde55e4355",
+    "status_lines": 5,
+    "clean": false,
+    "diff_check_ok": true,
+    "diff_check_output": ""
+  },
+  "domainry-report-sdk": {
+    "path": "/Users/tiger/Projects/domainry-report-sdk",
+    "head": "44ffb16f5c99e97e7cab598aceadfcd4abb3d921",
+    "status_lines": 3,
+    "clean": false,
+    "diff_check_ok": true,
+    "diff_check_output": ""
+  },
+  "domainry-runtime": {
+    "path": "/Users/tiger/Projects/domainry-runtime",
+    "head": "31068a61b9b97f4d249d987b050837551e289e76",
+    "status_lines": 33,
+    "clean": false,
+    "diff_check_ok": true,
+    "diff_check_output": ""
+  },
+  "domainry-plane": {
+    "path": "/Users/tiger/Projects/domainry-plane",
+    "head": "895c2938e0f7ac475102bc200faa321c82358633",
+    "status_lines": 4,
+    "clean": false,
+    "diff_check_ok": true,
+    "diff_check_output": ""
+  },
+  "llm-proxy": {
+    "path": "/Users/tiger/Projects/anti/llm-proxy",
+    "head": "a32407a678ea7f96d70b7557765e2a01262184d4",
+    "status_lines": 0,
+    "clean": true,
+    "diff_check_ok": true,
+    "diff_check_output": ""
+  },
+  "files": {
+    "fixture/revenue.xlsx": {
+      "bytes": 32204,
+      "sha256": "e9c83fb03919603b54b354961b0e4e1bbc9021777f77b10e62fe4029f00b9451"
+    },
+    "fixture/analysis-table-artifact.json": {
+      "bytes": 57185,
+      "sha256": "330f98f83e412c06ab5c99def5a19c89ebae6e35f1bf1a8402be129d4646513b"
+    },
+    "e2e-result.json": {
+      "bytes": 584,
+      "sha256": "fc4ed2bc5d15e6b3f81c6df77ed980d4cd189726720b9e1498f6103cc91414b4"
+    },
+    "logs/e2e-final-race.log": {
+      "bytes": 584,
+      "sha256": "fc4ed2bc5d15e6b3f81c6df77ed980d4cd189726720b9e1498f6103cc91414b4"
+    }
+  }
+}

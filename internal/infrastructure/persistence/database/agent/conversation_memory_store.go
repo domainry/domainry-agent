@@ -40,7 +40,7 @@ func (s *ConversationStore) SaveSummary(ctx context.Context, claim agentpersiste
 		if err != nil {
 			return err
 		}
-		if c.ActiveRunID != claim.Run.ID || c.SummaryID != summary.PreviousID || summary.ConversationID != c.ID || summary.ThroughSeq >= claim.Run.UserSeq || summary.ThroughSeq <= 0 {
+		if claim.Run.BackgroundTask == nil && c.ActiveRunID != claim.Run.ID || c.SummaryID != summary.PreviousID || summary.ConversationID != c.ID || summary.ThroughSeq >= claim.Run.UserSeq || summary.ThroughSeq <= 0 {
 			return conversationError("conflict", "summary_stale")
 		}
 		if summary.PreviousID != "" {

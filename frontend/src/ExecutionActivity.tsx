@@ -11,6 +11,7 @@ import { recoveryTarget, resultKind } from "./execution-outcome.ts";
 import { ExecutionOutcome, RecoveryButton } from "./ExecutionOutcome.tsx";
 import { errorMessage } from "./errors.ts";
 import { Button } from "./components/ui/button";
+import { StoredResult } from "./StoredResult.tsx";
 
 const names: Record<string, string> = {
   calendar_write_accounts: "发现日历写入账号", calendar_event_inspect: "核对日程修改目标", calendar_event_create: "创建日程", calendar_event_update: "修改日程",
@@ -20,7 +21,7 @@ const names: Record<string, string> = {
   attachment_search: "搜索当前会话附件", attachment_read: "读取附件检索内容",
   business_catalog: "查看业务目录", query_records: "查询业务记录", get_record: "读取业务记录", query_related_records: "查询关联记录", invoke_action: "执行业务动作",
   workflow_start: "启动业务流程", workflow_get: "查询流程进度",
-  report_query: "查询报表",
+  report_query: "查询报表", analysis_run: "分析数据",
   history_read: "读取原文", memory_search: "查询记忆", memory_save: "保存记忆", memory_forget: "删除记忆", ask_user: "补充信息",
   todo_create: "创建待办", todo_list: "查询待办", todo_get: "读取事项", todo_update: "修改待办", todo_delete: "删除待办",
   tool_result_read: "读取完整工具结果", execution_read: "查看历史执行结果",
@@ -89,6 +90,7 @@ export function ExecutionActivity({run, onResume, onRepair, recoveryDisabled, re
           </>}
           {call.error_code && <p role="alert" className="subtle">{errorMessage(call.error_code)} <small>（{call.error_code}）</small></p>}
           {call.resource_id && <small className="subtle">结果引用：{call.resource_id}</small>}
+          {call.result_truncated && call.result_reference && <StoredResult key={JSON.stringify(call.result_reference)} reference={call.result_reference} />}
           {recovery?.step === step.number && recovery.callID === call.id && onResume && <RecoveryButton target={recovery} disabled={recoveryDisabled} onResume={onResume} />}
           {call.status === "failed" && ["completed", "failed", "cancelled"].includes(run.status) && onRepair && <div className="space-y-2"><p className="subtle">这次调用已记录为失败。准备新请求核对并修复此项，原结果保留。</p><Button type="button" variant="outline" size="sm" disabled={repairDisabled} title={repairDisabled ? "请先处理当前运行或发送／清空草稿" : undefined} onClick={() => onRepair(step.number, call, names[call.name] || call.name)}>准备修复这项失败</Button></div>}
         </details>;

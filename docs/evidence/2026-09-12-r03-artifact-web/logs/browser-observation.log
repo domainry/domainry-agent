@@ -1,0 +1,34 @@
+R03 real browser acceptance
+Date: 2026-09-12
+URL: http://127.0.0.1:8092/#conv_3f14b68cb4e4c705be0261b5445c8f74
+Fixture: real Identity HTTP + SQLite + actual compiled Agent frontend; deterministic local model protocol fixture
+
+Source relation
+- Opened 我的成果 -> 验收周报.
+- 来源会话 returned to conversation conv_3f14b68cb4e4c705be0261b5445c8f74.
+- 来源消息与处理记录 opened the persisted run detail, including the completed artifact_create step and the saved assistant reply.
+
+Preview, editing, versions, download
+- Markdown preview displayed the persisted weekly report.
+- Edited the title and body and saved version 3; UI displayed 已保存为版本 3.
+- Selected version 1; UI displayed 当前显示版本 1 and the original 待核对。 text.
+- Downloaded version 1; UI displayed 已下载版本 1 · art_f94a45faf5d1ae4b47b67edaf68c05da-v1.md.
+- Chart preview displayed an accessible bar chart and its exact 3-row table.
+- Table preview displayed =SUM(A1:A2) as text and preserved 9007199254740993.01 exactly.
+
+Safe rendering
+- Seeded Markdown contained a script tag, remote image, javascript: link and HTTPS link.
+- DOM inspection under .artifact-markdown: script elements=0, image elements=0, window.__artifactExecuted=false.
+- Only one anchor remained: 公开链接 -> https://example.com/.
+- The remote image became [图片：远程图片]; the javascript: link rendered as blocked text without an href.
+
+Current permission
+- Revoked artifact_read through the local acceptance control and clicked 刷新成果.
+- The source-bound weekly report disappeared; UI displayed 部分成果的来源当前不可读取，已从列表隐藏 and the current-tool-unavailable notice.
+- Restored artifact_read and refreshed; version 3 reappeared.
+
+Server result
+- TestArtifactToolsThroughIdentityHTTP passed after the finish signal in 240.86s.
+
+Command correction
+- An attempted console reader used an unsupported CUA property after the version-1 download. The click itself succeeded and the download notice was visible. No console-error count is claimed by this acceptance record.

@@ -113,6 +113,7 @@ func run() error {
 	options.CalendarWriteTools = true
 	options.MailWriteTools = true
 	options.ReportTools = true
+	options.AnalysisTools = true
 	options.WebConnectionKey = env("INTEGRATION_WEB_CONNECTION_KEY", "")
 	host, err := webassembly.Open(ctx, options)
 	if err != nil {

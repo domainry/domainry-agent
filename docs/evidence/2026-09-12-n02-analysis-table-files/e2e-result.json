@@ -1,0 +1,21 @@
+{
+  "columns": [
+    "active:boolean",
+    "amount:number",
+    "booked_at:date",
+    "note:text",
+    "region:text"
+  ],
+  "complete": true,
+  "data_version": "efe3a344e86a004d0f259025726bee9c044757a0e52bd5809584cf0010e0b4ed",
+  "dataset_key": "table_d66069d5ed3f20c5e0270c9f18409ee2",
+  "definition_version": "bed7d798bb28285003e7d3273f509015bbdc5808c6c6057a1e2b4993741e4f43",
+  "ok": true,
+  "permission_reads": 93,
+  "proof_present": true,
+  "revoked_saved_result": true,
+  "row_count": "1205",
+  "tool_result_bytes": 1521,
+  "tool_status": "completed",
+  "total": "1000012.29"
+}

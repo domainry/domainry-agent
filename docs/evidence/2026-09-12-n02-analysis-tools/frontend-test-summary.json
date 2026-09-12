@@ -1,0 +1,10 @@
+{
+  "command": "npm test",
+  "working_directory": "domainry-agent/frontend",
+  "tests": 49,
+  "passed": 49,
+  "failed": 0,
+  "duration_ms": 305.501709,
+  "scope": "initial generic result pagination tests plus existing frontend suite; subsequent precise-number formatter tested separately in result-pagination-test.log",
+  "source": "exec result session 17903 initial TAP summary"
+}

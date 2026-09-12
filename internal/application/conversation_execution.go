@@ -65,6 +65,14 @@ func validateToolJSON(schema *jsonschema.Schema, raw []byte) error {
 }
 
 func (s *ConversationService) executionCatalog(ctx context.Context, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, map[string]conversationCompiledTool, error) {
+	definitions, compiled, err := s.registeredExecutionCatalog(ctx, a)
+	if err != nil {
+		return nil, nil, err
+	}
+	return s.availableExecutionCatalog(ctx, a, definitions, compiled)
+}
+
+func (s *ConversationService) registeredExecutionCatalog(ctx context.Context, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, map[string]conversationCompiledTool, error) {
 	definitions, err := s.options.ToolHost.ConversationTools(ctx, a)
 	if err != nil {
 		return nil, nil, err
@@ -95,6 +103,10 @@ func (s *ConversationService) executionCatalog(ctx context.Context, a agentsdk.C
 	if err != nil {
 		return nil, nil, err
 	}
+	return definitions, compiled, nil
+}
+
+func (s *ConversationService) availableExecutionCatalog(ctx context.Context, a agentsdk.ConversationAuthority, definitions []agentsdk.ConversationToolDefinition, compiled map[string]conversationCompiledTool) ([]agentsdk.ConversationToolDefinition, map[string]conversationCompiledTool, error) {
 	if s.options.ToolAvailability == nil {
 		return definitions, compiled, nil
 	}
@@ -166,10 +178,11 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 		messages = append(messages, agentsdk.ConversationStepMessage{Role: message.Role, Content: message.Content})
 	}
 	usage := map[string]any{}
-	budget := execution.Budget{Calls: s.options.MaxToolCalls}
+	maxSteps, maxToolCalls, maxOutputBytes, _ := s.conversationRunLimits(claim)
+	budget := execution.Budget{Calls: maxToolCalls}
 	used := execution.Usage{}
 	seenCalls := map[string]int{}
-	for number := 0; number < s.options.MaxSteps; number++ {
+	for number := 0; number < maxSteps; number++ {
 		if err := ctx.Err(); err != nil {
 			return agentsdk.ConversationModelResult{}, err
 		}
@@ -178,11 +191,11 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 			return agentsdk.ConversationModelResult{}, err
 		}
 		if !found {
-			definitions, _, err := s.executionCatalog(ctx, claim.Authority)
+			definitions, _, err := s.executionCatalogForRun(ctx, claim)
 			if err != nil {
 				return agentsdk.ConversationModelResult{}, err
 			}
-			in := agentsdk.ConversationStepRequest{Messages: messages, Tools: definitions, ModelIdentity: model.ConversationModelIdentity(), IdempotencyKey: fmt.Sprintf("conversation:%s:step:%d", claim.Run.ID, number), MaxOutputBytes: s.options.MaxOutputBytes, MaxArgumentBytes: s.options.MaxArgumentBytes, MaxToolCalls: s.options.MaxToolCalls}
+			in := agentsdk.ConversationStepRequest{Messages: messages, Tools: definitions, ModelIdentity: model.ConversationModelIdentity(), IdempotencyKey: fmt.Sprintf("conversation:%s:step:%d", claim.Run.ID, number), MaxOutputBytes: maxOutputBytes, MaxArgumentBytes: s.options.MaxArgumentBytes, MaxToolCalls: maxToolCalls}
 			in, err = s.compactConversationExecution(ctx, claim, in)
 			if err != nil {
 				return agentsdk.ConversationModelResult{}, err
@@ -277,7 +290,7 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 // Call-time checks alone do not cover revocation between model iterations.
 func (s *ConversationService) reauthorizeExecutionInputs(ctx context.Context, claim persistence.ConversationClaim, step persistence.ConversationExecutionStep) error {
 	repo := s.repo.(persistence.ConversationExecutionRepository)
-	_, current, err := s.executionCatalog(ctx, claim.Authority)
+	_, current, err := s.executionCatalogForRun(ctx, claim)
 	if err != nil {
 		return err
 	}
@@ -328,7 +341,7 @@ func (s *ConversationService) executeConversationTool(ctx context.Context, claim
 		return agentsdk.ConversationToolResult{}, err
 	}
 	repo := s.repo.(persistence.ConversationExecutionRepository)
-	_, current, err := s.executionCatalog(ctx, claim.Authority)
+	_, current, err := s.executionCatalogForRun(ctx, claim)
 	if err != nil {
 		return agentsdk.ConversationToolResult{}, err
 	}

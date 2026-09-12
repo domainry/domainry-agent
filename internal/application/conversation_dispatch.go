@@ -10,6 +10,13 @@ import (
 // Shared transport dispatch; identity is established by the owning transport.
 func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op string, r agentsdk.ConversationRPCRequest) (any, error) {
 	a := r.Authority
+	if op == "result_read" {
+		reader, ok := s.(agentsdk.ConversationResultReader)
+		if !ok {
+			return nil, conversationFailure("unavailable", "result_read_unavailable")
+		}
+		return reader.ReadResult(ctx, r.ConversationID, r.RunID, r.ResultRead, a)
+	}
 	if op == "libraries_sources" || op == "libraries_bind_source" {
 		sources, ok := s.(agentsdk.KnowledgeDatasourceService)
 		if !ok {
@@ -143,6 +150,18 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 		case "todos_delete":
 			err := todos.DeleteTodo(ctx, r.TodoID, r.TodoDelete, a)
 			return map[string]bool{"deleted": err == nil}, err
+		}
+	}
+	if strings.HasPrefix(op, "tasks_") {
+		tasks, ok := s.(agentsdk.ConversationTaskService)
+		if !ok {
+			return nil, conversationFailure("unavailable", "tasks_unavailable")
+		}
+		switch op {
+		case "tasks_list":
+			return tasks.ConversationTasks(ctx, r.TaskQuery, a)
+		case "tasks_get":
+			return tasks.ConversationTask(ctx, r.TaskID, a)
 		}
 	}
 	switch op {

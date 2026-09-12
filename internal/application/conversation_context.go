@@ -34,6 +34,7 @@ func conversationContextSize(messages []agentsdk.ConversationModelMessage) int {
 }
 
 func (s *ConversationService) buildConversationContext(ctx context.Context, claim agentpersistence.ConversationClaim) (agentsdk.ConversationModelRequest, error) {
+	_, maxToolCalls, maxOutputBytes, _ := s.conversationRunLimits(claim)
 	c, err := s.repo.Get(ctx, claim.Run.ConversationID, claim.Authority)
 	if err != nil {
 		return agentsdk.ConversationModelRequest{}, err
@@ -45,13 +46,16 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 	if s.options.ToolHost != nil {
 		base[0].Content = conversationExecutionSystem + " Tool responses marked stored_result_preview are incomplete excerpts of immutable stored results. Preserve their status, resource references and unresolved work. Use tool_result_read with the supplied reference to read needed omitted evidence before drawing conclusions; never treat a preview as a complete dataset."
 	}
+	if claim.Run.BackgroundTask != nil {
+		base[0].Content += " This is a user-authorized background task. Work only toward its stated goal, stay within the frozen tool catalog and budget, and report the actual result. Do not start another background task."
+	}
 	if s.profile != nil {
 		base[0].Content += "\n\nAgent " + s.profile.Key + " @ " + s.profile.Version + ":\n" + s.profile.Instructions
 	}
 	replyBudget := s.options.ContextBytes
 	executionLinks := false
 	if s.options.ToolHost != nil {
-		definitions, _, err := s.executionCatalog(ctx, claim.Authority)
+		definitions, _, err := s.executionCatalogForRun(ctx, claim)
 		if err != nil {
 			return agentsdk.ConversationModelRequest{}, err
 		}
@@ -72,7 +76,7 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 			}
 			base = append(base, links)
 		}
-		framing, err := json.Marshal(agentsdk.ConversationStepRequest{Tools: definitions, ModelIdentity: s.model.(agentsdk.ConversationAgentModel).ConversationModelIdentity(), IdempotencyKey: fmt.Sprintf("conversation:%s:step:255", claim.Run.ID), MaxOutputBytes: s.options.MaxOutputBytes, MaxArgumentBytes: s.options.MaxArgumentBytes, MaxToolCalls: s.options.MaxToolCalls})
+		framing, err := json.Marshal(agentsdk.ConversationStepRequest{Tools: definitions, ModelIdentity: s.model.(agentsdk.ConversationAgentModel).ConversationModelIdentity(), IdempotencyKey: fmt.Sprintf("conversation:%s:step:255", claim.Run.ID), MaxOutputBytes: maxOutputBytes, MaxArgumentBytes: s.options.MaxArgumentBytes, MaxToolCalls: maxToolCalls})
 		if err != nil {
 			return agentsdk.ConversationModelRequest{}, err
 		}
@@ -192,7 +196,7 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 		if sources != nil {
 			sources.Omitted = nil
 		} // omitted content is not a reply dependency
-		reply := agentsdk.ConversationModelRequest{Messages: messages, Sources: sources, Purpose: "reply", IdempotencyKey: "conversation:" + claim.Run.ID + ":" + conversationDigest([]any{messages, sources}), MaxOutputBytes: s.options.MaxOutputBytes}
+		reply := agentsdk.ConversationModelRequest{Messages: messages, Sources: sources, Purpose: "reply", IdempotencyKey: "conversation:" + claim.Run.ID + ":" + conversationDigest([]any{messages, sources}), MaxOutputBytes: maxOutputBytes}
 		if all && (size <= replyBudget*7/10 || len(history) <= 9 && size <= replyBudget) {
 			return reply, nil
 		}

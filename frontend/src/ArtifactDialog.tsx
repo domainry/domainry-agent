@@ -9,7 +9,15 @@ import { sessionScope } from "./session.ts";
 import { ArtifactPreview } from "./ArtifactPreview.tsx";
 import { artifactPath, downloadArtifact, parseArtifactMutation, type ArtifactPage, type ArtifactVersion, type ArtifactVersions, type ArtifactMutation, type ArtifactExport } from "./artifact-state.ts";
 
-export function ArtifactDialog({ conversationID = "", initial, onClose }: { conversationID?: string; initial?: { id: string; version: number }; onClose: () => void }) {
+type ArtifactDialogProps = {
+  conversationID?: string;
+  initial?: { id: string; version: number };
+  onClose: () => void;
+  onSource?: (conversationID: string) => void;
+  onRun?: (conversationID: string, runID: string) => void;
+};
+
+export function ArtifactDialog({ conversationID = "", initial, onClose, onSource, onRun }: ArtifactDialogProps) {
   const key = `agent-artifact-mutation:${sessionScope()}`;
   const [pending, setPending] = useState<ArtifactMutation | null>(() => { try { return parseArtifactMutation(localStorage.getItem(key)); } catch { return null; } });
   const [selected, setSelected] = useState<{ id: string; version: number } | null>(() => pending ? { id: pending.artifactID, version: pending.body.expected_version || pending.body.version || 0 } : initial || null);
@@ -118,6 +126,11 @@ export function ArtifactDialog({ conversationID = "", initial, onClose }: { conv
     {value && <section className="artifact-detail" aria-label="成果内容">
       <div className="todo-toolbar"><h3>{value.artifact.title}</h3><select aria-label="成果版本" disabled={disabled || editing} value={selected?.version || 0} onChange={event => selectArtifact({ id: value.artifact.id, version: Number(event.target.value) })}><option value={0}>最新版本</option>{!versions.items.some(item => item.version === value.artifact.version) && <option value={value.artifact.version}>版本 {value.artifact.version}</option>}{versions.items.map(item => <option key={item.version} value={item.version}>版本 {item.version}</option>)}</select><span className="subtle">当前显示版本 {value.artifact.version}</span></div>
       <p className="subtle">更新于 {new Date(value.artifact.updated_at).toLocaleString()} · {(value.artifact.bytes / 1024).toFixed(1)} KB</p>
+      {value.artifact.source_conversation_id && <div className="todo-toolbar" aria-label="成果来源关联">
+        <span className="subtle">来源关联</span>
+        {onSource && <Button type="button" variant="ghost" size="sm" disabled={disabled || editing} onClick={() => onSource(value.artifact.source_conversation_id!)}>来源会话</Button>}
+        {value.artifact.source_run_id && onRun && <Button type="button" variant="ghost" size="sm" disabled={disabled || editing} onClick={() => onRun(value.artifact.source_conversation_id!, value.artifact.source_run_id!)}>来源消息与处理记录</Button>}
+      </div>}
       {versions.omitted && <p className="subtle">部分版本的来源当前不可读取。</p>}
       {!versions.complete && versions.next_before && <Button size="sm" variant="ghost" disabled={busy} onClick={() => void loadVersions()}>加载更早版本</Button>}
       {!editing ? <><div className="todo-toolbar"><Button size="sm" variant="outline" disabled={disabled} onClick={startEdit}>修改内容</Button><Button size="sm" disabled={disabled} onClick={() => void apply({ kind: "export", artifactID: value.artifact.id, body: { client_id: crypto.randomUUID(), version: value.artifact.version, format: value.content.kind === "markdown" ? "markdown" : "csv" } })}>下载此版本{value.content.kind === "markdown" ? " Markdown" : " CSV"}</Button></div><ArtifactPreview key={`${value.artifact.id}:${value.artifact.version}`} content={value.content} /></> : <form className="todo-editor" onSubmit={event => { event.preventDefault(); save(); }}>

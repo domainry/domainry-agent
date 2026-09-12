@@ -1,0 +1,14 @@
+ok  	github.com/domainry/domainry-knowledge/artifact	1.445s
+?   	github.com/domainry/domainry-knowledge/contract	[no test files]
+ok  	github.com/domainry/domainry-knowledge/extraction	1.812s
+ok  	github.com/domainry/domainry-knowledge/internal/application/knowledge	3.952s
+ok  	github.com/domainry/domainry-knowledge/internal/architecture	4.396s
+?   	github.com/domainry/domainry-knowledge/internal/assembly/module	[no test files]
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/artifactstorage	5.527s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/attachmentstorage	6.125s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/connectortransport	4.723s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/documentstorage	5.154s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/persistence/database/knowledge	6.328s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/persistence/database/record	6.720s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/provider	7.265s
+?   	github.com/domainry/domainry-knowledge/module	[no test files]
