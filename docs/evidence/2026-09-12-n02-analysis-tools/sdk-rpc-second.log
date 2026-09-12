@@ -1,0 +1,5 @@
+--- FAIL: TestContractAndConfigurationFailBeforeIO (0.00s)
+    businessrpc_test.go:415: public contract changed without compatibility review: 453337c9cf7e0e8a44d0ec29f626778876be1c8f2b4cda434da6400063875e91
+FAIL
+FAIL	github.com/domainry/domainry-agent-sdk/businessrpc	1.778s
+FAIL
