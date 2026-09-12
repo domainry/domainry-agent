@@ -1,0 +1,12 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+PASS real Chrome login reaches actual shared Identity and seven optional business tools
+PASS persisted catalog, three cursor pages and record detail render through independent product
+PASS browser requests actual rename and shows frozen target and payload before any mutation
+PASS actual Identity process plus all product and Runtime bindings restart with pending confirmation; browser approval changes the exact record
+PASS current field and read revocations hide saved source-derived answer; restoring the original authority reveals it
+PASS unavailable business owner hides old answer without fallback; restored owner revalidates the original source
+PASS completed reply and exact business effect survive another full restart and fit a 390px viewport
+    conversation_business_product_service_test.go:293: actual Identity OS process, independent Agent web host and Runtime business/Report HTTP: 808 business and 6521 Identity SDK requests; product login, catalog/pages/detail, explicit confirmation, duplicate response, field/read revocation, preserved-source history, unavailable owner and complete process/binding/database restart; isolated Identity application quota 12000/minute
+--- PASS: TestConversationBusinessProductWithSharedIdentityService (64.63s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	65.423s

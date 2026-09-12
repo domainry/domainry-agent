@@ -1,0 +1,9 @@
+{
+  "complete": false,
+  "scope": "unconfirmed_upload_restart_and_later_observation",
+  "steps": [],
+  "baselines": [],
+  "errors": [],
+  "externalRequests": [],
+  "failure": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n409 !== 200\n"
+}

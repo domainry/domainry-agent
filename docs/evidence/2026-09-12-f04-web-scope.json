@@ -1,0 +1,501 @@
+{
+  "todo": "F04",
+  "complete": true,
+  "stage": "web-endpoints-only-scope-correction",
+  "captured_at": "2026-09-12T00:47:03.005278+08:00",
+  "path_base": "/Users/tiger/Projects",
+  "source_files": [
+    {
+      "path": "domainry-agent/README.md",
+      "bytes": 13502,
+      "sha256": "9ab72e1a8e99ba27f498cc4ad66789ad608baf8ef587e1c74ff1a327e859a82c"
+    },
+    {
+      "path": "domainry-agent/cmd/domainry-agent-web/main.go",
+      "bytes": 5893,
+      "sha256": "9d12dbd592369ad4ccb0ed0d5652d669c2218f294df9bbdb766e6a7ac7d983c9"
+    },
+    {
+      "path": "domainry-agent/docs/agent-capabilities-todo.md",
+      "bytes": 112773,
+      "sha256": "da1f9e17fa832bdd4fcd95e8e4dc4211a638a4284d9a925f1d3ef12526c7bb46"
+    },
+    {
+      "path": "domainry-agent/docs/remaining-capability-boundaries.md",
+      "bytes": 11449,
+      "sha256": "bd8b0c19cd194d374b512ec521bb06c8689092ff2c2778b6c80e20f750e1c7df"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-contract.md",
+      "bytes": 2378,
+      "sha256": "0d632c8fab154528bc42f1ba90e0496ed92ba0ed77f1473d8b4ca5faa03e6889"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-owner.md",
+      "bytes": 4334,
+      "sha256": "ac728a1ae05c1705c958fbbdee76709d626e380c5deab50315df83b73dd01770"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-product.md",
+      "bytes": 9119,
+      "sha256": "93a26396fbf5bb29064dde38d7d79c35f819d1913188c76f0d94ab5387a3d072"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-proxy.md",
+      "bytes": 5091,
+      "sha256": "8a4df3f284a6abc7ffd9e3bc0dc6d4d95416c02a4168b15c937a219dba9934df"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-tools.md",
+      "bytes": 2767,
+      "sha256": "9cd69f7f808a33e4d638a1cc83698062ea1fe29c45e0bb025ba4bed0dc58144f"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-12-f04-web-scope.md",
+      "bytes": 3868,
+      "sha256": "a66d08992639135a9b072694ce6731bdba1d35220d408a13f6fa54f73daa01d6"
+    },
+    {
+      "path": "domainry-agent/docs/web-read-boundaries.md",
+      "bytes": 7975,
+      "sha256": "6367c6e19e0beb71e0577e336080d92bed9ebccc84331ceab40bd642584a7f46"
+    },
+    {
+      "path": "domainry-agent/frontend/build-product.mjs",
+      "bytes": 1046,
+      "sha256": "219a005e3fb10ff3fa88c46022c2914bf453fb543b8d82f8d7406650fc8811bf"
+    },
+    {
+      "path": "domainry-agent/frontend/package.json",
+      "bytes": 1589,
+      "sha256": "dcb36ff8b8c0461b960c618c3aa7e5c432d9288fcdc62638221cdd43ad8e744a"
+    },
+    {
+      "path": "domainry-agent/frontend/src/ExecutionActivity.tsx",
+      "bytes": 9290,
+      "sha256": "e8cdb220cf388a4c975271c2e00f08678548bf17efc5552a8f47aa9acb11ed19"
+    },
+    {
+      "path": "domainry-agent/frontend/src/ToolSettingsDialog.tsx",
+      "bytes": 7581,
+      "sha256": "a77f8b46eeef5970d135ee1b87beb0776a041eef9102c72f6dc9afbd859f943c"
+    },
+    {
+      "path": "domainry-agent/frontend/src/WebResult.tsx",
+      "bytes": 2789,
+      "sha256": "24d812e91662831d71c3169f76baa08562ccc72f1232f6ee14572a424da29346"
+    },
+    {
+      "path": "domainry-agent/frontend/tests/web-tools.browser.mjs",
+      "bytes": 12284,
+      "sha256": "0c191dc4bb4ab9ebc944d6478a162442842aba29a5cf3fa29de551b56260788c"
+    },
+    {
+      "path": "domainry-agent/internal/architecture/layout_test.go",
+      "bytes": 4134,
+      "sha256": "768f436d3b0b4946b31d42a5c5425d9483d4c463eff7b23676dd516cba0fdc05"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/product/product.go",
+      "bytes": 6727,
+      "sha256": "c0eb4fa0bf8c82a6c76e407b7fec65bb7b7edcdff48ed1a65eee9be6314c5d5b"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/product/record_product.go",
+      "bytes": 2545,
+      "sha256": "53a3f30bcc41d42d1659623910f3e7ffb5ffff0fc7364272554924323040ae0a"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/account_provider_transport_test.go",
+      "bytes": 1641,
+      "sha256": "3583f2d9384d32186086e5444f317023cc98d3f5328aadeb370047b35b62ed1e"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/account_tools.go",
+      "bytes": 4552,
+      "sha256": "ac90eddb4b7cc92dde14a8309734fd9dd1d5c9ed991396babe743a6c98335288"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/account_tools_test.go",
+      "bytes": 2414,
+      "sha256": "1fa8306c5c0d3710b3b7d94d58de95f02ff3bdde7a34fd4b49451cf82aa92dfb"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/host.go",
+      "bytes": 11763,
+      "sha256": "60ccf9d47c78be53032abee404ec8d5a44b328adff03d51df48610641d9918f8"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/integration_accounts_test.go",
+      "bytes": 19837,
+      "sha256": "dd7ca7fbfa34679654c8aceb18f794a0a000d1d5d2b2b461dd6b4cf66a87bf0a"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/web_report_source_test.go",
+      "bytes": 2445,
+      "sha256": "cf030e643b8dbc3d1ea37a2ae46ffe606187b601bcbc8f705ca6d26b0583c2a7"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/web_tools_browser_test.go",
+      "bytes": 4210,
+      "sha256": "a0872a1224c16e9c3bbd5f957f9723fe3841e203c4d986b8376e99a70b9a1685"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/web_tools_fixture_test.go",
+      "bytes": 11647,
+      "sha256": "56e7a2f24a1605739f047f5a8b4cc49ffdd9264fe263c295bb8ffbcf38800736"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/web_tools_test.go",
+      "bytes": 8841,
+      "sha256": "b7270cc6dd6643cd255a0c93aec67b8ad839879fa0a3efa9a116847c84d0e16d"
+    },
+    {
+      "path": "domainry-agent/testsupport/producttest/product.go",
+      "bytes": 11567,
+      "sha256": "daa4e48c684dd367e0978cbdff11a23208ea346e500e04a813638124ba645c5d"
+    },
+    {
+      "path": "domainry-connector-sdk/README.md",
+      "bytes": 4630,
+      "sha256": "923249c330d4cfecccd31cd6720ea5976b7a7be8e71604edbf8836459d849bca"
+    },
+    {
+      "path": "domainry-connector-sdk/external_module_test.go",
+      "bytes": 9106,
+      "sha256": "796ee4ca4f6262a8e7ca3e3f243ac542e87a5ccf2486905dd8ca0552bc5bff9f"
+    },
+    {
+      "path": "domainry-connector-sdk/identity.go",
+      "bytes": 728,
+      "sha256": "71b090dfdc4463a8796b4e5c160ab9f95e81c5ae44fc9e86bced77a77d14864d"
+    },
+    {
+      "path": "domainry-connector-sdk/identity_test.go",
+      "bytes": 376,
+      "sha256": "6a2ab023d84817d232e3a9f58768c59227e74aeab0d5d4c3c16a75e3675317c6"
+    },
+    {
+      "path": "domainry-connector-sdk/web/identity.go",
+      "bytes": 1363,
+      "sha256": "f896ac123798985e06e7f40fb78bfedeedd83d098d9cfcd555d9675dca14ff96"
+    },
+    {
+      "path": "domainry-connector-sdk/web/url.go",
+      "bytes": 3336,
+      "sha256": "3692eca282e6413c7e9af69f7e35b26f052564d5aee1ce40960661f3db3487d9"
+    },
+    {
+      "path": "domainry-connector-sdk/web/validation.go",
+      "bytes": 3306,
+      "sha256": "60d5e2b501b7411db9b253a72fd620c28c5afa163d9101da97ed04b1d1e0fa36"
+    },
+    {
+      "path": "domainry-connector-sdk/web/web.go",
+      "bytes": 1941,
+      "sha256": "f75b2d106a804ae0f14834b4ce1d618161bf14276adb90d9b5d67521d7abea37"
+    },
+    {
+      "path": "domainry-connector-sdk/web/web_test.go",
+      "bytes": 7225,
+      "sha256": "5df4ab52b82971751d10831d1f98de65eabf530b02323c6fb17909f5eaa83a68"
+    },
+    {
+      "path": "domainry-connectors/README.md",
+      "bytes": 5248,
+      "sha256": "6fcc032b8063d0ef00c868cffccb02cdedba290dddb492b0fe666824ccb6463a"
+    },
+    {
+      "path": "domainry-connectors/catalog/catalog.json",
+      "bytes": 188661,
+      "sha256": "98375fa207a9ee8b0f02b2c42d1dd6aac417c22aa2f64cb6aa17db746eb75035"
+    },
+    {
+      "path": "domainry-connectors/catalog/connector_validation.go",
+      "bytes": 19172,
+      "sha256": "ce46bfc93070717ff3061093a6548832d1b78f53491669bcbcd3350ce691eea6"
+    },
+    {
+      "path": "domainry-connectors/catalog/definitions/web/connector.json",
+      "bytes": 16796,
+      "sha256": "356dbd5691b4bdbc74be2ca334213bac7a54756f2ad45a113f22d1fba6b7e0b4"
+    },
+    {
+      "path": "domainry-connectors/catalog/json_shape_test.go",
+      "bytes": 1499,
+      "sha256": "313fc88a4f2b9fabd5480faf2aa8396edcb62653fedb10c23256549ab8a31ada"
+    },
+    {
+      "path": "domainry-connectors/internal/assembly/module/web.go",
+      "bytes": 586,
+      "sha256": "95aa240dd9d59b619a811fd5415934f9bd71ea0d6c96b35352c130773c9ff66a"
+    },
+    {
+      "path": "domainry-connectors/module/module.go",
+      "bytes": 714,
+      "sha256": "54aa09d84bf820c7004258e2b6888ea038af8a31ceb2c3116ee261674c8d4ff8"
+    },
+    {
+      "path": "domainry-connectors/module/web_test.go",
+      "bytes": 2384,
+      "sha256": "8e4f57eb07791c879681deed43d17e2c7b13386e83df4026b5d39c13550da763"
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/config.go",
+      "bytes": 5167,
+      "sha256": "59fb962e0e9364c7a7cec509616431f971ae883a3f626bbb88c097d98dcedf29"
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/provider.go",
+      "bytes": 5791,
+      "sha256": "c88bb80350117295c2106bbf43b1c87faa40243a2c9c907555e3854ac044278e"
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/provider_test.go",
+      "bytes": 18227,
+      "sha256": "10ec9aa516f57ea400c755fc937863879e4dd0dc6569602ee8017b3a93d974ea"
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/read.go",
+      "bytes": 5428,
+      "sha256": "4021efa0293f9dc53ed329c6535f86b8d6a402e6a9f1f7250706562a94793121"
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/verification.json",
+      "bytes": 515,
+      "sha256": "e9d027210116a6f4bdfe586560621f49f3932209d14a07fb779422acba3dbf4a"
+    },
+    {
+      "path": "domainry-connectors/scripts/generate_catalog/provider_registry_generated.go",
+      "bytes": 28209,
+      "sha256": "d82692b97383d89aaf309d1ac5bfdb479b059e2ba1456d9bfe9dc61f78c0bd93"
+    },
+    {
+      "path": "domainry-integration/README.md",
+      "bytes": 8020,
+      "sha256": "60898db5fe7de0e7ba87257f8c142ba44ae0464974fb35802b19d9efbfc3dd4e"
+    },
+    {
+      "path": "domainry-integration/cmd/integration-server/main.go",
+      "bytes": 5709,
+      "sha256": "8a2e1c4e81389b0b6d06a57948f16032a3ba57a4280d883c102758e7b5601b31"
+    },
+    {
+      "path": "domainry-integration/cmd/integration-server/main_test.go",
+      "bytes": 1829,
+      "sha256": "1a7937b078d24eefd0e0f88cd5df2c018e0c3446d57b3c0717dd223f5028068a"
+    },
+    {
+      "path": "domainry-integration/internal/application/integration/connection_account_reads.go",
+      "bytes": 3926,
+      "sha256": "d6724b15e14071f7e3e5fc7f05aa4cc47225401842e9f22ac8e14d50c5b2539e"
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/connection_accounts_test.go",
+      "bytes": 10445,
+      "sha256": "0a22582f1b10e491cfebf9e5a326d7320d746be3f1d45cc42f5f1a69e2838380"
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/service_test.go",
+      "bytes": 9313,
+      "sha256": "d1be23d4edd3059d78d6dd6d94d4d80c8163312d69257045dbb5d3d2744891d4"
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/web_read_flow_test.go",
+      "bytes": 15549,
+      "sha256": "98130d68520df53bbb5cb72350d89d53d520d521ce034271b00c6c9dd4b362bc"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/connectortransport/public_web.go",
+      "bytes": 4536,
+      "sha256": "ecbb8351d66161cdf4eba4b7fa879e86ae07109f028765d17e43dafd2516b4fb"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/connectortransport/public_web_test.go",
+      "bytes": 8938,
+      "sha256": "81865488fe0578c0385d5305f75e5d64751aa8cb3e21db63ebdbb8194593d4ec"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_reads.go",
+      "bytes": 2485,
+      "sha256": "12cd5bae094bdfdc1259425506f1c2fe49d533697fd49176400c1e5b45b60066"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_store.go",
+      "bytes": 21451,
+      "sha256": "85af6808135b9774a2cc1072d31e2123aca4e92ae69c0ae7adf4844f374c9c0f"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_json_config_test.go",
+      "bytes": 745,
+      "sha256": "22272a1491e8e009fe801bd528783dcf1787799104b7a29c7c2b20f2db29e33c"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_validation.go",
+      "bytes": 7142,
+      "sha256": "a132e23f4453df7383095434385dccea7d64f89facae9b4b7c8c59a2857bb32e"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/delivery_store.go",
+      "bytes": 13189,
+      "sha256": "e591a14a27a8f4e6d455ff52e881ccbf79572f043c58a2c367adc0ec3cdbe4eb"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/operations_store.go",
+      "bytes": 11776,
+      "sha256": "05140e4b341b411891acfec5212187ef5af8b1188e29a8340cbd86477b9ee2c1"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/sensitive_call_claim_test.go",
+      "bytes": 3356,
+      "sha256": "188859f98d4e44b4c291705d6456848734f41b4d303c30ae723c57c132a85cbd"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/security/secret_cipher.go",
+      "bytes": 2303,
+      "sha256": "28f1711dc0b4e6be4e4bbd48cd9782e4f9146a326d90184419d1dafc7f64f087"
+    },
+    {
+      "path": "domainry-pm/internal/infrastructure/config/defaults/agent.json",
+      "bytes": 1875,
+      "sha256": "49653ec70418ce37006230e821475e06dfbd554a3a785b0746b5730386cab2bc"
+    },
+    {
+      "path": "domainry-pm/internal/infrastructure/config/defaults/skills.json",
+      "bytes": 4522,
+      "sha256": "73c54e334b8d6e133f834927d941eed7e33b8d58facc5fa07eff2a6435844b7f"
+    },
+    {
+      "path": "domainry-tools/README.md",
+      "bytes": 4579,
+      "sha256": "ade3ee9a020ae3312c287cdafdd0437e52c15484169b278aebe1c281d4340c1a"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/accounttools/adapter.go",
+      "bytes": 15111,
+      "sha256": "c5d764e414d43221318a5c21f6a77b4d6cadfe3d3b083533e4789cc87768dccf"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/accounttools/availability.go",
+      "bytes": 1951,
+      "sha256": "2fdc5ce5858cd3871786cb3b8c1630cb9bd555649c26d730b72a461ef5c7c7bc"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/webtools/adapter.go",
+      "bytes": 5182,
+      "sha256": "1cb4f52cfefaeb53ab646621c655f4e953f112af14edd660a5a011f130f1f089"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/webtools/definitions.go",
+      "bytes": 2165,
+      "sha256": "70a0e574ca6ae0579e82a6691f610a4e7155bac01a7f38bc4ea4b6ee0c0ca2c5"
+    },
+    {
+      "path": "domainry-tools/internal/architecture/layout_test.go",
+      "bytes": 4855,
+      "sha256": "cd992c642b2580424df9339978e99144337185efc25c661d1d2dfb268dbdeb38"
+    },
+    {
+      "path": "domainry-tools/module/account_read_fixture_test.go",
+      "bytes": 4325,
+      "sha256": "783a33d2f8e3ab5a8cd10af5dc2c838c39d98fcbecdbf2790f203886ee331e19"
+    },
+    {
+      "path": "domainry-tools/module/module.go",
+      "bytes": 2493,
+      "sha256": "b5d729f948e431727eb0692b90a27fa1153dbdda2ec8bb06607f936366ffba8b"
+    },
+    {
+      "path": "domainry-tools/module/web_test.go",
+      "bytes": 12156,
+      "sha256": "9f75b9b8886e76b3ed51be2f71f476139def64d91d3a1474097ecf441b79021c"
+    },
+    {
+      "path": "domainry-work/internal/infrastructure/config/defaults/agent.json",
+      "bytes": 1991,
+      "sha256": "e7655aa17b2a5f8a85ae393db62ab2d0febb098f65480295f82398b565788828"
+    },
+    {
+      "path": "domainry-work/internal/infrastructure/config/defaults/skills.json",
+      "bytes": 4603,
+      "sha256": "2075f5ec0874138dd48b9ded2a9ee9341c8567b582df688fc7fae91bb86b87ec"
+    }
+  ],
+  "upstream_read_only_interface_evidence": [
+    {
+      "path": "anti/llm-proxy/router/router.go",
+      "bytes": 7068,
+      "sha256": "d7e0a8ac08f8bb4427880086c598bb93dad9c12c3e5a22697b8ff841daee7325"
+    },
+    {
+      "path": "anti/llm-proxy/handler/web_search.go",
+      "bytes": 4673,
+      "sha256": "870d89a92bd5c6e9a1bc26dfe713297b9b5de07f21bee205b70fe5103ba43717"
+    },
+    {
+      "path": "anti/llm-proxy/handler/web_fetch.go",
+      "bytes": 2028,
+      "sha256": "d244c8fbb03822470ee9c180aded22534dd95a1a8708901fa18d4b57f2c53efa"
+    },
+    {
+      "path": "anti/llm-proxy/model/web_search/web_search.go",
+      "bytes": 3496,
+      "sha256": "0ffbc1d49018392f98ae18da82f046e1fee8c166c1f54914168b200773ceb33f"
+    },
+    {
+      "path": "anti/llm-proxy/model/web_fetch/web_fetch.go",
+      "bytes": 248,
+      "sha256": "abd886bdd5a14b32a56b717bbaa28e59af636fff7fc9efec98fff516907827aa"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f04-web-scope/final-check.json",
+      "bytes": 192,
+      "sha256": "d5a3c8db4271abe07a634de0b1be9407444ae74ec337d620f566bb6caab9e6ea"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f04-web-scope/host-race.log",
+      "bytes": 439,
+      "sha256": "858aa3172163afee2ccac460195099803652347f28824be450475656967e7ced"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f04-web-scope/provider-race.log",
+      "bytes": 851,
+      "sha256": "33883a081d2eafe3943cf97abe7abe963845bd0769d4109523dab2c0d13982e3"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f04-web-scope/restoration.json",
+      "bytes": 3282,
+      "sha256": "821c045527f24095ac0cd7f1637d0b1081c5874553b42ffa5149ef3a8bae815e"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f04-web-scope/restore-plan.json",
+      "bytes": 2350,
+      "sha256": "afc22134833e00e0a6966f04250aead7b8f82e32a9319c9aeff51190bd0ce32f"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f04-web-scope/scope-audit.json",
+      "bytes": 15580,
+      "sha256": "fb958914176b0be173b6547deabf6ceddbf7bd00b4357ac5728d949cfc8e7814"
+    }
+  ],
+  "prior_manifests": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-product.json",
+      "bytes": 361707,
+      "sha256": "642818cfb012fc21f08717423eba52e5bd443a86716ce45b8a4481338a17d6df"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy.json",
+      "bytes": 11268,
+      "sha256": "4455d7141ecd1f177370286950a83132394832f9839714661a03889e2fc92610"
+    }
+  ],
+  "supersedes": "Only llm-proxy service modifications and their inclusion in F04 delivery; historical manifests and logs are retained unchanged. Existing Domainry F04 implementation and browser evidence remain unchanged.",
+  "limitations": [
+    "Upstream responses use isolated protocol HTTP servers; no deployed llm-proxy/Parallel/Jina success claimed.",
+    "Browser suite was not repeated: 69 prior non-document source files and 1713 build files are hash-identical.",
+    "F05 remains pending; progress remains 53 of 81."
+  ]
+}

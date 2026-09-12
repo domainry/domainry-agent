@@ -1,0 +1,4 @@
+PASS text table uploaded, indexed and original download verified
+PASS 25 actual parsed rows paginate 20/5, and copy/download contain only the selected page
+PASS tool results display exact values, missing email, 25 table rows and verified source
+PASS mobile result display, document deletion and historical extraction revocation

@@ -1,0 +1,12 @@
+# github.com/domainry/domainry-connectors/internal/oauth2 [github.com/domainry/domainry-connectors/internal/oauth2.test]
+internal/oauth2/authorization_test.go:44:92: undefined: connector.ErrorClassificationPermanent
+internal/oauth2/authorization_test.go:45:55: undefined: connector.ErrorClassificationUncertain
+internal/oauth2/authorization_test.go:46:60: undefined: connector.ErrorClassificationUncertain
+internal/oauth2/authorization_test.go:47:84: undefined: connector.ErrorClassificationUncertain
+internal/oauth2/authorization_test.go:48:105: undefined: connector.ErrorClassificationUncertain
+internal/oauth2/authorization_test.go:49:62: undefined: connector.ErrorClassificationUncertain
+internal/oauth2/authorization_test.go:50:46: undefined: connector.ErrorClassificationUncertain
+FAIL	github.com/domainry/domainry-connectors/internal/oauth2 [build failed]
+ok  	github.com/domainry/domainry-connectors/providers/google_workspace/google	0.732s
+ok  	github.com/domainry/domainry-connectors/providers/microsoft_365/microsoft	1.165s
+FAIL

@@ -1,0 +1,276 @@
+{
+  "todo": "K05",
+  "todo_complete": false,
+  "increment": "private product document upload",
+  "increment_complete": true,
+  "date": "2026-09-11",
+  "source_commit": "dbf61406e55b8a446f026cde941ce7f9a9f33bda",
+  "provider_revision": "1.2.0",
+  "real_identity": true,
+  "real_knowledge_service": true,
+  "real_model": false,
+  "new_browser_acceptance": false,
+  "final_fixture_index": 2,
+  "fixtures": [
+    {
+      "evidence_directory": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-fzuqsp47",
+      "test_passed": false,
+      "duration_seconds": 41.51,
+      "report": {
+        "cleanup_verified": false,
+        "complete": false,
+        "conversation_citation": true,
+        "conversation_run_id": "crun_c145ac7cdd372a7cad631c40d8e24c3c",
+        "database": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-fzuqsp47/managed.db",
+        "document_id": "kdoc_6e6ac452060155069743510813f5e576",
+        "indexed": true,
+        "kb_id": "kb-3bbd8f1d3249",
+        "library_id": "lib_977b714004a2e322a31aed4f254f88e7",
+        "marker": "QINGHE-PRIVATE-UPLOAD-7E51B3E4B35F59F5A68F3441",
+        "model": "deterministic",
+        "origin": "https://api.verdent.ai",
+        "private_acl": true,
+        "recovery_required": true,
+        "restart_original": true,
+        "runtime_id": "managed-live-7e51b3e4b35f59f5a68f3441",
+        "synthetic": true,
+        "team_id": "1470194374940573696",
+        "visibility_matching": true,
+        "visibility_omitted": true,
+        "visibility_wrong": true,
+        "workspace_id": "managed-live"
+      },
+      "writes": [
+        {
+          "method": "POST",
+          "doc_id": "dka_9e6f1218dfd40b694fbbf35b7b7ed8c5eae8294173fa4e06526731f85f88e927",
+          "filename": "document-1cf2263b85da3586bd9522e7464fb42c.md",
+          "permission_header": "[\"scope:agent:library:b7968c3621ac63567248223bc6f2ba126da7df7b381bc52ff07138e11bada369\"]",
+          "request_id": "kput_ee43abd00f8ce05736a31b9322a90dac5a4116beea2cb2f731c2d642d13984da",
+          "http_status": 200
+        },
+        {
+          "method": "DELETE",
+          "doc_id": "dka_9e6f1218dfd40b694fbbf35b7b7ed8c5eae8294173fa4e06526731f85f88e927",
+          "http_status": 200
+        }
+      ],
+      "cleanup": {
+        "cleanup_verified": true,
+        "delete_acknowledged": true,
+        "durable_tombstone": true,
+        "original_reference_removed": true,
+        "fetch_err_code": 1004,
+        "absent_from_search": true,
+        "initial_test_failure": "asserted HTTP 200 for deleted document; product correctly returned document_not_found 404",
+        "initial_test_complete": false
+      },
+      "persisted": {
+        "remote_id": "dka_9e6f1218dfd40b694fbbf35b7b7ed8c5eae8294173fa4e06526731f85f88e927",
+        "access_policy_sha256": "00d758794025b31444b7160f877dd0d43efa1a32b03088f814fb6f3373cd4bd8",
+        "put_request_id": "kput_ee43abd00f8ce05736a31b9322a90dac5a4116beea2cb2f731c2d642d13984da",
+        "put_started": true,
+        "put_acknowledged": true,
+        "index_observed": true,
+        "delete_started": true,
+        "delete_acknowledged": true
+      },
+      "document_state": "deleted",
+      "original_reference_removed": true
+    },
+    {
+      "evidence_directory": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-1silkczd",
+      "test_passed": true,
+      "duration_seconds": 32.74,
+      "report": {
+        "cleanup_verified": true,
+        "complete": true,
+        "conversation_citation": true,
+        "conversation_run_id": "crun_5b532956f42f733034b772cd957b8161",
+        "database": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-1silkczd/managed.db",
+        "document_id": "kdoc_50e673e997872e802f744b6fac426d59",
+        "indexed": true,
+        "kb_id": "kb-3bbd8f1d3249",
+        "library_id": "lib_7be197e41551f1054a0a36b33092f31c",
+        "marker": "QINGHE-PRIVATE-UPLOAD-5CCF23C2A85C552D12F19031",
+        "model": "deterministic",
+        "origin": "https://api.verdent.ai",
+        "private_acl": true,
+        "restart_original": true,
+        "runtime_id": "managed-live-5ccf23c2a85c552d12f19031",
+        "synthetic": true,
+        "team_id": "1470194374940573696",
+        "visibility_matching": true,
+        "visibility_omitted": true,
+        "visibility_wrong": true,
+        "workspace_id": "managed-live"
+      },
+      "writes": [
+        {
+          "method": "POST",
+          "doc_id": "dka_b1db2b50f4b056185badee36c68513eb397b99c05d3bc54cfc1bc945aa3bc052",
+          "filename": "document-1cf2263b85da3586bd9522e7464fb42c.md",
+          "permission_header": "[\"scope:agent:library:f1febf614a6abf6074d00d30a78a91f6c70c86a6c593ad87aa40cbc9ae0cae92\"]",
+          "request_id": "kput_9f33368c04b2627c30c19db561eba7821f50bff6992d7f746b253253f11c1209",
+          "http_status": 200
+        },
+        {
+          "method": "DELETE",
+          "doc_id": "dka_b1db2b50f4b056185badee36c68513eb397b99c05d3bc54cfc1bc945aa3bc052",
+          "http_status": 200
+        }
+      ],
+      "cleanup": {
+        "cleanup_verified": true,
+        "delete_acknowledged": true,
+        "durable_tombstone": true,
+        "original_reference_removed": true,
+        "fetch_err_code": 1004,
+        "absent_from_search": true
+      },
+      "persisted": {
+        "remote_id": "dka_b1db2b50f4b056185badee36c68513eb397b99c05d3bc54cfc1bc945aa3bc052",
+        "access_policy_sha256": "826357581d6bd5dcdf46535f3db2661b8744c41862f7fc0581ff163a51b96d2b",
+        "put_request_id": "kput_9f33368c04b2627c30c19db561eba7821f50bff6992d7f746b253253f11c1209",
+        "put_started": true,
+        "put_acknowledged": true,
+        "index_observed": true,
+        "delete_started": true,
+        "delete_acknowledged": true
+      },
+      "document_state": "deleted",
+      "original_reference_removed": true
+    },
+    {
+      "evidence_directory": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-tne9t279",
+      "test_passed": true,
+      "duration_seconds": 32.04,
+      "report": {
+        "absent_from_search": true,
+        "cleanup_search_hits": 1,
+        "cleanup_verified": true,
+        "complete": true,
+        "conversation_citation": true,
+        "conversation_run_id": "crun_e69740aa34bcf06deba105ad00175738",
+        "database": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-tne9t279/managed.db",
+        "document_id": "kdoc_ccdb531b6cf474fd84e11a352dedea7c",
+        "indexed": true,
+        "kb_id": "kb-3bbd8f1d3249",
+        "library_id": "lib_bfe0b6821e9727a9698b94ff6fd814c3",
+        "marker": "QINGHE-PRIVATE-UPLOAD-7084762D2444D46836787AA0",
+        "model": "deterministic",
+        "origin": "https://api.verdent.ai",
+        "private_acl": true,
+        "read_after_disabling_uploads": true,
+        "restart_original": true,
+        "runtime_id": "managed-live-7084762d2444d46836787aa0",
+        "synthetic": true,
+        "team_id": "1470194374940573696",
+        "visibility_matching": true,
+        "visibility_omitted": true,
+        "visibility_wrong": true,
+        "workspace_id": "managed-live"
+      },
+      "writes": [
+        {
+          "method": "POST",
+          "doc_id": "dka_71c629db66ec523f3ee7be17a7ba19e774058884a8f377cb5bc847e1151769b9",
+          "filename": "document-1cf2263b85da3586bd9522e7464fb42c.md",
+          "permission_header": "[\"scope:agent:library:45eed239e7fbfad631135f639db583099742d6abd58f8f9db6a01b5fad3475f8\"]",
+          "request_id": "kput_90ce654f5c06dc4c3a076dd14d31cca9419f1ac03e607f2d2636e0d86b86bf61",
+          "http_status": 200
+        },
+        {
+          "method": "DELETE",
+          "doc_id": "dka_71c629db66ec523f3ee7be17a7ba19e774058884a8f377cb5bc847e1151769b9",
+          "http_status": 200
+        }
+      ],
+      "cleanup": {
+        "cleanup_verified": true,
+        "absent_from_search": true,
+        "fetch_err_code": 1004
+      },
+      "persisted": {
+        "remote_id": "dka_71c629db66ec523f3ee7be17a7ba19e774058884a8f377cb5bc847e1151769b9",
+        "access_policy_sha256": "a4987f16dfc165d8a78083ef9abbd7d44f00f86e15e7be1d45e5640a8bef5272",
+        "put_request_id": "kput_90ce654f5c06dc4c3a076dd14d31cca9419f1ac03e607f2d2636e0d86b86bf61",
+        "put_started": true,
+        "put_acknowledged": true,
+        "index_observed": true,
+        "delete_started": true,
+        "delete_acknowledged": true
+      },
+      "document_state": "deleted",
+      "original_reference_removed": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "agent_full",
+      "exit_code": 0,
+      "log": "/tmp/domainry-K05-agent-full-final.log"
+    },
+    {
+      "name": "agent_related_race",
+      "exit_code": 0,
+      "log": "/tmp/domainry-K05-private-race.log"
+    },
+    {
+      "name": "agent_vet",
+      "exit_code": 0,
+      "log": "/tmp/domainry-K05-agent-vet.log"
+    },
+    {
+      "name": "sdk_full",
+      "exit_code": 0,
+      "log": "/tmp/domainry-K05-sdk-full.log"
+    },
+    {
+      "name": "connectors_full",
+      "exit_code": 0,
+      "log": "/tmp/domainry-K05-connectors-full.log"
+    },
+    {
+      "name": "connectors_final_catalog_provider",
+      "exit_code": 0,
+      "log": "/tmp/domainry-K05-connector-final.log"
+    },
+    {
+      "name": "connector_vet",
+      "exit_code": 0,
+      "log": "/tmp/domainry-K05-connector-vet.log"
+    },
+    {
+      "name": "frontend_test",
+      "exit_code": 0,
+      "log": "/tmp/domainry-K05-frontend-test.log"
+    },
+    {
+      "name": "frontend_build",
+      "exit_code": 0,
+      "log": "/tmp/domainry-K05-frontend-build.log"
+    },
+    {
+      "name": "policy_recovery_and_binding",
+      "exit_code": 0,
+      "log": "/tmp/domainry-K05-policy-and-binding-final.log"
+    },
+    {
+      "name": "live_final",
+      "exit_code": 0,
+      "log": "/tmp/domainry-K05-managed-private-readonly-live.log"
+    }
+  ],
+  "remaining": [
+    "datasource configuration UI",
+    "independent real multi-library product upload acceptance",
+    "browser acceptance with new datasource UI"
+  ],
+  "local_test_corrections": [
+    "private storage fixture needs a child directory created with mode 0700",
+    "document poll must be at least 10 ms",
+    "library source assembly needs a tool-capable host"
+  ],
+  "initial_live_failure": "test expected HTTP 200 after deletion; product correctly returns document_not_found 404; failure retained and cleanup independently verified"
+}

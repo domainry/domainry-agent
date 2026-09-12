@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http/httptest"
 	"path/filepath"
 	"strings"
@@ -13,9 +14,9 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent/internal/application"
-	"github.com/domainry/domainry-agent/internal/infrastructure/artifactstorage"
 	agentremote "github.com/domainry/domainry-agent/remote"
 	agentserver "github.com/domainry/domainry-agent/server"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 type artifactTestPolicy struct{ denied atomic.Value }
@@ -45,14 +46,14 @@ func artifactErrorClass(t *testing.T, err error, class string) {
 
 func TestArtifactsSaaSRoundTripVersionsReceiptsAndDownloadAuthority(t *testing.T) {
 	repo, a := conversationRepository(t), conversationAuthority()
-	storage, err := artifactstorage.NewFiles(filepath.Join(t.TempDir(), "content"))
+	storage, err := knowledgemodule.NewArtifactFiles(filepath.Join(t.TempDir(), "content"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer storage.Close()
 	policy := &artifactTestPolicy{}
 	options := application.ConversationOptions{PersonalAuthorizer: policy, ArtifactStorage: storage}
-	service, err := application.NewConversationService(repo, nil, a.RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, nil, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -156,7 +157,7 @@ func TestArtifactsSaaSRoundTripVersionsReceiptsAndDownloadAuthority(t *testing.T
 	// Changed server TTL must not turn a lost-response retry into a new export.
 	service.Close()
 	options.ArtifactExportTTL = 2 * time.Hour
-	restarted, err := application.NewConversationService(repo, nil, a.RuntimeID, options)
+	restarted, err := conversationassembly.NewService(repo, nil, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -183,7 +184,7 @@ func TestArtifactProvenanceProtectsMetadataEditsAndExportsAfterRestart(t *testin
 		}
 		return sourceAnswer("PRIVATE-VALUE-97"), nil
 	}}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{Knowledge: knowledge, PersonalAuthorizer: policy, ToolHost: personal})
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{Knowledge: knowledge, PersonalAuthorizer: policy, ToolHost: personal})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -220,7 +221,7 @@ func TestArtifactProvenanceProtectsMetadataEditsAndExportsAfterRestart(t *testin
 	_, err = service.CreateArtifact(t.Context(), input, a)
 	artifactErrorClass(t, err, "bad_request")
 	service.Close()
-	service, err = application.NewConversationService(repo, nil, a.RuntimeID, application.ConversationOptions{Knowledge: knowledge, PersonalAuthorizer: policy})
+	service, err = conversationassembly.NewService(repo, nil, a.RuntimeID, application.ConversationOptions{Knowledge: knowledge, PersonalAuthorizer: policy})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -258,7 +259,7 @@ func TestArtifactProvenanceProtectsMetadataEditsAndExportsAfterRestart(t *testin
 func TestArtifactsRejectCorruptHostContentBeforePersisting(t *testing.T) {
 	repo, a := conversationRepository(t), conversationAuthority()
 	storage, policy := &corruptArtifactStorage{}, &artifactTestPolicy{}
-	service, err := application.NewConversationService(repo, nil, a.RuntimeID, application.ConversationOptions{PersonalAuthorizer: policy, ArtifactStorage: storage})
+	service, err := conversationassembly.NewService(repo, nil, a.RuntimeID, application.ConversationOptions{PersonalAuthorizer: policy, ArtifactStorage: storage})
 	if err != nil {
 		t.Fatal(err)
 	}

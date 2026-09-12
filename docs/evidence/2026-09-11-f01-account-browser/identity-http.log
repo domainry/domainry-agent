@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-agent/internal/assembly/web [github.com/domainry/domainry-agent/internal/assembly/web.test]
+internal/assembly/web/integration_accounts_test.go:59:85: cannot use h.registrar.Renderer (variable of interface type "github.com/domainry/domainry-agent-sdk/modulehost".Dialect) as "github.com/domainry/domainry-integration-sdk/modulehost".Dialect value in return statement: "github.com/domainry/domainry-agent-sdk/modulehost".Dialect does not implement "github.com/domainry/domainry-integration-sdk/modulehost".Dialect (missing method Insert)
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web [build failed]
+FAIL

@@ -1,0 +1,423 @@
+{
+  "schema": "agent.k06.increment.v1",
+  "date": "2026-09-11",
+  "status": "in_progress",
+  "completed": false,
+  "live_cases": [
+    {
+      "case": "pdf-first",
+      "complete": true,
+      "model": "glm-5.3-flash-free",
+      "cleanup_verified": true,
+      "absent_from_search": true,
+      "writes": [
+        {
+          "method": "POST",
+          "http_status": 200,
+          "doc_id": "dka_6da471f7578e1f547b3194159374fb5aee823cbb6d6460e9c5985527b11c86d6"
+        },
+        {
+          "method": "DELETE",
+          "http_status": 200,
+          "doc_id": "dka_6da471f7578e1f547b3194159374fb5aee823cbb6d6460e9c5985527b11c86d6"
+        }
+      ],
+      "recovery_directory": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-fsygyo5s/pdf"
+    },
+    {
+      "case": "docx-first-failed",
+      "complete": false,
+      "model": "glm-5.3-flash-free",
+      "cleanup_verified": true,
+      "absent_from_search": true,
+      "writes": [
+        {
+          "method": "POST",
+          "http_status": 200,
+          "doc_id": "dka_ec9d220766e628cfbfb013fc717d9b117b76f9f530a0a891a0fea4bac16782f9"
+        },
+        {
+          "method": "DELETE",
+          "http_status": 200,
+          "doc_id": "dka_ec9d220766e628cfbfb013fc717d9b117b76f9f530a0a891a0fea4bac16782f9"
+        }
+      ],
+      "recovery_directory": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-fsygyo5s/docx"
+    },
+    {
+      "case": "xlsx-first-failed",
+      "complete": false,
+      "model": "glm-5.3-flash-free",
+      "cleanup_verified": true,
+      "absent_from_search": true,
+      "writes": [
+        {
+          "method": "POST",
+          "http_status": 200,
+          "doc_id": "dka_3c10765a15978132d3d33ec330d3252dfc3fa777b7f81b40ff17dae096bdc3dd"
+        },
+        {
+          "method": "DELETE",
+          "http_status": 200,
+          "doc_id": "dka_3c10765a15978132d3d33ec330d3252dfc3fa777b7f81b40ff17dae096bdc3dd"
+        }
+      ],
+      "recovery_directory": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-fsygyo5s/xlsx"
+    },
+    {
+      "case": "docx-retry",
+      "complete": true,
+      "model": "glm-5.3-flash-free",
+      "cleanup_verified": true,
+      "absent_from_search": true,
+      "writes": [
+        {
+          "method": "POST",
+          "http_status": 200,
+          "doc_id": "dka_7a0fcda4b4c32cedd8d3fdbf7df92383cdbf2e2577c1e440db930943ab22ff70"
+        },
+        {
+          "method": "DELETE",
+          "http_status": 200,
+          "doc_id": "dka_7a0fcda4b4c32cedd8d3fdbf7df92383cdbf2e2577c1e440db930943ab22ff70"
+        }
+      ],
+      "recovery_directory": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-sj4x5byb/docx"
+    },
+    {
+      "case": "xlsx-local-retry",
+      "complete": true,
+      "seconds": 73.57,
+      "model": "glm-5.3-flash-free",
+      "parser": "agent-spreadsheet/1-excelize-2.11.0",
+      "source_provider": "agent_parsed_document",
+      "source_sha256": "1c418895a86623474b9e3b00c3d9a6f1d9cd8f04ed28c8bf3a665dcce6f1c5b2",
+      "cleanup_verified": true,
+      "absent_from_search": true,
+      "writes_evidence": "evidence/2026-09-11-k06-extraction/xlsx-local-retry/writes.json",
+      "recovery_directory": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-nyi_m1t1/xlsx"
+    }
+  ],
+  "verified": [
+    "real PDF extraction",
+    "real DOCX extraction after rule feedback fix",
+    "exact decimal values and two parsed table rows",
+    "missing email with null value",
+    "desktop/mobile source dialog and Identity revoke/restore",
+    "host restart, document deletion and history suppression",
+    "agent and SDK Go suites",
+    "related race and vet",
+    "33 frontend tests and build",
+    "local XLSX/CSV/TSV parser through public SDK and host injection",
+    "real model extraction of the previously failing XLSX original; B3-B6 and A10-C11 locations",
+    "download/member revocation, in-flight deletion and restart with actual XLSX tool loop",
+    "forged field/citation locations rejected",
+    "25-row browser page/copy/download; only selected page exported",
+    "desktop/mobile actual XLSX source dialog, restart and Identity revocation"
+  ],
+  "not_verified": [
+    "private conversation attachment direct extraction",
+    "paged original reads and compact source receipts",
+    "local DOCX/PDF parsing adapters (current format acceptance uses remote parsing)"
+  ],
+  "browser_external_services": "deterministic model and remote knowledge protocol fixtures; real Identity/HTTP/SQLite/original storage; XLSX browser uses actual local XLSX parsing",
+  "next_design": "../document-parsing.md",
+  "files": [
+    {
+      "path": "evidence/2026-09-11-k06-extraction/agent-final.log",
+      "bytes": 2776,
+      "sha256": "8e3bf3290d1c1ac5414483dd8eb339715a529ba809c9506b07edf160b578a89a"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-first-failed/failure.png",
+      "bytes": 115965,
+      "sha256": "609d8e607df6b0eec07cc71a8d06cba40958633dc4876a1d8ecb50a4b43f3ae7"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-first-failed/report.json",
+      "bytes": 21407,
+      "sha256": "fba707ef53416086b65ec1d01e7b458567f97793a47e2f43ad352f611e298fda"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-first.log",
+      "bytes": 12106,
+      "sha256": "be58ff76fffb4e7aa0a5a719ef8bbc7490e3b015883d6f1e57d04d939d1bc97c"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-host-repair.log",
+      "bytes": 283,
+      "sha256": "55fbcbf8eba851d1140a126d4c554c500b987696920fa4361c25c1e66330a0aa"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-host-table.log",
+      "bytes": 283,
+      "sha256": "f11d8bef366e46fb081c857ff6fdf9ab13c0ff208fad2c0e39df74d284026b29"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-long-table-incomplete/failure.png",
+      "bytes": 109614,
+      "sha256": "a8ee45f49df1425e49267c0272ae813b7a895af41e29a37954f86156acf51619"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-long-table-incomplete/report.json",
+      "bytes": 174,
+      "sha256": "bbfda0f521db5a88cad29f011deaef3d98cea6b06dd47e2dbe696aa90f2f24cd"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-repair/desktop-extraction.png",
+      "bytes": 119446,
+      "sha256": "7c8a70b59a6be80dde4fb2d280094318edfb490f559d99fb0721eaaa5004bb25"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-repair/desktop-source.png",
+      "bytes": 166788,
+      "sha256": "fcd4fde0a14763f2c1d8d6e2e350f7f9260604bebfbbbe4d46925960f6017020"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-repair/mobile-extraction.png",
+      "bytes": 62409,
+      "sha256": "603563e6e3e8f51e417496d0741e39684a4cd3f47e5b0aa8b346c8f534b8fc18"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-repair/report.json",
+      "bytes": 36609,
+      "sha256": "76e60cd0cbfaaed5f877bfb16756b009de26ffa2cd572ed032076718478c3a14"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-repair.log",
+      "bytes": 363,
+      "sha256": "a3a6dced3b000d719d8fcc351b403dd89dde88abc6861b7137f59e9edad4c524"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-table-local/desktop-extraction.png",
+      "bytes": 99685,
+      "sha256": "806b351e0425a7aabb26005be78f3f2ac87850c18c256fb6eecd797298437b74"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-table-local/desktop-source.png",
+      "bytes": 159111,
+      "sha256": "81dc8bb8c6e7f0f231ab1129f503703094a92142807becf4a7382f3eb7ed6871"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-table-local/mobile-extraction.png",
+      "bytes": 61450,
+      "sha256": "b1af756091091831a3587a5b8e67d31e098a4db9859ff56e6662459b3af9476f"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-table-local/report.json",
+      "bytes": 41462,
+      "sha256": "39a629a6aeecc8ff0858b5e2e6654cd2522c9eac161c3e293857113091a4abc0"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-table-local/table-page-2.md",
+      "bytes": 153,
+      "sha256": "150fc1ea00f4ff3fb4d7aa2f2dc2d047d55e8d8ca7abc211fdfd10b8cc24b7eb"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-table-local-host.log",
+      "bytes": 283,
+      "sha256": "6983a59abe13d0d2372067ab8bf0b6151650a37440caadd5bdeba3f43714260c"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-table-local.log",
+      "bytes": 328,
+      "sha256": "444437f6f97b23fb4365627aa1d785c3d4e2991240f2316a503f10639b05c301"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-table.log",
+      "bytes": 5697,
+      "sha256": "77d1bb82ac095c8cbedd7c9efb1ce39eef0502cc49b97ff1ebd2a0225f7d035b"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-xlsx-local/desktop-extraction.png",
+      "bytes": 121658,
+      "sha256": "12644bdb699d7d01768f850e7b8ad203b06538cf79fcf23d545b2326c7d1ba57"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-xlsx-local/desktop-source.png",
+      "bytes": 158806,
+      "sha256": "7eacdeef53fff9bf51ae95250879ea03ba10499ff4ea8900291fcae37aa68051"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-xlsx-local/mobile-extraction.png",
+      "bytes": 66396,
+      "sha256": "2e248573428ec5d5f0dd2b612ef60e877f3e31517aa374cae9c733883fe0d6be"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-xlsx-local/report.json",
+      "bytes": 66712,
+      "sha256": "d93d297d5e7f93fa2d6499e26849bb2e327bddea7492f7528b7bf012a2e57320"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-xlsx-local-host.log",
+      "bytes": 283,
+      "sha256": "01d4a7fc3f8c9fee2b60aa8a87592c430159c35a26fca671e6d019da60313f3c"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/browser-xlsx-local.log",
+      "bytes": 463,
+      "sha256": "da625a22b27ef9a633ff7306d156972ee8542d98dba769703ef9893a179875ea"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/docx-first-failed/cleanup-recheck.json",
+      "bytes": 168,
+      "sha256": "9d1c1dec5c35e48c392f5d070e1301bac1a2288342987b81cce06e4602303ca9"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/docx-first-failed/report.json",
+      "bytes": 888,
+      "sha256": "295584fc7b61624ebb4abf08666d3a04c4eee145841ce0ae5586f7950ce1dd8a"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/docx-first-failed/writes.json",
+      "bytes": 539,
+      "sha256": "1b7b841da9bd8467e725662073f3d216e72a16475aeb2e6f467cd244d792835d"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/docx-retry/extraction-results.json",
+      "bytes": 7739,
+      "sha256": "1fde3cb56727c2a94f907770dfe58bfb57b67f4554b440360c774fb2e8930dab"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/docx-retry/report.json",
+      "bytes": 9323,
+      "sha256": "9680545bd9317cf2ad8f840350230880f1eb43999a9497db7ecd326a15e273d2"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/docx-retry/writes.json",
+      "bytes": 539,
+      "sha256": "6682a2d55a06565b8b0200d6a9409a7815d6c098c7a5a1cc3683cf27fa8f66d1"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/docx-retry.log",
+      "bytes": 871,
+      "sha256": "dea602075d3c38d5c00135a0eab65692e648311ebb4ff30ab6b311144d295dc1"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/extraction-feedback-final.log",
+      "bytes": 194,
+      "sha256": "db4b39d98ae0763750c16f633117e79b002e395db768ef8e493097d86b1d5379"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/formats-live.log",
+      "bytes": 1370,
+      "sha256": "cc9a1dbb5f3402650ab337a44fd5a0d91d6180f7f0a3a1232cf3d9c937919b5f"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/frontend-final-build.log",
+      "bytes": 31787,
+      "sha256": "3c7d72a046bd90d5b2fd79344644cdcbb78144e0825b1aa858c8d5f053c85a38"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/frontend-state-final.log",
+      "bytes": 4661,
+      "sha256": "db9d44599121956300cec0704ef6e77a2b91adfed16e900612ff535208e09966"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/local-frontend-build.log",
+      "bytes": 31787,
+      "sha256": "0af88f36b0f936b5eea8324fd63e010ce4b2189d21591689fde97566c62e2dd2"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/local-frontend-test.log",
+      "bytes": 4662,
+      "sha256": "f019287b3ffa2e10755ba76c4cba98aaa22d551ebe76d714c37e997147003228"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/local-go-all.log",
+      "bytes": 2844,
+      "sha256": "0545fa4b77e0795636b9b990e8e52c37bf886327fe1b96ab2706f70f72a51544"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/local-integration.log",
+      "bytes": 2822,
+      "sha256": "df3af170f4221fefe9202bdc4fb0e581b9293fd9d2b1f63c56cc8bc7011fc198"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/local-parser.log",
+      "bytes": 208,
+      "sha256": "99009257196f40461d085e1a32e648e00b6a7c9ce25e0d512b4b32d09460782e"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/local-race.log",
+      "bytes": 213,
+      "sha256": "73d04a5546341c70fe5a337b965207e1e55f40c47bbaff6c6066f88e91b454af"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/local-sdk-all.log",
+      "bytes": 538,
+      "sha256": "e338f65ea5d90deab5cd315896cb2d91fca3e646cbe3b63b2345025dbcf8adbc"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/local-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/pdf-first/extraction-results.json",
+      "bytes": 7722,
+      "sha256": "a10f3114bc97849f53aa461ffd892a9c15f050c0cd5dca86db706cbcbde76e92"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/pdf-first/report.json",
+      "bytes": 9302,
+      "sha256": "7c08911972a6bf14631199c5ff2092b7fe76bdee796e4c4bfdb0152d109cf0b8"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/pdf-first/writes.json",
+      "bytes": 538,
+      "sha256": "6f18f16395612c30e175119e3a20836599cb34b6c244e84b3bd9a4ad34ec8297"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/race-final.log",
+      "bytes": 194,
+      "sha256": "5c5ea69919019a9033870a99079bb2a3884c23cac8dcf65f578246df043c6b7f"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/sdk-final.log",
+      "bytes": 540,
+      "sha256": "cc9012f9abbf3fa23b1b25399e5ba97f86eb5d8a465fe6a312f3ef56537a3e7e"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/vet-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/xlsx-first-failed/cleanup-recheck.json",
+      "bytes": 168,
+      "sha256": "274746749ea47245d42f8ce8ec6ec0576a74911d6573e5e59f77c9569049c1c6"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/xlsx-first-failed/report.json",
+      "bytes": 888,
+      "sha256": "55aed261b79e558e1b60cd5598c9eb9c4f3328823acd43d62d00963d90287eed"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/xlsx-first-failed/writes.json",
+      "bytes": 539,
+      "sha256": "5e00ee9d4a0f295095c9c29472f69db2a87756468d7f5c9ef6803ed277e4c5eb"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/xlsx-local-live.log",
+      "bytes": 871,
+      "sha256": "463ed03420abffecdd8a12660956770c9559dd296f26d733bc55052784b5ef30"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/xlsx-local-retry/extraction-results.json",
+      "bytes": 22906,
+      "sha256": "e6db2ae1a4e98c41b4fda6fee75711446151841a59251aca4ef04c6f3126d924"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/xlsx-local-retry/report.json",
+      "bytes": 25498,
+      "sha256": "efddc6867b3512a65803519106cb21841e8a75fc4071432cc58831e4746c7566"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-extraction/xlsx-local-retry/writes.json",
+      "bytes": 539,
+      "sha256": "6c721110429aadcf042743346c0184b958eda022760aac97fd62bb986767a04b"
+    }
+  ],
+  "followup_cache_evidence": "evidence/2026-09-11-k06-parse-cache.json"
+}

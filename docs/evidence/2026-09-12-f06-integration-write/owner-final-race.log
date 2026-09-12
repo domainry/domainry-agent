@@ -1,0 +1,70 @@
+=== RUN   TestAccountWriteCredentialPersistenceCannotEraseKnownSuccess
+--- PASS: TestAccountWriteCredentialPersistenceCannotEraseKnownSuccess (0.12s)
+=== RUN   TestAccountWriteRechecksGrantAfterResolvingCredentials
+--- PASS: TestAccountWriteRechecksGrantAfterResolvingCredentials (0.11s)
+=== RUN   TestAccountWriteStableIdentityBoundedReceiptAndCurrentAuthorization
+--- PASS: TestAccountWriteStableIdentityBoundedReceiptAndCurrentAuthorization (0.15s)
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/foreign-personal
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-workspace
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/no-access
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-principal
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/scope-exceeds-principal
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-source
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-hash
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/unknown-operation
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/read-effect
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/async
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/missing-declaration
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/missing-grant
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/revoked-account
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/unknown-payload-field
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/invalid-recipient
+--- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO (1.20s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/foreign-personal (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-workspace (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/no-access (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-principal (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/scope-exceeds-principal (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-source (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-hash (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/unknown-operation (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/read-effect (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/async (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/missing-declaration (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/missing-grant (0.09s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/revoked-account (0.09s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/unknown-payload-field (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/invalid-recipient (0.08s)
+=== RUN   TestAccountWriteConcurrentClaimCannotSendTwice
+--- PASS: TestAccountWriteConcurrentClaimCannotSendTwice (0.26s)
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/unknown-error
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/uncertain
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/permanent
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/retryable
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/wrong-request-ref
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/extra-body
+--- PASS: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed (0.70s)
+    --- PASS: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/unknown-error (0.11s)
+    --- PASS: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/uncertain (0.12s)
+    --- PASS: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/permanent (0.11s)
+    --- PASS: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/retryable (0.11s)
+    --- PASS: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/wrong-request-ref (0.11s)
+    --- PASS: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/extra-body (0.13s)
+=== RUN   TestAccountWriteDisconnectPersistsSuccessAndRevokeHidesIt
+=== RUN   TestAccountWriteDisconnectPersistsSuccessAndRevokeHidesIt/caller-disconnect
+=== RUN   TestAccountWriteDisconnectPersistsSuccessAndRevokeHidesIt/revoke-during-call
+--- PASS: TestAccountWriteDisconnectPersistsSuccessAndRevokeHidesIt (0.26s)
+    --- PASS: TestAccountWriteDisconnectPersistsSuccessAndRevokeHidesIt/caller-disconnect (0.13s)
+    --- PASS: TestAccountWriteDisconnectPersistsSuccessAndRevokeHidesIt/revoke-during-call (0.13s)
+=== RUN   TestAccountWriteInterruptedClaimAndReceiptStorageFailureStayUncertain
+=== RUN   TestAccountWriteInterruptedClaimAndReceiptStorageFailureStayUncertain/true
+=== RUN   TestAccountWriteInterruptedClaimAndReceiptStorageFailureStayUncertain/false
+--- PASS: TestAccountWriteInterruptedClaimAndReceiptStorageFailureStayUncertain (0.28s)
+    --- PASS: TestAccountWriteInterruptedClaimAndReceiptStorageFailureStayUncertain/true (0.14s)
+    --- PASS: TestAccountWriteInterruptedClaimAndReceiptStorageFailureStayUncertain/false (0.14s)
+=== RUN   TestAccountWriteFailuresNeverEnterOrStarveLegacyReconciliation
+--- PASS: TestAccountWriteFailuresNeverEnterOrStarveLegacyReconciliation (0.22s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	4.981s

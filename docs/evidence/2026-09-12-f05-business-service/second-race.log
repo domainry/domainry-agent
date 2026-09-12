@@ -1,0 +1,46 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation interaction expiration unavailable
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:33:55 WARN conversation claim failed error="sql: database is closed"
+--- FAIL: TestConversationBusinessProductWithSharedIdentityService (12.29s)
+panic: Runtime authorization references unknown generated permissions: roles[1].permissions[10].permission_key="identity.user_role_assignments.account_and_roles_update", roles[4].permissions[9].permission_key="identity.user_role_assignments.account_and_roles_update", roles[5].permissions[10].permission_key="identity.user_role_assignments.account_and_roles_update", roles[6].permissions[9].permission_key="identity.user_role_assignments.account_and_roles_update" [recovered, repanicked]
+
+goroutine 49 [running]:
+testing.tRunner.func1.2({0x108586400, 0xc00002c7a0})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1974 +0x2b8
+testing.tRunner.func1()
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1977 +0x460
+panic({0x108586400?, 0xc00002c7a0?})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/panic.go:860 +0x12c
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.mustCompleteRuntimeStartup(...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/startup_errors.go:5
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.newWithExtensionsUsingAllFactoriesAndStore({_, _}, {{0x0, 0x0}, {0x1058e669d, 0x18}, {0x0, 0x0}, {0x0, 0x0}, ...}, ...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/startup.go:512 +0x6bb4
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.NewWithScheduler({_, _}, {{0x0, 0x0}, {0x1058e669d, 0x18}, {0x0, 0x0}, {0x0, 0x0}, ...}, ...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/startup.go:78 +0x338
+github.com/domainry/domainry-runtime/runtime/bootstrap.NewWithScheduler(...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/bootstrap.go:59
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.(*businessWebFixture).open(0xc001a0dc08)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_web_fixture_test.go:155 +0x530
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.TestConversationBusinessProductWithSharedIdentityService(0xc001916d88)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_product_service_test.go:57 +0x398
+testing.tRunner(0xc001916d88, 0x10892c1e0)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2036 +0x168
+created by testing.(*T).Run in goroutine 1
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2101 +0x7c0
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	13.181s
+FAIL

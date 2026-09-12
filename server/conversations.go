@@ -31,6 +31,10 @@ func (s *Server) conversationHandler(op string) http.HandlerFunc {
 			writeError(w, 403, "agent.conversation.runtime_denied", "")
 			return
 		}
+		if s.config.ConversationWorkspaceID != "" && in.Authority.WorkspaceID != s.config.ConversationWorkspaceID {
+			writeError(w, 403, "agent.conversation.workspace_denied", "")
+			return
+		}
 		result, err := agentapplication.InvokeConversation(r.Context(), s.config.Conversations, op, in)
 		if err != nil {
 			status, code := 500, "agent.conversation.internal"

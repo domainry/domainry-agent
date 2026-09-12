@@ -1,0 +1,8 @@
+=== RUN   TestConversationBusinessRPCRealOwnersAndRestart
+    conversation_business_rpc_test.go:286: actual Runtime/Identity/Record/Action/Workflow + SQLite, 33 service HTTP calls; one lost-response Action effect, one nonterminal workflow; source/receipt checks and original-key reconciliation survive complete restart
+--- PASS: TestConversationBusinessRPCRealOwnersAndRestart (39.20s)
+=== RUN   TestConversationBusinessBrowserAndRestart
+    conversation_business_web_test.go:114: Business browser HTTP verified: conversation=conv_815dbe2b6169099f3977ccb11776a01b, queries=3, get=1; full restart and field/read revocation passed
+--- PASS: TestConversationBusinessBrowserAndRestart (119.13s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	160.267s

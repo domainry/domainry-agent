@@ -22,7 +22,7 @@ func resultReadAvailable(in agentsdk.ConversationStepRequest) bool {
 
 // The source's current definition and authorization are mandatory even when
 // the reader itself is permitted. Nested reads retain their original sources.
-func (s *ConversationService) authorizedConversationResult(ctx context.Context, ref agentsdk.ConversationResultReference, a agentsdk.ConversationAuthority, current map[string]conversationCompiledTool, seen map[string]bool) (agentsdk.ConversationToolResult, error) {
+func (s *ConversationService) authorizedConversationResult(ctx context.Context, ref agentsdk.ConversationResultReference, a agentsdk.ConversationAuthority, current map[string]conversationCompiledTool, seen map[string]bool, recipient string) (agentsdk.ConversationToolResult, error) {
 	var empty agentsdk.ConversationToolResult
 	repo, ok := s.repo.(persistence.ConversationResultRepository)
 	if !ok {
@@ -35,7 +35,7 @@ func (s *ConversationService) authorizedConversationResult(ctx context.Context, 
 	if source.Result == nil || source.State != "completed" || source.Call.ID != ref.CallID || source.Step != ref.Step || conversationDigest(source.Result) != ref.SHA256 {
 		return empty, conversationFailure("conflict", "result_reference_changed")
 	}
-	if err = s.authorizeConversationRecord(ctx, ref.ConversationID, ref.RunID, source, a, current, seen); err != nil {
+	if err = s.authorizeConversationRecord(ctx, ref.ConversationID, ref.RunID, source, a, current, seen, recipient); err != nil {
 		return empty, err
 	}
 	return *source.Result, nil
@@ -53,7 +53,7 @@ func (s *ConversationService) readConversationToolResult(ctx context.Context, in
 	if err != nil {
 		return personalToolFailure("result_read_failed")
 	}
-	result, err := s.authorizedConversationResult(ctx, args.Reference, in.Authority, current, map[string]bool{})
+	result, err := s.authorizedConversationResult(ctx, args.Reference, in.Authority, current, map[string]bool{}, in.ConversationID)
 	if err != nil {
 		var coded *agentsdk.Error
 		if errors.As(err, &coded) {

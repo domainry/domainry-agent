@@ -1,0 +1,4 @@
+=== RUN   TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart
+--- PASS: TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart (7.41s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	9.228s

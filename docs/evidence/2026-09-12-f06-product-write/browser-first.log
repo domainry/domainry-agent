@@ -1,0 +1,38 @@
+=== RUN   TestAccountWritesBuiltBrowser
+PASS seven opted-in tools require the actual owner OAuth grant
+    account_write_model_test.go:27: model request 1: 2 messages
+    account_write_model_test.go:28: model request 1 returned after 82.958µs
+    account_write_model_test.go:27: model request 2: 7 messages
+    account_write_model_test.go:28: model request 2 returned after 87.584µs
+    account_write_model_test.go:27: model request 3: 10 messages
+    account_write_model_test.go:28: model request 3 returned after 97.875µs
+    account_write_model_test.go:27: model request 4: 13 messages
+    account_write_model_test.go:28: model request 4 returned after 100µs
+    account_write_model_test.go:27: model request 5: 15 messages
+    account_write_model_test.go:28: model request 5 returned after 2.084792ms
+PASS four exact targets, all recipient groups, complete bodies and clear semantics survive host restart before approval
+    account_write_model_test.go:27: model request 6: 20 messages
+    account_write_model_test.go:28: model request 6 returned after 137.292µs
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('dialog', { name: '处理记录', exact: true }).getByText('邮件已由服务受理', { exact: true }).first() to be visible[22m
+[2m    90 × locator resolved to hidden <strong>邮件已由服务受理</strong>[22m
+
+    at /Users/tiger/Projects/domainry-agent/frontend/tests/account-write.browser.mjs:98:64 {
+  log: [
+    "  - waiting for getByRole('dialog', { name: '处理记录', exact: true }).getByText('邮件已由服务受理', { exact: true }).first() to be visible",
+    '    90 × locator resolved to hidden <strong>邮件已由服务受理</strong>'
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.22.0
+    account_write_browser_test.go:98: account write browser exit status 1
+--- FAIL: TestAccountWritesBuiltBrowser (88.13s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	88.595s
+FAIL

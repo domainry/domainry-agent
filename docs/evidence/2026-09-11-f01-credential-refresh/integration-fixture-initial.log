@@ -1,0 +1,32 @@
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/succeeded
+    provider_secret_updates_test.go:90: Integration access scope is invalid
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/failed
+    provider_secret_updates_test.go:90: Integration access scope is invalid
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/storage-failed
+    provider_secret_updates_test.go:90: Integration access scope is invalid
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/succeeded
+    provider_secret_updates_test.go:90: Integration access scope is invalid
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/failed
+    provider_secret_updates_test.go:90: Integration access scope is invalid
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/storage-failed
+    provider_secret_updates_test.go:90: Integration access scope is invalid
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/succeeded
+    provider_secret_updates_test.go:90: Integration access scope is invalid
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/failed
+    provider_secret_updates_test.go:90: Integration access scope is invalid
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/storage-failed
+    provider_secret_updates_test.go:90: Integration access scope is invalid
+--- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome (0.02s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/succeeded (0.01s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/failed (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/storage-failed (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/succeeded (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/failed (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/storage-failed (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/succeeded (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/failed (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/storage-failed (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	0.684s
+FAIL

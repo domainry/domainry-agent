@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -132,7 +133,7 @@ func TestBusinessRelationToolTraversesAndReauthorizesThroughSaaS(t *testing.T) {
 					return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "查到关联订单1和关联订单2。"}, FinishReason: "stop"}, nil
 				}
 			}}
-			service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})
+			service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -193,7 +194,7 @@ func TestBusinessRelationToolIsAbsentWithoutHostExtension(t *testing.T) {
 		}
 		return (&executionModel{}).answerResult(), nil
 	}}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: &businessSourceFixture{}})
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: &businessSourceFixture{}})
 	if err != nil {
 		t.Fatal(err)
 	}

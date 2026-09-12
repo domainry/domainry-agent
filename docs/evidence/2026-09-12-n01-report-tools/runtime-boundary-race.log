@@ -1,0 +1,8 @@
+--- FAIL: TestRuntimeConsumesDomainryModulesByImmutableVersion (0.00s)
+    tagged_dependency_boundary_test.go:33: Domainry module github.com/domainry/domainry-tools is not pinned to an immutable version: v0.0.0
+    tagged_dependency_boundary_test.go:33: Domainry module github.com/domainry/domainry-tools-sdk is not pinned to an immutable version: v0.0.0
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/boundary	5.154s
+ok  	github.com/domainry/domainry-runtime/runtime/application/agenthost	2.578s
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/transport	3.414s
+FAIL

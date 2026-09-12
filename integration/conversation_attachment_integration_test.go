@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http/httptest"
 	"path/filepath"
 	"strings"
@@ -14,9 +15,9 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent/internal/application"
-	"github.com/domainry/domainry-agent/internal/infrastructure/attachmentstorage"
 	agentremote "github.com/domainry/domainry-agent/remote"
 	agentserver "github.com/domainry/domainry-agent/server"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 type attachmentTestPolicy struct{ denied atomic.Value }
@@ -48,7 +49,7 @@ func (s *attachmentDeleteOutage) DeleteAttachmentContent(ctx context.Context, id
 
 func TestAttachmentsSaaSBinaryRoundTripPermissionsAndDeferredCleanup(t *testing.T) {
 	repo, a := conversationRepository(t), conversationAuthority()
-	files, err := attachmentstorage.NewFiles(filepath.Join(t.TempDir(), "attachments"))
+	files, err := knowledgemodule.NewAttachmentFiles(filepath.Join(t.TempDir(), "attachments"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -57,7 +58,7 @@ func TestAttachmentsSaaSBinaryRoundTripPermissionsAndDeferredCleanup(t *testing.
 	storage.failed.Store(true)
 	policy := &attachmentTestPolicy{}
 	options := application.ConversationOptions{AttachmentStorage: storage, AttachmentAuthorizer: policy}
-	service, err := application.NewConversationService(repo, nil, a.RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, nil, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -155,7 +156,7 @@ func TestAttachmentsSaaSBinaryRoundTripPermissionsAndDeferredCleanup(t *testing.
 		t.Fatal(err)
 	}
 	storage.failed.Store(false)
-	service, err = application.NewConversationService(repo, nil, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, nil, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}

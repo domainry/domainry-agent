@@ -1,0 +1,331 @@
+{
+  "steps": [
+    "two selected Web tools become available with workspace service registration and no OAuth",
+    "six persisted tool calls drive source-bound report; result cards retain query, URLs, read time and unknown completeness",
+    "real Knowledge artifact UI previews, edits v3 and downloads source-preserving Markdown",
+    "tool revocation hides saved answer and report; full host restart preserves preference and authorized v3",
+    "current Identity read revocation removes displayed report and blocks derived content",
+    "authorized workspace member can use shared Web service while private conversation and report remain isolated",
+    "bounded page explicitly reports truncation and creates no report at 390px",
+    "revoked workspace connection makes both tools unavailable and denies historical sources"
+  ],
+  "javascriptErrors": [],
+  "snapshots": [
+    {
+      "title": "公开网页与资料报告",
+      "conversation": {
+        "id": "conv_313546616e0a5d87cb948fa38e85b792",
+        "title": "公开网页与资料报告",
+        "runtime_id": "accounts-runtime",
+        "workspace_id": "accounts-workspace",
+        "user_id": "admin",
+        "archived": false,
+        "memory_enabled": false,
+        "last_seq": 2,
+        "revision": 3,
+        "created_at": "2026-09-11T15:59:10.646Z",
+        "updated_at": "2026-09-11T15:59:15.649Z"
+      },
+      "messages": {
+        "items": [
+          {
+            "id": "msg_cdcdc2f690c3d859a0e738c77ac9ed26",
+            "conversation_id": "conv_313546616e0a5d87cb948fa38e85b792",
+            "run_id": "crun_d0bd7293e78a196e406f5ad9ebba91f0",
+            "seq": 1,
+            "role": "user",
+            "content": "查询最新导出功能，保留来源，并保存、修改和导出资料报告。",
+            "created_at": "2026-09-11T15:59:11.015776Z"
+          },
+          {
+            "id": "msg_9ab89c44b8d737c9560cc64c4b904062",
+            "conversation_id": "conv_313546616e0a5d87cb948fa38e85b792",
+            "run_id": "crun_d0bd7293e78a196e406f5ad9ebba91f0",
+            "seq": 2,
+            "role": "assistant",
+            "content": "资料摘要：WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。\n\n来源：https://example.com/releases；读取时间：2026-09-11T15:59:11.700487Z。页面完整性未知，排名结果不代表全部来源。\n\n已保存网页资料报告，版本 2，并导出 Markdown。报告 ID：art_5c02a9f13bc8d12964d656faea1474d1。",
+            "created_at": "2026-09-11T15:59:15.649313Z"
+          }
+        ]
+      },
+      "run": {
+        "id": "crun_d0bd7293e78a196e406f5ad9ebba91f0",
+        "conversation_id": "conv_313546616e0a5d87cb948fa38e85b792",
+        "client_message_id": "c3754df9-e1fb-44c1-a5b8-6ffbad62f1a4",
+        "status": "completed",
+        "user_seq": 1,
+        "assistant_message_id": "msg_9ab89c44b8d737c9560cc64c4b904062",
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 50,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "web-search",
+                "name": "web_search",
+                "arguments": "{\"limit\":2,\"query\":\"最新导出功能发布说明\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"query\":\"最新导出功能发布说明\",\"search_id\":\"web-fixture-search\",\"items\":[{\"url\":\"https://example.com/releases\",\"title\":\"功能发布说明\",\"excerpts\":[\"2026-09-10 发布：支持 Markdown 导出。\"],\"truncated\":false}],\"scope\":\"ranked_results\",\"truncated\":false},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"public-web\",\"connector_key\":\"web\",\"provider_key\":\"llm_proxy\",\"account_updated_at\":\"2026-09-11T15:59:10.050837Z\",\"operation\":\"web_search\",\"contract_sha256\":\"8c24df34c2968ac2fac33fe5091f5f0d606ea26b9315def2cddd3505fa4063d0\"}],\"read_at\":\"2026-09-11T15:59:11.312331Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_313546616e0a5d87cb948fa38e85b792",
+                  "run_id": "crun_d0bd7293e78a196e406f5ad9ebba91f0",
+                  "step": 0,
+                  "call_id": "web-search",
+                  "sha256": "7e9b4781e05fb77f312004c57fcac180fe451ac370ffdaf53df024b35450bab7"
+                }
+              }
+            ]
+          },
+          {
+            "number": 1,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "web-fetch",
+                "name": "web_fetch",
+                "arguments": "{\"max_content_bytes\":1024,\"url\":\"https://example.com/releases\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"requested_url\":\"https://example.com/releases\",\"url\":\"https://example.com/releases\",\"title\":\"功能发布说明\",\"description\":\"\",\"content\":\"WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。\",\"truncated\":false,\"source_completeness\":\"unknown\",\"warnings\":[\"远端页面完整性未确认\"]},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"public-web\",\"connector_key\":\"web\",\"provider_key\":\"llm_proxy\",\"account_updated_at\":\"2026-09-11T15:59:10.050837Z\",\"operation\":\"web_fetch\",\"contract_sha256\":\"59bc1d78623a0ab72320efe81bd601592149719b8c0957509b07cb0ddbee8b06\"}],\"read_at\":\"2026-09-11T15:59:11.700487Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_313546616e0a5d87cb948fa38e85b792",
+                  "run_id": "crun_d0bd7293e78a196e406f5ad9ebba91f0",
+                  "step": 1,
+                  "call_id": "web-fetch",
+                  "sha256": "b11a4dd8f9e047aa5bbb901318baabfd25ec329e95059b103d60a25e887d998c"
+                }
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "write",
+                "id": "report-create",
+                "name": "artifact_create",
+                "arguments": "{\"content\":{\"kind\":\"markdown\",\"markdown\":\"# 网页资料报告\\n\\n摘录：WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。\\n\\n查询：最新导出功能发布说明\\n来源：https://example.com/releases\\n请求 URL：https://example.com/releases\\n读取时间：2026-09-11T15:59:11.700487Z\\n页面完整性：unknown\\n提示：远端页面完整性未确认\\n\\n源文标注发布日期 2026-09-10；读取时间并非发布时间。排名搜索不穷尽来源，其他功能未证实。\\n\"},\"title\":\"网页资料报告\"}",
+                "status": "completed",
+                "resource_id": "art_5c02a9f13bc8d12964d656faea1474d1",
+                "result_preview": "{\"artifact\":{\"id\":\"art_5c02a9f13bc8d12964d656faea1474d1\",\"version\":1,\"title\":\"网页资料报告\",\"kind\":\"markdown\",\"sha256\":\"d9951cc06e0e927c3cfcfe027dfac48e3717cfd91a242fc7210b610ad9820b39\",\"bytes\":525,\"source_conversation_id\":\"conv_313546616e0a5d87cb948fa38e85b792\",\"source_run_id\":\"crun_d0bd7293e78a196e406f5ad9ebba91f0\",\"created_at\":\"2026-09-11T15:59:12.176Z\",\"updated_at\":\"2026-09-11T15:59:12.176Z\"}}",
+                "result_reference": {
+                  "conversation_id": "conv_313546616e0a5d87cb948fa38e85b792",
+                  "run_id": "crun_d0bd7293e78a196e406f5ad9ebba91f0",
+                  "step": 2,
+                  "call_id": "report-create",
+                  "sha256": "86363770296153be0269ca1f4e7c894b72942ccd6bafd22a01f35922a03d34df"
+                }
+              }
+            ]
+          },
+          {
+            "number": 3,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "report-read",
+                "name": "artifact_read",
+                "arguments": "{\"id\":\"art_5c02a9f13bc8d12964d656faea1474d1\",\"version\":1}",
+                "status": "completed",
+                "result_preview": "{\"artifact\":{\"id\":\"art_5c02a9f13bc8d12964d656faea1474d1\",\"version\":1,\"title\":\"网页资料报告\",\"kind\":\"markdown\",\"sha256\":\"d9951cc06e0e927c3cfcfe027dfac48e3717cfd91a242fc7210b610ad9820b39\",\"bytes\":525,\"source_conversation_id\":\"conv_313546616e0a5d87cb948fa38e85b792\",\"source_run_id\":\"crun_d0bd7293e78a196e406f5ad9ebba91f0\",\"created_at\":\"2026-09-11T15:59:12.176Z\",\"updated_at\":\"2026-09-11T15:59:12.176Z\"},\"markdown\":\"# 网页资料报告\\n\\n摘录：WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。\\n\\n查询：最新导出功能发布说明\\n来源：https://example.com/releases\\n请求 URL：https://example.com/releases\\n读取时间：2026-09-11T15:59:11.700487Z\\n页面完整性：unknown\\n提示：远端页面完整性未确认\\n\\n源文标注发布日期 2026-09-10；读取时间并非发布时间。排名搜索不穷尽来源，其他功能未证实。\\n\",\"offset\":0,\"next_offset\":480,\"complete\":true}",
+                "result_reference": {
+                  "conversation_id": "conv_313546616e0a5d87cb948fa38e85b792",
+                  "run_id": "crun_d0bd7293e78a196e406f5ad9ebba91f0",
+                  "step": 3,
+                  "call_id": "report-read",
+                  "sha256": "b0b4b4cdc7ce167e87e38ae35516ba8ec02c61f25294c1dc3b4b58b713864d3b"
+                }
+              }
+            ]
+          },
+          {
+            "number": 4,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "write",
+                "id": "report-edit",
+                "name": "artifact_edit",
+                "arguments": "{\"expected_version\":1,\"id\":\"art_5c02a9f13bc8d12964d656faea1474d1\",\"patch\":{\"text\":[{\"find\":\"其他功能未证实。\",\"replace\":\"其他功能未证实；使用前再次核对发布页。\"}]}}",
+                "status": "completed",
+                "resource_id": "art_5c02a9f13bc8d12964d656faea1474d1",
+                "result_preview": "{\"artifact\":{\"id\":\"art_5c02a9f13bc8d12964d656faea1474d1\",\"version\":2,\"title\":\"网页资料报告\",\"kind\":\"markdown\",\"sha256\":\"b3163a7b64b307705eb38d431743390e4df3797a5098ea34e503483b2f2414ce\",\"bytes\":558,\"source_conversation_id\":\"conv_313546616e0a5d87cb948fa38e85b792\",\"source_run_id\":\"crun_d0bd7293e78a196e406f5ad9ebba91f0\",\"created_at\":\"2026-09-11T15:59:12.176Z\",\"updated_at\":\"2026-09-11T15:59:13.4Z\"}}",
+                "result_reference": {
+                  "conversation_id": "conv_313546616e0a5d87cb948fa38e85b792",
+                  "run_id": "crun_d0bd7293e78a196e406f5ad9ebba91f0",
+                  "step": 4,
+                  "call_id": "report-edit",
+                  "sha256": "7e0afdb2f18eee8ece7b0a500bb690ffbd9530a789695db058d2af5a070a20b1"
+                }
+              }
+            ]
+          },
+          {
+            "number": 5,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "write",
+                "id": "report-export",
+                "name": "artifact_export",
+                "arguments": "{\"format\":\"markdown\",\"id\":\"art_5c02a9f13bc8d12964d656faea1474d1\",\"version\":2}",
+                "status": "completed",
+                "resource_id": "art_5c02a9f13bc8d12964d656faea1474d1",
+                "result_preview": "{\"export\":{\"id\":\"exp_b08567d61bed976e7fefa97af5c43316\",\"artifact_id\":\"art_5c02a9f13bc8d12964d656faea1474d1\",\"version\":2,\"format\":\"markdown\",\"filename\":\"art_5c02a9f13bc8d12964d656faea1474d1-v2.md\",\"content_type\":\"text/markdown; charset=utf-8\",\"sha256\":\"b4154d78f7da9d7a0552686d4471783b436a90d3938d59b354e54a70861eb5d5\",\"bytes\":513,\"created_at\":\"2026-09-11T15:59:14.678Z\",\"expires_at\":\"2026-09-11T16:59:14.678Z\",\"downloads\":0}}",
+                "result_reference": {
+                  "conversation_id": "conv_313546616e0a5d87cb948fa38e85b792",
+                  "run_id": "crun_d0bd7293e78a196e406f5ad9ebba91f0",
+                  "step": 5,
+                  "call_id": "report-export",
+                  "sha256": "e66f0a927bcdf41e22a49a28586c7fbc28c3b7b2a8c6b2031bd8bbbf942008aa"
+                }
+              }
+            ]
+          },
+          {
+            "number": 6,
+            "attempt": 1,
+            "status": "completed",
+            "text": "资料摘要：WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。\n\n来源：https://example.com/releases；读取时间：2026-09-11T15:59:11.700487Z。页面完整性未知，排名结果不代表全部来源。\n\n已保存网页资料报告，版本 2，并导出 Markdown。报告 ID：art_5c02a9f13bc8d12964d656faea1474d1。",
+            "calls": []
+          }
+        ],
+        "write_scope": {
+          "personal_memory": false,
+          "personal_artifacts": true
+        },
+        "created_at": "2026-09-11T15:59:11.015776Z",
+        "updated_at": "2026-09-11T15:59:15.649438Z"
+      }
+    },
+    {
+      "title": "裁剪的网页正文",
+      "conversation": {
+        "id": "conv_c869a44bc15e44a056b19b7fd9678e02",
+        "title": "裁剪的网页正文",
+        "runtime_id": "accounts-runtime",
+        "workspace_id": "accounts-workspace",
+        "user_id": "admin",
+        "archived": false,
+        "memory_enabled": false,
+        "last_seq": 2,
+        "revision": 3,
+        "created_at": "2026-09-11T15:59:24.265Z",
+        "updated_at": "2026-09-11T15:59:25.471Z"
+      },
+      "messages": {
+        "items": [
+          {
+            "id": "msg_5f7db3f7b85fb16618ad404f217e2241",
+            "conversation_id": "conv_c869a44bc15e44a056b19b7fd9678e02",
+            "run_id": "crun_eb7ea8e93d8fff4b446c463102cc5c5f",
+            "seq": 1,
+            "role": "user",
+            "content": "查询网页并保存报告",
+            "created_at": "2026-09-11T15:59:24.668752Z"
+          },
+          {
+            "id": "msg_038b75e5f173bcc895e043eac5f9b2e9",
+            "conversation_id": "conv_c869a44bc15e44a056b19b7fd9678e02",
+            "run_id": "crun_eb7ea8e93d8fff4b446c463102cc5c5f",
+            "seq": 2,
+            "role": "assistant",
+            "content": "网页正文已裁剪，仅取得部分内容；无法形成完整报告，未保存。",
+            "created_at": "2026-09-11T15:59:25.471027Z"
+          }
+        ]
+      },
+      "run": {
+        "id": "crun_eb7ea8e93d8fff4b446c463102cc5c5f",
+        "conversation_id": "conv_c869a44bc15e44a056b19b7fd9678e02",
+        "client_message_id": "3b6c7220-1fe7-49bd-ab79-24d515485afe",
+        "status": "completed",
+        "user_seq": 1,
+        "assistant_message_id": "msg_038b75e5f173bcc895e043eac5f9b2e9",
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 22,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "web-search",
+                "name": "web_search",
+                "arguments": "{\"limit\":2,\"query\":\"最新导出功能发布说明\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"query\":\"最新导出功能发布说明\",\"search_id\":\"web-fixture-search\",\"items\":[{\"url\":\"https://example.com/releases\",\"title\":\"功能发布说明\",\"excerpts\":[\"2026-09-10 发布：支持 Markdown 导出。\"],\"truncated\":false}],\"scope\":\"ranked_results\",\"truncated\":false},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"public-web\",\"connector_key\":\"web\",\"provider_key\":\"llm_proxy\",\"account_updated_at\":\"2026-09-11T15:59:10.050837Z\",\"operation\":\"web_search\",\"contract_sha256\":\"8c24df34c2968ac2fac33fe5091f5f0d606ea26b9315def2cddd3505fa4063d0\"}],\"read_at\":\"2026-09-11T15:59:25.032148Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_c869a44bc15e44a056b19b7fd9678e02",
+                  "run_id": "crun_eb7ea8e93d8fff4b446c463102cc5c5f",
+                  "step": 0,
+                  "call_id": "web-search",
+                  "sha256": "bcf7308e0278745fff14f3e74d80fc5556ae3a56b66c12e18162469391c49c15"
+                }
+              }
+            ]
+          },
+          {
+            "number": 1,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "web-fetch",
+                "name": "web_fetch",
+                "arguments": "{\"max_content_bytes\":1024,\"url\":\"https://example.com/releases\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"requested_url\":\"https://example.com/releases\",\"url\":\"https://example.com/releases\",\"title\":\"功能发布说明\",\"description\":\"\",\"content\":\"WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。WEB-BODY：发布说明标注 2026-09-10，支持导出 Markdown。未声明其他格式。WEB-BODY：发布说明\",\"truncated\":true,\"source_completeness\":\"unknown\",\"warnings\":[\"远端页面完整性未确认\"]},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"public-web\",\"connector_key\":\"web\",\"provider_key\":\"llm_proxy\",\"account_updated_at\":\"2026-09-11T15:59:10.050837Z\",\"operation\":\"web_fetch\",\"contract_sha256\":\"59bc1d78623a0ab72320efe81bd601592149719b8c0957509b07cb0ddbee8b06\"}],\"read_at\":\"2026-09-11T15:59:25.278692Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_c869a44bc15e44a056b19b7fd9678e02",
+                  "run_id": "crun_eb7ea8e93d8fff4b446c463102cc5c5f",
+                  "step": 1,
+                  "call_id": "web-fetch",
+                  "sha256": "d27c2c5a70b80a25921e47094a6053213bec3aeb5aeeb421e963c955b42923f5"
+                }
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "attempt": 1,
+            "status": "completed",
+            "text": "网页正文已裁剪，仅取得部分内容；无法形成完整报告，未保存。",
+            "calls": []
+          }
+        ],
+        "write_scope": {
+          "personal_memory": false,
+          "personal_artifacts": true
+        },
+        "created_at": "2026-09-11T15:59:24.668752Z",
+        "updated_at": "2026-09-11T15:59:25.471108Z"
+      }
+    }
+  ],
+  "complete": true
+}

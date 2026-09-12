@@ -1,0 +1,190 @@
+{
+  "todo": "F02",
+  "complete": false,
+  "increment": "Provider-neutral calendar read contract and Google provider; Integration deadline regression fix",
+  "captured_at": "2026-09-11T10:53:57.304059+00:00",
+  "completed_todos": 50,
+  "total_todos": 81,
+  "next_within_todo": "Microsoft Calendar/Graph provider, Integration current-account read authorization, Tools/product integration and E2E",
+  "real_vendor_calendar_verified": false,
+  "browser_e2e_verified": false,
+  "source_files": [
+    {
+      "path": "docs/agent-capabilities-todo.md",
+      "bytes": 97445,
+      "sha256": "7ee0d14d540dd95c89a1a9332cb26f7e9092f6eed8cffabb7f7b503995533a6d"
+    },
+    {
+      "path": "docs/calendar-read-boundaries.md",
+      "bytes": 3183,
+      "sha256": "e9004f29cc20ac5ffb07f55062da009e6f1319011e7dc3cfd3ad948f43e4a2e0"
+    },
+    {
+      "path": "docs/testing-2026-09-11-f02-google-calendar.md",
+      "bytes": 5615,
+      "sha256": "b556f4c53862c64ccdc269294bcad0ac488daba1811928cd2ccd2ab102b4de9d"
+    },
+    {
+      "path": "../domainry-connector-sdk/README.md",
+      "bytes": 2911,
+      "sha256": "260149763027b2e7b15ad8ef44a3579679ca5794be628962daaa1183266a4d12"
+    },
+    {
+      "path": "../domainry-connector-sdk/external_module_test.go",
+      "bytes": 8264,
+      "sha256": "ecb3e6d29040ed73174c91e309dc86613e09ab4107b09058c9c04134e43abdae"
+    },
+    {
+      "path": "../domainry-connector-sdk/calendar/availability.go",
+      "bytes": 2399,
+      "sha256": "273e2526a0b7c1b2afc71d2805a0835b25bb2b8ca07777a9d075bb3965cdda0c"
+    },
+    {
+      "path": "../domainry-connector-sdk/calendar/calendar.go",
+      "bytes": 3109,
+      "sha256": "02641a4e3110148cb764440c24404c88e9e53535c130a85f069f2300dc01b812"
+    },
+    {
+      "path": "../domainry-connector-sdk/calendar/calendar_test.go",
+      "bytes": 5155,
+      "sha256": "26d08645c1581a0a06401754aba6364582e5dfc92185328eaf451105454182f2"
+    },
+    {
+      "path": "../domainry-connector-sdk/calendar/identity.go",
+      "bytes": 1449,
+      "sha256": "99e1f6e03e84c2791632793dbb27b74926bd82b0e2fb4d964c644001f519a4ad"
+    },
+    {
+      "path": "../domainry-connector-sdk/calendar/local_time.go",
+      "bytes": 1467,
+      "sha256": "ad915458f0febd10bd457f6fd4d9565ad89df23b1389380908a4a6a8f165f740"
+    },
+    {
+      "path": "../domainry-connector-sdk/calendar/validation.go",
+      "bytes": 3720,
+      "sha256": "cde31851046041c9b193a158ce19f333b761ebc98eab31e02aafccbaa4d86de3"
+    },
+    {
+      "path": "../domainry-connectors/providers/google_workspace/google/calendar.go",
+      "bytes": 11008,
+      "sha256": "f6160b204be98bc71aa1bda40abae6a4d6fcd901bd1a783f43c7bba1b8c415b8"
+    },
+    {
+      "path": "../domainry-connectors/providers/google_workspace/google/calendar_test.go",
+      "bytes": 9724,
+      "sha256": "7092d78d2d31c2f3a6745aa77d86487488e404d964749208dbf67cecbc54c3f7"
+    },
+    {
+      "path": "../domainry-connectors/providers/google_workspace/google/provider.go",
+      "bytes": 13878,
+      "sha256": "be446bcbaf56f61e04cdef5d760957f4d9a720b43abf1f520d70686c89e40a0a"
+    },
+    {
+      "path": "../domainry-connectors/catalog/catalog.json",
+      "bytes": 185231,
+      "sha256": "7e3f62ad2c9bfa41f97397b864f6f52abb15b0a60e32f6215f4a95fb547bfa25"
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/provider_worker_store.go",
+      "bytes": 29109,
+      "sha256": "ce58353caa2b05bf18067e90ea5e2306dfcddd5dd46e4412516d7172209a2984"
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/provider_worker_deadline.go",
+      "bytes": 1024,
+      "sha256": "701d55fdc60e6b1ab8ad88e44b99ba5adaf034c120bad155916545ed43880f57"
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/provider_worker_deadline_test.go",
+      "bytes": 3251,
+      "sha256": "d79becff2a12068bd3ca8e9936c75ed382f2428e4750aa58f0e2f7a70afc284c"
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/operations_store_test.go",
+      "bytes": 15544,
+      "sha256": "266745adb063e1b4061bc1321e38124a1d363398e724e074495a655ebd9216f4"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/boundary-catalog.log",
+      "bytes": 99,
+      "sha256": "bdf61b94016f235401ab3c043f8ab6787a6c03b089ad555d03e5585fb67776d0"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/catalog-generation.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/connectors-full.log",
+      "bytes": 11280,
+      "sha256": "fa255731f82f70f4e29afd2c121b31d66aacb968ad43060b8ea927d48586cec6"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/contracts-provider.log",
+      "bytes": 345,
+      "sha256": "d916f024169d3aba28cb755dc56d8db8943cd52835a0e790f834611ab3a05150"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/diff-check.json",
+      "bytes": 350,
+      "sha256": "a4b873e242b6a0679c9869413c873d7d9166b98a1050033517fc33595a2f73bb"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/initial.log",
+      "bytes": 330,
+      "sha256": "2a8fed304c5bd2641cbb5aee958f33c98813b2d0f1daa470b4d912236920a16e"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/integration-final.log",
+      "bytes": 2100,
+      "sha256": "301cd4b9e59b41bfb11835abf93693c6be86e73089916457665a0e9a2a9da87e"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/integration-regression.log",
+      "bytes": 2278,
+      "sha256": "8430f4f00a8092038cdf0184b2c648096d70858fa37e1ee80454230896e6f427"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/integration-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/local-time-identity.log",
+      "bytes": 226,
+      "sha256": "1a8340c654eab8032b5fc1f57c016f093a79ec60dc7e9f9e8e435381b0ba6f61"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/race-final.log",
+      "bytes": 17556,
+      "sha256": "0cd856b057273fe9f541566b4315e42aa1b9ac3846d7f73ace0731b935595dc0"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/worker-deadline-final.log",
+      "bytes": 1009,
+      "sha256": "38823ee23020cbe9b2796dbf3ebe77ba4e80c1ff4dc4bf51720363b48bb067b1"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/worker-deadline-initial.log",
+      "bytes": 261,
+      "sha256": "80973a2e124c93c5246a87b35681e71743d3e470eed5247f0b19bd056193ffcc"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/worker-deadline-race.log",
+      "bytes": 945,
+      "sha256": "7bcd0bfd207d485e3cec642e3d2fa147dd825d6f2adc428b8ba5b5c1e30397e4"
+    }
+  ],
+  "scope_limits": [
+    "No current-user calendar execution endpoint or product calendar tools yet.",
+    "No new UI or live vendor calls in this increment.",
+    "Full Integration regression preceded the additional commit deadline test; that final test independently passed race."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "steps": [
+    "administrator explicitly enables preference permission; selected catalog excludes other granted tools; disabling removes calculation from actual model input",
+    "Agent and Integration reopen preserves disabled preference; another actual Identity user retains independent defaults",
+    "lost write response blocks further clicks until explicit refresh reads the committed revision; no automatic write replay",
+    "two concurrent writes produce one revision; current permission removal hides the row and rejects enable; restoring permission preserves the choice",
+    "actual owner OAuth grant enables the configured account requirement; revocation removes the tool on the next model request",
+    "390px viewport keeps dialog and switch in bounds; search and re-enable operate on the persisted current revision"
+  ],
+  "javascriptErrors": [],
+  "complete": true
+}

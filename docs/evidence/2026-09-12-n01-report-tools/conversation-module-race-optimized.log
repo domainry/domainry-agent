@@ -1,0 +1,10 @@
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation/module
+    conversation_report_tools_test.go:206: initial paged report conversation completed
+    conversation_report_tools_test.go:256: full restart and field revocation checked; restored-permission query completed
+    conversation_report_tools_test.go:279: actual source mutation hides old result; fresh-data query completed
+    conversation_report_tools_test.go:290: real Report, Tools, Agent, Identity and SQLite: 5 calls per query, saved conversation, complete restart, field/read revocation, real data update hides saved answer, fresh query after restored permission/data update; model decisions use an in-process deterministic SDK fixture
+--- PASS: TestReportToolConversationWithRealOwnerAndRevalidation (314.73s)
+    --- PASS: TestReportToolConversationWithRealOwnerAndRevalidation/module (314.73s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	316.698s

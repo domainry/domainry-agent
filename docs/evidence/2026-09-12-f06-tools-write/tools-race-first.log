@@ -1,0 +1,106 @@
+=== RUN   TestAccountWritePublicContractsAndOriginalReceipt
+=== RUN   TestAccountWritePublicContractsAndOriginalReceipt/calendar_event_create
+=== RUN   TestAccountWritePublicContractsAndOriginalReceipt/calendar_event_update
+=== RUN   TestAccountWritePublicContractsAndOriginalReceipt/mail_send
+=== RUN   TestAccountWritePublicContractsAndOriginalReceipt/mail_reply
+--- PASS: TestAccountWritePublicContractsAndOriginalReceipt (0.08s)
+    --- PASS: TestAccountWritePublicContractsAndOriginalReceipt/calendar_event_create (0.02s)
+    --- PASS: TestAccountWritePublicContractsAndOriginalReceipt/calendar_event_update (0.02s)
+    --- PASS: TestAccountWritePublicContractsAndOriginalReceipt/mail_send (0.02s)
+    --- PASS: TestAccountWritePublicContractsAndOriginalReceipt/mail_reply (0.02s)
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/missing_confirmation
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/forged_confirmation
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/extra_host_policy
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/no_identity
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/foreign_user
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/subject_mismatch
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/no_write_permission
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/old_revision
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/revoked_grant
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/tool_disabled
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/missing_execution_id
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/missing_run
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/changed_definition
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/missing_port_calendar
+=== RUN   TestAccountWriteRequiresHostApprovalAndCurrentAuthority/missing_port_mail
+--- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority (0.17s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/missing_confirmation (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/forged_confirmation (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/extra_host_policy (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/no_identity (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/foreign_user (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/subject_mismatch (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/no_write_permission (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/old_revision (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/revoked_grant (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/tool_disabled (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/missing_execution_id (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/missing_run (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/changed_definition (0.01s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/missing_port_calendar (0.00s)
+    --- PASS: TestAccountWriteRequiresHostApprovalAndCurrentAuthority/missing_port_mail (0.00s)
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/reply_missing_original
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/calendar_wrong_offset
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/calendar_null_attendees
+    account_write_test.go:149: invalid content approved or sent: {Completion: Status: Content:[] ErrorCode: ResourceID:} tool.arguments_invalid verification=1
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/calendar_empty_patch
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/calendar_invalid_etag
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/mail_header_injection
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/mail_duplicate_recipient
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/mail_missing_bcc
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/mail_from
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/outer_access
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/outer_confirmation
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/outer_idempotency_key
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/outer_request_id
+=== RUN   TestAccountWriteRejectsInvalidTypedContentBeforeEffect/outer_secret
+--- FAIL: TestAccountWriteRejectsInvalidTypedContentBeforeEffect (0.19s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/reply_missing_original (0.01s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/calendar_wrong_offset (0.02s)
+    --- FAIL: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/calendar_null_attendees (0.01s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/calendar_empty_patch (0.01s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/calendar_invalid_etag (0.01s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/mail_header_injection (0.01s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/mail_duplicate_recipient (0.01s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/mail_missing_bcc (0.01s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/mail_from (0.01s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/outer_access (0.01s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/outer_confirmation (0.01s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/outer_idempotency_key (0.01s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/outer_request_id (0.01s)
+    --- PASS: TestAccountWriteRejectsInvalidTypedContentBeforeEffect/outer_secret (0.01s)
+=== RUN   TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts
+=== RUN   TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/invalid_delivery
+=== RUN   TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/not_found
+=== RUN   TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/uncertain
+=== RUN   TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/foreign_source
+=== RUN   TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/foreign_ref
+=== RUN   TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/invalid_time
+=== RUN   TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/private_response
+--- PASS: TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts (0.14s)
+    --- PASS: TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/invalid_delivery (0.02s)
+    --- PASS: TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/not_found (0.02s)
+    --- PASS: TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/uncertain (0.02s)
+    --- PASS: TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/foreign_source (0.02s)
+    --- PASS: TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/foreign_ref (0.02s)
+    --- PASS: TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/invalid_time (0.02s)
+    --- PASS: TestAccountWriteUnknownNeverResendsAndRejectsForeignReceipts/private_response (0.02s)
+=== RUN   TestAccountWriteRechecksResponseAndHistoricalResult
+=== RUN   TestAccountWriteRechecksResponseAndHistoricalResult/grant
+=== RUN   TestAccountWriteRechecksResponseAndHistoricalResult/revision
+=== RUN   TestAccountWriteRechecksResponseAndHistoricalResult/tool
+--- PASS: TestAccountWriteRechecksResponseAndHistoricalResult (0.06s)
+    --- PASS: TestAccountWriteRechecksResponseAndHistoricalResult/grant (0.01s)
+    --- PASS: TestAccountWriteRechecksResponseAndHistoricalResult/revision (0.01s)
+    --- PASS: TestAccountWriteRechecksResponseAndHistoricalResult/tool (0.01s)
+=== RUN   TestAccountWriteDiscoveryAndAvailabilityDoNotPerformIO
+--- PASS: TestAccountWriteDiscoveryAndAvailabilityDoNotPerformIO (0.02s)
+=== RUN   TestCalendarWriteInspectionPreservesCompleteTarget
+--- PASS: TestCalendarWriteInspectionPreservesCompleteTarget (0.01s)
+=== RUN   TestAccountWriteSelectionCoexistsWithReadFamilies
+--- PASS: TestAccountWriteSelectionCoexistsWithReadFamilies (0.02s)
+FAIL
+FAIL	github.com/domainry/domainry-tools/module	1.335s
+FAIL

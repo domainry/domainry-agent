@@ -1,0 +1,16 @@
+=== RUN   TestOAuthSessionAtomicallyCreatesPrivateAccountAndReplaysReceipt
+--- PASS: TestOAuthSessionAtomicallyCreatesPrivateAccountAndReplaysReceipt (0.01s)
+=== RUN   TestOAuthSessionRejectsCrossUserWorkspaceScopeAndState
+--- PASS: TestOAuthSessionRejectsCrossUserWorkspaceScopeAndState (0.00s)
+=== RUN   TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay
+=== RUN   TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay/deny
+=== RUN   TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay/unknown
+=== RUN   TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay/cancel
+--- PASS: TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay (0.01s)
+    --- PASS: TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay/deny (0.00s)
+    --- PASS: TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay/unknown (0.00s)
+    --- PASS: TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay/cancel (0.00s)
+=== RUN   TestOAuthApplicationChangeDuringExchangeRollsBackCredentialsAndNeedsNewAuthorization
+--- PASS: TestOAuthApplicationChangeDuringExchangeRollsBackCredentialsAndNeedsNewAuthorization (0.00s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	0.427s

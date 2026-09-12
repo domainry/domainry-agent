@@ -4,6 +4,7 @@ import type { Citation } from "./knowledge-state.ts";
 
 export type ResultReference = { conversation_id: string; run_id: string; step: number; call_id: string; sha256: string };
 export type ToolView = {
+  effect?: "read" | "write"; completion?: "accepted";
   citations?: Citation[];
   id: string; name: string; arguments: string; status: string;
   error_code?: string; resource_id?: string;
@@ -15,6 +16,7 @@ export type StepView = {
 export type ExecutionEvent = {
   seq: number; type: string;
   data?: {
+    effect?: "read" | "write"; completion?: "accepted";
     citations?: Citation[];
     interaction?: Interaction;
     attempt?: number; step?: number; index?: number; offset?: number;
@@ -35,6 +37,10 @@ const bytes = (text: string) => new TextEncoder().encode(text).length;
 // are display text only; the browser never dispatches a model tool call.
 export function applyExecutionEvent(run: Run, event: ExecutionEvent): Run {
   if (run.access_error) return run;
+  if (event.type === "run.cancelled" || event.type === "run.failed") return {...run, steps: run.steps?.map(step => ({...step,
+    status: step.status === "generating" ? "interrupted" : step.status,
+    calls: step.calls.map(call => ({...call, status: ["receiving", "queued", "waiting_user", "waiting_confirmation"].includes(call.status) ? "not_started" : call.status === "running" ? "interrupted" : call.status})),
+  }))};
   if (!executionEventNames.includes(event.type)) return run;
   const data = event.data || {};
   if (!Number.isInteger(data.step) || data.step! < 0 || data.step! >= 256 || data.attempt !== run.attempt) throw new Error("Invalid step event");
@@ -66,6 +72,8 @@ export function applyExecutionEvent(run: Run, event: ExecutionEvent): Run {
       const call = step.calls.find(call => call.id === data.call_id);
       if (!call) throw new Error("Unknown tool execution");
       call.status = data.status || "running";
+      if (data.effect) call.effect = data.effect;
+      call.completion = data.completion;
       call.error_code = data.error_code; call.resource_id = data.resource_id;
       call.citations = data.citations; call.result_reference = data.result_reference; call.result_preview = data.result_preview; call.result_truncated = data.result_truncated; break;
     }

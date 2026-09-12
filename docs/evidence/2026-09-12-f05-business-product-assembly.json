@@ -1,0 +1,214 @@
+{
+  "todo": "F05",
+  "complete": false,
+  "stage": "product-composition-and-borrowed-identity",
+  "captured_at": "2026-09-12T01:09:45.864596+08:00",
+  "path_base": "/Users/tiger/Projects",
+  "source_files": [
+    {
+      "path": "domainry-agent/README.md",
+      "bytes": 14823,
+      "sha256": "9a2ff464f81d857c42066cded7026e34fbdfa0a496b60d950961fb30cd1022ce"
+    },
+    {
+      "path": "domainry-agent/cmd/domainry-agent-web/main.go",
+      "bytes": 6808,
+      "sha256": "27d789808968a1af384518a71756958448cd7af3f669525b11c17526c259154d"
+    },
+    {
+      "path": "domainry-agent/docs/agent-capabilities-todo.md",
+      "bytes": 114645,
+      "sha256": "66730c17f86d7d0362a8aa155df650ecd64918c7d6f7e5e2851f068c299ec7b0"
+    },
+    {
+      "path": "domainry-agent/docs/business-host-boundaries.md",
+      "bytes": 3315,
+      "sha256": "a1ed8fbaf1c471761ca4f3c79494c563f58145f31249e46f24ce164fb9868799"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-12-f05-business-product-assembly.md",
+      "bytes": 3701,
+      "sha256": "d369604358a440b035e297e74d1f1ef950a72aed07b5058070b831416cf10b0b"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/product/business.go",
+      "bytes": 2952,
+      "sha256": "e08bd396d9f29ef935ee71ce4976e97f70afbaa15ed88ee4617a65c64faf60c0"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/product/business_test.go",
+      "bytes": 4338,
+      "sha256": "2f6d3712a8c4972f7e1842e53d1bd9b0113af4eaba412a58a9eaa21508145374"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/product/product.go",
+      "bytes": 7520,
+      "sha256": "809a8860041eb9497f187a4f2ddec75a6f5fd42077f7c9a9e579316a66bade0e"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/business.go",
+      "bytes": 1368,
+      "sha256": "bd0cf4a0571fc85af1abb6bf83da6b00d216a9b07c12c5a6e9708b57fbf59186"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/business_test.go",
+      "bytes": 5104,
+      "sha256": "4b1455b0ec440be7f9f3fa8b4c1a25ce38e105bb3d73ec2ad01564010da712bf"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/conversation_tools.go",
+      "bytes": 8310,
+      "sha256": "b9cdba53d2a02fc5a867ba781fa513f0ada9cb7fae15db3855fe6fa3979c9bd9"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/host.go",
+      "bytes": 12443,
+      "sha256": "c9924c304b8e362a831e0e5b0d499fe17eaa27ae424282ec9e557d4b0826c0db"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/integration.go",
+      "bytes": 5633,
+      "sha256": "ed14076a981b314aa199ee81dd117b2efbe939a2d16b799fbf6ae642f4c1b456"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/knowledge_permissions.go",
+      "bytes": 4303,
+      "sha256": "f00997f00b6c2a8960c429b354a6b9a90a998c57245f3b8562bfc4535346d3b0"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/tool_settings.go",
+      "bytes": 5323,
+      "sha256": "94d015ee8f60bbce92569cc318b25155149e8e8a13a954fb701603c84bc26d74"
+    },
+    {
+      "path": "domainry-agent/webhost/host.go",
+      "bytes": 1281,
+      "sha256": "c1e9f547a3bad1d193141658f2e8a7c23ecae63be71b294146aa3da8c662ca4a"
+    },
+    {
+      "path": "domainry-pm/cmd/domainry-pm/main.go",
+      "bytes": 291,
+      "sha256": "aecce51ca39075245e48ebb8f307bf68275919f121028049784680c421e1e47c"
+    },
+    {
+      "path": "domainry-pm/internal/infrastructure/config/defaults/agent.json",
+      "bytes": 1875,
+      "sha256": "49653ec70418ce37006230e821475e06dfbd554a3a785b0746b5730386cab2bc"
+    },
+    {
+      "path": "domainry-pm/internal/infrastructure/config/defaults/requirement.schema.json",
+      "bytes": 1322,
+      "sha256": "7fd69845bf0cb0d1e2f7ba4408be3f38c70eaea37aacfa59a4655bf23acb5b4b"
+    },
+    {
+      "path": "domainry-pm/internal/infrastructure/config/defaults/skills.json",
+      "bytes": 4522,
+      "sha256": "73c54e334b8d6e133f834927d941eed7e33b8d58facc5fa07eff2a6435844b7f"
+    },
+    {
+      "path": "domainry-pm/internal/infrastructure/config/defaults/ui.json",
+      "bytes": 3240,
+      "sha256": "df080ef1dad062816cbd73006b49a7da18566f26764354fd433e03ed514b4185"
+    },
+    {
+      "path": "domainry-work/cmd/domainry-work/main.go",
+      "bytes": 293,
+      "sha256": "44cc57846c343b51144172ae383519ba69d696674b750cb06595a5744c4f49e7"
+    },
+    {
+      "path": "domainry-work/internal/infrastructure/config/defaults/agent.json",
+      "bytes": 1991,
+      "sha256": "e7655aa17b2a5f8a85ae393db62ab2d0febb098f65480295f82398b565788828"
+    },
+    {
+      "path": "domainry-work/internal/infrastructure/config/defaults/document.schema.json",
+      "bytes": 442,
+      "sha256": "9f2fa1f230f757c2332dc7f8b1325a8e4f18ae9ac9de0dbd0f28a7033786d9ba"
+    },
+    {
+      "path": "domainry-work/internal/infrastructure/config/defaults/meeting.schema.json",
+      "bytes": 530,
+      "sha256": "4d11233c1a14ba6ebf4c7408ce40aaa72ba696af577a68a8965b2c41f9c13257"
+    },
+    {
+      "path": "domainry-work/internal/infrastructure/config/defaults/skills.json",
+      "bytes": 4603,
+      "sha256": "2075f5ec0874138dd48b9ded2a9ee9341c8567b582df688fc7fae91bb86b87ec"
+    },
+    {
+      "path": "domainry-work/internal/infrastructure/config/defaults/ui.json",
+      "bytes": 3126,
+      "sha256": "04d4a66663fa91b0054d36a4f08f41af2f0a45a76cd86b47c20dfbbf6ffa69d0"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-product/agent-regression.log",
+      "bytes": 350,
+      "sha256": "9700de856335d0006745bde097897cd06bfa47a5246355024d1053f916adbe28"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-product/agent-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-product/assembly-initial.log",
+      "bytes": 221,
+      "sha256": "2b281252e9122598a35c5e203fe5921ee8b4529eaffc14e67498c745316d7176"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-product/environment-final-race.log",
+      "bytes": 692,
+      "sha256": "6e54af41de950a42caa7c380df8049928cdf0f7ea9957884f2c4c731d64abf8a"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-product/format-check.json",
+      "bytes": 198,
+      "sha256": "7bc5e66546de4aa9725dbccea6bfe19b05c6e2c2a2a96a37bb16187c90acebf8"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-product/pm-regression.log",
+      "bytes": 548,
+      "sha256": "c4c1116afcdc7df5be103a38c614e91c391547dce4ae8b7635ce1ba54ab29a6f"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-product/pm-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-product/shared-identity-final.log",
+      "bytes": 1481,
+      "sha256": "503c4ccd588ea16451e8c539468fced1239490f215e6aa278363340e600d4e46"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-product/shared-identity-initial.log",
+      "bytes": 1480,
+      "sha256": "d3df7962640e881251817a023b4053a9d49ab705f5f13e5944dea85aa79c6438"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-product/work-regression.log",
+      "bytes": 549,
+      "sha256": "e4b40da0c32a0b358d0bcdeaec0b4f254741e9549b7f1aebab0801f75af24c34"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-product/work-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "prior_manifests": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business.json",
+      "bytes": 14544,
+      "sha256": "8e89a12d0471ed377a8bbcc17939b3484be16b55c1da248578402a711b4569a0"
+    }
+  ],
+  "remaining": [
+    "Real Identity SaaS plus Runtime business service plus product conversation/confirmation/browser acceptance",
+    "Default Work/PM business tool and Skill selection",
+    "Report host assembly, with concrete tool execution acceptance mapped to N01-N03",
+    "Complete F05 before F06."
+  ]
+}

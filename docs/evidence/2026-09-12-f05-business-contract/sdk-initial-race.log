@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-agent-sdk/businessrpc [github.com/domainry/domainry-agent-sdk/businessrpc.test]
+../domainry-agent-sdk/businessrpc/businessrpc_test.go:54:103: unknown field Name in struct literal of type agentsdk.ConversationBusinessObject
+FAIL	github.com/domainry/domainry-agent-sdk/businessrpc [build failed]
+FAIL

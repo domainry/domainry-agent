@@ -1,0 +1,61 @@
+Local symbolization failed for web.test: open /private/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/go-build3541678704/b001/web.test: no such file or directory
+Some binary filenames not available. Symbolization may be incomplete.
+Try setting PPROF_BINARY_PATH to the search path for local binaries.
+File: web.test
+Type: cpu
+Time: 2026-09-12 05:09:46 CST
+Duration: 75.08s, Total samples = 102.07s (135.94%)
+Showing nodes accounting for 51.60s, 50.55% of 102.07s total
+Dropped 1395 nodes (cum <= 0.51s)
+Showing top 50 nodes out of 373
+      flat  flat%   sum%        cum   cum%
+     0.01s 0.0098% 0.0098%     34.11s 33.42%  database/sql.withLock
+         0     0% 0.0098%     31.12s 30.49%  runtime.semawakeup
+    31.11s 30.48% 30.49%     31.11s 30.48%  runtime.pthread_cond_signal
+         0     0% 30.49%     31.09s 30.46%  runtime.notewakeup
+         0     0% 30.49%     31.08s 30.45%  runtime.wakep
+         0     0% 30.49%     31.07s 30.44%  runtime.startm
+         0     0% 30.49%     30.92s 30.29%  runtime.systemstack
+         0     0% 30.49%     22.80s 22.34%  database/sql.(*DB).queryDC
+         0     0% 30.49%     22.80s 22.34%  database/sql.(*DB).queryDC.func1
+         0     0% 30.49%     22.80s 22.34%  database/sql.ctxDriverQuery
+         0     0% 30.49%     22.80s 22.34%  modernc.org/sqlite.(*conn).QueryContext
+         0     0% 30.49%     22.80s 22.34%  modernc.org/sqlite.(*conn).query
+     0.01s 0.0098% 30.50%     22.28s 21.83%  modernc.org/sqlite/lib.Xsqlite3_step
+         0     0% 30.50%     21.91s 21.47%  modernc.org/sqlite.(*conn).step
+         0     0% 30.50%     21.63s 21.19%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).worker
+         0     0% 30.50%     20.73s 20.31%  runtime.newproc.func1
+    20.39s 19.98% 50.48%     20.39s 19.98%  syscall.rawsyscalln
+         0     0% 50.48%     20.39s 19.98%  syscall.syscalln
+         0     0% 50.48%     20.34s 19.93%  github.com/domainry/domainry-identity-sdk/application.principals.Resolve
+         0     0% 50.48%     20.34s 19.93%  github.com/domainry/domainry-identity/internal/adapter/identitysdk.sdkPrincipalResolver.Resolve
+         0     0% 50.48%     20.26s 19.85%  github.com/domainry/domainry-agent/internal/assembly/web.(*Host).resolveConversationPrincipal
+         0     0% 50.48%     19.96s 19.56%  modernc.org/sqlite/lib._sqlite3Step
+     0.07s 0.069% 50.54%     19.96s 19.56%  modernc.org/sqlite/lib._sqlite3VdbeExec
+         0     0% 50.54%     18.82s 18.44%  syscall.syscall
+         0     0% 50.54%     17.58s 17.22%  golang.org/x/sys/unix.FcntlFlock (inline)
+         0     0% 50.54%     17.58s 17.22%  golang.org/x/sys/unix.fcntl
+         0     0% 50.54%     17.58s 17.22%  modernc.org/libc.Xfcntl
+         0     0% 50.54%     17.58s 17.22%  modernc.org/libc.Xfcntl64
+         0     0% 50.54%     17.23s 16.88%  database/sql.(*DB).retry
+     0.01s 0.0098% 50.55%     16.72s 16.38%  database/sql.(*DB).QueryContext
+         0     0% 50.55%     16.71s 16.37%  database/sql.(*DB).QueryContext.func1
+         0     0% 50.55%     16.70s 16.36%  database/sql.(*DB).query
+         0     0% 50.55%     16.53s 16.19%  net/http.HandlerFunc.ServeHTTP
+         0     0% 50.55%     16.50s 16.17%  net/http.(*ServeMux).ServeHTTP
+         0     0% 50.55%     16.07s 15.74%  github.com/domainry/domainry-agent/internal/assembly/web.TestAccountWritesThroughIdentityProviderHTTPAndRestart.func1
+         0     0% 50.55%     15.74s 15.42%  github.com/domainry/domainry-agent-sdk/browsergateway.NewHandler.func3
+         0     0% 50.55%     15.68s 15.36%  testing.tRunner
+         0     0% 50.55%     15.12s 14.81%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).execute
+         0     0% 50.55%     14.99s 14.69%  github.com/domainry/domainry-agent/internal/assembly/web.(*browser).call
+         0     0% 50.55%     14.43s 14.14%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).generateConversationExecution
+         0     0% 50.55%     14.06s 13.77%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).run
+         0     0% 50.55%     14.04s 13.76%  github.com/domainry/domainry-agent-sdk/browsergateway.NewHandler.(*boundary).authenticated.func6
+         0     0% 50.55%     14.03s 13.75%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).record
+         0     0% 50.55%     13.92s 13.64%  modernc.org/sqlite.(*stmt).query
+         0     0% 50.55%     13.84s 13.56%  modernc.org/sqlite/lib._sqlite3OsShmLock (inline)
+         0     0% 50.55%     13.84s 13.56%  modernc.org/sqlite/lib._unixShmLock
+         0     0% 50.55%     13.81s 13.53%  modernc.org/sqlite/lib._unixShmSystemLock
+         0     0% 50.55%     13.64s 13.36%  runtime._System
+         0     0% 50.55%     12.50s 12.25%  runtime.schedule
+         0     0% 50.55%     12.48s 12.23%  runtime.mcall

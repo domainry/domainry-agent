@@ -1,0 +1,11 @@
+=== RUN   TestCalendarToolsBuiltBrowser
+PASS five product-selected calendar tools show unavailable before actual OAuth grant and available after owner authorization
+PASS actual browser message completes six persisted tool calls through Identity, Tools, Integration, Google protocol HTTP and model protocol HTTP; all-day dates, DST offsets and complete paging survive
+PASS disabling event details hides the retained reply; full host restart preserves choice; explicit re-enable reauthorizes the original account source
+PASS current Integration read permission independently controls previously saved calendar results
+PASS another real Identity user cannot discover the personal calendar or read its conversation
+PASS a real partial provider response yields no free intervals; the mobile reply states that availability cannot be confirmed
+PASS owner account revocation hides retained calendar text and removes availability across all five tools; settings remain usable at 390px
+--- PASS: TestCalendarToolsBuiltBrowser (11.89s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	12.638s

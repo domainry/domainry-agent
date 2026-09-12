@@ -1,0 +1,7 @@
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation/module
+    conversation_report_tools_test.go:236: real Report, Tools, Agent, Identity and SQLite: 5 calls, saved conversation, complete restart, field/read revocation, old result invalidation, fresh query after restored permission; model decisions are a protocol fixture
+--- PASS: TestReportToolConversationWithRealOwnerAndRevalidation (26.35s)
+    --- PASS: TestReportToolConversationWithRealOwnerAndRevalidation/module (26.35s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	27.127s

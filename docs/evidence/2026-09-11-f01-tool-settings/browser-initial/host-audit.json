@@ -1,0 +1,9 @@
+{
+  "complete": true,
+  "oauth_exchanges": 1,
+  "provider_probes": 0,
+  "real_identity": true,
+  "real_integration_store": true,
+  "real_tools_store": true,
+  "reopened": true
+}

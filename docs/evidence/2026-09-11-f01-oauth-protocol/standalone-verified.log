@@ -1,0 +1,4 @@
+ok  	github.com/domainry/domainry-integration/cmd/integration-server	(cached)
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/security	(cached)
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/connectortransport	1.043s
+ok  	github.com/domainry/domainry-integration/internal/architecture	0.471s

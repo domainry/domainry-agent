@@ -33,6 +33,10 @@ type KnowledgeResponseMapping = provider.KnowledgeResponseMapping
 type KnowledgeCitationMapping = provider.KnowledgeCitationMapping
 
 type Options struct {
+	AttachmentKnowledge                                    []KnowledgeConfig
+	AttachmentKnowledgeBindingsJSON                        string
+	KnowledgeDatasources                                   []KnowledgeDatasourceConfig
+	KnowledgeDatasourcesJSON                               string
 	KnowledgeLibraries                                     []KnowledgeLibraryConfig
 	KnowledgeLibraryBindingsJSON                           string
 	ConversationEnabled                                    bool
@@ -52,7 +56,7 @@ type Options struct {
 func OptionsFromEnvironment() Options {
 	id, _ := strconv.Atoi(strings.TrimSpace(os.Getenv("AGENT_HTTP_AGENT_ID")))
 	model := provider.ConversationModelConfigFromEnvironment()
-	return Options{KnowledgeLibraryBindingsJSON: os.Getenv("AGENT_KNOWLEDGE_LIBRARY_BINDINGS"), ConversationEnabled: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_ENABLED")), "true"), BaseURL: os.Getenv("AGENT_HTTP_BASE_URL"), APIKey: os.Getenv("AGENT_HTTP_API_KEY"), AgentID: id, Timeout: 120 * time.Second, ConversationTimezone: os.Getenv("AGENT_CONVERSATION_TIMEZONE"), ConversationBaseURL: model.BaseURL, ConversationURL: model.URL, ConversationAPIKey: model.APIKey, ConversationModel: model.Model, ConversationProviderName: model.Provider, ConversationProtocol: model.Protocol, Knowledge: provider.KnowledgeConfigFromEnvironment()}
+	return Options{AttachmentKnowledgeBindingsJSON: os.Getenv("AGENT_ATTACHMENT_KNOWLEDGE_BINDINGS"), KnowledgeDatasourcesJSON: os.Getenv("AGENT_KNOWLEDGE_DATASOURCES"), KnowledgeLibraryBindingsJSON: os.Getenv("AGENT_KNOWLEDGE_LIBRARY_BINDINGS"), ConversationEnabled: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_ENABLED")), "true"), BaseURL: os.Getenv("AGENT_HTTP_BASE_URL"), APIKey: os.Getenv("AGENT_HTTP_API_KEY"), AgentID: id, Timeout: 120 * time.Second, ConversationTimezone: os.Getenv("AGENT_CONVERSATION_TIMEZONE"), ConversationBaseURL: model.BaseURL, ConversationURL: model.URL, ConversationAPIKey: model.APIKey, ConversationModel: model.Model, ConversationProviderName: model.Provider, ConversationProtocol: model.Protocol, Knowledge: provider.KnowledgeConfigFromEnvironment()}
 }
 
 type Factory struct{ options Options }
@@ -108,11 +112,14 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if deferred, ok := host.(modulehost.DeferredConversationHost); ok {
 		deferConversations = deferred.DeferConversationHostBinding()
 	}
-	if conversationOptions.PersonalAuthorizer == nil {
+	if !deferConversations && conversationOptions.PersonalAuthorizer == nil {
 		conversationOptions.PersonalAuthorizer, _ = host.(agentsdk.ConversationToolAuthorizer)
 	}
+	if !deferConversations && conversationOptions.ExecutionAuthorizer == nil {
+		conversationOptions.ExecutionAuthorizer, _ = host.(agentsdk.ConversationExecutionAuthorizer)
+	}
 	conversationRepository := agentstore.NewConversationStore(store)
-	if conversationOptions.ToolHost == nil {
+	if !deferConversations && conversationOptions.ToolHost == nil {
 		if authorizer, ok := host.(agentsdk.ConversationToolAuthorizer); ok {
 			if _, capable := model.(agentsdk.ConversationAgentModel); capable {
 				conversationOptions.ToolHost, err = agentapplication.NewPersonalConversationHost(conversationRepository, authorizer, f.options.ConversationTimezone)
@@ -122,7 +129,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 			}
 		}
 	}
-	if conversationOptions.ToolHost != nil && conversationOptions.ToolAvailability == nil {
+	if !deferConversations && conversationOptions.ToolHost != nil && conversationOptions.ToolAvailability == nil {
 		conversationOptions.ToolAvailability, _ = host.(agentsdk.ConversationToolAvailability)
 	}
 	if f.options.Knowledge.Configured() {
@@ -135,8 +142,22 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		}
 		conversationOptions.Knowledge = knowledge
 	}
-	if err := assembleLibraryKnowledge(&conversationOptions, f.options.KnowledgeLibraries, f.options.KnowledgeLibraryBindingsJSON, f.options.Knowledge); err != nil {
+	if err := assembleLibraryKnowledge(&conversationOptions, f.options.KnowledgeLibraries, f.options.KnowledgeLibraryBindingsJSON, f.options.Knowledge, app.RuntimeID); err != nil {
 		return nil, err
+	}
+	if err := assembleKnowledgeDatasources(&conversationOptions, f.options.KnowledgeDatasources, f.options.KnowledgeDatasourcesJSON, app.RuntimeID); err != nil {
+		return nil, err
+	}
+	if err := assembleAttachmentKnowledge(&conversationOptions, f.options.AttachmentKnowledge, f.options.AttachmentKnowledgeBindingsJSON, app.RuntimeID); err != nil {
+		return nil, err
+	}
+	for _, attachment := range conversationOptions.AttachmentKnowledge {
+		if attachment.Knowledge == nil {
+			return nil, fmt.Errorf("invalid attachment knowledge binding")
+		}
+		if err := conversationRepository.ActivateAttachmentKnowledgeSource(ctx, app.RuntimeID, attachment.WorkspaceID, attachment.Knowledge.AttachmentKnowledgeSourceIdentity()); err != nil {
+			return nil, err
+		}
 	}
 	assembly := &conversationAssembly{repository: conversationRepository, model: model, runtimeID: app.RuntimeID, timezone: f.options.ConversationTimezone, options: conversationOptions}
 	if deferConversations {

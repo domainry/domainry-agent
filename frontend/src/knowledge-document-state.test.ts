@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { ApiError } from "./errors.ts";
 import { setSession, type AppSession } from "./session.ts";
+import { canTransferToLibrary, parsePendingTransfer } from "./document-transfer-state.ts";
 import { documentCanDownload, documentHash, documentLabel, documentMaxBytes, parsePendingDocument, parsePendingImport, readKnowledgeDocument, uploadKnowledgeDocument, type KnowledgeDocument } from "./knowledge-document-state.ts";
 
 const a: AppSession = { mode: "identity", scope: "fixture/workspace/a", runtime_id: "fixture", workspace_id: "workspace", user_id: "a", name: "A", must_change_password: false, ready: true, model: "fixture" };
@@ -75,4 +76,17 @@ test("attachment copy receipts bind a source and stable target without keeping f
   assert.deepEqual(parsePendingImport(JSON.stringify({...value, data: "ignored content"}), source), value);
   for (const change of [{ conversationID: "conv_other" }, { attachmentID: "att_other" }, { revision: 0 }, { revision: 1.5 }, { libraryID: "../other" }, { clientID: "../unsafe" }]) assert.equal(parsePendingImport(JSON.stringify({...value,...change}), source), null);
   assert.equal(parsePendingImport(" ".repeat(2049), source), null);
+});
+
+test("a pending transfer remains recoverable during a source outage without enabling new writes or bypassing target access", () => {
+  const library = { id: "lib_" + "c".repeat(32), kind: "personal" as const, name: "Personal", description: "", role: "manager", owner_user_id: "a", archived: false, revision: 1, documents_configured: false };
+  assert.equal(canTransferToLibrary(library, document.library_id), false);
+  assert.equal(canTransferToLibrary(library, document.library_id, library.id), true);
+  assert.equal(canTransferToLibrary(library, document.library_id, "lib_" + "d".repeat(32)), false);
+  assert.equal(canTransferToLibrary({ ...library, role: "reader" }, document.library_id, library.id), false);
+  assert.equal(canTransferToLibrary({ ...library, archived: true }, document.library_id, library.id), false);
+  assert.equal(canTransferToLibrary(library, library.id, library.id), false);
+  const value = { source: { id: document.id, library_id: document.library_id, filename: document.filename, bytes: document.bytes, sha256: document.sha256, revision: document.revision }, targetID: library.id, clientID: "original-request", mode: "move" };
+  assert.deepEqual(parsePendingTransfer(JSON.stringify({ ...value, body: "must not be retained" })), value);
+  for (const change of [{ targetID: document.library_id }, { targetID: "../other" }, { mode: "share-publicly" }, { clientID: "../unsafe" }, { source: { ...value.source, revision: 0 } }]) assert.equal(parsePendingTransfer(JSON.stringify({ ...value, ...change })), null);
 });

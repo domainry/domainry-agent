@@ -1,0 +1,934 @@
+{
+  "steps": [
+    "seven opted-in tools require the actual owner OAuth grant",
+    "four exact targets, all recipient groups, complete bodies and clear semantics survive host restart before approval"
+  ],
+  "javascriptErrors": [],
+  "snapshots": [
+    {
+      "label": "grouped",
+      "initial": {
+        "id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+        "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+        "client_message_id": "82b0db3b-ec86-4034-a16a-93a6fc03d5ae",
+        "status": "waiting_confirmation",
+        "user_seq": 1,
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 63,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "aw-create-account",
+                "name": "calendar_write_accounts",
+                "arguments": "{\"operation\":\"calendar_event_create\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"name\":\"日程与邮件验收账号\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\"}],\"operation\":\"calendar_event_create\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_create\",\"contract_sha256\":\"c4ce975e8194b9c2bb55c1bbe59ac28757125abc39b7afdfe642a39aae39dcc9\"}]}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 0,
+                  "call_id": "aw-create-account",
+                  "sha256": "5c0899ecd42dc1c3002fc97e70ba9f022f19afc68fecea2a23789ba0f674b30c"
+                }
+              },
+              {
+                "effect": "read",
+                "id": "aw-update-account",
+                "name": "calendar_write_accounts",
+                "arguments": "{\"operation\":\"calendar_event_update\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"name\":\"日程与邮件验收账号\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\"}],\"operation\":\"calendar_event_update\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_update\",\"contract_sha256\":\"1c8515a32de5a9874549b5628008365ea8913fe937340e543029828d2e50c42d\"}]}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 0,
+                  "call_id": "aw-update-account",
+                  "sha256": "623ae2cfd04e95fdef7dd05d133e1d61047535732dba12ea859000a90ff983b6"
+                }
+              },
+              {
+                "effect": "read",
+                "id": "aw-send-account",
+                "name": "mail_write_accounts",
+                "arguments": "{\"operation\":\"mail_send\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"name\":\"日程与邮件验收账号\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\"}],\"operation\":\"mail_send\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_send\",\"contract_sha256\":\"27f290e180d111a97a202e01372ecffd2f4ab6480369728ca6aa85d502c92895\"}]}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 0,
+                  "call_id": "aw-send-account",
+                  "sha256": "5719a5781e1135b11ccf805e783a56f9b1b6c4a7c96cec7187b034b207ca6873"
+                }
+              },
+              {
+                "effect": "read",
+                "id": "aw-reply-account",
+                "name": "mail_write_accounts",
+                "arguments": "{\"operation\":\"mail_reply\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"name\":\"日程与邮件验收账号\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\"}],\"operation\":\"mail_reply\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_reply\",\"contract_sha256\":\"ca1227cbb9b9f854bcae93ded73bc12845bbc8b6714581b73f0f6aab0f4b4da1\"}]}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 0,
+                  "call_id": "aw-reply-account",
+                  "sha256": "809e9ccd025cf915155de1f1a236c1a14e892ba472594e57566711f11db6c762"
+                }
+              }
+            ]
+          },
+          {
+            "number": 1,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "aw-calendar-list",
+                "name": "calendar_list",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"primary\",\"name\":\"评审日历\",\"time_zone\":\"America/New_York\",\"primary\":true}],\"complete\":true,\"text_truncated\":false},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_list\",\"contract_sha256\":\"30741361ad9b26653d6ed4422169bacc7dd81227a658d44e32c02dab176eda62\"}],\"read_at\":\"2026-09-11T21:16:17.810639Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 1,
+                  "call_id": "aw-calendar-list",
+                  "sha256": "e4ba30327539c5eb64814b057ee557542e29b854721abc7f8896c56bf0fb2788"
+                }
+              },
+              {
+                "effect": "read",
+                "id": "aw-mail-list",
+                "name": "mail_list",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"original-mail\",\"thread_id\":\"original-thread\",\"internet_message_id\":\"\\u003coriginal@example.test\\u003e\",\"subject\":\"评审回复\",\"from\":[{\"address\":\"from@example.test\"}],\"to\":[{\"address\":\"sender@example.test\"}],\"cc\":[],\"reply_to\":[{\"address\":\"reply@example.test\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":true,\"is_draft\":false,\"metadata_complete\":true}],\"complete\":true,\"query_syntax\":\"gmail\",\"mailbox_scope\":\"mailbox_excluding_spam_trash\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_list\",\"contract_sha256\":\"a67a8c1553a2b8457dd54dd3d574994f05e8177ccae2b34a78239affa3fd3004\"}],\"read_at\":\"2026-09-11T21:16:17.984509Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 1,
+                  "call_id": "aw-mail-list",
+                  "sha256": "d9a1a4930953bbf1c56d85ab0a4060c110e50dc0e4d9cd0d5da7f9630d8718cb"
+                }
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "aw-events",
+                "name": "calendar_events",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"calendar_id\":\"primary\",\"time_zone\":\"America/New_York\",\"window\":{\"start\":\"2026-11-01T00:00:00-04:00\",\"end\":\"2026-11-02T00:00:00-05:00\"}}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"review-event\",\"calendar_id\":\"primary\",\"title\":\"原评审日程\",\"description\":\"原说明\",\"location\":\"原地点\",\"status\":\"confirmed\",\"start\":{\"date\":\"2026-11-01\"},\"end\":{\"date\":\"2026-11-02\"},\"text_truncated\":false,\"description_truncated\":false}],\"complete\":true,\"time_zone\":\"America/New_York\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_events\",\"contract_sha256\":\"9f0e6e40b6bc664b0d21d1581cbe0897aaf87be532428b679ab6473e17d585eb\"}],\"read_at\":\"2026-09-11T21:16:18.433165Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 2,
+                  "call_id": "aw-events",
+                  "sha256": "424f753ca313ea38d2504ee9fbe2829925b86186b66c966217754a9315f0c313"
+                }
+              },
+              {
+                "effect": "read",
+                "id": "aw-original",
+                "name": "mail_read",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"message_id\":\"original-mail\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"summary\":{\"id\":\"original-mail\",\"thread_id\":\"original-thread\",\"internet_message_id\":\"\\u003coriginal@example.test\\u003e\",\"subject\":\"评审回复\",\"from\":[{\"address\":\"from@example.test\"}],\"to\":[{\"address\":\"sender@example.test\"}],\"cc\":[],\"reply_to\":[{\"address\":\"reply@example.test\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":true,\"is_draft\":false,\"metadata_complete\":true},\"body\":{\"text\":\"请回复评审安排。\",\"complete\":true,\"omitted_reasons\":[]}},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_read\",\"contract_sha256\":\"e98aba01bcab28ef70dd6dd5cac5c45a64e2d6d31899dc2e3105bb7a63f57a23\"}],\"read_at\":\"2026-09-11T21:16:18.623278Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 2,
+                  "call_id": "aw-original",
+                  "sha256": "00e58f479af2ecf9883d78c4a965c5688644a9fe3e34ab412ac6d43c5cd599c4"
+                }
+              }
+            ]
+          },
+          {
+            "number": 3,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "aw-inspect",
+                "name": "calendar_event_inspect",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"calendar_id\":\"primary\",\"event_id\":\"review-event\",\"time_zone\":\"America/New_York\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"event\":{\"id\":\"review-event\",\"calendar_id\":\"primary\",\"title\":\"原评审日程\",\"description\":\"原说明\",\"location\":\"原地点\",\"status\":\"confirmed\",\"start\":{\"date\":\"2026-11-01\"},\"end\":{\"date\":\"2026-11-02\"}},\"version\":\"\\\"version-1\\\"\",\"kind\":\"single\",\"attendees\":[{\"address\":\"old@example.test\",\"name\":\"原参与者\",\"kind\":\"required\"}]},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_inspect\",\"contract_sha256\":\"88e0c7794f9f9e111b8e03629cf73c5cdf3f7dd7fbca11ecc5d09914a93c9aec\"}],\"read_at\":\"2026-09-11T21:16:19.133241Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 3,
+                  "call_id": "aw-inspect",
+                  "sha256": "530919a765ad8e717da317abc158ab04ee7e8119672f9676e8320ea26d6b2379"
+                }
+              }
+            ]
+          },
+          {
+            "number": 4,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "write",
+                "id": "aw-create",
+                "name": "calendar_event_create",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event\":{\"title\":\"完整日程标题\",\"description\":\"完整日程说明\",\"start\":{\"date\":\"2026-11-01\",\"time_zone\":\"America/New_York\"},\"end\":{\"date\":\"2026-11-02\",\"time_zone\":\"America/New_York\"},\"attendees\":[{\"address\":\"invite@example.test\",\"name\":\"受邀者\",\"kind\":\"required\"}]},\"notifications\":\"notify_attendees\"}}",
+                "status": "waiting_confirmation"
+              },
+              {
+                "id": "aw-update",
+                "name": "calendar_event_update",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event_id\":\"review-event\",\"expected_version\":\"\\\"version-1\\\"\",\"scope\":\"event\",\"changes\":{\"description\":\"\",\"location\":\"\",\"attendees\":[]},\"notifications\":\"notify_attendees\"}}",
+                "status": "queued"
+              },
+              {
+                "id": "aw-send",
+                "name": "mail_send",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"message\":{\"to\":[{\"name\":\"收件人\",\"address\":\"to@example.test\"}],\"cc\":[{\"name\":\"抄送人\",\"address\":\"cc@example.test\"}],\"bcc\":[{\"name\":\"密送人\",\"address\":\"bcc@example.test\"}],\"subject\":\"完整发送主题\",\"text\":\"完整发送正文\\n第二行：\\u003cscript\\u003e这只是正文\\u003c/script\\u003e\\n正文末尾确认内容\"}}}",
+                "status": "queued"
+              },
+              {
+                "id": "aw-reply",
+                "name": "mail_reply",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"message_id\":\"original-mail\",\"message\":{\"to\":[{\"address\":\"reply@example.test\"}],\"cc\":[{\"name\":\"抄送人\",\"address\":\"cc@example.test\"}],\"bcc\":[{\"name\":\"密送人\",\"address\":\"bcc@example.test\"}],\"subject\":\"Re: 评审回复\",\"text\":\"完整回复正文\"}}}",
+                "status": "queued"
+              }
+            ]
+          }
+        ],
+        "interaction": {
+          "operations": [
+            {
+              "call_id": "aw-create",
+              "tool": "calendar_event_create",
+              "tool_version": "1",
+              "action_key": "calendar.event_create",
+              "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event\":{\"title\":\"完整日程标题\",\"description\":\"完整日程说明\",\"start\":{\"date\":\"2026-11-01\",\"time_zone\":\"America/New_York\"},\"end\":{\"date\":\"2026-11-02\",\"time_zone\":\"America/New_York\"},\"attendees\":[{\"address\":\"invite@example.test\",\"name\":\"受邀者\",\"kind\":\"required\"}]},\"notifications\":\"notify_attendees\"}}",
+              "arguments_hash": "6c700e668a3133f1e7733e6d1383e78a4a66e9eb349b1d4e24b8f77e9f7cd344",
+              "definition_hash": "335f4910854ec56cab88f4a64de15700e9099e3dce59d824e07f5eab2e5618e4"
+            },
+            {
+              "call_id": "aw-update",
+              "tool": "calendar_event_update",
+              "tool_version": "1",
+              "action_key": "calendar.event_update",
+              "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event_id\":\"review-event\",\"expected_version\":\"\\\"version-1\\\"\",\"scope\":\"event\",\"changes\":{\"description\":\"\",\"location\":\"\",\"attendees\":[]},\"notifications\":\"notify_attendees\"}}",
+              "arguments_hash": "fd50bf3b36f4341ab389c4fc53b93e5f2bd5e75309ae62b12bf506954f387fa1",
+              "definition_hash": "c6fb65a5a2ef163a9ff38a5408596db315c7ffea90ad7f90efd97612618945f8"
+            },
+            {
+              "call_id": "aw-send",
+              "tool": "mail_send",
+              "tool_version": "1",
+              "action_key": "mail.send",
+              "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"message\":{\"to\":[{\"name\":\"收件人\",\"address\":\"to@example.test\"}],\"cc\":[{\"name\":\"抄送人\",\"address\":\"cc@example.test\"}],\"bcc\":[{\"name\":\"密送人\",\"address\":\"bcc@example.test\"}],\"subject\":\"完整发送主题\",\"text\":\"完整发送正文\\n第二行：\\u003cscript\\u003e这只是正文\\u003c/script\\u003e\\n正文末尾确认内容\"}}}",
+              "arguments_hash": "b544ecefcfbf599cbdf3b3dcef77bb936cd92f935fb86bc8c3b1c1e843748866",
+              "definition_hash": "19bf09f4d16d507aac39b9531ce665dc57dcb45b5221746bd403db5ea50732e4"
+            },
+            {
+              "call_id": "aw-reply",
+              "tool": "mail_reply",
+              "tool_version": "1",
+              "action_key": "mail.reply",
+              "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"message_id\":\"original-mail\",\"message\":{\"to\":[{\"address\":\"reply@example.test\"}],\"cc\":[{\"name\":\"抄送人\",\"address\":\"cc@example.test\"}],\"bcc\":[{\"name\":\"密送人\",\"address\":\"bcc@example.test\"}],\"subject\":\"Re: 评审回复\",\"text\":\"完整回复正文\"}}}",
+              "arguments_hash": "c6230b3f420da3e898d2a3f3f835c4424bac7d56ec5712823431553831ee99f2",
+              "definition_hash": "5a430202eb5c498081d0206d9d013749b6390068eea3b344bafe85f2b27b771f"
+            }
+          ],
+          "id": "cint_85c4a5291dd493e0d425972f8fe541c8",
+          "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+          "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+          "step": 4,
+          "call_id": "aw-create",
+          "kind": "confirmation",
+          "status": "pending",
+          "question": "请确认是否执行此操作；执行参数如下。",
+          "tool": "calendar_event_create",
+          "tool_version": "1",
+          "action_key": "calendar.event_create",
+          "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event\":{\"title\":\"完整日程标题\",\"description\":\"完整日程说明\",\"start\":{\"date\":\"2026-11-01\",\"time_zone\":\"America/New_York\"},\"end\":{\"date\":\"2026-11-02\",\"time_zone\":\"America/New_York\"},\"attendees\":[{\"address\":\"invite@example.test\",\"name\":\"受邀者\",\"kind\":\"required\"}]},\"notifications\":\"notify_attendees\"}}",
+          "arguments_hash": "6c700e668a3133f1e7733e6d1383e78a4a66e9eb349b1d4e24b8f77e9f7cd344",
+          "definition_hash": "335f4910854ec56cab88f4a64de15700e9099e3dce59d824e07f5eab2e5618e4",
+          "revision": 1,
+          "created_at": "2026-09-11T21:16:19.815559Z",
+          "expires_at": "2026-09-12T21:16:19.815559Z"
+        },
+        "created_at": "2026-09-11T21:16:16.538648Z",
+        "updated_at": "2026-09-11T21:16:19.815703Z"
+      },
+      "completed": {
+        "id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+        "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+        "client_message_id": "82b0db3b-ec86-4034-a16a-93a6fc03d5ae",
+        "status": "completed",
+        "user_seq": 1,
+        "assistant_message_id": "msg_c03042b294494d33bbb14384300e6936",
+        "attempt": 2,
+        "draft_bytes": 0,
+        "last_event_seq": 80,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "aw-create-account",
+                "name": "calendar_write_accounts",
+                "arguments": "{\"operation\":\"calendar_event_create\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"name\":\"日程与邮件验收账号\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\"}],\"operation\":\"calendar_event_create\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_create\",\"contract_sha256\":\"c4ce975e8194b9c2bb55c1bbe59ac28757125abc39b7afdfe642a39aae39dcc9\"}]}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 0,
+                  "call_id": "aw-create-account",
+                  "sha256": "5c0899ecd42dc1c3002fc97e70ba9f022f19afc68fecea2a23789ba0f674b30c"
+                }
+              },
+              {
+                "effect": "read",
+                "id": "aw-update-account",
+                "name": "calendar_write_accounts",
+                "arguments": "{\"operation\":\"calendar_event_update\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"name\":\"日程与邮件验收账号\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\"}],\"operation\":\"calendar_event_update\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_update\",\"contract_sha256\":\"1c8515a32de5a9874549b5628008365ea8913fe937340e543029828d2e50c42d\"}]}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 0,
+                  "call_id": "aw-update-account",
+                  "sha256": "623ae2cfd04e95fdef7dd05d133e1d61047535732dba12ea859000a90ff983b6"
+                }
+              },
+              {
+                "effect": "read",
+                "id": "aw-send-account",
+                "name": "mail_write_accounts",
+                "arguments": "{\"operation\":\"mail_send\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"name\":\"日程与邮件验收账号\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\"}],\"operation\":\"mail_send\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_send\",\"contract_sha256\":\"27f290e180d111a97a202e01372ecffd2f4ab6480369728ca6aa85d502c92895\"}]}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 0,
+                  "call_id": "aw-send-account",
+                  "sha256": "5719a5781e1135b11ccf805e783a56f9b1b6c4a7c96cec7187b034b207ca6873"
+                }
+              },
+              {
+                "effect": "read",
+                "id": "aw-reply-account",
+                "name": "mail_write_accounts",
+                "arguments": "{\"operation\":\"mail_reply\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"name\":\"日程与邮件验收账号\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\"}],\"operation\":\"mail_reply\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_reply\",\"contract_sha256\":\"ca1227cbb9b9f854bcae93ded73bc12845bbc8b6714581b73f0f6aab0f4b4da1\"}]}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 0,
+                  "call_id": "aw-reply-account",
+                  "sha256": "809e9ccd025cf915155de1f1a236c1a14e892ba472594e57566711f11db6c762"
+                }
+              }
+            ]
+          },
+          {
+            "number": 1,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "aw-calendar-list",
+                "name": "calendar_list",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"primary\",\"name\":\"评审日历\",\"time_zone\":\"America/New_York\",\"primary\":true}],\"complete\":true,\"text_truncated\":false},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_list\",\"contract_sha256\":\"30741361ad9b26653d6ed4422169bacc7dd81227a658d44e32c02dab176eda62\"}],\"read_at\":\"2026-09-11T21:16:17.810639Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 1,
+                  "call_id": "aw-calendar-list",
+                  "sha256": "e4ba30327539c5eb64814b057ee557542e29b854721abc7f8896c56bf0fb2788"
+                }
+              },
+              {
+                "effect": "read",
+                "id": "aw-mail-list",
+                "name": "mail_list",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"original-mail\",\"thread_id\":\"original-thread\",\"internet_message_id\":\"\\u003coriginal@example.test\\u003e\",\"subject\":\"评审回复\",\"from\":[{\"address\":\"from@example.test\"}],\"to\":[{\"address\":\"sender@example.test\"}],\"cc\":[],\"reply_to\":[{\"address\":\"reply@example.test\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":true,\"is_draft\":false,\"metadata_complete\":true}],\"complete\":true,\"query_syntax\":\"gmail\",\"mailbox_scope\":\"mailbox_excluding_spam_trash\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_list\",\"contract_sha256\":\"a67a8c1553a2b8457dd54dd3d574994f05e8177ccae2b34a78239affa3fd3004\"}],\"read_at\":\"2026-09-11T21:16:17.984509Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 1,
+                  "call_id": "aw-mail-list",
+                  "sha256": "d9a1a4930953bbf1c56d85ab0a4060c110e50dc0e4d9cd0d5da7f9630d8718cb"
+                }
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "aw-events",
+                "name": "calendar_events",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"calendar_id\":\"primary\",\"time_zone\":\"America/New_York\",\"window\":{\"start\":\"2026-11-01T00:00:00-04:00\",\"end\":\"2026-11-02T00:00:00-05:00\"}}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"review-event\",\"calendar_id\":\"primary\",\"title\":\"原评审日程\",\"description\":\"原说明\",\"location\":\"原地点\",\"status\":\"confirmed\",\"start\":{\"date\":\"2026-11-01\"},\"end\":{\"date\":\"2026-11-02\"},\"text_truncated\":false,\"description_truncated\":false}],\"complete\":true,\"time_zone\":\"America/New_York\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_events\",\"contract_sha256\":\"9f0e6e40b6bc664b0d21d1581cbe0897aaf87be532428b679ab6473e17d585eb\"}],\"read_at\":\"2026-09-11T21:16:18.433165Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 2,
+                  "call_id": "aw-events",
+                  "sha256": "424f753ca313ea38d2504ee9fbe2829925b86186b66c966217754a9315f0c313"
+                }
+              },
+              {
+                "effect": "read",
+                "id": "aw-original",
+                "name": "mail_read",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"message_id\":\"original-mail\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"summary\":{\"id\":\"original-mail\",\"thread_id\":\"original-thread\",\"internet_message_id\":\"\\u003coriginal@example.test\\u003e\",\"subject\":\"评审回复\",\"from\":[{\"address\":\"from@example.test\"}],\"to\":[{\"address\":\"sender@example.test\"}],\"cc\":[],\"reply_to\":[{\"address\":\"reply@example.test\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":true,\"is_draft\":false,\"metadata_complete\":true},\"body\":{\"text\":\"请回复评审安排。\",\"complete\":true,\"omitted_reasons\":[]}},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_read\",\"contract_sha256\":\"e98aba01bcab28ef70dd6dd5cac5c45a64e2d6d31899dc2e3105bb7a63f57a23\"}],\"read_at\":\"2026-09-11T21:16:18.623278Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 2,
+                  "call_id": "aw-original",
+                  "sha256": "00e58f479af2ecf9883d78c4a965c5688644a9fe3e34ab412ac6d43c5cd599c4"
+                }
+              }
+            ]
+          },
+          {
+            "number": 3,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "aw-inspect",
+                "name": "calendar_event_inspect",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"calendar_id\":\"primary\",\"event_id\":\"review-event\",\"time_zone\":\"America/New_York\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"event\":{\"id\":\"review-event\",\"calendar_id\":\"primary\",\"title\":\"原评审日程\",\"description\":\"原说明\",\"location\":\"原地点\",\"status\":\"confirmed\",\"start\":{\"date\":\"2026-11-01\"},\"end\":{\"date\":\"2026-11-02\"}},\"version\":\"\\\"version-1\\\"\",\"kind\":\"single\",\"attendees\":[{\"address\":\"old@example.test\",\"name\":\"原参与者\",\"kind\":\"required\"}]},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_inspect\",\"contract_sha256\":\"88e0c7794f9f9e111b8e03629cf73c5cdf3f7dd7fbca11ecc5d09914a93c9aec\"}],\"read_at\":\"2026-09-11T21:16:19.133241Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 3,
+                  "call_id": "aw-inspect",
+                  "sha256": "530919a765ad8e717da317abc158ab04ee7e8119672f9676e8320ea26d6b2379"
+                }
+              }
+            ]
+          },
+          {
+            "number": 4,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "write",
+                "id": "aw-create",
+                "name": "calendar_event_create",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event\":{\"title\":\"完整日程标题\",\"description\":\"完整日程说明\",\"start\":{\"date\":\"2026-11-01\",\"time_zone\":\"America/New_York\"},\"end\":{\"date\":\"2026-11-02\",\"time_zone\":\"America/New_York\"},\"attendees\":[{\"address\":\"invite@example.test\",\"name\":\"受邀者\",\"kind\":\"required\"}]},\"notifications\":\"notify_attendees\"}}",
+                "status": "completed",
+                "resource_id": "account-write:89831cd03038f3e627e8f882dc46f065deede0b276f54d4b4b2c34713b6f0581",
+                "result_preview": "{\"data\":{\"request_ref\":\"account-write:89831cd03038f3e627e8f882dc46f065deede0b276f54d4b4b2c34713b6f0581\",\"outcome\":\"created\",\"calendar_id\":\"primary\",\"event_id\":\"c8f0ed05d90bd462cb5c7853a5d6272961f271297e817aa9cde620e159d55a88\",\"version\":\"\\\"created-version\\\"\",\"notifications\":\"requested\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_create\",\"contract_sha256\":\"c4ce975e8194b9c2bb55c1bbe59ac28757125abc39b7afdfe642a39aae39dcc9\"}],\"recorded_at\":\"2026-09-11T21:16:53.002973Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 4,
+                  "call_id": "aw-create",
+                  "sha256": "4ca5e0b7f5a988ee96be736844a8a87d03309e9c6cbe0eca8ac649a536fcfbc3"
+                }
+              },
+              {
+                "effect": "write",
+                "id": "aw-update",
+                "name": "calendar_event_update",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event_id\":\"review-event\",\"expected_version\":\"\\\"version-1\\\"\",\"scope\":\"event\",\"changes\":{\"description\":\"\",\"location\":\"\",\"attendees\":[]},\"notifications\":\"notify_attendees\"}}",
+                "status": "completed",
+                "resource_id": "account-write:27d272d363395dddcd406930c03ea7e985b80116076a5aabbf132e7ff196c129",
+                "result_preview": "{\"data\":{\"request_ref\":\"account-write:27d272d363395dddcd406930c03ea7e985b80116076a5aabbf132e7ff196c129\",\"outcome\":\"updated\",\"calendar_id\":\"primary\",\"event_id\":\"review-event\",\"version\":\"\\\"version-2\\\"\",\"notifications\":\"requested\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_update\",\"contract_sha256\":\"1c8515a32de5a9874549b5628008365ea8913fe937340e543029828d2e50c42d\"}],\"recorded_at\":\"2026-09-11T21:16:53.269894Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 4,
+                  "call_id": "aw-update",
+                  "sha256": "13853b26aa9fa44d220d4675779e1fe0ce3cda9cb82d2fc298ef987dabccce07"
+                }
+              },
+              {
+                "effect": "write",
+                "completion": "accepted",
+                "id": "aw-send",
+                "name": "mail_send",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"message\":{\"to\":[{\"name\":\"收件人\",\"address\":\"to@example.test\"}],\"cc\":[{\"name\":\"抄送人\",\"address\":\"cc@example.test\"}],\"bcc\":[{\"name\":\"密送人\",\"address\":\"bcc@example.test\"}],\"subject\":\"完整发送主题\",\"text\":\"完整发送正文\\n第二行：\\u003cscript\\u003e这只是正文\\u003c/script\\u003e\\n正文末尾确认内容\"}}}",
+                "status": "completed",
+                "resource_id": "account-write:5616df4fe1f824b4df68da6059435dfba184ce2a531d813ee509865f9e66a0e5",
+                "result_preview": "{\"data\":{\"request_ref\":\"account-write:5616df4fe1f824b4df68da6059435dfba184ce2a531d813ee509865f9e66a0e5\",\"status\":\"accepted\",\"message_id\":\"sent-1\",\"thread_id\":\"new-thread\",\"accepted_at\":\"2026-09-11T21:16:53.579693Z\",\"delivery\":\"unknown\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_send\",\"contract_sha256\":\"27f290e180d111a97a202e01372ecffd2f4ab6480369728ca6aa85d502c92895\"}],\"recorded_at\":\"2026-09-11T21:16:53.579717Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 4,
+                  "call_id": "aw-send",
+                  "sha256": "422a5e71fa2dbb6010050901655cddc676095b0ae33571a74b79569c97ac9f6d"
+                }
+              },
+              {
+                "effect": "write",
+                "completion": "accepted",
+                "id": "aw-reply",
+                "name": "mail_reply",
+                "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"message_id\":\"original-mail\",\"message\":{\"to\":[{\"address\":\"reply@example.test\"}],\"cc\":[{\"name\":\"抄送人\",\"address\":\"cc@example.test\"}],\"bcc\":[{\"name\":\"密送人\",\"address\":\"bcc@example.test\"}],\"subject\":\"Re: 评审回复\",\"text\":\"完整回复正文\"}}}",
+                "status": "completed",
+                "resource_id": "account-write:80afa88aa21e562c4f5272ef7fae07e8f26663bb59adbbda2698369d73689ea3",
+                "result_preview": "{\"data\":{\"request_ref\":\"account-write:80afa88aa21e562c4f5272ef7fae07e8f26663bb59adbbda2698369d73689ea3\",\"status\":\"accepted\",\"message_id\":\"sent-2\",\"thread_id\":\"original-thread\",\"in_reply_to_message_id\":\"original-mail\",\"accepted_at\":\"2026-09-11T21:16:53.878277Z\",\"delivery\":\"unknown\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_reply\",\"contract_sha256\":\"ca1227cbb9b9f854bcae93ded73bc12845bbc8b6714581b73f0f6aab0f4b4da1\"}],\"recorded_at\":\"2026-09-11T21:16:53.878296Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+                  "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+                  "step": 4,
+                  "call_id": "aw-reply",
+                  "sha256": "026d6df739a050808a1e7faea1676b24c770ae637af01ec4fbfea696a4f1730d"
+                }
+              }
+            ]
+          },
+          {
+            "number": 5,
+            "attempt": 2,
+            "status": "completed",
+            "text": "日程已创建并完成明确修改；两封邮件已由服务受理，送达状态未知。",
+            "calls": []
+          }
+        ],
+        "interaction": {
+          "operations": [
+            {
+              "call_id": "aw-create",
+              "tool": "calendar_event_create",
+              "tool_version": "1",
+              "action_key": "calendar.event_create",
+              "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event\":{\"title\":\"完整日程标题\",\"description\":\"完整日程说明\",\"start\":{\"date\":\"2026-11-01\",\"time_zone\":\"America/New_York\"},\"end\":{\"date\":\"2026-11-02\",\"time_zone\":\"America/New_York\"},\"attendees\":[{\"address\":\"invite@example.test\",\"name\":\"受邀者\",\"kind\":\"required\"}]},\"notifications\":\"notify_attendees\"}}",
+              "arguments_hash": "6c700e668a3133f1e7733e6d1383e78a4a66e9eb349b1d4e24b8f77e9f7cd344",
+              "definition_hash": "335f4910854ec56cab88f4a64de15700e9099e3dce59d824e07f5eab2e5618e4"
+            },
+            {
+              "call_id": "aw-update",
+              "tool": "calendar_event_update",
+              "tool_version": "1",
+              "action_key": "calendar.event_update",
+              "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event_id\":\"review-event\",\"expected_version\":\"\\\"version-1\\\"\",\"scope\":\"event\",\"changes\":{\"description\":\"\",\"location\":\"\",\"attendees\":[]},\"notifications\":\"notify_attendees\"}}",
+              "arguments_hash": "fd50bf3b36f4341ab389c4fc53b93e5f2bd5e75309ae62b12bf506954f387fa1",
+              "definition_hash": "c6fb65a5a2ef163a9ff38a5408596db315c7ffea90ad7f90efd97612618945f8"
+            },
+            {
+              "call_id": "aw-send",
+              "tool": "mail_send",
+              "tool_version": "1",
+              "action_key": "mail.send",
+              "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"message\":{\"to\":[{\"name\":\"收件人\",\"address\":\"to@example.test\"}],\"cc\":[{\"name\":\"抄送人\",\"address\":\"cc@example.test\"}],\"bcc\":[{\"name\":\"密送人\",\"address\":\"bcc@example.test\"}],\"subject\":\"完整发送主题\",\"text\":\"完整发送正文\\n第二行：\\u003cscript\\u003e这只是正文\\u003c/script\\u003e\\n正文末尾确认内容\"}}}",
+              "arguments_hash": "b544ecefcfbf599cbdf3b3dcef77bb936cd92f935fb86bc8c3b1c1e843748866",
+              "definition_hash": "19bf09f4d16d507aac39b9531ce665dc57dcb45b5221746bd403db5ea50732e4"
+            },
+            {
+              "call_id": "aw-reply",
+              "tool": "mail_reply",
+              "tool_version": "1",
+              "action_key": "mail.reply",
+              "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"message_id\":\"original-mail\",\"message\":{\"to\":[{\"address\":\"reply@example.test\"}],\"cc\":[{\"name\":\"抄送人\",\"address\":\"cc@example.test\"}],\"bcc\":[{\"name\":\"密送人\",\"address\":\"bcc@example.test\"}],\"subject\":\"Re: 评审回复\",\"text\":\"完整回复正文\"}}}",
+              "arguments_hash": "c6230b3f420da3e898d2a3f3f835c4424bac7d56ec5712823431553831ee99f2",
+              "definition_hash": "5a430202eb5c498081d0206d9d013749b6390068eea3b344bafe85f2b27b771f"
+            }
+          ],
+          "authorization_id": "cint_85c4a5291dd493e0d425972f8fe541c8",
+          "approved_scope": "listed_operations",
+          "id": "cint_85c4a5291dd493e0d425972f8fe541c8",
+          "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+          "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+          "step": 4,
+          "call_id": "aw-create",
+          "kind": "confirmation",
+          "status": "approved",
+          "question": "请确认是否执行此操作；执行参数如下。",
+          "tool": "calendar_event_create",
+          "tool_version": "1",
+          "action_key": "calendar.event_create",
+          "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event\":{\"title\":\"完整日程标题\",\"description\":\"完整日程说明\",\"start\":{\"date\":\"2026-11-01\",\"time_zone\":\"America/New_York\"},\"end\":{\"date\":\"2026-11-02\",\"time_zone\":\"America/New_York\"},\"attendees\":[{\"address\":\"invite@example.test\",\"name\":\"受邀者\",\"kind\":\"required\"}]},\"notifications\":\"notify_attendees\"}}",
+          "arguments_hash": "6c700e668a3133f1e7733e6d1383e78a4a66e9eb349b1d4e24b8f77e9f7cd344",
+          "definition_hash": "335f4910854ec56cab88f4a64de15700e9099e3dce59d824e07f5eab2e5618e4",
+          "revision": 2,
+          "responded_by": "admin",
+          "created_at": "2026-09-11T21:16:19.815559Z",
+          "expires_at": "2026-09-12T21:16:19.815559Z",
+          "responded_at": "2026-09-11T21:16:48.708554Z"
+        },
+        "last_input_seq": 2,
+        "created_at": "2026-09-11T21:16:16.538648Z",
+        "updated_at": "2026-09-11T21:16:54.511435Z"
+      }
+    }
+  ],
+  "error": "TimeoutError: locator.waitFor: Timeout 45000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('dialog', { name: '处理记录', exact: true }).getByText('邮件已由服务受理', { exact: true }).first() to be visible\u001b[22m\n\u001b[2m    90 × locator resolved to hidden <strong>邮件已由服务受理</strong>\u001b[22m\n",
+  "lastRun": {
+    "id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+    "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+    "client_message_id": "82b0db3b-ec86-4034-a16a-93a6fc03d5ae",
+    "status": "completed",
+    "user_seq": 1,
+    "assistant_message_id": "msg_c03042b294494d33bbb14384300e6936",
+    "attempt": 2,
+    "draft_bytes": 0,
+    "last_event_seq": 80,
+    "steps": [
+      {
+        "number": 0,
+        "attempt": 1,
+        "status": "tools",
+        "text": "",
+        "calls": [
+          {
+            "effect": "read",
+            "id": "aw-create-account",
+            "name": "calendar_write_accounts",
+            "arguments": "{\"operation\":\"calendar_event_create\"}",
+            "status": "completed",
+            "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"name\":\"日程与邮件验收账号\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\"}],\"operation\":\"calendar_event_create\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_create\",\"contract_sha256\":\"c4ce975e8194b9c2bb55c1bbe59ac28757125abc39b7afdfe642a39aae39dcc9\"}]}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 0,
+              "call_id": "aw-create-account",
+              "sha256": "5c0899ecd42dc1c3002fc97e70ba9f022f19afc68fecea2a23789ba0f674b30c"
+            }
+          },
+          {
+            "effect": "read",
+            "id": "aw-update-account",
+            "name": "calendar_write_accounts",
+            "arguments": "{\"operation\":\"calendar_event_update\"}",
+            "status": "completed",
+            "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"name\":\"日程与邮件验收账号\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\"}],\"operation\":\"calendar_event_update\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_update\",\"contract_sha256\":\"1c8515a32de5a9874549b5628008365ea8913fe937340e543029828d2e50c42d\"}]}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 0,
+              "call_id": "aw-update-account",
+              "sha256": "623ae2cfd04e95fdef7dd05d133e1d61047535732dba12ea859000a90ff983b6"
+            }
+          },
+          {
+            "effect": "read",
+            "id": "aw-send-account",
+            "name": "mail_write_accounts",
+            "arguments": "{\"operation\":\"mail_send\"}",
+            "status": "completed",
+            "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"name\":\"日程与邮件验收账号\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\"}],\"operation\":\"mail_send\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_send\",\"contract_sha256\":\"27f290e180d111a97a202e01372ecffd2f4ab6480369728ca6aa85d502c92895\"}]}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 0,
+              "call_id": "aw-send-account",
+              "sha256": "5719a5781e1135b11ccf805e783a56f9b1b6c4a7c96cec7187b034b207ca6873"
+            }
+          },
+          {
+            "effect": "read",
+            "id": "aw-reply-account",
+            "name": "mail_write_accounts",
+            "arguments": "{\"operation\":\"mail_reply\"}",
+            "status": "completed",
+            "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"name\":\"日程与邮件验收账号\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\"}],\"operation\":\"mail_reply\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_reply\",\"contract_sha256\":\"ca1227cbb9b9f854bcae93ded73bc12845bbc8b6714581b73f0f6aab0f4b4da1\"}]}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 0,
+              "call_id": "aw-reply-account",
+              "sha256": "809e9ccd025cf915155de1f1a236c1a14e892ba472594e57566711f11db6c762"
+            }
+          }
+        ]
+      },
+      {
+        "number": 1,
+        "attempt": 1,
+        "status": "tools",
+        "text": "",
+        "calls": [
+          {
+            "effect": "read",
+            "id": "aw-calendar-list",
+            "name": "calendar_list",
+            "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\"}",
+            "status": "completed",
+            "result_preview": "{\"data\":{\"items\":[{\"id\":\"primary\",\"name\":\"评审日历\",\"time_zone\":\"America/New_York\",\"primary\":true}],\"complete\":true,\"text_truncated\":false},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_list\",\"contract_sha256\":\"30741361ad9b26653d6ed4422169bacc7dd81227a658d44e32c02dab176eda62\"}],\"read_at\":\"2026-09-11T21:16:17.810639Z\"}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 1,
+              "call_id": "aw-calendar-list",
+              "sha256": "e4ba30327539c5eb64814b057ee557542e29b854721abc7f8896c56bf0fb2788"
+            }
+          },
+          {
+            "effect": "read",
+            "id": "aw-mail-list",
+            "name": "mail_list",
+            "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\"}",
+            "status": "completed",
+            "result_preview": "{\"data\":{\"items\":[{\"id\":\"original-mail\",\"thread_id\":\"original-thread\",\"internet_message_id\":\"\\u003coriginal@example.test\\u003e\",\"subject\":\"评审回复\",\"from\":[{\"address\":\"from@example.test\"}],\"to\":[{\"address\":\"sender@example.test\"}],\"cc\":[],\"reply_to\":[{\"address\":\"reply@example.test\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":true,\"is_draft\":false,\"metadata_complete\":true}],\"complete\":true,\"query_syntax\":\"gmail\",\"mailbox_scope\":\"mailbox_excluding_spam_trash\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_list\",\"contract_sha256\":\"a67a8c1553a2b8457dd54dd3d574994f05e8177ccae2b34a78239affa3fd3004\"}],\"read_at\":\"2026-09-11T21:16:17.984509Z\"}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 1,
+              "call_id": "aw-mail-list",
+              "sha256": "d9a1a4930953bbf1c56d85ab0a4060c110e50dc0e4d9cd0d5da7f9630d8718cb"
+            }
+          }
+        ]
+      },
+      {
+        "number": 2,
+        "attempt": 1,
+        "status": "tools",
+        "text": "",
+        "calls": [
+          {
+            "effect": "read",
+            "id": "aw-events",
+            "name": "calendar_events",
+            "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"calendar_id\":\"primary\",\"time_zone\":\"America/New_York\",\"window\":{\"start\":\"2026-11-01T00:00:00-04:00\",\"end\":\"2026-11-02T00:00:00-05:00\"}}",
+            "status": "completed",
+            "result_preview": "{\"data\":{\"items\":[{\"id\":\"review-event\",\"calendar_id\":\"primary\",\"title\":\"原评审日程\",\"description\":\"原说明\",\"location\":\"原地点\",\"status\":\"confirmed\",\"start\":{\"date\":\"2026-11-01\"},\"end\":{\"date\":\"2026-11-02\"},\"text_truncated\":false,\"description_truncated\":false}],\"complete\":true,\"time_zone\":\"America/New_York\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_events\",\"contract_sha256\":\"9f0e6e40b6bc664b0d21d1581cbe0897aaf87be532428b679ab6473e17d585eb\"}],\"read_at\":\"2026-09-11T21:16:18.433165Z\"}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 2,
+              "call_id": "aw-events",
+              "sha256": "424f753ca313ea38d2504ee9fbe2829925b86186b66c966217754a9315f0c313"
+            }
+          },
+          {
+            "effect": "read",
+            "id": "aw-original",
+            "name": "mail_read",
+            "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"message_id\":\"original-mail\"}",
+            "status": "completed",
+            "result_preview": "{\"data\":{\"summary\":{\"id\":\"original-mail\",\"thread_id\":\"original-thread\",\"internet_message_id\":\"\\u003coriginal@example.test\\u003e\",\"subject\":\"评审回复\",\"from\":[{\"address\":\"from@example.test\"}],\"to\":[{\"address\":\"sender@example.test\"}],\"cc\":[],\"reply_to\":[{\"address\":\"reply@example.test\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":true,\"is_draft\":false,\"metadata_complete\":true},\"body\":{\"text\":\"请回复评审安排。\",\"complete\":true,\"omitted_reasons\":[]}},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_read\",\"contract_sha256\":\"e98aba01bcab28ef70dd6dd5cac5c45a64e2d6d31899dc2e3105bb7a63f57a23\"}],\"read_at\":\"2026-09-11T21:16:18.623278Z\"}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 2,
+              "call_id": "aw-original",
+              "sha256": "00e58f479af2ecf9883d78c4a965c5688644a9fe3e34ab412ac6d43c5cd599c4"
+            }
+          }
+        ]
+      },
+      {
+        "number": 3,
+        "attempt": 1,
+        "status": "tools",
+        "text": "",
+        "calls": [
+          {
+            "effect": "read",
+            "id": "aw-inspect",
+            "name": "calendar_event_inspect",
+            "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"calendar_id\":\"primary\",\"event_id\":\"review-event\",\"time_zone\":\"America/New_York\"}",
+            "status": "completed",
+            "result_preview": "{\"data\":{\"event\":{\"id\":\"review-event\",\"calendar_id\":\"primary\",\"title\":\"原评审日程\",\"description\":\"原说明\",\"location\":\"原地点\",\"status\":\"confirmed\",\"start\":{\"date\":\"2026-11-01\"},\"end\":{\"date\":\"2026-11-02\"}},\"version\":\"\\\"version-1\\\"\",\"kind\":\"single\",\"attendees\":[{\"address\":\"old@example.test\",\"name\":\"原参与者\",\"kind\":\"required\"}]},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_inspect\",\"contract_sha256\":\"88e0c7794f9f9e111b8e03629cf73c5cdf3f7dd7fbca11ecc5d09914a93c9aec\"}],\"read_at\":\"2026-09-11T21:16:19.133241Z\"}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 3,
+              "call_id": "aw-inspect",
+              "sha256": "530919a765ad8e717da317abc158ab04ee7e8119672f9676e8320ea26d6b2379"
+            }
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "attempt": 1,
+        "status": "tools",
+        "text": "",
+        "calls": [
+          {
+            "effect": "write",
+            "id": "aw-create",
+            "name": "calendar_event_create",
+            "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event\":{\"title\":\"完整日程标题\",\"description\":\"完整日程说明\",\"start\":{\"date\":\"2026-11-01\",\"time_zone\":\"America/New_York\"},\"end\":{\"date\":\"2026-11-02\",\"time_zone\":\"America/New_York\"},\"attendees\":[{\"address\":\"invite@example.test\",\"name\":\"受邀者\",\"kind\":\"required\"}]},\"notifications\":\"notify_attendees\"}}",
+            "status": "completed",
+            "resource_id": "account-write:89831cd03038f3e627e8f882dc46f065deede0b276f54d4b4b2c34713b6f0581",
+            "result_preview": "{\"data\":{\"request_ref\":\"account-write:89831cd03038f3e627e8f882dc46f065deede0b276f54d4b4b2c34713b6f0581\",\"outcome\":\"created\",\"calendar_id\":\"primary\",\"event_id\":\"c8f0ed05d90bd462cb5c7853a5d6272961f271297e817aa9cde620e159d55a88\",\"version\":\"\\\"created-version\\\"\",\"notifications\":\"requested\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_create\",\"contract_sha256\":\"c4ce975e8194b9c2bb55c1bbe59ac28757125abc39b7afdfe642a39aae39dcc9\"}],\"recorded_at\":\"2026-09-11T21:16:53.002973Z\"}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 4,
+              "call_id": "aw-create",
+              "sha256": "4ca5e0b7f5a988ee96be736844a8a87d03309e9c6cbe0eca8ac649a536fcfbc3"
+            }
+          },
+          {
+            "effect": "write",
+            "id": "aw-update",
+            "name": "calendar_event_update",
+            "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event_id\":\"review-event\",\"expected_version\":\"\\\"version-1\\\"\",\"scope\":\"event\",\"changes\":{\"description\":\"\",\"location\":\"\",\"attendees\":[]},\"notifications\":\"notify_attendees\"}}",
+            "status": "completed",
+            "resource_id": "account-write:27d272d363395dddcd406930c03ea7e985b80116076a5aabbf132e7ff196c129",
+            "result_preview": "{\"data\":{\"request_ref\":\"account-write:27d272d363395dddcd406930c03ea7e985b80116076a5aabbf132e7ff196c129\",\"outcome\":\"updated\",\"calendar_id\":\"primary\",\"event_id\":\"review-event\",\"version\":\"\\\"version-2\\\"\",\"notifications\":\"requested\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"calendar_event_update\",\"contract_sha256\":\"1c8515a32de5a9874549b5628008365ea8913fe937340e543029828d2e50c42d\"}],\"recorded_at\":\"2026-09-11T21:16:53.269894Z\"}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 4,
+              "call_id": "aw-update",
+              "sha256": "13853b26aa9fa44d220d4675779e1fe0ce3cda9cb82d2fc298ef987dabccce07"
+            }
+          },
+          {
+            "effect": "write",
+            "completion": "accepted",
+            "id": "aw-send",
+            "name": "mail_send",
+            "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"message\":{\"to\":[{\"name\":\"收件人\",\"address\":\"to@example.test\"}],\"cc\":[{\"name\":\"抄送人\",\"address\":\"cc@example.test\"}],\"bcc\":[{\"name\":\"密送人\",\"address\":\"bcc@example.test\"}],\"subject\":\"完整发送主题\",\"text\":\"完整发送正文\\n第二行：\\u003cscript\\u003e这只是正文\\u003c/script\\u003e\\n正文末尾确认内容\"}}}",
+            "status": "completed",
+            "resource_id": "account-write:5616df4fe1f824b4df68da6059435dfba184ce2a531d813ee509865f9e66a0e5",
+            "result_preview": "{\"data\":{\"request_ref\":\"account-write:5616df4fe1f824b4df68da6059435dfba184ce2a531d813ee509865f9e66a0e5\",\"status\":\"accepted\",\"message_id\":\"sent-1\",\"thread_id\":\"new-thread\",\"accepted_at\":\"2026-09-11T21:16:53.579693Z\",\"delivery\":\"unknown\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_send\",\"contract_sha256\":\"27f290e180d111a97a202e01372ecffd2f4ab6480369728ca6aa85d502c92895\"}],\"recorded_at\":\"2026-09-11T21:16:53.579717Z\"}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 4,
+              "call_id": "aw-send",
+              "sha256": "422a5e71fa2dbb6010050901655cddc676095b0ae33571a74b79569c97ac9f6d"
+            }
+          },
+          {
+            "effect": "write",
+            "completion": "accepted",
+            "id": "aw-reply",
+            "name": "mail_reply",
+            "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"message_id\":\"original-mail\",\"message\":{\"to\":[{\"address\":\"reply@example.test\"}],\"cc\":[{\"name\":\"抄送人\",\"address\":\"cc@example.test\"}],\"bcc\":[{\"name\":\"密送人\",\"address\":\"bcc@example.test\"}],\"subject\":\"Re: 评审回复\",\"text\":\"完整回复正文\"}}}",
+            "status": "completed",
+            "resource_id": "account-write:80afa88aa21e562c4f5272ef7fae07e8f26663bb59adbbda2698369d73689ea3",
+            "result_preview": "{\"data\":{\"request_ref\":\"account-write:80afa88aa21e562c4f5272ef7fae07e8f26663bb59adbbda2698369d73689ea3\",\"status\":\"accepted\",\"message_id\":\"sent-2\",\"thread_id\":\"original-thread\",\"in_reply_to_message_id\":\"original-mail\",\"accepted_at\":\"2026-09-11T21:16:53.878277Z\",\"delivery\":\"unknown\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"operation\":\"mail_reply\",\"contract_sha256\":\"ca1227cbb9b9f854bcae93ded73bc12845bbc8b6714581b73f0f6aab0f4b4da1\"}],\"recorded_at\":\"2026-09-11T21:16:53.878296Z\"}",
+            "result_reference": {
+              "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+              "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+              "step": 4,
+              "call_id": "aw-reply",
+              "sha256": "026d6df739a050808a1e7faea1676b24c770ae637af01ec4fbfea696a4f1730d"
+            }
+          }
+        ]
+      },
+      {
+        "number": 5,
+        "attempt": 2,
+        "status": "completed",
+        "text": "日程已创建并完成明确修改；两封邮件已由服务受理，送达状态未知。",
+        "calls": []
+      }
+    ],
+    "interaction": {
+      "operations": [
+        {
+          "call_id": "aw-create",
+          "tool": "calendar_event_create",
+          "tool_version": "1",
+          "action_key": "calendar.event_create",
+          "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event\":{\"title\":\"完整日程标题\",\"description\":\"完整日程说明\",\"start\":{\"date\":\"2026-11-01\",\"time_zone\":\"America/New_York\"},\"end\":{\"date\":\"2026-11-02\",\"time_zone\":\"America/New_York\"},\"attendees\":[{\"address\":\"invite@example.test\",\"name\":\"受邀者\",\"kind\":\"required\"}]},\"notifications\":\"notify_attendees\"}}",
+          "arguments_hash": "6c700e668a3133f1e7733e6d1383e78a4a66e9eb349b1d4e24b8f77e9f7cd344",
+          "definition_hash": "335f4910854ec56cab88f4a64de15700e9099e3dce59d824e07f5eab2e5618e4"
+        },
+        {
+          "call_id": "aw-update",
+          "tool": "calendar_event_update",
+          "tool_version": "1",
+          "action_key": "calendar.event_update",
+          "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event_id\":\"review-event\",\"expected_version\":\"\\\"version-1\\\"\",\"scope\":\"event\",\"changes\":{\"description\":\"\",\"location\":\"\",\"attendees\":[]},\"notifications\":\"notify_attendees\"}}",
+          "arguments_hash": "fd50bf3b36f4341ab389c4fc53b93e5f2bd5e75309ae62b12bf506954f387fa1",
+          "definition_hash": "c6fb65a5a2ef163a9ff38a5408596db315c7ffea90ad7f90efd97612618945f8"
+        },
+        {
+          "call_id": "aw-send",
+          "tool": "mail_send",
+          "tool_version": "1",
+          "action_key": "mail.send",
+          "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"message\":{\"to\":[{\"name\":\"收件人\",\"address\":\"to@example.test\"}],\"cc\":[{\"name\":\"抄送人\",\"address\":\"cc@example.test\"}],\"bcc\":[{\"name\":\"密送人\",\"address\":\"bcc@example.test\"}],\"subject\":\"完整发送主题\",\"text\":\"完整发送正文\\n第二行：\\u003cscript\\u003e这只是正文\\u003c/script\\u003e\\n正文末尾确认内容\"}}}",
+          "arguments_hash": "b544ecefcfbf599cbdf3b3dcef77bb936cd92f935fb86bc8c3b1c1e843748866",
+          "definition_hash": "19bf09f4d16d507aac39b9531ce665dc57dcb45b5221746bd403db5ea50732e4"
+        },
+        {
+          "call_id": "aw-reply",
+          "tool": "mail_reply",
+          "tool_version": "1",
+          "action_key": "mail.reply",
+          "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"message_id\":\"original-mail\",\"message\":{\"to\":[{\"address\":\"reply@example.test\"}],\"cc\":[{\"name\":\"抄送人\",\"address\":\"cc@example.test\"}],\"bcc\":[{\"name\":\"密送人\",\"address\":\"bcc@example.test\"}],\"subject\":\"Re: 评审回复\",\"text\":\"完整回复正文\"}}}",
+          "arguments_hash": "c6230b3f420da3e898d2a3f3f835c4424bac7d56ec5712823431553831ee99f2",
+          "definition_hash": "5a430202eb5c498081d0206d9d013749b6390068eea3b344bafe85f2b27b771f"
+        }
+      ],
+      "authorization_id": "cint_85c4a5291dd493e0d425972f8fe541c8",
+      "approved_scope": "listed_operations",
+      "id": "cint_85c4a5291dd493e0d425972f8fe541c8",
+      "conversation_id": "conv_407a39b4224dc92645769faabf6e5301",
+      "run_id": "crun_cd4a054332d211fa58bdaaed60a0e7a5",
+      "step": 4,
+      "call_id": "aw-create",
+      "kind": "confirmation",
+      "status": "approved",
+      "question": "请确认是否执行此操作；执行参数如下。",
+      "tool": "calendar_event_create",
+      "tool_version": "1",
+      "action_key": "calendar.event_create",
+      "arguments": "{\"account_key\":\"account_oauth_oycamDQmhuhDenY_bGJ4vPI69KtC2Vldn6oHgZunPZg\",\"account_updated_at\":\"2026-09-11T21:16:15.778622Z\",\"request\":{\"calendar_id\":\"primary\",\"event\":{\"title\":\"完整日程标题\",\"description\":\"完整日程说明\",\"start\":{\"date\":\"2026-11-01\",\"time_zone\":\"America/New_York\"},\"end\":{\"date\":\"2026-11-02\",\"time_zone\":\"America/New_York\"},\"attendees\":[{\"address\":\"invite@example.test\",\"name\":\"受邀者\",\"kind\":\"required\"}]},\"notifications\":\"notify_attendees\"}}",
+      "arguments_hash": "6c700e668a3133f1e7733e6d1383e78a4a66e9eb349b1d4e24b8f77e9f7cd344",
+      "definition_hash": "335f4910854ec56cab88f4a64de15700e9099e3dce59d824e07f5eab2e5618e4",
+      "revision": 2,
+      "responded_by": "admin",
+      "created_at": "2026-09-11T21:16:19.815559Z",
+      "expires_at": "2026-09-12T21:16:19.815559Z",
+      "responded_at": "2026-09-11T21:16:48.708554Z"
+    },
+    "last_input_seq": 2,
+    "created_at": "2026-09-11T21:16:16.538648Z",
+    "updated_at": "2026-09-11T21:16:54.511435Z"
+  }
+}

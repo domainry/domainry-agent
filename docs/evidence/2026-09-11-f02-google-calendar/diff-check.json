@@ -1,0 +1,22 @@
+[
+  {
+    "repository": "domainry-agent",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repository": "domainry-connector-sdk",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repository": "domainry-connectors",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repository": "domainry-integration",
+    "exit_code": 0,
+    "output": ""
+  }
+]

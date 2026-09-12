@@ -24,15 +24,20 @@ type sourceAuditEntry struct {
 // a model call. Flattening inherited roots keeps ordinary follow-up turns from
 // forming an ever-growing chain of references to the same document lookup.
 type conversationSourceAudit struct {
-	s       *ConversationService
-	a       agentsdk.ConversationAuthority
-	cache   map[agentsdk.ConversationRunReference]sourceAuditEntry
-	reading map[agentsdk.ConversationRunReference]bool
-	records map[string]bool
+	s              *ConversationService
+	a              agentsdk.ConversationAuthority
+	cache          map[agentsdk.ConversationRunReference]sourceAuditEntry
+	reading        map[agentsdk.ConversationRunReference]bool
+	records        map[string]bool
+	conversationID string // model consumer; empty only for explicit user reads
 }
 
-func (s *ConversationService) sourceAudit(a agentsdk.ConversationAuthority) *conversationSourceAudit {
-	return &conversationSourceAudit{s: s, a: a, cache: map[agentsdk.ConversationRunReference]sourceAuditEntry{}, reading: map[agentsdk.ConversationRunReference]bool{}, records: map[string]bool{}}
+func (s *ConversationService) sourceAudit(a agentsdk.ConversationAuthority, conversationID ...string) *conversationSourceAudit {
+	consumer := ""
+	if len(conversationID) > 0 {
+		consumer = conversationID[0]
+	}
+	return &conversationSourceAudit{s: s, a: a, conversationID: consumer, cache: map[agentsdk.ConversationRunReference]sourceAuditEntry{}, reading: map[agentsdk.ConversationRunReference]bool{}, records: map[string]bool{}}
 }
 
 func mergeConversationSources(groups ...[]agentsdk.ConversationRunReference) []agentsdk.ConversationRunReference {
@@ -241,16 +246,31 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 	if record.Result == nil || record.Result.Status != "completed" {
 		return nil, nil
 	}
+	// A user may disable any tool, including local/personal tools. Reuse of its
+	// stored output must honor the same live policy as a new invocation.
+	if err := audit.connectedTool(ctx, record.Call.Name); err != nil {
+		return nil, err
+	}
 	key := conversationDigest([]any{owner, record.Step, record.Call.ID})
 	if audit.records[key] {
 		return nil, conversationFailure("unavailable", "source_reference_invalid")
 	}
 	audit.records[key] = true
 	defer delete(audit.records, key)
-	if definition, business := businessTool(record.Call.Name); business {
-		if err := audit.connectedTool(ctx, record.Call.Name); err != nil {
+	if privateAttachmentCall(record.Call) || record.Result != nil && retiredDocumentResult(*record.Result) {
+		return nil, conversationFailure("forbidden", "knowledge_source_retired")
+	}
+	if privateRemoteAttachmentCall(record.Call) {
+		if audit.conversationID != "" && audit.conversationID != owner.ConversationID {
+			return nil, conversationFailure("forbidden", "attachment_conversation_mismatch")
+		}
+		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
+		if err := audit.s.authorizeStoredToolResult(ctx, request, *record.Result); err != nil {
 			return nil, err
 		}
+		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
+	}
+	if definition, business := businessTool(record.Call.Name); business {
 		if conversationDigest(definition) != conversationDigest(record.Definition) {
 			return nil, conversationFailure("conflict", "tool_changed")
 		}
@@ -271,8 +291,8 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
 	}
 	if _, knowledge := knowledgeTool(record.Call.Name); knowledge {
-		if err := audit.connectedTool(ctx, record.Call.Name); err != nil {
-			return nil, err
+		if audit.conversationID != "" && audit.conversationID != owner.ConversationID && privateAttachmentCall(record.Call) {
+			return nil, conversationFailure("forbidden", "attachment_conversation_mismatch")
 		}
 		if !knownKnowledgeDefinition(record.Definition) {
 			return nil, conversationFailure("conflict", "tool_changed")
@@ -301,6 +321,29 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 	}
 	if _, ok := artifactTool(record.Call.Name); ok {
 		return audit.artifactToolRecord(ctx, owner, record)
+	}
+	// Product-owned tools remain subject to current authorization when their
+	// saved results are reused in history, summaries or generated documents.
+	personal := false
+	for _, d := range agentsdk.PersonalConversationTools() {
+		personal = personal || d.Key == record.Call.Name
+	}
+	if !personal && (audit.s.profile != nil || len(audit.s.options.ToolDefinitions) > 0) {
+		if audit.s.options.ToolHost == nil {
+			return nil, conversationFailure("forbidden", "tool_access_denied")
+		}
+		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
+		auth, err := audit.s.options.ToolHost.AuthorizeConversationTool(ctx, request)
+		if err != nil {
+			return nil, err
+		}
+		if !auth.Granted {
+			return nil, conversationFailure("forbidden", "tool_access_denied")
+		}
+		if err = audit.s.authorizeStoredToolResult(ctx, request, *record.Result); err != nil {
+			return nil, err
+		}
+		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
 	}
 	switch record.Call.Name {
 	case "history_search":
@@ -410,7 +453,7 @@ func (s *ConversationService) checkRunSources(ctx context.Context, ref agentsdk.
 	}
 	ctx, cancel := s.sourceAccessContext(ctx)
 	defer cancel()
-	_, err := s.sourceAudit(a).run(ctx, ref)
+	_, err := s.sourceAudit(a, ref.ConversationID).run(ctx, ref)
 	return err
 }
 
@@ -423,7 +466,7 @@ func (s *ConversationService) projectConversationRun(ctx context.Context, run ag
 	}
 	ctx, cancel := s.sourceAccessContext(ctx)
 	defer cancel()
-	if _, err := s.sourceAudit(a).run(ctx, agentsdk.ConversationRunReference{ConversationID: run.ConversationID, RunID: run.ID}); err != nil {
+	if _, err := s.sourceAudit(a, run.ConversationID).run(ctx, agentsdk.ConversationRunReference{ConversationID: run.ConversationID, RunID: run.ID}); err != nil {
 		run.AccessError = sourceAccessCode(err)
 		run.DraftText = ""
 		run.DraftBytes = 0

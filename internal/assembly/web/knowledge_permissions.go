@@ -46,6 +46,9 @@ func (h *Host) registerKnowledgePermissions(ctx context.Context, bindings map[st
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)
+	if h.identityBorrowed {
+		return nil
+	}
 	definitions := []identitysdk.PermissionDefinition{}
 	for _, key := range keys {
 		definitions = append(definitions, identitysdk.PermissionDefinition{PermissionKey: knowledgePermissionResource + "." + key, ResourceKey: knowledgePermissionResource, OperationKey: key, Label: "Knowledge documents: " + key, Category: "Knowledge documents", SourceKind: "agent"})

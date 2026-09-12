@@ -1,0 +1,5 @@
+=== RUN   TestWebReportDoesNotAdoptReplacementConnection
+    web_report_source_test.go:60: replacement service has both tools; old report v1/v2 and answer denied without upstream I/O
+--- PASS: TestWebReportDoesNotAdoptReplacementConnection (65.25s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	66.862s

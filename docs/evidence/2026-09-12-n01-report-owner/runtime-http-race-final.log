@@ -1,0 +1,8 @@
+=== RUN   TestConversationReportRPCUsesRealReportOwner
+    conversation_business_reports_rpc_test.go:114: real Report v0.1.7 / SDK v0.1.6, Runtime, Identity and SQLite: local and service summary/ObjectSQL, stable pages, cursor scope, field/read revocation, undeclared input, cross-workspace rejection and complete restart
+--- PASS: TestConversationReportRPCUsesRealReportOwner (31.97s)
+=== RUN   TestConversationGovernedReportRPCUsesRealOwnerAndCurrentData
+    conversation_report_evidence_rpc_test.go:148: actual Report/Runtime/Identity/SQLite via public service: authorized catalog/pagination, real rows, complete versus page, signed result, field/read revocation, current data mutation invalidates evidence and cursor, full owner restart; no model or browser asserted
+--- PASS: TestConversationGovernedReportRPCUsesRealOwnerAndCurrentData (47.63s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	81.494s

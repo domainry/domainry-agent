@@ -1,0 +1,480 @@
+PASS binary PDF uploaded, indexed and original download verified
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: desktop-extraction
++ actual - expected
+
++ [
++   {
++     actual: 'visible semantic collection outside [data-static-ui-list]',
++     code: 'STATIC_UI_LIST_CONTRACT_MISSING',
++     expected: 'collection owner marked with data-static-ui-list',
++     target: 'table:项目数量单价Pencil21.2Paper312.5'
++   },
++   {
++     actual: 'no accessible name',
++     code: 'STATIC_UI_CONTROL_NAME_MISSING',
++     expected: 'visible or aria-label control name',
++     target: 'button'
++   },
++   {
++     actual: 'no accessible name',
++     code: 'STATIC_UI_CONTROL_NAME_MISSING',
++     expected: 'visible or aria-label control name',
++     target: 'button'
++   },
++   {
++     actual: 'no accessible name',
++     code: 'STATIC_UI_CONTROL_NAME_MISSING',
++     expected: 'visible or aria-label control name',
++     target: 'button'
++   },
++   {
++     actual: '10px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'small:你的智能工作空间'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'label:含归档'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'small:9月11日'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'span:第 1 页'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'div:我的工作空间'
++   },
++   {
++     actual: '10px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'span:事项与截止日期'
++   },
++   {
++     actual: '10px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'span:个人资料、共享成员'
++   },
++   {
++     actual: '10px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'span:文档、表格与下载'
++   },
++   {
++     actual: '10px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'span:偏好与约定'
++   },
++   {
++     actual: '10px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'small:个人账号'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'div:工作空间 / 对话'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'span:/'
++   },
++   {
++     actual: '10px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'span:已就绪'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'span:历史记录与上下文会自动保存'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'button:查看处理记录'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'button:将这条消息保存为记忆'
++   },
++   {
++     actual: '10px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'span:Agent'
++   },
++   {
++     actual: '9.6px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'small:已完成'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'pre:{}'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'pre:{ "provider": "agent_libraries", "kb_id": "", "operation": "libraries", "query":'
++   },
++   {
++     actual: '9.6px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'small:已完成'
++   },
++   {
++     actual: '10.4px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'small:检索片段'
++   },
++   {
++     actual: '9.6px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'small:已完成'
++   },
++   {
++     actual: '10.4px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'small:读取依据'
++   },
++   {
++     actual: '9.6px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'small:已完成'
++   },
++   {
++     actual: '10.4px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'small:读取依据'
++   },
++   {
++     actual: '11.2px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'button:查看来源：synthetic-extraction.pdf'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'button:查看处理记录'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'button:将这条回复保存为记忆'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'span:本次操作权限'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'span:未授权写入'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'p:仅对本次请求生效，请按需要选择允许修改的内容。'
++   },
++   {
++     actual: '11px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'span:Enter 发送 · Shift + Enter 换行'
++   },
++   {
++     actual: '10px',
++     code: 'STATIC_UI_TEXT_TOO_SMALL',
++     expected: '>= 12px',
++     target: 'p:对话与执行记录会自动保存，请核对重要结果。'
++   }
++ ]
+- []
+
+    at baseline (file:///Users/tiger/Projects/domainry-agent/frontend/tests/knowledge-extraction.browser.mjs:39:12)
+    at async file:///Users/tiger/Projects/domainry-agent/frontend/tests/knowledge-extraction.browser.mjs:75:3 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [
+    {
+      code: 'STATIC_UI_LIST_CONTRACT_MISSING',
+      target: 'table:项目数量单价Pencil21.2Paper312.5',
+      actual: 'visible semantic collection outside [data-static-ui-list]',
+      expected: 'collection owner marked with data-static-ui-list'
+    },
+    {
+      code: 'STATIC_UI_CONTROL_NAME_MISSING',
+      target: 'button',
+      actual: 'no accessible name',
+      expected: 'visible or aria-label control name'
+    },
+    {
+      code: 'STATIC_UI_CONTROL_NAME_MISSING',
+      target: 'button',
+      actual: 'no accessible name',
+      expected: 'visible or aria-label control name'
+    },
+    {
+      code: 'STATIC_UI_CONTROL_NAME_MISSING',
+      target: 'button',
+      actual: 'no accessible name',
+      expected: 'visible or aria-label control name'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'small:你的智能工作空间',
+      actual: '10px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'label:含归档',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'small:9月11日',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'span:第 1 页',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'div:我的工作空间',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'span:事项与截止日期',
+      actual: '10px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'span:个人资料、共享成员',
+      actual: '10px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'span:文档、表格与下载',
+      actual: '10px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'span:偏好与约定',
+      actual: '10px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'small:个人账号',
+      actual: '10px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'div:工作空间 / 对话',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'span:/',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'span:已就绪',
+      actual: '10px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'span:历史记录与上下文会自动保存',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'button:查看处理记录',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'button:将这条消息保存为记忆',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'span:Agent',
+      actual: '10px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'small:已完成',
+      actual: '9.6px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'pre:{}',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'pre:{ "provider": "agent_libraries", "kb_id": "", "operation": "libraries", "query":',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'small:已完成',
+      actual: '9.6px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'small:检索片段',
+      actual: '10.4px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'small:已完成',
+      actual: '9.6px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'small:读取依据',
+      actual: '10.4px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'small:已完成',
+      actual: '9.6px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'small:读取依据',
+      actual: '10.4px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'button:查看来源：synthetic-extraction.pdf',
+      actual: '11.2px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'button:查看处理记录',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'button:将这条回复保存为记忆',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'span:本次操作权限',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'span:未授权写入',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'p:仅对本次请求生效，请按需要选择允许修改的内容。',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'span:Enter 发送 · Shift + Enter 换行',
+      actual: '11px',
+      expected: '>= 12px'
+    },
+    {
+      code: 'STATIC_UI_TEXT_TOO_SMALL',
+      target: 'p:对话与执行记录会自动保存，请核对重要结果。',
+      actual: '10px',
+      expected: '>= 12px'
+    }
+  ],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.22.0

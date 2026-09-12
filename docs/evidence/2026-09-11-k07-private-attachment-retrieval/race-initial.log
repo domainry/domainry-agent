@@ -1,0 +1,10 @@
+=== RUN   TestAttachmentReceiptRejectsTamperingAndStaysScoped
+--- PASS: TestAttachmentReceiptRejectsTamperingAndStaysScoped (0.01s)
+=== RUN   TestRemovedOriginalParsingCannotAuthorizeOldResults
+--- PASS: TestRemovedOriginalParsingCannotAuthorizeOldResults (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	2.070s
+=== RUN   TestPrivateAttachmentConnectorRetrievalSaaSHistoryAndRestart
+--- PASS: TestPrivateAttachmentConnectorRetrievalSaaSHistoryAndRestart (4.20s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	5.661s

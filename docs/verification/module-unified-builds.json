@@ -1,0 +1,21 @@
+{
+  "recorded_at": "2026-09-11T07:57:47.207157+00:00",
+  "go_test_exit_code": 0,
+  "test_log": "module-unified-contract-tests.txt",
+  "products": {
+    "domainry-pm": {
+      "binary": "/Users/tiger/Projects/domainry-pm/bin/domainry-pm",
+      "binary_sha256": "148383b708f2d4e21ed555d85effdc4cd82a71279215c6827e5022f7f0490145",
+      "frontend_entry": "/Users/tiger/Projects/domainry-pm/frontend/dist/index.html",
+      "build_exit_code": 0,
+      "readme": "/Users/tiger/Projects/domainry-pm/README.md"
+    },
+    "domainry-work": {
+      "binary": "/Users/tiger/Projects/domainry-work/bin/domainry-work",
+      "binary_sha256": "d3ab5f9c9ce810c8792a3db6d9036ceccfc91b9bc7faf0ec50187e7467c9df8c",
+      "frontend_entry": "/Users/tiger/Projects/domainry-work/frontend/dist/index.html",
+      "build_exit_code": 0,
+      "readme": "/Users/tiger/Projects/domainry-work/README.md"
+    }
+  }
+}

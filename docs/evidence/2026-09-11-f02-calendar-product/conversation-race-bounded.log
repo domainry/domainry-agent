@@ -1,0 +1,6 @@
+=== RUN   TestCalendarProductIdentityConversationAndRestart
+    calendar_tools_test.go:377: GET /tools/preferences: status 403, want 200, body {"code":"tools.settings.access_denied"}
+--- FAIL: TestCalendarProductIdentityConversationAndRestart (115.97s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	116.909s
+FAIL

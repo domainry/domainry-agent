@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http/httptest"
 	"reflect"
 	"strings"
@@ -92,7 +93,7 @@ func TestConversationCompactionMemoryAndOriginalHistory(t *testing.T) {
 		}
 		return agentsdk.ConversationModelResult{Content: strings.Repeat("r", 280), Model: "fake"}, nil
 	})
-	service, err := agentapplication.NewConversationService(repo, model, conversationAuthority().RuntimeID, conversationOptions())
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, conversationOptions())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -179,7 +180,7 @@ func TestConversationInvalidSummaryIsRecoverableWithoutLosingMessages(t *testing
 		}
 		return agentsdk.ConversationModelResult{Content: strings.Repeat("r", 280)}, nil
 	})
-	s, err := agentapplication.NewConversationService(repo, model, conversationAuthority().RuntimeID, conversationOptions())
+	s, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, conversationOptions())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -234,7 +235,7 @@ func TestConversationWorkerRestartReusesFrozenInput(t *testing.T) {
 		<-ctx.Done()
 		return agentsdk.ConversationModelResult{}, ctx.Err()
 	})
-	s, err := agentapplication.NewConversationService(repo, blocking, conversationAuthority().RuntimeID, conversationOptions())
+	s, err := conversationassembly.NewService(repo, blocking, conversationAuthority().RuntimeID, conversationOptions())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -266,7 +267,7 @@ func TestConversationWorkerRestartReusesFrozenInput(t *testing.T) {
 		recovered <- r
 		return agentsdk.ConversationModelResult{Content: "done"}, nil
 	})
-	second, err := agentapplication.NewConversationService(repo, model, a.RuntimeID, conversationOptions())
+	second, err := conversationassembly.NewService(repo, model, a.RuntimeID, conversationOptions())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -290,7 +291,7 @@ func TestConversationModuleSaaSAndBrowserSurface(t *testing.T) {
 			if mode == "module" {
 				binding, err = agentmodule.NewFactory(agentmodule.Options{ConversationProvider: model}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, newSQLiteModuleHost(t, a.RuntimeID))
 			} else {
-				svc, e := agentapplication.NewConversationService(conversationRepository(t), model, a.RuntimeID, conversationOptions())
+				svc, e := conversationassembly.NewService(conversationRepository(t), model, a.RuntimeID, conversationOptions())
 				if e != nil {
 					t.Fatal(e)
 				}
@@ -380,7 +381,7 @@ func TestConversationPersistsSafeProviderFailureCategories(t *testing.T) {
 			model := conversationModelFunc(func(context.Context, agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
 				return agentsdk.ConversationModelResult{}, &agentsdk.Error{Class: "unavailable", Code: tc.code, Message: "private provider detail"}
 			})
-			service, err := agentapplication.NewConversationService(conversationRepository(t), model, conversationAuthority().RuntimeID, conversationOptions())
+			service, err := conversationassembly.NewService(conversationRepository(t), model, conversationAuthority().RuntimeID, conversationOptions())
 			if err != nil {
 				t.Fatal(err)
 			}

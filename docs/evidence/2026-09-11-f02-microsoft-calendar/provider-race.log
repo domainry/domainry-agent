@@ -1,0 +1,118 @@
+=== RUN   TestCalendarReadPublicBindingsPagingDSTAndDetails
+--- PASS: TestCalendarReadPublicBindingsPagingDSTAndDetails (0.00s)
+=== RUN   TestCalendarAllDaySourceDatesAndSnapshotGuard
+=== RUN   TestCalendarAllDaySourceDatesAndSnapshotGuard/valid
+=== RUN   TestCalendarAllDaySourceDatesAndSnapshotGuard/changed
+=== RUN   TestCalendarAllDaySourceDatesAndSnapshotGuard/missing-zone
+=== RUN   TestCalendarAllDaySourceDatesAndSnapshotGuard/zone-injection
+=== RUN   TestCalendarAllDaySourceDatesAndSnapshotGuard/not-midnight
+=== RUN   TestCalendarAllDaySourceDatesAndSnapshotGuard/zone-ignored
+--- PASS: TestCalendarAllDaySourceDatesAndSnapshotGuard (0.01s)
+    --- PASS: TestCalendarAllDaySourceDatesAndSnapshotGuard/valid (0.00s)
+    --- PASS: TestCalendarAllDaySourceDatesAndSnapshotGuard/changed (0.00s)
+    --- PASS: TestCalendarAllDaySourceDatesAndSnapshotGuard/missing-zone (0.00s)
+    --- PASS: TestCalendarAllDaySourceDatesAndSnapshotGuard/zone-injection (0.00s)
+    --- PASS: TestCalendarAllDaySourceDatesAndSnapshotGuard/not-midnight (0.00s)
+    --- PASS: TestCalendarAllDaySourceDatesAndSnapshotGuard/zone-ignored (0.00s)
+=== RUN   TestCalendarNextLinkCannotChangeDestinationOrQuery
+=== RUN   TestCalendarNextLinkCannotChangeDestinationOrQuery/host
+=== RUN   TestCalendarNextLinkCannotChangeDestinationOrQuery/path
+=== RUN   TestCalendarNextLinkCannotChangeDestinationOrQuery/userinfo
+=== RUN   TestCalendarNextLinkCannotChangeDestinationOrQuery/fragment
+=== RUN   TestCalendarNextLinkCannotChangeDestinationOrQuery/filter
+=== RUN   TestCalendarNextLinkCannotChangeDestinationOrQuery/window
+=== RUN   TestCalendarNextLinkCannotChangeDestinationOrQuery/duplicate
+=== RUN   TestCalendarNextLinkCannotChangeDestinationOrQuery/missing-select
+=== RUN   TestCalendarNextLinkCannotChangeDestinationOrQuery/negative-skip
+=== RUN   TestCalendarNextLinkCannotChangeDestinationOrQuery/two-pagers
+--- PASS: TestCalendarNextLinkCannotChangeDestinationOrQuery (0.01s)
+    --- PASS: TestCalendarNextLinkCannotChangeDestinationOrQuery/host (0.00s)
+    --- PASS: TestCalendarNextLinkCannotChangeDestinationOrQuery/path (0.00s)
+    --- PASS: TestCalendarNextLinkCannotChangeDestinationOrQuery/userinfo (0.00s)
+    --- PASS: TestCalendarNextLinkCannotChangeDestinationOrQuery/fragment (0.00s)
+    --- PASS: TestCalendarNextLinkCannotChangeDestinationOrQuery/filter (0.00s)
+    --- PASS: TestCalendarNextLinkCannotChangeDestinationOrQuery/window (0.00s)
+    --- PASS: TestCalendarNextLinkCannotChangeDestinationOrQuery/duplicate (0.00s)
+    --- PASS: TestCalendarNextLinkCannotChangeDestinationOrQuery/missing-select (0.00s)
+    --- PASS: TestCalendarNextLinkCannotChangeDestinationOrQuery/negative-skip (0.00s)
+    --- PASS: TestCalendarNextLinkCannotChangeDestinationOrQuery/two-pagers (0.00s)
+=== RUN   TestCalendarCursorBoundToAccountWindowAndSelection
+=== RUN   TestCalendarCursorBoundToAccountWindowAndSelection/calendar
+=== RUN   TestCalendarCursorBoundToAccountWindowAndSelection/window
+=== RUN   TestCalendarCursorBoundToAccountWindowAndSelection/zone
+=== RUN   TestCalendarCursorBoundToAccountWindowAndSelection/limit
+=== RUN   TestCalendarCursorBoundToAccountWindowAndSelection/account
+=== RUN   TestCalendarCursorBoundToAccountWindowAndSelection/workspace
+=== RUN   TestCalendarCursorBoundToAccountWindowAndSelection/malformed
+=== RUN   TestCalendarCursorBoundToAccountWindowAndSelection/forged-query
+--- PASS: TestCalendarCursorBoundToAccountWindowAndSelection (0.00s)
+    --- PASS: TestCalendarCursorBoundToAccountWindowAndSelection/calendar (0.00s)
+    --- PASS: TestCalendarCursorBoundToAccountWindowAndSelection/window (0.00s)
+    --- PASS: TestCalendarCursorBoundToAccountWindowAndSelection/zone (0.00s)
+    --- PASS: TestCalendarCursorBoundToAccountWindowAndSelection/limit (0.00s)
+    --- PASS: TestCalendarCursorBoundToAccountWindowAndSelection/account (0.00s)
+    --- PASS: TestCalendarCursorBoundToAccountWindowAndSelection/workspace (0.00s)
+    --- PASS: TestCalendarCursorBoundToAccountWindowAndSelection/malformed (0.00s)
+    --- PASS: TestCalendarCursorBoundToAccountWindowAndSelection/forged-query (0.00s)
+=== RUN   TestCalendarAvailabilitySecondaryCalendarsAndIncomplete
+=== RUN   TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/complete
+=== RUN   TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/unknown
+=== RUN   TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/page-limit
+=== RUN   TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/loop
+=== RUN   TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/missing-value
+=== RUN   TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/null-value
+=== RUN   TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/denied
+=== RUN   TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/non-utc
+--- PASS: TestCalendarAvailabilitySecondaryCalendarsAndIncomplete (0.01s)
+    --- PASS: TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/complete (0.00s)
+    --- PASS: TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/unknown (0.00s)
+    --- PASS: TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/page-limit (0.00s)
+    --- PASS: TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/loop (0.00s)
+    --- PASS: TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/missing-value (0.00s)
+    --- PASS: TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/null-value (0.00s)
+    --- PASS: TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/denied (0.00s)
+    --- PASS: TestCalendarAvailabilitySecondaryCalendarsAndIncomplete/non-utc (0.00s)
+=== RUN   TestCalendarRotationsAcrossPagesSurviveLaterNormalizationFailure
+--- PASS: TestCalendarRotationsAcrossPagesSurviveLaterNormalizationFailure (0.00s)
+=== RUN   TestCalendarInvalidRequestsAndDetailResponses
+=== RUN   TestCalendarInvalidRequestsAndDetailResponses/wrong-id
+=== RUN   TestCalendarInvalidRequestsAndDetailResponses/cancelled
+=== RUN   TestCalendarInvalidRequestsAndDetailResponses/html
+=== RUN   TestCalendarInvalidRequestsAndDetailResponses/missing-body
+=== RUN   TestCalendarInvalidRequestsAndDetailResponses/missing-flags
+=== RUN   TestCalendarInvalidRequestsAndDetailResponses/wrong-offset
+=== RUN   TestCalendarInvalidRequestsAndDetailResponses/reversed
+--- PASS: TestCalendarInvalidRequestsAndDetailResponses (0.00s)
+    --- PASS: TestCalendarInvalidRequestsAndDetailResponses/wrong-id (0.00s)
+    --- PASS: TestCalendarInvalidRequestsAndDetailResponses/cancelled (0.00s)
+    --- PASS: TestCalendarInvalidRequestsAndDetailResponses/html (0.00s)
+    --- PASS: TestCalendarInvalidRequestsAndDetailResponses/missing-body (0.00s)
+    --- PASS: TestCalendarInvalidRequestsAndDetailResponses/missing-flags (0.00s)
+    --- PASS: TestCalendarInvalidRequestsAndDetailResponses/wrong-offset (0.00s)
+    --- PASS: TestCalendarInvalidRequestsAndDetailResponses/reversed (0.00s)
+=== RUN   TestCalendarAllDayRefetchRetainsRefreshOnChangedSnapshot
+--- PASS: TestCalendarAllDayRefetchRetainsRefreshOnChangedSnapshot (0.00s)
+=== RUN   TestCalendarUTCAllDayDoesNotRefetchAndFallBackInstantsStayDistinct
+--- PASS: TestCalendarUTCAllDayDoesNotRefetchAndFallBackInstantsStayDistinct (0.00s)
+=== RUN   TestOAuthAuthorizationCodeUsesRegistryAndPrivateHostTransport
+--- PASS: TestOAuthAuthorizationCodeUsesRegistryAndPrivateHostTransport (0.00s)
+=== RUN   TestDeclaredConnectionTestScopes
+--- PASS: TestDeclaredConnectionTestScopes (0.00s)
+=== RUN   TestTypedOperationsUseRuntimeHTTP
+--- PASS: TestTypedOperationsUseRuntimeHTTP (0.00s)
+=== RUN   TestUnauthorizedRefreshRotatesTokens
+--- PASS: TestUnauthorizedRefreshRotatesTokens (0.00s)
+=== RUN   TestValidationAndReadFailures
+--- PASS: TestValidationAndReadFailures (0.00s)
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure/call/http
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure/call/network
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure/connection-test/http
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure/connection-test/network
+--- PASS: TestRotatedCredentialsSurviveFollowupFailure (0.00s)
+    --- PASS: TestRotatedCredentialsSurviveFollowupFailure/call/http (0.00s)
+    --- PASS: TestRotatedCredentialsSurviveFollowupFailure/call/network (0.00s)
+    --- PASS: TestRotatedCredentialsSurviveFollowupFailure/connection-test/http (0.00s)
+    --- PASS: TestRotatedCredentialsSurviveFollowupFailure/connection-test/network (0.00s)
+PASS
+ok  	github.com/domainry/domainry-connectors/providers/microsoft_365/microsoft	1.474s

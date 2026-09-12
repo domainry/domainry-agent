@@ -1,0 +1,17 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+page.evaluate: SyntaxError: Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)
+    at api (/Users/tiger/Projects/domainry-agent/frontend/tests/business-service.browser.mjs:22:26)
+    at /Users/tiger/Projects/domainry-agent/frontend/tests/business-service.browser.mjs:72:26 {
+  log: []
+}
+
+Node.js v22.22.0
+    conversation_business_product_service_test.go:260: actual shared Identity business browser exit status 1
+--- FAIL: TestConversationBusinessProductWithSharedIdentityService (16.89s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	17.555s
+FAIL

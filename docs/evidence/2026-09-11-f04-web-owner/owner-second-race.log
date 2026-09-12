@@ -1,0 +1,11 @@
+=== RUN   TestWebWorkspaceReadHTTPModuleSaaSAndRestart
+=== RUN   TestWebWorkspaceReadHTTPModuleSaaSAndRestart/module
+    web_read_flow_test.go:225: cacheable account response
+=== RUN   TestWebWorkspaceReadHTTPModuleSaaSAndRestart/saas
+    web_read_flow_test.go:225: cacheable account response
+--- FAIL: TestWebWorkspaceReadHTTPModuleSaaSAndRestart (6.20s)
+    --- FAIL: TestWebWorkspaceReadHTTPModuleSaaSAndRestart/module (2.40s)
+    --- FAIL: TestWebWorkspaceReadHTTPModuleSaaSAndRestart/saas (3.80s)
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/assembly/saas	6.932s
+FAIL

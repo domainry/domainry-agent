@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http/httptest"
 	"strings"
 	"sync"
@@ -101,7 +102,7 @@ func TestConversationQuestionPersistsAcrossServiceRestartAndContinuesSameCall(t 
 		return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "已按项目组织。"}, FinishReason: "stop"}, nil
 	}
 	options := application.ConversationOptions{ToolHost: host, Workers: 1, Poll: 10 * time.Millisecond}
-	service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -117,7 +118,7 @@ func TestConversationQuestionPersistsAcrossServiceRestartAndContinuesSameCall(t 
 		t.Fatal("missing question")
 	}
 	service.Close()
-	service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -162,7 +163,7 @@ func TestConversationConfirmationDuplicatesAndUnknownResultKeepOriginalAuthoriza
 		}
 		return model.answerResult(), nil
 	}
-	service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -226,7 +227,7 @@ func TestConversationConfirmationRejectsChangedToolsAndRevokedAccess(t *testing.
 			if change == "expired" {
 				options.InteractionTTL = 50 * time.Millisecond
 			}
-			service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, options)
+			service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -290,7 +291,7 @@ func TestConversationQuestionCannotShareAStepWithOtherCalls(t *testing.T) {
 	model.step = func(int, agentsdk.ConversationStepRequest) (agentsdk.ConversationStepResult, error) {
 		return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", ToolCalls: []agentsdk.ConversationToolCall{{ID: "one", Name: "ask_user", Arguments: `{"question":"第一项？"}`}, {ID: "two", Name: "ask_user", Arguments: `{"question":"第二项？"}`}}}, FinishReason: "tool_calls"}, nil
 	}
-	service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -326,7 +327,7 @@ func TestConversationInteractionRemoteRoundTrip(t *testing.T) {
 		}
 		return model.answerResult(), nil
 	}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host})
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host})
 	if err != nil {
 		t.Fatal(err)
 	}

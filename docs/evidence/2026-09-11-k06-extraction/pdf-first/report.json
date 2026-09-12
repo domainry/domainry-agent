@@ -1,0 +1,269 @@
+{
+  "absent_from_search": true,
+  "cleanup_search_hits": 1,
+  "cleanup_verified": true,
+  "complete": true,
+  "conversation_citation": true,
+  "conversation_run_id": "crun_ee81d70a58265794a7738c7d298b29a2",
+  "database": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-fsygyo5s/pdf/managed.db",
+  "document_id": "kdoc_af34102000d74c43931698ba1029eede",
+  "dynamic_binding": true,
+  "extraction_outputs": [
+    {
+      "operation": "extract",
+      "doc_id": "kdoc_af34102000d74c43931698ba1029eede",
+      "library_id": "lib_4dcb23bef0572a8e3bc68b46cfb5b2f3",
+      "plan_sha256": "395ed3382b6fedd429a515acea60e04a1d3f5e5303fbd7d781e2da1867d05db9",
+      "data": {
+        "fields": [
+          {
+            "key": "customer",
+            "type": "text",
+            "status": "valid",
+            "value": "Qinghe Fixture",
+            "evidence": [
+              {
+                "citation_id": "kc_d1209fc6c6f0e317bb065ddec626b5c3",
+                "passage": 0,
+                "start": 110,
+                "end": 124,
+                "quote": "Qinghe Fixture"
+              }
+            ]
+          },
+          {
+            "key": "amount",
+            "type": "decimal",
+            "status": "valid",
+            "value": "9007199254740993.25",
+            "evidence": [
+              {
+                "citation_id": "kc_d1209fc6c6f0e317bb065ddec626b5c3",
+                "passage": 0,
+                "start": 141,
+                "end": 160,
+                "quote": "9007199254740993.25"
+              }
+            ]
+          },
+          {
+            "key": "signed_date",
+            "type": "date",
+            "status": "valid",
+            "value": "2026-09-11",
+            "evidence": [
+              {
+                "citation_id": "kc_d1209fc6c6f0e317bb065ddec626b5c3",
+                "passage": 0,
+                "start": 178,
+                "end": 188,
+                "quote": "2026-09-11"
+              }
+            ]
+          },
+          {
+            "key": "approval",
+            "type": "boolean",
+            "status": "valid",
+            "value": "true",
+            "evidence": [
+              {
+                "citation_id": "kc_d1209fc6c6f0e317bb065ddec626b5c3",
+                "passage": 0,
+                "start": 199,
+                "end": 203,
+                "quote": "true"
+              }
+            ]
+          },
+          {
+            "key": "email",
+            "type": "text",
+            "status": "missing",
+            "value": null,
+            "code": "required_not_matched_in_available_text",
+            "evidence": []
+          }
+        ],
+        "tables": [
+          {
+            "key": "items",
+            "rows": [
+              [
+                {
+                  "key": "item",
+                  "type": "text",
+                  "status": "valid",
+                  "value": "Pencil",
+                  "evidence": [
+                    {
+                      "citation_id": "kc_d1209fc6c6f0e317bb065ddec626b5c3",
+                      "passage": 0,
+                      "start": 276,
+                      "end": 282,
+                      "quote": "Pencil"
+                    }
+                  ]
+                },
+                {
+                  "key": "quantity",
+                  "type": "integer",
+                  "status": "valid",
+                  "value": "2",
+                  "evidence": [
+                    {
+                      "citation_id": "kc_d1209fc6c6f0e317bb065ddec626b5c3",
+                      "passage": 0,
+                      "start": 285,
+                      "end": 286,
+                      "quote": "2"
+                    }
+                  ]
+                },
+                {
+                  "key": "price",
+                  "type": "decimal",
+                  "status": "valid",
+                  "value": "1.2",
+                  "evidence": [
+                    {
+                      "citation_id": "kc_d1209fc6c6f0e317bb065ddec626b5c3",
+                      "passage": 0,
+                      "start": 289,
+                      "end": 293,
+                      "quote": "1.20"
+                    }
+                  ]
+                }
+              ],
+              [
+                {
+                  "key": "item",
+                  "type": "text",
+                  "status": "valid",
+                  "value": "Paper",
+                  "evidence": [
+                    {
+                      "citation_id": "kc_d1209fc6c6f0e317bb065ddec626b5c3",
+                      "passage": 0,
+                      "start": 294,
+                      "end": 299,
+                      "quote": "Paper"
+                    }
+                  ]
+                },
+                {
+                  "key": "quantity",
+                  "type": "integer",
+                  "status": "valid",
+                  "value": "3",
+                  "evidence": [
+                    {
+                      "citation_id": "kc_d1209fc6c6f0e317bb065ddec626b5c3",
+                      "passage": 0,
+                      "start": 302,
+                      "end": 303,
+                      "quote": "3"
+                    }
+                  ]
+                },
+                {
+                  "key": "price",
+                  "type": "decimal",
+                  "status": "valid",
+                  "value": "12.5",
+                  "evidence": [
+                    {
+                      "citation_id": "kc_d1209fc6c6f0e317bb065ddec626b5c3",
+                      "passage": 0,
+                      "start": 306,
+                      "end": 311,
+                      "quote": "12.50"
+                    }
+                  ]
+                }
+              ]
+            ],
+            "after": 0,
+            "complete": true
+          }
+        ],
+        "coverage": {
+          "basis": "available_parsed_passages",
+          "original_complete": false,
+          "passages": 1,
+          "limited": false
+        }
+      },
+      "citations": [
+        {
+          "library_id": "lib_4dcb23bef0572a8e3bc68b46cfb5b2f3",
+          "id": "kc_d1209fc6c6f0e317bb065ddec626b5c3",
+          "provider": "agent_knowledge_extract",
+          "kb_id": "",
+          "operation": "fetch",
+          "doc_id": "kdoc_af34102000d74c43931698ba1029eede",
+          "title": "synthetic-extraction.pdf",
+          "excerpt": "TANCE\nThis fixture contains no real personal or business information.\nCustomer: Qinghe Fixture\nInvoice Amount: 9007199254740993.25 CNY\nSigned Date: 2026-09-11\nApproval: true\nThe contact email is intentionally absent.\nItem | Quantity | Unit Price\nPencil |",
+          "excerpt_truncated": true
+        }
+      ],
+      "source": {
+        "library_id": "lib_4dcb23bef0572a8e3bc68b46cfb5b2f3",
+        "provider": "agent_library_documents",
+        "kb_id": "",
+        "operation": "fetch",
+        "doc_id": "kdoc_af34102000d74c43931698ba1029eede",
+        "scope_sha256": "8d354e7270b5eacf9ece957c123cbe897e2589f166e83b3111fb65a931ab1789",
+        "citations": [
+          {
+            "library_id": "lib_4dcb23bef0572a8e3bc68b46cfb5b2f3",
+            "id": "kc_9be72a27c2595ce02711b19c0b41532a",
+            "provider": "agent_library_documents",
+            "kb_id": "",
+            "operation": "fetch",
+            "doc_id": "kdoc_af34102000d74c43931698ba1029eede",
+            "title": "synthetic-extraction.pdf",
+            "excerpt": "K06 SYNTHETIC EXTRACTION ACCEPTANCE\nThis fixture contains no real personal or business information.\nCustomer: Qinghe Fixture\nInvoice Amount: 9007199254740993.25 CNY\nSigned Date: 2026-09-11\nApproval: true\nThe contact email is intentionally absent.\nItem | Quantity | Unit Price\nPencil | 2 | 1.20\nPaper | 3 | 12.50"
+          }
+        ],
+        "data": {
+          "passages": [
+            {
+              "doc_id": "kdoc_af34102000d74c43931698ba1029eede",
+              "title": "synthetic-extraction.pdf",
+              "content": "K06 SYNTHETIC EXTRACTION ACCEPTANCE\nThis fixture contains no real personal or business information.\nCustomer: Qinghe Fixture\nInvoice Amount: 9007199254740993.25 CNY\nSigned Date: 2026-09-11\nApproval: true\nThe contact email is intentionally absent.\nItem | Quantity | Unit Price\nPencil | 2 | 1.20\nPaper | 3 | 12.50"
+            }
+          ],
+          "documents": [
+            {
+              "id": "kdoc_af34102000d74c43931698ba1029eede",
+              "sha256": "1c4070779159f1a45f4fc7d11264d564c5972a0057dc08425a78cd0c75b465c6"
+            }
+          ],
+          "partial": true
+        }
+      }
+    }
+  ],
+  "file_format": "pdf",
+  "indexed": true,
+  "kb_id": "kb-3bbd8f1d3249",
+  "library_id": "lib_4dcb23bef0572a8e3bc68b46cfb5b2f3",
+  "library_kind": "personal",
+  "marker": "Qinghe Fixture",
+  "model": "glm-5.3-flash-free",
+  "model_protocol": "chat_completions",
+  "origin": "https://api.verdent.ai",
+  "original_after_catalog_removal": true,
+  "private_acl": true,
+  "read_after_catalog_restore": true,
+  "restart_original": true,
+  "runtime_id": "managed-live-13d8641bb45d2a9019f00ecd",
+  "synthetic": true,
+  "team_id": "1470194374940573696",
+  "visibility_matching": true,
+  "visibility_omitted": true,
+  "visibility_wrong": true,
+  "workspace_id": "managed-live"
+}

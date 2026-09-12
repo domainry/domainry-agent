@@ -1,0 +1,30 @@
+=== RUN   TestExternalAccountsCurrentIdentityOwnershipAndRestart
+--- PASS: TestExternalAccountsCurrentIdentityOwnershipAndRestart (25.62s)
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//app
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//auth
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//agent
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//integration
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//integration/callback
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//app/product/landing
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//oauth/{code}
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//oauth/%2e%2e
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//oauth/../callback
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//oauth/_callback
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//oauth/_callback#01
+=== RUN   TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//oauth/callback?code=x
+--- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes (6.17s)
+    --- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//app (0.00s)
+    --- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//auth (0.00s)
+    --- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//agent (0.00s)
+    --- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//integration (0.00s)
+    --- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//integration/callback (0.00s)
+    --- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//app/product/landing (0.00s)
+    --- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//oauth/{code} (0.00s)
+    --- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//oauth/%2e%2e (0.00s)
+    --- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//oauth/../callback (0.00s)
+    --- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//oauth/_callback (0.00s)
+    --- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//oauth/_callback#01 (0.00s)
+    --- PASS: TestExternalAccountsGatewayRejectsUnsafeNavigationAndRoutes//oauth/callback?code=x (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	34.306s

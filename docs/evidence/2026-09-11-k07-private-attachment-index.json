@@ -1,0 +1,48 @@
+{
+  "date": "2026-09-11",
+  "todo": "K07",
+  "batch": "private attachment remote-index backend",
+  "backend_batch_complete": true,
+  "k07_complete": false,
+  "real_verdent": false,
+  "browser_ui_tested_this_batch": false,
+  "verified": [
+    "dedicated physical KB ownership",
+    "private owner/conversation ACL via official Connector",
+    "unchanged original bytes",
+    "explicit index permission and HTTP/SaaS APIs",
+    "index status and frozen remote/request IDs",
+    "lease takeover and ready-to-delete ABA prevention",
+    "parent deletion fences late completion",
+    "uncertain PUT/DELETE not repeated",
+    "absence without DELETE acknowledgement does not discard original",
+    "graceful shutdown drains committed PUT/DELETE",
+    "Identity revocation and full Module host restart",
+    "Agent and SDK full Go tests",
+    "targeted race tests and go vet"
+  ],
+  "remaining": [
+    "private conversation retrieval and citation validation",
+    "index/recovery UI",
+    "uncertain-operation reconciliation flow",
+    "real Verdent private attachment end-to-end acceptance"
+  ],
+  "logs": {
+    "store.log": "docs/evidence/2026-09-11-k07-private-attachment-index/store.log",
+    "module.log": "docs/evidence/2026-09-11-k07-private-attachment-index/module.log",
+    "protocol.log": "docs/evidence/2026-09-11-k07-private-attachment-index/protocol.log",
+    "race.log": "docs/evidence/2026-09-11-k07-private-attachment-index/race.log",
+    "identity-first-failure.log": "docs/evidence/2026-09-11-k07-private-attachment-index/identity-first-failure.log",
+    "identity-test-failure.log": "docs/evidence/2026-09-11-k07-private-attachment-index/identity-test-failure.log",
+    "identity.log": "docs/evidence/2026-09-11-k07-private-attachment-index/identity.log",
+    "identity-race.log": "docs/evidence/2026-09-11-k07-private-attachment-index/identity-race.log",
+    "agent-initial-failure.log": "docs/evidence/2026-09-11-k07-private-attachment-index/agent-initial-failure.log",
+    "sdk-initial-failure.log": "docs/evidence/2026-09-11-k07-private-attachment-index/sdk-initial-failure.log",
+    "transfer-shutdown-fix.log": "docs/evidence/2026-09-11-k07-private-attachment-index/transfer-shutdown-fix.log",
+    "shutdown-race.log": "docs/evidence/2026-09-11-k07-private-attachment-index/shutdown-race.log",
+    "agent-all.log": "docs/evidence/2026-09-11-k07-private-attachment-index/agent-all.log",
+    "sdk-all.log": "docs/evidence/2026-09-11-k07-private-attachment-index/sdk-all.log",
+    "vet.log": "docs/evidence/2026-09-11-k07-private-attachment-index/vet.log"
+  },
+  "validation_scope": "Agent and SDK sources in domainry-agent/go.work; no release or user-host deployment claimed"
+}

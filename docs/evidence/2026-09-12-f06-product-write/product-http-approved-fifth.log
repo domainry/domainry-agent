@@ -1,0 +1,20 @@
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart/approved_restart
+    account_write_model_test.go:27: model request 1: 2 messages
+    account_write_model_test.go:28: model request 1 returned after 104.583µs
+    account_write_model_test.go:27: model request 2: 7 messages
+    account_write_model_test.go:28: model request 2 returned after 71.959µs
+    account_write_model_test.go:27: model request 3: 10 messages
+    account_write_model_test.go:28: model request 3 returned after 180.208µs
+    account_write_model_test.go:27: model request 4: 13 messages
+    account_write_model_test.go:28: model request 4 returned after 105.084µs
+    account_write_model_test.go:27: model request 5: 15 messages
+    account_write_model_test.go:28: model request 5 returned after 181.25µs
+    account_write_model_test.go:27: model request 6: 20 messages
+    account_write_model_test.go:28: model request 6 returned after 121.041µs
+    account_write_test.go:193: actual OAuth/Identity/Agent/Tools/Integration/Provider chain: vendor HTTP=14 model HTTP=6 effects=map[calendar_create:1 calendar_update:1 mail_reply:1 mail_send:1]
+    account_write_test.go:50: vendor HTTP=14 model HTTP=6 effects=map[calendar_create:1 calendar_update:1 mail_reply:1 mail_send:1]
+--- PASS: TestAccountWritesThroughIdentityProviderHTTPAndRestart (10.25s)
+    --- PASS: TestAccountWritesThroughIdentityProviderHTTPAndRestart/approved_restart (10.25s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	11.048s

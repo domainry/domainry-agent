@@ -1,0 +1,19 @@
+
+> @domainry/integration-client@0.1.0-dev1 test
+> npm run build && node --test
+
+
+> @domainry/integration-client@0.1.0-dev1 build
+> tsc -p tsconfig.json
+
+✔ publishes one owner-client method for every browser Integration route (1.428375ms)
+✔ keeps response metadata behind the Integration client boundary (0.123708ms)
+✔ account and OAuth commands keep fixed payloads and forward cancellation (0.105042ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 45.393416

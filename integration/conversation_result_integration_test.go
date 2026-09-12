@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"strings"
 	"sync"
 	"testing"
@@ -157,7 +158,7 @@ func TestExecutionCompactsStoredResultsAndResumesExactInput(t *testing.T) {
 		return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "已核对完整结果中的尾部证据，费用仍待复核。"}, FinishReason: "stop"}, nil
 	}
 	options := application.ConversationOptions{ToolHost: host, ContextBytes: 32768, Poll: 5 * time.Millisecond}
-	service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -174,7 +175,7 @@ func TestExecutionCompactsStoredResultsAndResumesExactInput(t *testing.T) {
 		t.Fatal("injected disconnect not observed")
 	}
 	service.Close()
-	service, err = application.NewConversationService(repo, model, conversationAuthority().RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -239,7 +240,7 @@ func TestResultReadReauthorizesOriginalAndNestedSourcesBeforeModel(t *testing.T)
 					ref = *last.ResultReference
 					return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "已保存供后续核对。"}, FinishReason: "stop"}, nil
 				}
-				service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, Poll: 5 * time.Millisecond})
+				service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, Poll: 5 * time.Millisecond})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -271,7 +272,7 @@ func TestResultReadReauthorizesOriginalAndNestedSourcesBeforeModel(t *testing.T)
 				}
 				return resultToolCall("tool_result_read", "read-private", agentsdk.ConversationResultRead{Reference: ref, MaxBytes: 256}), nil
 			}
-			service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, Poll: 5 * time.Millisecond})
+			service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, Poll: 5 * time.Millisecond})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -310,7 +311,7 @@ func TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets(t *te
 		ref = *in.Messages[len(in.Messages)-1].ResultReference
 		return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "已保存结果。"}, FinishReason: "stop"}, nil
 	}
-	service, err := application.NewConversationService(repo, seedModel, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, Poll: 5 * time.Millisecond})
+	service, err := conversationassembly.NewService(repo, seedModel, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, Poll: 5 * time.Millisecond})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -366,7 +367,7 @@ func TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets(t *te
 				}
 				return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "本次未读取到资料。"}, FinishReason: "stop"}, nil
 			}
-			reader, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, Poll: 5 * time.Millisecond})
+			reader, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, Poll: 5 * time.Millisecond})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -396,7 +397,7 @@ func TestLargeResultWithoutReaderPreservesLedgerAndFailsBudget(t *testing.T) {
 		}
 		return resultToolCall("large_operation", "large", map[string]string{"title": "source"}), nil
 	}
-	service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, ContextBytes: 32768, Poll: 5 * time.Millisecond})
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, ContextBytes: 32768, Poll: 5 * time.Millisecond})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -451,7 +452,7 @@ func TestHistoryCompactionReservesToolCatalogAndStepFraming(t *testing.T) {
 		}
 		return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: strings.Repeat("资料整理中。", 350)}, FinishReason: "stop"}, nil
 	}
-	service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, ContextBytes: 16384, MaxInputBytes: 512, SummaryBytes: 512, Poll: 5 * time.Millisecond})
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, ContextBytes: 16384, MaxInputBytes: 512, SummaryBytes: 512, Poll: 5 * time.Millisecond})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -523,7 +524,7 @@ func TestResultBytePagesReconstructCompleteJSON(t *testing.T) {
 		}
 		return resultToolCall("tool_result_read", fmt.Sprintf("all-page-%d", pages), agentsdk.ConversationResultRead{Reference: ref, Offset: next, MaxBytes: 4096}), nil
 	}
-	service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, ContextBytes: 32768, MaxSteps: 32, MaxToolCalls: 32, Poll: 5 * time.Millisecond})
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, ContextBytes: 32768, MaxSteps: 32, MaxToolCalls: 32, Poll: 5 * time.Millisecond})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,0 +1,11 @@
+=== RUN   TestBusinessEnvironmentPinsServiceAndIdentity
+--- PASS: TestBusinessEnvironmentPinsServiceAndIdentity (0.00s)
+=== RUN   TestSharedIdentityEnvironmentRejectsNonOriginBeforeDispatch
+--- PASS: TestSharedIdentityEnvironmentRejectsNonOriginBeforeDispatch (0.00s)
+=== RUN   TestIntegrationEnvironmentRequiresCompleteConfiguration
+--- PASS: TestIntegrationEnvironmentRequiresCompleteConfiguration (0.00s)
+=== RUN   TestIntegrationSaaSProductionProcessWithProductIdentity
+    integration_test.go:44: opt-in production Integration process
+--- SKIP: TestIntegrationSaaSProductionProcessWithProductIdentity (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	1.572s

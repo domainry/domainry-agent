@@ -1,0 +1,24 @@
+ok  	github.com/domainry/domainry-integration/capability	1.212s
+ok  	github.com/domainry/domainry-integration/cmd/integration-server	2.368s
+?   	github.com/domainry/domainry-integration/internal/adapter/accountwrite	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/adapter/integrationsdk	0.377s
+ok  	github.com/domainry/domainry-integration/internal/application/integration	0.753s
+ok  	github.com/domainry/domainry-integration/internal/architecture	1.873s
+ok  	github.com/domainry/domainry-integration/internal/assembly/module	1.830s
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	16.070s
+?   	github.com/domainry/domainry-integration/internal/domain/integration/model	[no test files]
+?   	github.com/domainry/domainry-integration/internal/domain/integration/repository	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/domain/integration/service	2.387s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/connectortransport	(cached)
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/architecture	2.739s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	3.338s
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/migration	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/schema	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/security	(cached)
+ok  	github.com/domainry/domainry-integration/internal/transport/http/module	3.363s
+?   	github.com/domainry/domainry-integration/internal/transport/http/saas	[no test files]
+ok  	github.com/domainry/domainry-integration/module	5.582s

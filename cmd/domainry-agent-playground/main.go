@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"log"
 	"net"
 	"net/http"
@@ -88,7 +89,7 @@ func run() error {
 	if knowledge != nil {
 		options.Knowledge = knowledge
 	}
-	conversations, err := application.NewConversationService(agentstore.NewConversationStore(store), model, "agent-playground", options)
+	conversations, err := conversationassembly.NewService(agentstore.NewConversationStore(store), model, "agent-playground", options)
 	if err != nil {
 		return err
 	}

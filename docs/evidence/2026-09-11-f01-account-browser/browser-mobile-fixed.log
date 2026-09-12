@@ -1,0 +1,27 @@
+=== RUN   TestExternalAccountsBuiltBrowser
+PASS administrator explicitly enables actions, configures owner application, and edits without reading or replacing its secret
+PASS real redirect callback binds current Identity, strips URL secrets, persists one personal account, survives reload and tests connection
+PASS second real Identity user cannot see first personal account or administrator application config
+PASS provider denial is a durable rejected receipt and creates no account or token exchange
+PASS lost callback response recovers original receipt; reopening both persistent modules does not exchange code again
+PASS live Identity revocation applies immediately and remains revoked across restart; explicit restoration restores list
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: {"left":-161.7109375,"right":551.7109375,"viewport":390,"content":711,"width":711}
+    at file:///Users/tiger/Projects/domainry-agent/frontend/tests/external-accounts.browser.mjs:92:9 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v22.22.0
+    integration_accounts_browser_test.go:104: account browser acceptance failed exit status 1
+--- FAIL: TestExternalAccountsBuiltBrowser (6.66s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	7.859s
+FAIL

@@ -1,0 +1,9 @@
+=== RUN   TestIntegrationEnvironmentRequiresCompleteConfiguration
+--- PASS: TestIntegrationEnvironmentRequiresCompleteConfiguration (0.00s)
+=== RUN   TestIntegrationSaaSProductionProcessWithProductIdentity
+2026/09/11 17:03:40 Integration SaaS server listening on 127.0.0.1:58141
+    integration_test.go:171: POST /auth/password/change: 400 {"code":"backend.idempotency.key_required","error":{"code":"backend.idempotency.key_required"}}
+--- FAIL: TestIntegrationSaaSProductionProcessWithProductIdentity (1.58s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/product	2.746s
+FAIL

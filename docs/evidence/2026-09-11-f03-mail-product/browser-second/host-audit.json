@@ -1,0 +1,12 @@
+{
+  "actual_google_provider": true,
+  "complete": true,
+  "model_http_requests": 19,
+  "oauth_protocol_exchanges": 2,
+  "real_agent_tools_integration_sqlite": true,
+  "real_identity": true,
+  "real_language_model": false,
+  "real_vendor_account": false,
+  "reopened": true,
+  "vendor_http_requests": 16
+}

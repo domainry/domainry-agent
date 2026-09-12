@@ -1,0 +1,11 @@
+--- FAIL: TestConnectorDefinitionsAreEmbeddedAndDetached (0.04s)
+    catalog_test.go:79: Connector definition definitions/web/connector.json: provider llm_proxy config field "allowed_source_hosts" requires an explicit JSON shape
+--- FAIL: TestConnectorDefinitionDocumentsAreSourceOwnedAndTyped (0.04s)
+    catalog_test.go:97: Connector definition definitions/web/connector.json: provider llm_proxy config field "allowed_source_hosts" requires an explicit JSON shape
+--- FAIL: TestSecretTestPolicyMatchesSDKForProvidersWithoutReadinessProbe (0.04s)
+    optional_secret_test.go:8: Connector definition definitions/web/connector.json: provider llm_proxy config field "allowed_source_hosts" requires an explicit JSON shape
+FAIL
+FAIL	github.com/domainry/domainry-connectors/catalog	0.810s
+ok  	github.com/domainry/domainry-connectors/module	0.964s
+ok  	github.com/domainry/domainry-connectors/internal/architecture	(cached)
+FAIL

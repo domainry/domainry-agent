@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"sync"
 	"testing"
 
@@ -93,7 +94,7 @@ func TestConversationExecutionReauthorizesToolDataBeforeNextModelRequest(t *test
 		}
 		return model.callResult(`{"title":"one"}`), nil
 	}
-	service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -140,7 +141,7 @@ func TestConversationExecutionResumesAfterModelFailureWithoutRepeatingWrite(t *t
 		return model.answerResult(), nil
 	}
 	options := application.ConversationOptions{ToolHost: host}
-	service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -159,7 +160,7 @@ func TestConversationExecutionResumesAfterModelFailureWithoutRepeatingWrite(t *t
 		t.Fatalf("expected interrupted answer %+v", first)
 	}
 	service.Close()
-	service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -197,7 +198,7 @@ func TestConversationExecutionReconcilesUnknownWritesAndReauthorizesResume(t *te
 				}
 				return model.answerResult(), nil
 			}
-			service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
+			service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -254,7 +255,7 @@ func TestConversationExecutionValidatesSchemaBeforeHostEffects(t *testing.T) {
 		}
 		return model.answerResult(), nil
 	}
-	service, err := application.NewConversationService(conversationRepository(t), model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
+	service, err := conversationassembly.NewService(conversationRepository(t), model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
 	if err != nil {
 		t.Fatal(err)
 	}

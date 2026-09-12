@@ -1,0 +1,52 @@
+=== RUN   TestAccountWritesBuiltBrowser
+PASS seven opted-in tools require the actual owner OAuth grant
+    account_write_model_test.go:29: model request 1: 2 messages
+    account_write_model_test.go:30: model request 1 returned after 80.667µs
+    account_write_model_test.go:29: model request 2: 7 messages
+    account_write_model_test.go:30: model request 2 returned after 151.042µs
+    account_write_model_test.go:29: model request 3: 10 messages
+    account_write_model_test.go:30: model request 3 returned after 80.208µs
+    account_write_model_test.go:29: model request 4: 13 messages
+    account_write_model_test.go:30: model request 4 returned after 93.834µs
+    account_write_model_test.go:29: model request 5: 15 messages
+    account_write_model_test.go:30: model request 5 returned after 382.166µs
+PASS four exact targets, all recipient groups, complete bodies and clear semantics survive host restart before approval
+    account_write_model_test.go:29: model request 6: 20 messages
+    account_write_model_test.go:30: model request 6 returned after 201.542µs
+PASS one grouped approval causes exactly four native effects; duplicate approval does not resend and result cards state accepted with delivery unknown
+    account_write_model_test.go:29: model request 7: 2 messages
+    account_write_model_test.go:30: model request 7 returned after 41.125µs
+    account_write_model_test.go:29: model request 8: 7 messages
+    account_write_model_test.go:30: model request 8 returned after 75.833µs
+    account_write_model_test.go:29: model request 9: 10 messages
+    account_write_model_test.go:30: model request 9 returned after 192µs
+    account_write_model_test.go:29: model request 10: 13 messages
+    account_write_model_test.go:30: model request 10 returned after 150.75µs
+    account_write_model_test.go:29: model request 11: 15 messages
+    account_write_model_test.go:30: model request 11 returned after 432.584µs
+PASS approving only the first item creates one event; rejection leaves update and both mail operations unexecuted
+    account_write_model_test.go:29: model request 12: 2 messages
+    account_write_model_test.go:30: model request 12 returned after 251.709µs
+    account_write_model_test.go:29: model request 13: 7 messages
+    account_write_model_test.go:30: model request 13 returned after 66.167µs
+    account_write_model_test.go:29: model request 14: 10 messages
+    account_write_model_test.go:30: model request 14 returned after 76.916µs
+    account_write_model_test.go:29: model request 15: 13 messages
+    account_write_model_test.go:30: model request 15 returned after 103.334µs
+    account_write_model_test.go:29: model request 16: 15 messages
+    account_write_model_test.go:30: model request 16 returned after 307.917µs
+PASS current Identity write revocation blocks a displayed approval before any vendor write
+    account_write_model_test.go:29: model request 17: 2 messages
+    account_write_model_test.go:30: model request 17 returned after 36.292µs
+    account_write_model_test.go:29: model request 18: 7 messages
+    account_write_model_test.go:30: model request 18 returned after 57.708µs
+    account_write_model_test.go:29: model request 19: 10 messages
+    account_write_model_test.go:30: model request 19 returned after 77.292µs
+    account_write_model_test.go:29: model request 20: 13 messages
+    account_write_model_test.go:30: model request 20 returned after 216.583µs
+    account_write_model_test.go:29: model request 21: 15 messages
+    account_write_model_test.go:30: model request 21 returned after 796.125µs
+PASS 390px preview contains full outgoing content; provider acceptance with lost response remains uncertain and restart reconciliation performs zero vendor I/O
+--- PASS: TestAccountWritesBuiltBrowser (172.33s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	172.787s

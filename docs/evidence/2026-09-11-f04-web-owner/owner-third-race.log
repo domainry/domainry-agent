@@ -1,0 +1,10 @@
+=== RUN   TestWebWorkspaceReadHTTPModuleSaaSAndRestart
+=== RUN   TestWebWorkspaceReadHTTPModuleSaaSAndRestart/module
+    web_read_flow_test.go:355: module: 7 actual proxy HTTP requests; workspace readers, zero OAuth grants, AES credential persistence/rotation, two restarts, sensitive replay and revoked owner state verified
+=== RUN   TestWebWorkspaceReadHTTPModuleSaaSAndRestart/saas
+    web_read_flow_test.go:355: saas: 7 actual proxy HTTP requests; workspace readers, zero OAuth grants, AES credential persistence/rotation, two restarts, sensitive replay and revoked owner state verified
+--- PASS: TestWebWorkspaceReadHTTPModuleSaaSAndRestart (17.92s)
+    --- PASS: TestWebWorkspaceReadHTTPModuleSaaSAndRestart/module (6.40s)
+    --- PASS: TestWebWorkspaceReadHTTPModuleSaaSAndRestart/saas (11.51s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	19.630s

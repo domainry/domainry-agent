@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"log"
 	"net/http"
 	"os"
@@ -15,10 +16,12 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
+	saashost "github.com/domainry/domainry-agent/internal/assembly/saas"
 	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	"github.com/domainry/domainry-agent/server"
+	identityremote "github.com/domainry/domainry-identity-sdk/remote"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "modernc.org/sqlite"
 )
@@ -135,16 +138,25 @@ func openService(store *agentstore.Store) (*server.Server, func(), error) {
 		if err != nil {
 			return nil, closeService, err
 		}
-		options := agentapplication.ConversationOptions{}
-		if knowledge != nil {
-			options.Knowledge = knowledge
-		}
-		conversations, err := agentapplication.NewConversationService(agentstore.NewConversationStore(store), model, runtimeID, options)
+		identity, err := saashost.OpenConversationIdentity(context.Background(), runtimeID, identityremote.ConfigFromEnvironment())
 		if err != nil {
 			return nil, closeService, err
 		}
-		closeService = conversations.Close
+		options := agentapplication.ConversationOptions{ExecutionAuthorizer: identity}
+		if knowledge != nil {
+			options.Knowledge = knowledge
+		}
+		conversations, err := conversationassembly.NewService(agentstore.NewConversationStore(store), model, runtimeID, options)
+		if err != nil {
+			_ = identity.Close(context.Background())
+			return nil, closeService, err
+		}
+		closeService = func() {
+			conversations.Close()
+			_ = identity.Close(context.Background())
+		}
 		config.Conversations, config.ConversationRuntimeID = conversations, runtimeID
+		config.ConversationWorkspaceID = identity.WorkspaceID()
 	}
 	if config.Runner == nil && config.Conversations == nil {
 		return nil, closeService, errors.New("configure conversations or the legacy Agent provider")

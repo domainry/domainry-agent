@@ -2,15 +2,23 @@ import { useState } from "react";
 import { MessageResponse } from "./components/ai-elements/message";
 import { Button } from "./components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./components/ui/dialog";
-import { citationMarkdown, safeCitationURL, validCitations, type Citation } from "./knowledge-state.ts";
+import { citationLocation, citationMarkdown, safeCitationURL, validCitations, type Citation } from "./knowledge-state.ts";
+import { citationFile } from "./file-preview-state.ts";
+import { FilePreviewDialog } from "./FilePreviewDialog";
 
 function CitationDialog({ citation, onClose }: { citation: Citation; onClose: () => void }) {
+  const [preview, setPreview] = useState(false);
+  const file = citationFile(citation);
   const link = safeCitationURL(citation.url);
+  const location = citationLocation(citation);
+  if (preview && file) return <FilePreviewDialog target={file} title={citation.title || "原文件"} location={citation.location} onClose={() => setPreview(false)} />;
   return <Dialog open onOpenChange={open => { if (!open) onClose(); }}><DialogContent className="knowledge-dialog"><DialogHeader><DialogTitle>{citation.title || citation.doc_id}</DialogTitle><DialogDescription>查看本次取得的资料片段，核对回复中的依据。</DialogDescription></DialogHeader>
     {citation.library_id && <p className="subtle">资料库编号：{citation.library_id}</p>}
     <p className="subtle">文档编号：{citation.doc_id}{citation.kb_id ? ` · 知识库：${citation.kb_id}` : ""}</p>
     <p className="subtle">{citation.operation === "search" ? "搜索命中的片段" : "文档读取结果中的片段"}{citation.excerpt_truncated ? " · 仅展示部分内容" : ""}</p>
+    {location && <p className="subtle">{location}</p>}
     {citation.excerpt ? <blockquote className="knowledge-excerpt">{citation.excerpt}</blockquote> : <p className="subtle">上游没有提供可展示的正文片段。</p>}
+    {file && <Button variant="outline" onClick={() => setPreview(true)}>预览原文件</Button>}
     {link && <a className="knowledge-source-link" href={link} target="_blank" rel="noopener noreferrer">打开来源链接 ↗</a>}
   </DialogContent></Dialog>;
 }

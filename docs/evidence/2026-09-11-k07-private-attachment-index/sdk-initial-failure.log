@@ -1,0 +1,12 @@
+--- FAIL: TestAgentHTTPAdapterContractOwnsCompleteRouteCatalog (0.00s)
+    http_adapter_test.go:17: Agent Action count=107
+FAIL
+FAIL	github.com/domainry/domainry-agent-sdk	0.793s
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	0.422s
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+FAIL

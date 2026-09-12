@@ -25,7 +25,10 @@ operation = parser.add_mutually_exclusive_group(required=True)
 operation.add_argument('--create', action='store_true', help='upload a new synthetic test document and wait for indexed content')
 operation.add_argument('--cleanup', type=Path, help='delete only the document recorded in a test manifest')
 operation.add_argument('--inspect', type=Path, help='read the current indexing state and search results without writing remote data')
+parser.add_argument('--private', action='store_true', help='create a synthetic private document with its own permission ID')
 args = parser.parse_args()
+if args.private and not args.create:
+    parser.error('--private requires --create')
 default_dir = Path.home() / ('Library/Application Support/domainry-agent' if sys.platform == 'darwin' else '.config/domainry-agent')
 config_path = Path(os.environ.get('AGENT_WEB_SERVICES_CONFIG', default_dir / 'web-services.json')).expanduser()
 config = json.loads(config_path.read_text()) if config_path.exists() else {}
@@ -44,7 +47,7 @@ if not key:
         sys.exit('Configure a knowledge credential in the process environment.')
     key = getpass.getpass('Knowledge API key (not saved): ')
 
-def request(method, path, payload=None, binary=None):
+def request(method, path, payload=None, binary=None, permission_command=None):
     headers = {'Authorization':'Bearer '+key, 'Accept':'application/json'}
     data = binary
     if payload is not None:
@@ -52,6 +55,9 @@ def request(method, path, payload=None, binary=None):
         data = json.dumps(payload).encode()
     elif binary is not None:
         headers['Content-Type'] = 'application/octet-stream'
+    if permission_command is not None:
+        headers['X-KB-Permission-Ids'] = json.dumps(permission_command['permission_ids'], ensure_ascii=True, separators=(',', ':'))
+        headers['X-KB-Request-ID'] = permission_command['upload_request_id']
     req = urllib.request.Request(origin+path, data=data, headers=headers, method=method)
     try:
         with urllib.request.build_opener(NoRedirect()).open(req, timeout=40) as response:
@@ -72,8 +78,14 @@ def save(path, data):
 def report(name, status, data):
     print(json.dumps({'operation':name,'http_status':status,'err_code':data.get('err_code') if isinstance(data,dict) else None}),flush=True)
 
-def fetch(doc):
-    return request('POST','/v1/kb/fetch',{'team_id':team,'kb_id':kb,'doc_id':doc})
+def query_scope(manifest):
+    scope = {'team_id':team, 'kb_id':kb}
+    if manifest.get('visibility') == 'private':
+        scope['permission_ids'] = manifest['permission_ids']
+    return scope
+
+def fetch(doc, manifest=None):
+    return request('POST','/v1/kb/fetch',{**query_scope(manifest or {}),'doc_id':doc})
 
 def doc_path(doc, filename=None):
     query = {'doc_id':doc}
@@ -86,6 +98,16 @@ def read_manifest(path):
         raise RuntimeError('Manifest does not match the configured knowledge scope')
     if not re.fullmatch(r'domainry-agent-acceptance-\d{8}-[0-9a-f]{12}', manifest.get('doc_id','')) or manifest.get('preflight_missing') is not True:
         raise RuntimeError('Only a preflight-verified synthetic document is supported')
+    if manifest.get('visibility', 'public') not in ('public', 'private'):
+        raise RuntimeError('Unknown synthetic document visibility')
+    if manifest.get('visibility') == 'private':
+        permission = manifest.get('permission_id')
+        if not isinstance(permission, str) or not re.fullmatch(r'scope:domainry-k01:[0-9a-f]{32}:library:read', permission) or manifest.get('permission_ids') != [permission]:
+            raise RuntimeError('Private manifest requires its original synthetic permission')
+        if not re.fullmatch(r'domainry-k01-upload-[0-9a-f]{32}', manifest.get('upload_request_id', '')):
+            raise RuntimeError('Private manifest requires its original upload request ID')
+    elif any(name in manifest for name in ('permission_id', 'permission_ids', 'upload_request_id')):
+        raise RuntimeError('Permission command is only valid for a private manifest')
     return manifest
 
 def inspect(path, manifest):
@@ -93,7 +115,7 @@ def inspect(path, manifest):
     previous = None
     ready = False
     for attempt in range(24):
-        status, value = fetch(doc)
+        status, value = fetch(doc, manifest)
         save(path.parent/'fetch.json',value)
         data = value.get('data',{})
         state = (status,value.get('err_code'),data.get('status'),len(data.get('chunks',[])))
@@ -101,13 +123,16 @@ def inspect(path, manifest):
             report('inspect-fetch',status,value)
             print(json.dumps({'index_status':data.get('status'),'chunks':len(data.get('chunks',[]))}),flush=True)
             previous = state
-        if status == 200 and value.get('err_code') == 0 and len(data.get('chunks',[])) > 0:
+        if status == 200 and value.get('err_code') == 0 and any(manifest['marker'] in chunk.get('content', '') for chunk in data.get('chunks',[]) if isinstance(chunk, dict)):
             ready = True
             break
-        if status != 200 or value.get('err_code') != 0 or data.get('status') not in ('PENDING','PROCESSING','CHUNKED','INDEXING'):
+        # The service exposes additional intermediate states (e.g. PARSING).
+        # Keep polling them within this bounded loop without inventing a ready
+        # state; only an actual matching content passage above proves readiness.
+        if status != 200 or value.get('err_code') != 0 or not isinstance(data.get('status'), str) or not data['status'] or data['status'] in ('INDEXED', 'FAILED'):
             break
         time.sleep(5)
-    status, value = request('POST','/v1/kb/search',{'team_id':team,'kb_id':kb,'query':manifest['marker']+' 付款期限','top_k':5})
+    status, value = request('POST','/v1/kb/search',{**query_scope(manifest),'query':manifest['marker']+' 付款期限','top_k':5})
     save(path.parent/'search.json',value)
     report('inspect-search',status,value)
     manifest['content_readable'] = ready
@@ -119,18 +144,25 @@ if args.inspect:
 elif args.cleanup:
     manifest = read_manifest(args.cleanup)
     doc = manifest['doc_id']
-    status, value = fetch(doc)
-    if status == 200 and value.get('err_code') == 1004:
+    status, value = fetch(doc, manifest)
+    missing = status == 200 and value.get('err_code') == 1004
+    # A private document also returns 1004 when unreadable. Only a previously
+    # acknowledged deletion permits skipping DELETE for an uploaded fixture.
+    if missing and (manifest.get('visibility') != 'private' or manifest.get('delete_acknowledged') is True):
         manifest['cleanup_verified'] = True
         save(args.cleanup,manifest)
         report('already-deleted',status,value)
         sys.exit(0)
-    if status != 200 or value.get('err_code') != 0:
+    if status != 200 or value.get('err_code') not in (0, 1004) or manifest.get('upload_attempted') is not True:
         raise RuntimeError('Current document state is unknown; deletion not attempted')
     status, value = request('DELETE',doc_path(doc))
     save(args.cleanup.parent/'delete.json',value)
     report('delete',status,value)
-    status, value = fetch(doc)
+    if status != 200 or value.get('err_code') != 0:
+        raise RuntimeError('Deletion did not report success; retain the manifest')
+    manifest['delete_acknowledged'] = True
+    save(args.cleanup,manifest)
+    status, value = fetch(doc, manifest)
     save(args.cleanup.parent/'fetch-after-delete.json',value)
     report('fetch-after-delete',status,value)
     manifest['cleanup_verified'] = status == 200 and value.get('err_code') == 1004
@@ -142,16 +174,20 @@ else:
     out = Path(tempfile.mkdtemp(prefix='domainry-knowledge-live-doc-'))
     content = '# 青禾合成验收指南\n\n本文件仅用于 Domainry Agent 自动验收，不对应真实业务。\n\n验收标识：'+marker+'。\n\n## 付款期限\n收到验收发票后 30 日付款。\n\n## 周报要求\n周报分为本周进展、风险、下周计划三节。\n\n## 费用样例\n样例一 125.50 元，样例二 74.50 元，合计 200.00 元。\n'
     manifest = {'origin':origin,'team_id':team,'kb_id':kb,'doc_id':doc,'marker':marker,'filename':'domainry-agent-synthetic-acceptance.md','content':content,'preflight_missing':False,'upload_attempted':False,'cleanup_verified':False}
+    manifest['visibility'] = 'private' if args.private else 'public'
+    if args.private:
+        permission = 'scope:domainry-k01:'+uuid.uuid4().hex+':library:read'
+        manifest.update(permission_id=permission, permission_ids=[permission], upload_request_id='domainry-k01-upload-'+uuid.uuid4().hex)
     save(out/'manifest.json',manifest)
     print('Manifest: '+str(out/'manifest.json'),flush=True)
-    status, value = fetch(doc)
+    status, value = fetch(doc, manifest)
     save(out/'preflight.json',value)
     report('preflight',status,value)
     if status != 200 or value.get('err_code') != 1004: raise RuntimeError('New document ID not confirmed absent')
     manifest['preflight_missing'] = True
     manifest['upload_attempted'] = True
     save(out/'manifest.json',manifest)
-    status, value = request('POST',doc_path(doc,manifest['filename']),binary=content.encode())
+    status, value = request('POST',doc_path(doc,manifest['filename']),binary=content.encode(),permission_command=manifest if args.private else None)
     save(out/'upload.json',value)
     report('upload',status,value)
     if status not in (200,201,202) or value.get('err_code',0) != 0 or value.get('error') or value.get('non_json'): raise RuntimeError('Upload did not report success; inspect before retrying')

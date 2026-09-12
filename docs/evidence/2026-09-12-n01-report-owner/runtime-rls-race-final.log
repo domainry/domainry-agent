@@ -1,0 +1,6 @@
+=== RUN   TestConversationGovernedReportRespectsOwnerDataScope
+    conversation_report_evidence_rpc_test.go:213: {{customer_names customer_names [{map[name:Acme] map[]} {map[name:Beta] map[]} {map[name:Gamma] map[]} {map[name:Other] map[]} {map[name:Private Other] map[]}] 5 -1 object_sql_v1 <nil> [{name text dimension 0 0}] 100   false 5 exact} {customer_names 787d85140027d608695a0b7943bbd3b6a29a9a4f4c54155536e232aa9e989463 e23745df6260f47cb06d3d126034cec3b9ad374d9fd79e19d6e2fcd29effa686 2026-09-11T21:57:18.203681Z 10 true b2549a8b17adbd105170d08d227418a0834ccadf5a41583f4c472c1e3f6d3ad9}} <nil>
+--- FAIL: TestConversationGovernedReportRespectsOwnerDataScope (22.26s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	24.029s
+FAIL

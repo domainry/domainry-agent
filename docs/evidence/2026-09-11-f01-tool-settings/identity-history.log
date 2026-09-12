@@ -1,0 +1,6 @@
+=== RUN   TestToolSettingsCurrentIdentityCatalogConnectionAndRestart
+    tool_settings_test.go:155: disabled personal result leaked: {Citations:[] AccessError:source_access_unavailable InteractionID: ID:msg_de7aa32dcaf6edc53eafd57b197a2a49 ConversationID:conv_970937b90eafc3fb34834bc95f779810 RunID:crun_8e7da0b6d99203b9c8d3daad00acd315 Seq:2 Role:assistant Content:这条历史回复的资料来源当前无法验证，内容暂不提供。 CreatedAt:2026-09-11 09:47:19.100159 +0000 UTC}
+--- FAIL: TestToolSettingsCurrentIdentityCatalogConnectionAndRestart (1.38s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	2.519s
+FAIL

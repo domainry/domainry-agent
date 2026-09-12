@@ -1,0 +1,138 @@
+{
+  "todo": "F04",
+  "complete": false,
+  "stage": "llm-proxy source audit and shared SDK contract",
+  "captured_at": "2026-09-11T14:42:52.794296+00:00",
+  "path_base": "/Users/tiger/Projects",
+  "upstream_commit": "a32407a678ea7f96d70b7557765e2a01262184d4",
+  "contract": "public-web-read-v1",
+  "contract_sha256": "4a23e7257e9896ea361a13e981fd4fcfd9a41b3989d91bef7cbd8826f7f26024",
+  "source_files": [
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-contract.md",
+      "bytes": 2344,
+      "sha256": "ed44d1fd1b9d72d9945f4d0589eab62cf597113e032f3cb231efac974134c322"
+    },
+    {
+      "path": "domainry-agent/docs/web-read-boundaries.md",
+      "bytes": 5179,
+      "sha256": "9c6113d13c12ee8048831d91ed7e7d5bf6727ad060b104c2959667f2b1c3c3fc"
+    },
+    {
+      "path": "domainry-connector-sdk/README.md",
+      "bytes": 4630,
+      "sha256": "923249c330d4cfecccd31cd6720ea5976b7a7be8e71604edbf8836459d849bca"
+    },
+    {
+      "path": "domainry-connector-sdk/external_module_test.go",
+      "bytes": 9106,
+      "sha256": "796ee4ca4f6262a8e7ca3e3f243ac542e87a5ccf2486905dd8ca0552bc5bff9f"
+    },
+    {
+      "path": "domainry-connector-sdk/identity.go",
+      "bytes": 728,
+      "sha256": "71b090dfdc4463a8796b4e5c160ab9f95e81c5ae44fc9e86bced77a77d14864d"
+    },
+    {
+      "path": "domainry-connector-sdk/identity_test.go",
+      "bytes": 376,
+      "sha256": "6a2ab023d84817d232e3a9f58768c59227e74aeab0d5d4c3c16a75e3675317c6"
+    },
+    {
+      "path": "domainry-connector-sdk/web/identity.go",
+      "bytes": 1363,
+      "sha256": "f896ac123798985e06e7f40fb78bfedeedd83d098d9cfcd555d9675dca14ff96"
+    },
+    {
+      "path": "domainry-connector-sdk/web/url.go",
+      "bytes": 3336,
+      "sha256": "3692eca282e6413c7e9af69f7e35b26f052564d5aee1ce40960661f3db3487d9"
+    },
+    {
+      "path": "domainry-connector-sdk/web/validation.go",
+      "bytes": 3306,
+      "sha256": "60d5e2b501b7411db9b253a72fd620c28c5afa163d9101da97ed04b1d1e0fa36"
+    },
+    {
+      "path": "domainry-connector-sdk/web/web.go",
+      "bytes": 1941,
+      "sha256": "f75b2d106a804ae0f14834b4ce1d618161bf14276adb90d9b5d67521d7abea37"
+    },
+    {
+      "path": "domainry-connector-sdk/web/web_test.go",
+      "bytes": 7225,
+      "sha256": "5df4ab52b82971751d10831d1f98de65eabf530b02323c6fb17909f5eaa83a68"
+    }
+  ],
+  "upstream_files": [
+    {
+      "path": "anti/llm-proxy/router/router.go",
+      "bytes": 7068,
+      "sha256": "d7e0a8ac08f8bb4427880086c598bb93dad9c12c3e5a22697b8ff841daee7325"
+    },
+    {
+      "path": "anti/llm-proxy/handler/web_search.go",
+      "bytes": 4673,
+      "sha256": "870d89a92bd5c6e9a1bc26dfe713297b9b5de07f21bee205b70fe5103ba43717"
+    },
+    {
+      "path": "anti/llm-proxy/handler/web_fetch.go",
+      "bytes": 2028,
+      "sha256": "d244c8fbb03822470ee9c180aded22534dd95a1a8708901fa18d4b57f2c53efa"
+    },
+    {
+      "path": "anti/llm-proxy/model/web_search/web_search.go",
+      "bytes": 3496,
+      "sha256": "0ffbc1d49018392f98ae18da82f046e1fee8c166c1f54914168b200773ceb33f"
+    },
+    {
+      "path": "anti/llm-proxy/model/web_fetch/web_fetch.go",
+      "bytes": 248,
+      "sha256": "abd886bdd5a14b32a56b717bbaa28e59af636fff7fc9efec98fff516907827aa"
+    },
+    {
+      "path": "anti/llm-proxy/middleware/auth.go",
+      "bytes": 6810,
+      "sha256": "bc25800edfde06153c31773d39db6a4e4bcdda9ae3c78bb651e0e3165b7105b0"
+    },
+    {
+      "path": "anti/llm-proxy/service/web_search/web_search_service.go",
+      "bytes": 6362,
+      "sha256": "030a10504562e1cff37182696308c7d0408e74b6a0bb84020d0a86e4d56ba737"
+    },
+    {
+      "path": "anti/llm-proxy/service/jina/jina.go",
+      "bytes": 1449,
+      "sha256": "59c6430a9da52600ac962fc4d195e4e51c071c5513afeaf50be62d266f16a596"
+    },
+    {
+      "path": "anti/llm-proxy/tests/test_web_search.py",
+      "bytes": 11252,
+      "sha256": "52636adda67c238d3f14c82d435b9806997fd29d6d54dd2c1d0ad41e4bf94f0c"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-contract/sdk-full-race-initial-observed.txt",
+      "bytes": 728,
+      "sha256": "c68add4181965c39974275148770d303bde956e5d2e56d4f8c6f120a46bf5ca5"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-contract/sdk-full-race.log",
+      "bytes": 388,
+      "sha256": "ff71fdc894d0c278a3d24c7049b8ac19b9d0393ccca9e3d600484350cfebb8ac"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-contract/sdk-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-contract/sdk-web-initial.log",
+      "bytes": 470,
+      "sha256": "20d5326d07549798acb41e0884730072351339b1c2c8eee76ff0d5e615bfe31b"
+    }
+  ],
+  "real_llm_proxy_verified": false,
+  "provider_implemented": false
+}

@@ -1,0 +1,23 @@
+ok  	github.com/domainry/domainry-integration/capability	1.059s
+ok  	github.com/domainry/domainry-integration/cmd/integration-server	1.595s
+ok  	github.com/domainry/domainry-integration/internal/adapter/integrationsdk	0.787s
+ok  	github.com/domainry/domainry-integration/internal/application/integration	1.559s
+ok  	github.com/domainry/domainry-integration/internal/architecture	1.176s
+ok  	github.com/domainry/domainry-integration/internal/assembly/module	2.256s
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	7.289s
+?   	github.com/domainry/domainry-integration/internal/domain/integration/model	[no test files]
+?   	github.com/domainry/domainry-integration/internal/domain/integration/repository	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/domain/integration/service	3.159s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/connectortransport	2.408s
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/architecture	3.480s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	4.184s
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/migration	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/schema	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/security	4.015s
+ok  	github.com/domainry/domainry-integration/internal/transport/http/module	4.033s
+?   	github.com/domainry/domainry-integration/internal/transport/http/saas	[no test files]
+ok  	github.com/domainry/domainry-integration/module	6.301s

@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-agent/internal/extraction	0.385s
+ok  	github.com/domainry/domainry-agent/internal/application	0.503s
+ok  	github.com/domainry/domainry-agent/integration	0.722s

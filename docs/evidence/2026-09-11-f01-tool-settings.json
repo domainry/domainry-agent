@@ -1,0 +1,125 @@
+{
+  "todo": "F01",
+  "captured_at": "2026-09-11T09:23:20.823612+00:00",
+  "status": "owner_settings_module_only; HTTP compile only; no product E2E yet",
+  "verified": [
+    "policy, scope and current-catalog tests",
+    "SQLite persisted preferences through public module reopen",
+    "16 concurrent stale-revision writes: one winner and 15 conflicts",
+    "sole host migration ledger retains one migration",
+    "owner module race and architecture tests"
+  ],
+  "not_verified": [
+    "Tools HTTP current Identity behavior",
+    "Agent/Work/PM wiring",
+    "Integration credential readiness",
+    "tool switch browser E2E and live execution/recovery/history enforcement"
+  ],
+  "source_files": [
+    {
+      "path": "domainry-tools-sdk/availability.go",
+      "bytes": 1227,
+      "sha256": "1256a9f8de228676d15b8e0ae9b2291469a39a4c4fec05b69909ab32288a2cd5"
+    },
+    {
+      "path": "domainry-tools-sdk/settings.go",
+      "bytes": 1219,
+      "sha256": "e41b2d967030df70f025bb77b6b2a723f002a99f5a5101935289c3100e779894"
+    },
+    {
+      "path": "domainry-tools-sdk/settings_http.go",
+      "bytes": 1695,
+      "sha256": "3b34a5764dcf2ca7e5ddc4b2c6219d821d171127545b47d34bfc95cc73780ba0"
+    },
+    {
+      "path": "domainry-tools-sdk/modulehost/settings.go",
+      "bytes": 710,
+      "sha256": "f803aa8e05862b467c79cd3b5c22031ffc48fc425ba64c293b72a378f1fefea4"
+    },
+    {
+      "path": "domainry-tools-sdk/go.mod",
+      "bytes": 209,
+      "sha256": "89b2814a54239dc67e14b5c514d4464ef0a3d63459e14b946c61fbbeb484e20b"
+    },
+    {
+      "path": "domainry-tools/go.mod",
+      "bytes": 393,
+      "sha256": "3c05936e58856f4d2392f6d2ad5d05e9a19c0c0913c231799048e20c26c603ce"
+    },
+    {
+      "path": "domainry-tools/README.md",
+      "bytes": 2135,
+      "sha256": "cbd8e6c537e4906a19a0a0b5a2f163f1b1169a9a232d80303d0978431dabce9a"
+    },
+    {
+      "path": "domainry-tools/module/module.go",
+      "bytes": 1731,
+      "sha256": "9fa1df8010d12478ab0c5d78fd298619585223a53062ebf2d83b3c910482e424"
+    },
+    {
+      "path": "domainry-tools/internal/application/preferences/service.go",
+      "bytes": 4284,
+      "sha256": "be968a3b85135fd0a5a924cc2a5245d6e4de3f159bc1fd026760f5b9e7b6a627"
+    },
+    {
+      "path": "domainry-tools/internal/application/preferences/service_test.go",
+      "bytes": 6152,
+      "sha256": "812a6465ccca0563dcca914dfcd816aac6d4ab2f6c222e8c6b08991e27d396f5"
+    },
+    {
+      "path": "domainry-tools/internal/infrastructure/persistence/database/preferences/store.go",
+      "bytes": 4489,
+      "sha256": "086a17f4ae643f47996f0b129d03bcd5c1cd0a40d660822fc7ba92cf45752381"
+    },
+    {
+      "path": "domainry-tools/internal/assembly/preferences/module.go",
+      "bytes": 1443,
+      "sha256": "6021d6250d9f0ac26d713cdabbc2d04aa18178273df9dc55cf71af9fcc1086fe"
+    },
+    {
+      "path": "domainry-tools/internal/assembly/preferences/module_test.go",
+      "bytes": 4882,
+      "sha256": "2a80f88a392fa3dd13cb9299dca406c94a9b794278b00747b3e92c47de957e58"
+    },
+    {
+      "path": "domainry-tools/internal/transport/http/preferences/adapter.go",
+      "bytes": 3904,
+      "sha256": "fd8ec74a6396eeae51c9245f68a7609b1b5659a8ca8022c6d0a2827c63383619"
+    },
+    {
+      "path": "domainry-tools/internal/architecture/layout_test.go",
+      "bytes": 3487,
+      "sha256": "2174030ba052cd344a7f101acd2f3f3873031132a20c6ef46f9cd2d00c6b6872"
+    },
+    {
+      "path": "domainry-agent-sdk/conversation_tool_availability.go",
+      "bytes": 1011,
+      "sha256": "8764f51b2dad4b37e1213197e0fe235302ac0418aaeaa0c0b4a029517ce6ebbc"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f01-tool-settings.md",
+      "bytes": 4906,
+      "sha256": "bf013271c783a6198e3761aca3a253f29fc04bb52654670d97a758699daf6841"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-tool-settings/owner-http-compile-retry.log",
+      "bytes": 983,
+      "sha256": "0a285367063dd2b38636f49c74cf86f9efdb135a74714f43fbb999dada13363e",
+      "result": "passed"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-tool-settings/owner-http-compile.log",
+      "bytes": 13038,
+      "sha256": "854939165b74f223b842ad5ce94b7775f431a1655c7d919d891b3eeee8925fc0",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-tool-settings/owner-module-race.log",
+      "bytes": 895,
+      "sha256": "ec639f2769220109c0ba032b69347a454635189374707a8ae8cd1de419435ec4",
+      "result": "passed"
+    }
+  ]
+}

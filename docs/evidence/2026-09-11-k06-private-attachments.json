@@ -1,0 +1,191 @@
+{
+  "date": "2026-09-11",
+  "todo": "K06",
+  "todo_complete": false,
+  "increment": "current-conversation private attachment discovery, read and extraction",
+  "increment_complete": true,
+  "remote_knowledge_service_configured": false,
+  "live": {
+    "seconds": 32.37,
+    "report": {
+      "attachment_id": "att_fcd68fdbd2047eae64706bebe54bfef4",
+      "complete": true,
+      "conversation_id": "conv_b0d8f2e5f3434fd045e7fdb9684bedab",
+      "exact_cell_assertions": true,
+      "identity_revocation_restore": true,
+      "knowledge_service_configured": false,
+      "parse_cache_deleted": true,
+      "real_model": "glm-5.3-flash-free",
+      "restart": true,
+      "run_id": "crun_f87e2b443cac660a63f2f805aa5e2113"
+    },
+    "assertions": [
+      "exact fields B3/B4/B5/B6",
+      "required email missing",
+      "two table rows A10:C11",
+      "host restart",
+      "current download and tool permission revoke/restore",
+      "attachment and parse deletion"
+    ]
+  },
+  "browser": {
+    "host_seconds": 61.07,
+    "complete": true,
+    "steps": [
+      "private XLSX upload exposes current-conversation parsing and preserves original bytes without a library",
+      "private catalog/read/extract displays exact amount, missing email, both rows and actual sheet/row source",
+      "host restart preserves results; current attachment and tool permissions hide/restore values and citations",
+      "mobile display and deletion revoke historical private extraction"
+    ],
+    "layout_baselines": [
+      "desktop-attachment",
+      "desktop-extraction",
+      "desktop-source",
+      "mobile-extraction"
+    ],
+    "page_errors": [],
+    "owned_attachment_deleted": true,
+    "model": "protocol fixture; parsing, Identity, HTTP, SQLite and original storage real"
+  },
+  "checks": {
+    "agent_all": "passed",
+    "agent_vet": "passed",
+    "sdk_all": "passed",
+    "related_race": "passed",
+    "frontend_tests": 33,
+    "frontend_build": "passed"
+  },
+  "failures_retained": [
+    {
+      "kind": "live-semantic-extraction",
+      "seconds": 33.23,
+      "detail": "Model captured intentionally from an absence note as email; current tool guidance strengthened; same input and assertions passed on retry."
+    },
+    {
+      "kind": "race-test-time-budget",
+      "detail": "15-second HTTP poll expired under parallel instrumented load; changed only test budget to 60 seconds; final race passed."
+    },
+    {
+      "kind": "HTTP-test-revision",
+      "detail": "Initial test assumed revision=1 for deletion; fixed to use actual upload revision."
+    }
+  ],
+  "remaining": [
+    "source pagination",
+    "compact source receipts without embedded parsed full body",
+    "local PDF/DOCX adapters",
+    "indexing locally parsed cell text into search is not implemented"
+  ],
+  "artifacts": [
+    {
+      "path": "/tmp/domainry-K06-private-integration.log",
+      "bytes": 660,
+      "sha256": "644658242470483c3c360d65368b61c1ba919ea3f623ccde799ebf2a845a7e14"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-http.log",
+      "bytes": 1933,
+      "sha256": "90e9d322a1382e7359f8537f30761cd8ee0d2b0cf0d88356b30fb2d6267f343a"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-live-first-failure.log",
+      "bytes": 495,
+      "sha256": "3e52f0effd34b1425919f4c9434cd32d06759dfb3a2d05521363d22f171c5dd1"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-live.log",
+      "bytes": 402,
+      "sha256": "0d26a7e0efbfb1cd0c2bc7b0c249317f358d6c8fd198d1423adf4916cca854d8"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-browser.log",
+      "bytes": 400,
+      "sha256": "ca1b14235a80cd58efbc6808bdb73561cf1c35f849d0c568df335eaa581565db"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-browser-host.log",
+      "bytes": 288,
+      "sha256": "8d3bc36f5d8f78a7c005e38e9b45433b102fd33aa92efe14565b2bb324494eda"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-all-final.log",
+      "bytes": 2954,
+      "sha256": "c76078c3b8d3a1869ce7a4241564bf2f335c88284e93bbbef12fbb9869a44d82"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-sdk-final.log",
+      "bytes": 540,
+      "sha256": "e02777fbad08b974679b9d823eb6e3f819cd0539df23e478cc235f1afc4d9639"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-race.log",
+      "bytes": 661,
+      "sha256": "8b5cf77df81184c1783fb7857ca2d5b3680d9f0deead0a6d46489fddf2ed4f5c"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-race-final.log",
+      "bytes": 198,
+      "sha256": "acb8bccd01e98e0f75c9d6feb9f990f4959c75cd1f953a325a5e722d58e6fa0c"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-build.log",
+      "bytes": 31788,
+      "sha256": "7582d361900feb818373acffb7c15d2d262e0333b836faa5370906269200e75f"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-frontend.log",
+      "bytes": 4652,
+      "sha256": "288add6cfa97078edfbf0f915cd2b0738b8959f0df1a8023e6231489ead67d48"
+    },
+    {
+      "path": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-private-attachment-live-3i6wta4j/extraction-results.json",
+      "bytes": 22618,
+      "sha256": "c9c53f480c24b6b58a44a90e53a6d93e0fc86ccfeddc360f86f6bc740c7c8c6b"
+    },
+    {
+      "path": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-private-attachment-live-p8huf73y/report.json",
+      "bytes": 397,
+      "sha256": "fb42d1250d0307f566fa8ec4680679c78188e192d2048e705acb988a1f1f553f"
+    },
+    {
+      "path": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-private-attachment-live-p8huf73y/extraction-results.json",
+      "bytes": 21869,
+      "sha256": "30cafec2a15477a6950db2663a7edef432edfa7e9e9e68ca3871d143b30865fb"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-browser/report.json",
+      "bytes": 83411,
+      "sha256": "d93368ea6f6d6171f8d6e1bc49bce2eb278697825cb8b08939cf8a78c8383779"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-browser/desktop-attachment.png",
+      "bytes": 173758,
+      "sha256": "e871addfd46f15e7cf993d68ec58ceaa2e013ae49941127c8bad8795c01dfd4e"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-browser/desktop-extraction.png",
+      "bytes": 126846,
+      "sha256": "a7aaeb753cb74cb10ac86bfd8c861edf3c63324f251b76c3d49df7704827df03"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-browser/desktop-source.png",
+      "bytes": 163587,
+      "sha256": "f19837aa5f51db04c3f1ebe888a591b2cb5d87576f4709fe36c3307af38d9a5f"
+    },
+    {
+      "path": "/tmp/domainry-K06-private-browser/mobile-extraction.png",
+      "bytes": 65939,
+      "sha256": "7f3ad72585bd9323846a8679362375042b55333cd33c6745d386bcc15bed186a"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/integration/testdata/knowledge-extraction/synthetic-extraction.xlsx",
+      "bytes": 5239,
+      "sha256": "1c418895a86623474b9e3b00c3d9a6f1d9cd8f04ed28c8bf3a665dcce6f1c5b2"
+    }
+  ]
+}

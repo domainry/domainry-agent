@@ -1,0 +1,5 @@
+--- FAIL: TestContractIdentity (0.00s)
+    calendar_test.go:12: calendar contract hash=ef24ce63d41fce802f52702d991ca20c9f41148bcb7fdf310902fc22135288f6
+FAIL
+FAIL	github.com/domainry/domainry-connector-sdk/calendar	0.655s
+FAIL

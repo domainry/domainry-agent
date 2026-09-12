@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"os"
 	"path/filepath"
 	"strings"
@@ -94,7 +95,7 @@ func TestGatewayLiveLongConversation(t *testing.T) {
 			t.Fatal(err)
 		}
 		repo = agentstore.NewConversationStore(store)
-		service, err = agentapplication.NewConversationService(repo, recorder, conversationAuthority().RuntimeID, agentapplication.ConversationOptions{})
+		service, err = conversationassembly.NewService(repo, recorder, conversationAuthority().RuntimeID, agentapplication.ConversationOptions{})
 		if err != nil {
 			t.Fatal(err)
 		}

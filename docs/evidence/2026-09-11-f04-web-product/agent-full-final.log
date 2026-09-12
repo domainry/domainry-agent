@@ -1,0 +1,5 @@
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	141.502s
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	(cached)
+ok  	github.com/domainry/domainry-agent/internal/architecture	(cached)
+ok  	github.com/domainry/domainry-agent/definition	(cached)
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]

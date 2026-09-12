@@ -1,0 +1,5 @@
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	5.340s
+ok  	github.com/domainry/domainry-integration/internal/transport/http/module	3.552s
+ok  	github.com/domainry/domainry-integration/internal/assembly/module	6.368s
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	15.420s
+ok  	github.com/domainry/domainry-integration/module	15.706s

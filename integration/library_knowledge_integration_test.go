@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -118,7 +119,7 @@ func TestLibraryKnowledgeToolsMembershipAndFrozenResume(t *testing.T) {
 		}
 	}}
 	options := application.ConversationOptions{ToolHost: tools, PersonalAuthorizer: personalReadAuthorizer{}, LibraryAuthorizer: policy, LibraryKnowledge: []application.LibraryKnowledgeBinding{{WorkspaceID: a.WorkspaceID, LibraryID: private.ID, Source: newSource("private")}, {WorkspaceID: a.WorkspaceID, LibraryID: shared.ID, Source: newSource("shared")}}}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -155,7 +156,7 @@ func TestLibraryKnowledgeToolsMembershipAndFrozenResume(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}

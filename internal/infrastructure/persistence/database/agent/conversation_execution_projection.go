@@ -10,10 +10,30 @@ import (
 // The run projection and its event are written in the same transaction. A
 // reconnect can start at LastEventSeq without losing in-progress tool text.
 func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind string, data map[string]any) error {
+	if kind == "run.cancelled" || kind == "run.failed" {
+		for i := range run.Steps {
+			step := &run.Steps[i]
+			if step.Status == "generating" {
+				step.Status = "interrupted"
+			}
+			for j := range step.Calls {
+				call := &step.Calls[j]
+				switch call.Status {
+				case "receiving", "queued", "waiting_user", "waiting_confirmation":
+					call.Status = "not_started"
+				case "running":
+					call.Status = "interrupted"
+				}
+			}
+		}
+		return nil
+	}
 	if !strings.HasPrefix(kind, "step.") && !strings.HasPrefix(kind, "tool.") {
 		return nil
 	}
 	var event struct {
+		Effect          string                                `json:"effect"`
+		Completion      string                                `json:"completion"`
 		Step            int                                   `json:"step"`
 		Attempt         int                                   `json:"attempt"`
 		Index           int                                   `json:"index"`
@@ -104,6 +124,10 @@ func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind strin
 				if event.Status != "" {
 					call.Status = event.Status
 				}
+				if event.Effect != "" {
+					call.Effect = event.Effect
+				}
+				call.Completion = event.Completion
 				call.ErrorCode = event.ErrorCode
 				call.ResourceID = event.ResourceID
 				call.ResultPreview = event.ResultPreview

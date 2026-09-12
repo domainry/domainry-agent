@@ -1,0 +1,23 @@
+ok  	github.com/domainry/domainry-integration/capability	(cached)
+ok  	github.com/domainry/domainry-integration/cmd/integration-server	(cached)
+ok  	github.com/domainry/domainry-integration/internal/adapter/integrationsdk	(cached)
+ok  	github.com/domainry/domainry-integration/internal/application/integration	(cached)
+ok  	github.com/domainry/domainry-integration/internal/architecture	0.889s
+ok  	github.com/domainry/domainry-integration/internal/assembly/module	(cached)
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	9.615s
+?   	github.com/domainry/domainry-integration/internal/domain/integration/model	[no test files]
+?   	github.com/domainry/domainry-integration/internal/domain/integration/repository	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/domain/integration/service	(cached)
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/connectortransport	(cached)
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/architecture	(cached)
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	(cached)
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/migration	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/schema	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/security	(cached)
+ok  	github.com/domainry/domainry-integration/internal/transport/http/module	(cached)
+?   	github.com/domainry/domainry-integration/internal/transport/http/saas	[no test files]
+ok  	github.com/domainry/domainry-integration/module	(cached)

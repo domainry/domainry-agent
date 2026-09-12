@@ -1,0 +1,9 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+    conversation_business_identity_process_test.go:37: Identity HTTP rejected /identity/principal/resolve 429 request count 1218
+    conversation_business_identity_process_test.go:37: Identity HTTP rejected /identity/principal/resolve 429 request count 1219
+    conversation_business_identity_process_test.go:37: Identity HTTP rejected /identity/principal/resolve 429 request count 1221
+    conversation_business_web_fixture_test.go:256: business browser run incomplete: {"access_error":"source_access_unavailable","id":"crun_83326f2049aa27d5d76d820fc5d1f774","conversation_id":"conv_9070378399c209b4ce887ea9f0786e15","client_message_id":"business-query-1789149403728073000","status":"failed","user_seq":1,"attempt":1,"draft_bytes":0,"last_event_seq":34,"error_code":"business_access_denied","created_at":"2026-09-11T17:56:43.73023Z","updated_at":"2026-09-11T17:56:47.513886Z"}
+--- FAIL: TestConversationBusinessProductWithSharedIdentityService (7.80s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	9.237s
+FAIL

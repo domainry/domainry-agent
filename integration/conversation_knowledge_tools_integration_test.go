@@ -3,6 +3,7 @@ package integration_test
 import (
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -97,7 +98,7 @@ func TestKnowledgeToolsSearchReadFreezeAndRevalidateAcrossRestart(t *testing.T) 
 		}
 	}}
 	options := application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Knowledge: knowledge}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -111,7 +112,7 @@ func TestKnowledgeToolsSearchReadFreezeAndRevalidateAcrossRestart(t *testing.T) 
 		t.Fatalf("expected frozen step to be recoverable: %+v", done)
 	}
 	service.Close()
-	service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -176,7 +177,7 @@ func TestKnowledgeBusinessFailureIsRecordedWithoutSources(t *testing.T) {
 			return agentsdk.ConversationStepResult{}, fmt.Errorf("unexpected model request")
 		}
 	}}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Knowledge: knowledge})
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Knowledge: knowledge})
 	if err != nil {
 		t.Fatal(err)
 	}

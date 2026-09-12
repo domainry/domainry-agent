@@ -1,0 +1,10 @@
+{
+  "gofmt": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "sdk_git_diff_check": {
+    "exit_code": 0,
+    "output": ""
+  }
+}

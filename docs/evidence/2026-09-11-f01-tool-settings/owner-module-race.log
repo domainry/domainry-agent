@@ -1,0 +1,12 @@
+?   	github.com/domainry/domainry-tools/calculation	[no test files]
+?   	github.com/domainry/domainry-tools/internal/adapter/recordtools	[no test files]
+ok  	github.com/domainry/domainry-tools/internal/application/preferences	(cached)
+ok  	github.com/domainry/domainry-tools/internal/application/tool	(cached)
+ok  	github.com/domainry/domainry-tools/internal/architecture	1.927s
+ok  	github.com/domainry/domainry-tools/internal/assembly/preferences	1.652s
+?   	github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences	[no test files]
+?   	github.com/domainry/domainry-tools/module	[no test files]
+?   	github.com/domainry/domainry-tools/timeutil	[no test files]
+?   	github.com/domainry/domainry-tools-sdk	[no test files]
+?   	github.com/domainry/domainry-tools-sdk/modulehost	[no test files]
+?   	github.com/domainry/domainry-tools-sdk/schema	[no test files]

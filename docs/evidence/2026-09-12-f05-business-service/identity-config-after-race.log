@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-identity/internal/platform/config	1.774s
+ok  	github.com/domainry/domainry-identity/cmd/identity-server	1.548s
+ok  	github.com/domainry/domainry-identity/internal/transport/http/remotesdk	1.795s

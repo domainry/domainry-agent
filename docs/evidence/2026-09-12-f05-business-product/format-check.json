@@ -1,0 +1,6 @@
+{
+  "agent_git_diff_check": "pass",
+  "gofmt": "pass",
+  "work_pm_git_check": "not_applicable_no_git_metadata",
+  "frontend": "No source changes; not rebuilt or browser-tested in this increment."
+}

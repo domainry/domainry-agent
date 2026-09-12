@@ -1,0 +1,49 @@
+{
+  "prior_baseline_sha256": "b83c43d878e75efcc09c2b5553edf72e088b92e0fd9f513f5e2f7974245840db",
+  "removed": [],
+  "added": [
+    {
+      "key": "runtime/application/agenthost/conversation_business_host.go|4c46628760bfbeb3",
+      "path": "runtime/application/agenthost/conversation_business_host.go",
+      "line": 94,
+      "text": "if !a.Known || a.RuntimeID != h.runtimeID || a.WorkspaceID != string(h.application.WorkspaceID) || strings.TrimSpace(a.UserID) == \"\" {",
+      "adjudication": "Rejects unknown authority, mismatched Runtime/workspace and empty subject before current Identity resolution."
+    },
+    {
+      "key": "runtime/application/agenthost/conversation_business_host.go|e3dcace4ac8cd670",
+      "path": "runtime/application/agenthost/conversation_business_host.go",
+      "line": 53,
+      "text": "if strings.TrimSpace(runtimeID) == \"\" || application.WorkspaceID == \"\" || application.ApplicationKey == \"\" || principals == nil || schema == nil || records == nil {",
+      "adjudication": "Rejects incomplete host dependencies; never selects a default workspace."
+    },
+    {
+      "key": "runtime/application/workflow/workflow_agent_invocation_application_service.go|4a61a3d45199a286",
+      "path": "runtime/application/workflow/workflow_agent_invocation_application_service.go",
+      "line": 130,
+      "text": "if !found || execution.ID != receipt.ExecutionID || execution.ActorID != principal.UserID || execution.WorkspaceID != principal.WorkspaceID || execution.WorkflowKey != workflow.Key || execution.IdempotencyKey != key || execution.Trigger != \"agent\" || execution.ProcessID == \"\" {",
+      "adjudication": "Rejects a receipt whose saved execution does not match current workspace/user/key/process; no fallback."
+    },
+    {
+      "key": "runtime/infrastructure/persistence/database/action/action_business_execution_store.go|8a6b0a15d07ee4c7",
+      "path": "runtime/infrastructure/persistence/database/action/action_business_execution_store.go",
+      "line": 138,
+      "text": "if strings.TrimSpace(scope.WorkspaceID) == \"\" || strings.TrimSpace(scope.ObjectKey) == \"\" || strings.TrimSpace(scope.ActionKey) == \"\" || strings.TrimSpace(scope.IdempotencyKey) == \"\" {",
+      "adjudication": "Rejects incomplete action receipt scope before querying the owner store."
+    },
+    {
+      "key": "runtime/infrastructure/persistence/database/workspaceprovision/external_workspace.go|485ce7b9ddf1d0c2",
+      "path": "runtime/infrastructure/persistence/database/workspaceprovision/external_workspace.go",
+      "line": 77,
+      "text": "if !ok || tx == nil || strings.TrimSpace(request.WorkspaceID) == \"\" || strings.TrimSpace(request.UserID) == \"\" {",
+      "adjudication": "Rejects missing transaction/workspace/owner before external application bootstrap."
+    },
+    {
+      "key": "runtime/infrastructure/persistence/database/workspaceprovision/external_workspace.go|85126cf14f7b36c7",
+      "path": "runtime/infrastructure/persistence/database/workspaceprovision/external_workspace.go",
+      "line": 65,
+      "text": "if !ok || tx == nil || strings.TrimSpace(request.WorkspaceID) == \"\" || strings.EqualFold(request.WorkspaceID, \"default\") || strings.TrimSpace(request.UserID) == \"\" || strings.TrimSpace(request.Name) == \"\" {",
+      "adjudication": "Rejects missing identity and literal default workspace before external workspace creation."
+    }
+  ],
+  "inventory_change": "Existing RunAgentWorkflowWithKey added to generated caller_key_required command inventory (127 -> 128). No owner implementation was changed by this review."
+}

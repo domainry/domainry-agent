@@ -1,0 +1,72 @@
+{
+  "date": "2026-09-11",
+  "item": "K07",
+  "scope": "private attachment index management and observation recovery UI",
+  "index_ui_batch_complete": true,
+  "k07_complete": false,
+  "real_verdent": false,
+  "real_model": false,
+  "deployed_user_host": false,
+  "frontend_tests": 42,
+  "agent_all_tests": "passed",
+  "sdk_all_tests": "passed",
+  "vet": "passed",
+  "race": {
+    "storage": "passed",
+    "saas": "passed",
+    "identity_web": "passed after bounded timeout adjustment; initial timeout preserved"
+  },
+  "browser": {
+    "full_round_complete": false,
+    "coverage_complete_across_recovery_and_targeted_remaining_cases": true,
+    "recovery_report": "recovery/report.json",
+    "remaining_report": "remaining/report.json",
+    "host_audit": "remaining/host-audit.json",
+    "baseline_views": 4,
+    "all_baselines_passed": true,
+    "note": "Recovery/start/check/reload/source removal/restart cases passed in the full round; that round then failed on a premature restoration assertion. Only remaining permission, preview, download and cleanup cases were rerun with fresh setup. No failed report was rewritten."
+  },
+  "boundary": {
+    "original_parser": false,
+    "new_database_migration": false,
+    "application_imports_concrete_services": false,
+    "index_capabilities_from_live_host": true,
+    "source_bytes_not_in_index_request": true
+  },
+  "remaining": [
+    "dedicated attachment KB configuration and real Verdent acceptance",
+    "trusted reconciliation for uncertain remote deletion or crash before write; existing source does not guarantee idempotent writes or provide operation receipts"
+  ],
+  "files": {
+    "agent-all.log": "5d3d77245f0cdec289f2ea31a8dc64dd9500955fa86d0b53c617f027158c566e",
+    "browser-bootstrap-failure.log": "1cfb05733f48fd665b6452259a566a8e5434a63efe35b892b446d1aa5ad41222",
+    "browser-recovery-cases.log": "7ec6734f6bd8872cfefafec708fb968823000f8922ba3c0b87351a73d3ebf6fa",
+    "browser-remaining-cases.log": "30a75a65598b29c32c4268fa80c9f9bfc6e9c4e3ecbc466d05506bef24e151f6",
+    "browser-repair1.log": "9783f2ab2ed7fbe5bcef68dfd809f21c00a24881bfa443e111a4727eb482a6cb",
+    "browser-round.log": "3e9b29345ce0c27d3741e1ed586d9f312cf4a1e448523834f1be547c2250c045",
+    "frontend-build.log": "29201450a38ccd11ead7e2f982eff9f260bf603f00d318fb717983d1bdde223f",
+    "frontend-types.log": "7c2489be54899ba188707bb8207580f312c01c69c850a6104fab735ed6a913d7",
+    "frontend-unit.log": "37dec14e1a6c22240c0d170c943843f21da211744a4f22916c63a061d5406dfd",
+    "race-initial.log": "90c30cf73b5f6a6b221c460e809b403b6ee89a6f86bb07299d8d2843bd9b8c54",
+    "race-web-final.log": "b327d1616676c156e052e595f309621188ea7a2a2aef0486265ab1ffab779961",
+    "recovery/desktop-private-original.png": "bbc83aa1b4bb3f96d0dfea3d68b3decc49aa08824387dfc31792d83eef0bb540",
+    "recovery/failure.png": "bebff95b6997544e181549d7deb771a0121019b037c99d87a8999ae80e6f7d8b",
+    "recovery/report.json": "bcbf27adbe71ea27f3cbed5abf4d8803f388ba29139fcb1883ba19baa5f5020b",
+    "recovery/unavailable-index-receipt.png": "4b1d12509d7ab8046740bf4abb86a9f6231fa9a0803dff66949178ca5b753306",
+    "remaining/desktop-private-index.png": "99adc04f52af82293971e661ec509a3fd4d65b753d0482221fc325e2238a024f",
+    "remaining/download.pdf": "04b53692ecd93bab02e31b43499d98937d39d8c906726dce34b9de0fd1c36268",
+    "remaining/host-audit.json": "3d8f085e4c8faf8e1c1c0b8e0a65f94b360fd148e92e9fe933c960544308f0f2",
+    "remaining/mobile-private-index.png": "43317a18fc13d8ee1524c5dba7f2dc008874576ad64d264d043591c88aff0184",
+    "remaining/original.pdf": "04b53692ecd93bab02e31b43499d98937d39d8c906726dce34b9de0fd1c36268",
+    "remaining/report.json": "e0f736c25ad72aa9a77723d3592165580a55fffc037cea0fc7a782d9a9293b8a",
+    "repair1/desktop-private-original.png": "bbc83aa1b4bb3f96d0dfea3d68b3decc49aa08824387dfc31792d83eef0bb540",
+    "repair1/failure.png": "9c9df95d1d7a45a528a99fa1d5277de237d5ad35684fa43a064e3149b78f9ade",
+    "repair1/report.json": "8f12dd66930e181048cc92bae5f15f088f2cb096dd43658bcf21a24b0a000b0c",
+    "round/failure.png": "bbc83aa1b4bb3f96d0dfea3d68b3decc49aa08824387dfc31792d83eef0bb540",
+    "round/report.json": "8612c84f761b3db30069f522e3d06020f5a06e89678fa0d420f67597042464a1",
+    "saas.log": "eb4c76de95ef288996454e0f5d6e395b995d9cc8417970bb5d15a6b5bd92c9b0",
+    "sdk-all.log": "55bd2146013ce12d4e4b8fa8dad3b88cb88bb18d42c4c13d319c85fbbf67e7f2",
+    "targeted.log": "529be9ddfaf7ddf4d93cdbba95ef5534ce029cd8bf63f3382604f22f45ea9c92",
+    "vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

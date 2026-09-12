@@ -3,6 +3,7 @@ package integration_test
 import (
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -14,8 +15,8 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent/internal/application"
-	"github.com/domainry/domainry-agent/internal/infrastructure/documentstorage"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 func TestManagedLibraryDocumentsIndexFilterRevokeAndRestart(t *testing.T) {
@@ -30,13 +31,14 @@ func TestManagedLibraryDocumentsIndexFilterRevokeAndRestart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	files, err := documentstorage.NewFiles(t.TempDir() + "/documents")
+	files, err := knowledgemodule.NewDocumentFiles(t.TempDir() + "/documents")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer files.Close()
 	var mu sync.Mutex
 	remote, phase, body := "", "", ""
+	uploadRequestID := ""
 	puts, deletes, requests := 0, 0, 0
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
@@ -45,6 +47,10 @@ func TestManagedLibraryDocumentsIndexFilterRevokeAndRestart(t *testing.T) {
 		if r.URL.Path == "/v1/kb/kbs/managed/documents" {
 			if r.Method == "POST" {
 				puts++
+				if r.Header.Get("X-KB-Permission-Ids") != `["library:private:read"]` || r.Header.Get("X-KB-Request-ID") == "" {
+					t.Error("private upload omitted ACL or durable request ID")
+				}
+				uploadRequestID = r.Header.Get("X-KB-Request-ID")
 				remote = r.URL.Query().Get("doc_id")
 				raw, _ := io.ReadAll(r.Body)
 				body = string(raw)
@@ -79,7 +85,7 @@ func TestManagedLibraryDocumentsIndexFilterRevokeAndRestart(t *testing.T) {
 		json.NewEncoder(w).Encode(map[string]any{"err_code": 0, "data": map[string]any{"doc_id": remote, "status": phase, "title": "Policy", "body": body, "global": "SECRET-GLOBAL"}})
 	}))
 	defer upstream.Close()
-	config := provider.KnowledgeConfig{BaseURL: upstream.URL, TeamID: "team", KBID: "managed", WorkspaceID: a.WorkspaceID, APIKey: "fixture", DocumentManagement: true, ResponseMapping: &provider.KnowledgeResponseMapping{Search: &provider.KnowledgeCitationMapping{Items: "/hits", Many: true, DocumentID: "/doc_id", Title: "/title", Excerpt: "/body"}, Fetch: &provider.KnowledgeCitationMapping{Items: "/data", DocumentID: "/doc_id", Title: "/title", Excerpt: "/body"}}}
+	config := provider.KnowledgeConfig{BaseURL: upstream.URL, TeamID: "team", KBID: "managed", WorkspaceID: a.WorkspaceID, APIKey: "fixture", DocumentManagement: true, DocumentPermissionIDs: []string{"library:private:read"}, ResponseMapping: &provider.KnowledgeResponseMapping{Search: &provider.KnowledgeCitationMapping{Items: "/hits", Many: true, DocumentID: "/doc_id", Title: "/title", Excerpt: "/body"}, Fetch: &provider.KnowledgeCitationMapping{Items: "/data", DocumentID: "/doc_id", Title: "/title", Excerpt: "/body"}}}
 	source, err := provider.NewKnowledge(config)
 	if err != nil {
 		t.Fatal(err)
@@ -108,11 +114,17 @@ func TestManagedLibraryDocumentsIndexFilterRevokeAndRestart(t *testing.T) {
 		return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "Library result processed"}, FinishReason: "stop"}, nil
 	}}
 	options := application.ConversationOptions{ToolHost: tools, PersonalAuthorizer: personalReadAuthorizer{}, LibraryAuthorizer: policy, DocumentStorage: files, DocumentPoll: 10 * time.Millisecond, Poll: 10 * time.Millisecond, LibraryKnowledge: []application.LibraryKnowledgeBinding{{WorkspaceID: a.WorkspaceID, LibraryID: lib.ID, Source: source, ManageDocuments: true}}}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer func() { service.Close() }()
+	if _, err := service.UploadKnowledgeDocument(t.Context(), lib.ID, agentsdk.KnowledgeDocumentUpload{ClientID: "too-large", Filename: "large.txt", Data: make([]byte, 10<<20+1)}, a); err == nil {
+		t.Fatal("upstream oversize accepted into document lifecycle")
+	}
+	if page, err := repo.KnowledgeDocuments(t.Context(), lib.ID, "", 10, a); err != nil || len(page.Items) != 0 {
+		t.Fatal("oversize upload left a reservation", err)
+	}
 	upload := agentsdk.KnowledgeDocumentUpload{ClientID: "policy", Filename: "policy.txt", Data: []byte("APPROVED-POLICY\n" + strings.Repeat("完整原文", 800))}
 	if _, err := service.UploadKnowledgeDocument(t.Context(), lib.ID, upload, b); err == nil {
 		t.Fatal("reader uploaded")
@@ -157,11 +169,16 @@ func TestManagedLibraryDocumentsIndexFilterRevokeAndRestart(t *testing.T) {
 	mu.Lock()
 	phase = "INDEXED"
 	mu.Unlock()
-	waitDoc("ready")
+	ready := waitDoc("ready")
+	mu.Lock()
+	if ready.AccessPolicySHA256 != source.KnowledgeDocumentAccessPolicySHA256() || ready.PutRequestID == "" || ready.PutRequestID != uploadRequestID {
+		t.Error("write policy/command not persisted before upload")
+	}
+	mu.Unlock()
 	// A restarted host with management disabled must retain managed filtering.
 	service.Close()
 	options.LibraryKnowledge[0].ManageDocuments = false
-	service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -180,6 +197,39 @@ func TestManagedLibraryDocumentsIndexFilterRevokeAndRestart(t *testing.T) {
 	conversationID, run := runSearch("ready")
 	if run.Status != "completed" {
 		t.Fatalf("managed retrieval failed: %+v", run)
+	}
+	// A changed startup ACL must not reuse already persisted document evidence,
+	// even if upstream mistakenly returns the old content under the new scope.
+	service.Close()
+	changedConfig := config
+	changedConfig.DocumentPermissionIDs = []string{"different:policy"}
+	changedSource, err := provider.NewKnowledge(changedConfig)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if changedSource.KnowledgeDocumentSourceIdentity() != source.KnowledgeDocumentSourceIdentity() {
+		t.Fatal("ACL changed physical source identity")
+	}
+	options.LibraryKnowledge[0].Source = changedSource
+	requireContent = false
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, changedRun := runSearch("changed-policy")
+	if changedRun.Status != "completed" {
+		t.Fatalf("changed policy search: %+v", changedRun)
+	}
+	priorView, err := service.Messages(t.Context(), conversationID, agentsdk.ConversationMessageQuery{}, a)
+	if err != nil || strings.Contains(string(mustJSON(priorView)), "Library result processed") {
+		t.Fatal("stale policy retained historical answer", err)
+	}
+	service.Close()
+	options.LibraryKnowledge[0].Source = source
+	requireContent = true
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
+	if err != nil {
+		t.Fatal(err)
 	}
 	policy.denied.Store(true)
 	if _, err := service.DownloadKnowledgeDocument(t.Context(), lib.ID, doc.ID, b); err == nil {
@@ -221,7 +271,7 @@ func TestManagedLibraryDocumentsIndexFilterRevokeAndRestart(t *testing.T) {
 	}
 	service.Close()
 	options.LibraryKnowledge[0].ManageDocuments = true
-	service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -255,7 +305,7 @@ func TestManagedLibraryDocumentsIndexFilterRevokeAndRestart(t *testing.T) {
 		}
 		return resultToolCall("knowledge_search", "default", map[string]any{"query": "policy"}), nil
 	}
-	service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}

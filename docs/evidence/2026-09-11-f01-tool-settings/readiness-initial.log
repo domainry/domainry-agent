@@ -1,0 +1,15 @@
+# github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration [github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration.test]
+internal/infrastructure/persistence/database/integration/oauth_session_store.go:20:36: undefined: integrationsdk.OAuthAuthorizationSession
+internal/infrastructure/persistence/database/integration/oauth_session_store_test.go:23:19: undefined: connector.OAuthCodeExchangeRequest
+internal/infrastructure/persistence/database/integration/connection_account_store.go:22:64: undefined: integrationsdk.ConnectionAccountSubject
+internal/infrastructure/persistence/database/integration/connection_account_store.go:27:87: undefined: integrationsdk.ConnectionAccountSubject
+internal/infrastructure/persistence/database/integration/connection_account_store.go:62:60: undefined: integrationsdk.ConnectionAccount
+internal/infrastructure/persistence/database/integration/connection_account_store.go:75:53: undefined: integrationsdk.ConnectionAccountSubject
+internal/infrastructure/persistence/database/integration/connection_account_store.go:91:94: undefined: integrationsdk.ConnectionAccountSubject
+internal/infrastructure/persistence/database/integration/connection_account_store.go:91:138: undefined: integrationsdk.ConnectionAccount
+internal/infrastructure/persistence/database/integration/connection_account_store.go:134:131: undefined: integrationsdk.ConnectionAccount
+internal/infrastructure/persistence/database/integration/connection_account_store.go:162:92: undefined: integrationsdk.ConnectionAccountSubject
+internal/infrastructure/persistence/database/integration/connection_account_store.go:162:92: too many errors
+FAIL	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration [build failed]
+ok  	github.com/domainry/domainry-integration/internal/architecture	0.654s [no tests to run]
+FAIL

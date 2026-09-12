@@ -1,0 +1,15 @@
+=== RUN   TestWebProductIdentityReportSourcesAndRestart
+    web_tools_test.go:160: real Identity + Integration + Tools + Agent + Knowledge + SQLite; upstream HTTP=2; model HTTP=8; OAuth=0
+--- PASS: TestWebProductIdentityReportSourcesAndRestart (98.42s)
+=== RUN   TestWebProductEmptyPartialAndFailure
+=== RUN   TestWebProductEmptyPartialAndFailure/1
+=== RUN   TestWebProductEmptyPartialAndFailure/2
+=== RUN   TestWebProductEmptyPartialAndFailure/3
+=== RUN   TestWebProductEmptyPartialAndFailure/4
+--- PASS: TestWebProductEmptyPartialAndFailure (60.30s)
+    --- PASS: TestWebProductEmptyPartialAndFailure/1 (6.14s)
+    --- PASS: TestWebProductEmptyPartialAndFailure/2 (17.05s)
+    --- PASS: TestWebProductEmptyPartialAndFailure/3 (14.97s)
+    --- PASS: TestWebProductEmptyPartialAndFailure/4 (12.22s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	160.376s

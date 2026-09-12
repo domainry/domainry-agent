@@ -1,6 +1,6 @@
 # 个人资料与共享资料库权限
 
-更新：2026-09-10。用户已确认采用“个人资料＋共享资料库”：共享资料库维护成员及阅读 / 编辑 / 管理角色，文档默认继承库权限，暂不做组织树继承。以下区分当前实现与待交付方案。
+更新：2026-09-11。用户已确认采用“个人资料＋共享资料库”：共享资料库维护成员及阅读 / 编辑 / 管理角色，文档默认继承库权限，暂不做组织树继承。以下区分当前实现与待交付方案。
 
 ## 产品边界
 
@@ -21,19 +21,21 @@
 - `internal/assembly/web/knowledge_permissions.go` 每次解析 Identity 主体，评估 `agent.knowledge_documents.<binding>`，把获准绑定映射为上游权限 ID。这是默认知识源的静态文档组机制，与新资料库绑定独立，不自动生成个人标识。
 - 资料库实体、成员和阅读 / 编辑 / 管理角色已接 SDK、Agent 存储、HTTP / SaaS 及网页。个人资料库每个 Runtime / Workspace / User 唯一且不允许添加成员；共享库成员独立维护。第 9 个宿主迁移增加库和成员两张表。具体接口和验证见 [资料库管理验收](testing-2026-09-10-knowledge-libraries.md)。
 - `internal/assembly/web/knowledge_libraries.go` 按当前 Identity 主体和动作评估可信库 ID、种类、调用者库内角色、创建者及工作区事实；存储另外检查实时成员关系，管理操作要求库内 manager。添加成员验证目标是当前工作区有效主体，不能把 `OrgID` / `OrgScopeIDs` 当作成员。成员变更不自动授予全局 Identity 权限，也不注册一个全局 Identity 角色。
-- `module/library_knowledge.go` 已提供按工作区 / 本地库 ID 的启动配置，连接独立远端 KB；拒绝不同库或默认源复用相同远端范围。`internal/application/knowledge_library_source.go` 按实时成员、未归档状态和 Identity 读取动作筛选目录，并在请求前后和历史复用时再次检查。`knowledge_libraries` 提供目录，v2 search / read 接受库 ID 作为选择器，不能借此扩大权限。
+- `module/library_knowledge.go` 已提供按工作区 / 本地库 ID 的启动配置及单库 `PermissionIDs` / JSON `permission_ids`，连接独立远端 KB；拒绝不同库或默认源复用相同远端范围。`internal/application/knowledge_library_source.go` 按实时成员、未归档状态和 Identity 读取动作筛选目录，并在请求前后和历史复用时再次检查。`knowledge_libraries` 提供目录，v2 search / read 接受库 ID 作为选择器，不能借此扩大权限。三种库角色共用库阅读标识，成员变更不逐文档重写上游 ACL。
 - `internal/infrastructure/provider/knowledge.go` 将可信宿主计算的范围交给 Connector，模型和浏览器不能设置 `permission_ids`。每个实际连接仍固定 team / kb / workspace，配置变更需要重启宿主。引用与来源凭据保留资料库 ID；`knowledge_configured` 仅表示绑定存在，不表示远端在线或索引完成。实现与验证见 [按资料库检索验收](testing-2026-09-10-library-knowledge.md)。
-- `domainry-connectors/providers/knowledge_base/http_api` 已实现 search / fetch 及文档推送、索引状态、删除，并通过真实合成文件生命周期验收，见 [文档协议验收](testing-2026-09-10-knowledge-document-protocol.md)。上传协议只有 `doc_id` / `filename`，仍没有设置或修改文档 ACL 的契约；宿主端口可用不代表产品内附件已安全入库。
+- `domainry-connectors/providers/knowledge_base/http_api` 已实现 search / fetch 及文档推送、索引状态、删除，并通过真实合成文件生命周期验收，见 [文档协议验收](testing-2026-09-10-knowledge-document-protocol.md)。2026-09-11 已从知识服务固定提交确认上传支持 `X-KB-Permission-Ids` 与稳定 `X-KB-Request-ID`，普通团队 Key 可使用；独立 ACL GET / PUT 需 delegate。产品 Connector 与资料库上传现已接入此私有协议，保存稳定请求 ID 和权限摘要，并通过真实产品上传 / 索引 / 重启 / 引用 / 清理验证；会话附件私有索引仍是 K07 的独立范围。
 - `knowledge_document.go` / `knowledge_document_worker.go` 已实现按库文档登记、原文件保存、索引任务和删除清理，迁移 10 持久保存来源管理标记。`knowledge_document_source.go` 按本地 ready 文档过滤显式映射片段，未登记、待索引和已删除文档不得进入模型或历史。五个文档 HTTP / SaaS 操作分别经 Identity 授权，上传 / 删除要求库内 editor 或 manager。原文不可变，更新需创建新文档。见[文档应用链路验收](testing-2026-09-10-managed-documents.md)。
-- 会话附件已接私有原文件存储、元数据、上传 / 列表 / 详情 / 下载 / 删除服务、HTTP 与 SaaS SDK，以及持久清理队列；共享、远端私有索引和资料提取仍未接通。
+- 会话附件已接私有原文件存储、元数据、上传 / 列表 / 详情 / 下载 / 删除服务、HTTP 与 SaaS SDK，以及持久清理队列和受权在线预览。源文件解析、正文缓存和本地附件提取已[移除](document-parsing.md)，不再作为待办；共享与远端私有索引的实际进度见 [K07](agent-capabilities-todo.md)。检索由 Connector 提供，Agent 负责文件归属、权限与原件展示。
 
 ## 上游标识与知识库边界
 
-逻辑标识可以使用个人 `user:<id>`、资料库 `library:<id>:read`、会话 `conversation:<id>:read`。实际编码应包含可信租户 / 工作区命名空间，例如 `scope:<namespace>:library:<id>:read`，各组件编码或使用无歧义摘要。编辑与管理角色经本地授权后也获得资料库的阅读标识。
+Module 现在默认采用 `scope:agent:library:<sha256>`，摘要输入是可信 Runtime / Workspace / Library 的 JSON 元组；个人库和共享库都使用该规则。宿主可以显式配置实际既有权限 ID。关闭上传不改变库阅读标识；编辑与管理角色经本地授权后也获得相同阅读标识。
 
 Verdent 控制台明确：多个权限 ID 按“至少一个完全一致”匹配，没有隐含层级或 AND 关系。不能把 `workspace:w1` 和 `user:12311` 分成两个标识表达“w1 内的 12311”，否则其他工作区成员可能匹配个人文档。
 
-检索请求省略 `permission_ids` 或传 `[]`，只允许团队可见文档；非空请求也包含团队可见文档。上传时省略 ACL 的具体行为仍未确认，不能推断为本产品的工作区或资料库可见性。
+检索请求省略 `permission_ids` 或传 `[]`，只允许团队可见文档；非空请求也包含团队可见文档。已读源码要求上传省略 ACL 时保留省略语义及既有 ACL，显式 `[]` 为团队可见；新文档的真实私有上传和查询已通过 K01，不能把远端团队可见推断为本产品的工作区或资料库可见性。
+
+2026-09-11 真实私有矩阵已通过 7 个场景、26 次请求：正确或混合含正确 ID 可搜索／读取；省略、空数组、错误、相似 ID 不得取得私有资料，公开对照同时保持可读；请求权限改变后保存来源复核失败，见 [K01 权限对照](testing-2026-09-11-knowledge-permissions-probe.md)。随后真实 Identity / HTTP / SQLite 与三个独立 KB 的 17 个场景、95 次请求通过，验证个人隔离、三种成员角色、撤权、重启和在途读取撤权后不再调用模型，见 [K04 验收](testing-2026-09-11-library-permissions.md)。相关合成资料均已删除并核对不可检索。生产私有上传已完成 [K05 增量验收](testing-2026-09-11-private-library-upload.md)，固定 `permission_ids` 用于同库上传和阅读；数据源入口现已通过 [K05 完成验收](testing-2026-09-11-knowledge-datasources.md)；远端权限更新仍在 K07。
 
 当前资料库检索要求绑定独立远端知识库，服务端只向当前可读资料库发出请求。若以后复用远端知识库，仍须设计与验证共享远端范围的隔离方案；本批本地逐文档过滤不表示已支持多个资料库复用一个远端 KB。未登记的团队资料不得默认向所有工作区开放。命名空间本身不能隔离团队可见文档。通过自定义源或多个地址别名访问同一 KB 时，宿主仍须保证实际隔离。
 
@@ -56,10 +58,10 @@ Verdent 控制台明确：多个权限 ID 按“至少一个完全一致”匹�
 
 工作进程按文档处理最新目标版本，核对全部远端片段生效后开放；旧回执不能覆盖新权限。超时、失败和重启保留任务重试；放宽权限也等目标索引状态确认。跨库共享 / 移动不能仅修改本地标签。
 
-当前来源复核先检查本地库权限。受管理资料库额外检查文档 ready 状态及不可变内容摘要，再用相同请求比较当前受限片段投影；默认 / 未管理来源仍比较完整规范化上游 JSON。成员移除、库归档和本地文档删除会在请求远端前拒绝复用旧证据；内容变化也不会改写冻结输入。跨库权限版本与远端 ACL 同步仍未实现。
+当前来源复核先检查本地库权限。受管理资料库额外检查文档 ready 状态、冻结权限摘要及不可变内容摘要，再用相同请求比较当前受限片段投影；默认 / 未管理来源仍比较完整规范化上游 JSON。成员移除、库归档和本地文档删除会在请求远端前拒绝复用旧证据；内容变化也不会改写冻结输入。跨库权限版本与远端 ACL 同步仍未实现。
 
 ## 后续交付与验收
 
-资料库实体、成员与三种角色、管理接口及网页已实现；独立远端绑定、按库目录 / 检索 / 读取、带库引用和历史复核也已通过实际 Identity / HTTP / SQLite 与网页夹具验收。显式启用 manage_documents 的独立库已提供编辑者上传、文档状态、下载和删除接口，完整宿主重启与撤权经实际 Identity / HTTP 验证。资料库文档管理网页也已接通，浏览器已验证上传续传、索引状态、下载原件、撤权 / 恢复、宿主重启、对话引用和手机删除，见[网页验收](testing-2026-09-10-library-documents-web.md)。会话附件已可显式另存到个人／共享资料库，见[另存验收](testing-2026-09-10-attachment-library-copy.md)；新副本继承目标库权限，原附件保持会话私有。跨库共享 / 移动、人工核查入口及真实新链路仍在 K04 / K05 / K07，保持未完成。
+资料库实体、成员与三种角色、管理接口及网页已实现；独立远端绑定、按库目录 / 检索 / 读取、带库引用和历史复核也已通过实际 Identity / HTTP / SQLite 与网页夹具验收。显式启用 manage_documents 的独立库已提供编辑者上传、文档状态、下载和删除接口，完整宿主重启与撤权经实际 Identity / HTTP 验证。资料库文档管理网页也已接通，浏览器已验证上传续传、索引状态、下载原件、撤权 / 恢复、宿主重启、对话引用和手机删除，见[网页验收](testing-2026-09-10-library-documents-web.md)。会话附件已可显式另存到个人／共享资料库，见[另存验收](testing-2026-09-10-attachment-library-copy.md)；新副本继承目标库权限，原附件保持会话私有。K04 的真实私有检索授权已通过；K05 私有上传单库链路已通过真实 Identity / HTTP / worker / Verdent 验收，见[私有上传增量](testing-2026-09-11-private-library-upload.md)。数据源入口、独立多库产品上传与新入口网页验收现已完成 [K05](testing-2026-09-11-knowledge-datasources.md)。知识源绑定仅管理者可操作，且必须通过实时 Identity 授权；绑定键、来源及私有策略摘要持久保存，不接受浏览器任意权限。跨库共享 / 移动与人工核查入口仍在 K07。
 
 真实验收需覆盖个人 A / B、资料库成员 / 非成员、三种角色、跨库 / 工作区隔离、同用户不同会话附件、成员移除、文档共享 / 移动、同步失败、重启、乱序回执，以及删除和在途索引竞争；失去权限后旧引用、历史和模型恢复不能复用受限内容。首期不以组织树作为验收前提。

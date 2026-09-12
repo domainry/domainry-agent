@@ -1,0 +1,188 @@
+{
+  "date": "2026-09-11",
+  "todo": "K07",
+  "todo_complete": true,
+  "scope_basis": "Original K07 clauses interpreted together with B04: reconcile through verified source capabilities; retain needs_reconcile when the result cannot be confirmed. No claim that every upstream failure can be cancelled or replayed.",
+  "scope_correction": "Earlier progress notes introduced a new upstream upload receipt API as a completion gate. That API is not required by the original K07/B04 wording. Its optional expansion question remains open; no upstream expansion or publication was performed.",
+  "requirements": [
+    {
+      "requirement": "上传记录、授权文档 ID、来源会话及状态",
+      "status": "verified",
+      "code": "internal/infrastructure/persistence/database/agent/conversation_attachment_index_store.go",
+      "code_sha256": "1e5d3da4e465eed40558a855f3928d9929ca1d9dcf9155e78f7447c0121e8235",
+      "evidence": [
+        "docs/evidence/2026-09-11-k07-private-attachment-live.json",
+        "docs/evidence/2026-09-11-k07-attachment-unconfirmed.json"
+      ]
+    },
+    {
+      "requirement": "删除关系与原件实际清理",
+      "status": "verified",
+      "code": "internal/application/conversation_attachment_index_worker.go",
+      "code_sha256": "8aafd6faca2bfb3933efd2a4a84849dc20b137db95c0f4166017c2658a906e93",
+      "evidence": [
+        "docs/evidence/2026-09-11-k07-private-attachment-live.json",
+        "docs/evidence/2026-09-11-k07-delete-recovery.json"
+      ]
+    },
+    {
+      "requirement": "会话私有、个人资料与共享库边界",
+      "status": "verified",
+      "code": "internal/infrastructure/provider/attachment_knowledge.go",
+      "code_sha256": "945d519f268200419d8ef70453dfa8005d64a713a0beb72373d5e4d6ff403160",
+      "evidence": [
+        "docs/evidence/2026-09-11-k07-private-attachment-live.json",
+        "docs/evidence/2026-09-11-k07-live-transfers.json"
+      ]
+    },
+    {
+      "requirement": "显式另存与独立资料库副本",
+      "status": "verified",
+      "code": "internal/application/knowledge_attachment_import.go",
+      "code_sha256": "a175c13c757b9f8217c345289de08d3cfc10171b5bc3de66223013ae10523546",
+      "evidence": [
+        "docs/testing-2026-09-10-attachment-library-copy.md",
+        "docs/evidence/2026-09-11-k07-completion-audit/report.json",
+        "docs/evidence/2026-09-11-k07-completion-audit/domainry-attachment-import-browser-host-3.log"
+      ]
+    },
+    {
+      "requirement": "受限预览、下载及当前权限复核",
+      "status": "verified",
+      "code": "internal/application/conversation_attachment.go",
+      "code_sha256": "db7e75ba3571c8449da1f64bc9a7cf5a46f798482bf449e52112d56730e51f13",
+      "evidence": [
+        "docs/evidence/2026-09-11-k06-original-preview-complete.json",
+        "docs/evidence/2026-09-11-k07-attachment-unconfirmed.json"
+      ]
+    },
+    {
+      "requirement": "共享移动授权、目标私有 ACL 及旧来源撤销",
+      "status": "verified",
+      "code": "internal/application/knowledge_document_transfer.go",
+      "code_sha256": "4f2957e75fb042308762983868af54caa4c85ccaab10f359ab54b58af83bfebb",
+      "evidence": [
+        "docs/evidence/2026-09-11-k07-live-transfers.json"
+      ]
+    },
+    {
+      "requirement": "失败恢复；结果未知依 B04 保留待核查",
+      "status": "verified",
+      "code": "internal/infrastructure/persistence/database/agent/conversation_attachment_index_store.go",
+      "code_sha256": "1e5d3da4e465eed40558a855f3928d9929ca1d9dcf9155e78f7447c0121e8235",
+      "evidence": [
+        "docs/evidence/2026-09-11-k07-attachment-unconfirmed.json",
+        "docs/evidence/2026-09-11-k07-delete-recovery.json"
+      ]
+    },
+    {
+      "requirement": "上传不默认团队可见；按当前会话过滤远端片段",
+      "status": "verified",
+      "code": "internal/application/conversation_attachment_knowledge.go",
+      "code_sha256": "eb6e9ea9fbe324247735688b199df177a0e0e7d76c987dcddc2f9e9f17bfe784",
+      "evidence": [
+        "docs/evidence/2026-09-11-k07-private-attachment-live.json",
+        "docs/evidence/2026-09-11-k07-private-attachment-retrieval.json"
+      ]
+    }
+  ],
+  "verified_evidence": [
+    {
+      "manifest": "docs/evidence/2026-09-11-k07-live-transfers.json",
+      "sha256": "f071daef59b34bae8eae2324ff91ca5d94ff4a6e0ad83e6cce773ee0ab59d99d",
+      "artifact_hashes_verified": 11
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-k06-original-preview-complete.json",
+      "sha256": "32ed3e6912deb46b9bf21732e4b3a55879f68ae83234013ab0efc0a02c15f5cf",
+      "artifact_hashes_verified": 15
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-k07-private-attachment-index-ui.json",
+      "sha256": "8ddd78107a052a42166d6258ce8adda1aab128e7760df1dde995339e3e2f53d8",
+      "artifact_hashes_verified": 30
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-k07-private-attachment-retrieval.json",
+      "sha256": "d60916675447581fd0c88fd0b45c184862e6d58ec49c156d55be4c86c8d92d9a",
+      "artifact_hashes_verified": 28
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-k07-delete-recovery.json",
+      "sha256": "5db613dcda09cfb8bbd3a050776ef0b2ecc4a99c41ef5513804a853431e7f17f",
+      "artifact_hashes_verified": 15
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-k07-private-attachment-live.json",
+      "sha256": "af7ee9adb74fa42cf72959949f2f39cc61bd151c3524e44350afc4050d294b67",
+      "artifact_hashes_verified": 11
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-k07-attachment-unconfirmed.json",
+      "sha256": "0e017fe66272e2716d295476e620353633162e6ff170459f4bc052a2697c0420",
+      "artifact_hashes_verified": 18
+    }
+  ],
+  "regression_evidence": "docs/evidence/2026-09-11-k07-attachment-unconfirmed.json",
+  "architecture": {
+    "application_uses_public_sdk_and_host_ports": true,
+    "storage_writes_use_host_orm": true,
+    "connector_owns_external_protocol": true,
+    "agent_original_parser": false,
+    "architecture_test": "internal/architecture/layout_test.go"
+  },
+  "limits": [
+    "Unknown uploads preserve original and command identity; they cannot be forcibly replayed or declared cancelled with current provider contract.",
+    "Individual K07 acceptance uses real Verdent synthetic fixtures plus separately scoped built-client protocol tests, not a new single real-model browser run.",
+    "Dependency release, production deployment and whole-product acceptance remain H04/H08 and other pending items."
+  ],
+  "numbered_todo_completed_after_audit": 49,
+  "numbered_todo_total": 81,
+  "attachment_import_evidence": {
+    "report_complete": true,
+    "steps": [
+      "unbound personal library explains unavailable upload",
+      "library visibility is explicit and focus preserves selected file",
+      "lost response, refresh, wrong-file rejection and same-receipt retry without duplication",
+      "index completion and downloaded original byte verification",
+      "Identity download revocation, restoration and full host restart with existing browser login",
+      "uploaded document reaches model tool loop and a verified local document citation",
+      "archive pauses upload/download and restoration updates document controls",
+      "mobile confirmation/cancel/delete, durable cleanup and historical citation revocation",
+      "private attachment upload recovers after lost response and refresh, rejects changed bytes, and preview/download match the original",
+      "attachment import checks both permissions and recovers a lost response after refresh without resending file bytes",
+      "independent shared copy survives source deletion and host restart with identical original bytes",
+      "imported file can be queried across conversations without exposing private source identifiers, then is independently deleted"
+    ],
+    "artifacts": [
+      {
+        "path": "docs/evidence/2026-09-11-k07-completion-audit/report.json",
+        "sha256": "8d5a083a28b798a32f988ff5e5683e734677c2954b250b0ccafa6fb62b162d5e"
+      },
+      {
+        "path": "docs/evidence/2026-09-11-k07-completion-audit/domainry-attachment-import-browser-host-3.log",
+        "sha256": "bec977dcc47456b73a47cdfaf13ce2738d88e9728727f1981fa95217f2224c8e"
+      },
+      {
+        "path": "docs/evidence/2026-09-11-k07-completion-audit/domainry-attachment-import-browser-3.log",
+        "sha256": "363e959a0188c7ee72e6d348b64bb941dba981252439d2d8a2432cd2578eecc1"
+      },
+      {
+        "path": "docs/evidence/2026-09-11-k07-completion-audit/download-before-restart.txt",
+        "sha256": "4b5fa5281b048daf2433c79850949e01303f97cba1fe4bc0de1f6cdcaf17b49d"
+      },
+      {
+        "path": "docs/evidence/2026-09-11-k07-completion-audit/download-after-restart.txt",
+        "sha256": "4b5fa5281b048daf2433c79850949e01303f97cba1fe4bc0de1f6cdcaf17b49d"
+      },
+      {
+        "path": "docs/evidence/2026-09-11-k07-completion-audit/download-private-attachment.txt",
+        "sha256": "4b5fa5281b048daf2433c79850949e01303f97cba1fe4bc0de1f6cdcaf17b49d"
+      },
+      {
+        "path": "docs/evidence/2026-09-11-k07-completion-audit/download-import-after-source-deletion-and-restart.txt",
+        "sha256": "4b5fa5281b048daf2433c79850949e01303f97cba1fe4bc0de1f6cdcaf17b49d"
+      }
+    ]
+  }
+}

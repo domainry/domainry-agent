@@ -1,0 +1,16 @@
+=== RUN   TestMailReadOAuthHTTPModuleSaaSAndRestart
+=== RUN   TestMailReadOAuthHTTPModuleSaaSAndRestart/google/module
+    mail_read_flow_test.go:279: google/module actual Provider, OAuth PKCE/private refresh, HTTP/SQLite, mail list/search/page/body/partial, basic denial, restart/replay and revocation: token_http=4 read_http=13
+=== RUN   TestMailReadOAuthHTTPModuleSaaSAndRestart/google/saas
+    mail_read_flow_test.go:279: google/saas actual Provider, OAuth PKCE/private refresh, HTTP/SQLite, mail list/search/page/body/partial, basic denial, restart/replay and revocation: token_http=4 read_http=13
+=== RUN   TestMailReadOAuthHTTPModuleSaaSAndRestart/microsoft/module
+    mail_read_flow_test.go:279: microsoft/module actual Provider, OAuth PKCE/private refresh, HTTP/SQLite, mail list/search/page/body/partial, basic denial, restart/replay and revocation: token_http=4 read_http=9
+=== RUN   TestMailReadOAuthHTTPModuleSaaSAndRestart/microsoft/saas
+    mail_read_flow_test.go:279: microsoft/saas actual Provider, OAuth PKCE/private refresh, HTTP/SQLite, mail list/search/page/body/partial, basic denial, restart/replay and revocation: token_http=4 read_http=9
+--- PASS: TestMailReadOAuthHTTPModuleSaaSAndRestart (24.79s)
+    --- PASS: TestMailReadOAuthHTTPModuleSaaSAndRestart/google/module (4.69s)
+    --- PASS: TestMailReadOAuthHTTPModuleSaaSAndRestart/google/saas (8.11s)
+    --- PASS: TestMailReadOAuthHTTPModuleSaaSAndRestart/microsoft/module (4.32s)
+    --- PASS: TestMailReadOAuthHTTPModuleSaaSAndRestart/microsoft/saas (7.68s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	26.881s

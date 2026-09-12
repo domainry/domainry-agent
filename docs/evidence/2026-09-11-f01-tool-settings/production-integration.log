@@ -1,0 +1,7 @@
+=== RUN   TestIntegrationSaaSProductionProcessWithProductIdentity
+2026/09/11 17:55:35 Integration SaaS server listening on 127.0.0.1:49385
+2026/09/11 17:55:36 Integration SaaS server listening on 127.0.0.1:49385
+2026/09/11 17:55:37 Integration SaaS server listening on 127.0.0.1:49385
+--- PASS: TestIntegrationSaaSProductionProcessWithProductIdentity (2.58s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	3.208s

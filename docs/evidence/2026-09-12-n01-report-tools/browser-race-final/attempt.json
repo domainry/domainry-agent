@@ -1,0 +1,5 @@
+{
+  "passed": false,
+  "status": "cancelled-before-browser-launch",
+  "reason": "The existing race host exited 1 after its original 3-minute report observer deadline. The waiting browser process was terminated; no new browser assertions executed. Plain browser acceptance previously passed. Full module HTTP race is rerunning separately with a larger observer deadline."
+}

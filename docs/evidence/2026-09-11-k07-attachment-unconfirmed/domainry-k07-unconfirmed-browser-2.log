@@ -1,0 +1,10 @@
+=== RUN   TestPrivateAttachmentIndexBrowserRecovery
+PASS unknown remote upload is explicitly pending reconciliation; original remains available and no new upload is offered
+PASS pending remote result does not block authorized PDF rendering or exact original download
+PASS full host restart and original request replay retain the same attachment; repeated not-found inspections do not repeat upload or fabricate completion
+PASS Identity revocation blocks reconciliation while original uncertain state persists; restoration and mobile display work
+PASS later positive remote observation resolves the same upload without changing its identity or uploading again
+PASS deletion revokes original access and clears the resolved remote document exactly once
+--- PASS: TestPrivateAttachmentIndexBrowserRecovery (11.98s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	14.638s

@@ -1,0 +1,9 @@
+{
+  "agent_and_integration_reopened": true,
+  "complete": true,
+  "exchanges": 2,
+  "issuer": "local protocol fixture",
+  "probes": 1,
+  "provider": "google_workspace/google",
+  "real_identity": true
+}

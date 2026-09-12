@@ -1,0 +1,27 @@
+=== RUN   TestCalendarToolsBuiltBrowser
+PASS five product-selected calendar tools show unavailable before actual OAuth grant and available after owner authorization
+PASS actual browser message completes six persisted tool calls through Identity, Tools, Integration, Google protocol HTTP and model protocol HTTP; all-day dates, DST offsets and complete paging survive
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert.ok(!(await page.locator('main').innerText()).includes('CALENDAR-BODY'))
+
+    at expectHidden (file:///Users/tiger/Projects/domainry-agent/frontend/tests/calendar-tools.browser.mjs:40:9)
+    at async file:///Users/tiger/Projects/domainry-agent/frontend/tests/calendar-tools.browser.mjs:57:2 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v22.22.0
+    calendar_tools_browser_test.go:102: calendar browser exit status 1
+--- FAIL: TestCalendarToolsBuiltBrowser (8.16s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	8.916s
+FAIL

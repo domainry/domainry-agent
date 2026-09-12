@@ -1,0 +1,103 @@
+{
+  "todo": "F05",
+  "complete": false,
+  "stage": "Public business host RPC contract and isolated HTTP",
+  "captured_at": "2026-09-11T16:23:36.563053+00:00",
+  "path_base": "/Users/tiger/Projects",
+  "contract": "domainry-agent-business-host-v1",
+  "contract_sha256": "9037f423a375d37b5a73a1eca5b8ea92838d8510c5c3a2add3a5aa9f2c0f7b27",
+  "source_files": [
+    {
+      "path": "domainry-agent/docs/business-host-boundaries.md",
+      "bytes": 2583,
+      "sha256": "6272d9ffc17186d5e42d298005fd651db8232e0f561337c11c3c3cfc66ed8af3"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-12-f05-business-contract.md",
+      "bytes": 3883,
+      "sha256": "947e281c040c0094d5492ab810f41bd358ee239f56695170b79a8825f89ad2b7"
+    },
+    {
+      "path": "domainry-agent-sdk/README.md",
+      "bytes": 18307,
+      "sha256": "9d0395d32722e86e3a996e0cf7a44716569b1319718fefa3e048771a2b0c07aa"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/businessrpc_test.go",
+      "bytes": 18163,
+      "sha256": "e045099668bc6b30312ada3d71fc52633683c5a8e486cd42df170fe443b3ea81"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/client.go",
+      "bytes": 5266,
+      "sha256": "0259e713a07dac1c89c7e5ee2bb664c941a0b191670dc174b773bb82c0365a83"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/codec.go",
+      "bytes": 1165,
+      "sha256": "2f1cd11f64a9ca6787fde05513b62b2f5e56bb46629b4ebbff6128119c1f6072"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/dispatch.go",
+      "bytes": 3782,
+      "sha256": "7f0efc926dfaa876b04fce30b5fbe4fe23d0dae0d621abc593f200bb32e22121"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/methods.go",
+      "bytes": 5023,
+      "sha256": "d2c8c4284bc032817a701894b909545dc3cb1ebf739528f6e14fd30c859a5ea6"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/protocol.go",
+      "bytes": 6454,
+      "sha256": "5722646949a37a9ef7b51d9406ee8bd3bf9f9e06ad5c124820e2546b6650ac89"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/public_test.go",
+      "bytes": 727,
+      "sha256": "7868bc8953b196de6fd74e4b596a88fabc2e522001ff60a07d5448da76c87ba9"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/server.go",
+      "bytes": 6309,
+      "sha256": "e48fe3fa9565d41a275120afbc5bf7c2f2334c7849db7fc960296e4de65258c5"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-contract/compile-initial.log",
+      "bytes": 72,
+      "sha256": "64d7fd1b2ab6a1865609ed3b2b6588563e7a2731cc2d4cf312172e5e65818114"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-contract/format-diff-check.json",
+      "bytes": 126,
+      "sha256": "ccf9b81931e1814d81e202d0f4259df60626a95cd2113f43b4f876003d2f5ef4"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-contract/sdk-final-race.log",
+      "bytes": 1137,
+      "sha256": "548b656335db999fc86b74e05fb329c37981966cf233b332aa3346c274c57ca5"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-contract/sdk-full-race.log",
+      "bytes": 601,
+      "sha256": "5564543d3f2bdfd869a2c75c86a1e610aa65ef7c8e3296bee9de644b8d019213"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-contract/sdk-initial-race.log",
+      "bytes": 330,
+      "sha256": "377ba50289872b03908db288b8f60e952338563c92720c7f0283f7f962422cf9"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-contract/sdk-second-race.log",
+      "bytes": 1027,
+      "sha256": "34a558b634b9dd0329f9378f9b4a566707cf02b6c7dc37402c21b5d9d46980b6"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-contract/sdk-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart/approved_restart
+    account_write_model_test.go:27: model request 1: 2 messages
+    account_write_model_test.go:28: model request 1 returned after 200.708µs
+    account_write_model_test.go:27: model request 2: 7 messages
+    account_write_model_test.go:28: model request 2 returned after 521.125µs
+    account_write_model_test.go:27: model request 3: 10 messages
+    account_write_model_test.go:28: model request 3 returned after 965.042µs
+    account_write_model_test.go:27: model request 4: 13 messages
+    account_write_model_test.go:28: model request 4 returned after 912.333µs
+    account_write_model_test.go:27: model request 5: 15 messages
+    account_write_model_test.go:28: model request 5 returned after 1.1315ms
+    account_write_test.go:131: POST /agent/conversations/conv_ac4b72eeb2644199dd54997497095c3c/runs/crun_bf4c9bfeab64b30fc9be5e011b40f23a/respond: status 403, want 200, body {"code":"agent.conversation.interaction_access_denied"}
+    account_write_test.go:50: vendor HTTP=6 model HTTP=5 effects=map[]
+--- FAIL: TestAccountWritesThroughIdentityProviderHTTPAndRestart (82.53s)
+    --- FAIL: TestAccountWritesThroughIdentityProviderHTTPAndRestart/approved_restart (82.53s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	83.711s
+FAIL

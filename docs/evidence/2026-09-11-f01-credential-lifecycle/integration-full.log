@@ -1,0 +1,21 @@
+ok  	github.com/domainry/domainry-integration/capability	1.640s
+?   	github.com/domainry/domainry-integration/cmd/integration-server	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/adapter/integrationsdk	2.044s
+ok  	github.com/domainry/domainry-integration/internal/application/integration	1.677s
+ok  	github.com/domainry/domainry-integration/internal/architecture	2.408s
+ok  	github.com/domainry/domainry-integration/internal/assembly/module	4.592s
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	5.793s
+?   	github.com/domainry/domainry-integration/internal/domain/integration/model	[no test files]
+?   	github.com/domainry/domainry-integration/internal/domain/integration/repository	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/domain/integration/service	4.997s
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/architecture	5.506s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	5.224s
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/migration	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/schema	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/transport/http/module	5.875s
+?   	github.com/domainry/domainry-integration/internal/transport/http/saas	[no test files]
+ok  	github.com/domainry/domainry-integration/module	6.494s

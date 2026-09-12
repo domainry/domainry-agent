@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-runtime/runtime/application/agenthost	0.528s
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/transport	1.201s
+ok  	github.com/domainry/domainry-runtime/runtime/boundary	1.188s

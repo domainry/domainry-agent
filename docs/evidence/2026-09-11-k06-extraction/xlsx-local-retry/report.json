@@ -1,0 +1,774 @@
+{
+  "absent_from_search": true,
+  "cleanup_search_hits": 1,
+  "cleanup_verified": true,
+  "complete": true,
+  "conversation_citation": true,
+  "conversation_run_id": "crun_c8d48b1e521ece34859bbbbabf759dc9",
+  "database": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-nyi_m1t1/xlsx/managed.db",
+  "document_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+  "dynamic_binding": true,
+  "extraction_outputs": [
+    {
+      "operation": "extract",
+      "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+      "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+      "plan_sha256": "1ab954a4b1affa147e3b3646b113a2ad8c98b2627a5cb06dd3e81fd2c6e3a284",
+      "data": {
+        "fields": [
+          {
+            "key": "customer",
+            "type": "text",
+            "status": "valid",
+            "value": "Qinghe Fixture",
+            "evidence": [
+              {
+                "citation_id": "kc_67b27b998d1083b5227cde1cc93b352b",
+                "passage": 2,
+                "start": 11,
+                "end": 25,
+                "quote": "Qinghe Fixture",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 3,
+                  "cell": "B3"
+                }
+              }
+            ]
+          },
+          {
+            "key": "amount",
+            "type": "decimal",
+            "status": "valid",
+            "value": "9007199254740993.25",
+            "evidence": [
+              {
+                "citation_id": "kc_b2d325b54b30e3c6a8fd75c3f6772386",
+                "passage": 3,
+                "start": 17,
+                "end": 36,
+                "quote": "9007199254740993.25",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 4,
+                  "cell": "B4"
+                }
+              }
+            ]
+          },
+          {
+            "key": "signed_date",
+            "type": "date",
+            "status": "valid",
+            "value": "2026-09-11",
+            "evidence": [
+              {
+                "citation_id": "kc_6450ecb15b8f701b83d380ab7f82d12f",
+                "passage": 4,
+                "start": 14,
+                "end": 24,
+                "quote": "2026-09-11",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 5,
+                  "cell": "B5"
+                }
+              }
+            ]
+          },
+          {
+            "key": "approval",
+            "type": "boolean",
+            "status": "valid",
+            "value": "true",
+            "evidence": [
+              {
+                "citation_id": "kc_62ae4860181834d9a2d629cbf546f3b3",
+                "passage": 5,
+                "start": 11,
+                "end": 15,
+                "quote": "true",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 6,
+                  "cell": "B6"
+                }
+              }
+            ]
+          },
+          {
+            "key": "email",
+            "type": "text",
+            "status": "missing",
+            "value": null,
+            "code": "required_not_matched_in_available_text",
+            "evidence": []
+          }
+        ],
+        "tables": [
+          {
+            "key": "items",
+            "rows": [
+              [
+                {
+                  "key": "item",
+                  "type": "text",
+                  "status": "valid",
+                  "value": "Pencil",
+                  "evidence": [
+                    {
+                      "citation_id": "kc_49544e551a8f2ed04cb34c4dbc3ab2ad",
+                      "passage": 8,
+                      "start": 0,
+                      "end": 6,
+                      "quote": "Pencil",
+                      "location": {
+                        "sheet": "Synthetic Invoice",
+                        "row": 10,
+                        "cell": "A10"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "key": "quantity",
+                  "type": "integer",
+                  "status": "valid",
+                  "value": "2",
+                  "evidence": [
+                    {
+                      "citation_id": "kc_49544e551a8f2ed04cb34c4dbc3ab2ad",
+                      "passage": 8,
+                      "start": 9,
+                      "end": 10,
+                      "quote": "2",
+                      "location": {
+                        "sheet": "Synthetic Invoice",
+                        "row": 10,
+                        "cell": "B10"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "key": "price",
+                  "type": "decimal",
+                  "status": "valid",
+                  "value": "1.2",
+                  "evidence": [
+                    {
+                      "citation_id": "kc_49544e551a8f2ed04cb34c4dbc3ab2ad",
+                      "passage": 8,
+                      "start": 13,
+                      "end": 17,
+                      "quote": "1.20",
+                      "location": {
+                        "sheet": "Synthetic Invoice",
+                        "row": 10,
+                        "cell": "C10"
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                {
+                  "key": "item",
+                  "type": "text",
+                  "status": "valid",
+                  "value": "Paper",
+                  "evidence": [
+                    {
+                      "citation_id": "kc_627d1c6cd283eab0c6da8d03b761e586",
+                      "passage": 9,
+                      "start": 0,
+                      "end": 5,
+                      "quote": "Paper",
+                      "location": {
+                        "sheet": "Synthetic Invoice",
+                        "row": 11,
+                        "cell": "A11"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "key": "quantity",
+                  "type": "integer",
+                  "status": "valid",
+                  "value": "3",
+                  "evidence": [
+                    {
+                      "citation_id": "kc_627d1c6cd283eab0c6da8d03b761e586",
+                      "passage": 9,
+                      "start": 8,
+                      "end": 9,
+                      "quote": "3",
+                      "location": {
+                        "sheet": "Synthetic Invoice",
+                        "row": 11,
+                        "cell": "B11"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "key": "price",
+                  "type": "decimal",
+                  "status": "valid",
+                  "value": "12.5",
+                  "evidence": [
+                    {
+                      "citation_id": "kc_627d1c6cd283eab0c6da8d03b761e586",
+                      "passage": 9,
+                      "start": 12,
+                      "end": 17,
+                      "quote": "12.50",
+                      "location": {
+                        "sheet": "Synthetic Invoice",
+                        "row": 11,
+                        "cell": "C11"
+                      }
+                    }
+                  ]
+                }
+              ]
+            ],
+            "after": 0,
+            "complete": true
+          }
+        ],
+        "coverage": {
+          "basis": "available_parsed_passages",
+          "original_complete": false,
+          "passages": 10,
+          "limited": false
+        },
+        "warnings": []
+      },
+      "citations": [
+        {
+          "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+          "id": "kc_67b27b998d1083b5227cde1cc93b352b",
+          "provider": "agent_knowledge_extract",
+          "kb_id": "",
+          "operation": "fetch",
+          "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+          "title": "synthetic-extraction.xlsx",
+          "excerpt": "Customer | Qinghe Fixture",
+          "location": {
+            "sheet": "Synthetic Invoice",
+            "row": 3
+          }
+        },
+        {
+          "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+          "id": "kc_b2d325b54b30e3c6a8fd75c3f6772386",
+          "provider": "agent_knowledge_extract",
+          "kb_id": "",
+          "operation": "fetch",
+          "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+          "title": "synthetic-extraction.xlsx",
+          "excerpt": "Invoice Amount | 9007199254740993.25 CNY",
+          "location": {
+            "sheet": "Synthetic Invoice",
+            "row": 4
+          }
+        },
+        {
+          "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+          "id": "kc_6450ecb15b8f701b83d380ab7f82d12f",
+          "provider": "agent_knowledge_extract",
+          "kb_id": "",
+          "operation": "fetch",
+          "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+          "title": "synthetic-extraction.xlsx",
+          "excerpt": "Signed Date | 2026-09-11",
+          "location": {
+            "sheet": "Synthetic Invoice",
+            "row": 5
+          }
+        },
+        {
+          "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+          "id": "kc_62ae4860181834d9a2d629cbf546f3b3",
+          "provider": "agent_knowledge_extract",
+          "kb_id": "",
+          "operation": "fetch",
+          "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+          "title": "synthetic-extraction.xlsx",
+          "excerpt": "Approval | true",
+          "location": {
+            "sheet": "Synthetic Invoice",
+            "row": 6
+          }
+        },
+        {
+          "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+          "id": "kc_49544e551a8f2ed04cb34c4dbc3ab2ad",
+          "provider": "agent_knowledge_extract",
+          "kb_id": "",
+          "operation": "fetch",
+          "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+          "title": "synthetic-extraction.xlsx",
+          "excerpt": "Pencil | 2 | 1.20",
+          "location": {
+            "sheet": "Synthetic Invoice",
+            "row": 10
+          }
+        },
+        {
+          "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+          "id": "kc_627d1c6cd283eab0c6da8d03b761e586",
+          "provider": "agent_knowledge_extract",
+          "kb_id": "",
+          "operation": "fetch",
+          "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+          "title": "synthetic-extraction.xlsx",
+          "excerpt": "Paper | 3 | 12.50",
+          "location": {
+            "sheet": "Synthetic Invoice",
+            "row": 11
+          }
+        }
+      ],
+      "source": {
+        "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+        "provider": "agent_parsed_document",
+        "kb_id": "",
+        "operation": "fetch",
+        "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+        "scope_sha256": "b4d6eb47e606b764ce179379f22eb7a4f72c1d07b4e04852527a3b05097da6a0",
+        "citations": [
+          {
+            "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+            "id": "kc_0de57054bf8af076bbadd113e6cb194e",
+            "provider": "agent_parsed_document",
+            "kb_id": "",
+            "operation": "fetch",
+            "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+            "title": "synthetic-extraction.xlsx",
+            "excerpt": "K06 SYNTHETIC EXTRACTION ACCEPTANCE",
+            "location": {
+              "sheet": "Synthetic Invoice",
+              "row": 1
+            }
+          },
+          {
+            "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+            "id": "kc_d92bc2c52e03412c8661db39770f8607",
+            "provider": "agent_parsed_document",
+            "kb_id": "",
+            "operation": "fetch",
+            "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+            "title": "synthetic-extraction.xlsx",
+            "excerpt": "This fixture contains no real personal or business information.",
+            "location": {
+              "sheet": "Synthetic Invoice",
+              "row": 2
+            }
+          },
+          {
+            "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+            "id": "kc_69bee75ae8d9476bb5c952c64b2e5b5c",
+            "provider": "agent_parsed_document",
+            "kb_id": "",
+            "operation": "fetch",
+            "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+            "title": "synthetic-extraction.xlsx",
+            "excerpt": "Customer | Qinghe Fixture",
+            "location": {
+              "sheet": "Synthetic Invoice",
+              "row": 3
+            }
+          },
+          {
+            "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+            "id": "kc_bb7e336b656f0e2f685d4fa091da59a4",
+            "provider": "agent_parsed_document",
+            "kb_id": "",
+            "operation": "fetch",
+            "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+            "title": "synthetic-extraction.xlsx",
+            "excerpt": "Invoice Amount | 9007199254740993.25 CNY",
+            "location": {
+              "sheet": "Synthetic Invoice",
+              "row": 4
+            }
+          },
+          {
+            "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+            "id": "kc_084b8e66cd270d130ce360be0498b748",
+            "provider": "agent_parsed_document",
+            "kb_id": "",
+            "operation": "fetch",
+            "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+            "title": "synthetic-extraction.xlsx",
+            "excerpt": "Signed Date | 2026-09-11",
+            "location": {
+              "sheet": "Synthetic Invoice",
+              "row": 5
+            }
+          },
+          {
+            "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+            "id": "kc_15939159da6eacb141c7f590cdbd134e",
+            "provider": "agent_parsed_document",
+            "kb_id": "",
+            "operation": "fetch",
+            "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+            "title": "synthetic-extraction.xlsx",
+            "excerpt": "Approval | true",
+            "location": {
+              "sheet": "Synthetic Invoice",
+              "row": 6
+            }
+          },
+          {
+            "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+            "id": "kc_b5736aada6d853707712a7654cb874f1",
+            "provider": "agent_parsed_document",
+            "kb_id": "",
+            "operation": "fetch",
+            "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+            "title": "synthetic-extraction.xlsx",
+            "excerpt": "The contact email is intentionally absent.",
+            "location": {
+              "sheet": "Synthetic Invoice",
+              "row": 7
+            }
+          },
+          {
+            "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+            "id": "kc_62377b357c3ce4c25f87f814988215bb",
+            "provider": "agent_parsed_document",
+            "kb_id": "",
+            "operation": "fetch",
+            "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+            "title": "synthetic-extraction.xlsx",
+            "excerpt": "Item | Quantity | Unit Price",
+            "location": {
+              "sheet": "Synthetic Invoice",
+              "row": 9
+            }
+          },
+          {
+            "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+            "id": "kc_a371b628091eaed55c86dbf0d76e5484",
+            "provider": "agent_parsed_document",
+            "kb_id": "",
+            "operation": "fetch",
+            "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+            "title": "synthetic-extraction.xlsx",
+            "excerpt": "Pencil | 2 | 1.20",
+            "location": {
+              "sheet": "Synthetic Invoice",
+              "row": 10
+            }
+          },
+          {
+            "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+            "id": "kc_467bddb92afa0c13d96a61914fdf76d8",
+            "provider": "agent_parsed_document",
+            "kb_id": "",
+            "operation": "fetch",
+            "doc_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+            "title": "synthetic-extraction.xlsx",
+            "excerpt": "Paper | 3 | 12.50",
+            "location": {
+              "sheet": "Synthetic Invoice",
+              "row": 11
+            }
+          }
+        ],
+        "data": {
+          "document_id": "kdoc_39e73307d06a96b092db0aa39a230273",
+          "parsed": {
+            "parser": {
+              "id": "agent-spreadsheet",
+              "version": "1-excelize-2.11.0"
+            },
+            "source_sha256": "1c418895a86623474b9e3b00c3d9a6f1d9cd8f04ed28c8bf3a665dcce6f1c5b2",
+            "format": "xlsx",
+            "blocks": [
+              {
+                "id": "b1",
+                "kind": "row",
+                "text": "K06 SYNTHETIC EXTRACTION ACCEPTANCE",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 1
+                },
+                "cells": [
+                  {
+                    "address": "A1",
+                    "type": "text",
+                    "raw": "K06 SYNTHETIC EXTRACTION ACCEPTANCE",
+                    "start": 0,
+                    "end": 35
+                  }
+                ]
+              },
+              {
+                "id": "b2",
+                "kind": "row",
+                "text": "This fixture contains no real personal or business information.",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 2
+                },
+                "cells": [
+                  {
+                    "address": "A2",
+                    "type": "text",
+                    "raw": "This fixture contains no real personal or business information.",
+                    "start": 0,
+                    "end": 63
+                  }
+                ]
+              },
+              {
+                "id": "b3",
+                "kind": "row",
+                "text": "Customer | Qinghe Fixture",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 3
+                },
+                "cells": [
+                  {
+                    "address": "A3",
+                    "type": "text",
+                    "raw": "Customer",
+                    "start": 0,
+                    "end": 8
+                  },
+                  {
+                    "address": "B3",
+                    "type": "text",
+                    "raw": "Qinghe Fixture",
+                    "start": 11,
+                    "end": 25
+                  }
+                ]
+              },
+              {
+                "id": "b4",
+                "kind": "row",
+                "text": "Invoice Amount | 9007199254740993.25 CNY",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 4
+                },
+                "cells": [
+                  {
+                    "address": "A4",
+                    "type": "text",
+                    "raw": "Invoice Amount",
+                    "start": 0,
+                    "end": 14
+                  },
+                  {
+                    "address": "B4",
+                    "type": "text",
+                    "raw": "9007199254740993.25 CNY",
+                    "start": 17,
+                    "end": 40
+                  }
+                ]
+              },
+              {
+                "id": "b5",
+                "kind": "row",
+                "text": "Signed Date | 2026-09-11",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 5
+                },
+                "cells": [
+                  {
+                    "address": "A5",
+                    "type": "text",
+                    "raw": "Signed Date",
+                    "start": 0,
+                    "end": 11
+                  },
+                  {
+                    "address": "B5",
+                    "type": "text",
+                    "raw": "2026-09-11",
+                    "start": 14,
+                    "end": 24
+                  }
+                ]
+              },
+              {
+                "id": "b6",
+                "kind": "row",
+                "text": "Approval | true",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 6
+                },
+                "cells": [
+                  {
+                    "address": "A6",
+                    "type": "text",
+                    "raw": "Approval",
+                    "start": 0,
+                    "end": 8
+                  },
+                  {
+                    "address": "B6",
+                    "type": "text",
+                    "raw": "true",
+                    "start": 11,
+                    "end": 15
+                  }
+                ]
+              },
+              {
+                "id": "b7",
+                "kind": "row",
+                "text": "The contact email is intentionally absent.",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 7
+                },
+                "cells": [
+                  {
+                    "address": "A7",
+                    "type": "text",
+                    "raw": "The contact email is intentionally absent.",
+                    "start": 0,
+                    "end": 42
+                  }
+                ]
+              },
+              {
+                "id": "b8",
+                "kind": "row",
+                "text": "Item | Quantity | Unit Price",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 9
+                },
+                "cells": [
+                  {
+                    "address": "A9",
+                    "type": "text",
+                    "raw": "Item",
+                    "start": 0,
+                    "end": 4
+                  },
+                  {
+                    "address": "B9",
+                    "type": "text",
+                    "raw": "Quantity",
+                    "start": 7,
+                    "end": 15
+                  },
+                  {
+                    "address": "C9",
+                    "type": "text",
+                    "raw": "Unit Price",
+                    "start": 18,
+                    "end": 28
+                  }
+                ]
+              },
+              {
+                "id": "b9",
+                "kind": "row",
+                "text": "Pencil | 2 | 1.20",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 10
+                },
+                "cells": [
+                  {
+                    "address": "A10",
+                    "type": "text",
+                    "raw": "Pencil",
+                    "start": 0,
+                    "end": 6
+                  },
+                  {
+                    "address": "B10",
+                    "type": "text",
+                    "raw": "2",
+                    "start": 9,
+                    "end": 10
+                  },
+                  {
+                    "address": "C10",
+                    "type": "text",
+                    "raw": "1.20",
+                    "start": 13,
+                    "end": 17
+                  }
+                ]
+              },
+              {
+                "id": "b10",
+                "kind": "row",
+                "text": "Paper | 3 | 12.50",
+                "location": {
+                  "sheet": "Synthetic Invoice",
+                  "row": 11
+                },
+                "cells": [
+                  {
+                    "address": "A11",
+                    "type": "text",
+                    "raw": "Paper",
+                    "start": 0,
+                    "end": 5
+                  },
+                  {
+                    "address": "B11",
+                    "type": "text",
+                    "raw": "3",
+                    "start": 8,
+                    "end": 9
+                  },
+                  {
+                    "address": "C11",
+                    "type": "text",
+                    "raw": "12.50",
+                    "start": 12,
+                    "end": 17
+                  }
+                ]
+              }
+            ],
+            "coverage": "decoded_cell_values",
+            "warnings": [
+              "Formatting, charts, images and embedded objects are not interpreted. Numeric values preserve stored text; precision already lost in the original cannot be restored."
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "file_format": "xlsx",
+  "indexed": true,
+  "kb_id": "kb-3bbd8f1d3249",
+  "library_id": "lib_e176688d6fb0cc4aa831df0c41f37963",
+  "library_kind": "personal",
+  "marker": "Qinghe Fixture",
+  "model": "glm-5.3-flash-free",
+  "model_protocol": "chat_completions",
+  "origin": "https://api.verdent.ai",
+  "original_after_catalog_removal": true,
+  "private_acl": true,
+  "read_after_catalog_restore": true,
+  "restart_original": true,
+  "runtime_id": "managed-live-b036c708564019e6cdaf33e3",
+  "synthetic": true,
+  "team_id": "1470194374940573696",
+  "visibility_matching": true,
+  "visibility_omitted": true,
+  "visibility_wrong": true,
+  "workspace_id": "managed-live"
+}

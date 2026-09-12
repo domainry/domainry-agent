@@ -1,0 +1,52 @@
+=== RUN   TestNestedOwnerMigrationsReplayAndFailClosed
+--- PASS: TestNestedOwnerMigrationsReplayAndFailClosed (0.01s)
+=== RUN   TestExtractedPersistenceOnAllDatabases
+=== RUN   TestExtractedPersistenceOnAllDatabases/sqlite
+=== RUN   TestExtractedPersistenceOnAllDatabases/mysql
+=== RUN   TestExtractedPersistenceOnAllDatabases/postgres
+--- PASS: TestExtractedPersistenceOnAllDatabases (0.23s)
+    --- PASS: TestExtractedPersistenceOnAllDatabases/sqlite (0.01s)
+    --- PASS: TestExtractedPersistenceOnAllDatabases/mysql (0.13s)
+    --- PASS: TestExtractedPersistenceOnAllDatabases/postgres (0.09s)
+=== RUN   TestStartupLockExclusionAndReleaseOnAllDatabases
+=== RUN   TestStartupLockExclusionAndReleaseOnAllDatabases/sqlite
+=== RUN   TestStartupLockExclusionAndReleaseOnAllDatabases/mysql
+=== RUN   TestStartupLockExclusionAndReleaseOnAllDatabases/postgres
+--- PASS: TestStartupLockExclusionAndReleaseOnAllDatabases (0.33s)
+    --- PASS: TestStartupLockExclusionAndReleaseOnAllDatabases/sqlite (0.00s)
+    --- PASS: TestStartupLockExclusionAndReleaseOnAllDatabases/mysql (0.16s)
+    --- PASS: TestStartupLockExclusionAndReleaseOnAllDatabases/postgres (0.17s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost	1.656s
+=== RUN   TestPMProductIntegration
+=== RUN   TestPMProductIntegration/sqlite
+=== RUN   TestPMProductIntegration/mysql
+=== RUN   TestPMProductIntegration/postgres
+--- PASS: TestPMProductIntegration (5.16s)
+    --- PASS: TestPMProductIntegration/sqlite (1.04s)
+    --- PASS: TestPMProductIntegration/mysql (2.61s)
+    --- PASS: TestPMProductIntegration/postgres (1.51s)
+=== RUN   TestAcceptanceRequiresEvidenceAndRevisionWorkflow
+--- PASS: TestAcceptanceRequiresEvidenceAndRevisionWorkflow (0.00s)
+PASS
+ok  	github.com/domainry/domainry-pm/internal/assembly/saas	6.118s
+=== RUN   TestWorkProductIntegration
+=== RUN   TestWorkProductIntegration/sqlite
+=== RUN   TestWorkProductIntegration/mysql
+=== RUN   TestWorkProductIntegration/postgres
+--- PASS: TestWorkProductIntegration (5.36s)
+    --- PASS: TestWorkProductIntegration/sqlite (1.10s)
+    --- PASS: TestWorkProductIntegration/mysql (2.69s)
+    --- PASS: TestWorkProductIntegration/postgres (1.57s)
+=== RUN   TestOfficeValidation
+--- PASS: TestOfficeValidation (0.00s)
+=== RUN   TestWorkDocumentProductIntegration
+=== RUN   TestWorkDocumentProductIntegration/sqlite
+=== RUN   TestWorkDocumentProductIntegration/mysql
+=== RUN   TestWorkDocumentProductIntegration/postgres
+--- PASS: TestWorkDocumentProductIntegration (4.79s)
+    --- PASS: TestWorkDocumentProductIntegration/sqlite (1.06s)
+    --- PASS: TestWorkDocumentProductIntegration/mysql (2.38s)
+    --- PASS: TestWorkDocumentProductIntegration/postgres (1.35s)
+PASS
+ok  	github.com/domainry/domainry-work/internal/assembly/saas	11.501s

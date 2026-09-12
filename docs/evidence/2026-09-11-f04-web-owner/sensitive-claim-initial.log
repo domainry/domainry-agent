@@ -1,0 +1,11 @@
+=== RUN   TestSensitiveAccountCallNeverReclaimsFailedOrRunningRequest
+=== RUN   TestSensitiveAccountCallNeverReclaimsFailedOrRunningRequest/failed
+    sensitive_call_claim_test.go:53: failed sensitive identity dispatched 2 times
+=== RUN   TestSensitiveAccountCallNeverReclaimsFailedOrRunningRequest/running
+    sensitive_call_claim_test.go:91: running sensitive identity dispatched 2 times
+--- FAIL: TestSensitiveAccountCallNeverReclaimsFailedOrRunningRequest (1.20s)
+    --- FAIL: TestSensitiveAccountCallNeverReclaimsFailedOrRunningRequest/failed (0.10s)
+    --- FAIL: TestSensitiveAccountCallNeverReclaimsFailedOrRunningRequest/running (1.10s)
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	1.877s
+FAIL

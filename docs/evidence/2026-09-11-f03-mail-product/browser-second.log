@@ -1,0 +1,12 @@
+=== RUN   TestMailToolsBuiltBrowser
+PASS four product-selected mail tools become available after actual owner OAuth grant
+PASS browser submits authorized request; two search pages and body drive summary, extracted action and nine persisted tool calls including local draft create/read/edit/export
+PASS Knowledge draft retains source run and original mail references; real UI previews, edits v3 and downloads exact Markdown
+PASS disabling mail body hides saved answer and derived draft; host restart preserves choice and explicit re-enable restores authorized v3
+PASS current Identity read revocation removes a displayed draft on refresh and prevents source-dependent reads
+PASS another Identity user cannot discover the personal mailbox or read the conversation and draft
+PASS missing provider body yields explicit incomplete answer and creates no additional draft at 390px
+PASS revoked account no longer exposes derived drafts; fresh metadata-only OAuth enables headers and excludes search/body/drafting
+--- PASS: TestMailToolsBuiltBrowser (29.95s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	30.523s

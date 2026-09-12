@@ -1,0 +1,110 @@
+=== RUN   TestAgentOwnsLifecycleExecution
+--- PASS: TestAgentOwnsLifecycleExecution (0.08s)
+=== RUN   TestRuntimeDDDLayerImportBoundary
+--- PASS: TestRuntimeDDDLayerImportBoundary (0.02s)
+=== RUN   TestRuntimePlatformContainsOnlyHostOwnedBindings
+--- PASS: TestRuntimePlatformContainsOnlyHostOwnedBindings (0.00s)
+=== RUN   TestRuntimeProductionUsesExtractedOwnerSDKs
+--- PASS: TestRuntimeProductionUsesExtractedOwnerSDKs (0.02s)
+=== RUN   TestRuntimeDoesNotReclaimIntegrationOwnerState
+--- PASS: TestRuntimeDoesNotReclaimIntegrationOwnerState (0.04s)
+=== RUN   TestRuntimeConsumesMetadataThroughOneSDKBinding
+--- PASS: TestRuntimeConsumesMetadataThroughOneSDKBinding (0.05s)
+=== RUN   TestRuntimePublicPackagesDoNotImportInternalOwners
+--- PASS: TestRuntimePublicPackagesDoNotImportInternalOwners (0.01s)
+=== RUN   TestRuntimeHasNoCatchAllDirectories
+--- PASS: TestRuntimeHasNoCatchAllDirectories (0.00s)
+=== RUN   TestClientHeadersCannotBecomePrincipalOrganizationScope
+--- PASS: TestClientHeadersCannotBecomePrincipalOrganizationScope (0.01s)
+=== RUN   TestReportModuleOwnsProductHTTPAndApplicationBoundary
+--- PASS: TestReportModuleOwnsProductHTTPAndApplicationBoundary (0.02s)
+=== RUN   TestRuntimeGeneratedIdempotencyInventoryIsCurrent
+--- PASS: TestRuntimeGeneratedIdempotencyInventoryIsCurrent (0.09s)
+=== RUN   TestRuntimeWorkspaceFallbackReviewBaseline
+    runtime_contract_inventory_test.go:42: Runtime workspace fallback review baseline changed; remove the fallback or explicitly review this exact list:
+        runtime/application/action/action_workspace_aggregate_execution.go|5bb28c1937a21188
+        runtime/application/action/action_workspace_identity_usage_execution.go|33146e63c53c252b
+        runtime/application/action/action_workspace_identity_usage_execution.go|4555daacc7fce16c
+        runtime/application/action/action_workspace_identity_usage_execution.go|9c6d9a6e5b67eb1b
+        runtime/application/action/action_workspace_identity_usage_execution.go|ca200195624cfa84
+        runtime/application/action/action_workspace_identity_usage_execution.go|eea8f4708f2b79bd
+        runtime/application/action/workspace_identity_usage_cursor.go|c7f5a914731a8893
+        runtime/application/action/workspace_identity_usage_cursor.go|f94f39652a2e0fc3
+        runtime/application/agenthost/agent_task_dispatch_application_service.go|a1aa32c92cd2c2fa
+        runtime/application/agenthost/conversation_business_host.go|4c46628760bfbeb3
+        runtime/application/agenthost/conversation_business_host.go|e3dcace4ac8cd670
+        runtime/application/notificationfacade/module_transactions.go|a53412ab9d129a2d
+        runtime/application/publicationhandoff/publication_handoff_application_service.go|3a264f3250c4d24e
+        runtime/application/publicationhandoff/publication_handoff_application_service.go|b2e5ab60c1900c7a
+        runtime/application/record/record_subject_lifecycle_application_service.go|9bc2b99f1b0726ee
+        runtime/application/seed/business/acceptance_setup.go|77da2f4766b7ea50
+        runtime/application/seed/business/records.go|b2e5ab60c1900c7a
+        runtime/application/seed/globalcapability/runtime.go|c9934cedd7524bf6
+        runtime/application/workflow/workflow_agent_capability_completion.go|a0f007c7d608a730
+        runtime/application/workflow/workflow_agent_invocation_application_service.go|4a61a3d45199a286
+        runtime/application/workflow/workflow_principal_resolver_application_service.go|a7621539cdd54a6e
+        runtime/application/workflow/workflow_record_reader_adapter.go|a140e6ec8b49a80f
+        runtime/application/workflow/workflow_record_reader_adapter.go|a140e6ec8b49a80f
+        runtime/application/workspaceprovision/workspace_administration_application_service.go|0e4286d03e5f3289
+        runtime/application/workspaceprovision/workspace_administration_application_service.go|6a0413e7fa385b92
+        runtime/application/workspaceprovision/workspace_administration_application_service.go|b7fd3431341b3beb
+        runtime/infrastructure/persistence/database/action/action_business_execution_store.go|8a6b0a15d07ee4c7
+        runtime/infrastructure/persistence/database/appschema/manifest_store.go|4abfd612c230c5f8
+        runtime/infrastructure/persistence/database/automation/sql_values.go|e3a854a480b5fcda
+        runtime/infrastructure/persistence/database/datamigration/copy.go|50c2e571441e2111
+        runtime/infrastructure/persistence/database/datamigration/verify.go|d6e7f1f7aec0d805
+        runtime/infrastructure/persistence/database/deployment/runtime_status_store.go|aa60dbbb6d4212b5
+        runtime/infrastructure/persistence/database/deployment/runtime_status_store.go|aa60dbbb6d4212b5
+        runtime/infrastructure/persistence/database/deployment/runtime_status_store.go|b2e5ab60c1900c7a
+        runtime/infrastructure/persistence/database/notificationpublication/publication_outbox_store.go|76820ce84ef1ab0b
+        runtime/infrastructure/persistence/database/operations/operations_lease_release_store.go|7a71ce1034c84994
+        runtime/infrastructure/persistence/database/operations/operations_lease_release_store.go|7a71ce1034c84994
+        runtime/infrastructure/persistence/database/operations/operations_lease_release_store.go|7a71ce1034c84994
+        runtime/infrastructure/persistence/database/operations/operations_lease_release_store.go|8064de5ad2689fb1
+        runtime/infrastructure/persistence/database/operations/operations_store.go|aa60dbbb6d4212b5
+        runtime/infrastructure/persistence/database/operations/operations_store.go|aa60dbbb6d4212b5
+        runtime/infrastructure/persistence/database/operations/operations_store.go|aa60dbbb6d4212b5
+        runtime/infrastructure/persistence/database/publicationhandoff/publication_store.go|5a36b4df9408e1f7
+        runtime/infrastructure/persistence/database/publicationhandoff/publication_store.go|7b95cd2bfed73c02
+        runtime/infrastructure/persistence/database/record/record_timer_workspace_repository.go|4b05a52a154a21d2
+        runtime/infrastructure/persistence/database/report/report_export_prepare_receipt_store.go|24525ceea97305f1
+        runtime/infrastructure/persistence/database/report/report_export_prepare_receipt_store.go|2b789134dff6d4dc
+        runtime/infrastructure/persistence/database/report/report_export_prepare_receipt_store.go|3c82c77658de4750
+        runtime/infrastructure/persistence/database/report/report_export_prepare_receipt_store.go|3fb78d5606a79f9b
+        runtime/infrastructure/persistence/database/report/report_export_prepare_receipt_store.go|4a46fdff622ba5eb
+        runtime/infrastructure/persistence/database/report/report_export_prepare_receipt_store.go|4d6a2a9b24627125
+        runtime/infrastructure/persistence/database/report/report_export_prepare_receipt_store.go|fd8d30675ba2e2a7
+        runtime/infrastructure/persistence/database/runtime_store.go|59d98ea5a23691e7
+        runtime/infrastructure/persistence/database/schema/evidence_tables.go|fd24a33727e24390
+        runtime/infrastructure/persistence/database/schema/idempotency_receipt_migration.go|e8c3ac38d432ce4d
+        runtime/infrastructure/persistence/database/transaction/boundary_intent_store.go|b2e5ab60c1900c7a
+        runtime/infrastructure/persistence/database/workspace_authority_migration.go|0b077f6dc4679960
+        runtime/infrastructure/persistence/database/workspace_authority_migration.go|a6eebb2c3352d05c
+        runtime/infrastructure/persistence/database/workspace_authority_migration.go|cdc02830ba5f9cbf
+        runtime/infrastructure/persistence/database/workspace_authority_migration.go|e4b994b4a4d16fd7
+        runtime/infrastructure/persistence/database/workspaceaggregate/store.go|1b8985217bed23e8
+        runtime/infrastructure/persistence/database/workspaceaggregate/store.go|2c2c795ac86bd065
+        runtime/infrastructure/persistence/database/workspaceaggregate/store.go|5714632398805316
+        runtime/infrastructure/persistence/database/workspaceaggregate/store.go|8fc20d6bd3224ab5
+        runtime/infrastructure/persistence/database/workspaceaggregate/store.go|abdaed3fd66a86e2
+        runtime/infrastructure/persistence/database/workspaceprovision/commercial_configuration_store.go|92f88f881e40d9d7
+        runtime/infrastructure/persistence/database/workspaceprovision/external_workspace.go|485ce7b9ddf1d0c2
+        runtime/infrastructure/persistence/database/workspaceprovision/external_workspace.go|85126cf14f7b36c7
+        runtime/infrastructure/persistence/database/workspaceprovision/runtime_installation.go|4ad2342bd50e12cb
+        runtime/infrastructure/persistence/database/workspaceprovision/workspace_administration_store.go|5a564a74778c604c
+        runtime/infrastructure/persistence/database/workspaceprovision/workspace_administration_store.go|e59c076c6b0d497e
+        runtime/infrastructure/persistence/database/workspaceprovision/workspace_administration_store.go|fe86c72a76b88ebd
+        runtime/infrastructure/persistence/database/workspaceprovision/workspace_provision_store.go|0282cbdf14c4c58e
+        runtime/infrastructure/persistence/database/workspaceprovision/workspace_provision_store.go|03345e83281c1da9
+        runtime/infrastructure/persistence/lifecyclemodule/relational_owner_executor.go|24884aa91d6bb1bc
+        runtime/infrastructure/persistence/lifecyclemodule/relational_owner_executor.go|ea3d447910e1697b
+--- FAIL: TestRuntimeWorkspaceFallbackReviewBaseline (0.02s)
+=== RUN   TestKnownPrincipalLiteralsDeclareWorkspaceOrSystemScope
+--- PASS: TestKnownPrincipalLiteralsDeclareWorkspaceOrSystemScope (0.11s)
+=== RUN   TestRuntimeConsumesDomainryModulesByImmutableVersion
+--- PASS: TestRuntimeConsumesDomainryModulesByImmutableVersion (0.00s)
+=== RUN   TestWorkspaceSQLReviewBaseline
+--- PASS: TestWorkspaceSQLReviewBaseline (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/boundary	1.092s
+FAIL

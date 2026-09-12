@@ -1,0 +1,5 @@
+=== RUN   TestMailProductIdentityDraftSourcesAndRestart
+    mail_tools_test.go:173: 9 tool calls with draft v2; retained conversation, draft read/edit/export/download denied after tool, list, read and account revocation; restart and two users; partial/basic scope; vendor HTTP=16 model HTTP=20
+--- PASS: TestMailProductIdentityDraftSourcesAndRestart (9.64s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	10.113s

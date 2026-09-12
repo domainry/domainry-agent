@@ -1,0 +1,15 @@
+=== RUN   TestAccountToolCompositionSelectionAndCollision
+=== RUN   TestAccountToolCompositionSelectionAndCollision/none
+=== RUN   TestAccountToolCompositionSelectionAndCollision/calendar
+=== RUN   TestAccountToolCompositionSelectionAndCollision/mail
+=== RUN   TestAccountToolCompositionSelectionAndCollision/both
+--- PASS: TestAccountToolCompositionSelectionAndCollision (0.02s)
+    --- PASS: TestAccountToolCompositionSelectionAndCollision/none (0.00s)
+    --- PASS: TestAccountToolCompositionSelectionAndCollision/calendar (0.00s)
+    --- PASS: TestAccountToolCompositionSelectionAndCollision/mail (0.00s)
+    --- PASS: TestAccountToolCompositionSelectionAndCollision/both (0.01s)
+=== RUN   TestMailProductIdentityDraftSourcesAndRestart
+    mail_tools_test.go:173: 9 tool calls with draft v2; retained conversation, draft read/edit/export/download denied after tool, list, read and account revocation; restart and two users; partial/basic scope; vendor HTTP=16 model HTTP=20
+--- PASS: TestMailProductIdentityDraftSourcesAndRestart (240.56s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	242.389s

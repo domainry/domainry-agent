@@ -1,0 +1,7 @@
+--- FAIL: TestContractIdentityIsStable (0.00s)
+    connector_test.go:571: connector contract hash drifted: got 87ae98278dc7b16912997fe9d00907579ba0097806c89299abb211bcd6beacb4, update only with an intentional contract version change
+--- FAIL: TestOAuthTestScopesRegistrySnapshot (0.00s)
+    oauth_test.go:73: connector provider probe/scopes requires at least one operation
+FAIL
+FAIL	github.com/domainry/domainry-connector-sdk	0.385s
+FAIL

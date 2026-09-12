@@ -1,0 +1,9 @@
+{
+  "unchanged_sdk_snapshot_files": 24,
+  "production_dependency_count": 220,
+  "forbidden_implementation_dependencies": [],
+  "llm_proxy_head": "a32407a678ea7f96d70b7557765e2a01262184d4",
+  "llm_proxy_worktree_clean": true,
+  "google_new_test_functions": 14,
+  "neutral_text_has_business_dependencies": false
+}

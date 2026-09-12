@@ -37,6 +37,8 @@ if services_path.exists():
         "AGENT_KNOWLEDGE_WORKSPACE_ID", "AGENT_KNOWLEDGE_TOP_K",
         "AGENT_WEB_KNOWLEDGE_PERMISSIONS",
         "AGENT_KNOWLEDGE_RESPONSE_MAPPING",
+        "AGENT_KNOWLEDGE_LIBRARY_BINDINGS", "AGENT_KNOWLEDGE_DATASOURCES",
+        "AGENT_ATTACHMENT_KNOWLEDGE_BINDINGS",
     ):
         if name in services:
             if not isinstance(services[name], str):

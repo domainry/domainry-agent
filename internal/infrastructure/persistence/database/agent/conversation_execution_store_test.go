@@ -71,11 +71,16 @@ func TestConversationExecutionFreezesEachStepAndNeverReplaysCompletedWrites(t *t
 	if _, err = repo.Cancel(ctx, c.ID, run.ID, a); err != nil {
 		t.Fatal(err)
 	}
-	if err = repo.FinishExecutionTool(ctx, claim, 0, "two", success); err == nil {
-		t.Fatal("stale worker completed cancelled call")
+	wrongWorker := claim
+	wrongWorker.Owner = "unrelated-worker"
+	if err = repo.FinishExecutionTool(ctx, wrongWorker, 0, "two", success); err == nil {
+		t.Fatal("unrelated worker completed cancelled call")
 	}
 	if _, err = repo.Resume(ctx, c.ID, run.ID, a); err != nil {
 		t.Fatal(err)
+	}
+	if err = repo.FinishExecutionTool(ctx, claim, 0, "two", success); err == nil {
+		t.Fatal("old receipt bypassed resume fence")
 	}
 	recovered, ok, err := repo.Claim(ctx, a.RuntimeID, "worker-two", time.Minute)
 	if err != nil || !ok || recovered.Fence == claim.Fence {
@@ -92,7 +97,7 @@ func TestConversationExecutionFreezesEachStepAndNeverReplaysCompletedWrites(t *t
 		t.Fatalf("completed write lost %+v %v", old, err)
 	}
 	unknown, replayed, err := repo.BeginExecutionTool(ctx, recovered, 0, "two", auth)
-	if err != nil || !replayed || unknown.State != "started" || unknown.IdempotencyKey != second.IdempotencyKey {
+	if err != nil || !replayed || unknown.State != "uncertain" || unknown.IdempotencyKey != second.IdempotencyKey {
 		t.Fatalf("uncertain call lost %+v %v", unknown, err)
 	}
 	if err = repo.FinishExecutionTool(ctx, recovered, 0, "two", agentsdk.ConversationToolResult{Status: "uncertain", ErrorCode: "upstream_timeout"}); err != nil {
@@ -130,7 +135,7 @@ func TestConversationExecutionFreezesEachStepAndNeverReplaysCompletedWrites(t *t
 	for _, event := range events.Items {
 		counts[event.Type]++
 	}
-	if counts["step.started"] != 2 || counts["step.completed"] != 2 || counts["tool.started"] != 2 || counts["tool.completed"] != 2 || counts["tool.uncertain"] != 1 {
+	if counts["step.started"] != 2 || counts["step.completed"] != 2 || counts["tool.started"] != 3 || counts["tool.completed"] != 2 || counts["tool.uncertain"] != 2 {
 		t.Fatalf("duplicate or missing committed events: %v", counts)
 	}
 }

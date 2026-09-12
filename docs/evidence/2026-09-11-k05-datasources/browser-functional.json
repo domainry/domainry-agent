@@ -1,0 +1,1471 @@
+{
+  "steps": [
+    "unbound catalog, occupied source, visible pagination and live Identity denial",
+    "lost binding response recovered by read after refresh, upload enabled without host restart",
+    "host restart without catalog disables knowledge connection and preserves original download",
+    "mobile shared-library binding, one PUT, persisted exclusive KB ownership and original cleanup"
+  ],
+  "bindings": [
+    {
+      "datasource_key": "second",
+      "expected_revision": 1
+    },
+    {
+      "datasource_key": "third",
+      "expected_revision": 1
+    }
+  ],
+  "baselines": [
+    {
+      "label": "desktop-unbound",
+      "pageOverflow": false,
+      "interactiveInventory": [
+        {
+          "tag": "span",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "新建会话",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 0,
+          "control_locator": {
+            "kind": "index",
+            "value": 0
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "搜索会话名称",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "搜索会话",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 1,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"搜索会话\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "显示归档会话",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 2,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"显示归档会话\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "上一页会话",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 3,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"上一页会话\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下一页会话",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 4,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"下一页会话\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "个人待办事项与截止日期",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 5,
+          "control_locator": {
+            "kind": "index",
+            "value": 5
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "资料库个人资料、共享成员",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 6,
+          "control_locator": {
+            "kind": "index",
+            "value": 6
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "我的成果文档、表格与下载",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 7,
+          "control_locator": {
+            "kind": "index",
+            "value": 7
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "个人记忆偏好与约定",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 8,
+          "control_locator": {
+            "kind": "index",
+            "value": 8
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "退出登录",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 9,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"退出登录\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "附件",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 10,
+          "control_locator": {
+            "kind": "index",
+            "value": 10
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "会话操作",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 11,
+          "control_locator": {
+            "kind": "css",
+            "value": "#radix-_r_8_"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "使用个人记忆",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 12,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"使用个人记忆\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "安排今天的工作理清优先级，找到下一步",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 13,
+          "control_locator": {
+            "kind": "index",
+            "value": 13
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "从文档中找答案检索相关资料，核对信息来源",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 14,
+          "control_locator": {
+            "kind": "index",
+            "value": 14
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "梳理一个项目把目标拆成清晰的行动计划",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 15,
+          "control_locator": {
+            "kind": "index",
+            "value": 15
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "打磨一份内容从初步想法，到成型的表达",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 16,
+          "control_locator": {
+            "kind": "index",
+            "value": 16
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "Upload files",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "file"
+        },
+        {
+          "tag": "textarea",
+          "role": "",
+          "name": "消息",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "发送消息",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 17,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"发送消息\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        },
+        {
+          "tag": "div",
+          "role": "dialog",
+          "name": "资料库个人资料仅自己可见。共享资料库按成员授权，文档继承库权限。资料库可由管理员连接知识源，连接后可在对话中检索。文档默认继承所在资料库权限，上传入库完成后可跨会话查询。打开个人资料新共享资料库名称创建共享资料库我的资料库刷新资料库个人资料个人 · 管理共享资料共享 · 管理待连接共享资料共享 · 管理个人资料仅自己可",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "打开个人资料",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 18,
+          "control_locator": {
+            "kind": "index",
+            "value": 18
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "创建共享资料库",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 19,
+          "control_locator": {
+            "kind": "index",
+            "value": 19
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "刷新资料库",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 20,
+          "control_locator": {
+            "kind": "index",
+            "value": 20
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "个人资料个人 · 管理",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 21,
+          "control_locator": {
+            "kind": "index",
+            "value": 21
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "共享资料共享 · 管理",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 22,
+          "control_locator": {
+            "kind": "index",
+            "value": 22
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "待连接共享资料共享 · 管理",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 23,
+          "control_locator": {
+            "kind": "index",
+            "value": 23
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "刷新知识源",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 24,
+          "control_locator": {
+            "kind": "index",
+            "value": 24
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "知识源 first暂不可连接",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 25,
+          "control_locator": {
+            "kind": "index",
+            "value": 25
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "知识源 second可连接",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 26,
+          "control_locator": {
+            "kind": "index",
+            "value": 26
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "知识源 third可连接",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 27,
+          "control_locator": {
+            "kind": "index",
+            "value": 27
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "上一页知识源",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": true,
+          "control_index": 28,
+          "control_locator": {
+            "kind": "index",
+            "value": 28
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下一页知识源",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": true,
+          "control_index": 29,
+          "control_locator": {
+            "kind": "index",
+            "value": 29
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "连接知识源",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 30,
+          "control_locator": {
+            "kind": "index",
+            "value": 30
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "刷新文档",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 31,
+          "control_locator": {
+            "kind": "index",
+            "value": 31
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "保存设置",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 32,
+          "control_locator": {
+            "kind": "index",
+            "value": 32
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "归档资料库",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 33,
+          "control_locator": {
+            "kind": "index",
+            "value": 33
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "关闭",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 34,
+          "control_locator": {
+            "kind": "index",
+            "value": 34
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "span",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        }
+      ],
+      "qualityFailures": [
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "div:请先新建会话",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:个人 · 管理",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:共享 · 管理",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:共享 · 管理",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:暂不可连接",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:可连接",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:可连接",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        }
+      ]
+    },
+    {
+      "label": "mobile-shared-connect",
+      "pageOverflow": false,
+      "interactiveInventory": [
+        {
+          "tag": "span",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "打开工作导航",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 0,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"打开工作导航\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "附件",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 1,
+          "control_locator": {
+            "kind": "index",
+            "value": 1
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "会话操作",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 2,
+          "control_locator": {
+            "kind": "css",
+            "value": "#radix-_r_0_"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "使用个人记忆",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 3,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"使用个人记忆\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "安排今天的工作理清优先级，找到下一步",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 4,
+          "control_locator": {
+            "kind": "index",
+            "value": 4
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "从文档中找答案检索相关资料，核对信息来源",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 5,
+          "control_locator": {
+            "kind": "index",
+            "value": 5
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "梳理一个项目把目标拆成清晰的行动计划",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 6,
+          "control_locator": {
+            "kind": "index",
+            "value": 6
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "打磨一份内容从初步想法，到成型的表达",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 7,
+          "control_locator": {
+            "kind": "index",
+            "value": 7
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "Upload files",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "file"
+        },
+        {
+          "tag": "textarea",
+          "role": "",
+          "name": "消息",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "发送消息",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 8,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"发送消息\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        },
+        {
+          "tag": "div",
+          "role": "dialog",
+          "name": "资料库个人资料仅自己可见。共享资料库按成员授权，文档继承库权限。资料库可由管理员连接知识源，连接后可在对话中检索。文档默认继承所在资料库权限，上传入库完成后可跨会话查询。打开个人资料新共享资料库名称创建共享资料库我的资料库刷新资料库个人资料个人 · 管理共享资料共享 · 管理待连接共享资料共享 · 管理待连接共享资料我",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "打开个人资料",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 9,
+          "control_locator": {
+            "kind": "index",
+            "value": 9
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "创建共享资料库",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 10,
+          "control_locator": {
+            "kind": "index",
+            "value": 10
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "刷新资料库",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 11,
+          "control_locator": {
+            "kind": "index",
+            "value": 11
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "个人资料个人 · 管理",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 12,
+          "control_locator": {
+            "kind": "index",
+            "value": 12
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "共享资料共享 · 管理",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 13,
+          "control_locator": {
+            "kind": "index",
+            "value": 13
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "待连接共享资料共享 · 管理",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 14,
+          "control_locator": {
+            "kind": "index",
+            "value": 14
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "刷新知识源",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 15,
+          "control_locator": {
+            "kind": "index",
+            "value": 15
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "知识源 first暂不可连接",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 16,
+          "control_locator": {
+            "kind": "index",
+            "value": 16
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "知识源 second暂不可连接",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 17,
+          "control_locator": {
+            "kind": "index",
+            "value": 17
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "知识源 third可连接",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 18,
+          "control_locator": {
+            "kind": "index",
+            "value": 18
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "上一页知识源",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": true,
+          "control_index": 19,
+          "control_locator": {
+            "kind": "index",
+            "value": 19
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下一页知识源",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": true,
+          "control_index": 20,
+          "control_locator": {
+            "kind": "index",
+            "value": 20
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "连接知识源",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 21,
+          "control_locator": {
+            "kind": "index",
+            "value": 21
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "刷新文档",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 22,
+          "control_locator": {
+            "kind": "index",
+            "value": 22
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "保存设置",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 23,
+          "control_locator": {
+            "kind": "index",
+            "value": 23
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "归档资料库",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 24,
+          "control_locator": {
+            "kind": "index",
+            "value": 24
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "调整角色",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 25,
+          "control_locator": {
+            "kind": "index",
+            "value": 25
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "移除成员",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 26,
+          "control_locator": {
+            "kind": "index",
+            "value": 26
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "select",
+          "role": "",
+          "name": "阅读编辑管理",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "保存成员角色",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 27,
+          "control_locator": {
+            "kind": "index",
+            "value": 27
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "关闭",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 28,
+          "control_locator": {
+            "kind": "index",
+            "value": 28
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "span",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        }
+      ],
+      "qualityFailures": [
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "div:请先新建会话",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:个人 · 管理",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:共享 · 管理",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:共享 · 管理",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:暂不可连接",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:暂不可连接",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:可连接",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        }
+      ]
+    }
+  ],
+  "complete": true,
+  "errors": []
+}

@@ -10,6 +10,16 @@ import (
 // Shared transport dispatch; identity is established by the owning transport.
 func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op string, r agentsdk.ConversationRPCRequest) (any, error) {
 	a := r.Authority
+	if op == "libraries_sources" || op == "libraries_bind_source" {
+		sources, ok := s.(agentsdk.KnowledgeDatasourceService)
+		if !ok {
+			return nil, conversationFailure("unavailable", "datasources_unavailable")
+		}
+		if op == "libraries_sources" {
+			return sources.KnowledgeLibrarySources(ctx, r.LibraryID, r.LibraryAfter, r.Limit, a)
+		}
+		return sources.BindKnowledgeLibrarySource(ctx, r.LibraryID, r.LibrarySourceWrite, a)
+	}
 	if op == "documents_transfer" {
 		transfer, ok := s.(agentsdk.KnowledgeDocumentTransferService)
 		if !ok {
@@ -72,6 +82,18 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 		switch op {
 		case "attachments_upload":
 			return attachments.UploadAttachment(ctx, r.ConversationID, r.AttachmentUpload, a)
+		case "attachments_index":
+			indexing, ok := s.(agentsdk.ConversationAttachmentIndexService)
+			if !ok {
+				return nil, conversationFailure("unavailable", "attachment_index_unavailable")
+			}
+			return indexing.IndexAttachment(ctx, r.ConversationID, r.AttachmentID, r.Revision, a)
+		case "attachments_check_index":
+			checking, ok := s.(agentsdk.ConversationAttachmentIndexCheckService)
+			if !ok {
+				return nil, conversationFailure("unavailable", "attachment_index_unavailable")
+			}
+			return checking.CheckAttachmentIndex(ctx, r.ConversationID, r.AttachmentID, r.Revision, a)
 		case "attachments_list":
 			return attachments.Attachments(ctx, r.ConversationID, r.AttachmentAfter, r.Limit, a)
 		case "attachments_get":

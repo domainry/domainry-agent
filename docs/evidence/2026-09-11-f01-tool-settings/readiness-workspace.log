@@ -1,0 +1,6 @@
+--- FAIL: TestConnectionAccountOwnershipCannotChangeAndRevokeCanRecoverLostResponse (0.00s)
+    connection_account_store_test.go:186: lost response retry: {personal-a workspace-a crm probe personal-a personal user-a revoked 0x2bda70a49890 2026-09-11T09:35:05.687046Z 2026-09-11T09:35:05.687715Z} <nil>
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	0.465s
+ok  	github.com/domainry/domainry-integration/internal/architecture	(cached) [no tests to run]
+FAIL

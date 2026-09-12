@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-agent/internal/artifact"
 	"github.com/domainry/domainry-agent/internal/execution"
+	"github.com/domainry/domainry-knowledge/artifact"
 )
 
 func TestArtifactToolSchemasKeepAuthorityAndStorageHostOwned(t *testing.T) {

@@ -1,0 +1,5 @@
+=== RUN   TestToolSettingsCurrentIdentityCatalogConnectionAndRestart
+    tool_settings_test.go:238: PASS Identity/action/current catalog, Agent whitelist, actual calculation, disable/re-enable, CAS/lost response, owner input rejection, restart, permission revocation, OAuth actual grant, missing scope and account revoke
+--- PASS: TestToolSettingsCurrentIdentityCatalogConnectionAndRestart (40.77s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	42.353s

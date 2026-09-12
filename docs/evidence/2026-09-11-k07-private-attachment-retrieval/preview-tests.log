@@ -1,0 +1,11 @@
+✔ preview accepts only managed document identities, never source URLs (1.486666ms)
+✔ download response controls filename, supports Unicode and rejects paths (0.326875ms)
+✔ private citations open only their scoped attachment original (0.164ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 97.370584

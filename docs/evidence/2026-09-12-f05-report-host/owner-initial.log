@@ -1,0 +1,33 @@
+=== RUN   TestConversationReportRPCUsesRealReportOwner
+--- FAIL: TestConversationReportRPCUsesRealReportOwner (0.51s)
+panic: roles[1].permissions[27].permission_key: duplicate permission "report.summary.get"; roles[4].permissions[16].permission_key: duplicate permission "report.summary.get"; roles[5].permissions[17].permission_key: duplicate permission "report.summary.get" [recovered, repanicked]
+
+goroutine 51 [running]:
+testing.tRunner.func1.2({0x108e669c0, 0x33c4dfe751e8})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1974 +0x1a0
+testing.tRunner.func1()
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1977 +0x318
+panic({0x108e669c0?, 0x33c4dfe751e8?})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/panic.go:860 +0x12c
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.mustCompleteRuntimeStartup(...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/startup_errors.go:5
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.newWithExtensionsUsingAllFactoriesAndStore({_, _}, {{0x0, 0x0}, {0x1069098e5, 0x18}, {0x0, 0x0}, {0x0, 0x0}, ...}, ...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/startup.go:222 +0x618c
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.NewWithScheduler({_, _}, {{0x0, 0x0}, {0x1069098e5, 0x18}, {0x0, 0x0}, {0x0, 0x0}, ...}, ...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/startup.go:78 +0x200
+github.com/domainry/domainry-runtime/runtime/bootstrap.NewWithScheduler(...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/bootstrap.go:59
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.(*businessWebFixture).open(0x33c4df5d8c08)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_web_fixture_test.go:142 +0x300
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.newBusinessWebFixtureWithModel(0x33c4df57e008, {0x109247720, 0x1094d48e0}, {0x33c4df5f5e00, 0x2, 0x2?})
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_web_fixture_test.go:130 +0x1734
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.newBusinessWebFixture(...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_web_fixture_test.go:45
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.TestConversationReportRPCUsesRealReportOwner(0x33c4df57e008)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_reports_rpc_test.go:31 +0x64
+testing.tRunner(0x33c4df57e008, 0x10922f590)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2036 +0xc4
+created by testing.(*T).Run in goroutine 1
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2101 +0x3a8
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	1.180s
+FAIL

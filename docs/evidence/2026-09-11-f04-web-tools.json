@@ -1,0 +1,90 @@
+{
+  "todo": "F04",
+  "complete": false,
+  "stage": "public web Tools and current fixed workspace connection source checks",
+  "captured_at": "2026-09-11T15:29:51.434258+00:00",
+  "path_base": "/Users/tiger/Projects",
+  "source_files": [
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-tools.md",
+      "bytes": 2767,
+      "sha256": "9cd69f7f808a33e4d638a1cc83698062ea1fe29c45e0bb025ba4bed0dc58144f"
+    },
+    {
+      "path": "domainry-tools/README.md",
+      "bytes": 4579,
+      "sha256": "ade3ee9a020ae3312c287cdafdd0437e52c15484169b278aebe1c281d4340c1a"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/accounttools/adapter.go",
+      "bytes": 15111,
+      "sha256": "c5d764e414d43221318a5c21f6a77b4d6cadfe3d3b083533e4789cc87768dccf"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/accounttools/availability.go",
+      "bytes": 1951,
+      "sha256": "2fdc5ce5858cd3871786cb3b8c1630cb9bd555649c26d730b72a461ef5c7c7bc"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/webtools/adapter.go",
+      "bytes": 5182,
+      "sha256": "1cb4f52cfefaeb53ab646621c655f4e953f112af14edd660a5a011f130f1f089"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/webtools/definitions.go",
+      "bytes": 2165,
+      "sha256": "70a0e574ca6ae0579e82a6691f610a4e7155bac01a7f38bc4ea4b6ee0c0ca2c5"
+    },
+    {
+      "path": "domainry-tools/internal/architecture/layout_test.go",
+      "bytes": 4855,
+      "sha256": "cd992c642b2580424df9339978e99144337185efc25c661d1d2dfb268dbdeb38"
+    },
+    {
+      "path": "domainry-tools/module/account_read_fixture_test.go",
+      "bytes": 4325,
+      "sha256": "783a33d2f8e3ab5a8cd10af5dc2c838c39d98fcbecdbf2790f203886ee331e19"
+    },
+    {
+      "path": "domainry-tools/module/module.go",
+      "bytes": 2493,
+      "sha256": "b5d729f948e431727eb0692b90a27fa1153dbdda2ec8bb06607f936366ffba8b"
+    },
+    {
+      "path": "domainry-tools/module/web_test.go",
+      "bytes": 12156,
+      "sha256": "9f75b9b8886e76b3ed51be2f71f476139def64d91d3a1474097ecf441b79021c"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-tools/format-check.json",
+      "bytes": 507,
+      "sha256": "bf5b77e64e26387c0ae6eaf98f53e0ad201d84864ab9e7154aca465624c32145"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-tools/tools-final-race.log",
+      "bytes": 1118,
+      "sha256": "904badea357bf1cadac09222c093e56091c294a146b457dedacfb9f058deca28"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-tools/tools-initial-race.log",
+      "bytes": 10409,
+      "sha256": "f18629cf65199e18c598c308dc99fa9af66d34cb748eb9cb0b9793d73b4f91f3"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-tools/tools-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "validation": {
+    "new_test_groups": 6,
+    "coexisting_tools": 11,
+    "tools_race_packages": 5,
+    "vet": true,
+    "real_owner_web_e2e": false,
+    "product_browser_e2e": false,
+    "git_metadata": false
+  }
+}

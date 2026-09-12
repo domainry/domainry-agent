@@ -1,0 +1,23 @@
+{
+  "built_at": "2026-09-11T09:22:26.595547+00:00",
+  "artifacts": [
+    {
+      "product": "domainry-pm",
+      "path": "/Users/tiger/Projects/domainry-pm/bin/domainry-pm",
+      "bytes": 54775298,
+      "sha256": "e1e16d84b085a05ac565f37b49b69b771a48b0964337a52346852e8e0e2a9be6"
+    },
+    {
+      "product": "domainry-work",
+      "path": "/Users/tiger/Projects/domainry-work/bin/domainry-work",
+      "bytes": 54775730,
+      "sha256": "8e2bd88ae7841ad838090055b7d20310359658370556da6fe883d060fb4e3c82"
+    }
+  ],
+  "workspace_dependencies": [
+    "domainry-identity",
+    "domainry-metadata",
+    "domainry-audit"
+  ],
+  "frontend_rebuilt": false
+}

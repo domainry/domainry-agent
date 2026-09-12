@@ -1,0 +1,4 @@
+=== RUN   TestPrivateAttachmentConnectorRetrievalSaaSHistoryAndRestart
+--- PASS: TestPrivateAttachmentConnectorRetrievalSaaSHistoryAndRestart (0.54s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	0.931s

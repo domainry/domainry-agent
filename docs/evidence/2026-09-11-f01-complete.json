@@ -1,0 +1,40 @@
+{
+  "todo": "F01",
+  "complete": true,
+  "scope": "Original individual connection-management requirement; third-batch live-vendor acceptance remains incomplete",
+  "captured_at": "2026-09-11T10:28:58.377894+00:00",
+  "progress": {
+    "complete": 50,
+    "total": 81,
+    "next": "F02"
+  },
+  "real_vendor_oauth_verified": false,
+  "evidence_references_verified": 232,
+  "latest_source_snapshots_verified_before_documentation_update": 36,
+  "source_and_evidence": [
+    {
+      "path": "README.md",
+      "sha256": "14d4371af7f175e4aba419e8a11b03b4f39d3257b514ec4f1910180d82343062"
+    },
+    {
+      "path": "docs/agent-capabilities-todo.md",
+      "sha256": "0b21322b7c7d9c1429dd8de20c26e6c0552262dcf6ff17087840b4d8c0bdc7ba"
+    },
+    {
+      "path": "docs/remaining-capability-boundaries.md",
+      "sha256": "96dd2068608fc7590b208983402a37b1a96b92a7966697666e5362b3f85813bc"
+    },
+    {
+      "path": "docs/testing-2026-09-11-f01-completion.md",
+      "sha256": "c241924b69e51f6ca53a378dd59776940890a5e199eb52a4bfa9edf4eb7f923c"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f01-complete/hash-audit.json",
+      "sha256": "6839b086007d90262db082f6218b6b52fe92d20a37d44e87fd582c5042e0891a"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f01-complete/original-requirements.txt",
+      "sha256": "5e75e50a5e2144a3855da75d4dec531fed9c83e7ec9a875ef9ed58c6b92f477d"
+    }
+  ]
+}

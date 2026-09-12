@@ -1,0 +1,6 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+    conversation_business_web_fixture_test.go:256: business browser run incomplete: {"access_error":"source_access_unavailable","id":"crun_22ed1f7d2adf691ba37f685fbc096b07","conversation_id":"conv_b96a4cbb920375160f38523d2e175abb","client_message_id":"business-query-1789149242504273000","status":"failed","user_seq":1,"attempt":1,"draft_bytes":0,"last_event_seq":31,"error_code":"business_access_denied","created_at":"2026-09-11T17:54:02.506603Z","updated_at":"2026-09-11T17:54:06.193191Z"}
+--- FAIL: TestConversationBusinessProductWithSharedIdentityService (7.49s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	8.295s
+FAIL

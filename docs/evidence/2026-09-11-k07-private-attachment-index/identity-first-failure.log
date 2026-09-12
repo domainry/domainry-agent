@@ -1,0 +1,6 @@
+=== RUN   TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart
+    conversation_attachment_index_test.go:140: POST /agent/conversations/conv_e204baff7118ed533ab49711ea40bee2/attachments/att_8afbdaf5ccf1c7cfeaa87adb7c23cedb/index?expected_revision=2&permission_ids=public: status 200, want 400, body {"id":"att_8afbdaf5ccf1c7cfeaa87adb7c23cedb","conversation_id":"conv_e204baff7118ed533ab49711ea40bee2","filename":"private.txt","content_type":"text/plain","bytes":37,"sha256":"cb088e5b8564c1992f90cf89d4748e613064d2a409e3027eace38be09b2a52fc","visibility":"conversation_private","state":"indexing","index_status":"QUEUED","revision":3,"created_at":"2026-09-11T00:37:20.271Z","updated_at":"2026-09-11T00:37:20.313Z"}
+--- FAIL: TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart (0.57s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	1.556s
+FAIL

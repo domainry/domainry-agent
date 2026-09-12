@@ -1,0 +1,152 @@
+{
+  "schema": "agent.k06.parse-cache.increment.v1",
+  "date": "2026-09-11",
+  "increment_complete": true,
+  "k06_complete": false,
+  "migration": 12,
+  "live": {
+    "complete": true,
+    "seconds": 60.85,
+    "model": "glm-5.3-flash-free",
+    "original_sha256": "1c418895a86623474b9e3b00c3d9a6f1d9cd8f04ed28c8bf3a665dcce6f1c5b2",
+    "parse_cache_ready": true,
+    "parse_cache_deleted": true,
+    "cleanup_verified": true,
+    "absent_from_search": true,
+    "writes": [
+      {
+        "method": "POST",
+        "http_status": 200,
+        "doc_id": "dka_575cb1ef68afee167818aa81a06ad96ea58e29af72c467ec35043a1d98bf530b"
+      },
+      {
+        "method": "DELETE",
+        "http_status": 200,
+        "doc_id": "dka_575cb1ef68afee167818aa81a06ad96ea58e29af72c467ec35043a1d98bf530b"
+      }
+    ],
+    "recovery_directory": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-k9tzv5nd/xlsx"
+  },
+  "browser": {
+    "complete": true,
+    "seconds": 65.89,
+    "owned_document_deleted": true,
+    "baselines": [
+      {
+        "label": "desktop-extraction",
+        "qualityFailures": [],
+        "pageOverflow": false
+      },
+      {
+        "label": "desktop-source",
+        "qualityFailures": [],
+        "pageOverflow": false
+      },
+      {
+        "label": "mobile-extraction",
+        "qualityFailures": [],
+        "pageOverflow": false
+      }
+    ],
+    "external_services": "deterministic model/remote knowledge fixture; real Identity/HTTP/SQLite/private files/XLSX parser"
+  },
+  "verified": [
+    "single persistent queue entry for concurrent requests",
+    "scoped private cache artifacts and reopen",
+    "parser version separation",
+    "renewal preserves ownership fence; expired lease takeover rejects stale publish/renew",
+    "atomic original/parent deletion revokes parse leases",
+    "parse host shutdown and restart recovery in about 3.41s",
+    "completed extraction restart and authorization checks use a single actual parse",
+    "original deletion removes private derived JSON",
+    "final Agent and SDK suites; related race and vet"
+  ],
+  "timing_note": "Browser/live accepted cache reuse and cleanup before the final lease-shortening change. Final full suite/race subsequently covered the short lease, renewal and stopped-host takeover; no duplicate remote upload for that internal timing change.",
+  "not_verified": [
+    "private conversation attachment discovery/read/extract tools",
+    "paged original reads and receipts without repeated full parsed body",
+    "local PDF/DOCX adapters and process isolation"
+  ],
+  "files": [
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/browser/desktop-extraction.png",
+      "bytes": 121658,
+      "sha256": "12644bdb699d7d01768f850e7b8ad203b06538cf79fcf23d545b2326c7d1ba57"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/browser/desktop-source.png",
+      "bytes": 159044,
+      "sha256": "a182f40e0c892d9559e7b716bd9d3773aabc0421d0f13d4e06eaea67190a6a58"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/browser/mobile-extraction.png",
+      "bytes": 66396,
+      "sha256": "2e248573428ec5d5f0dd2b612ef60e877f3e31517aa374cae9c733883fe0d6be"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/browser/report.json",
+      "bytes": 66712,
+      "sha256": "17ba3d3fe2c787eecd0909baff2ae5a5e1895a119cc8aac26c10e64268593eb4"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/browser-host.log",
+      "bytes": 396,
+      "sha256": "2247a67af23cde565511601f52fa985d2149cae414ff11d291281fa7d7e1d203"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/browser.log",
+      "bytes": 463,
+      "sha256": "da625a22b27ef9a633ff7306d156972ee8542d98dba769703ef9893a179875ea"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/core.log",
+      "bytes": 2001,
+      "sha256": "cc0dc78f98212e8f0e202e3b54d10f57285e650491c42395f520b4c00a965baf"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/final-agent-all.log",
+      "bytes": 2962,
+      "sha256": "f23e48b6dbe50ae8eb420c704990c2938fd0aad3545821f906dd6de4bf127339"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/final-race.log",
+      "bytes": 1393,
+      "sha256": "26848eb1c084b500368ab8adeac44affcc3fa789bff36ff1d6525da75b5db799"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/final-sdk-all.log",
+      "bytes": 540,
+      "sha256": "87fe34ccbb293129ec805104f5739893253fa136870534291a8e010f54dbbfa6"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/final-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/renew.log",
+      "bytes": 983,
+      "sha256": "2d8f08dd037a9fda9a2953f8cec20c3b449afd53c39ffe19a46c05d7784a0b12"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/xlsx-live/extraction-results.json",
+      "bytes": 22906,
+      "sha256": "46de6f820c3ef76c033971dbb6f373b579dfcbc313968427d72d33799e84970b"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/xlsx-live/report.json",
+      "bytes": 25558,
+      "sha256": "437acc5832cc8ad6682931d76609731ef4e1da40d306439b870de85018a33c5b"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/xlsx-live/writes.json",
+      "bytes": 539,
+      "sha256": "5675647a7f69ba1db3547b8d931838c9afb25cee1dca30f20b361ac2356a10ff"
+    },
+    {
+      "path": "evidence/2026-09-11-k06-parse-cache/xlsx-live.log",
+      "bytes": 871,
+      "sha256": "4fc57831b842a9212f2b427649577d86121f67e0146cb9b4bf07647b6fe66cfb"
+    }
+  ]
+}

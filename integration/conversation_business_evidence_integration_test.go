@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -73,7 +74,7 @@ func TestBusinessHostProofPersistsAcrossModelFailureAndServiceReconstruction(t *
 		}
 	}}
 	options := application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -90,7 +91,7 @@ func TestBusinessHostProofPersistsAcrossModelFailureAndServiceReconstruction(t *
 		t.Fatal(done)
 	}
 	service.Close()
-	service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -136,7 +137,7 @@ func TestBusinessHostSealingFailureNeverEntersModelAsSource(t *testing.T) {
 				}
 				return (&executionModel{}).answerResult(), nil
 			}}
-			service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})
+			service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})
 			if err != nil {
 				t.Fatal(err)
 			}

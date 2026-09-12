@@ -1,0 +1,14 @@
+=== RUN   TestConversationConfirmationPortUsesDurableExactApproval
+=== RUN   TestConversationConfirmationPortUsesDurableExactApproval/listed_restart_new_call
+=== RUN   TestConversationConfirmationPortUsesDurableExactApproval/single_call
+=== RUN   TestConversationConfirmationPortUsesDurableExactApproval/reject
+=== RUN   TestConversationConfirmationPortUsesDurableExactApproval/cross_user
+--- PASS: TestConversationConfirmationPortUsesDurableExactApproval (4.96s)
+    --- PASS: TestConversationConfirmationPortUsesDurableExactApproval/listed_restart_new_call (2.43s)
+    --- PASS: TestConversationConfirmationPortUsesDurableExactApproval/single_call (2.31s)
+    --- PASS: TestConversationConfirmationPortUsesDurableExactApproval/reject (0.11s)
+    --- PASS: TestConversationConfirmationPortUsesDurableExactApproval/cross_user (0.11s)
+=== RUN   TestConversationConfirmationAssemblyPreservesOriginalOptionalPolicies
+--- PASS: TestConversationConfirmationAssemblyPreservesOriginalOptionalPolicies (0.07s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	6.492s

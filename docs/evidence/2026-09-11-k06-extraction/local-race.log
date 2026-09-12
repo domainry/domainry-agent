@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/documentparser	5.213s
+ok  	github.com/domainry/domainry-agent/internal/application	1.505s
+ok  	github.com/domainry/domainry-agent/integration	5.287s

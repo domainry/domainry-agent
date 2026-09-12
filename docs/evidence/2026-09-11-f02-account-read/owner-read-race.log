@@ -1,0 +1,50 @@
+=== RUN   TestAccountReadsUseOwnedCredentialsAndSensitiveActorBoundEvidence
+--- PASS: TestAccountReadsUseOwnedCredentialsAndSensitiveActorBoundEvidence (0.15s)
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/foreign-personal
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/wrong-workspace
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/no-access
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/scope-exceeds-principal
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/wrong-principal
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/wrong-contract
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/unknown-operation
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/write
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/async
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/missing-declaration
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/invalid-declaration
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/missing-grant
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/busy-only
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/revoked
+=== RUN   TestAccountReadAuthorityRejectsBeforeAnyProviderIO/credential-revoked
+--- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO (1.27s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/foreign-personal (0.08s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/wrong-workspace (0.08s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/no-access (0.08s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/scope-exceeds-principal (0.08s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/wrong-principal (0.08s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/wrong-contract (0.09s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/unknown-operation (0.09s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/write (0.09s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/async (0.09s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/missing-declaration (0.09s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/invalid-declaration (0.09s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/missing-grant (0.09s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/busy-only (0.09s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/revoked (0.09s)
+    --- PASS: TestAccountReadAuthorityRejectsBeforeAnyProviderIO/credential-revoked (0.09s)
+=== RUN   TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn
+=== RUN   TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn/before-revision
+=== RUN   TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn/before-effect
+=== RUN   TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn/before-contract
+=== RUN   TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn/after-grant
+=== RUN   TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn/after-revoke
+=== RUN   TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn/after-ownership
+--- PASS: TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn (0.56s)
+    --- PASS: TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn/before-revision (0.09s)
+    --- PASS: TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn/before-effect (0.09s)
+    --- PASS: TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn/before-contract (0.09s)
+    --- PASS: TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn/after-grant (0.10s)
+    --- PASS: TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn/after-revoke (0.11s)
+    --- PASS: TestAccountReadsRejectChangedTargetBeforeExecutionAndRevokeBeforeReturn/after-ownership (0.09s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	3.391s

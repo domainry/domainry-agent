@@ -1,0 +1,254 @@
+{
+  "started_at": "2026-09-10T18:17:20.723599Z",
+  "scope": "private_permission_matrix",
+  "spec": {
+    "public_document": "domainry-agent-acceptance-20260910-7023e1eca588",
+    "public_marker": "QINGHE-D081D8B0246D",
+    "private_document": "domainry-agent-acceptance-20260910-8bd5e52f6e76",
+    "private_marker": "QINGHE-AF746473567B",
+    "allowed_permission": "scope:domainry-k01:4d993f42c2864a4fa9513158c74c5106:library:read"
+  },
+  "observations": [
+    {
+      "case": "allowed",
+      "operation": "search",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 6094
+    },
+    {
+      "case": "allowed",
+      "operation": "fetch",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 2744
+    },
+    {
+      "case": "allowed",
+      "operation": "search",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 6093
+    },
+    {
+      "case": "allowed",
+      "operation": "fetch",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 2744
+    },
+    {
+      "case": "omitted",
+      "operation": "search",
+      "permission_form": "omitted",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 3476
+    },
+    {
+      "case": "omitted",
+      "operation": "fetch",
+      "permission_form": "omitted",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 2744
+    },
+    {
+      "case": "omitted",
+      "operation": "search",
+      "permission_form": "omitted",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 3475
+    },
+    {
+      "case": "omitted",
+      "operation": "fetch",
+      "permission_form": "omitted",
+      "http_status": 200,
+      "err_code": 1004,
+      "response_bytes": 48
+    },
+    {
+      "case": "explicit_empty",
+      "operation": "search",
+      "permission_form": "empty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 3476
+    },
+    {
+      "case": "explicit_empty",
+      "operation": "fetch",
+      "permission_form": "empty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 2744
+    },
+    {
+      "case": "explicit_empty",
+      "operation": "search",
+      "permission_form": "empty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 3475
+    },
+    {
+      "case": "explicit_empty",
+      "operation": "fetch",
+      "permission_form": "empty",
+      "http_status": 200,
+      "err_code": 1004,
+      "response_bytes": 48
+    },
+    {
+      "case": "unrelated",
+      "operation": "search",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 3476
+    },
+    {
+      "case": "unrelated",
+      "operation": "fetch",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 2744
+    },
+    {
+      "case": "unrelated",
+      "operation": "search",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 3475
+    },
+    {
+      "case": "unrelated",
+      "operation": "fetch",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 1004,
+      "response_bytes": 48
+    },
+    {
+      "case": "mixed_exact_match",
+      "operation": "search",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 6094
+    },
+    {
+      "case": "mixed_exact_match",
+      "operation": "fetch",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 2744
+    },
+    {
+      "case": "mixed_exact_match",
+      "operation": "search",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 6093
+    },
+    {
+      "case": "mixed_exact_match",
+      "operation": "fetch",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 2744
+    },
+    {
+      "case": "similar_but_not_exact",
+      "operation": "search",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 3476
+    },
+    {
+      "case": "similar_but_not_exact",
+      "operation": "fetch",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 2744
+    },
+    {
+      "case": "similar_but_not_exact",
+      "operation": "search",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 3475
+    },
+    {
+      "case": "similar_but_not_exact",
+      "operation": "fetch",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 1004,
+      "response_bytes": 48
+    },
+    {
+      "case": "saved_evidence",
+      "operation": "fetch",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 0,
+      "response_bytes": 2744
+    },
+    {
+      "case": "saved_evidence_after_permission_change",
+      "operation": "fetch",
+      "permission_form": "nonempty",
+      "http_status": 200,
+      "err_code": 1004,
+      "response_bytes": 48
+    }
+  ],
+  "passed": [
+    "allowed",
+    "omitted",
+    "explicit_empty",
+    "unrelated",
+    "mixed_exact_match",
+    "similar_but_not_exact",
+    "saved_evidence_rejected_after_permission_change"
+  ],
+  "complete": true,
+  "source_commit": "dbf61406e55b8a446f026cde941ce7f9a9f33bda",
+  "cleanup": [
+    {
+      "doc_id": "domainry-agent-acceptance-20260910-8bd5e52f6e76",
+      "visibility": "private",
+      "delete_acknowledged": true,
+      "cleanup_verified": true,
+      "search_http_status": 200,
+      "search_err_code": 0,
+      "hits_count": 1,
+      "deleted_document_found": false
+    },
+    {
+      "doc_id": "domainry-agent-acceptance-20260910-7023e1eca588",
+      "visibility": "public",
+      "delete_acknowledged": true,
+      "cleanup_verified": true,
+      "search_http_status": 200,
+      "search_err_code": 0,
+      "hits_count": 1,
+      "deleted_document_found": false
+    }
+  ]
+}

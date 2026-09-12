@@ -65,6 +65,14 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		principal := identity.Principal
 		in := agentsdk.ConversationRPCRequest{Authority: agentsdk.ConversationAuthority{Known: principal.Known, RuntimeID: s.runtimeID, WorkspaceID: principal.WorkspaceID, UserID: principal.UserID, RoleKey: principal.RoleKey}, ConversationID: r.PathValue("conversationID"), RunID: r.PathValue("runID"), MemoryID: r.PathValue("memoryID")}
 		q := r.URL.Query()
+		if op == "libraries_sources" || op == "libraries_bind_source" {
+			for key, values := range q {
+				if op != "libraries_sources" || (key != "after" && key != "limit") || len(values) != 1 {
+					writeCode(w, 400, "agent.conversation.datasource_query_invalid")
+					return
+				}
+			}
+		}
 		in.TodoID = r.PathValue("todoID")
 		in.ArtifactID = r.PathValue("artifactID")
 		in.ArtifactExportID = r.PathValue("exportID")
@@ -88,6 +96,19 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			return n
 		}
 		in.Revision = number("expected_revision")
+		if op == "attachments_index" || op == "attachments_check_index" {
+			if len(q) != 1 || len(q["expected_revision"]) != 1 || in.Revision < 1 {
+				writeCode(w, 400, "agent.conversation.attachment_index_request_invalid")
+				return
+			}
+			if r.Body != nil {
+				data, err := io.ReadAll(io.LimitReader(r.Body, 1))
+				if err != nil || len(data) != 0 {
+					writeCode(w, 400, "agent.conversation.attachment_index_request_invalid")
+					return
+				}
+			}
+		}
 		in.AfterSeq = number("after_seq")
 		in.Limit = int(number("limit"))
 		in.ArtifactVersion = number("version")
@@ -148,6 +169,8 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			}
 		}
 		switch op {
+		case "libraries_bind_source":
+			body = &in.LibrarySourceWrite
 		case "documents_transfer":
 			body = &in.DocumentTransfer
 		case "documents_import_attachment":
@@ -237,6 +260,7 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/octet-stream")
 			w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": download.Attachment.Filename}))
+			w.Header().Set("X-Agent-File-SHA256", download.Attachment.SHA256)
 			w.Header().Set("Content-Length", strconv.Itoa(len(download.Data)))
 			w.Header().Set("X-Content-Type-Options", "nosniff")
 			w.Header().Set("Cache-Control", "private, no-store")
@@ -252,6 +276,7 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/octet-stream")
 			w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": download.Document.Filename}))
+			w.Header().Set("X-Agent-File-SHA256", download.Document.SHA256)
 			w.Header().Set("Content-Length", strconv.Itoa(len(download.Data)))
 			w.Header().Set("X-Content-Type-Options", "nosniff")
 			w.Header().Set("Cache-Control", "private, no-store")

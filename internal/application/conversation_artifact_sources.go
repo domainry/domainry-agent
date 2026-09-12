@@ -30,7 +30,7 @@ func (h *PersonalConversationHost) AuthorizeConversationToolResult(ctx context.C
 	if h.artifacts == nil {
 		return conversationFailure("unavailable", "artifacts_unavailable")
 	}
-	_, err := h.artifacts.sourceAudit(in.Authority).artifactToolRecord(ctx, agentsdk.ConversationRunReference{ConversationID: in.ConversationID, RunID: in.RunID}, persistence.ConversationToolExecution{Step: in.Step, Call: in.Call, Definition: in.Definition, Result: &result})
+	_, err := h.artifacts.sourceAudit(in.Authority, in.ConversationID).artifactToolRecord(ctx, agentsdk.ConversationRunReference{ConversationID: in.ConversationID, RunID: in.RunID}, persistence.ConversationToolExecution{Step: in.Step, Call: in.Call, Definition: in.Definition, Result: &result})
 	return err
 }
 

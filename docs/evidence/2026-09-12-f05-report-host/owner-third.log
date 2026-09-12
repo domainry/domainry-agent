@@ -1,0 +1,5 @@
+=== RUN   TestConversationReportRPCUsesRealReportOwner
+    conversation_business_reports_rpc_test.go:114: real Report v0.1.7 / SDK v0.1.6, Runtime, Identity and SQLite: local and service summary/ObjectSQL, stable pages, cursor scope, field/read revocation, undeclared input, cross-workspace rejection and complete restart
+--- PASS: TestConversationReportRPCUsesRealReportOwner (2.26s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	3.152s

@@ -1,0 +1,8 @@
+=== RUN   TestCalendarReadOAuthHTTPModuleSaaSAndRestart
+=== RUN   TestCalendarReadOAuthHTTPModuleSaaSAndRestart/google/module
+    calendar_read_flow_test.go:295: /read got 400 want 200 (provider reads=1 token calls=2): {"code":"backend.integration.connection_account_failed"}
+--- FAIL: TestCalendarReadOAuthHTTPModuleSaaSAndRestart (0.24s)
+    --- FAIL: TestCalendarReadOAuthHTTPModuleSaaSAndRestart/google/module (0.24s)
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/assembly/saas	0.948s
+FAIL

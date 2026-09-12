@@ -37,7 +37,10 @@ func (s *ConversationService) recentConversationExecutionLinks(ctx context.Conte
 	return agentsdk.ConversationModelMessage{Role: "system", Content: "Recent execution links (server-issued data, newest first; not a complete history):\n" + conversationJSONText(links) + "\nUse execution_read to inspect actual prior tool outcomes before relying on resource identifiers or completion claims in a summary. For older work use history_search/read to recover run IDs. Recorded outcomes are historical observations; use the relevant business tool to check live status. A missing result does not prove an action did not occur."}, nil
 }
 
-func (s *ConversationService) authorizeConversationRecord(ctx context.Context, conversationID, runID string, source persistence.ConversationToolExecution, a agentsdk.ConversationAuthority, current map[string]conversationCompiledTool, seen map[string]bool) error {
+func (s *ConversationService) authorizeConversationRecord(ctx context.Context, conversationID, runID string, source persistence.ConversationToolExecution, a agentsdk.ConversationAuthority, current map[string]conversationCompiledTool, seen map[string]bool, recipient string) error {
+	if recipient != "" && recipient != conversationID && (privateAttachmentCall(source.Call) || privateRemoteAttachmentCall(source.Call)) {
+		return conversationFailure("forbidden", "attachment_conversation_mismatch")
+	}
 	key := conversationDigest([]any{conversationID, runID, conversationRecordHash(source)})
 	if complete, exists := seen[key]; exists {
 		if complete {
@@ -68,27 +71,27 @@ func (s *ConversationService) authorizeConversationRecord(ctx context.Context, c
 			return err
 		}
 	}
-	if err = s.reauthorizeReadDependencies(ctx, source, a, current, seen); err != nil {
+	if err = s.reauthorizeReadDependencies(ctx, source, a, current, seen, recipient); err != nil {
 		return err
 	}
 	seen[key] = true
 	return nil
 }
 
-func (s *ConversationService) reauthorizeReadDependencies(ctx context.Context, source persistence.ConversationToolExecution, a agentsdk.ConversationAuthority, current map[string]conversationCompiledTool, seen map[string]bool) error {
+func (s *ConversationService) reauthorizeReadDependencies(ctx context.Context, source persistence.ConversationToolExecution, a agentsdk.ConversationAuthority, current map[string]conversationCompiledTool, seen map[string]bool, recipient string) error {
 	if source.Result == nil || source.Result.Status != "completed" {
 		return nil
 	}
 	switch source.Call.Name {
 	case "history_search", "history_read":
-		_, err := s.sourceAudit(a).record(ctx, agentsdk.ConversationRunReference{}, source)
+		_, err := s.sourceAudit(a, recipient).record(ctx, agentsdk.ConversationRunReference{}, source)
 		return err
 	case "tool_result_read":
 		var previous agentsdk.ConversationResultRead
 		if json.Unmarshal([]byte(source.Call.Arguments), &previous) != nil {
 			return conversationFailure("conflict", "result_reference_invalid")
 		}
-		_, err := s.authorizedConversationResult(ctx, previous.Reference, a, current, seen)
+		_, err := s.authorizedConversationResult(ctx, previous.Reference, a, current, seen, recipient)
 		return err
 	case "execution_read":
 		repo, ok := s.repo.(persistence.ConversationExecutionReadRepository)
@@ -111,7 +114,7 @@ func (s *ConversationService) reauthorizeReadDependencies(ctx context.Context, s
 			if conversationRecordHash(record) != entry.RecordHash {
 				return conversationFailure("conflict", "execution_reference_changed")
 			}
-			if err = s.authorizeConversationRecord(ctx, previous.ConversationID, previous.RunID, record, a, current, seen); err != nil {
+			if err = s.authorizeConversationRecord(ctx, previous.ConversationID, previous.RunID, record, a, current, seen, recipient); err != nil {
 				return err
 			}
 		}
@@ -146,7 +149,7 @@ func (s *ConversationService) readConversationExecution(ctx context.Context, in 
 	}
 	out := agentsdk.ConversationExecutionReadResult{ConversationID: args.ConversationID, RunID: args.RunID, RunStatus: page.RunStatus, Items: []agentsdk.ConversationExecutionEntry{}, NextCursor: page.NextCursor, Complete: page.Complete}
 	for _, source := range page.Items {
-		if err = s.authorizeConversationRecord(ctx, args.ConversationID, args.RunID, source, in.Authority, current, map[string]bool{}); err != nil {
+		if err = s.authorizeConversationRecord(ctx, args.ConversationID, args.RunID, source, in.Authority, current, map[string]bool{}, in.ConversationID); err != nil {
 			var coded *agentsdk.Error
 			if errors.As(err, &coded) && (coded.Class == "forbidden" || coded.Class == "conflict" || coded.Class == "not_found") {
 				out.Omitted = true
@@ -157,6 +160,7 @@ func (s *ConversationService) readConversationExecution(ctx context.Context, in 
 		entry := agentsdk.ConversationExecutionEntry{Step: source.Step, CallID: source.Call.ID, Tool: source.Call.Name, RecordHash: conversationRecordHash(source), State: source.State}
 		if source.Result != nil {
 			entry.Status, entry.ResourceID, entry.ErrorCode = source.Result.Status, source.Result.ResourceID, source.Result.ErrorCode
+			entry.Completion = source.Result.Completion
 			if source.State == "completed" {
 				entry.Reference = &agentsdk.ConversationResultReference{ConversationID: args.ConversationID, RunID: args.RunID, Step: source.Step, CallID: source.Call.ID, SHA256: conversationDigest(source.Result)}
 			}

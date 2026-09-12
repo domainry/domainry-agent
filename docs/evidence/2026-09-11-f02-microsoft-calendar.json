@@ -1,0 +1,125 @@
+{
+  "todo": "F02",
+  "complete": false,
+  "increment": "Microsoft Calendar read provider and Graph protocol verification",
+  "captured_at": "2026-09-11T11:14:34.771404+00:00",
+  "completed_todos": 50,
+  "total_todos": 81,
+  "next_within_todo": "Integration current-account read authorization; Tools/product integration; calendar E2E",
+  "real_vendor_calendar_verified": false,
+  "browser_e2e_verified": false,
+  "source_files": [
+    {
+      "path": "docs/agent-capabilities-todo.md",
+      "bytes": 98350,
+      "sha256": "07f58aef7252fe960d7d5ae7a9cfd281e5c0235b825c877fb79cbfc09d0a3087"
+    },
+    {
+      "path": "docs/calendar-read-boundaries.md",
+      "bytes": 3325,
+      "sha256": "4562e1f43d6e50b060d772d7d0a53ac56fac16ab5f0ddeb44309539a135ba960"
+    },
+    {
+      "path": "docs/testing-2026-09-11-f02-microsoft-calendar.md",
+      "bytes": 4306,
+      "sha256": "f0cd6537d5afb0ba9224245a6b18c733c766f6ab0d513053252fb01850f8061d"
+    },
+    {
+      "path": "../domainry-connectors/catalog/catalog.json",
+      "bytes": 185950,
+      "sha256": "e0b1826e2412f5f9e8bad19b6030db760b4ee4f76ce4f6dbfd68f758056b28e6"
+    },
+    {
+      "path": "../domainry-connectors/providers/microsoft_365/microsoft/provider.go",
+      "bytes": 12921,
+      "sha256": "b1b5ff7c34dc43d8881413d08abcf381d4a2cdc835604de52c9bfd6c185bdedf"
+    },
+    {
+      "path": "../domainry-connectors/providers/microsoft_365/microsoft/calendar.go",
+      "bytes": 7807,
+      "sha256": "cb2830770cd75fa3a55f3e338093c476ee9b94ea6c4a6542e521527c055eee63"
+    },
+    {
+      "path": "../domainry-connectors/providers/microsoft_365/microsoft/calendar_event.go",
+      "bytes": 6386,
+      "sha256": "9b7f6eb98408e18bfda4c634bbf75b7a1a2e039eab37aa051db929c9a6e2129f"
+    },
+    {
+      "path": "../domainry-connectors/providers/microsoft_365/microsoft/calendar_transport.go",
+      "bytes": 5768,
+      "sha256": "5d0e827aea6bef68968e27b3d16665d09d609eba89162d112c560e8581ddcb81"
+    },
+    {
+      "path": "../domainry-connectors/providers/microsoft_365/microsoft/calendar_test.go",
+      "bytes": 20619,
+      "sha256": "c8d99170b9ed3f9ff0013e09aaba7623a3332004c23b6027065b7782d00508bb"
+    },
+    {
+      "path": "../domainry-connector-sdk/calendar/calendar.go",
+      "bytes": 3109,
+      "sha256": "02641a4e3110148cb764440c24404c88e9e53535c130a85f069f2300dc01b812"
+    },
+    {
+      "path": "../domainry-connector-sdk/calendar/identity.go",
+      "bytes": 1449,
+      "sha256": "99e1f6e03e84c2791632793dbb27b74926bd82b0e2fb4d964c644001f519a4ad"
+    },
+    {
+      "path": "../domainry-connector-sdk/calendar/availability.go",
+      "bytes": 2399,
+      "sha256": "273e2526a0b7c1b2afc71d2805a0835b25bb2b8ca07777a9d075bb3965cdda0c"
+    },
+    {
+      "path": "../domainry-connector-sdk/calendar/validation.go",
+      "bytes": 3720,
+      "sha256": "cde31851046041c9b193a158ce19f333b761ebc98eab31e02aafccbaa4d86de3"
+    },
+    {
+      "path": "../domainry-connector-sdk/calendar/local_time.go",
+      "bytes": 1467,
+      "sha256": "ad915458f0febd10bd457f6fd4d9565ad89df23b1389380908a4a6a8f165f740"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/boundary-catalog.log",
+      "bytes": 99,
+      "sha256": "bdf61b94016f235401ab3c043f8ab6787a6c03b089ad555d03e5585fb67776d0"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/catalog-generation.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/connectors-full.log",
+      "bytes": 11060,
+      "sha256": "f479e8654e56d2a80699102fba7459dcaec7fd43f0bc1c973b7438c7e070fe53"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/diff-check.json",
+      "bytes": 216,
+      "sha256": "007b816a532b55a52d5fcd2b4cc34cadca787e9e5d775e30d439612d63825752"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/integration-compatibility.log",
+      "bytes": 2102,
+      "sha256": "b459a9a8791437a0f8973f170c2cce001c749c19c6e84400d7f98819c3120507"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/provider-initial.log",
+      "bytes": 8215,
+      "sha256": "37ccf0a78f8d5fb2d5c32046fbd97fc51d96a607c4884904c115cba5c3243381"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/provider-race.log",
+      "bytes": 8519,
+      "sha256": "49bc183c40275f2ebf5c930554a410e39b182a8e2e9aec83e1e242cad6002955"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/provider-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

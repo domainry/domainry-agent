@@ -1,0 +1,12 @@
+PASS unbound personal library explains unavailable upload
+PASS library visibility is explicit and focus preserves selected file
+PASS lost response, refresh, wrong-file rejection and same-receipt retry without duplication
+PASS index completion and downloaded original byte verification
+PASS Identity download revocation, restoration and full host restart with existing browser login
+PASS uploaded document reaches model tool loop and a verified local document citation
+PASS archive pauses upload/download and restoration updates document controls
+PASS mobile confirmation/cancel/delete, durable cleanup and historical citation revocation
+PASS private attachment upload recovers after lost response and refresh, rejects changed bytes, and preview/download match the original
+PASS attachment import checks both permissions and recovers a lost response after refresh without resending file bytes
+PASS independent shared copy survives source deletion and host restart with identical original bytes
+PASS imported file can be queried across conversations without exposing private source identifiers, then is independently deleted

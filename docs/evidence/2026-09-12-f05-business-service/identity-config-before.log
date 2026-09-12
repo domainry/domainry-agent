@@ -1,0 +1,26 @@
+--- FAIL: TestLoadPermissionOwnerListsThroughConfigContract (0.00s)
+panic: reflect.Set: value of type map[string]string is not assignable to type map[string][]string [recovered, repanicked]
+
+goroutine 36 [running]:
+testing.tRunner.func1.2({0x100bcac40, 0x3717adc206c0})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1974 +0x1a0
+testing.tRunner.func1()
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1977 +0x318
+panic({0x100bcac40?, 0x3717adc206c0?})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/panic.go:860 +0x12c
+reflect.Value.assignTo({0x100bda880?, 0x3717adc1f7a0?, 0x2?}, {0x100a56585, 0xb}, 0x100bda900, 0x0)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/reflect/value.go:3215 +0x200
+reflect.Value.Set({0x100bda900?, 0x3717adc24de0?, 0x1?}, {0x100bda880?, 0x3717adc1f7a0?, 0xf?})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/reflect/value.go:2158 +0xcc
+github.com/domainry/domainry-identity/internal/platform/config.setConfigField(0x100bdaa80?, {{0x100bc06c9, 0x23}, {0x3717adc64150, 0x26}, {0x3717adc0efb8, 0x8}, {0x100a54dcf, 0x7}, 0x0, ...}, ...)
+	/Users/tiger/Projects/domainry-identity/internal/platform/config/contract.go:297 +0x2e8
+github.com/domainry/domainry-identity/internal/platform/config.LoadContract({_, _, _})
+	/Users/tiger/Projects/domainry-identity/internal/platform/config/contract.go:104 +0x4d8
+github.com/domainry/domainry-identity/internal/platform/config.TestLoadPermissionOwnerListsThroughConfigContract(0x3717adc7e248)
+	/Users/tiger/Projects/domainry-identity/internal/platform/config/contract_test.go:34 +0x150
+testing.tRunner(0x3717adc7e248, 0x100c0b678)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2036 +0xc4
+created by testing.(*T).Run in goroutine 1
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2101 +0x3a8
+FAIL	github.com/domainry/domainry-identity/internal/platform/config	0.631s
+FAIL

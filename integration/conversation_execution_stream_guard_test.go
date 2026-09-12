@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"context"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"strings"
 	"testing"
 
@@ -37,7 +38,7 @@ func TestConversationExecutionRejectsFaultyStreamingModelsBeforeToolEffects(t *t
 			repo := conversationRepository(t)
 			host := &executionHost{allowed: true}
 			model := &faultyExecutionModel{failure: failure}
-			service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
+			service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
 			if err != nil {
 				t.Fatal(err)
 			}

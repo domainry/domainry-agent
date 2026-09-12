@@ -1,0 +1,6 @@
+=== RUN   TestMailDraftDoesNotAdoptReplacementAccount
+    mail_draft_source_test.go:19: navigation landing page is unavailable or too large
+--- FAIL: TestMailDraftDoesNotAdoptReplacementAccount (0.73s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	1.593s
+FAIL

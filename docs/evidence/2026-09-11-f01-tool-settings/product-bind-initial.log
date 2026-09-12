@@ -1,0 +1,4 @@
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	6.224s
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	2.329s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/architecture	1.051s

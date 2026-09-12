@@ -1,0 +1,57 @@
+{
+  "steps": [
+    "unbound personal library explains unavailable upload",
+    "library visibility is explicit and focus preserves selected file",
+    "lost response, refresh, wrong-file rejection and same-receipt retry without duplication",
+    "index completion and downloaded original byte verification",
+    "Identity download revocation, restoration and full host restart with existing browser login",
+    "uploaded document reaches model tool loop and a verified local document citation",
+    "archive pauses upload/download and restoration updates document controls",
+    "mobile confirmation/cancel/delete, durable cleanup and historical citation revocation",
+    "private attachment upload recovers after lost response and refresh, rejects changed bytes, and preview/download match the original",
+    "attachment import checks both permissions and recovers a lost response after refresh without resending file bytes",
+    "independent shared copy survives source deletion and host restart with identical original bytes",
+    "imported file can be queried across conversations without exposing private source identifiers, then is independently deleted"
+  ],
+  "downloads": [
+    {
+      "path": "/tmp/domainry-attachment-import-browser-3/download-before-restart.txt",
+      "sha256": "4b5fa5281b048daf2433c79850949e01303f97cba1fe4bc0de1f6cdcaf17b49d"
+    },
+    {
+      "path": "/tmp/domainry-attachment-import-browser-3/download-after-restart.txt",
+      "sha256": "4b5fa5281b048daf2433c79850949e01303f97cba1fe4bc0de1f6cdcaf17b49d"
+    },
+    {
+      "path": "/tmp/domainry-attachment-import-browser-3/download-private-attachment.txt",
+      "sha256": "4b5fa5281b048daf2433c79850949e01303f97cba1fe4bc0de1f6cdcaf17b49d"
+    },
+    {
+      "path": "/tmp/domainry-attachment-import-browser-3/download-import-after-source-deletion-and-restart.txt",
+      "sha256": "4b5fa5281b048daf2433c79850949e01303f97cba1fe4bc0de1f6cdcaf17b49d"
+    }
+  ],
+  "uploadAttempts": [
+    "a31c7e09-0f85-43a3-a88c-2b0c91854c22",
+    "a31c7e09-0f85-43a3-a88c-2b0c91854c22"
+  ],
+  "attachmentAttempts": [
+    "42c73a81-e709-4ccb-99bc-eaa97c023295",
+    "42c73a81-e709-4ccb-99bc-eaa97c023295"
+  ],
+  "copyAttempts": [
+    {
+      "client_id": "fb77993b-b61f-484b-8cab-be8482dc5e21",
+      "conversation_id": "conv_6767faa28869aa0448bd6449a7df7e76",
+      "attachment_id": "att_91a9d8dd3979a330006bc39628f6fdf1",
+      "expected_revision": 2
+    },
+    {
+      "client_id": "fb77993b-b61f-484b-8cab-be8482dc5e21",
+      "conversation_id": "conv_6767faa28869aa0448bd6449a7df7e76",
+      "attachment_id": "att_91a9d8dd3979a330006bc39628f6fdf1",
+      "expected_revision": 2
+    }
+  ],
+  "passed": true
+}

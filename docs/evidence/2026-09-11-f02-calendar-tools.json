@@ -1,0 +1,102 @@
+{
+  "todo": "F02",
+  "complete": false,
+  "increment": "Public calendar Tools adapter and current account/result authorization",
+  "captured_at": "2026-09-11T12:29:41.731691+00:00",
+  "completed_todos": 50,
+  "total_todos": 81,
+  "next_within_todo": "Product composition; page and conversation E2E",
+  "real_vendor_calendar_verified": false,
+  "product_calendar_browser_e2e_verified": false,
+  "verification": {
+    "tools_full_race": "passed",
+    "public_facade_race_seconds": 2.942,
+    "adapter_architecture": "passed, strengthened external implementation boundary",
+    "vet": "passed",
+    "git_diff_check": "not applicable: Tools directory has no Git metadata"
+  },
+  "source_files": [
+    {
+      "path": "docs/agent-capabilities-todo.md",
+      "bytes": 100310,
+      "sha256": "083cfc84f76a1bd14015a2daa989cc9266fb074d53abb1f1ab73c113bcdc800b"
+    },
+    {
+      "path": "docs/calendar-read-boundaries.md",
+      "bytes": 3427,
+      "sha256": "e7ec6edc825ff26c3fc0ac55be8c1d87d44d29781a199602912107d1cfef90fb"
+    },
+    {
+      "path": "docs/testing-2026-09-11-f02-calendar-tools.md",
+      "bytes": 3218,
+      "sha256": "b464c5744ddcb450ac52def5bee84836cd639786351d0c40736ccce69d220332"
+    },
+    {
+      "path": "../domainry-tools/go.mod",
+      "bytes": 497,
+      "sha256": "c58872cd5adcfe5797c6a09d613acd1cdaf821f54de45823c5cacb83083a3709"
+    },
+    {
+      "path": "../domainry-tools/README.md",
+      "bytes": 2929,
+      "sha256": "8b9770bc4bbe65ea77f0cc42038ac35295fb1118ce9e6d0f88ca811bbb3e89fd"
+    },
+    {
+      "path": "../domainry-tools/module/module.go",
+      "bytes": 2009,
+      "sha256": "75d6cb16cae700f99f3717fe405683712e24ae1dbb80b3b7007acd7526e57aac"
+    },
+    {
+      "path": "../domainry-tools/module/calendar_test.go",
+      "bytes": 21631,
+      "sha256": "ac0f5226019373d78e2cceccd977dfe9e0c6382b6a6f6d1bf67da767e26e86fb"
+    },
+    {
+      "path": "../domainry-tools/internal/architecture/layout_test.go",
+      "bytes": 3972,
+      "sha256": "d6c06ba30ae159252533dadf87aa8c194daf71f47034d0123f329c1046309883"
+    },
+    {
+      "path": "../domainry-tools/internal/adapter/calendartools/definitions.go",
+      "bytes": 3457,
+      "sha256": "c345c4a2f4a5786dd142b00f0f2a335c530efe2dbda6ed37e552bc7e8b4ee360"
+    },
+    {
+      "path": "../domainry-tools/internal/adapter/calendartools/adapter.go",
+      "bytes": 14471,
+      "sha256": "23396de575461ad6ddf70abccd9bdc779da42a63a61b1b882341f71692ba66b3"
+    },
+    {
+      "path": "../domainry-tools/internal/adapter/calendartools/presentation.go",
+      "bytes": 4995,
+      "sha256": "35f4fc6890935b728a72b479b53d5b1a9824fcdd784eaac8ecb66f8cf050d51f"
+    },
+    {
+      "path": "../domainry-tools/internal/adapter/calendartools/availability.go",
+      "bytes": 1880,
+      "sha256": "e35236d73d2773f1cd6c4a963d5bc3980cdceb7cbdefc3ccadbc42c8d649606a"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "docs/evidence/2026-09-11-f02-calendar-tools/diff-check.log",
+      "bytes": 7268,
+      "sha256": "16fe521de56b762a2ed6bb75c04179b3ceb2f2fe6df0dff877f8df07e5851474"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-calendar-tools/full-race.log",
+      "bytes": 863,
+      "sha256": "8288ffe910ac93d83b576ac50786322587eb7bf32a1eeb66a66333c4fd2a5d08"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-calendar-tools/public-race-initial.log",
+      "bytes": 5017,
+      "sha256": "0bc083b4ee97da4ed17cd562acaa7503e80291f661485ea1c7577d8007cb7f9d"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-calendar-tools/vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

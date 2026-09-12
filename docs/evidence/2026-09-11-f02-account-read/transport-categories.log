@@ -1,0 +1,11 @@
+--- FAIL: TestFactoryAssemblesDeploymentNeutralModuleBinding (0.46s)
+    factory_test.go:134: Integration product routes=51
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/assembly/module	1.126s
+--- FAIL: TestServiceMatchesIntegrationSDKRemoteContract (0.51s)
+    service_test.go:151: SaaS Integration HTTP adapters=&{0x1f1c990a9c0 0x1f1c93da0f0 0x1f1c93da0f0 0x1f1c93da0f0 0x1f1c93da0f0 0x1f1c93da0f0 [0x1f1c9b6e4b0]}
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/assembly/saas	5.546s
+ok  	github.com/domainry/domainry-integration/internal/transport/http/module	1.397s
+?   	github.com/domainry/domainry-integration/internal/transport/http/saas	[no test files]
+FAIL

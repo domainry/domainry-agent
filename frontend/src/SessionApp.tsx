@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { LogOut, ArrowUpRight, FileText, ListChecks, MessageSquare } from "lucide-react";
 import App from "./App";
+import ProductWorkspace from "./ProductWorkspace";
+const productName = import.meta.env.VITE_PRODUCT_NAME as string | undefined;
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { ApiError } from "./errors";
@@ -105,18 +107,18 @@ export default function SessionApp() {
   }
 
   if (session && !session.must_change_password)
-    return <App key={session.scope} session={session} onLogout={session.mode === "identity" && (!external || external.logout_url) ? logout : undefined} accountBusy={busy} accountError={error} />;
+    return productName ? <ProductWorkspace key={session.scope} session={session} onLogout={logout} /> : <App key={session.scope} session={session} onLogout={session.mode === "identity" && (!external || external.logout_url) ? logout : undefined} accountBusy={busy} accountError={error} />;
 
   const changing = !!session?.must_change_password;
   return <main className="login-page">
     <aside className="login-story">
-      <div className="brand"><span className="brand-symbol">d.</span><div>Domainry<small>你的智能工作空间</small></div></div>
+      <div className="brand"><span className="brand-symbol">d.</span><div>{productName || "Domainry"}<small>你的智能工作空间</small></div></div>
       <div className="login-story-content"><span className="login-kicker">思路在这里，工作向前走</span><h2>从一个想法，<br />到下一步行动。</h2><p>让对话连接资料与工作，<br />把每一次讨论，变成有用的积累。</p>
         <div className="login-story-items"><span><MessageSquare size={18} />持续的讨论<ArrowUpRight size={16} /></span><span><FileText size={18} />有依据的答案<ArrowUpRight size={16} /></span><span><ListChecks size={18} />清晰的下一步<ArrowUpRight size={16} /></span></div>
       </div><span className="login-story-footer">DOMAINRY · AGENT WORKSPACE</span>
     </aside>
     <div className="login-form-panel"><section className="login-card">
-    <div className="login-brand"><span className="brand-symbol">d.</span><span>DOMAINRY AGENT</span></div>
+    <div className="login-brand"><span className="brand-symbol">d.</span><span>{productName || "DOMAINRY AGENT"}</span></div>
     <h1>{mode === "loading" ? "正在连接…" : changing ? "设置你的新密码" : "登录，继续你的工作"}</h1>
     <p>{changing ? "首次登录需要修改初始密码，完成后即可开始对话。" : "对话历史和个人记忆将保存在你的账号下。"}</p>
     {workspace && <div className="login-workspace">工作空间 · {workspace}</div>}

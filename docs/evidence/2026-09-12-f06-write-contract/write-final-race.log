@@ -1,0 +1,160 @@
+=== RUN   TestContractIdentityAndReadIsolation
+--- PASS: TestContractIdentityAndReadIsolation (0.00s)
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/wrong-offset
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/zero-duration
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/attendee-injection
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/unknown-kind
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/invalid-utf8
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/silent-notifications
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/blank-title
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/missing-zone
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/embedded-display-name
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/large-title
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/large-body
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/body-control
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/mixed-bounds
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/unknown-attendees
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/duplicate-attendees
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/multiple-addresses
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/local-zone
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/reversed-duration
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/missing-calendar
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/path-traversal
+=== RUN   TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/missing-offset
+--- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/wrong-offset (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/zero-duration (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/attendee-injection (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/unknown-kind (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/invalid-utf8 (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/silent-notifications (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/blank-title (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/missing-zone (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/embedded-display-name (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/large-title (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/large-body (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/body-control (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/mixed-bounds (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/unknown-attendees (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/duplicate-attendees (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/multiple-addresses (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/local-zone (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/reversed-duration (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/missing-calendar (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/path-traversal (0.00s)
+    --- PASS: TestCalendarCreateValidationPreservesExplicitTimeAndRecipients/missing-offset (0.00s)
+=== RUN   TestUpdatePatchDistinguishesOmittedAndClearedFields
+--- PASS: TestUpdatePatchDistinguishesOmittedAndClearedFields (0.00s)
+=== RUN   TestMutationJSONRejectsUndeclaredAuthorityAndVendorFields
+--- PASS: TestMutationJSONRejectsUndeclaredAuthorityAndVendorFields (0.03s)
+=== RUN   TestMaximumCalendarTextAndAttendeesSurviveJSONEscaping
+--- PASS: TestMaximumCalendarTextAndAttendeesSurviveJSONEscaping (0.09s)
+=== RUN   TestUpdateBindsCurrentTargetVersionAndSeriesScope
+=== RUN   TestUpdateBindsCurrentTargetVersionAndSeriesScope/unexpected-series
+=== RUN   TestUpdateBindsCurrentTargetVersionAndSeriesScope/cancelled
+=== RUN   TestUpdateBindsCurrentTargetVersionAndSeriesScope/unknown-kind
+=== RUN   TestUpdateBindsCurrentTargetVersionAndSeriesScope/partial-attendees
+=== RUN   TestUpdateBindsCurrentTargetVersionAndSeriesScope/different-version
+=== RUN   TestUpdateBindsCurrentTargetVersionAndSeriesScope/different-calendar
+=== RUN   TestUpdateBindsCurrentTargetVersionAndSeriesScope/different-event
+=== RUN   TestUpdateBindsCurrentTargetVersionAndSeriesScope/unknown-status
+=== RUN   TestUpdateBindsCurrentTargetVersionAndSeriesScope/unsafe-link
+--- PASS: TestUpdateBindsCurrentTargetVersionAndSeriesScope (0.00s)
+    --- PASS: TestUpdateBindsCurrentTargetVersionAndSeriesScope/unexpected-series (0.00s)
+    --- PASS: TestUpdateBindsCurrentTargetVersionAndSeriesScope/cancelled (0.00s)
+    --- PASS: TestUpdateBindsCurrentTargetVersionAndSeriesScope/unknown-kind (0.00s)
+    --- PASS: TestUpdateBindsCurrentTargetVersionAndSeriesScope/partial-attendees (0.00s)
+    --- PASS: TestUpdateBindsCurrentTargetVersionAndSeriesScope/different-version (0.00s)
+    --- PASS: TestUpdateBindsCurrentTargetVersionAndSeriesScope/different-calendar (0.00s)
+    --- PASS: TestUpdateBindsCurrentTargetVersionAndSeriesScope/different-event (0.00s)
+    --- PASS: TestUpdateBindsCurrentTargetVersionAndSeriesScope/unknown-status (0.00s)
+    --- PASS: TestUpdateBindsCurrentTargetVersionAndSeriesScope/unsafe-link (0.00s)
+=== RUN   TestReceiptCannotClaimAnotherMutationOrNotificationDelivery
+=== RUN   TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/different-request
+=== RUN   TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/different-calendar
+=== RUN   TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/different-event
+=== RUN   TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/no-version
+=== RUN   TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/created-not-updated
+=== RUN   TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/delivery-not-proven
+=== RUN   TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/unsafe-url
+--- PASS: TestReceiptCannotClaimAnotherMutationOrNotificationDelivery (0.00s)
+    --- PASS: TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/different-request (0.00s)
+    --- PASS: TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/different-calendar (0.00s)
+    --- PASS: TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/different-event (0.00s)
+    --- PASS: TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/no-version (0.00s)
+    --- PASS: TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/created-not-updated (0.00s)
+    --- PASS: TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/delivery-not-proven (0.00s)
+    --- PASS: TestReceiptCannotClaimAnotherMutationOrNotificationDelivery/unsafe-url (0.00s)
+PASS
+ok  	github.com/domainry/domainry-connector-sdk/calendarwrite	1.747s
+=== RUN   TestContractIdentityKeepsReadAndWriteOperationsDistinct
+--- PASS: TestContractIdentityKeepsReadAndWriteOperationsDistinct (0.00s)
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/unknown-cc
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/display-in-address
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/subject-injection
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/subject-limit
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/empty-message
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/header-injection
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/multiple-addresses
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/duplicate-across-groups
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/body-limit
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/body-invalid-utf8
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/unknown-to
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/unknown-bcc
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/no-recipients
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/name-injection
+=== RUN   TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/body-control
+--- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/unknown-cc (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/display-in-address (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/subject-injection (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/subject-limit (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/empty-message (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/header-injection (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/multiple-addresses (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/duplicate-across-groups (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/body-limit (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/body-invalid-utf8 (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/unknown-to (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/unknown-bcc (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/no-recipients (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/name-injection (0.00s)
+    --- PASS: TestOutgoingMailUsesOnlyExplicitValidBoundedRecipientsAndText/body-control (0.00s)
+=== RUN   TestReplyUsesCurrentCompleteMetadataAndReplyTo
+=== RUN   TestReplyUsesCurrentCompleteMetadataAndReplyTo/another-message
+=== RUN   TestReplyUsesCurrentCompleteMetadataAndReplyTo/incomplete-metadata
+=== RUN   TestReplyUsesCurrentCompleteMetadataAndReplyTo/draft
+=== RUN   TestReplyUsesCurrentCompleteMetadataAndReplyTo/unknown-draft-state
+=== RUN   TestReplyUsesCurrentCompleteMetadataAndReplyTo/changed-subject
+=== RUN   TestReplyUsesCurrentCompleteMetadataAndReplyTo/unknown-sender
+=== RUN   TestReplyUsesCurrentCompleteMetadataAndReplyTo/reply-to-overrides-from
+--- PASS: TestReplyUsesCurrentCompleteMetadataAndReplyTo (0.00s)
+    --- PASS: TestReplyUsesCurrentCompleteMetadataAndReplyTo/another-message (0.00s)
+    --- PASS: TestReplyUsesCurrentCompleteMetadataAndReplyTo/incomplete-metadata (0.00s)
+    --- PASS: TestReplyUsesCurrentCompleteMetadataAndReplyTo/draft (0.00s)
+    --- PASS: TestReplyUsesCurrentCompleteMetadataAndReplyTo/unknown-draft-state (0.00s)
+    --- PASS: TestReplyUsesCurrentCompleteMetadataAndReplyTo/changed-subject (0.00s)
+    --- PASS: TestReplyUsesCurrentCompleteMetadataAndReplyTo/unknown-sender (0.00s)
+    --- PASS: TestReplyUsesCurrentCompleteMetadataAndReplyTo/reply-to-overrides-from (0.00s)
+=== RUN   TestOutgoingJSONRejectsHiddenSenderHeadersAndNativePayload
+--- PASS: TestOutgoingJSONRejectsHiddenSenderHeadersAndNativePayload (0.34s)
+=== RUN   TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest
+=== RUN   TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/thread-without-message
+=== RUN   TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/new-mail-claiming-reply
+=== RUN   TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/wrong-request
+=== RUN   TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/claimed-delivery
+=== RUN   TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/claimed-completion
+=== RUN   TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/missing-time
+=== RUN   TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/ambiguous-time
+--- PASS: TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest (0.00s)
+    --- PASS: TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/thread-without-message (0.00s)
+    --- PASS: TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/new-mail-claiming-reply (0.00s)
+    --- PASS: TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/wrong-request (0.00s)
+    --- PASS: TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/claimed-delivery (0.00s)
+    --- PASS: TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/claimed-completion (0.00s)
+    --- PASS: TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/missing-time (0.00s)
+    --- PASS: TestReceiptDistinguishesAcceptanceFromDeliveryAndBindsOriginalRequest/ambiguous-time (0.00s)
+PASS
+ok  	github.com/domainry/domainry-connector-sdk/mailwrite	2.329s

@@ -1,0 +1,17 @@
+{
+  "git": "not applicable: no Git metadata",
+  "gofmt_exit_code": 0,
+  "unformatted_files": [],
+  "text_trailing_whitespace": false,
+  "checked_paths": [
+    "README.md",
+    "module/module.go",
+    "module/web_test.go",
+    "module/account_read_fixture_test.go",
+    "internal/adapter/webtools/adapter.go",
+    "internal/adapter/webtools/definitions.go",
+    "internal/adapter/accounttools/adapter.go",
+    "internal/adapter/accounttools/availability.go",
+    "internal/architecture/layout_test.go"
+  ]
+}

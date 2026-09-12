@@ -1,0 +1,47 @@
+ok  	github.com/domainry/domainry-integration/capability	2.480s
+ok  	github.com/domainry/domainry-integration/cmd/integration-server	5.825s
+ok  	github.com/domainry/domainry-integration/internal/adapter/integrationsdk	0.382s
+ok  	github.com/domainry/domainry-integration/internal/application/integration	0.765s
+ok  	github.com/domainry/domainry-integration/internal/architecture	1.322s
+ok  	github.com/domainry/domainry-integration/internal/assembly/module	2.935s
+--- FAIL: TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions (2.67s)
+    --- FAIL: TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions/module (0.93s)
+        oauth_flow_test.go:275: repeat callback changed committed receipt
+    --- FAIL: TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions/saas (1.73s)
+        oauth_flow_test.go:275: repeat callback changed committed receipt
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/assembly/saas	10.516s
+?   	github.com/domainry/domainry-integration/internal/domain/integration/model	[no test files]
+?   	github.com/domainry/domainry-integration/internal/domain/integration/repository	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/domain/integration/service	(cached)
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/connectortransport	(cached)
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/architecture	2.257s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	2.929s
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/migration	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/schema	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/security	(cached)
+ok  	github.com/domainry/domainry-integration/internal/transport/http/module	2.683s
+?   	github.com/domainry/domainry-integration/internal/transport/http/saas	[no test files]
+ok  	github.com/domainry/domainry-integration/module	7.939s
+ok  	github.com/domainry/domainry-integration-sdk	3.251s
+?   	github.com/domainry/domainry-integration-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-integration-sdk/remote	2.995s
+?   	github.com/domainry/domainry-integration-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-tools/calculation	[no test files]
+?   	github.com/domainry/domainry-tools/internal/adapter/recordtools	[no test files]
+ok  	github.com/domainry/domainry-tools/internal/application/preferences	2.986s
+ok  	github.com/domainry/domainry-tools/internal/application/tool	(cached)
+ok  	github.com/domainry/domainry-tools/internal/architecture	2.572s
+ok  	github.com/domainry/domainry-tools/internal/assembly/preferences	3.228s
+?   	github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences	[no test files]
+?   	github.com/domainry/domainry-tools/internal/transport/http/preferences	[no test files]
+?   	github.com/domainry/domainry-tools/module	[no test files]
+?   	github.com/domainry/domainry-tools/timeutil	[no test files]
+?   	github.com/domainry/domainry-tools-sdk	[no test files]
+?   	github.com/domainry/domainry-tools-sdk/modulehost	[no test files]
+?   	github.com/domainry/domainry-tools-sdk/schema	[no test files]
+FAIL

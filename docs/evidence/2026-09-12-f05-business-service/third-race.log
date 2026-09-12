@@ -1,0 +1,44 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation interaction expiration unavailable
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+2026/09/12 01:35:23 WARN conversation claim failed error="sql: database is closed"
+--- FAIL: TestConversationBusinessProductWithSharedIdentityService (11.34s)
+panic: read current Runtime Identity permissions for "application:domainry-runtime": identity.permission_source_owner_forbidden [recovered, repanicked]
+
+goroutine 25 [running]:
+testing.tRunner.func1.2({0x10a186e80, 0xc0003eb380})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1974 +0x2b8
+testing.tRunner.func1()
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1977 +0x460
+panic({0x10a186e80?, 0xc0003eb380?})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/panic.go:860 +0x12c
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.mustCompleteRuntimeStartup(...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/startup_errors.go:5
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.newWithExtensionsUsingAllFactoriesAndStore({_, _}, {{0x0, 0x0}, {0x1074f6c3d, 0x18}, {0x0, 0x0}, {0x0, 0x0}, ...}, ...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/startup.go:512 +0x6bb4
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.NewWithScheduler({_, _}, {{0x0, 0x0}, {0x1074f6c3d, 0x18}, {0x0, 0x0}, {0x0, 0x0}, ...}, ...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/startup.go:78 +0x338
+github.com/domainry/domainry-runtime/runtime/bootstrap.NewWithScheduler(...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/bootstrap.go:59
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.(*businessWebFixture).open(0xc001a12c08)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_web_fixture_test.go:155 +0x530
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.TestConversationBusinessProductWithSharedIdentityService(0xc001a1c008)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_product_service_test.go:72 +0x290
+testing.tRunner(0xc001a1c008, 0x10a53c280)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2036 +0x168
+created by testing.(*T).Run in goroutine 1
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2101 +0x7c0
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	12.237s
+FAIL

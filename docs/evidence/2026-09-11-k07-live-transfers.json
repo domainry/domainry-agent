@@ -1,0 +1,87 @@
+{
+  "date": "2026-09-11",
+  "todo": "K07",
+  "todo_complete": false,
+  "increment_complete": true,
+  "live_verdent": true,
+  "live_model": false,
+  "scope": "One actual Identity/Module/HTTP/SQLite host, two users and three independent KBs; personal A to shared copy, shared to personal B move",
+  "verification": {
+    "protocol_harness_test_seconds": 40.9,
+    "protocol_harness_race_package_seconds": 69.446,
+    "live_test_seconds": 86.54,
+    "live_package_seconds": 87.102,
+    "real_runs": 1,
+    "distinct_kbs": 3,
+    "distinct_private_write_scopes": 3,
+    "put_count": 3,
+    "delete_count": 3,
+    "all_mutations_http_200": true,
+    "cleanup_verified": true,
+    "remote_search_absent": true,
+    "original_binary_files_remaining": 0,
+    "go_vet": "passed",
+    "python_syntax": "passed",
+    "browser_qa": "Previously recorded K07 browser evidence reused; no new browser run"
+  },
+  "remaining": [
+    "Direct conversation-private attachment indexing through Connector; no Agent original parser"
+  ],
+  "artifacts": [
+    {
+      "path": "/private/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-transfer-live-p272holr/report.json",
+      "bytes": 2660,
+      "sha256": "d11485ea83c5b82d69af9e8b238b4a79334f37c48aa6207fac9065a4c55d4a5d"
+    },
+    {
+      "path": "/private/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-transfer-live-p272holr/writes.json",
+      "bytes": 1856,
+      "sha256": "ab4c2dbb141f397eb5dc8089c251ada70b826374f85df87f8cb20370ac7957e1"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-11-k07-live-transfers/report.json",
+      "bytes": 2660,
+      "sha256": "d11485ea83c5b82d69af9e8b238b4a79334f37c48aa6207fac9065a4c55d4a5d"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-11-k07-live-transfers/writes.json",
+      "bytes": 1856,
+      "sha256": "ab4c2dbb141f397eb5dc8089c251ada70b826374f85df87f8cb20370ac7957e1"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfers-verdent-live.log",
+      "bytes": 1010,
+      "sha256": "485ddaae65d7acf79b96a60fd2675c2ec21ebeb77af4567e77edb0589124cd3c"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-live-harness.log",
+      "bytes": 779,
+      "sha256": "99828d708212fae697b2c09cf1ecdafb1c15478966203bb46ab1cc938e3ee23a"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-live-harness-race.log",
+      "bytes": 70,
+      "sha256": "e0a66b56b4e8742cb4ffdcdfe7c3270cd9f7ea6407bde0faae881862534a3fcf"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-live-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/knowledge_document_transfer_live_test.go",
+      "bytes": 22010,
+      "sha256": "bf11c443e7e044d9748527c671db5333a9d8956c4e99f9a2c497dad5e8730b70"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/knowledge_document_permissions_live_test.go",
+      "bytes": 21607,
+      "sha256": "db26d5145152660bdd91e9722a5e18ae532452aadd0b23f6ec5fd54a5b16bc6c"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/scripts/test-agent-managed-document-live.py",
+      "bytes": 4195,
+      "sha256": "9bbb319e0b4fc8e83fe8e0935fb220673f3736745f63de9ff41b6e57bb9229c0"
+    }
+  ]
+}

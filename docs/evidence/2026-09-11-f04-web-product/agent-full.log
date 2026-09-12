@@ -1,0 +1,9 @@
+--- FAIL: TestWebReportDoesNotAdoptReplacementConnection (3.64s)
+    web_report_source_test.go:35: Integration credential belongs to another connection account
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	136.760s
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	0.516s
+ok  	github.com/domainry/domainry-agent/internal/architecture	(cached)
+ok  	github.com/domainry/domainry-agent/definition	(cached)
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+FAIL

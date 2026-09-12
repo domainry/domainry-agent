@@ -1,6 +1,10 @@
 # 持久会话（Conversation v1）
 
-会话支持可选的 [文档检索](knowledge.md)，以及 `conversation.execution.v1` 工具执行扩展。当前 Web Module 已装配时间、计算、历史检索、原文读取、个人记忆与待办工具，以及 `ask_user` 和持久化确认 / 核查流程；工具按权限与已挂载能力开放。会话附件已接私有原文件和管理网页，尚未接知识索引，见 [附件验证](testing-2026-09-10-attachments-web.md)。Runtime 宿主已接业务目录、记录、关联、动作及流程；其他资源的授权范围、共享资料库与邮件等仍在 [能力清单](agent-capabilities-todo.md) 中。纯文本模型继续兼容，各项验收状态以清单及对应记录为准。
+会话支持可选的 [文档检索](knowledge.md)，以及 `conversation.execution.v1` 工具执行扩展。当前 Web Module 已装配时间、计算、历史检索、原文读取、个人记忆与待办工具，以及 `ask_user` 和持久化确认 / 核查流程；工具按权限与已挂载能力开放。
+
+会话附件保留私有原文件存储、管理网页、授权下载和 PDF / DOCX / XLSX 在线预览，见[原件预览验收](testing-2026-09-11-original-preview.md)。Agent 不解析源文件、不缓存解析正文，也不通过模型工具读取或提取本地附件正文；旧实现已删除，见[移除与升级说明](document-parsing.md)。检索及知识内容读取由 Connector 提供，现有 `knowledge_extract` 只处理它返回的受权文本。会话附件的远端索引与检索接入进度以 [K07](agent-capabilities-todo.md) 为准。
+
+Runtime 宿主已接业务目录、记录、关联、动作及流程；各项能力与验收状态以[能力清单](agent-capabilities-todo.md)及对应记录为准。纯文本模型继续兼容。
 
 ## 和原有能力的区分
 
@@ -36,7 +40,11 @@ Migration 5 增加 `_agent_user_todos` 和 `_agent_todo_mutations`。待办按 r
 
 所有查询使用 `owner_key = SHA256(JSON([runtime_id, workspace_id, user_id]))` 隔离，子记录同时匹配 conversation ID。哈希是隔离键，不是内容加密。角色改变不清空个人会话。HTTP 身份来自宿主认证上下文，不能从 JSON 或查询参数指定其他用户。
 
-SaaS 的一个 API key 对应配置的一个 `AGENT_SAAS_RUNTIME_ID`；请求中的 Runtime ID 必须匹配。浏览器通过 Runtime 的产品接口访问，不能持有 SaaS service key 或自行发送授权身份。当前未实现一个 SaaS key 服务多个 Runtime 的映射。
+SaaS 的一个 API key 对应配置的一个 `AGENT_SAAS_RUNTIME_ID`；请求中的 Runtime ID 必须匹配。独立可执行程序还绑定一个明确的 Identity 工作区及应用，所有会话 RPC 检查该工作区。浏览器通过 Runtime 的产品接口访问，不能持有 SaaS service key 或自行发送授权身份。当前未实现一个 SaaS key 服务多个 Runtime 的映射。
+
+网页与 Runtime 的会话应用宿主必须提供 SDK `ConversationExecutionAuthorizer`，或者由 `ConversationOptions.ExecutionAuthorizer` 显式提供；缺少时延迟装配失败，worker 不启动。该端口独立于工具：纯文本回复和摘要也需要检查当前主体。当前 `send`／`resume` HTTP Action 要求有效登录主体，未声明独立角色权限；宿主按相同规则重新解析当前用户及角色，工具、答复确认和资料权限仍分别评估。显式恢复／答复在原事务内保存当前角色，后续 worker 重新检查；用户、工作区、原请求和写范围不变，重复请求不更新运行身份。
+
+执行授权检查最多占用 5 秒，失败或拒绝停止后续工作，分别保存 `execution_authorization_unavailable`／`execution_access_denied`，不持久化宿主原始错误或凭证。新授权不会豁免冻结历史、资料和工具结果的来源复核，也不回滚已完成的外部动作。独立 SaaS 经公开 Identity SDK 完成服务发现、契约摘要校验及逐次主体解析；缺少绑定配置时在启动 worker 前失败。Module 的立即装配与延迟装配均要求模型配有执行授权端口。实现与验证见 [C03 验收](testing-2026-09-11-execution-authorization.md)。内部服务构造器仍保留测试／旧内部调用的兼容入口，不能作为生产组合入口；无 Identity 的 playground 只允许监听字面量回环 IP，不提供生产用户权限。后续计划触发仍按 G 项开发、接同一执行边界并验收。
 
 删除会话使用修订号，并在事务内删除其消息、run、输入快照、摘要、事件、步骤、调用及交互记录。个人记忆独立删除。归档可恢复，不清除消息；此版不做会话历史自动清理，也不会把原有 `agent.dialog.v1` 清理策略套到新会话上。交互有效期只关闭待处理事项，不删除历史。
 
@@ -46,15 +54,34 @@ SaaS 的一个 API key 对应配置的一个 `AGENT_SAAS_RUNTIME_ID`；请求中
 
 每个会话同时只有一个活动 run，新消息冲突返回 `agent.conversation.busy`。不同会话可并发。工作线程用数据库领取 queued 或租约过期的 running run；每次领取递增 fence，定期续租。完整回复、终态事件和清除 active run 在一个事务内提交。
 
-通常状态为 `queued → running → completed / failed / cancelled`。工具运行也可进入 `waiting_user`、`waiting_confirmation` 或 `needs_reconciliation`。等待释放租约、增加 fence，保留会话的 active run；迟到的 worker 无法继续提交结果。取消同样立即增加 fence。failed/cancelled 只有在仍为最新处理且交互未被拒绝、取消或过期时才能 resume；已核查或仍待核查的外部操作按账本恢复，已完成操作不重放。completed 不能 resume。
+通常状态为 `queued → running → completed / failed / cancelled`。工具运行也可进入 `waiting_user`、`waiting_confirmation` 或 `needs_reconciliation`。等待释放租约、增加 fence，保留会话的 active run；迟到的 worker 无法继续推进执行。取消同样立即增加 fence，禁止新步骤、工具和正式回复；原在途调用的回执有下述受限补存入口。failed/cancelled 只有在仍为最新处理且交互未被拒绝、取消或过期时才能 resume；已核查或仍待核查的外部操作按账本恢复，已完成操作不重放。completed 不能 resume。
+
+网页根据持久工具回执另行展示实际结果，回复保存成功不会把失败调用标成成功。SDK `completion=accepted` 表示流程等写入请求已受理，业务是否完成以具体查询结果为准；`effect` 来自可信工具定义。未完成的模型步骤和调用有对应恢复入口，继续复用原 Run 及幂等回执。已有确定失败回执时，“准备修复这项失败”生成引用原会话／运行／步骤／调用的新草稿，清除整类写授权，用户核对后发送；不会改写旧回执或覆盖现有草稿。旧处理记录保持独立，只有最新运行提供继续入口。实现及验收见 [E05 实际结果与恢复](testing-2026-09-11-execution-outcome.md)。
 
 `ask_user` 必须独占一个模型步骤，答复保存为原始用户消息，同时配对原工具调用的结果并作为 user 消息交回模型；模型看到补充或纠正后才能规划后续步骤。浏览器通过 `POST /agent/conversations/{conversationID}/runs/{runID}/respond` 提交 `interaction_id`、`client_id`、`expected_revision`、`decision`，回答另带 `answer`。decision 分别为 `answer`、`approve`、`reject`，参数不能在确认请求中修改。同一答复重复提交复用结果，不追加第二条消息；改变答复返回冲突。
 
 答复入口使用独立的 `agent.conversations.respond` 权限；批准 / 回答前检查工具版本和当前权限，worker 继续执行前再检查一次。批准凭据由服务端加载，浏览器和模型不能自行提交凭据。宿主使用可选 `ConversationInteractionAuthorizer` 决定答复权限。问题 / 确认默认有效期 24 小时，`ConversationOptions.InteractionTTL` 可调整，最长 7 天；独立清理循环及提交入口都检查有效期，过期后 run 失败并解除会话占用。核查记录不自动过期，通过 resume 查询实际结果，通过 cancel 停止处理。
 
+确认可包含服务端冻结的 `operations` 列表，最多 20 项具体剩余写操作。用户可仅批准当前项，或明确提交 `decision=approve, scope=listed_operations` 一次授权列表中的各项。每项绑定本 Run／步骤／调用、工具版本、动作与完整参数；服务端在同一宿主事务保存各项授权记录，`authorization_id` 关联原组合确认。没有列表时提交该 scope 会被拒绝。默认空 scope 保持原单项行为，重复响应改变 scope 属于幂等冲突。
+
+范围内调用使用已保存的精确授权继续执行，Identity、资源、来源及宿主额外要求仍重新检查。模型后续追加调用、修改参数或目标，不能使用原范围；新请求也不继承。用户补充或确认前刷新／重启、批准响应丢失及后台租约恢复均已验证，实际 Runtime 批量业务写入与网页证据见 [C04 操作范围验收](testing-2026-09-11-operation-scope.md)。
+
 回复调用之前冻结输入快照。进程重启、租约恢复和手动 resume 都复用该输入及幂等键，即使个人偏好已经修改。冻结之前中断则重新组装；已提交摘要可继续使用。模型服务是否支持幂等由模型服务决定：异常恢复可能重复产生模型费用，但 fence 防止重复提交回复。纯文本路径恢复时使用当前模型配置；工具路径还会核对步骤保存的模型配置指纹，变化时拒绝直接续接。
 
 默认每个服务实例 2 个工作线程、30 秒租约、每 10 秒续租、1 秒检查队列、每轮最多 5 分钟。关闭服务会取消本地请求，保留未完成 run 供租约到期后恢复。
+
+取消表示停止后续处理，不是撤销已经提交的业务效果：
+
+- 取消事务保留 completed / pending 回执，把已开始且没有结果的写调用标记为 uncertain，并同事务保存工具事件和取消状态。尚未开始的调用显示 `not_started`；未返回的读请求显示 `interrupted`，不推断远端业务已回滚。
+- 本实例取消对应 attempt 的 Context；其他实例通过续租失效停止。原取消响应与新一次 resume 并发时，不会取消新的 attempt。知识 Connector 沿已有 `Call(ctx) → RoundTripHTTP(ctx) → NewRequestWithContext` 传播停止信号。
+- 工具返回后以独立的 5 秒收尾 Context 保存实际回执。SDK 内部账本记录最近调用 / 核查的 lease owner 与 fence；仅在 Run 仍是该租约直接对应的 cancelled 状态时允许补存。结果与事件同事务提交，Run 保持 cancelled；不同用户、工作区、执行者、已恢复、租约接管或已删除的记录不能使用旧回执写入，已完成结果不能被替换。
+- 这个例外仅用于回执。存储内的个人事项等事务写操作继续检查有效运行租约，取消后不得创建效果。旧账本没有执行者 guard 时，迟到结果不获准直接覆盖，需要按原核查路径恢复。
+- 取消后的未知写结果在用户明确 resume 后走 Reconcile，不通过重新 Invoke 猜测结果；原先完成的调用只读账本。迟到回执可以在处理记录中刷新查看；取消时尚未形成的 assistant 回复不进入正式历史。
+
+当前 Connector SDK 提供 Context 停止 I/O，以及独立的幂等、核查、补偿契约，没有通用的远端任务取消能力。
+停止当前请求不会自动调用取消订单、删除事件等业务补偿，也不会撤销已受理的 Workflow 实例。
+增加其他 Provider 时按其真实契约提供停止能力，不能把关闭 HTTP 连接或请求超时当作外部操作失败的证据。
+实现、边界和网页验收见 [B06 取消验收](testing-2026-09-10-cancellation.md)。
 
 ## 历史上下文与压缩
 
@@ -152,8 +179,17 @@ export AGENT_SAAS_RUNTIME_ID='your-runtime-id'
 export AGENT_SAAS_DB_DRIVER='sqlite'
 export AGENT_SAAS_DB_DSN='agent.db'
 export AGENT_SAAS_ADDRESS=':8090'
+# 绑定现有 Identity 应用；不把用户登录令牌用作应用服务凭证。
+export IDENTITY_ENDPOINT='https://identity.example.com'
+export IDENTITY_WORKSPACE_ID='your-workspace-id'
+export IDENTITY_AUDIENCE='your-identity-application-key'
+export IDENTITY_ISSUER='https://identity.example.com'
+# 配置 IDENTITY_SERVICE_ACCESS_TOKEN 和已核对的 IDENTITY_CAPABILITY_CONTRACT_SHA256。
+# 租户与工作区不同的部署还需配置 IDENTITY_TENANT_ID。
 go run ./cmd/domainry-agent
 ```
+
+这些 Identity 参数复用 Identity SDK 的环境配置；应用需在 Identity 中登记，服务凭证必须绑定到同一租户／工作区／应用。`IDENTITY_AUDIENCE` 是应用标识，不从模型或请求参数推断。契约摘要固定为部署时核对的 Identity capability 摘要，升级时一起核对更新。应用服务凭证由 SDK Transport 持有，Agent 运行记录只保存稳定主体标识与角色。初始绑定最多 15 秒，配置缺失、服务不可用或契约不兼容会阻止会话服务启动；运行期间主体解析失败会停止本次执行，恢复必须重新通过当前授权。
 
 根据已接入服务的接口约定，支持以下协议。服务地址通过部署配置传入，不绑定具体服务商。模型必须出现在所选协议的目录中且属于 API key 的 scope；目录可变，因此不硬编码模型名称或按前缀猜协议。
 
@@ -326,6 +362,17 @@ Task 的启动与工具回调通过同一个 `authorizeTaskRun` 调用宿主，�
 执行请求、账本及审批草稿使用本次授权结果；Task 宿主仍检查原工具凭证、具体记录与字段权限。
 Conversation 继续使用独立 `ConversationToolHost`，实际授权范围和确认绑定沿用其原有规则，
 不需要 ProcessID、NodeInstanceID 或 TaskDefinition。两类状态机、等待确认与恢复语义没有合并。
+
+Module 的两阶段装配提供可选 `modulehost.ConversationApplicationHostBinder.BindConversationHost`：
+持久层宿主先通过 `DeferredConversationHost` 声明延迟启动，待当前授权服务就绪后，单独绑定
+`ConversationApplicationHost` 的授权器与可选业务源。绑定之前不发布会话服务 / HTTP Adapter，
+也不领取已排队的会话。这个入口不要求实现旧 Interactive、Task、Proposal、Audit、Analysis 接口；
+独立网页宿主 `internal/assembly/web/host.go` 已使用这个入口装配 Identity 与 Agent。
+
+延迟装配的默认授权器、个人工具宿主及工具状态从后绑定的会话宿主解析，不提前捕获持久层宿主的同名能力；
+显式 `ConversationOptions` 配置仍优先。缺少授权器、未声明延迟启动、重复绑定或关闭后绑定均报错，
+不替换运行中的服务。必须在读取服务 / Descriptor / Adapter 或开始服务 HTTP 前完成绑定。
+已有完整 Runtime 宿主仍可用 `BindApplicationHost` 一次装配；在会话已独立绑定后补绑旧接口，也保留原会话实例。
 
 Module 工具接口与 SaaS 仓储 RPC 均保留预算错误 `agent.task.tool_call_limit` / `agent.task.cost_budget_exceeded`，
 HTTP 状态为 429。执行预算不能靠重试原调用补充，因此错误的 `Retryable` 为 false。

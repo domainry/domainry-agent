@@ -1,0 +1,6 @@
+=== RUN   TestMailProductIdentityDraftSourcesAndRestart
+    mail_tools_test.go:41: answer missing 已搜索 2 封邮件: 草稿回执缺失。
+--- FAIL: TestMailProductIdentityDraftSourcesAndRestart (5.03s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	5.496s
+FAIL

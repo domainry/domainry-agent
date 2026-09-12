@@ -1,0 +1,14 @@
+{
+	"Path": "github.com/domainry/domainry-report",
+	"Main": true,
+	"Dir": "/Users/tiger/Projects/domainry-report",
+	"GoMod": "/Users/tiger/Projects/domainry-report/go.mod",
+	"GoVersion": "1.26.0"
+}
+{
+	"Path": "github.com/domainry/domainry-report-sdk",
+	"Main": true,
+	"Dir": "/Users/tiger/Projects/domainry-report-sdk",
+	"GoMod": "/Users/tiger/Projects/domainry-report-sdk/go.mod",
+	"GoVersion": "1.26.0"
+}

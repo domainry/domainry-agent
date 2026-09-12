@@ -1,0 +1,6 @@
+=== RUN   TestConversationCatalogConnectionChangesAndFrozenResume
+--- PASS: TestConversationCatalogConnectionChangesAndFrozenResume (0.03s)
+=== RUN   TestConversationCatalogRechecksConnectionAfterConcreteAuthorization
+--- PASS: TestConversationCatalogRechecksConnectionAfterConcreteAuthorization (0.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	0.753s

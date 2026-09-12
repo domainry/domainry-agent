@@ -1,0 +1,198 @@
+{
+  "todo": "F03",
+  "stage": "mail contract and Google read provider",
+  "completed": false,
+  "contract_sha256": "0d7e591567bb2e3211e32fd406fd376486b9857afaa17ec7517aa4bc947f1cb2",
+  "real_vendor_account": false,
+  "product_mail_e2e": false,
+  "source_files": [
+    {
+      "path": "domainry-agent/docs/mail-read-boundaries.md",
+      "sha256": "3508e45e1a547cea091bd6df5b3b43c418ab9aacd5b27b0b54f140ca5274cab4",
+      "bytes": 3002
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f03-mail-contract-google.md",
+      "sha256": "012497790516086668681c773472d75e833ef890c0bd4b30f17f3b858b51892d",
+      "bytes": 5521
+    },
+    {
+      "path": "domainry-connector-sdk/README.md",
+      "sha256": "efab2c593ae98f7e8e24de64bd0b237f2f08c328a7855621ddddf7fb6a39d07b",
+      "bytes": 4057
+    },
+    {
+      "path": "domainry-connector-sdk/external_module_test.go",
+      "sha256": "8ec1f456a1158fe7a8d393c629070e669c43837c89f429ef7355305e47a2d0a0",
+      "bytes": 8800
+    },
+    {
+      "path": "domainry-connector-sdk/go.mod",
+      "sha256": "dfc83ea1f4abb1f0369543015f7886bba0bd7845ec10bb620df7a6ac36b08ef8",
+      "bytes": 61
+    },
+    {
+      "path": "domainry-connector-sdk/identity.go",
+      "sha256": "5384ed837c33756f4ba96879bb2781c6396587bd41448b98b0e59191b13df74b",
+      "bytes": 728
+    },
+    {
+      "path": "domainry-connector-sdk/identity_test.go",
+      "sha256": "50bba82b376e22e3ef4f5136f623e77cc1acefa76f2fee805a2a61f1394a7103",
+      "bytes": 376
+    },
+    {
+      "path": "domainry-connector-sdk/mail/identity.go",
+      "sha256": "28183569a339da105c8d902263b34b246c4d83fa07160d197f5f1adad69cb8c6",
+      "bytes": 1325
+    },
+    {
+      "path": "domainry-connector-sdk/mail/mail.go",
+      "sha256": "a2cd9c59c58ecaba02d31dd318bbbd334b9f5586bcb13abb2d078528d3bbb72d",
+      "bytes": 2673
+    },
+    {
+      "path": "domainry-connector-sdk/mail/mail_test.go",
+      "sha256": "cd0e330037320cafb07fbc7b3b8cd6daf306050cac7c6704af922220e9711049",
+      "bytes": 3732
+    },
+    {
+      "path": "domainry-connector-sdk/mail/validation.go",
+      "sha256": "4d6896d63a9c272a5373d9667410e435c189318fc52bb99719ae5459152fbed0",
+      "bytes": 3887
+    },
+    {
+      "path": "domainry-connectors/README.md",
+      "sha256": "23bf082176c2b36d59f4eacb80a9c1be1b0c84fee076b6720dea99d77e89cfea",
+      "bytes": 3359
+    },
+    {
+      "path": "domainry-connectors/go.mod",
+      "sha256": "b00b4a2a52827a6eeaed0999671561c9bff1f315e0fc6ffb7f3bd8b03124b7e9",
+      "bytes": 420
+    },
+    {
+      "path": "domainry-connectors/go.sum",
+      "sha256": "e43395d077f9c9536103f4df89e75ae43ce90453e4b185f009a0d91a0e92b70f",
+      "bytes": 7207
+    },
+    {
+      "path": "domainry-connectors/internal/architecture/layout_test.go",
+      "sha256": "a0f93d2d98bf186ca2c87e1d2af02a44c98268da31eda8ea3b4788f830ff659f",
+      "bytes": 1541
+    },
+    {
+      "path": "domainry-connectors/internal/mailcontent/text.go",
+      "sha256": "d1d4645ff3714f269295d6e327e57bd3f451e43283eb7d4b1056191fe782d61a",
+      "bytes": 4389
+    },
+    {
+      "path": "domainry-connectors/internal/mailcontent/text_test.go",
+      "sha256": "8412b28695cb206139ccbad946adaa3eac7391f66dda31f5daff63408ec1830b",
+      "bytes": 2305
+    },
+    {
+      "path": "domainry-connectors/internal/mailpaging/cursor.go",
+      "sha256": "e11073d2f6739b18ed2b48fa51c3e66bf7f96aca526833beb4ac5a8001512c5d",
+      "bytes": 1698
+    },
+    {
+      "path": "domainry-connectors/internal/mailpaging/cursor_test.go",
+      "sha256": "e75cf49ab9aaaa5e238838c29d1268a5f572625645631ddda81da49f978fda59",
+      "bytes": 1047
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/background.go",
+      "sha256": "22cc49524fe263fb690e03c2fe2dc3f66f45ac78881e48de7d42930f952001fe",
+      "bytes": 25035
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/mail.go",
+      "sha256": "fb4eecdfb894172db8852a193768debd69537ed7c88c1b045290bca0b810cf27",
+      "bytes": 7021
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/mail_body.go",
+      "sha256": "52be55144add989d1e74b7abc2f65e04fe4205bce08204b73176c407edff0cc0",
+      "bytes": 6285
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/mail_limits_test.go",
+      "sha256": "a779a249ab327a7bf48f5c4ff608005868dd5b974af3adb259a42934a9a9cffd",
+      "bytes": 6054
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/mail_message.go",
+      "sha256": "37146f72fc74a7800b7a7ce806fb0ae108be2b88670698a01a217c137e77cc70",
+      "bytes": 3517
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/mail_test.go",
+      "sha256": "adbc4ced603cc66120c7a2d703955744db8bfecff56aa05b804812eebc819f92",
+      "bytes": 13630
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/oauth_operation_scopes.go",
+      "sha256": "8b98b20d7e97a611520cd0da5e5545a73fba004b1b88076e28552862fc124d4a",
+      "bytes": 1750
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/operations.go",
+      "sha256": "421849fee39d94690cd7ea6e63d8d0a57a0d247675b28fd49135aafbea07591a",
+      "bytes": 13715
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/provider.go",
+      "sha256": "2d9c09fce1290109880cad1f02d60b6a4c6cff281a6741e7c8f354f56ab5ed8d",
+      "bytes": 14170
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-contract-google/checks.json",
+      "sha256": "d0b930b464066577c458a9e19c16751b3f03ea6bbd8bb4de87cea7c5725f5e7a",
+      "bytes": 587
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-contract-google/connectors-full.log",
+      "sha256": "7c437bdbb09c3dccd83647befa91bac8b9191e81680bbe754c00b7797a1c8587",
+      "bytes": 11217
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-contract-google/connectors-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-contract-google/google-race-final.log",
+      "sha256": "ca1672e4e55eec0696ec4e773ca5eb34a1833101ef947aea0690dcc654ab979f",
+      "bytes": 231
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-contract-google/google-race-initial.log",
+      "sha256": "f7d8a9fd0caa4d5ad76b2a18d8eb20489b4424475e994844228f76da0c02b07c",
+      "bytes": 231
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-contract-google/integration-compatibility.log",
+      "sha256": "4c034d3f2406e115a8ce0c54d749d62e6b5a23b0e3eb8f1e3a5c09e74f88dca4",
+      "bytes": 2106
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-contract-google/sdk-race-final.log",
+      "sha256": "03ea206f2ed31f58e375e7e70a3b2a3069d37b0023b89bb3a0349729869cbde0",
+      "bytes": 327
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-contract-google/sdk-race.log",
+      "sha256": "b960a86afb601be4bfb28faeb080f6f1acd4bc7c5377ce17417e3a42d932ecff",
+      "bytes": 319
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-contract-google/sdk-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "next": "Microsoft provider, then Tools/product and mail/draft E2E"
+}

@@ -1,0 +1,19 @@
+{
+  "date": "2026-09-11",
+  "name": "domainry-agent-attachment-acceptance-20260911",
+  "team_name": "codeck-team",
+  "origin": "https://api.verdent.ai",
+  "import_type": "api_push",
+  "purpose": "isolated K07 synthetic private attachment acceptance",
+  "creation_started": true,
+  "creation_confirmed": true,
+  "kb_id": "kb-1a07a88ed780",
+  "contains_user_documents": false,
+  "production_configuration_changed": false,
+  "cleanup_status": "synthetic document deleted and fetch/search absence verified; empty dedicated KB retained for repeatable acceptance",
+  "team_id": "1470194374940573696",
+  "initial_indexed_documents": 0,
+  "live_acceptance_passed": true,
+  "live_acceptance_seconds": 58.9,
+  "synthetic_doc_id": "dka_172cb143f5c0bf7f9051fc8a7b48ea76f95e0f411a2934bdb98127ca9d98e635"
+}

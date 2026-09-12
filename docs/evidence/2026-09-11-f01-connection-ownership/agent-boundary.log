@@ -1,0 +1,8 @@
+=== RUN   TestApplicationDoesNotImportAdaptersOrOtherServiceImplementations
+--- PASS: TestApplicationDoesNotImportAdaptersOrOtherServiceImplementations (0.04s)
+=== RUN   TestPersistenceImplementationStaysInternal
+--- PASS: TestPersistenceImplementationStaysInternal (0.00s)
+=== RUN   TestModuleUsesTaggedDependencies
+--- PASS: TestModuleUsesTaggedDependencies (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/architecture	0.684s

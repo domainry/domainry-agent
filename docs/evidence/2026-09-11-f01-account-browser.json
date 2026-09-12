@@ -1,0 +1,636 @@
+{
+  "todo": "F01",
+  "status": "account_browser_substep_verified; F01 remains open",
+  "captured_at": "2026-09-11T09:09:27.255910+00:00",
+  "issuer": "isolated local HTTP token protocol; official Google Provider; no real vendor consent",
+  "identity": "actual Identity module, current permission authoring/resolution and sessions",
+  "browser": {
+    "scenarios": 8,
+    "javascript_errors": 0,
+    "sensitive_referrers": 0,
+    "exchanges": 2,
+    "probes": 1,
+    "final_report": "browser-final/report.json",
+    "mobile_verified": true
+  },
+  "saas": "separately built production Integration executable and actual product Identity, three starts with persistent database; config/start/reject/receipt flow only",
+  "remaining": [
+    "Tools-owned persisted user switches and live connection availability",
+    "execution, recovery and historical-result enforcement of those switches",
+    "real vendor application and consent acceptance"
+  ],
+  "commands": [
+    {
+      "cwd": "domainry-agent",
+      "command": "go test ./...",
+      "log": "agent-full.log",
+      "note": "before adding opt-in SaaS process test; subsequent targeted process test verified"
+    },
+    {
+      "cwd": "domainry-agent-sdk",
+      "command": "GOWORK=/Users/tiger/Projects/domainry-agent/go.work go test ./...",
+      "log": "agent-sdk-full.log"
+    },
+    {
+      "cwd": "domainry-work",
+      "command": "GOWORK=/Users/tiger/Projects/domainry-agent/go.work go test ./...",
+      "log": "work-full.log"
+    },
+    {
+      "cwd": "domainry-pm",
+      "command": "GOWORK=/Users/tiger/Projects/domainry-agent/go.work go test ./...",
+      "log": "pm-full.log"
+    },
+    {
+      "cwd": "domainry-agent",
+      "command": "go test -race ./internal/assembly/web -run '^TestExternalAccounts(CurrentIdentity|Gateway)' -count=1 -v",
+      "log": "accounts-race.log"
+    },
+    {
+      "cwd": "domainry-agent",
+      "command": "AGENT_ACCOUNTS_BROWSER=1 AGENT_NODE_BINARY=<node> AGENT_PLAYWRIGHT_MODULE=<playwright> AGENT_UI_TEST_OUTPUT=<output> go test ./internal/assembly/web -run '^TestExternalAccountsBuiltBrowser$' -count=1 -v",
+      "log": "browser-final.log"
+    },
+    {
+      "cwd": "domainry-agent",
+      "command": "go build -o /tmp/domainry-f01-integration-server github.com/domainry/domainry-integration/cmd/integration-server; AGENT_INTEGRATION_TEST_BINARY=/tmp/domainry-f01-integration-server go test ./internal/assembly/product -run '^TestIntegration' -count=1 -v",
+      "log": "saas-product-process-verified.log"
+    },
+    {
+      "cwd": "domainry-agent",
+      "command": "go vet ./internal/assembly/web ./internal/assembly/product ./internal/transport/http/product ./cmd/domainry-agent-web",
+      "log": "agent-vet.log"
+    },
+    {
+      "cwd": "domainry-agent",
+      "command": "npm --prefix frontend test",
+      "log": "frontend-tests.log"
+    },
+    {
+      "cwd": "domainry-agent",
+      "command": "npm --prefix frontend run build",
+      "log": "frontend-build-mobile.log"
+    },
+    {
+      "cwd": "domainry-work",
+      "command": "npm --prefix frontend run build",
+      "log": "work-frontend-final.log"
+    },
+    {
+      "cwd": "domainry-pm",
+      "command": "npm --prefix frontend run build",
+      "log": "pm-frontend-final.log"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "domainry-agent/README.md",
+      "bytes": 8333,
+      "sha256": "941743204d91858cc8c342055754dd3308b4df37fc1ec4b8177709d5f06e8726"
+    },
+    {
+      "path": "domainry-agent/go.mod",
+      "bytes": 3542,
+      "sha256": "085e865330136c87701fc9deb6068aec3965777b22fcb0d05e7eb6f772be40c8"
+    },
+    {
+      "path": "domainry-agent/docs/remaining-capability-boundaries.md",
+      "bytes": 10474,
+      "sha256": "e60d035140f63a61f86b7061bf2dc37c88f2053a8fc329fee62db3e18845689e"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f01-account-browser.md",
+      "bytes": 7558,
+      "sha256": "bbb45c04f74f53ff5481be36d0908f676e72b4c60755528432e2b41b71cff355"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/host.go",
+      "bytes": 10349,
+      "sha256": "8781a2f264b0940fa61c5960790c0082fe21d99907cf5e1f6fa292cd67d2e2ce"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/integration.go",
+      "bytes": 4656,
+      "sha256": "84ef1ba922cf15d7d6bfebf86624e1c71cfb6d46eda4a0df7fd5c16752a3856f"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/integration_accounts_test.go",
+      "bytes": 18482,
+      "sha256": "af6685fd7922964bbf7ddb9bb67883629b020783ee2f5c733f612b576064789d"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/integration_accounts_browser_test.go",
+      "bytes": 3751,
+      "sha256": "305ba6473e1af771304d45a49063dc1a3875bbb3737ce7ad0405052a1eae2eae"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/product/integration.go",
+      "bytes": 1338,
+      "sha256": "c3fb82bd78ed254a5cd7f503a82ce2129030ee593df07fb4a069b93f3fa0271e"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/product/integration_test.go",
+      "bytes": 8240,
+      "sha256": "a6abf730d8a49200124d0de29091b3c6235272ad2e57b2d495f1dbd29a690fe0"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/product/product.go",
+      "bytes": 6060,
+      "sha256": "3874b6c8dd780657dc802cab86b8ee9cb548c7dca87245c459ea5f93ad501c65"
+    },
+    {
+      "path": "domainry-agent/internal/transport/http/product/setup.go",
+      "bytes": 8264,
+      "sha256": "898d0fb409f3f738237535c3b7a9dc84561417fb0f10c962d787f0b9d8d03758"
+    },
+    {
+      "path": "domainry-agent/cmd/domainry-agent-web/main.go",
+      "bytes": 5440,
+      "sha256": "f7227e943d3c6c223f120210e25365e22c49358ca173784326d438a26ffac310"
+    },
+    {
+      "path": "domainry-agent/internal/architecture/layout_test.go",
+      "bytes": 2911,
+      "sha256": "4999791333b8d90f230dda2617e7e07c5448903f04b376074005def9a4d676da"
+    },
+    {
+      "path": "domainry-agent/frontend/package.json",
+      "bytes": 1518,
+      "sha256": "19e8e81785b92e5081619603f4aa962adb4fd2fcfbc1e6a0c442d1707bb1a47f"
+    },
+    {
+      "path": "domainry-agent/frontend/package-lock.json",
+      "bytes": 338816,
+      "sha256": "b03553b6785be1f26dfb5503ace13ca1117115965ce5d80a0b17ef93745491c9"
+    },
+    {
+      "path": "domainry-agent/frontend/vite.config.ts",
+      "bytes": 1092,
+      "sha256": "78de7e8caac7c1c5469eba54378775e4a85657e129aeaef515b16b9e621b6453"
+    },
+    {
+      "path": "domainry-agent/frontend/build-product.mjs",
+      "bytes": 1046,
+      "sha256": "219a005e3fb10ff3fa88c46022c2914bf453fb543b8d82f8d7406650fc8811bf"
+    },
+    {
+      "path": "domainry-agent/frontend/oauth-callback.html",
+      "bytes": 462,
+      "sha256": "f422dddf59f602a44bf8f6e93f01b41fa1136d16cc5ce4faa6cab893ebf36fe9"
+    },
+    {
+      "path": "domainry-agent/frontend/src/ExternalAccountsDialog.tsx",
+      "bytes": 16778,
+      "sha256": "7f7f11a4e23c05c34c3536d7f9f48cea7204e8c8f4129ec679c0e8258758aea9"
+    },
+    {
+      "path": "domainry-agent/frontend/src/external-account-state.ts",
+      "bytes": 2637,
+      "sha256": "ab758ee33ef60bf08b5ba85ec9a8b7a217ec0a250172dc28e18730639d3ec871"
+    },
+    {
+      "path": "domainry-agent/frontend/src/oauth-callback.ts",
+      "bytes": 2061,
+      "sha256": "fc53fad944bbf5fd630450d9a11316ba427cda42017bdc85cc384999022a33f7"
+    },
+    {
+      "path": "domainry-agent/frontend/src/session.ts",
+      "bytes": 4258,
+      "sha256": "1fd7883c7fa562273af7ae5ba9621c7ec5a66474ea321b4b7a19403d88618485"
+    },
+    {
+      "path": "domainry-agent/frontend/src/App.tsx",
+      "bytes": 44012,
+      "sha256": "b23dc835c64f397dae978bd9a77e817b73b82691dfae8c784f254356c5637689"
+    },
+    {
+      "path": "domainry-agent/frontend/src/ProductWorkspace.tsx",
+      "bytes": 18206,
+      "sha256": "7978466dc2574c8d78ac42556e8db15656d3ac7c47d9606b81080c67b7a4c412"
+    },
+    {
+      "path": "domainry-agent/frontend/src/index.css",
+      "bytes": 41118,
+      "sha256": "ff8822b1ddacac64e09c053b43934a9ab313f3f0214acebacbaf2bb815b4625d"
+    },
+    {
+      "path": "domainry-agent/frontend/tests/external-accounts.browser.mjs",
+      "bytes": 11996,
+      "sha256": "282cf59fe7ddb7e1b375b6034c4543c80e446e28cdc079522dda0c9420f2872b"
+    },
+    {
+      "path": "domainry-agent-sdk/browsergateway/handler.go",
+      "bytes": 14466,
+      "sha256": "e215a31ddd6f16b1ef5170e5bcde79c695986e82a4e54ccbbfc992762abdc077"
+    },
+    {
+      "path": "domainry-agent-sdk/browsergateway/modules.go",
+      "bytes": 5179,
+      "sha256": "3dfa064da72298a4bbd2677778d271cda6311a4571d47eff4e3d818373279875"
+    },
+    {
+      "path": "domainry-agent-sdk/README.md",
+      "bytes": 16858,
+      "sha256": "35713f1bec1683ab27b24e2b2e2251644cad0c7a12bd3faa7c9074609265c334"
+    },
+    {
+      "path": "domainry-integration-sdk/oauth.go",
+      "bytes": 4004,
+      "sha256": "042787de502b89660eea2b59cc211d248e8d8fbfb1b9d06680a5ce7e499cd347"
+    },
+    {
+      "path": "domainry-integration-sdk/connection_accounts.go",
+      "bytes": 4876,
+      "sha256": "c20266892a40e45f48494372021a92ffd0d0ebfce4dcb3b40f405f7175053fcc"
+    },
+    {
+      "path": "domainry-integration-sdk/browser/src/client.ts",
+      "bytes": 14865,
+      "sha256": "be5241b4ac462babf40815b4c9facddc8e6c654be83fd417096e2862297f7e33"
+    },
+    {
+      "path": "domainry-integration-sdk/browser/src/types.ts",
+      "bytes": 8866,
+      "sha256": "823b51586d7390ef0ddd16e7095b45a07660ae4bce03a6fb0b49a7a58c587db2"
+    },
+    {
+      "path": "domainry-integration-sdk/browser/src/index.ts",
+      "bytes": 1227,
+      "sha256": "ce9f193f970b49493d8e1f2f06d6c518650e8ff8930d73bc2bc9b374be163fb1"
+    },
+    {
+      "path": "domainry-integration-sdk/browser/dist/index.js",
+      "bytes": 49,
+      "sha256": "146117c08ee52bbfb89b6ba7672f1e7062730df40447dd448df0c0eff16998f2"
+    },
+    {
+      "path": "domainry-integration/module/module.go",
+      "bytes": 1124,
+      "sha256": "79e8497a0525b6f2a4b1f73ec4c5733ba50529aaff7e2e53175ee32a328013e0"
+    },
+    {
+      "path": "domainry-integration/cmd/integration-server/main.go",
+      "bytes": 4907,
+      "sha256": "08ef8b8911fd6e90022a47f56beca9213fb030f2fd66401633e44f3dc6b34200"
+    },
+    {
+      "path": "domainry-connectors/module/module.go",
+      "bytes": 570,
+      "sha256": "08b605dffef70ccd317d31ef0ac25d33673f22b94ae20fb5d476375da300876d"
+    },
+    {
+      "path": "domainry-work/frontend/oauth-callback.html",
+      "bytes": 491,
+      "sha256": "b18b8b6a356914b7b60fcc1c72d3f223f8983b990a5a1ad5c2aa47c8070097b2"
+    },
+    {
+      "path": "domainry-pm/frontend/oauth-callback.html",
+      "bytes": 491,
+      "sha256": "b18b8b6a356914b7b60fcc1c72d3f223f8983b990a5a1ad5c2aa47c8070097b2"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/accounts-race.log",
+      "bytes": 2548,
+      "sha256": "96c601d5a9e7cdfcd8ee99e8b53b7b6ea9e18e7b9f03347b9133503103af47de",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/agent-full.log",
+      "bytes": 2765,
+      "sha256": "12101170d236efdf2d485fe192915bb9b6e5f81a3b543edb9e46a1043336d643",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/agent-sdk-full.log",
+      "bytes": 540,
+      "sha256": "e03a9b0c839eecc7bc06a61712c248be03c655e3b9abbd654e569d20a59e0b34",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/agent-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-final/application-configured.png",
+      "bytes": 153272,
+      "sha256": "ac89a1361efccb5d117bb59fcb3157ce97aad231578ca068c32ad842b2c5b161",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-final/authorization-rejected.png",
+      "bytes": 208866,
+      "sha256": "8393077bf95f5f1ca741a277fc25d1c39f292828f9a7fa0651ea635d1d8f2e2a",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-final/host-audit.json",
+      "bytes": 201,
+      "sha256": "bc852c92fff84d99ac04fba3c26a18a4bcea761ef036d65fbbe64ee4b987ffe7",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-final/lost-response-restarted.png",
+      "bytes": 233463,
+      "sha256": "12dd27fe92474bd6589308621747bfae5e3528e632c4bf4bbb52096d9b6053ed",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-final/mobile-revoked.png",
+      "bytes": 59966,
+      "sha256": "6fd6fe0d77bf71470d13769ceeb709ccc310709b75c296ddfc5c58ae3583d693",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-final/personal-connected.png",
+      "bytes": 149946,
+      "sha256": "d17d22a718a3521b1f6d5724a2b0f2d3ae581e888db3b77c906559257fae22ee",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-final/report.json",
+      "bytes": 1165,
+      "sha256": "97a51b885498815bd68c3c03c5c9ae382217d4350b81f803ae6dbce66f826373",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-final.log",
+      "bytes": 1117,
+      "sha256": "57aa64b89e271fafd1881134ee41104e91f72939f98869ded9a37d6af8df2b57",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-initial/failure.png",
+      "bytes": 125070,
+      "sha256": "9d41d00669b599084799f8e8522cc0de69496e5369cd10f2c1453f52822f89fc",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-initial/report.json",
+      "bytes": 263,
+      "sha256": "21aa38ad2b40ad8b7e03bf1aec38e50e92b75a5090059055338137e048d4ba36",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-initial.log",
+      "bytes": 858,
+      "sha256": "4d2b899ec34336f32cfd74cb009c564c8318ef65e3669d37ecd4d7c482ea2ccb",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed/application-configured.png",
+      "bytes": 153598,
+      "sha256": "17670cd82179c5db76891f5ca2b2db27e86e824b65510c89232e401c09d3fba2",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed/authorization-rejected.png",
+      "bytes": 208655,
+      "sha256": "6976ccdc89a5cbe404711bdfb172c5e8641ede55460d7371fac4245d18805470",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed/failure.png",
+      "bytes": 17898,
+      "sha256": "7e5daf03524688af94b772ae33293a3e35cc48203ec8a3cd0a87f7179e2e30e1",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed/lost-response-restarted.png",
+      "bytes": 230098,
+      "sha256": "dd67d5f51883a1fb994b910f298a6f9223b425e2b86bea7968b87c7e9ef148c4",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed/personal-connected.png",
+      "bytes": 149942,
+      "sha256": "5aa780ac49ddfefa9c3383aa5e1d1a581e69419d764d6731a2af6dc3ab04f727",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed/report.json",
+      "bytes": 922,
+      "sha256": "644e0bfd20d294b28b3d330a60ea74927ac2ff72810d4a55ac44a0190aa12fbf",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed.log",
+      "bytes": 1398,
+      "sha256": "6c3298587fdb927ef31742b6614af01ccab02b03e9e8b98fa159ca10236cd135",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-retry1/application-configured.png",
+      "bytes": 153154,
+      "sha256": "98c78fe1529a0eca5acfb80d8397c42e59bd1e546a055bbb49defa628e5609f2",
+      "result": "early_functional_pass; superseded mobile acceptance"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-retry1/authorization-rejected.png",
+      "bytes": 211568,
+      "sha256": "cddf263887d2bf5b5215a11e2a3ccb6dec0ccec6b7a58e68bb3b50a945a7ed91",
+      "result": "early_functional_pass; superseded mobile acceptance"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-retry1/host-audit.json",
+      "bytes": 201,
+      "sha256": "bc852c92fff84d99ac04fba3c26a18a4bcea761ef036d65fbbe64ee4b987ffe7",
+      "result": "early_functional_pass; superseded mobile acceptance"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-retry1/lost-response-restarted.png",
+      "bytes": 230586,
+      "sha256": "e9649509472bd236a356246543f406d3f90d7158b8357d6ff61fbf4d75970023",
+      "result": "early_functional_pass; superseded mobile acceptance"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-retry1/mobile-revoked.png",
+      "bytes": 16130,
+      "sha256": "98f7f6c2e2d88dff4fcac2d1cc20b01453c3ec9dbf699625a80b90615992a0ef",
+      "result": "early_functional_pass; superseded mobile acceptance"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-retry1/personal-connected.png",
+      "bytes": 149942,
+      "sha256": "5aa780ac49ddfefa9c3383aa5e1d1a581e69419d764d6731a2af6dc3ab04f727",
+      "result": "early_functional_pass; superseded mobile acceptance"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-retry1/report.json",
+      "bytes": 889,
+      "sha256": "db1c26f6367a93ab10b521ba5f39605d5be54d479fed4f667fbec07358e6428e",
+      "result": "early_functional_pass; superseded mobile acceptance"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-retry1.log",
+      "bytes": 971,
+      "sha256": "e55358631601f6720c37bc8ddd104b7096e71beeea0d2c95d0de3ccc5036cc17",
+      "result": "early_functional_pass; superseded mobile acceptance"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-verified/application-configured.png",
+      "bytes": 153241,
+      "sha256": "b1f98c519bebcae72846d31eb6846503229308177d55e256e63790ef01dda6f9",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-verified/authorization-rejected.png",
+      "bytes": 186578,
+      "sha256": "d650e77bce218a72f0d3ac398fce87c1cd6e6accfb40adcbbab2cdc6803462f9",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-verified/failure.png",
+      "bytes": 152585,
+      "sha256": "47c4f5dbf49d351faf2ba17c1760bbc7cb32d373f745ca774d6068cf2684b101",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-verified/personal-connected.png",
+      "bytes": 149942,
+      "sha256": "5aa780ac49ddfefa9c3383aa5e1d1a581e69419d764d6731a2af6dc3ab04f727",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-verified/report.json",
+      "bytes": 721,
+      "sha256": "9f0309e0089ca75139ad5c99d9c6cb4bd858d49ff7cb3f985e9100dd822436cd",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/browser-verified.log",
+      "bytes": 1295,
+      "sha256": "17dbb897ba60aec635cf2a9ca825e985565007200d3a59635ae6e814b0921ada",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/diff-check.log",
+      "bytes": 14632,
+      "sha256": "20c251b5a1ec7864bdf141e0e4eb421cd3d8c1d944afd7f96a207a52d011713e",
+      "result": "Agent and Agent SDK passed; Work/PM directories have no Git repository (exit 129), no git diff claim"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/frontend-build-mobile.log",
+      "bytes": 32522,
+      "sha256": "36e49b1f6c7de5dace1899441ffdd1bc29a2e5c7b0562ca466f7fa5f5c36ee8c",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/frontend-build-setup.log",
+      "bytes": 32522,
+      "sha256": "eb98e8ee26d39ad71c0fd52d59e842ec56b81d9e3edae4c5ecca9b2541680c60",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/frontend-build.log",
+      "bytes": 32522,
+      "sha256": "e7eed991ad3fab34d895859ed8cacf746b7e329d629b91bac20a754a047fb757",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/frontend-tests.log",
+      "bytes": 10436,
+      "sha256": "5f17f84862ee7f49b671dc2093e49182cd018bbdfc99836df5a166fd93e42069",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/identity-http-retry.log",
+      "bytes": 293,
+      "sha256": "b850ff3e366b8f5e9802aa453dab977b466e87544ff823746052e617a451a2d1",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/identity-http-retry2.log",
+      "bytes": 282,
+      "sha256": "599c7aabd67b96e6562cbb5d27be266f8d0b2940c985885e384b18a0717417ca",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/identity-http-retry3.log",
+      "bytes": 415,
+      "sha256": "56715ad18616815d4535846bf807843e33b53996677eb2bb965e921159a53722",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/identity-http-retry4.log",
+      "bytes": 435,
+      "sha256": "35f22939e3a662167f3efdf68df5e2c528b5c3953610bfa9d15f3a758be45586",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/identity-http-retry5.log",
+      "bytes": 441,
+      "sha256": "e34c8f3a64f1f02c442adb4bacf573948f8dc95872b87150edc6ca22f64b80b8",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/identity-http-setup.log",
+      "bytes": 212,
+      "sha256": "1f549fec9787d328ec190639da15d4e69b5be5e35b176e1e75bd746c93aa993a",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/identity-http.log",
+      "bytes": 649,
+      "sha256": "aa952a3156e967e72fdb0664bc64e74d473442c9d9bf502c8d550458853cef1d",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/pm-frontend-build.log",
+      "bytes": 32559,
+      "sha256": "67399b2e53173749db611f4e5f62e48e1cccdde3e5f7042af073ea944ca42cd8",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/pm-frontend-final.log",
+      "bytes": 32559,
+      "sha256": "42aaae8afb979e61555a03d0fcbe42466dce1994c86312b9bad09b6f4efde995",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/pm-full.log",
+      "bytes": 548,
+      "sha256": "2b8c69ae7454fcb7d97b685d3c5efed729ff2d7098d1059dcaec76360f302a1a",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/saas-product-process-retry.log",
+      "bytes": 442,
+      "sha256": "d0aa0b6c0455a7aad0099cdbdf573555de904cba92dec95fd87f41980f4e29b6",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/saas-product-process-verified.log",
+      "bytes": 577,
+      "sha256": "844119a1b56194b802892937ab43a2c01480f5c06f85e192b618112f6a91ef13",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/saas-product-process.log",
+      "bytes": 593,
+      "sha256": "81cfa0b6cc927dcbe21d1fc44230c56171b997009803c46af67536daeeccb74b",
+      "result": "failed_attempt_preserved"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/work-frontend-build.log",
+      "bytes": 32563,
+      "sha256": "2c4133b69624eea604542f9996fa1596136196fcc63a0fc1aabb408c77729356",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/work-frontend-final.log",
+      "bytes": 32563,
+      "sha256": "cbce9d83d44a6842f96200620d3536525370d26af9e177100cd6381cfa77500d",
+      "result": "passed_or_supporting_artifact"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f01-account-browser/work-full.log",
+      "bytes": 549,
+      "sha256": "a0b2ac79abad77355fa8ff7b7b4a3d76b2859703ca7b01d2ec5995efed498cf9",
+      "result": "passed_or_supporting_artifact"
+    }
+  ]
+}

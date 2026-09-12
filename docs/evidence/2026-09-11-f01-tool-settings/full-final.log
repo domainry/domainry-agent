@@ -1,0 +1,102 @@
+?   	github.com/domainry/domainry-agent/capability	[no test files]
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	1.758s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-playground	[no test files]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/definition	(cached)
+--- FAIL: TestConversationCatalogConnectionChangesAndFrozenResume (0.01s)
+    conversation_tool_catalog_integration_test.go:86: disconnected={AccessError:source_access_unavailable ID:crun_5f2bb4f13d3e935842a4c9f39f21e5d1 ConversationID:conv_68c4ea122ba55b13d90d8bdca5fda839 ClientMessageID:one RequestHash:af5d0e662a1d1e9e46572d53ce1477b8cacf861245c009349903f0da0cd4339d Status:failed UserSeq:1 AssistantMessageID: Attempt:2 DraftText: DraftBytes:0 LastEventSeq:13 Steps:[] Interaction:<nil> LastInputSeq:0 WriteScope:<nil> Model: Usage:map[] ErrorCode:tool_unavailable CreatedAt:2026-09-11 09:54:59.003033 +0000 UTC UpdatedAt:2026-09-11 09:54:59.009964 +0000 UTC}
+FAIL
+FAIL	github.com/domainry/domainry-agent/integration	81.916s
+ok  	github.com/domainry/domainry-agent/internal/application	2.004s
+ok  	github.com/domainry/domainry-agent/internal/architecture	2.669s
+?   	github.com/domainry/domainry-agent/internal/assembly/conversation	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	1.194s
+?   	github.com/domainry/domainry-agent/internal/assembly/saas	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	81.973s
+ok  	github.com/domainry/domainry-agent/internal/capability	(cached)
+?   	github.com/domainry/domainry-agent/internal/composition	[no test files]
+?   	github.com/domainry/domainry-agent/internal/dataaccess	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/execution	(cached)
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence	(cached)
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/base	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	(cached)
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost	(cached)
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	(cached)
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	(cached)
+ok  	github.com/domainry/domainry-agent/internal/transport/http/playground	(cached)
+?   	github.com/domainry/domainry-agent/internal/transport/http/product	[no test files]
+?   	github.com/domainry/domainry-agent/internal/transport/http/web	[no test files]
+ok  	github.com/domainry/domainry-agent/module	2.461s
+ok  	github.com/domainry/domainry-agent/remote	(cached)
+ok  	github.com/domainry/domainry-agent/server	(cached)
+?   	github.com/domainry/domainry-agent/testsupport	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/databasetest	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/producttest	[no test files]
+?   	github.com/domainry/domainry-agent/web	[no test files]
+?   	github.com/domainry/domainry-agent/webhost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk	(cached)
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	(cached)
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+ok  	github.com/domainry/domainry-integration/capability	(cached)
+ok  	github.com/domainry/domainry-integration/cmd/integration-server	4.441s
+ok  	github.com/domainry/domainry-integration/internal/adapter/integrationsdk	(cached)
+ok  	github.com/domainry/domainry-integration/internal/application/integration	(cached)
+ok  	github.com/domainry/domainry-integration/internal/architecture	3.268s
+ok  	github.com/domainry/domainry-integration/internal/assembly/module	3.935s
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	9.881s
+?   	github.com/domainry/domainry-integration/internal/domain/integration/model	[no test files]
+?   	github.com/domainry/domainry-integration/internal/domain/integration/repository	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/domain/integration/service	(cached)
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/connectortransport	(cached)
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/architecture	3.324s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	3.065s
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/migration	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/schema	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/security	(cached)
+ok  	github.com/domainry/domainry-integration/internal/transport/http/module	(cached)
+?   	github.com/domainry/domainry-integration/internal/transport/http/saas	[no test files]
+ok  	github.com/domainry/domainry-integration/module	5.325s
+ok  	github.com/domainry/domainry-integration-sdk	(cached)
+?   	github.com/domainry/domainry-integration-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-integration-sdk/remote	(cached)
+?   	github.com/domainry/domainry-integration-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-tools/calculation	[no test files]
+?   	github.com/domainry/domainry-tools/internal/adapter/recordtools	[no test files]
+ok  	github.com/domainry/domainry-tools/internal/application/preferences	2.948s
+ok  	github.com/domainry/domainry-tools/internal/application/tool	(cached)
+ok  	github.com/domainry/domainry-tools/internal/architecture	2.587s
+ok  	github.com/domainry/domainry-tools/internal/assembly/preferences	(cached)
+?   	github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences	[no test files]
+?   	github.com/domainry/domainry-tools/internal/transport/http/preferences	[no test files]
+?   	github.com/domainry/domainry-tools/module	[no test files]
+?   	github.com/domainry/domainry-tools/timeutil	[no test files]
+?   	github.com/domainry/domainry-tools-sdk	[no test files]
+?   	github.com/domainry/domainry-tools-sdk/modulehost	[no test files]
+?   	github.com/domainry/domainry-tools-sdk/schema	[no test files]
+?   	github.com/domainry/domainry-work/cmd/domainry-work	[no test files]
+?   	github.com/domainry/domainry-work/internal/application/office	[no test files]
+ok  	github.com/domainry/domainry-work/internal/architecture	2.241s
+ok  	github.com/domainry/domainry-work/internal/assembly/saas	6.006s
+?   	github.com/domainry/domainry-work/internal/domain/office/model	[no test files]
+?   	github.com/domainry/domainry-work/internal/domain/office/service	[no test files]
+?   	github.com/domainry/domainry-work/internal/infrastructure/config	[no test files]
+?   	github.com/domainry/domainry-pm/cmd/domainry-pm	[no test files]
+?   	github.com/domainry/domainry-pm/internal/application/requirement	[no test files]
+ok  	github.com/domainry/domainry-pm/internal/architecture	2.567s
+ok  	github.com/domainry/domainry-pm/internal/assembly/saas	4.682s
+?   	github.com/domainry/domainry-pm/internal/domain/requirement/model	[no test files]
+?   	github.com/domainry/domainry-pm/internal/domain/requirement/service	[no test files]
+?   	github.com/domainry/domainry-pm/internal/infrastructure/config	[no test files]
+FAIL

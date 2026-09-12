@@ -1,0 +1,16 @@
+=== RUN   TestCalendarReadOAuthHTTPModuleSaaSAndRestart
+=== RUN   TestCalendarReadOAuthHTTPModuleSaaSAndRestart/google/module
+    calendar_read_flow_test.go:408: real HTTP + SQLite + actual Provider + OAuth PKCE + private refresh; four calendar reads; current-user denial; restart and sensitive replay; revocation passed
+=== RUN   TestCalendarReadOAuthHTTPModuleSaaSAndRestart/google/saas
+    calendar_read_flow_test.go:408: real HTTP + SQLite + actual Provider + OAuth PKCE + private refresh; four calendar reads; current-user denial; restart and sensitive replay; revocation passed
+=== RUN   TestCalendarReadOAuthHTTPModuleSaaSAndRestart/microsoft/module
+    calendar_read_flow_test.go:408: real HTTP + SQLite + actual Provider + OAuth PKCE + private refresh; four calendar reads; current-user denial; restart and sensitive replay; revocation passed
+=== RUN   TestCalendarReadOAuthHTTPModuleSaaSAndRestart/microsoft/saas
+    calendar_read_flow_test.go:408: real HTTP + SQLite + actual Provider + OAuth PKCE + private refresh; four calendar reads; current-user denial; restart and sensitive replay; revocation passed
+--- PASS: TestCalendarReadOAuthHTTPModuleSaaSAndRestart (29.51s)
+    --- PASS: TestCalendarReadOAuthHTTPModuleSaaSAndRestart/google/module (4.90s)
+    --- PASS: TestCalendarReadOAuthHTTPModuleSaaSAndRestart/google/saas (10.32s)
+    --- PASS: TestCalendarReadOAuthHTTPModuleSaaSAndRestart/microsoft/module (4.50s)
+    --- PASS: TestCalendarReadOAuthHTTPModuleSaaSAndRestart/microsoft/saas (9.78s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	33.083s

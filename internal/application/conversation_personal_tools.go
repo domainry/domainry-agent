@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/domainry/domainry-tools/timeutil"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -246,44 +247,11 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		}
 		return personalToolResult(page)
 	case "time_now":
-		var args struct {
-			Timezone string `json:"timezone"`
-			Relative string `json:"relative_date"`
-		}
+		var args timeutil.Input
 		_ = json.Unmarshal([]byte(in.Call.Arguments), &args)
-		location := h.timezone
-		source := "host_default"
-		if auth.UserTimezone != "" {
-			location, err = time.LoadLocation(auth.UserTimezone)
-			if err != nil {
-				return personalToolFailure("timezone_invalid"), nil
-			}
-			source = "user_profile"
-		}
-		if args.Timezone != "" {
-			location, err = time.LoadLocation(args.Timezone)
-			if err != nil {
-				return personalToolFailure("timezone_invalid"), nil
-			}
-			source = "requested"
-		}
-		now := h.now().In(location)
-		out := map[string]any{"now": now.Format(time.RFC3339Nano), "timezone": location.String(), "timezone_source": source, "date": now.Format("2006-01-02"), "weekday": now.Weekday().String()}
-		if args.Relative != "" {
-			days := 0
-			switch args.Relative {
-			case "tomorrow":
-				days = 1
-			case "yesterday":
-				days = -1
-			case "next_week":
-				days = 8 - int(now.Weekday())
-				if now.Weekday() == time.Sunday {
-					days = 1
-				}
-			}
-			out["relative_date"] = args.Relative
-			out["resolved_date"] = now.AddDate(0, 0, days).Format("2006-01-02")
+		out, err := timeutil.Resolve(args, h.now(), h.timezone, auth.UserTimezone)
+		if err != nil {
+			return personalToolFailure("timezone_invalid"), nil
 		}
 		return personalToolResult(out)
 	case "calculate":
@@ -303,7 +271,7 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		}
 		if _, ok := h.repo.(persistence.ConversationSourceRepository); ok {
 			service := h.sourceService()
-			audit := service.sourceAudit(in.Authority)
+			audit := service.sourceAudit(in.Authority, in.ConversationID)
 			items := make([]agentsdk.ConversationHistoryHit, 0, len(value.Items))
 			for _, hit := range value.Items {
 				if hit.Role == "assistant" {
@@ -331,7 +299,7 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		}
 		if _, ok := h.repo.(persistence.ConversationSourceRepository); ok && message.Role == "assistant" {
 			service := h.sourceService()
-			if _, err := service.sourceAudit(in.Authority).historyReference(ctx, message.ConversationID, message.ID, message.RunID); err != nil {
+			if _, err := service.sourceAudit(in.Authority, in.ConversationID).historyReference(ctx, message.ConversationID, message.ID, message.RunID); err != nil {
 				return personalToolFailure(sourceAccessCode(err)), nil
 			}
 		}

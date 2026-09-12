@@ -1,0 +1,8 @@
+=== RUN   TestToolSettingsConfirmationAcrossRestartRechecksDurableChoice
+    tool_settings_confirmation_test.go:79: PASS disabled after confirmation request, confirmation denied before mutation, disabled choice survives reopen, explicit enable permits original confirmation and one actual memory write
+--- PASS: TestToolSettingsConfirmationAcrossRestartRechecksDurableChoice (1.95s)
+=== RUN   TestToolSettingsCurrentIdentityCatalogConnectionAndRestart
+    tool_settings_test.go:210: PASS Identity/action/current catalog, Agent whitelist, actual calculation, disable/re-enable, CAS/lost response, owner input rejection, restart, permission revocation, OAuth actual grant, missing scope and account revoke
+--- PASS: TestToolSettingsCurrentIdentityCatalogConnectionAndRestart (2.56s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	4.985s

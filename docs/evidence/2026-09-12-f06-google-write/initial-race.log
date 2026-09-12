@@ -1,0 +1,76 @@
+=== RUN   TestAccountWriteRegistrationScopesAndReadIsolation
+--- PASS: TestAccountWriteRegistrationScopesAndReadIsolation (0.00s)
+=== RUN   TestAccountWriteCalendarInspectRejectsIncompleteTargets
+=== RUN   TestAccountWriteCalendarInspectRejectsIncompleteTargets/omitted
+=== RUN   TestAccountWriteCalendarInspectRejectsIncompleteTargets/hidden
+=== RUN   TestAccountWriteCalendarInspectRejectsIncompleteTargets/extra-guests
+=== RUN   TestAccountWriteCalendarInspectRejectsIncompleteTargets/cancelled
+=== RUN   TestAccountWriteCalendarInspectRejectsIncompleteTargets/no-etag
+=== RUN   TestAccountWriteCalendarInspectRejectsIncompleteTargets/wrong-target
+=== RUN   TestAccountWriteCalendarInspectRejectsIncompleteTargets/special-event
+=== RUN   TestAccountWriteCalendarInspectRejectsIncompleteTargets/too-many
+--- PASS: TestAccountWriteCalendarInspectRejectsIncompleteTargets (0.02s)
+    --- PASS: TestAccountWriteCalendarInspectRejectsIncompleteTargets/omitted (0.00s)
+    --- PASS: TestAccountWriteCalendarInspectRejectsIncompleteTargets/hidden (0.00s)
+    --- PASS: TestAccountWriteCalendarInspectRejectsIncompleteTargets/extra-guests (0.00s)
+    --- PASS: TestAccountWriteCalendarInspectRejectsIncompleteTargets/cancelled (0.00s)
+    --- PASS: TestAccountWriteCalendarInspectRejectsIncompleteTargets/no-etag (0.00s)
+    --- PASS: TestAccountWriteCalendarInspectRejectsIncompleteTargets/wrong-target (0.00s)
+    --- PASS: TestAccountWriteCalendarInspectRejectsIncompleteTargets/special-event (0.00s)
+    --- PASS: TestAccountWriteCalendarInspectRejectsIncompleteTargets/too-many (0.00s)
+=== RUN   TestAccountWriteCalendarCreateAndConditionalPatch
+--- PASS: TestAccountWriteCalendarCreateAndConditionalPatch (0.00s)
+=== RUN   TestAccountWriteCalendarConflictsNeverOverwrite
+=== RUN   TestAccountWriteCalendarConflictsNeverOverwrite/stale-before
+=== RUN   TestAccountWriteCalendarConflictsNeverOverwrite/stale-during
+=== RUN   TestAccountWriteCalendarConflictsNeverOverwrite/series-scope
+=== RUN   TestAccountWriteCalendarConflictsNeverOverwrite/resource-change
+=== RUN   TestAccountWriteCalendarConflictsNeverOverwrite/uncertain
+=== RUN   TestAccountWriteCalendarConflictsNeverOverwrite/duplicate-create
+--- PASS: TestAccountWriteCalendarConflictsNeverOverwrite (0.01s)
+    --- PASS: TestAccountWriteCalendarConflictsNeverOverwrite/stale-before (0.00s)
+    --- PASS: TestAccountWriteCalendarConflictsNeverOverwrite/stale-during (0.00s)
+    --- PASS: TestAccountWriteCalendarConflictsNeverOverwrite/series-scope (0.00s)
+    --- PASS: TestAccountWriteCalendarConflictsNeverOverwrite/resource-change (0.00s)
+    --- PASS: TestAccountWriteCalendarConflictsNeverOverwrite/uncertain (0.00s)
+    --- PASS: TestAccountWriteCalendarConflictsNeverOverwrite/duplicate-create (0.00s)
+=== RUN   TestAccountWriteMailExplicitTargetsMIMEAndNativeReply
+    account_write_test.go:351: {      } decode connector operation mail_send input: outgoing mail subject or text is invalid
+--- FAIL: TestAccountWriteMailExplicitTargetsMIMEAndNativeReply (0.00s)
+=== RUN   TestAccountWriteReplyRejectsChangedOrUnsafeOriginal
+=== RUN   TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/target
+=== RUN   TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/draft
+=== RUN   TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/reply-to
+=== RUN   TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/subject
+=== RUN   TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/missing-id
+=== RUN   TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/injected-id
+=== RUN   TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/unsafe-references
+=== RUN   TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/incomplete
+--- PASS: TestAccountWriteReplyRejectsChangedOrUnsafeOriginal (0.01s)
+    --- PASS: TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/target (0.00s)
+    --- PASS: TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/draft (0.00s)
+    --- PASS: TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/reply-to (0.00s)
+    --- PASS: TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/subject (0.00s)
+    --- PASS: TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/missing-id (0.00s)
+    --- PASS: TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/injected-id (0.00s)
+    --- PASS: TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/unsafe-references (0.00s)
+    --- PASS: TestAccountWriteReplyRejectsChangedOrUnsafeOriginal/incomplete (0.00s)
+=== RUN   TestAccountWriteMailUncertainAndRefreshPreservesSecrets
+=== RUN   TestAccountWriteMailUncertainAndRefreshPreservesSecrets/network
+=== RUN   TestAccountWriteMailUncertainAndRefreshPreservesSecrets/http500
+=== RUN   TestAccountWriteMailUncertainAndRefreshPreservesSecrets/invalid-json
+=== RUN   TestAccountWriteMailUncertainAndRefreshPreservesSecrets/missing-id
+=== RUN   TestAccountWriteMailUncertainAndRefreshPreservesSecrets/wrong-thread
+=== RUN   TestAccountWriteMailUncertainAndRefreshPreservesSecrets/http403
+--- PASS: TestAccountWriteMailUncertainAndRefreshPreservesSecrets (0.01s)
+    --- PASS: TestAccountWriteMailUncertainAndRefreshPreservesSecrets/network (0.00s)
+    --- PASS: TestAccountWriteMailUncertainAndRefreshPreservesSecrets/http500 (0.00s)
+    --- PASS: TestAccountWriteMailUncertainAndRefreshPreservesSecrets/invalid-json (0.00s)
+    --- PASS: TestAccountWriteMailUncertainAndRefreshPreservesSecrets/missing-id (0.00s)
+    --- PASS: TestAccountWriteMailUncertainAndRefreshPreservesSecrets/wrong-thread (0.00s)
+    --- PASS: TestAccountWriteMailUncertainAndRefreshPreservesSecrets/http403 (0.00s)
+=== RUN   TestAccountWriteInvalidEnvelopeAndPayloadHaveNoIO
+--- PASS: TestAccountWriteInvalidEnvelopeAndPayloadHaveNoIO (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-connectors/providers/google_workspace/google	0.705s
+FAIL

@@ -1,0 +1,33 @@
+{
+  "baseline_files": 740,
+  "changed_or_added": 22,
+  "deleted": [],
+  "previous_owner_stage_preserved_files": 252,
+  "previous_owner_stage_changed_files": [
+    "domainry-agent/docs/account-write-boundaries.md",
+    "domainry-agent/docs/agent-capabilities-todo.md",
+    "domainry-integration-sdk/connection_account_writes.go"
+  ],
+  "reviewed_unchanged_files": 949,
+  "dependency_packages": 219,
+  "external_implementation_dependencies": [],
+  "gofmt_clean": true,
+  "changed_git_files_diff_check": [
+    "domainry-agent",
+    "domainry-agent-sdk",
+    "domainry-integration-sdk"
+  ],
+  "repositories_without_git_metadata": [
+    "domainry-tools",
+    "domainry-tools-sdk"
+  ],
+  "llm_proxy": {
+    "head": "a32407a678ea7f96d70b7557765e2a01262184d4",
+    "clean": true
+  },
+  "todo": {
+    "checked": 54,
+    "total": 81,
+    "F06_complete": false
+  }
+}

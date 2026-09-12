@@ -1,0 +1,152 @@
+{
+  "todo": "F04",
+  "complete": false,
+  "stage": "Integration Web owner module/SaaS HTTP and sensitive invocation claim",
+  "captured_at": "2026-09-11T15:44:48.486491+00:00",
+  "path_base": "/Users/tiger/Projects",
+  "source_files": [
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-owner.md",
+      "bytes": 4334,
+      "sha256": "ac728a1ae05c1705c958fbbdee76709d626e380c5deab50315df83b73dd01770"
+    },
+    {
+      "path": "domainry-integration/README.md",
+      "bytes": 8020,
+      "sha256": "60898db5fe7de0e7ba87257f8c142ba44ae0464974fb35802b19d9efbfc3dd4e"
+    },
+    {
+      "path": "domainry-integration/internal/application/integration/connection_account_reads.go",
+      "bytes": 3926,
+      "sha256": "d6724b15e14071f7e3e5fc7f05aa4cc47225401842e9f22ac8e14d50c5b2539e"
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/connection_accounts_test.go",
+      "bytes": 10445,
+      "sha256": "0a22582f1b10e491cfebf9e5a326d7320d746be3f1d45cc42f5f1a69e2838380"
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/service_test.go",
+      "bytes": 9313,
+      "sha256": "d1be23d4edd3059d78d6dd6d94d4d80c8163312d69257045dbb5d3d2744891d4"
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/web_read_flow_test.go",
+      "bytes": 15549,
+      "sha256": "98130d68520df53bbb5cb72350d89d53d520d521ce034271b00c6c9dd4b362bc"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/connectortransport/public_web.go",
+      "bytes": 4536,
+      "sha256": "ecbb8351d66161cdf4eba4b7fa879e86ae07109f028765d17e43dafd2516b4fb"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_reads.go",
+      "bytes": 2485,
+      "sha256": "12cd5bae094bdfdc1259425506f1c2fe49d533697fd49176400c1e5b45b60066"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_store.go",
+      "bytes": 21451,
+      "sha256": "85af6808135b9774a2cc1072d31e2123aca4e92ae69c0ae7adf4844f374c9c0f"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_json_config_test.go",
+      "bytes": 745,
+      "sha256": "22272a1491e8e009fe801bd528783dcf1787799104b7a29c7c2b20f2db29e33c"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_validation.go",
+      "bytes": 7142,
+      "sha256": "a132e23f4453df7383095434385dccea7d64f89facae9b4b7c8c59a2857bb32e"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/delivery_store.go",
+      "bytes": 13189,
+      "sha256": "e591a14a27a8f4e6d455ff52e881ccbf79572f043c58a2c367adc0ec3cdbe4eb"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/operations_store.go",
+      "bytes": 11776,
+      "sha256": "05140e4b341b411891acfec5212187ef5af8b1188e29a8340cbd86477b9ee2c1"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/sensitive_call_claim_test.go",
+      "bytes": 3356,
+      "sha256": "188859f98d4e44b4c291705d6456848734f41b4d303c30ae723c57c132a85cbd"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/security/secret_cipher.go",
+      "bytes": 2303,
+      "sha256": "28f1711dc0b4e6be4e4bbd48cd9782e4f9146a326d90184419d1dafc7f64f087"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-owner/format-diff-check.json",
+      "bytes": 332,
+      "sha256": "48b0b349b801decee8a8980f9d85acc8f834f32859e3b07685b194db91aeb591"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-owner/integration-full.log",
+      "bytes": 2109,
+      "sha256": "8511d3f28c12053651323d2847c0f25a570460dc945d4e6e70bb845338ab15d6"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-owner/integration-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-owner/owner-initial-race.log",
+      "bytes": 646,
+      "sha256": "22f11535a1f3037cc383dbce2e86ea0532e1c5a32df8fcc131dd3c1c9b08f373"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-owner/owner-second-race.log",
+      "bytes": 588,
+      "sha256": "25e2bedb9b59c30b6eacc0b9df2f9b289a57285aa2d700d526020fb86d64b8d5"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-owner/owner-storage-race.log",
+      "bytes": 110,
+      "sha256": "a1d3acbd4fe2ad309f9dea73ed12316ad54b23fe47f9b6ad58c116e83136260c"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-owner/owner-third-race.log",
+      "bytes": 884,
+      "sha256": "58d75213d393162038e393b041021b1b5fea2f9f8097e5d86b9412dced7a0a26"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-owner/owner-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-owner/sensitive-claim-final.log",
+      "bytes": 4737,
+      "sha256": "1ad5121cdafc43b9f18e5153cbd4a8894425ab27fefe92050c85a27c5dffb3c7"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-owner/sensitive-claim-initial.log",
+      "bytes": 767,
+      "sha256": "663d9e39f61fd8f3b225a43fb3ecf7e6b9775c853f1d218a2e769979a14d80bf"
+    }
+  ],
+  "validation": {
+    "web_topologies": [
+      "module",
+      "saas"
+    ],
+    "proxy_http_calls": 14,
+    "restarts_per_topology": 2,
+    "oauth_grants": 0,
+    "aes_cipher": true,
+    "sensitive_failed_running_replay_blocked": true,
+    "integration_test_packages": 14,
+    "vet": true,
+    "live_identity_service": false,
+    "live_proxy_or_upstream": false,
+    "product_browser_e2e": false
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "todo": "F03",
+  "stage": "Microsoft mail read provider",
+  "completed": false,
+  "real_vendor_account": false,
+  "product_mail_e2e": false,
+  "source_files": [
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f03-microsoft-mail.md",
+      "sha256": "5b76b7ddf1536bed2229741194d54657c7f5a69b507912533e1b4d0942bec00e",
+      "bytes": 4908
+    },
+    {
+      "path": "domainry-connector-sdk/mail/identity.go",
+      "sha256": "28183569a339da105c8d902263b34b246c4d83fa07160d197f5f1adad69cb8c6",
+      "bytes": 1325
+    },
+    {
+      "path": "domainry-connector-sdk/mail/mail.go",
+      "sha256": "a2cd9c59c58ecaba02d31dd318bbbd334b9f5586bcb13abb2d078528d3bbb72d",
+      "bytes": 2673
+    },
+    {
+      "path": "domainry-connector-sdk/mail/mail_test.go",
+      "sha256": "cd0e330037320cafb07fbc7b3b8cd6daf306050cac7c6704af922220e9711049",
+      "bytes": 3732
+    },
+    {
+      "path": "domainry-connector-sdk/mail/validation.go",
+      "sha256": "4d6896d63a9c272a5373d9667410e435c189318fc52bb99719ae5459152fbed0",
+      "bytes": 3887
+    },
+    {
+      "path": "domainry-connectors/README.md",
+      "sha256": "24fbb010a1b126914b41f88ecb0a1f547ef96e42a17c719a09c61935c9a1b28d",
+      "bytes": 4028
+    },
+    {
+      "path": "domainry-connectors/catalog/catalog.json",
+      "sha256": "481b2b0846d450f2aca1d14d82dc896b92c979c6db81b3a4b6e8cca1cdb4cf30",
+      "bytes": 187228
+    },
+    {
+      "path": "domainry-connectors/internal/mailcontent/text.go",
+      "sha256": "d1d4645ff3714f269295d6e327e57bd3f451e43283eb7d4b1056191fe782d61a",
+      "bytes": 4389
+    },
+    {
+      "path": "domainry-connectors/internal/mailcontent/text_test.go",
+      "sha256": "8412b28695cb206139ccbad946adaa3eac7391f66dda31f5daff63408ec1830b",
+      "bytes": 2305
+    },
+    {
+      "path": "domainry-connectors/internal/mailpaging/cursor.go",
+      "sha256": "e11073d2f6739b18ed2b48fa51c3e66bf7f96aca526833beb4ac5a8001512c5d",
+      "bytes": 1698
+    },
+    {
+      "path": "domainry-connectors/internal/mailpaging/cursor_test.go",
+      "sha256": "e75cf49ab9aaaa5e238838c29d1268a5f572625645631ddda81da49f978fda59",
+      "bytes": 1047
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/verification.json",
+      "sha256": "0bd02f3467b3a2c4aa4b02e4b128ca60993e1d84ca4b2ebea95aef60760988d4",
+      "bytes": 655
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/mail.go",
+      "sha256": "bc8401b82a005880fb2108a58d35f24f596c36bc9446a8c6198f81cdc4c6633b",
+      "bytes": 6268
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/mail_message.go",
+      "sha256": "d2e33ce14a6892e5e6c315324192bbefd67702698845b8956fc898eefbe5fb11",
+      "bytes": 4122
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/mail_paging.go",
+      "sha256": "bb2d8387f21148b597f4398e22404a5063c854d8e38882e39198a86a39e88a92",
+      "bytes": 2244
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/mail_paging_test.go",
+      "sha256": "3e95ad1cba635d5beb3a88af13434b11f843a084b20de9eb710346ac2ab3a86d",
+      "bytes": 6335
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/mail_test.go",
+      "sha256": "990f3afac171b8eef8a47f58ba2e98364400a8849bff7893cf3a0d8c92c73bb3",
+      "bytes": 10978
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/oauth_operation_scopes.go",
+      "sha256": "79e9df442cd2d00837e60439bc0ee0a1e30dbbb4082f5f5f3a560c420c699ff4",
+      "bytes": 1265
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/provider.go",
+      "sha256": "08453e5da80dc7938d238336bef403d28b26405f3023fac630a89345328e7914",
+      "bytes": 13213
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/verification.json",
+      "sha256": "cb53a0363e52bf142a50a655d917c184e9fe5dc02ff0be736e683583f60afa8b",
+      "bytes": 655
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-microsoft-mail/catalog-before.json",
+      "sha256": "dcbeea90c6f633ed3c7a7170fcd42dbbfb09552e052b407cad1e9477d814717c",
+      "bytes": 185950
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-microsoft-mail/catalog-boundary-final.log",
+      "sha256": "bdf61b94016f235401ab3c043f8ab6787a6c03b089ad555d03e5585fb67776d0",
+      "bytes": 99
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-microsoft-mail/catalog-boundary.log",
+      "sha256": "e1659c9f60e6e646b72bb9ce3aeff8c22159b01471a979269d912448b5cba652",
+      "bytes": 222
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-microsoft-mail/catalog-change-audit.json",
+      "sha256": "d89775fcec6a9c0d589e9469b9dc09871e635e379d4d6d35a4e4e82ee797090b",
+      "bytes": 577
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-microsoft-mail/catalog-read.log",
+      "sha256": "e521a6d4920128fd10ea5ca1989965e8f6bff7e170143912e1cef4d5aa3ffdc1",
+      "bytes": 391
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-microsoft-mail/checks.json",
+      "sha256": "9e84ab72f8ef3497c107ab07cc6143ddc2ae87791000b8fa529acac5f7a48268",
+      "bytes": 238
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-microsoft-mail/connectors-full.log",
+      "sha256": "add1f4ccdf600279c8ecbe7f8e6527cf23c510ac1e5bb7206d47b35a27d51846",
+      "bytes": 11425
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-microsoft-mail/connectors-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-microsoft-mail/integration-compatibility.log",
+      "sha256": "cf8d62c96c0109120c083c90708e759f999580206c154dd5475bc291a90e244d",
+      "bytes": 2124
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-microsoft-mail/provider-race-final.log",
+      "sha256": "e70eede06c2b20b655d4f3daf17b2300ca4fed1b30705a04500ae15a6ee4f346",
+      "bytes": 86
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-microsoft-mail/provider-race.log",
+      "sha256": "05034d35affe7ff2597c930560d1e507dd6747f538a48c1d126e9ac22367d1d8",
+      "bytes": 86
+    }
+  ],
+  "prior_evidence_hashes_verified": 9,
+  "next": "Tools and Integration composition, then product mail and draft E2E"
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "repository": "domainry-connector-sdk",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repository": "domainry-connector-sdk",
+    "command": "gofmt -l changed F03 Go files",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repository": "domainry-connectors",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repository": "domainry-connectors",
+    "command": "gofmt -l changed F03 Go files",
+    "exit_code": 0,
+    "output": ""
+  }
+]

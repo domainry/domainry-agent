@@ -1,0 +1,30 @@
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/succeeded
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/failed
+    provider_secret_updates_test.go:125: rotation was discarded or provider was called again failed <nil> 1
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/storage-failed
+    provider_secret_updates_test.go:117: credential persistence failure was hidden synthetic provider request failed after token rotation
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/succeeded
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/failed
+    provider_secret_updates_test.go:125: rotation was discarded or provider was called again failed <nil> 1
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/storage-failed
+    provider_secret_updates_test.go:117: credential persistence failure was hidden synthetic provider request failed after token rotation
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/succeeded
+    provider_secret_updates_test.go:125: rotation was discarded or provider was called again succeeded <nil> 1
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/failed
+    provider_secret_updates_test.go:125: rotation was discarded or provider was called again failed <nil> 1
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/storage-failed
+    provider_secret_updates_test.go:117: credential persistence failure was hidden synthetic provider request failed after token rotation
+--- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome (0.02s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/succeeded (0.01s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/failed (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/storage-failed (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/succeeded (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/failed (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/storage-failed (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/succeeded (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/failed (0.00s)
+    --- FAIL: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/storage-failed (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	0.679s
+FAIL

@@ -1,0 +1,143 @@
+{
+  "todo": "F03",
+  "stage": "Tools mail adapter and shared account access",
+  "completed": false,
+  "real_vendor_account": false,
+  "product_mail_e2e": false,
+  "source_files": [
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f03-mail-tools.md",
+      "bytes": 3842,
+      "sha256": "3c49925642a9cda2fa3e638b4037c0f562b94b203dd213a9960f11a8208204ba"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/calendar_tools.go",
+      "bytes": 3005,
+      "sha256": "12625aca8ebf3ddced8dc646dc7f42036e149e359e99c7caa005ddc0a5914e66"
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/calendar_tools_test.go",
+      "bytes": 20103,
+      "sha256": "08eafd22a571213d93751d08a38b6c1bb817f8e7340ee06fa23bc4cfbb7c4349"
+    },
+    {
+      "path": "domainry-connector-sdk/mail/identity.go",
+      "bytes": 1325,
+      "sha256": "28183569a339da105c8d902263b34b246c4d83fa07160d197f5f1adad69cb8c6"
+    },
+    {
+      "path": "domainry-connector-sdk/mail/mail.go",
+      "bytes": 2673,
+      "sha256": "a2cd9c59c58ecaba02d31dd318bbbd334b9f5586bcb13abb2d078528d3bbb72d"
+    },
+    {
+      "path": "domainry-connector-sdk/mail/mail_test.go",
+      "bytes": 3732,
+      "sha256": "cd0e330037320cafb07fbc7b3b8cd6daf306050cac7c6704af922220e9711049"
+    },
+    {
+      "path": "domainry-connector-sdk/mail/validation.go",
+      "bytes": 3887,
+      "sha256": "4d6896d63a9c272a5373d9667410e435c189318fc52bb99719ae5459152fbed0"
+    },
+    {
+      "path": "domainry-tools/README.md",
+      "bytes": 3914,
+      "sha256": "27e97a5cd98112908487367deefa231ca66ceced328ca0591aae48d9bab10b5f"
+    },
+    {
+      "path": "domainry-tools/go.mod",
+      "bytes": 497,
+      "sha256": "c58872cd5adcfe5797c6a09d613acd1cdaf821f54de45823c5cacb83083a3709"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/accounttools/adapter.go",
+      "bytes": 15021,
+      "sha256": "390e59f3763cca63a7f4ae15f560f69bdde96de4ecc08848d625879716dd3cc0"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/accounttools/availability.go",
+      "bytes": 1921,
+      "sha256": "9177d16b76614a92ceb6e2d10bae9b3394d01cab5d529753bd3e58bc1a401dfa"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/calendartools/adapter.go",
+      "bytes": 3386,
+      "sha256": "03ba650a77147606ad7006b728eae2e97f4f3a0808524fe35068768e977feaf5"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/calendartools/definitions.go",
+      "bytes": 3457,
+      "sha256": "c345c4a2f4a5786dd142b00f0f2a335c530efe2dbda6ed37e552bc7e8b4ee360"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/calendartools/presentation.go",
+      "bytes": 4995,
+      "sha256": "35f4fc6890935b728a72b479b53d5b1a9824fcdd784eaac8ecb66f8cf050d51f"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/mailtools/adapter.go",
+      "bytes": 3316,
+      "sha256": "1bc9f9a20c378e8d729450bce027f04438e69d5d2faef62e92620eb87002d617"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/mailtools/definitions.go",
+      "bytes": 3235,
+      "sha256": "e85b7586d325bd64c7cd5485333be5a543e69887c26f9b956aca675ee711226c"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/mailtools/presentation.go",
+      "bytes": 1889,
+      "sha256": "864c6ce86704e84cc884e76038635f4fd465b4c5cc09e2dd575acb2eeadaf1a2"
+    },
+    {
+      "path": "domainry-tools/internal/architecture/layout_test.go",
+      "bytes": 4676,
+      "sha256": "f7ba01421147c2e960d821356332ec332fcf9c9fdb5564b7fc9b3c840b04b43e"
+    },
+    {
+      "path": "domainry-tools/module/account_read_fixture_test.go",
+      "bytes": 4325,
+      "sha256": "783a33d2f8e3ab5a8cd10af5dc2c838c39d98fcbecdbf2790f203886ee331e19"
+    },
+    {
+      "path": "domainry-tools/module/calendar_test.go",
+      "bytes": 18075,
+      "sha256": "8d120de85cd14ccb18daa2dc22f68397c7c25f197fe355a8d334cd27d62fc668"
+    },
+    {
+      "path": "domainry-tools/module/mail_test.go",
+      "bytes": 16064,
+      "sha256": "382488d82c9ae65766a364f746d1cf0569a7a910e0c56f09fe655c1d131970bf"
+    },
+    {
+      "path": "domainry-tools/module/module.go",
+      "bytes": 2255,
+      "sha256": "4f2e5519b475a30f6a7fdd521abae3922c01fb6fada776f11cdad3be8df01226"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-tools/calendar-product-compatibility.log",
+      "bytes": 69,
+      "sha256": "758f0e7c11492d375cd0613c009f20f38998ebcdb83e6d2b6b4b612da6354b0f"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-tools/checks.json",
+      "bytes": 243,
+      "sha256": "40905ece80663213d87b3db9b950fbf8bc58bf59787b60527ae518bc86479ea5"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-tools/tools-full-race.log",
+      "bytes": 1032,
+      "sha256": "02ab02775c2e659d665614a9040f59c81a90a8fe9122b910b5aa19658a397e8a"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-tools/tools-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "prior_evidence_hashes_verified": 20,
+  "next": "Integration mail owner flows and product/mail/draft E2E"
+}

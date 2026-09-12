@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-report/internal/domain/report/service/analysis
+internal/domain/report/service/analysis/compile_test.go:46:4: expected statement, found ')'
+FAIL	github.com/domainry/domainry-report/internal/domain/report/service/analysis [setup failed]
+FAIL

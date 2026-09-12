@@ -1,0 +1,6 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+    conversation_business_product_service_test.go:162: PUT /identity/users/admin/account-and-roles status=400 want=200 body={"code":"backend.identity.role_not_found","error":{"code":"backend.identity.role_not_found","params":{"actual":"headquarters_admin","field_path":"role_assignment.role_id"}},"params":{"actual":"headquarters_admin","field_path":"role_assignment.role_id"}}
+--- FAIL: TestConversationBusinessProductWithSharedIdentityService (15.34s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	16.276s
+FAIL

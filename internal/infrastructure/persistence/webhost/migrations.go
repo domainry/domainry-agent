@@ -1,4 +1,4 @@
-// Package webhost owns the SQLite pool and single migration ledger for the
+// Package webhost owns the host pool and single migration ledger for the
 // standalone browser host. Embedded modules retain ownership of their schema.
 package webhost
 
@@ -11,21 +11,29 @@ import (
 	"time"
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
+	"github.com/domainry/domainry-orm/driver"
 	"github.com/domainry/domainry-orm/migration"
 	"github.com/domainry/domainry-orm/query"
 	"github.com/domainry/domainry-orm/schema"
 )
 
 // Registrar is used during sequential startup under the host's exclusive
-// database file lock. Identity callbacks may submit nested Metadata/Audit
+// startup database lock. Identity callbacks may submit nested Metadata/Audit
 // migrations; no transaction or mutex is held across those callbacks.
 type Registrar struct {
-	DB       *sql.DB
-	Renderer modulehost.Dialect
+	DatabaseDriver, Namespace string
+	Profile                   driver.Profile
+	DB                        *sql.DB
+	Renderer                  modulehost.Dialect
 }
 
-func (*Registrar) Driver() string { return "sqlite" }
-func (*Registrar) Schema() string { return "" }
+func (r *Registrar) Driver() string {
+	if r.DatabaseDriver == "" {
+		return "sqlite"
+	}
+	return r.DatabaseDriver
+}
+func (r *Registrar) Schema() string { return r.Namespace }
 
 func (r *Registrar) Prepare(ctx context.Context) error {
 	statement, args, err := schema.NewTable(r.Renderer, "_schema_migrations").IfNotExists().Columns(
@@ -46,6 +54,15 @@ func (r *Registrar) Prepare(ctx context.Context) error {
 func (r *Registrar) ApplyOwnedMigrations(ctx context.Context, owner string, migrations []modulehost.SchemaMigration) error {
 	for _, m := range migrations {
 		if err := r.ApplyOwnedMigration(ctx, owner, m.Version, m.Name, migration.Checksum(m), func(ctx context.Context) error {
+			if r.Profile != nil && !r.Profile.Capabilities().TransactionalDDL {
+				// Engines with implicit DDL commits retain the dirty ledger on failure.
+				for _, statement := range m.Statements {
+					if _, err := r.DB.ExecContext(ctx, statement); err != nil {
+						return err
+					}
+				}
+				return nil
+			}
 			tx, err := r.DB.BeginTx(ctx, nil)
 			if err != nil {
 				return err

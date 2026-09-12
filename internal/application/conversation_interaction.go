@@ -63,6 +63,9 @@ func (s *ConversationService) Respond(ctx context.Context, id, runID string, res
 	if err := s.authorize(a); err != nil {
 		return agentsdk.ConversationRun{}, err
 	}
+	if response.Scope != "" && (response.Scope != "listed_operations" || response.Decision != "approve") {
+		return agentsdk.ConversationRun{}, conversationFailure("bad_request", "interaction_scope_invalid")
+	}
 	if !conversationKey(response.InteractionID) || !conversationKey(response.ClientID) || response.ExpectedRevision < 1 || !conversationText(response.Answer, min(s.options.MaxInputBytes, 16384), false) || response.Decision != "answer" && response.Decision != "approve" && response.Decision != "reject" {
 		return agentsdk.ConversationRun{}, conversationFailure("bad_request", "interaction_response_invalid")
 	}
@@ -89,6 +92,11 @@ func (s *ConversationService) Respond(ctx context.Context, id, runID string, res
 	}
 	if run.Interaction.ID == response.InteractionID && run.Interaction.Status == "pending" && response.Decision != "reject" {
 		i := run.Interaction
+		if response.Scope == "listed_operations" {
+			if err := s.authorizeListedOperations(ctx, *i, a); err != nil {
+				return agentsdk.ConversationRun{}, err
+			}
+		}
 		_, tools, err := s.executionCatalog(ctx, a)
 		if err != nil {
 			return agentsdk.ConversationRun{}, err
@@ -109,6 +117,9 @@ func (s *ConversationService) Respond(ctx context.Context, id, runID string, res
 		}
 	}
 	if response.Decision != "reject" {
+		if err := s.authorizeConversationExecution(ctx, id, runID, "respond", a); err != nil {
+			return agentsdk.ConversationRun{}, err
+		}
 		if err := s.checkRunSources(ctx, agentsdk.ConversationRunReference{ConversationID: id, RunID: runID}, a); err != nil {
 			return agentsdk.ConversationRun{}, conversationFailure("forbidden", "source_access_unavailable")
 		}

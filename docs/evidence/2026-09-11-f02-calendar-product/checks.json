@@ -1,0 +1,26 @@
+{
+  "captured_at": "2026-09-11T13:03:06.239460+00:00",
+  "capture": "Command outcomes observed in tool output; test/build/browser logs are separate files.",
+  "checks": [
+    {
+      "command": "go test ./internal/architecture ./internal/assembly/product ./cmd/domainry-agent-web",
+      "exit_code": 0,
+      "output": "architecture passed; product 1.165s; command compiled with no tests"
+    },
+    {
+      "command": "go vet ./internal/assembly/web ./internal/assembly/product ./cmd/domainry-agent-web",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": "gofmt -l changed Go files",
+      "exit_code": 0,
+      "output": ""
+    }
+  ]
+}

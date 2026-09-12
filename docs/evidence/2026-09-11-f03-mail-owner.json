@@ -1,0 +1,151 @@
+{
+  "todo": "F03",
+  "stage": "Integration mail owner HTTP Module/SaaS matrix",
+  "completed": false,
+  "real_vendor_account": false,
+  "product_mail_e2e": false,
+  "actual_http": {
+    "oauth_requests": 16,
+    "mail_requests": 44
+  },
+  "source_files": [
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f03-mail-owner.md",
+      "sha256": "0718ee730a538176be8c5ef1a3b5a93fea3734ef202844bf16a63e31d91b2ffe",
+      "bytes": 2547
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/mail.go",
+      "sha256": "fb4eecdfb894172db8852a193768debd69537ed7c88c1b045290bca0b810cf27",
+      "bytes": 7021
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/mail_body.go",
+      "sha256": "52be55144add989d1e74b7abc2f65e04fe4205bce08204b73176c407edff0cc0",
+      "bytes": 6285
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/mail_limits_test.go",
+      "sha256": "a779a249ab327a7bf48f5c4ff608005868dd5b974af3adb259a42934a9a9cffd",
+      "bytes": 6054
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/mail_message.go",
+      "sha256": "37146f72fc74a7800b7a7ce806fb0ae108be2b88670698a01a217c137e77cc70",
+      "bytes": 3517
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/mail_test.go",
+      "sha256": "adbc4ced603cc66120c7a2d703955744db8bfecff56aa05b804812eebc819f92",
+      "bytes": 13630
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/oauth_operation_scopes.go",
+      "sha256": "8b98b20d7e97a611520cd0da5e5545a73fba004b1b88076e28552862fc124d4a",
+      "bytes": 1750
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/mail.go",
+      "sha256": "bc8401b82a005880fb2108a58d35f24f596c36bc9446a8c6198f81cdc4c6633b",
+      "bytes": 6268
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/mail_message.go",
+      "sha256": "d2e33ce14a6892e5e6c315324192bbefd67702698845b8956fc898eefbe5fb11",
+      "bytes": 4122
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/mail_paging.go",
+      "sha256": "bb2d8387f21148b597f4398e22404a5063c854d8e38882e39198a86a39e88a92",
+      "bytes": 2244
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/mail_paging_test.go",
+      "sha256": "3e95ad1cba635d5beb3a88af13434b11f843a084b20de9eb710346ac2ab3a86d",
+      "bytes": 6335
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/mail_test.go",
+      "sha256": "990f3afac171b8eef8a47f58ba2e98364400a8849bff7893cf3a0d8c92c73bb3",
+      "bytes": 10978
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/oauth_operation_scopes.go",
+      "sha256": "79e9df442cd2d00837e60439bc0ee0a1e30dbbb4082f5f5f3a560c420c699ff4",
+      "bytes": 1265
+    },
+    {
+      "path": "domainry-integration/internal/adapter/integrationsdk/connection_account_reads.go",
+      "sha256": "0b4edb4217c9b54010b2cbdbb69070fcd29e47ead1ba30c9700802084fce7f5b",
+      "bytes": 1644
+    },
+    {
+      "path": "domainry-integration/internal/application/integration/connection_account_reads.go",
+      "sha256": "d6724b15e14071f7e3e5fc7f05aa4cc47225401842e9f22ac8e14d50c5b2539e",
+      "bytes": 3926
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/account_read_flow_fixture_test.go",
+      "sha256": "cf0c6a20b4be7c31d8b1bca45418a0b73988cb8a7f3a529bd14361110b432f94",
+      "bytes": 4868
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/account_read_flow_transport_test.go",
+      "sha256": "491e82a216d7e14c4a1190a0d0f9cf63806fd4d1bca46eeb20bea2d5f854f197",
+      "bytes": 1761
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/calendar_read_flow_test.go",
+      "sha256": "1469a3c0cb9fcc223ca6158aa9c1e0a428f63cb50bf958e471c7d6e8b0216b8d",
+      "bytes": 18010
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/connection_accounts_test.go",
+      "sha256": "0a22582f1b10e491cfebf9e5a326d7320d746be3f1d45cc42f5f1a69e2838380",
+      "bytes": 10445
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/mail_read_flow_test.go",
+      "sha256": "3b28e8a94e5619b6956828fdd26a928232ce90e40665e1ac2d7c818e162420dd",
+      "bytes": 13765
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/oauth_flow_test.go",
+      "sha256": "adfe3f6dce73ced37779acb7f3c1d60abf40d72e30face65bc3becabbd3096ff",
+      "bytes": 13923
+    },
+    {
+      "path": "domainry-integration/internal/domain/integration/model/connection_account_reads.go",
+      "sha256": "2e0a0402e6dd24857f7e1ea8fa939aa26d7241c31d8f163f81219112552e14e1",
+      "bytes": 3569
+    },
+    {
+      "path": "domainry-integration-sdk/connection_account_reads.go",
+      "sha256": "e9c3a8227d46dd02f2c7060ae6984a2eb79654df7be5b877c54b3107957965bf",
+      "bytes": 3705
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-owner/checks.json",
+      "sha256": "7b3cf7430010868aa18fe34b6f2c5d8f4d04c2e170920e62009287f227089662",
+      "bytes": 245
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-owner/integration-full.log",
+      "sha256": "7cb272e2c3794ea63899a711619cc4ffe494d07128fcdcb92798cd1a44c54dd5",
+      "bytes": 2124
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-owner/integration-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f03-mail-owner/owner-race-initial.log",
+      "sha256": "f3b589c04b6de32b8011af881618a583238877ccc1ff1d1b256d32b3fafa2e08",
+      "bytes": 1619
+    }
+  ],
+  "next": "Agent/Work/PM product mail and source-owned drafts E2E"
+}

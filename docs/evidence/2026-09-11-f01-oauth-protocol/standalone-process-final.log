@@ -1,0 +1,12 @@
+=== RUN   TestStandaloneConfigurationRequiresKeyAndPublishesOAuthProviders
+--- PASS: TestStandaloneConfigurationRequiresKeyAndPublishesOAuthProviders (0.00s)
+=== RUN   TestStandaloneOAuthChild
+--- PASS: TestStandaloneOAuthChild (0.00s)
+=== RUN   TestStandaloneOAuthConfigurationAndSessionSurviveProcessRestart
+2026/09/11 14:01:32 Integration SaaS server listening on 127.0.0.1:51265
+    oauth_process_test.go:130: Integration SaaS returned 500 Internal Server Error: {"code":"integration.internal","message":"Integration OAuth scopes are required"}
+PASS
+--- FAIL: TestStandaloneOAuthConfigurationAndSessionSurviveProcessRestart (0.42s)
+FAIL
+FAIL	github.com/domainry/domainry-integration/cmd/integration-server	0.864s
+FAIL

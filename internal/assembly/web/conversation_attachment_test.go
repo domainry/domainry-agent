@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -139,5 +140,37 @@ func TestAttachmentsThroughIdentityHTTPAndRestart(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 	}
 	b.call("POST", "/agent/conversations", `{"client_id":"attachment-ui","title":"附件网页验收"}`, 200)
-	servePersonalToolAcceptance(t, host, options, map[string]func(){"revoke_attachment_download": func() { grant("attachments_download") }, "restore_attachments": func() { grant("") }})
+	reopen := func() {
+		if err := host.Close(context.Background()); err != nil {
+			t.Fatal(err)
+		}
+		host = nil
+		host, err = Open(t.Context(), options)
+		if err != nil {
+			t.Fatal(err)
+		}
+		b = newBrowser()
+		b.login("admin@example.com", changed)
+	}
+	servePersonalToolAcceptanceWithHost(t, func() *Host { return host }, options, map[string]func(){"revoke_attachment_download": func() { grant("attachments_download") }, "restore_attachments": func() { grant("") }, "restart_attachment_host": reopen})
+	if os.Getenv("AGENT_FILE_PREVIEW_ACCEPTANCE") == "1" {
+		deadline := time.Now().Add(5 * time.Second)
+		for {
+			paths, err := filepath.Glob(filepath.Join(options.DatabasePath+".attachments", "*", "*.bin"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(paths) == 0 {
+				break
+			}
+			if time.Now().After(deadline) {
+				t.Fatal("browser originals not physically removed", len(paths))
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
+		if _, err := os.Stat(options.DatabasePath + ".parses"); !os.IsNotExist(err) {
+			t.Fatal("preview created a backend parsing cache", err)
+		}
+		t.Log("All synthetic browser originals physically deleted; no original parsing cache created")
+	}
 }

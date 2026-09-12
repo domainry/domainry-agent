@@ -1,0 +1,15 @@
+Managed private document evidence: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-lpr2hh7y
+Real Identity/HTTP/SQLite/worker/Verdent; deterministic model. Original files and write ownership remain in the recovery directory until cleanup is confirmed.
+=== RUN   TestLiveDynamicKnowledgeDatasourcesIdentityHTTP
+=== RUN   TestLiveDynamicKnowledgeDatasourcesIdentityHTTP/personal_a
+    knowledge_document_permissions_live_test.go:521: Private product upload, index, 3 visibility scopes, restart, citation and cleanup passed: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-lpr2hh7y/personal_a
+=== RUN   TestLiveDynamicKnowledgeDatasourcesIdentityHTTP/personal_b
+    knowledge_document_permissions_live_test.go:521: Private product upload, index, 3 visibility scopes, restart, citation and cleanup passed: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-lpr2hh7y/personal_b
+=== RUN   TestLiveDynamicKnowledgeDatasourcesIdentityHTTP/shared
+    knowledge_document_permissions_live_test.go:521: Private product upload, index, 3 visibility scopes, restart, citation and cleanup passed: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-lpr2hh7y/shared
+--- PASS: TestLiveDynamicKnowledgeDatasourcesIdentityHTTP (102.35s)
+    --- PASS: TestLiveDynamicKnowledgeDatasourcesIdentityHTTP/personal_a (43.16s)
+    --- PASS: TestLiveDynamicKnowledgeDatasourcesIdentityHTTP/personal_b (29.11s)
+    --- PASS: TestLiveDynamicKnowledgeDatasourcesIdentityHTTP/shared (30.09s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	103.047s

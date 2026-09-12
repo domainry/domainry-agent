@@ -1,0 +1,10 @@
+ok  	github.com/domainry/domainry-connectors/providers/accounting/freee	0.602s
+ok  	github.com/domainry/domainry-connectors/providers/accounting/money_forward	0.968s
+ok  	github.com/domainry/domainry-connectors/providers/accounting/quickbooks	2.727s
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/google_calendar	3.220s
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/microsoft_booking	2.855s
+ok  	github.com/domainry/domainry-connectors/providers/esign/docusign	3.828s
+ok  	github.com/domainry/domainry-connectors/providers/google_workspace/google	3.354s
+ok  	github.com/domainry/domainry-connectors/providers/logistics/fedex	4.051s
+ok  	github.com/domainry/domainry-connectors/providers/logistics/ups	3.940s
+ok  	github.com/domainry/domainry-connectors/providers/microsoft_365/microsoft	3.703s

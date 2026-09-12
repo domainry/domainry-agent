@@ -1,6 +1,6 @@
 import type { Run } from "./api.ts";
 
-export type Citation = { library_id?: string; id: string; provider: string; kb_id: string; operation: "search" | "fetch"; doc_id: string; title?: string; url?: string; excerpt?: string; excerpt_truncated?: boolean };
+export type Citation = { conversation_id?: string; library_id?: string; id: string; provider: string; kb_id: string; operation: "search" | "fetch"; doc_id: string; title?: string; url?: string; excerpt?: string; excerpt_truncated?: boolean; location?: { sheet?: string; row?: number; cell?: string } };
 export function validCitations(items?: Citation[]): Citation[] {
   const seen = new Set<string>();
   return (items || []).filter(item => {
@@ -18,4 +18,14 @@ export function citationMarkdown(text: string, items: Citation[]): string {
 }
 export function safeCitationURL(value?: string): string | undefined {
   try { const url = new URL(value || ""); return ["https:", "http:"].includes(url.protocol) && !url.username && !url.password && !/[\r\n\t]/.test(value || "") ? url.href : undefined; } catch { return undefined; }
+}
+
+export function citationLocation(citation: Citation): string {
+  const location = citation.location;
+  if (!location) return "";
+  const parts: string[] = [];
+  if (typeof location.sheet === "string" && location.sheet.length <= 128 && location.sheet) parts.push(`工作表：${location.sheet}`);
+  if (typeof location.cell === "string" && /^[A-Z]{1,3}[1-9][0-9]{0,6}$/.test(location.cell)) parts.push(`单元格 ${location.cell}`);
+  else if (Number.isInteger(location.row) && location.row! > 0) parts.push(`第 ${location.row} 行`);
+  return parts.join(" · ");
 }

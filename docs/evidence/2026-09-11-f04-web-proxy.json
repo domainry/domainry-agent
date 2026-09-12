@@ -1,0 +1,305 @@
+{
+  "todo": "F04",
+  "complete": false,
+  "stage": "llm-proxy services, independent web Provider, catalog and standalone host transport",
+  "captured_at": "2026-09-11T15:22:26.743295+00:00",
+  "path_base": "/Users/tiger/Projects",
+  "upstream_commit": "a32407a678ea7f96d70b7557765e2a01262184d4",
+  "contract": "public-web-read-v1",
+  "contract_sha256": "4a23e7257e9896ea361a13e981fd4fcfd9a41b3989d91bef7cbd8826f7f26024",
+  "source_files": [
+    {
+      "path": "anti/llm-proxy/go.mod",
+      "bytes": 8630,
+      "sha256": "c9e33aca55ddd33baa15f31f64912a3a655579f8aa1a1e02545f8ff1f9197eb7"
+    },
+    {
+      "path": "anti/llm-proxy/go.sum",
+      "bytes": 46627,
+      "sha256": "7f521ae600cc2dfee1c914c6c309af02ac6d289aa9f7810145da0a475f4bb0a5"
+    },
+    {
+      "path": "anti/llm-proxy/handler/web_fetch.go",
+      "bytes": 2103,
+      "sha256": "45dd5f1139ba7a4f62c84e897db7e51246f3c41ed5ee04d29986cc22a14df0ab"
+    },
+    {
+      "path": "anti/llm-proxy/handler/web_search.go",
+      "bytes": 4672,
+      "sha256": "8f99c99cdf34e39cfc0347f149f1f8a352d7fffac4193857a5ed44cb260b4032"
+    },
+    {
+      "path": "anti/llm-proxy/library/httpmeta/headers.go",
+      "bytes": 989,
+      "sha256": "d0a0ad91be2f3ae0d90eb4be9721c3f5872b831205551a4c1b592f7368d697c4"
+    },
+    {
+      "path": "anti/llm-proxy/library/httpmeta/headers_test.go",
+      "bytes": 728,
+      "sha256": "3fdb24085144b6eeac7b6f43a72420fd0cd7716146fe5e4010a30dea37f483e4"
+    },
+    {
+      "path": "anti/llm-proxy/library/webio/http.go",
+      "bytes": 1728,
+      "sha256": "3b5407fa10493e89bded162a2d1cabfb378e43d28bb5bb4af5388b6a1137633a"
+    },
+    {
+      "path": "anti/llm-proxy/library/webio/http_test.go",
+      "bytes": 2024,
+      "sha256": "9afbdd1c9bf36af9984f019f2b74bf0e8ecb14e01f3e6821b68386b175079687"
+    },
+    {
+      "path": "anti/llm-proxy/middleware/auth.go",
+      "bytes": 6718,
+      "sha256": "e4d64e3c946ab008e05b691de17d16f92897ae03074707424bf5aaa60bfa3593"
+    },
+    {
+      "path": "anti/llm-proxy/middleware/logger.go",
+      "bytes": 5466,
+      "sha256": "7c56ba08366cb0b043b11409b2f92a5780a9d5296f4a4ecd5abffda60ac92ee1"
+    },
+    {
+      "path": "anti/llm-proxy/service/jina/jina.go",
+      "bytes": 2080,
+      "sha256": "e430235b08b13012743b388ce446ad93481f3db5ff42d88acb20f8ec5c29687d"
+    },
+    {
+      "path": "anti/llm-proxy/service/jina/jina_test.go",
+      "bytes": 3458,
+      "sha256": "ae899e65b718cd1209682f698e72d2a7e0c2d4977a4348a865a9bb89a08bddbc"
+    },
+    {
+      "path": "anti/llm-proxy/service/web_search/web_search_service.go",
+      "bytes": 6606,
+      "sha256": "d8fd17a8430d6ab7737102a6f2d17575ded60153ec854be4fcbe24368c2b75e3"
+    },
+    {
+      "path": "anti/llm-proxy/service/web_search/web_search_service_test.go",
+      "bytes": 3523,
+      "sha256": "23743585866b0df89e67d82aa3490f69d26885073c7a8c17f14b6c430f4db6c5"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-proxy.md",
+      "bytes": 5107,
+      "sha256": "c9fcbff43d35c9500cd8771d0a7c0a630071e1d8d89fb169c00c11ab8620fd51"
+    },
+    {
+      "path": "domainry-agent/docs/web-read-boundaries.md",
+      "bytes": 6629,
+      "sha256": "01894976606cab4c26d251e8dc59c749bf5538fe756f8397eac5a9e96338537c"
+    },
+    {
+      "path": "domainry-connector-sdk/identity.go",
+      "bytes": 728,
+      "sha256": "71b090dfdc4463a8796b4e5c160ab9f95e81c5ae44fc9e86bced77a77d14864d"
+    },
+    {
+      "path": "domainry-connector-sdk/web/identity.go",
+      "bytes": 1363,
+      "sha256": "f896ac123798985e06e7f40fb78bfedeedd83d098d9cfcd555d9675dca14ff96"
+    },
+    {
+      "path": "domainry-connector-sdk/web/url.go",
+      "bytes": 3336,
+      "sha256": "3692eca282e6413c7e9af69f7e35b26f052564d5aee1ce40960661f3db3487d9"
+    },
+    {
+      "path": "domainry-connector-sdk/web/validation.go",
+      "bytes": 3306,
+      "sha256": "60d5e2b501b7411db9b253a72fd620c28c5afa163d9101da97ed04b1d1e0fa36"
+    },
+    {
+      "path": "domainry-connector-sdk/web/web.go",
+      "bytes": 1941,
+      "sha256": "f75b2d106a804ae0f14834b4ce1d618161bf14276adb90d9b5d67521d7abea37"
+    },
+    {
+      "path": "domainry-connector-sdk/web/web_test.go",
+      "bytes": 7225,
+      "sha256": "5df4ab52b82971751d10831d1f98de65eabf530b02323c6fb17909f5eaa83a68"
+    },
+    {
+      "path": "domainry-connectors/README.md",
+      "bytes": 5248,
+      "sha256": "6fcc032b8063d0ef00c868cffccb02cdedba290dddb492b0fe666824ccb6463a"
+    },
+    {
+      "path": "domainry-connectors/catalog/catalog.json",
+      "bytes": 188661,
+      "sha256": "98375fa207a9ee8b0f02b2c42d1dd6aac417c22aa2f64cb6aa17db746eb75035"
+    },
+    {
+      "path": "domainry-connectors/catalog/connector_validation.go",
+      "bytes": 19172,
+      "sha256": "ce46bfc93070717ff3061093a6548832d1b78f53491669bcbcd3350ce691eea6"
+    },
+    {
+      "path": "domainry-connectors/catalog/definitions/web/connector.json",
+      "bytes": 16796,
+      "sha256": "356dbd5691b4bdbc74be2ca334213bac7a54756f2ad45a113f22d1fba6b7e0b4"
+    },
+    {
+      "path": "domainry-connectors/catalog/json_shape_test.go",
+      "bytes": 1499,
+      "sha256": "313fc88a4f2b9fabd5480faf2aa8396edcb62653fedb10c23256549ab8a31ada"
+    },
+    {
+      "path": "domainry-connectors/internal/assembly/module/web.go",
+      "bytes": 586,
+      "sha256": "95aa240dd9d59b619a811fd5415934f9bd71ea0d6c96b35352c130773c9ff66a"
+    },
+    {
+      "path": "domainry-connectors/module/module.go",
+      "bytes": 714,
+      "sha256": "54aa09d84bf820c7004258e2b6888ea038af8a31ceb2c3116ee261674c8d4ff8"
+    },
+    {
+      "path": "domainry-connectors/module/web_test.go",
+      "bytes": 2384,
+      "sha256": "8e4f57eb07791c879681deed43d17e2c7b13386e83df4026b5d39c13550da763"
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/config.go",
+      "bytes": 5167,
+      "sha256": "59fb962e0e9364c7a7cec509616431f971ae883a3f626bbb88c097d98dcedf29"
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/provider.go",
+      "bytes": 5791,
+      "sha256": "c88bb80350117295c2106bbf43b1c87faa40243a2c9c907555e3854ac044278e"
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/provider_test.go",
+      "bytes": 18227,
+      "sha256": "10ec9aa516f57ea400c755fc937863879e4dd0dc6569602ee8017b3a93d974ea"
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/read.go",
+      "bytes": 5428,
+      "sha256": "4021efa0293f9dc53ed329c6535f86b8d6a402e6a9f1f7250706562a94793121"
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/verification.json",
+      "bytes": 515,
+      "sha256": "e9d027210116a6f4bdfe586560621f49f3932209d14a07fb779422acba3dbf4a"
+    },
+    {
+      "path": "domainry-connectors/scripts/generate_catalog/provider_registry_generated.go",
+      "bytes": 28209,
+      "sha256": "d82692b97383d89aaf309d1ac5bfdb479b059e2ba1456d9bfe9dc61f78c0bd93"
+    },
+    {
+      "path": "domainry-integration/README.md",
+      "bytes": 7379,
+      "sha256": "703f53e5eeb0da904efcd3d44daff01fac3c6016bf59575f0eba6ba9681116f9"
+    },
+    {
+      "path": "domainry-integration/cmd/integration-server/main.go",
+      "bytes": 5709,
+      "sha256": "8a2e1c4e81389b0b6d06a57948f16032a3ba57a4280d883c102758e7b5601b31"
+    },
+    {
+      "path": "domainry-integration/cmd/integration-server/main_test.go",
+      "bytes": 1829,
+      "sha256": "1a7937b078d24eefd0e0f88cd5df2c018e0c3446d57b3c0717dd223f5028068a"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/connectortransport/public_web.go",
+      "bytes": 4536,
+      "sha256": "ecbb8351d66161cdf4eba4b7fa879e86ae07109f028765d17e43dafd2516b4fb"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/connectortransport/public_web_test.go",
+      "bytes": 8938,
+      "sha256": "81865488fe0578c0385d5305f75e5d64751aa8cb3e21db63ebdbb8194593d4ec"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/boundary-catalog.log",
+      "bytes": 99,
+      "sha256": "bdf61b94016f235401ab3c043f8ab6787a6c03b089ad555d03e5585fb67776d0"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/catalog-final.log",
+      "bytes": 197,
+      "sha256": "21033e999df03dc97f608269a2c0675a011f4e44a118b5e2e755dcc972e1a371"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/catalog-initial.log",
+      "bytes": 924,
+      "sha256": "ec4e40cd8ef02642c3e75e8327e75d8a44484598621adea22dbba37ebfe78cc1"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/connectors-full.log",
+      "bytes": 11498,
+      "sha256": "c5abbbfea3528e574cfaf67be2c8b296aa657814d3023a6b4f89b30ac27c0d5d"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/format-diff-check.json",
+      "bytes": 865,
+      "sha256": "e9b13c9a5fb9290a8ceafe8bd116397efc69fab63892c67285636821d05e3750"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/foundation-final-race.log",
+      "bytes": 261,
+      "sha256": "bddcf24163e8a8a283f1e3203abffbf91009af4c8e4c6df517099c10e6d42096"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/foundation-initial.log",
+      "bytes": 2506,
+      "sha256": "fff9ff8b6613746f2214773e924f9a404946c2b06e5c694fd7d724796de87194"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/foundation-race.log",
+      "bytes": 346,
+      "sha256": "d83c613b67b39bc5b328456a356a48dea62736a6018917dd011bbcf27f7f560a"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/handler-middleware-compile.log",
+      "bytes": 2383,
+      "sha256": "d8dbfd8e330dcdbdd618cc7235737df621247398b7b54f3770dd26e8121b57fe"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/host-race.log",
+      "bytes": 1632,
+      "sha256": "38a2229b1d53d6a16fce2e617e55bfd801c436e6a2a624b8ad3e7df7fabb01a2"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/host-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/provider-initial-race.log",
+      "bytes": 851,
+      "sha256": "8b851ddbd0eb74ea4beab7cfa24dcc92d90bbf023370e87e3414fd15d2a2e3b5"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/provider-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-11-f04-web-proxy/proxy-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "validation": {
+    "provider_race_tests": 7,
+    "connectors_test_packages": 118,
+    "web_host_race_tests": 3,
+    "work_account_host_compatibility_tests": 3,
+    "catalog_checks": true,
+    "vet": true,
+    "proxy_service_race_packages": 4,
+    "proxy_toolchain": "go1.25.8",
+    "proxy_handler_tests": "compile only",
+    "actual_upstream_service": false,
+    "account_owner_web_e2e": false,
+    "tools": false,
+    "product_browser_e2e": false,
+    "remote_reader_network_policy_verified": false
+  }
+}

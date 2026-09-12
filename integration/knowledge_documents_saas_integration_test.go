@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -13,8 +14,8 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent/internal/application"
-	"github.com/domainry/domainry-agent/internal/infrastructure/attachmentstorage"
-	"github.com/domainry/domainry-agent/internal/infrastructure/documentstorage"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
+
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	agentremote "github.com/domainry/domainry-agent/remote"
 	agentserver "github.com/domainry/domainry-agent/server"
@@ -67,12 +68,12 @@ func TestKnowledgeDocumentsSaaSLargeOriginalAndUnknownPut(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			files, err := documentstorage.NewFiles(t.TempDir() + "/private")
+			files, err := knowledgemodule.NewDocumentFiles(t.TempDir() + "/private")
 			if err != nil {
 				t.Fatal(err)
 			}
 			defer files.Close()
-			attachments, err := attachmentstorage.NewFiles(t.TempDir() + "/attachments")
+			attachments, err := knowledgemodule.NewAttachmentFiles(t.TempDir() + "/attachments")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -83,7 +84,7 @@ func TestKnowledgeDocumentsSaaSLargeOriginalAndUnknownPut(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			service, err := application.NewConversationService(repo, &executionModel{}, a.RuntimeID, application.ConversationOptions{AttachmentStorage: attachments, AttachmentAuthorizer: attachmentPolicy, DocumentStorage: files, DocumentPoll: 10 * time.Millisecond, LibraryAuthorizer: policy, PersonalAuthorizer: personalReadAuthorizer{}, ToolHost: tools, LibraryKnowledge: []application.LibraryKnowledgeBinding{{WorkspaceID: a.WorkspaceID, LibraryID: lib.ID, Source: source, ManageDocuments: true}}})
+			service, err := conversationassembly.NewService(repo, &executionModel{}, a.RuntimeID, application.ConversationOptions{AttachmentStorage: attachments, AttachmentAuthorizer: attachmentPolicy, DocumentStorage: files, DocumentPoll: 10 * time.Millisecond, LibraryAuthorizer: policy, PersonalAuthorizer: personalReadAuthorizer{}, ToolHost: tools, LibraryKnowledge: []application.LibraryKnowledgeBinding{{WorkspaceID: a.WorkspaceID, LibraryID: lib.ID, Source: source, ManageDocuments: true}}})
 			if err != nil {
 				t.Fatal(err)
 			}

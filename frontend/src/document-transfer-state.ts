@@ -1,10 +1,16 @@
 import { sessionScope } from "./session.ts";
-import type { KnowledgeDocument } from "./knowledge-document-state.ts";
+import { documentCanWrite, type KnowledgeDocument, type KnowledgeLibrary } from "./knowledge-document-state.ts";
 
 export type TransferSource = Pick<KnowledgeDocument, "id" | "library_id" | "filename" | "bytes" | "sha256" | "revision">;
 export type TransferDraft = { source: TransferSource; canMove: boolean };
 export type PendingTransfer = { source: TransferSource; clientID: string; targetID: string; mode: "copy" | "move" };
 export const transferReceiptKey = () => `agent-document-transfer:${sessionScope()}`;
+// An acknowledged durable copy no longer depends on its knowledge source.
+// Retrying the same receipt may resolve it even while indexing is unavailable;
+// the server still checks the target authority and rejects unfinished writes.
+export function canTransferToLibrary(library: KnowledgeLibrary, sourceLibraryID: string, pendingTargetID?: string): boolean {
+  return library.id !== sourceLibraryID && documentCanWrite(library) && !library.archived && (library.documents_configured === true || pendingTargetID === library.id);
+}
 export function parsePendingTransfer(raw: string | null): PendingTransfer | null {
   if (!raw || raw.length > 4096) return null;
   try {

@@ -267,6 +267,13 @@ func (s *ConversationStore) BeginExecutionTool(ctx context.Context, claim persis
 		}
 		if found {
 			replayed = true
+			if out.State != "completed" {
+				out.LeaseOwner, out.Fence = claim.Owner, claim.Fence
+				if err = s.executionWrite(ctx, tx, "_agent_conversation_tool_calls", claim, number, callID, out, false); err != nil {
+					return err
+				}
+				return s.executionEvent(ctx, tx, row, "tool.started", map[string]any{"step": number, "call_id": callID, "tool": selected.Name, "version": out.Definition.Version, "effect": out.Definition.Effect})
+			}
 			return nil
 		}
 		var definition agentsdk.ConversationToolDefinition
@@ -281,20 +288,31 @@ func (s *ConversationStore) BeginExecutionTool(ctx context.Context, claim persis
 		}
 		now := time.Now().UTC()
 		out = persistence.ConversationToolExecution{Step: number, Call: *selected, Definition: definition, IdempotencyKey: "conversation-tool:" + conversationHash([]any{conversationOwner(claim.Authority), claim.Run.ID, number, callID}), Authorization: authorization, State: "started", CreatedAt: now, UpdatedAt: now}
+		out.LeaseOwner, out.Fence = claim.Owner, claim.Fence
 		if err = s.executionWrite(ctx, tx, "_agent_conversation_tool_calls", claim, number, callID, out, true); err != nil {
 			return err
 		}
-		return s.executionEvent(ctx, tx, row, "tool.started", map[string]any{"step": number, "call_id": callID, "tool": selected.Name, "version": definition.Version})
+		return s.executionEvent(ctx, tx, row, "tool.started", map[string]any{"step": number, "call_id": callID, "tool": selected.Name, "version": definition.Version, "effect": definition.Effect})
 	})
 	return out, replayed, err
 }
 
 func (s *ConversationStore) FinishExecutionTool(ctx context.Context, claim persistence.ConversationClaim, number int, callID string, result agentsdk.ConversationToolResult) error {
+	if result.Completion != "" && (result.Completion != "accepted" || result.Status != "completed") {
+		return conversationError("bad_request", "tool_result_invalid")
+	}
 	if result.Status != "completed" && result.Status != "failed" && result.Status != "pending" && result.Status != "uncertain" || len(result.Content) > 0 && !json.Valid(result.Content) || result.Status == "failed" && result.ErrorCode == "" {
 		return conversationError("bad_request", "tool_result_invalid")
 	}
 	return s.transaction(ctx, func(tx *sql.Tx) error {
-		return s.finishExecutionTool(ctx, tx, claim, number, callID, result)
+		row, err := s.claimed(ctx, tx, claim)
+		if err != nil {
+			row, err = s.cancelledToolReceiptRow(ctx, tx, claim, number, callID)
+			if err != nil {
+				return err
+			}
+		}
+		return s.finishExecutionToolReceipt(ctx, tx, claim, number, callID, result, row)
 	})
 }
 
@@ -303,6 +321,12 @@ func (s *ConversationStore) finishExecutionTool(ctx context.Context, tx *sql.Tx,
 	if err != nil {
 		return err
 	}
+	return s.finishExecutionToolReceipt(ctx, tx, claim, number, callID, result, row)
+}
+
+// Only the public receipt method accepts a cancelled run. Transactional local
+// mutations keep using finishExecutionTool and its strict live-lease check.
+func (s *ConversationStore) finishExecutionToolReceipt(ctx context.Context, tx *sql.Tx, claim persistence.ConversationClaim, number int, callID string, result agentsdk.ConversationToolResult, row conversationRunRow) error {
 	var out persistence.ConversationToolExecution
 	found, err := s.readExecutionTool(ctx, tx, claim, number, callID, &out)
 	if err != nil {
@@ -319,6 +343,9 @@ func (s *ConversationStore) finishExecutionTool(ctx context.Context, tx *sql.Tx,
 	}
 	if out.Definition.MaxOutputBytes < 1 || len(result.Content) > out.Definition.MaxOutputBytes {
 		return conversationError("bad_request", "tool_result_exceeded")
+	}
+	if result.Completion != "" && (out.Definition.Effect != "write" || result.Completion != "accepted" || result.Status != "completed") {
+		return conversationError("bad_request", "tool_result_invalid")
 	}
 	out.Result = &result
 	out.State = "completed"
@@ -341,13 +368,13 @@ func (s *ConversationStore) finishExecutionTool(ctx context.Context, tx *sql.Tx,
 	}
 	preview := historyPrefix(string(result.Content), 2048)
 	var citations []agentsdk.ConversationCitation
-	if result.Status == "completed" && (out.Call.Name == "knowledge_search" || out.Call.Name == "knowledge_read") {
+	if result.Status == "completed" && (out.Call.Name == "knowledge_search" || out.Call.Name == "knowledge_read" || out.Call.Name == "knowledge_extract" || out.Call.Name == "attachment_search" || out.Call.Name == "attachment_read") {
 		var evidence agentsdk.ConversationKnowledgeResult
 		if json.Unmarshal(result.Content, &evidence) == nil {
 			citations = evidence.Citations
 		}
 	}
-	if err = s.event(ctx, tx, &row, "tool."+out.State, map[string]any{"step": number, "call_id": callID, "tool": out.Call.Name, "status": result.Status, "error_code": result.ErrorCode, "resource_id": result.ResourceID, "result_preview": preview, "result_reference": reference, "result_truncated": len(preview) < len(result.Content), "citations": citations, "attempt": row.Run.Attempt}); err != nil {
+	if err = s.event(ctx, tx, &row, "tool."+out.State, map[string]any{"step": number, "call_id": callID, "tool": out.Call.Name, "status": result.Status, "effect": out.Definition.Effect, "completion": result.Completion, "error_code": result.ErrorCode, "resource_id": result.ResourceID, "result_preview": preview, "result_reference": reference, "result_truncated": len(preview) < len(result.Content), "citations": citations, "attempt": row.Run.Attempt}); err != nil {
 		return err
 	}
 	return s.saveRun(ctx, tx, row, old)

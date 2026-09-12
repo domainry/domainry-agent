@@ -1,0 +1,6 @@
+=== RUN   TestExternalAccountsCurrentIdentityOwnershipAndRestart
+    integration_accounts_test.go:294: Integration Module host is incomplete
+--- FAIL: TestExternalAccountsCurrentIdentityOwnershipAndRestart (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	1.150s
+FAIL

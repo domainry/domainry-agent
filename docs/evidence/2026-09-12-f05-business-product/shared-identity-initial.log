@@ -1,0 +1,20 @@
+=== RUN   TestBorrowedIdentityDoesNotPublishOrCloseOwner
+--- PASS: TestBorrowedIdentityDoesNotPublishOrCloseOwner (4.19s)
+=== RUN   TestBusinessServiceRequiresSharedIdentityAndExactScope
+=== RUN   TestBusinessServiceRequiresSharedIdentityAndExactScope/local_identity
+=== RUN   TestBusinessServiceRequiresSharedIdentityAndExactScope/runtime
+=== RUN   TestBusinessServiceRequiresSharedIdentityAndExactScope/workspace
+=== RUN   TestBusinessServiceRequiresSharedIdentityAndExactScope/application
+=== RUN   TestBusinessServiceRequiresSharedIdentityAndExactScope/issuer
+=== RUN   TestBusinessServiceRequiresSharedIdentityAndExactScope/missing_issuer
+=== RUN   TestBusinessServiceRequiresSharedIdentityAndExactScope/contract
+--- PASS: TestBusinessServiceRequiresSharedIdentityAndExactScope (0.00s)
+    --- PASS: TestBusinessServiceRequiresSharedIdentityAndExactScope/local_identity (0.00s)
+    --- PASS: TestBusinessServiceRequiresSharedIdentityAndExactScope/runtime (0.00s)
+    --- PASS: TestBusinessServiceRequiresSharedIdentityAndExactScope/workspace (0.00s)
+    --- PASS: TestBusinessServiceRequiresSharedIdentityAndExactScope/application (0.00s)
+    --- PASS: TestBusinessServiceRequiresSharedIdentityAndExactScope/issuer (0.00s)
+    --- PASS: TestBusinessServiceRequiresSharedIdentityAndExactScope/missing_issuer (0.00s)
+    --- PASS: TestBusinessServiceRequiresSharedIdentityAndExactScope/contract (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	6.003s

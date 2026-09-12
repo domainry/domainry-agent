@@ -1,0 +1,250 @@
+{
+  "product": "domainry-work",
+  "steps": [
+    "delivered product setup, Tools permission setup, owner tool selection and persistent disable",
+    "actual product Agent and Skill catalog sends no disabled calculation tool to model",
+    "entire product reopen preserves preference and mobile re-enable writes current revision"
+  ],
+  "javascriptErrors": [],
+  "navigation": [
+    {
+      "at": 1789120978147,
+      "path": "/"
+    },
+    {
+      "at": 1789120978495,
+      "path": "/"
+    },
+    {
+      "at": 1789120978498,
+      "path": "/"
+    },
+    {
+      "at": 1789120978646,
+      "path": "/"
+    },
+    {
+      "at": 1789120980435,
+      "path": "/"
+    }
+  ],
+  "requests": [
+    {
+      "at": 1789120978293,
+      "path": "/app/config",
+      "status": 200
+    },
+    {
+      "at": 1789120978317,
+      "path": "/app/session",
+      "status": 401
+    },
+    {
+      "at": 1789120978317,
+      "path": "/auth/refresh",
+      "status": 401
+    },
+    {
+      "at": 1789120978491,
+      "path": "/auth/login",
+      "status": 200
+    },
+    {
+      "at": 1789120978493,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120978500,
+      "path": "/app/config",
+      "status": 200
+    },
+    {
+      "at": 1789120978501,
+      "path": "/app/product/config",
+      "status": 200
+    },
+    {
+      "at": 1789120978504,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120978509,
+      "path": "/app/product/config",
+      "status": 200
+    },
+    {
+      "at": 1789120978522,
+      "path": "/app/product/records/meetings",
+      "status": 403
+    },
+    {
+      "at": 1789120978523,
+      "path": "/app/product/setup",
+      "status": 200
+    },
+    {
+      "at": 1789120978538,
+      "path": "/app/product/setup",
+      "status": 200
+    },
+    {
+      "at": 1789120978640,
+      "path": "/app/product/setup",
+      "status": 200
+    },
+    {
+      "at": 1789120978716,
+      "path": "/app/config",
+      "status": 200
+    },
+    {
+      "at": 1789120978725,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120978728,
+      "path": "/app/product/config",
+      "status": 200
+    },
+    {
+      "at": 1789120978736,
+      "path": "/app/product/records/meetings",
+      "status": 200
+    },
+    {
+      "at": 1789120978747,
+      "path": "/app/product/setup",
+      "status": 200
+    },
+    {
+      "at": 1789120979308,
+      "path": "/tools/preferences",
+      "status": 403
+    },
+    {
+      "at": 1789120979308,
+      "path": "/app/product/tool-settings-setup",
+      "status": 200
+    },
+    {
+      "at": 1789120979574,
+      "path": "/app/product/tool-settings-setup",
+      "status": 200
+    },
+    {
+      "at": 1789120979578,
+      "path": "/app/product/tool-settings-setup",
+      "status": 200
+    },
+    {
+      "at": 1789120979620,
+      "path": "/tools/preferences",
+      "status": 200
+    },
+    {
+      "at": 1789120979642,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120979688,
+      "path": "/tools/preferences",
+      "status": 200
+    },
+    {
+      "at": 1789120979774,
+      "path": "/tools/preferences/calculate",
+      "status": 200
+    },
+    {
+      "at": 1789120979962,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120979980,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120979994,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120980068,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120980132,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120980200,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120980261,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120980320,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120980326,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120980543,
+      "path": "/app/config",
+      "status": 200
+    },
+    {
+      "at": 1789120980554,
+      "path": "/app/session",
+      "status": 200
+    },
+    {
+      "at": 1789120980560,
+      "path": "/app/product/config",
+      "status": 200
+    },
+    {
+      "at": 1789120980568,
+      "path": "/app/product/records/meetings",
+      "status": 200
+    },
+    {
+      "at": 1789120980578,
+      "path": "/app/product/setup",
+      "status": 200
+    },
+    {
+      "at": 1789120980625,
+      "path": "/app/product/tool-settings-setup",
+      "status": 200
+    },
+    {
+      "at": 1789120980719,
+      "path": "/tools/preferences",
+      "status": 200
+    },
+    {
+      "at": 1789120981126,
+      "path": "/tools/preferences/calculate",
+      "status": 200
+    }
+  ],
+  "openAt": 1789120979248,
+  "complete": true
+}

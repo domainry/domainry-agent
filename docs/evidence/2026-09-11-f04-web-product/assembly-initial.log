@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	1.141s
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	0.730s [no tests to run]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]

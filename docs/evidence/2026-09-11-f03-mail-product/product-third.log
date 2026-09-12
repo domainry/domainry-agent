@@ -1,0 +1,6 @@
+=== RUN   TestMailProductIdentityDraftSourcesAndRestart
+    mail_tools_test.go:164: PUT /integration/oauth-applications/mail-google: status 400, want 200, body {"code":"backend.integration.oauth_failed"}
+--- FAIL: TestMailProductIdentityDraftSourcesAndRestart (8.60s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	9.426s
+FAIL

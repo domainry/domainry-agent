@@ -1,0 +1,6 @@
+go: downloading go1.25.8 (darwin/arm64)
+go: downloading golang.org/x/arch v0.20.0
+ok  	github.com/codeck-backend/llm-proxy/library/httpmeta	1.495s
+ok  	github.com/codeck-backend/llm-proxy/library/webio	1.956s
+ok  	github.com/codeck-backend/llm-proxy/service/jina	1.418s
+?   	github.com/codeck-backend/llm-proxy/service/web_search	[no test files]

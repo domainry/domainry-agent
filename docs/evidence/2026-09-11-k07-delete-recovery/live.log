@@ -1,0 +1,13 @@
+Document lifecycle evidence: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-knowledge-document-lifecycle-fleb2538
+=== RUN   TestLiveKnowledgeDocumentLifecycle
+    knowledge_documents_live_test.go:97: Synthetic document manifest: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-knowledge-document-lifecycle-fleb2538/manifest.json
+    knowledge_documents_live_test.go:198: Document push acknowledged; waiting for actual index state
+    knowledge_documents_live_test.go:211: Index status: PENDING
+    knowledge_documents_live_test.go:211: Index status: CHUNKED
+    knowledge_documents_live_test.go:211: Index status: EMBEDDED
+    knowledge_documents_live_test.go:211: Index status: INDEXED
+    knowledge_documents_live_test.go:283: Private fixture: real DELETE acknowledgement lost; identical DELETE recovered, then fetch/search absence verified
+    knowledge_documents_live_test.go:285: Actual content fetched and searched; deletion and absence verified
+--- PASS: TestLiveKnowledgeDocumentLifecycle (33.76s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	34.011s

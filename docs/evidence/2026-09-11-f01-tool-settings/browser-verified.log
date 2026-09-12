@@ -1,0 +1,10 @@
+=== RUN   TestToolSettingsBuiltBrowser
+PASS administrator explicitly enables preference permission; selected catalog excludes other granted tools; disabling removes calculation from actual model input
+PASS Agent and Integration reopen preserves disabled preference; another actual Identity user retains independent defaults
+PASS lost write response blocks further clicks until explicit refresh reads the committed revision; no automatic write replay
+PASS two concurrent writes produce one revision; current permission removal hides the row and rejects enable; restoring permission preserves the choice
+PASS actual owner OAuth grant enables the configured account requirement; revocation removes the tool on the next model request
+PASS 390px viewport keeps dialog and switch in bounds; search and re-enable operate on the persisted current revision
+--- PASS: TestToolSettingsBuiltBrowser (7.25s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	8.405s

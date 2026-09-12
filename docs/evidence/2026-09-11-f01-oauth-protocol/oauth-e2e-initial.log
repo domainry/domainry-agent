@@ -1,0 +1,10 @@
+=== RUN   TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions
+=== RUN   TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions/module
+    oauth_flow_test.go:312: Actual Google Provider + host Transport + local token HTTP: configuration authorization, PKCE, private ciphertext, cross-user rejection, two host restarts, single-use callback, uncertain result without retry, independent account and revoked receipt passed
+=== RUN   TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions/saas
+    oauth_flow_test.go:312: Actual Google Provider + host Transport + local token HTTP: configuration authorization, PKCE, private ciphertext, cross-user rejection, two host restarts, single-use callback, uncertain result without retry, independent account and revoked receipt passed
+--- PASS: TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions (1.53s)
+    --- PASS: TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions/module (0.57s)
+    --- PASS: TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions/saas (0.97s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	2.219s

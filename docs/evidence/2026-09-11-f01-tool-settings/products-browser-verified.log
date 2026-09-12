@@ -1,0 +1,27 @@
+=== RUN   TestToolSettingsBuiltProductBrowser
+PASS domainry-work Tools browser: 3 scenes
+--- PASS: TestToolSettingsBuiltProductBrowser (3.86s)
+PASS
+ok  	github.com/domainry/domainry-work/internal/assembly/saas	5.041s
+=== RUN   TestToolSettingsBuiltProductBrowser
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('dialog', { name: '工具设置', exact: true }).getByRole('button', { name: '启用管理员工具设置', exact: true })[22m
+
+    at /Users/tiger/Projects/domainry-agent/frontend/tests/product-tool-settings.browser.mjs:15:131 {
+  log: [
+    "  - waiting for getByRole('dialog', { name: '工具设置', exact: true }).getByRole('button', { name: '启用管理员工具设置', exact: true })"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.22.0
+    tool_settings_browser_test.go:8: product Tools browser exit status 1
+--- FAIL: TestToolSettingsBuiltProductBrowser (17.04s)
+FAIL
+FAIL	github.com/domainry/domainry-pm/internal/assembly/saas	18.590s
+FAIL

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -14,7 +15,6 @@ import (
 	"testing"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	agentmodule "github.com/domainry/domainry-agent/module"
 )
@@ -132,7 +132,7 @@ func TestConversationKnowledgeEmptyAndFailuresRemainDistinct(t *testing.T) {
 				}
 				return agentsdk.ConversationModelResult{Content: "没有检索到相关文档。"}, nil
 			})
-			s, err := agentapplication.NewConversationService(conversationRepository(t), model, conversationAuthority().RuntimeID, options)
+			s, err := conversationassembly.NewService(conversationRepository(t), model, conversationAuthority().RuntimeID, options)
 			if err != nil {
 				t.Fatal(err)
 			}

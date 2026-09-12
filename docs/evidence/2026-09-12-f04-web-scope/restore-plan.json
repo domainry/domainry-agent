@@ -1,0 +1,67 @@
+{
+  "baseline": "a32407a678ea7f96d70b7557765e2a01262184d4",
+  "matched_prior_manifest": "2026-09-11-f04-web-product.json",
+  "all_files_match_our_prior_snapshot": true,
+  "files": [
+    {
+      "path": "handler/web_fetch.go",
+      "action": "restore",
+      "before_sha256": "45dd5f1139ba7a4f62c84e897db7e51246f3c41ed5ee04d29986cc22a14df0ab"
+    },
+    {
+      "path": "handler/web_search.go",
+      "action": "restore",
+      "before_sha256": "8f99c99cdf34e39cfc0347f149f1f8a352d7fffac4193857a5ed44cb260b4032"
+    },
+    {
+      "path": "middleware/auth.go",
+      "action": "restore",
+      "before_sha256": "e4d64e3c946ab008e05b691de17d16f92897ae03074707424bf5aaa60bfa3593"
+    },
+    {
+      "path": "middleware/logger.go",
+      "action": "restore",
+      "before_sha256": "7c56ba08366cb0b043b11409b2f92a5780a9d5296f4a4ecd5abffda60ac92ee1"
+    },
+    {
+      "path": "service/jina/jina.go",
+      "action": "restore",
+      "before_sha256": "e430235b08b13012743b388ce446ad93481f3db5ff42d88acb20f8ec5c29687d"
+    },
+    {
+      "path": "service/web_search/web_search_service.go",
+      "action": "restore",
+      "before_sha256": "d8fd17a8430d6ab7737102a6f2d17575ded60153ec854be4fcbe24368c2b75e3"
+    },
+    {
+      "path": "library/httpmeta/headers.go",
+      "action": "remove_our_new_file",
+      "before_sha256": "d0a0ad91be2f3ae0d90eb4be9721c3f5872b831205551a4c1b592f7368d697c4"
+    },
+    {
+      "path": "library/httpmeta/headers_test.go",
+      "action": "remove_our_new_file",
+      "before_sha256": "3fdb24085144b6eeac7b6f43a72420fd0cd7716146fe5e4010a30dea37f483e4"
+    },
+    {
+      "path": "library/webio/http.go",
+      "action": "remove_our_new_file",
+      "before_sha256": "3b5407fa10493e89bded162a2d1cabfb378e43d28bb5bb4af5388b6a1137633a"
+    },
+    {
+      "path": "library/webio/http_test.go",
+      "action": "remove_our_new_file",
+      "before_sha256": "9afbdd1c9bf36af9984f019f2b74bf0e8ecb14e01f3e6821b68386b175079687"
+    },
+    {
+      "path": "service/jina/jina_test.go",
+      "action": "remove_our_new_file",
+      "before_sha256": "ae899e65b718cd1209682f698e72d2a7e0c2d4977a4348a865a9bb89a08bddbc"
+    },
+    {
+      "path": "service/web_search/web_search_service_test.go",
+      "action": "remove_our_new_file",
+      "before_sha256": "23743585866b0df89e67d82aa3490f69d26885073c7a8c17f14b6c430f4db6c5"
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http/httptest"
 	"testing"
 
@@ -17,7 +18,7 @@ import (
 // references and mutation receipts, without requiring a chat model or run.
 func TestPersonalTodoSaaSRoundTripAndScope(t *testing.T) {
 	a := conversationAuthority()
-	service, err := application.NewConversationService(conversationRepository(t), nil, a.RuntimeID, application.ConversationOptions{PersonalAuthorizer: personalReadAuthorizer{}})
+	service, err := conversationassembly.NewService(conversationRepository(t), nil, a.RuntimeID, application.ConversationOptions{PersonalAuthorizer: personalReadAuthorizer{}})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,0 +1,17 @@
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart/unknown_original_receipt
+    account_write_model_test.go:29: model request 1: 2 messages
+    account_write_model_test.go:30: model request 1 returned after 314µs
+    account_write_model_test.go:29: model request 2: 7 messages
+    account_write_model_test.go:30: model request 2 returned after 874.333µs
+    account_write_model_test.go:29: model request 3: 10 messages
+    account_write_model_test.go:30: model request 3 returned after 905.917µs
+    account_write_model_test.go:29: model request 4: 13 messages
+    account_write_model_test.go:30: model request 4 returned after 772.083µs
+    account_write_model_test.go:29: model request 5: 15 messages
+    account_write_model_test.go:30: model request 5 returned after 2.568208ms
+    account_write_test.go:50: vendor HTTP=8 model HTTP=5 effects=map[mail_send:1]
+--- PASS: TestAccountWritesThroughIdentityProviderHTTPAndRestart (314.70s)
+    --- PASS: TestAccountWritesThroughIdentityProviderHTTPAndRestart/unknown_original_receipt (314.70s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	316.353s

@@ -10,12 +10,14 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"testing/fstest"
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent-sdk/modulehost"
 	webhttp "github.com/domainry/domainry-agent/internal/transport/http/web"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
@@ -42,9 +44,27 @@ func TestConversationCatalogIdentityHTTPConnectionsAndBrowser(t *testing.T) {
 	t.Setenv("IDENTITY_DATA_SECRET_KEY", "catalog-test-encryption-key-long-enough")
 	t.Setenv("APP_ENV", "development")
 	state := &catalogConnectionFixture{}
+	readStarted, readStopped := make(chan struct{}), make(chan struct{})
+	var startRead, stopRead sync.Once
+	var interruptedReads atomic.Int32
 	var modelCalls, knowledgeCalls atomic.Int32
 	knowledge := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		knowledgeCalls.Add(1)
+		var body struct {
+			Query string `json:"query"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			t.Error(err)
+			http.Error(w, "invalid", 400)
+			return
+		}
+		if body.Query == "B06-wait-cancel" {
+			startRead.Do(func() { close(readStarted) })
+			<-r.Context().Done()
+			interruptedReads.Add(1)
+			stopRead.Do(func() { close(readStopped) })
+			return
+		}
 		fmt.Fprint(w, `{"hits":[{"doc_id":"catalog-policy","title":"工具目录验收资料","body":"CATALOG-KNOWLEDGE-EVIDENCE"}]}`)
 	}))
 	defer knowledge.Close()
@@ -87,6 +107,13 @@ func TestConversationCatalogIdentityHTTPConnectionsAndBrowser(t *testing.T) {
 		}
 		last := in.Messages[len(in.Messages)-1]
 		switch {
+		case last.Role == "user" && strings.Contains(last.Content, "B06取消"):
+			write(map[string]any{"tool_calls": []any{
+				map[string]any{"index": 0, "id": "b06-first", "type": "function", "function": map[string]any{"name": "calculate", "arguments": `{"operation":"expression","expression":"0.1+0.2","unit":"CNY"}`}},
+				map[string]any{"index": 1, "id": "b06-read", "type": "function", "function": map[string]any{"name": "knowledge_search", "arguments": `{"query":"B06-wait-cancel"}`}},
+				map[string]any{"index": 2, "id": "b06-third", "type": "function", "function": map[string]any{"name": "calculate", "arguments": `{"operation":"expression","expression":"0.1+0.2","unit":"CNY"}`}},
+			}}, "")
+			write(map[string]any{}, "tool_calls")
 		case last.Role == "tool":
 			if strings.Contains(last.Content, "CATALOG-KNOWLEDGE-EVIDENCE") {
 				answer("已通过当前连接取得验收资料。")
@@ -124,6 +151,9 @@ func TestConversationCatalogIdentityHTTPConnectionsAndBrowser(t *testing.T) {
 	host, err := Open(t.Context(), options)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if _, legacy := any(host).(modulehost.ApplicationHost); legacy {
+		t.Fatal("web conversations unexpectedly depend on legacy application ports")
 	}
 	defer func() { _ = host.Close(context.Background()) }()
 	b := &browser{t: t, cookies: map[string]*http.Cookie{}}
@@ -258,6 +288,30 @@ func TestConversationCatalogIdentityHTTPConnectionsAndBrowser(t *testing.T) {
 		"revoke_calculate":            func() { grant(false) },
 		"restore_catalog_permissions": func() { grant(true) },
 		"restart_catalog_host":        reopen,
+		"wait_cancellation_read": func() {
+			select {
+			case <-readStarted:
+			case <-time.After(5 * time.Second):
+				t.Error("cancellation read did not reach HTTP server")
+			}
+		},
+		"assert_cancellation_observed": func() {
+			select {
+			case <-readStopped:
+			case <-time.After(5 * time.Second):
+				t.Error("knowledge HTTP request was not cancelled")
+			}
+		},
 	})
+	for _, table := range []string{"_agent_task_runs", "_agent_task_definitions", "_agent_interactive_runs"} {
+		var count int
+		if err := host.db.QueryRowContext(t.Context(), "SELECT COUNT(*) FROM "+table).Scan(&count); err != nil || count != 0 {
+			t.Fatalf("conversation-only host wrote legacy table %s: count=%d error=%v", table, count, err)
+		}
+	}
+	t.Log("conversation-only web binding: legacy Task, TaskDefinition and Interactive rows=0")
+	if interruptedReads.Load() > 0 {
+		t.Logf("B06: official knowledge HTTP requests stopped=%d", interruptedReads.Load())
+	}
 	t.Logf("catalog acceptance completed: model HTTP requests=%d, knowledge HTTP requests=%d", modelCalls.Load(), knowledgeCalls.Load())
 }

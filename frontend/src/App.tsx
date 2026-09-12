@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { RunDialog } from "./RunDialog";
+import { repairRequest } from "./execution-outcome.ts";
+import type { ToolView } from "./execution-state.ts";
 import { TodoDialog } from "./TodoDialog";
 import { ArtifactDialog } from "./ArtifactDialog";
+import { ToolSettingsDialog } from "./ToolSettingsDialog";
+import { ExternalAccountsDialog } from "./ExternalAccountsDialog";
+import { loadAuthorization } from "./external-account-state.ts";
 import { KnowledgeLibraryDialog } from "./KnowledgeLibraryDialog";
 import { AttachmentDialog } from "./AttachmentDialog";
 import { ExecutionActivity } from "./ExecutionActivity";
@@ -91,6 +96,8 @@ const labels = {
   needs_reconciliation: "外部操作结果待核查",
 };
 export default function App({ session, onLogout, accountBusy, accountError }: { session: AppSession; onLogout?: () => void; accountBusy?: boolean; accountError?: string }) {
+  const [toolSettings, setToolSettings] = useState(false);
+  const [externalAccounts, setExternalAccounts] = useState(() => !!loadAuthorization(session.scope));
   const [narrow, setNarrow] = useState(() => window.matchMedia("(max-width: 650px)").matches);
   const [mobileNavigation, setMobileNavigation] = useState(false);
   const navigationButton = useRef<HTMLButtonElement>(null);
@@ -155,10 +162,38 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
   const cursor = cursors[cursors.length - 1];
 
   const fail = (e: unknown) => setError(describeError(e));
+  function refreshResultAccess() {
+    // Account or tool changes can invalidate already rendered source content.
+    // Clear it while the current conversation is reauthorized by the server.
+    setHistory({ items: [] });
+    setRun(null);
+    setInspectedRun(null);
+    setLoading(Boolean(selectedRef.current));
+    setRefresh(value => value + 1);
+  }
   function setInput(text: string) {
     drafts.write(selectedRef.current, text);
     setInputState(text);
     setDraftUnavailable(!drafts.available);
+  }
+  function resumeExecution(target: Run) {
+    if (target.id !== run?.id || target.conversation_id !== selectedRef.current) return;
+    void mutate(async () => {
+      const resumed = await request<Run>(`${runPath(target.conversation_id, target.id)}/resume`, "POST");
+      if (selectedRef.current === resumed.conversation_id) setRun(resumed);
+      setRefresh(value => value + 1);
+    });
+  }
+  const recoveryDisabled = busy || loading || isActive || !!record?.archived;
+  const repairDisabled = !canEdit || !!record?.archived || !!input.trim() || !!drafts.read(selectedId).pending;
+  function prepareRepair(target: Run, step: number, call: ToolView, label: string) {
+    if (repairDisabled || target.conversation_id !== selectedRef.current) return;
+    setInput(repairRequest(target, step, call, label));
+    drafts.writeMemoryScope(selectedId, false); setMemoryWrite(false);
+    drafts.writeTodoScope(selectedId, false); setTodoWrite(false);
+    drafts.writeArtifactScope(selectedId, false); setArtifactWrite(false);
+    setInspectedRun(null);
+    setNotice("修复请求已放入草稿，请核对后发送。原运行与已完成结果会保留。");
   }
   function activate(id: string) {
     setMobileNavigation(false);
@@ -482,6 +517,8 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
             <Brain size={17} />
             个人记忆<span className="subtle">偏好与约定</span>
           </Button>
+          {session.mode === "identity" && <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setToolSettings(true); }}><SlidersHorizontal size={17} />工具设置<span className="subtle">管理个人工具开关</span></Button>}
+          {session.mode === "identity" && <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setExternalAccounts(true); }}><SlidersHorizontal size={17} />外部账号<span className="subtle">授权与连接管理</span></Button>}
           <div className="account-card">
             <span className="account-avatar">{Array.from(session.name || session.user_id || "D")[0].toUpperCase()}</span>
             <div><strong>{session.mode === "local" ? "本地工作空间" : session.name || session.user_id}</strong><small><span className="live-dot" />{session.mode === "local" ? "本地测试模式" : "个人账号"}</small></div>
@@ -594,7 +631,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                     {message.role === "user" ? "你" : <><span className="message-avatar">d.</span>Domainry <span className="agent-label">Agent</span></>}
                   </div>
                   <MessageContent>
-                    {message.role === "assistant" && !message.access_error && run?.id === message.run_id && <ExecutionActivity run={run} />}
+                    {message.role === "assistant" && !message.access_error && run?.id === message.run_id && <ExecutionActivity run={run} onResume={() => resumeExecution(run)} onRepair={(step, call, label) => prepareRepair(run, step, call, label)} recoveryDisabled={recoveryDisabled} repairDisabled={repairDisabled} />}
                     {message.role === "assistant" ? (
                       message.access_error ? <p role="status" className="subtle">{errorMessage(message.access_error)}</p> : <KnowledgeResponse text={message.content} citations={message.citations} />
                     ) : (
@@ -658,7 +695,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                   {run.attempt > 1 && <span>· 第 {run.attempt} 次处理</span>}
                 </div>
                 <MessageContent>
-                  <ExecutionActivity run={run} />
+                  <ExecutionActivity run={run} onResume={() => resumeExecution(run)} onRepair={(step, call, label) => prepareRepair(run, step, call, label)} recoveryDisabled={recoveryDisabled} repairDisabled={repairDisabled} />
                   {!run.access_error && run.interaction && <InteractionCard key={`${run.interaction.id}:${run.interaction.revision}`} interaction={run.interaction} onRun={snapshot => { if (selectedRef.current === snapshot.conversation_id) setRun(snapshot); }} onRefresh={() => setRefresh(value => value + 1)} />}
                   {run.access_error ? <p role="alert" className="subtle">{errorMessage(run.access_error)}</p> : liveStepText(run) ? (
                     <KnowledgeResponse isAnimating={isActive} text={liveStepText(run)} citations={runCitations(run)} />
@@ -920,8 +957,10 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
           </Button>
         </DialogContent>
       </Dialog>
-      {inspectedRun && inspectedRun.conversationID === selectedId && <RunDialog key={`${inspectedRun.conversationID}:${inspectedRun.runID}`} {...inspectedRun} onClose={() => setInspectedRun(null)} />}
+      {inspectedRun && inspectedRun.conversationID === selectedId && <RunDialog key={`${inspectedRun.conversationID}:${inspectedRun.runID}`} {...inspectedRun} onClose={() => setInspectedRun(null)} onResume={inspectedRun.runID === run?.id ? resumeExecution : undefined} onRepair={prepareRepair} recoveryDisabled={recoveryDisabled} repairDisabled={repairDisabled} />}
       {todoDialog && <TodoDialog conversationID={selectedId} onClose={() => setTodoDialog(false)} onSource={id => { setTodoDialog(false); activate(id); }} />}
+      {toolSettings && <ToolSettingsDialog key={session.scope} session={session} onClose={() => { setToolSettings(false); refreshResultAccess(); }} />}
+      {externalAccounts && <ExternalAccountsDialog session={session} onClose={() => { setExternalAccounts(false); refreshResultAccess(); }} />}
       {libraryDialog && <KnowledgeLibraryDialog onClose={() => setLibraryDialog(false)} />}
       {artifactDialog && <ArtifactDialog conversationID={selectedId} onClose={() => setArtifactDialog(false)} />}
       {attachmentDialog && record && <AttachmentDialog key={record.id} conversationID={record.id} archived={record.archived} onClose={() => setAttachmentDialog(false)} onOpenLibrary={() => { setAttachmentDialog(false); setLibraryDialog(true); }} />}

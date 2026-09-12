@@ -1,0 +1,579 @@
+{
+  "steps": [
+    "four product-selected mail tools become available after actual owner OAuth grant",
+    "browser submits authorized request; two search pages and body drive summary, extracted action and nine persisted tool calls including local draft create/read/edit/export",
+    "Knowledge draft retains source run and original mail references; real UI previews, edits v3 and downloads exact Markdown",
+    "disabling mail body hides saved answer and derived draft; host restart preserves choice and explicit re-enable restores authorized v3",
+    "current Identity read revocation removes a displayed draft on refresh and prevents source-dependent reads",
+    "another Identity user cannot discover the personal mailbox or read the conversation and draft",
+    "missing provider body yields explicit incomplete answer and creates no additional draft at 390px",
+    "revoked account no longer exposes derived drafts; fresh metadata-only OAuth enables headers and excludes search/body/drafting"
+  ],
+  "javascriptErrors": [],
+  "snapshots": [
+    {
+      "title": "预算邮件与回复草稿",
+      "conversation": {
+        "id": "conv_89892f4c6b27fa02129755623ea3dccb",
+        "title": "预算邮件与回复草稿",
+        "runtime_id": "accounts-runtime",
+        "workspace_id": "accounts-workspace",
+        "user_id": "admin",
+        "archived": false,
+        "memory_enabled": false,
+        "last_seq": 2,
+        "revision": 3,
+        "created_at": "2026-09-11T14:18:07.046Z",
+        "updated_at": "2026-09-11T14:18:16.564Z"
+      },
+      "messages": {
+        "items": [
+          {
+            "id": "msg_18a3f88ed8be73e403b7219130460752",
+            "conversation_id": "conv_89892f4c6b27fa02129755623ea3dccb",
+            "run_id": "crun_855336a7ea5cde35b97dc6c67b0d6713",
+            "seq": 1,
+            "role": "user",
+            "content": "搜索预算邮件，提取待处理事项，并保存、修改和导出回复草稿。",
+            "created_at": "2026-09-11T14:18:07.432041Z"
+          },
+          {
+            "id": "msg_cc291c62c61e946436332968e633471d",
+            "conversation_id": "conv_89892f4c6b27fa02129755623ea3dccb",
+            "run_id": "crun_855336a7ea5cde35b97dc6c67b0d6713",
+            "seq": 2,
+            "role": "assistant",
+            "content": "已搜索 2 封邮件。摘要：MAIL-BODY：请李明在 2026-09-14 前核对预算 3200 元并回复。负责人未确认，请勿宣称已承诺。\n\n待处理事项：预算核对；来源请求李明于 2026-09-14 前处理，负责人和承诺待确认。\n\n已保存本地回复草稿（未发送），版本 2，并导出 Markdown。来源邮件 account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw / mail-1 / <budget-mail-1@example.com>，草稿 ID：art_d29b00530039b9c5b9d94f3a1479c975。",
+            "created_at": "2026-09-11T14:18:16.564224Z"
+          }
+        ]
+      },
+      "run": {
+        "id": "crun_855336a7ea5cde35b97dc6c67b0d6713",
+        "conversation_id": "conv_89892f4c6b27fa02129755623ea3dccb",
+        "client_message_id": "fe6ad220-ed00-4bbe-a470-7aef0efa9058",
+        "status": "completed",
+        "user_seq": 1,
+        "assistant_message_id": "msg_cc291c62c61e946436332968e633471d",
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 71,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "mail-accounts",
+                "name": "mail_accounts",
+                "arguments": "{\"operation\":\"mail_list\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"name\":\"个人邮件\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\"}],\"operation\":\"mail_list\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T14:18:06.445542Z\",\"operation\":\"mail_list\",\"contract_sha256\":\"a67a8c1553a2b8457dd54dd3d574994f05e8177ccae2b34a78239affa3fd3004\"}]}",
+                "result_reference": {
+                  "conversation_id": "conv_89892f4c6b27fa02129755623ea3dccb",
+                  "run_id": "crun_855336a7ea5cde35b97dc6c67b0d6713",
+                  "step": 0,
+                  "call_id": "mail-accounts",
+                  "sha256": "91bfca2db9d67600f2de4726c5ae2395f53bb0fc88a417552cd53ab6c5f159d7"
+                }
+              }
+            ]
+          },
+          {
+            "number": 1,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "mail-list",
+                "name": "mail_list",
+                "arguments": "{\"account_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"limit\":2}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"mail-1\",\"thread_id\":\"thread-budget\",\"internet_message_id\":\"\\u003cbudget-mail-1@example.com\\u003e\",\"subject\":\"预算核对\",\"from\":[{\"name\":\"王芳\",\"address\":\"wang@example.com\"}],\"to\":[{\"name\":\"李明\",\"address\":\"li@example.com\"}],\"cc\":[],\"reply_to\":[{\"address\":\"budget@example.com\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":false,\"is_draft\":false,\"metadata_complete\":true}],\"complete\":true,\"query_syntax\":\"gmail\",\"mailbox_scope\":\"mailbox_excluding_spam_trash\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T14:18:06.445542Z\",\"operation\":\"mail_list\",\"contract_sha256\":\"a67a8c1553a2b8457dd54dd3d574994f05e8177ccae2b34a78239affa3fd3004\"}],\"read_at\":\"2026-09-11T14:18:08.105548Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_89892f4c6b27fa02129755623ea3dccb",
+                  "run_id": "crun_855336a7ea5cde35b97dc6c67b0d6713",
+                  "step": 1,
+                  "call_id": "mail-list",
+                  "sha256": "c14f551ecc2a38efbc72019ac987d9f12464da7b5378d222dc3af60b8188a625"
+                }
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "mail-search",
+                "name": "mail_search",
+                "arguments": "{\"account_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"limit\":1,\"query\":\"subject:预算\",\"query_syntax\":\"gmail\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"mail-1\",\"thread_id\":\"thread-budget\",\"internet_message_id\":\"\\u003cbudget-mail-1@example.com\\u003e\",\"subject\":\"预算核对\",\"from\":[{\"name\":\"王芳\",\"address\":\"wang@example.com\"}],\"to\":[{\"name\":\"李明\",\"address\":\"li@example.com\"}],\"cc\":[],\"reply_to\":[{\"address\":\"budget@example.com\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":false,\"is_draft\":false,\"metadata_complete\":true}],\"next_cursor\":\"eyJ2ZXJzaW9uIjoxLCJzY29wZSI6IjAyZjY4YzRhOTFkZWU3MjBlMGYwYjkyZmIxOGViYjc5MmMyZDkzNjE4NmUxNTQ1N2RmYzdjNjZiNDM1MjkxOTkiLCJ0b2tlbiI6Im1haWwtcGFnZS0yIiwic2VlbiI6MH0\",\"complete\":false,\"query_syntax\":\"gmail\",\"mailbox_scope\":\"mailbox_excluding_spam_trash\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T14:18:06.445542Z\",\"operation\":\"mail_search\",\"contract_sha256\":\"ca712330f5266cceb7fb4f46bbcca13f836e22c60bcc70d3fe95845e5818575f\"}],\"read_at\":\"2026-09-11T14:18:08.426385Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_89892f4c6b27fa02129755623ea3dccb",
+                  "run_id": "crun_855336a7ea5cde35b97dc6c67b0d6713",
+                  "step": 2,
+                  "call_id": "mail-search",
+                  "sha256": "0c63ecebfd0bfccecc62ce6836809c03db6484e69b9398818f05100eb1726459"
+                }
+              }
+            ]
+          },
+          {
+            "number": 3,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "mail-page",
+                "name": "mail_search",
+                "arguments": "{\"account_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"cursor\":\"eyJ2ZXJzaW9uIjoxLCJzY29wZSI6IjAyZjY4YzRhOTFkZWU3MjBlMGYwYjkyZmIxOGViYjc5MmMyZDkzNjE4NmUxNTQ1N2RmYzdjNjZiNDM1MjkxOTkiLCJ0b2tlbiI6Im1haWwtcGFnZS0yIiwic2VlbiI6MH0\",\"limit\":1,\"query\":\"subject:预算\",\"query_syntax\":\"gmail\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"mail-2\",\"thread_id\":\"thread-budget\",\"internet_message_id\":\"\\u003cbudget-mail-2@example.com\\u003e\",\"subject\":\"预算核对\",\"from\":[{\"name\":\"王芳\",\"address\":\"wang@example.com\"}],\"to\":[{\"name\":\"李明\",\"address\":\"li@example.com\"}],\"cc\":[],\"reply_to\":[{\"address\":\"budget@example.com\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":false,\"is_draft\":false,\"metadata_complete\":true}],\"complete\":true,\"query_syntax\":\"gmail\",\"mailbox_scope\":\"mailbox_excluding_spam_trash\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T14:18:06.445542Z\",\"operation\":\"mail_search\",\"contract_sha256\":\"ca712330f5266cceb7fb4f46bbcca13f836e22c60bcc70d3fe95845e5818575f\"}],\"read_at\":\"2026-09-11T14:18:08.737324Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_89892f4c6b27fa02129755623ea3dccb",
+                  "run_id": "crun_855336a7ea5cde35b97dc6c67b0d6713",
+                  "step": 3,
+                  "call_id": "mail-page",
+                  "sha256": "16966c684b4517d90a8998830923281266fec3c5ed98ab85664345363c773af7"
+                }
+              }
+            ]
+          },
+          {
+            "number": 4,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "mail-read",
+                "name": "mail_read",
+                "arguments": "{\"account_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"message_id\":\"mail-1\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"summary\":{\"id\":\"mail-1\",\"thread_id\":\"thread-budget\",\"internet_message_id\":\"\\u003cbudget-mail-1@example.com\\u003e\",\"subject\":\"预算核对\",\"from\":[{\"name\":\"王芳\",\"address\":\"wang@example.com\"}],\"to\":[{\"name\":\"李明\",\"address\":\"li@example.com\"}],\"cc\":[],\"reply_to\":[{\"address\":\"budget@example.com\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":false,\"is_draft\":false,\"metadata_complete\":true},\"body\":{\"text\":\"MAIL-BODY：请李明在 2026-09-14 前核对预算 3200 元并回复。负责人未确认，请勿宣称已承诺。\",\"complete\":true,\"omitted_reasons\":[]}},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T14:18:06.445542Z\",\"operation\":\"mail_read\",\"contract_sha256\":\"e98aba01bcab28ef70dd6dd5cac5c45a64e2d6d31899dc2e3105bb7a63f57a23\"}],\"read_at\":\"2026-09-11T14:18:09.298726Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_89892f4c6b27fa02129755623ea3dccb",
+                  "run_id": "crun_855336a7ea5cde35b97dc6c67b0d6713",
+                  "step": 4,
+                  "call_id": "mail-read",
+                  "sha256": "cc656f423329484fee28a0b2f3c8ddcf7311edfd7cb0d390e801f61f0dbfcf9b"
+                }
+              }
+            ]
+          },
+          {
+            "number": 5,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "write",
+                "id": "draft-create",
+                "name": "artifact_create",
+                "arguments": "{\"content\":{\"kind\":\"markdown\",\"markdown\":\"# 预算回复草稿（未发送）\\n\\n收件人：budget@example.com\\n\\n已收到预算核对请求，负责人和承诺仍待确认。\\n\\n原邮件内容：MAIL-BODY：请李明在 2026-09-14 前核对预算 3200 元并回复。负责人未确认，请勿宣称已承诺。\\n\\n来源账号：account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\\n邮件 ID：mail-1\\nthread_id：thread-budget\\ninternet_message_id：\\u003cbudget-mail-1@example.com\\u003e\\n来源时间：2026-09-11T02:00:00Z\\n\"},\"title\":\"预算回复草稿（未发送）\"}",
+                "status": "completed",
+                "resource_id": "art_d29b00530039b9c5b9d94f3a1479c975",
+                "result_preview": "{\"artifact\":{\"id\":\"art_d29b00530039b9c5b9d94f3a1479c975\",\"version\":1,\"title\":\"预算回复草稿（未发送）\",\"kind\":\"markdown\",\"sha256\":\"6f1c839ca095108c0541135eb3500f51c12162ed9866d0d9255778da1597f7d2\",\"bytes\":531,\"source_conversation_id\":\"conv_89892f4c6b27fa02129755623ea3dccb\",\"source_run_id\":\"crun_855336a7ea5cde35b97dc6c67b0d6713\",\"created_at\":\"2026-09-11T14:18:09.777Z\",\"updated_at\":\"2026-09-11T14:18:09.777Z\"}}",
+                "result_reference": {
+                  "conversation_id": "conv_89892f4c6b27fa02129755623ea3dccb",
+                  "run_id": "crun_855336a7ea5cde35b97dc6c67b0d6713",
+                  "step": 5,
+                  "call_id": "draft-create",
+                  "sha256": "f3602c0f9283e692dc639b442ac38962a893d4d687a8223ec684c4de81e76ab9"
+                }
+              }
+            ]
+          },
+          {
+            "number": 6,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "draft-read",
+                "name": "artifact_read",
+                "arguments": "{\"id\":\"art_d29b00530039b9c5b9d94f3a1479c975\",\"version\":1}",
+                "status": "completed",
+                "result_preview": "{\"artifact\":{\"id\":\"art_d29b00530039b9c5b9d94f3a1479c975\",\"version\":1,\"title\":\"预算回复草稿（未发送）\",\"kind\":\"markdown\",\"sha256\":\"6f1c839ca095108c0541135eb3500f51c12162ed9866d0d9255778da1597f7d2\",\"bytes\":531,\"source_conversation_id\":\"conv_89892f4c6b27fa02129755623ea3dccb\",\"source_run_id\":\"crun_855336a7ea5cde35b97dc6c67b0d6713\",\"created_at\":\"2026-09-11T14:18:09.777Z\",\"updated_at\":\"2026-09-11T14:18:09.777Z\"},\"markdown\":\"# 预算回复草稿（未发送）\\n\\n收件人：budget@example.com\\n\\n已收到预算核对请求，负责人和承诺仍待确认。\\n\\n原邮件内容：MAIL-BODY：请李明在 2026-09-14 前核对预算 3200 元并回复。负责人未确认，请勿宣称已承诺。\\n\\n来源账号：account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\\n邮件 ID：mail-1\\nthread_id：thread-budget\\ninternet_message_id：\\u003cbudget-mail-1@example.com\\u003e\\n来源时间：2026-09-11T02:00:00Z\\n\",\"offset\":0,\"next_offset\":475,\"complete\":true}",
+                "result_reference": {
+                  "conversation_id": "conv_89892f4c6b27fa02129755623ea3dccb",
+                  "run_id": "crun_855336a7ea5cde35b97dc6c67b0d6713",
+                  "step": 6,
+                  "call_id": "draft-read",
+                  "sha256": "b8329f7e725514e1eeab659fdea46042d205671598eb7d33c6b506c53f8b649a"
+                }
+              }
+            ]
+          },
+          {
+            "number": 7,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "write",
+                "id": "draft-edit",
+                "name": "artifact_edit",
+                "arguments": "{\"expected_version\":1,\"id\":\"art_d29b00530039b9c5b9d94f3a1479c975\",\"patch\":{\"text\":[{\"find\":\"负责人和承诺仍待确认。\",\"replace\":\"负责人和承诺仍待确认；核对后再回复。\"}]}}",
+                "status": "completed",
+                "resource_id": "art_d29b00530039b9c5b9d94f3a1479c975",
+                "result_preview": "{\"artifact\":{\"id\":\"art_d29b00530039b9c5b9d94f3a1479c975\",\"version\":2,\"title\":\"预算回复草稿（未发送）\",\"kind\":\"markdown\",\"sha256\":\"44be313be4ed66183424e861a406dbb525350c4718c1b073133ddf5859b92781\",\"bytes\":552,\"source_conversation_id\":\"conv_89892f4c6b27fa02129755623ea3dccb\",\"source_run_id\":\"crun_855336a7ea5cde35b97dc6c67b0d6713\",\"created_at\":\"2026-09-11T14:18:09.777Z\",\"updated_at\":\"2026-09-11T14:18:11.449Z\"}}",
+                "result_reference": {
+                  "conversation_id": "conv_89892f4c6b27fa02129755623ea3dccb",
+                  "run_id": "crun_855336a7ea5cde35b97dc6c67b0d6713",
+                  "step": 7,
+                  "call_id": "draft-edit",
+                  "sha256": "5a982d0194156303b17483150f299b98f7d3fa9ea617a38fd9ddfe2d32a21527"
+                }
+              }
+            ]
+          },
+          {
+            "number": 8,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "write",
+                "id": "draft-export",
+                "name": "artifact_export",
+                "arguments": "{\"format\":\"markdown\",\"id\":\"art_d29b00530039b9c5b9d94f3a1479c975\",\"version\":2}",
+                "status": "completed",
+                "resource_id": "art_d29b00530039b9c5b9d94f3a1479c975",
+                "result_preview": "{\"export\":{\"id\":\"exp_a5530f3fb4df18d2d32ef932f9db1ec8\",\"artifact_id\":\"art_d29b00530039b9c5b9d94f3a1479c975\",\"version\":2,\"format\":\"markdown\",\"filename\":\"art_d29b00530039b9c5b9d94f3a1479c975-v2.md\",\"content_type\":\"text/markdown; charset=utf-8\",\"sha256\":\"b2befbfb6e28bef813f323b4c11f49072135d461f6909f7bd40ab610820c420f\",\"bytes\":496,\"created_at\":\"2026-09-11T14:18:13.321Z\",\"expires_at\":\"2026-09-11T15:18:13.321Z\",\"downloads\":0}}",
+                "result_reference": {
+                  "conversation_id": "conv_89892f4c6b27fa02129755623ea3dccb",
+                  "run_id": "crun_855336a7ea5cde35b97dc6c67b0d6713",
+                  "step": 8,
+                  "call_id": "draft-export",
+                  "sha256": "7ce9386e3edbb6d09b499ed3a65f5a6a5ddc523dca7dfd976c3bd36d9edd3c29"
+                }
+              }
+            ]
+          },
+          {
+            "number": 9,
+            "attempt": 1,
+            "status": "completed",
+            "text": "已搜索 2 封邮件。摘要：MAIL-BODY：请李明在 2026-09-14 前核对预算 3200 元并回复。负责人未确认，请勿宣称已承诺。\n\n待处理事项：预算核对；来源请求李明于 2026-09-14 前处理，负责人和承诺待确认。\n\n已保存本地回复草稿（未发送），版本 2，并导出 Markdown。来源邮件 account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw / mail-1 / <budget-mail-1@example.com>，草稿 ID：art_d29b00530039b9c5b9d94f3a1479c975。",
+            "calls": []
+          }
+        ],
+        "write_scope": {
+          "personal_memory": false,
+          "personal_artifacts": true
+        },
+        "created_at": "2026-09-11T14:18:07.432041Z",
+        "updated_at": "2026-09-11T14:18:16.564317Z"
+      }
+    },
+    {
+      "title": "缺少正文的邮件",
+      "conversation": {
+        "id": "conv_82a11774c3f2febe321b90d900fac6e4",
+        "title": "缺少正文的邮件",
+        "runtime_id": "accounts-runtime",
+        "workspace_id": "accounts-workspace",
+        "user_id": "admin",
+        "archived": false,
+        "memory_enabled": false,
+        "last_seq": 2,
+        "revision": 3,
+        "created_at": "2026-09-11T14:18:25.31Z",
+        "updated_at": "2026-09-11T14:18:26.829Z"
+      },
+      "messages": {
+        "items": [
+          {
+            "id": "msg_f7422cf2b0f7a23cb05b19db1051af16",
+            "conversation_id": "conv_82a11774c3f2febe321b90d900fac6e4",
+            "run_id": "crun_e652a7a6786276c016518ded099f5bb5",
+            "seq": 1,
+            "role": "user",
+            "content": "整理不完整邮件并保存草稿",
+            "created_at": "2026-09-11T14:18:25.644564Z"
+          },
+          {
+            "id": "msg_807a3725c654a7d16a6a9256b61d5201",
+            "conversation_id": "conv_82a11774c3f2febe321b90d900fac6e4",
+            "run_id": "crun_e652a7a6786276c016518ded099f5bb5",
+            "seq": 2,
+            "role": "assistant",
+            "content": "邮件正文不完整，无法生成完整摘要或回复草稿。未发送。",
+            "created_at": "2026-09-11T14:18:26.829528Z"
+          }
+        ]
+      },
+      "run": {
+        "id": "crun_e652a7a6786276c016518ded099f5bb5",
+        "conversation_id": "conv_82a11774c3f2febe321b90d900fac6e4",
+        "client_message_id": "3a63f118-fc98-44ad-bd93-3702a93fde5a",
+        "status": "completed",
+        "user_seq": 1,
+        "assistant_message_id": "msg_807a3725c654a7d16a6a9256b61d5201",
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 43,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "mail-accounts",
+                "name": "mail_accounts",
+                "arguments": "{\"operation\":\"mail_list\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"name\":\"个人邮件\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\"}],\"operation\":\"mail_list\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T14:18:06.445542Z\",\"operation\":\"mail_list\",\"contract_sha256\":\"a67a8c1553a2b8457dd54dd3d574994f05e8177ccae2b34a78239affa3fd3004\"}]}",
+                "result_reference": {
+                  "conversation_id": "conv_82a11774c3f2febe321b90d900fac6e4",
+                  "run_id": "crun_e652a7a6786276c016518ded099f5bb5",
+                  "step": 0,
+                  "call_id": "mail-accounts",
+                  "sha256": "91bfca2db9d67600f2de4726c5ae2395f53bb0fc88a417552cd53ab6c5f159d7"
+                }
+              }
+            ]
+          },
+          {
+            "number": 1,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "mail-list",
+                "name": "mail_list",
+                "arguments": "{\"account_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"limit\":2}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"mail-1\",\"thread_id\":\"thread-budget\",\"internet_message_id\":\"\\u003cbudget-mail-1@example.com\\u003e\",\"subject\":\"预算核对\",\"from\":[{\"name\":\"王芳\",\"address\":\"wang@example.com\"}],\"to\":[{\"name\":\"李明\",\"address\":\"li@example.com\"}],\"cc\":[],\"reply_to\":[{\"address\":\"budget@example.com\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":false,\"is_draft\":false,\"metadata_complete\":true}],\"complete\":true,\"query_syntax\":\"gmail\",\"mailbox_scope\":\"mailbox_excluding_spam_trash\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T14:18:06.445542Z\",\"operation\":\"mail_list\",\"contract_sha256\":\"a67a8c1553a2b8457dd54dd3d574994f05e8177ccae2b34a78239affa3fd3004\"}],\"read_at\":\"2026-09-11T14:18:26.028842Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_82a11774c3f2febe321b90d900fac6e4",
+                  "run_id": "crun_e652a7a6786276c016518ded099f5bb5",
+                  "step": 1,
+                  "call_id": "mail-list",
+                  "sha256": "f529f24d60bb4b7af9d1d53ff6259ea3cf74296dbc8c0d52f0c4af21a1c71cb7"
+                }
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "mail-search",
+                "name": "mail_search",
+                "arguments": "{\"account_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"limit\":1,\"query\":\"subject:预算\",\"query_syntax\":\"gmail\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"mail-1\",\"thread_id\":\"thread-budget\",\"internet_message_id\":\"\\u003cbudget-mail-1@example.com\\u003e\",\"subject\":\"预算核对\",\"from\":[{\"name\":\"王芳\",\"address\":\"wang@example.com\"}],\"to\":[{\"name\":\"李明\",\"address\":\"li@example.com\"}],\"cc\":[],\"reply_to\":[{\"address\":\"budget@example.com\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":false,\"is_draft\":false,\"metadata_complete\":true}],\"next_cursor\":\"eyJ2ZXJzaW9uIjoxLCJzY29wZSI6IjAyZjY4YzRhOTFkZWU3MjBlMGYwYjkyZmIxOGViYjc5MmMyZDkzNjE4NmUxNTQ1N2RmYzdjNjZiNDM1MjkxOTkiLCJ0b2tlbiI6Im1haWwtcGFnZS0yIiwic2VlbiI6MH0\",\"complete\":false,\"query_syntax\":\"gmail\",\"mailbox_scope\":\"mailbox_excluding_spam_trash\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T14:18:06.445542Z\",\"operation\":\"mail_search\",\"contract_sha256\":\"ca712330f5266cceb7fb4f46bbcca13f836e22c60bcc70d3fe95845e5818575f\"}],\"read_at\":\"2026-09-11T14:18:26.226603Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_82a11774c3f2febe321b90d900fac6e4",
+                  "run_id": "crun_e652a7a6786276c016518ded099f5bb5",
+                  "step": 2,
+                  "call_id": "mail-search",
+                  "sha256": "d1fde4078000648e124e62d1ffcbb305bf9e9458290e2f9b183768693b0b9eb5"
+                }
+              }
+            ]
+          },
+          {
+            "number": 3,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "mail-page",
+                "name": "mail_search",
+                "arguments": "{\"account_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"cursor\":\"eyJ2ZXJzaW9uIjoxLCJzY29wZSI6IjAyZjY4YzRhOTFkZWU3MjBlMGYwYjkyZmIxOGViYjc5MmMyZDkzNjE4NmUxNTQ1N2RmYzdjNjZiNDM1MjkxOTkiLCJ0b2tlbiI6Im1haWwtcGFnZS0yIiwic2VlbiI6MH0\",\"limit\":1,\"query\":\"subject:预算\",\"query_syntax\":\"gmail\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"mail-2\",\"thread_id\":\"thread-budget\",\"internet_message_id\":\"\\u003cbudget-mail-2@example.com\\u003e\",\"subject\":\"预算核对\",\"from\":[{\"name\":\"王芳\",\"address\":\"wang@example.com\"}],\"to\":[{\"name\":\"李明\",\"address\":\"li@example.com\"}],\"cc\":[],\"reply_to\":[{\"address\":\"budget@example.com\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":false,\"is_draft\":false,\"metadata_complete\":true}],\"complete\":true,\"query_syntax\":\"gmail\",\"mailbox_scope\":\"mailbox_excluding_spam_trash\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T14:18:06.445542Z\",\"operation\":\"mail_search\",\"contract_sha256\":\"ca712330f5266cceb7fb4f46bbcca13f836e22c60bcc70d3fe95845e5818575f\"}],\"read_at\":\"2026-09-11T14:18:26.423837Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_82a11774c3f2febe321b90d900fac6e4",
+                  "run_id": "crun_e652a7a6786276c016518ded099f5bb5",
+                  "step": 3,
+                  "call_id": "mail-page",
+                  "sha256": "592bea92dbec9f1e6e1ef9eb7ebbe6c3f914b5e05f2aaba82ab6473d5c9e8880"
+                }
+              }
+            ]
+          },
+          {
+            "number": 4,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "mail-read",
+                "name": "mail_read",
+                "arguments": "{\"account_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"message_id\":\"mail-1\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"summary\":{\"id\":\"mail-1\",\"thread_id\":\"thread-budget\",\"internet_message_id\":\"\\u003cbudget-mail-1@example.com\\u003e\",\"subject\":\"预算核对\",\"from\":[{\"name\":\"王芳\",\"address\":\"wang@example.com\"}],\"to\":[{\"name\":\"李明\",\"address\":\"li@example.com\"}],\"cc\":[],\"reply_to\":[{\"address\":\"budget@example.com\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":false,\"is_draft\":false,\"metadata_complete\":true},\"body\":{\"text\":\"\",\"complete\":false,\"omitted_reasons\":[\"body_missing\",\"body_unavailable\"]}},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_4E_sVXmf1v88UmLfU4HwmOHqMP1YCJ6hAoiVSPvVANw\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T14:18:06.445542Z\",\"operation\":\"mail_read\",\"contract_sha256\":\"e98aba01bcab28ef70dd6dd5cac5c45a64e2d6d31899dc2e3105bb7a63f57a23\"}],\"read_at\":\"2026-09-11T14:18:26.644847Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_82a11774c3f2febe321b90d900fac6e4",
+                  "run_id": "crun_e652a7a6786276c016518ded099f5bb5",
+                  "step": 4,
+                  "call_id": "mail-read",
+                  "sha256": "7b6efba43f767fbb51144ddb1f03bc3180e744f51fc621e3761f1eb6f9e00e8e"
+                }
+              }
+            ]
+          },
+          {
+            "number": 5,
+            "attempt": 1,
+            "status": "completed",
+            "text": "邮件正文不完整，无法生成完整摘要或回复草稿。未发送。",
+            "calls": []
+          }
+        ],
+        "write_scope": {
+          "personal_memory": false,
+          "personal_artifacts": true
+        },
+        "created_at": "2026-09-11T14:18:25.644564Z",
+        "updated_at": "2026-09-11T14:18:26.829594Z"
+      }
+    },
+    {
+      "title": "仅邮件头授权",
+      "conversation": {
+        "id": "conv_a4fa0ae26cfc9f5f1c3b0d0d359243a9",
+        "title": "仅邮件头授权",
+        "runtime_id": "accounts-runtime",
+        "workspace_id": "accounts-workspace",
+        "user_id": "admin",
+        "archived": false,
+        "memory_enabled": false,
+        "last_seq": 2,
+        "revision": 3,
+        "created_at": "2026-09-11T14:18:30.193Z",
+        "updated_at": "2026-09-11T14:18:31.058Z"
+      },
+      "messages": {
+        "items": [
+          {
+            "id": "msg_16f9694e2bfc64f41ea83527d0366b30",
+            "conversation_id": "conv_a4fa0ae26cfc9f5f1c3b0d0d359243a9",
+            "run_id": "crun_515706b76b04ec0e3fe6a653ddaf4ed9",
+            "seq": 1,
+            "role": "user",
+            "content": "总结邮件并创建回复草稿",
+            "created_at": "2026-09-11T14:18:30.544778Z"
+          },
+          {
+            "id": "msg_53073b0a52f23406b63becdfc182fc8e",
+            "conversation_id": "conv_a4fa0ae26cfc9f5f1c3b0d0d359243a9",
+            "run_id": "crun_515706b76b04ec0e3fe6a653ddaf4ed9",
+            "seq": 2,
+            "role": "assistant",
+            "content": "当前仅有邮件头权限，无法总结正文或创建回复草稿。",
+            "created_at": "2026-09-11T14:18:31.058281Z"
+          }
+        ]
+      },
+      "run": {
+        "id": "crun_515706b76b04ec0e3fe6a653ddaf4ed9",
+        "conversation_id": "conv_a4fa0ae26cfc9f5f1c3b0d0d359243a9",
+        "client_message_id": "6b86d1f7-ebf2-42bd-9f7b-8807b6f0b782",
+        "status": "completed",
+        "user_seq": 1,
+        "assistant_message_id": "msg_53073b0a52f23406b63becdfc182fc8e",
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 22,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "mail-accounts",
+                "name": "mail_accounts",
+                "arguments": "{\"operation\":\"mail_list\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_JIeaAB9vxpl7sGLoT-wfJXpPMzb-UBRaRP48Spaw1Ns\",\"name\":\"个人邮件\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\"}],\"operation\":\"mail_list\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_JIeaAB9vxpl7sGLoT-wfJXpPMzb-UBRaRP48Spaw1Ns\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T14:18:29.592832Z\",\"operation\":\"mail_list\",\"contract_sha256\":\"a67a8c1553a2b8457dd54dd3d574994f05e8177ccae2b34a78239affa3fd3004\"}]}",
+                "result_reference": {
+                  "conversation_id": "conv_a4fa0ae26cfc9f5f1c3b0d0d359243a9",
+                  "run_id": "crun_515706b76b04ec0e3fe6a653ddaf4ed9",
+                  "step": 0,
+                  "call_id": "mail-accounts",
+                  "sha256": "e3e992b8ca32a0ae846744e714557efce5888e6733e254b335473c6c207f60b6"
+                }
+              }
+            ]
+          },
+          {
+            "number": 1,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "mail-list",
+                "name": "mail_list",
+                "arguments": "{\"account_key\":\"account_oauth_JIeaAB9vxpl7sGLoT-wfJXpPMzb-UBRaRP48Spaw1Ns\",\"limit\":2}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"mail-1\",\"thread_id\":\"thread-budget\",\"internet_message_id\":\"\\u003cbudget-mail-1@example.com\\u003e\",\"subject\":\"预算核对\",\"from\":[{\"name\":\"王芳\",\"address\":\"wang@example.com\"}],\"to\":[{\"name\":\"李明\",\"address\":\"li@example.com\"}],\"cc\":[],\"reply_to\":[{\"address\":\"budget@example.com\"}],\"received_at\":\"2026-09-11T02:00:00Z\",\"sent_at\":\"2026-09-11T10:00:00+08:00\",\"is_read\":false,\"is_draft\":false,\"metadata_complete\":true}],\"complete\":true,\"query_syntax\":\"gmail\",\"mailbox_scope\":\"mailbox_excluding_spam_trash\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_JIeaAB9vxpl7sGLoT-wfJXpPMzb-UBRaRP48Spaw1Ns\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T14:18:29.592832Z\",\"operation\":\"mail_list\",\"contract_sha256\":\"a67a8c1553a2b8457dd54dd3d574994f05e8177ccae2b34a78239affa3fd3004\"}],\"read_at\":\"2026-09-11T14:18:30.924263Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_a4fa0ae26cfc9f5f1c3b0d0d359243a9",
+                  "run_id": "crun_515706b76b04ec0e3fe6a653ddaf4ed9",
+                  "step": 1,
+                  "call_id": "mail-list",
+                  "sha256": "aae7b737d087ba4f03bcf8cf8711da4eba9d087b3eb2f88bd4a563e6c3ca1bef"
+                }
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "attempt": 1,
+            "status": "completed",
+            "text": "当前仅有邮件头权限，无法总结正文或创建回复草稿。",
+            "calls": []
+          }
+        ],
+        "write_scope": {
+          "personal_memory": false,
+          "personal_artifacts": true
+        },
+        "created_at": "2026-09-11T14:18:30.544778Z",
+        "updated_at": "2026-09-11T14:18:31.058371Z"
+      }
+    }
+  ],
+  "complete": true
+}

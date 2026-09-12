@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-connector-sdk/calendarwrite_test [github.com/domainry/domainry-connector-sdk/calendarwrite.test]
+calendarwrite/contract_test.go:122:76: invalid operation: cannot take address of draft().Start (value of struct type calendar.Moment)
+FAIL	github.com/domainry/domainry-connector-sdk/calendarwrite [build failed]
+FAIL

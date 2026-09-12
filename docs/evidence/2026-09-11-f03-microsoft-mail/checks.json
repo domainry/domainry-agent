@@ -1,0 +1,20 @@
+[
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "gofmt",
+      "-l",
+      "F03 source files"
+    ],
+    "exit_code": 0,
+    "output": ""
+  }
+]

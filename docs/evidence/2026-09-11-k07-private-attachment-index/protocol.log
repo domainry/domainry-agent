@@ -1,0 +1,12 @@
+=== RUN   TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss
+=== RUN   TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss/normal
+=== RUN   TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss/lost-put
+=== RUN   TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss/lost-delete
+=== RUN   TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss/revoked-during-preflight
+--- PASS: TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss (30.95s)
+    --- PASS: TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss/normal (0.25s)
+    --- PASS: TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss/lost-put (0.24s)
+    --- PASS: TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss/lost-delete (30.24s)
+    --- PASS: TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss/revoked-during-preflight (0.22s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	31.884s

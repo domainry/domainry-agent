@@ -1,0 +1,15 @@
+
+> @domainry/integration-client@0.1.0-dev1 test
+> npm run build && node --test
+
+
+> @domainry/integration-client@0.1.0-dev1 build
+> tsc -p tsconfig.json
+
+src/index.ts(3,2): error TS2459: Module '"./client.js"' declares 'IntegrationConnectionAccount' locally, but it is not exported.
+src/index.ts(3,32): error TS2459: Module '"./client.js"' declares 'IntegrationOAuthApplication' locally, but it is not exported.
+src/index.ts(3,61): error TS2459: Module '"./client.js"' declares 'IntegrationOAuthApplicationInput' locally, but it is not exported.
+src/index.ts(4,2): error TS2459: Module '"./client.js"' declares 'IntegrationOAuthAuthorizationOption' locally, but it is not exported.
+src/index.ts(4,39): error TS2459: Module '"./client.js"' declares 'IntegrationOAuthAuthorizationInput' locally, but it is not exported.
+src/index.ts(4,75): error TS2459: Module '"./client.js"' declares 'IntegrationOAuthAuthorizationSession' locally, but it is not exported.
+src/index.ts(4,113): error TS2459: Module '"./client.js"' declares 'IntegrationOAuthAuthorizationCallback' locally, but it is not exported.

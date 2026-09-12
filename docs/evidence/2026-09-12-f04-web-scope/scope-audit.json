@@ -1,0 +1,409 @@
+{
+  "routes": {
+    "web_search": "POST /tool/web_search",
+    "web_fetch": "POST /tool/web_fetch_jina"
+  },
+  "connector_key": "web",
+  "provider_key": "llm_proxy",
+  "operation_count": 2,
+  "provider": "domainry-connectors/providers/web/llm_proxy/provider.go",
+  "transport": "domainry-integration/internal/infrastructure/connectortransport/public_web.go",
+  "provider_go_dependency_count": 190,
+  "llm_proxy_service_implementation_dependencies": [],
+  "peer_provider_implementation_dependencies": [],
+  "f04_non_document_source_unchanged": [
+    {
+      "path": "domainry-agent/cmd/domainry-agent-web/main.go",
+      "sha256": "9d12dbd592369ad4ccb0ed0d5652d669c2218f294df9bbdb766e6a7ac7d983c9",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/frontend/build-product.mjs",
+      "sha256": "219a005e3fb10ff3fa88c46022c2914bf453fb543b8d82f8d7406650fc8811bf",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/frontend/package.json",
+      "sha256": "dcb36ff8b8c0461b960c618c3aa7e5c432d9288fcdc62638221cdd43ad8e744a",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/frontend/src/ExecutionActivity.tsx",
+      "sha256": "e8cdb220cf388a4c975271c2e00f08678548bf17efc5552a8f47aa9acb11ed19",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/frontend/src/ToolSettingsDialog.tsx",
+      "sha256": "a77f8b46eeef5970d135ee1b87beb0776a041eef9102c72f6dc9afbd859f943c",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/frontend/src/WebResult.tsx",
+      "sha256": "24d812e91662831d71c3169f76baa08562ccc72f1232f6ee14572a424da29346",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/frontend/tests/web-tools.browser.mjs",
+      "sha256": "0c191dc4bb4ab9ebc944d6478a162442842aba29a5cf3fa29de551b56260788c",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/internal/architecture/layout_test.go",
+      "sha256": "768f436d3b0b4946b31d42a5c5425d9483d4c463eff7b23676dd516cba0fdc05",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/internal/assembly/product/product.go",
+      "sha256": "c0eb4fa0bf8c82a6c76e407b7fec65bb7b7edcdff48ed1a65eee9be6314c5d5b",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/internal/assembly/product/record_product.go",
+      "sha256": "53a3f30bcc41d42d1659623910f3e7ffb5ffff0fc7364272554924323040ae0a",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/account_provider_transport_test.go",
+      "sha256": "3583f2d9384d32186086e5444f317023cc98d3f5328aadeb370047b35b62ed1e",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/account_tools.go",
+      "sha256": "ac90eddb4b7cc92dde14a8309734fd9dd1d5c9ed991396babe743a6c98335288",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/account_tools_test.go",
+      "sha256": "1fa8306c5c0d3710b3b7d94d58de95f02ff3bdde7a34fd4b49451cf82aa92dfb",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/host.go",
+      "sha256": "60ccf9d47c78be53032abee404ec8d5a44b328adff03d51df48610641d9918f8",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/integration_accounts_test.go",
+      "sha256": "dd7ca7fbfa34679654c8aceb18f794a0a000d1d5d2b2b461dd6b4cf66a87bf0a",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/web_report_source_test.go",
+      "sha256": "cf030e643b8dbc3d1ea37a2ae46ffe606187b601bcbc8f705ca6d26b0583c2a7",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/web_tools_browser_test.go",
+      "sha256": "a0872a1224c16e9c3bbd5f957f9723fe3841e203c4d986b8376e99a70b9a1685",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/web_tools_fixture_test.go",
+      "sha256": "56e7a2f24a1605739f047f5a8b4cc49ffdd9264fe263c295bb8ffbcf38800736",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/internal/assembly/web/web_tools_test.go",
+      "sha256": "b7270cc6dd6643cd255a0c93aec67b8ad839879fa0a3efa9a116847c84d0e16d",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-agent/testsupport/producttest/product.go",
+      "sha256": "daa4e48c684dd367e0978cbdff11a23208ea346e500e04a813638124ba645c5d",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connector-sdk/external_module_test.go",
+      "sha256": "796ee4ca4f6262a8e7ca3e3f243ac542e87a5ccf2486905dd8ca0552bc5bff9f",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connector-sdk/identity.go",
+      "sha256": "71b090dfdc4463a8796b4e5c160ab9f95e81c5ae44fc9e86bced77a77d14864d",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connector-sdk/identity_test.go",
+      "sha256": "6a2ab023d84817d232e3a9f58768c59227e74aeab0d5d4c3c16a75e3675317c6",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connector-sdk/web/identity.go",
+      "sha256": "f896ac123798985e06e7f40fb78bfedeedd83d098d9cfcd555d9675dca14ff96",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connector-sdk/web/url.go",
+      "sha256": "3692eca282e6413c7e9af69f7e35b26f052564d5aee1ce40960661f3db3487d9",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connector-sdk/web/validation.go",
+      "sha256": "60d5e2b501b7411db9b253a72fd620c28c5afa163d9101da97ed04b1d1e0fa36",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connector-sdk/web/web.go",
+      "sha256": "f75b2d106a804ae0f14834b4ce1d618161bf14276adb90d9b5d67521d7abea37",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connector-sdk/web/web_test.go",
+      "sha256": "5df4ab52b82971751d10831d1f98de65eabf530b02323c6fb17909f5eaa83a68",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/catalog/catalog.json",
+      "sha256": "98375fa207a9ee8b0f02b2c42d1dd6aac417c22aa2f64cb6aa17db746eb75035",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/catalog/connector_validation.go",
+      "sha256": "ce46bfc93070717ff3061093a6548832d1b78f53491669bcbcd3350ce691eea6",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/catalog/definitions/web/connector.json",
+      "sha256": "356dbd5691b4bdbc74be2ca334213bac7a54756f2ad45a113f22d1fba6b7e0b4",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/catalog/json_shape_test.go",
+      "sha256": "313fc88a4f2b9fabd5480faf2aa8396edcb62653fedb10c23256549ab8a31ada",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/internal/assembly/module/web.go",
+      "sha256": "95aa240dd9d59b619a811fd5415934f9bd71ea0d6c96b35352c130773c9ff66a",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/module/module.go",
+      "sha256": "54aa09d84bf820c7004258e2b6888ea038af8a31ceb2c3116ee261674c8d4ff8",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/module/web_test.go",
+      "sha256": "8e4f57eb07791c879681deed43d17e2c7b13386e83df4026b5d39c13550da763",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/config.go",
+      "sha256": "59fb962e0e9364c7a7cec509616431f971ae883a3f626bbb88c097d98dcedf29",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/provider.go",
+      "sha256": "c88bb80350117295c2106bbf43b1c87faa40243a2c9c907555e3854ac044278e",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/provider_test.go",
+      "sha256": "10ec9aa516f57ea400c755fc937863879e4dd0dc6569602ee8017b3a93d974ea",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/read.go",
+      "sha256": "4021efa0293f9dc53ed329c6535f86b8d6a402e6a9f1f7250706562a94793121",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/providers/web/llm_proxy/verification.json",
+      "sha256": "e9d027210116a6f4bdfe586560621f49f3932209d14a07fb779422acba3dbf4a",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-connectors/scripts/generate_catalog/provider_registry_generated.go",
+      "sha256": "d82692b97383d89aaf309d1ac5bfdb479b059e2ba1456d9bfe9dc61f78c0bd93",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/cmd/integration-server/main.go",
+      "sha256": "8a2e1c4e81389b0b6d06a57948f16032a3ba57a4280d883c102758e7b5601b31",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/cmd/integration-server/main_test.go",
+      "sha256": "1a7937b078d24eefd0e0f88cd5df2c018e0c3446d57b3c0717dd223f5028068a",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/application/integration/connection_account_reads.go",
+      "sha256": "d6724b15e14071f7e3e5fc7f05aa4cc47225401842e9f22ac8e14d50c5b2539e",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/connection_accounts_test.go",
+      "sha256": "0a22582f1b10e491cfebf9e5a326d7320d746be3f1d45cc42f5f1a69e2838380",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/service_test.go",
+      "sha256": "d1be23d4edd3059d78d6dd6d94d4d80c8163312d69257045dbb5d3d2744891d4",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/assembly/saas/web_read_flow_test.go",
+      "sha256": "98130d68520df53bbb5cb72350d89d53d520d521ce034271b00c6c9dd4b362bc",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/connectortransport/public_web.go",
+      "sha256": "ecbb8351d66161cdf4eba4b7fa879e86ae07109f028765d17e43dafd2516b4fb",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/connectortransport/public_web_test.go",
+      "sha256": "81865488fe0578c0385d5305f75e5d64751aa8cb3e21db63ebdbb8194593d4ec",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_reads.go",
+      "sha256": "12cd5bae094bdfdc1259425506f1c2fe49d533697fd49176400c1e5b45b60066",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_store.go",
+      "sha256": "85af6808135b9774a2cc1072d31e2123aca4e92ae69c0ae7adf4844f374c9c0f",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_json_config_test.go",
+      "sha256": "22272a1491e8e009fe801bd528783dcf1787799104b7a29c7c2b20f2db29e33c",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_validation.go",
+      "sha256": "a132e23f4453df7383095434385dccea7d64f89facae9b4b7c8c59a2857bb32e",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/delivery_store.go",
+      "sha256": "e591a14a27a8f4e6d455ff52e881ccbf79572f043c58a2c367adc0ec3cdbe4eb",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/operations_store.go",
+      "sha256": "05140e4b341b411891acfec5212187ef5af8b1188e29a8340cbd86477b9ee2c1",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/sensitive_call_claim_test.go",
+      "sha256": "188859f98d4e44b4c291705d6456848734f41b4d303c30ae723c57c132a85cbd",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/security/secret_cipher.go",
+      "sha256": "28f1711dc0b4e6be4e4bbd48cd9782e4f9146a326d90184419d1dafc7f64f087",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-pm/internal/infrastructure/config/defaults/agent.json",
+      "sha256": "49653ec70418ce37006230e821475e06dfbd554a3a785b0746b5730386cab2bc",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-pm/internal/infrastructure/config/defaults/skills.json",
+      "sha256": "73c54e334b8d6e133f834927d941eed7e33b8d58facc5fa07eff2a6435844b7f",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-tools/internal/adapter/accounttools/adapter.go",
+      "sha256": "c5d764e414d43221318a5c21f6a77b4d6cadfe3d3b083533e4789cc87768dccf",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-tools/internal/adapter/accounttools/availability.go",
+      "sha256": "2fdc5ce5858cd3871786cb3b8c1630cb9bd555649c26d730b72a461ef5c7c7bc",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-tools/internal/adapter/webtools/adapter.go",
+      "sha256": "1cb4f52cfefaeb53ab646621c655f4e953f112af14edd660a5a011f130f1f089",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-tools/internal/adapter/webtools/definitions.go",
+      "sha256": "70a0e574ca6ae0579e82a6691f610a4e7155bac01a7f38bc4ea4b6ee0c0ca2c5",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-tools/internal/architecture/layout_test.go",
+      "sha256": "cd992c642b2580424df9339978e99144337185efc25c661d1d2dfb268dbdeb38",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-tools/module/account_read_fixture_test.go",
+      "sha256": "783a33d2f8e3ab5a8cd10af5dc2c838c39d98fcbecdbf2790f203886ee331e19",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-tools/module/module.go",
+      "sha256": "b5d729f948e431727eb0692b90a27fa1153dbdda2ec8bb06607f936366ffba8b",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-tools/module/web_test.go",
+      "sha256": "9f75b9b8886e76b3ed51be2f71f476139def64d91d3a1474097ecf441b79021c",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-work/internal/infrastructure/config/defaults/agent.json",
+      "sha256": "e7655aa17b2a5f8a85ae393db62ab2d0febb098f65480295f82398b565788828",
+      "matches_prior": true
+    },
+    {
+      "path": "domainry-work/internal/infrastructure/config/defaults/skills.json",
+      "sha256": "2075f5ec0874138dd48b9ded2a9ee9341c8567b582df688fc7fae91bb86b87ec",
+      "matches_prior": true
+    }
+  ],
+  "prior_build_files_unchanged": 1713,
+  "historical_document_changes": [
+    {
+      "path": "domainry-agent/README.md",
+      "changed": true
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-contract.md",
+      "changed": true
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-owner.md",
+      "changed": false
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-product.md",
+      "changed": true
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-proxy.md",
+      "changed": true
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-11-f04-web-tools.md",
+      "changed": false
+    },
+    {
+      "path": "domainry-agent/docs/web-read-boundaries.md",
+      "changed": true
+    },
+    {
+      "path": "domainry-connector-sdk/README.md",
+      "changed": false
+    },
+    {
+      "path": "domainry-connectors/README.md",
+      "changed": false
+    },
+    {
+      "path": "domainry-integration/README.md",
+      "changed": false
+    },
+    {
+      "path": "domainry-tools/README.md",
+      "changed": false
+    }
+  ],
+  "llm_proxy_worktree_clean": true
+}

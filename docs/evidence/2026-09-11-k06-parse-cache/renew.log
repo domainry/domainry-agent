@@ -1,0 +1,14 @@
+=== RUN   TestParseQueueLeaseTakeoverIsolationAndAtomicParentDeletion
+--- PASS: TestParseQueueLeaseTakeoverIsolationAndAtomicParentDeletion (0.03s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.786s
+=== RUN   TestLocalSpreadsheetConversationAuthorizationAndRestart
+=== RUN   TestLocalSpreadsheetConversationAuthorizationAndRestart/restart
+=== RUN   TestLocalSpreadsheetConversationAuthorizationAndRestart/revoke_during_parse
+=== RUN   TestLocalSpreadsheetConversationAuthorizationAndRestart/delete_during_parse
+--- PASS: TestLocalSpreadsheetConversationAuthorizationAndRestart (0.61s)
+    --- PASS: TestLocalSpreadsheetConversationAuthorizationAndRestart/restart (0.32s)
+    --- PASS: TestLocalSpreadsheetConversationAuthorizationAndRestart/revoke_during_parse (0.12s)
+    --- PASS: TestLocalSpreadsheetConversationAuthorizationAndRestart/delete_during_parse (0.17s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	1.468s

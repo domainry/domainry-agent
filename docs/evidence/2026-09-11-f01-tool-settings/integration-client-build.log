@@ -1,0 +1,4 @@
+
+> @domainry/integration-client@0.1.0-dev1 build
+> tsc -p tsconfig.json
+

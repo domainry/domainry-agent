@@ -20,7 +20,7 @@ type knowledgeConversationHost struct {
 }
 
 func knowledgeTool(key string) (agentsdk.ConversationToolDefinition, bool) {
-	for _, d := range append(agentsdk.KnowledgeConversationTools(), agentsdk.KnowledgeLibraryCatalogTool()) {
+	for _, d := range append(agentsdk.KnowledgeConversationTools(), agentsdk.KnowledgeLibraryCatalogTool(), agentsdk.KnowledgeExtractionTool()) {
 		if d.Key == key {
 			return d, true
 		}
@@ -29,7 +29,10 @@ func knowledgeTool(key string) (agentsdk.ConversationToolDefinition, bool) {
 }
 
 func knownKnowledgeDefinition(d agentsdk.ConversationToolDefinition) bool {
-	for _, current := range append(agentsdk.KnowledgeConversationTools(), agentsdk.LibraryKnowledgeConversationTools()...) {
+	definitions := append(agentsdk.KnowledgeConversationTools(), agentsdk.LibraryKnowledgeConversationTools()...)
+	definitions = append(definitions, agentsdk.KnowledgeExtractionTool(), agentsdk.LegacyKnowledgeExtractionTool())
+	definitions = append(definitions, agentsdk.HistoricalRemoteKnowledgeTools()...)
+	for _, current := range definitions {
 		if conversationDigest(d) == conversationDigest(current) {
 			return true
 		}
@@ -37,11 +40,19 @@ func knownKnowledgeDefinition(d agentsdk.ConversationToolDefinition) bool {
 	return false
 }
 func (h *knowledgeConversationHost) definitions() []agentsdk.ConversationToolDefinition {
-	if _, ok := h.source.(agentsdk.ConversationLibraryKnowledgeSource); ok {
-		return agentsdk.LibraryKnowledgeConversationTools()
+	definitions := []agentsdk.ConversationToolDefinition{}
+	if h.source != nil {
+		definitions = agentsdk.KnowledgeConversationTools()
 	}
-	return agentsdk.KnowledgeConversationTools()
+	if _, ok := h.source.(agentsdk.ConversationLibraryKnowledgeSource); ok {
+		definitions = agentsdk.LibraryKnowledgeConversationTools()
+	}
+	if _, ok := h.source.(agentsdk.KnowledgeExtractionContentSource); ok {
+		definitions = append(definitions, agentsdk.KnowledgeExtractionTool())
+	}
+	return definitions
 }
+
 func (h *knowledgeConversationHost) definition(key string) (agentsdk.ConversationToolDefinition, bool) {
 	for _, d := range h.definitions() {
 		if d.Key == key {
@@ -52,11 +63,12 @@ func (h *knowledgeConversationHost) definition(key string) (agentsdk.Conversatio
 }
 
 type knowledgeArguments struct {
-	Query     string `json:"query"`
-	DocID     string `json:"doc_id"`
-	LibraryID string `json:"library_id"`
-	After     string `json:"after"`
-	Limit     int    `json:"limit"`
+	Query        string `json:"query"`
+	DocID        string `json:"doc_id"`
+	AttachmentID string `json:"attachment_id"`
+	LibraryID    string `json:"library_id"`
+	After        string `json:"after"`
+	Limit        int    `json:"limit"`
 }
 
 func (h *knowledgeConversationHost) ConversationTools(ctx context.Context, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, error) {
@@ -111,10 +123,15 @@ func (h *knowledgeConversationHost) InvokeConversationTool(ctx context.Context, 
 	if err != nil || validateToolJSON(schema, []byte(in.Call.Arguments)) != nil {
 		return personalToolFailure("arguments_invalid"), nil
 	}
+	if d.Key == "knowledge_extract" {
+		return h.invokeExtraction(ctx, in)
+	}
 	var args knowledgeArguments
 	_ = json.Unmarshal([]byte(in.Call.Arguments), &args)
 	var evidence agentsdk.ConversationKnowledgeResult
-	if scoped, ok := h.source.(agentsdk.ConversationLibraryKnowledgeSource); ok && (d.Key == "knowledge_libraries" || args.LibraryID != "") {
+	if h.source == nil {
+		return personalToolFailure("knowledge_unavailable"), nil
+	} else if scoped, ok := h.source.(agentsdk.ConversationLibraryKnowledgeSource); ok && (d.Key == "knowledge_libraries" || args.LibraryID != "") {
 		switch d.Key {
 		case "knowledge_libraries":
 			evidence, err = scoped.ListKnowledgeLibraries(ctx, args.After, args.Limit, in.Authority)
@@ -125,9 +142,12 @@ func (h *knowledgeConversationHost) InvokeConversationTool(ctx context.Context, 
 		}
 	} else if d.Key == "knowledge_search" {
 		evidence, err = h.source.SearchKnowledge(ctx, args.Query, in.Authority)
-	} else {
+	} else if d.Key == "knowledge_read" {
 		evidence, err = h.source.ReadKnowledge(ctx, args.DocID, in.Authority)
+	} else {
+		return personalToolFailure("knowledge_unavailable"), nil
 	}
+
 	if err != nil {
 		return personalToolFailure(conversationModelFailureCode(err, "knowledge_failed")), nil
 	}
@@ -149,15 +169,27 @@ func (h *knowledgeConversationHost) AuthorizeConversationInteraction(ctx context
 }
 
 func (h *knowledgeConversationHost) AuthorizeConversationToolResult(ctx context.Context, in agentsdk.ConversationToolRequest, result agentsdk.ConversationToolResult) error {
+	if privateAttachmentCall(in.Call) || retiredDocumentResult(result) {
+		return conversationFailure("forbidden", "knowledge_source_retired")
+	}
 	if _, knowledge := knowledgeTool(in.Definition.Key); !knowledge {
 		if policy, ok := h.base.(agentsdk.ConversationToolResultAuthorizer); ok {
 			return policy.AuthorizeConversationToolResult(ctx, in, result)
 		}
 		return nil
 	}
+	if in.Call.Name == "knowledge_extract" {
+		return h.authorizeExtractionResult(ctx, in, result)
+	}
 	var evidence agentsdk.ConversationKnowledgeResult
 	var args knowledgeArguments
-	if json.Unmarshal(result.Content, &evidence) != nil || json.Unmarshal([]byte(in.Call.Arguments), &args) != nil || evidence.LibraryID != args.LibraryID ||
+	if json.Unmarshal(result.Content, &evidence) != nil || json.Unmarshal([]byte(in.Call.Arguments), &args) != nil {
+		return conversationFailure("conflict", "knowledge_response_invalid")
+	}
+	if h.source == nil {
+		return conversationFailure("forbidden", "knowledge_access_denied")
+	}
+	if evidence.LibraryID != args.LibraryID ||
 		in.Call.Name == "knowledge_search" && (evidence.Operation != "search" || evidence.Query != args.Query || evidence.DocumentID != "") ||
 		in.Call.Name == "knowledge_read" && (evidence.Operation != "fetch" || evidence.DocumentID != args.DocID || evidence.Query != "") {
 		return conversationFailure("conflict", "knowledge_response_invalid")
@@ -180,8 +212,16 @@ func (h *knowledgeConversationHost) AuthorizeConversationToolResult(ctx context.
 }
 
 func (s *ConversationService) authorizeStoredToolResult(ctx context.Context, in agentsdk.ConversationToolRequest, result agentsdk.ConversationToolResult) error {
+	if privateAttachmentCall(in.Call) || retiredDocumentResult(result) {
+		return conversationFailure("forbidden", "knowledge_source_retired")
+	}
 	if result.Status != "completed" {
 		return nil
+	}
+	if privateRemoteAttachmentCall(in.Call) {
+		ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+		defer cancel()
+		return s.authorizeAttachmentKnowledgeResult(ctx, in, result)
 	}
 	if policy, ok := s.options.ToolHost.(agentsdk.ConversationToolResultAuthorizer); ok {
 		ctx, cancel := context.WithTimeout(ctx, time.Duration(in.Definition.TimeoutMillis)*time.Millisecond)

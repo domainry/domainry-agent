@@ -1,0 +1,6 @@
+=== RUN   TestCalendarProductIdentityConversationAndRestart
+    calendar_tools_test.go:296: GET /tools/preferences: status 503, want 200, body {"code":"tools.settings.unavailable"}
+--- FAIL: TestCalendarProductIdentityConversationAndRestart (23.11s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	23.770s
+FAIL

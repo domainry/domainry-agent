@@ -1,0 +1,12 @@
+{
+  "steps": [],
+  "javascriptErrors": [],
+  "snapshots": [],
+  "actualIdentityProcess": true,
+  "actualBusinessHTTP": true,
+  "realLanguageModel": false,
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n403 !== 200\n",
+  "lastState": {
+    "error": "Error: page.evaluate: Error: /agent/conversations/ returned HTTP 404 instead of JSON\n    at eval (eval at evaluate (:311:30), <anonymous>:6:47)\n    at async <anonymous>:337:30"
+  }
+}

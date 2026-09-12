@@ -3,6 +3,7 @@ package integration_test
 import (
 	"context"
 	"encoding/json"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"path/filepath"
 	"strings"
 	"sync/atomic"
@@ -10,7 +11,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent/internal/application"
-	"github.com/domainry/domainry-agent/internal/infrastructure/artifactstorage"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 type artifactExecutionPolicy struct{ artifactTestPolicy }
@@ -23,7 +24,7 @@ func TestArtifactPreparationFailureCanCorrectWithoutReconciliation(t *testing.T)
 	for _, operation := range []string{"artifact_export", "artifact_edit"} {
 		t.Run(operation, func(t *testing.T) {
 			repo, a := conversationRepository(t), conversationAuthority()
-			storage, err := artifactstorage.NewFiles(filepath.Join(t.TempDir(), "content"))
+			storage, err := knowledgemodule.NewArtifactFiles(filepath.Join(t.TempDir(), "content"))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -67,7 +68,7 @@ func TestArtifactPreparationFailureCanCorrectWithoutReconciliation(t *testing.T)
 				}
 				return sourceAnswer("已完成实际操作"), nil
 			}}
-			service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{PersonalAuthorizer: policy, ToolHost: personal, ArtifactStorage: storage})
+			service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{PersonalAuthorizer: policy, ToolHost: personal, ArtifactStorage: storage})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -118,7 +119,7 @@ func TestArtifactPreparationFailureCanCorrectWithoutReconciliation(t *testing.T)
 
 func TestArtifactConversationToolsEditExportAndConfirmationRestart(t *testing.T) {
 	repo, a := conversationRepository(t), conversationAuthority()
-	storage, err := artifactstorage.NewFiles(filepath.Join(t.TempDir(), "content"))
+	storage, err := knowledgemodule.NewArtifactFiles(filepath.Join(t.TempDir(), "content"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -170,7 +171,7 @@ func TestArtifactConversationToolsEditExportAndConfirmationRestart(t *testing.T)
 		return sourceAnswer("周报已保存，可按指定版本下载。"), nil
 	}}
 	options := application.ConversationOptions{PersonalAuthorizer: policy, ToolHost: personal, ArtifactStorage: storage}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -254,7 +255,7 @@ func TestArtifactConversationToolsEditExportAndConfirmationRestart(t *testing.T)
 		t.Fatal("unconfirmed artifact was created")
 	}
 	service.Close()
-	service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -280,7 +281,7 @@ func TestArtifactConversationToolsEditExportAndConfirmationRestart(t *testing.T)
 
 func TestArtifactSourcesStopAtTheGeneratingStep(t *testing.T) {
 	repo, a := conversationRepository(t), conversationAuthority()
-	storage, err := artifactstorage.NewFiles(filepath.Join(t.TempDir(), "content"))
+	storage, err := knowledgemodule.NewArtifactFiles(filepath.Join(t.TempDir(), "content"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -314,7 +315,7 @@ func TestArtifactSourcesStopAtTheGeneratingStep(t *testing.T) {
 		}
 		return sourceAnswer("已补充资料"), nil
 	}}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: personal, PersonalAuthorizer: policy, ArtifactStorage: storage, Knowledge: knowledge})
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: personal, PersonalAuthorizer: policy, ArtifactStorage: storage, Knowledge: knowledge})
 	if err != nil {
 		t.Fatal(err)
 	}

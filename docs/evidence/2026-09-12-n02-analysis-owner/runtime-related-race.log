@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-runtime/runtime/modulehost/report	2.057s
+ok  	github.com/domainry/domainry-runtime/runtime/infrastructure/persistence/database/report	6.776s
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/composition	3.409s

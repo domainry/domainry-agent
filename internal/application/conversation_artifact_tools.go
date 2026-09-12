@@ -11,7 +11,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	"github.com/domainry/domainry-agent/internal/artifact"
+	"github.com/domainry/domainry-knowledge/artifact"
 )
 
 func (h *PersonalConversationHost) sourceService() *ConversationService {
@@ -156,7 +156,7 @@ func (s *ConversationService) prepareArtifactTool(ctx context.Context, in agents
 	sources := &agentsdk.ConversationSources{Version: 1, Runs: []agentsdk.ConversationRunReference{{ConversationID: in.ConversationID, RunID: in.RunID, BeforeStep: in.Step + 1}}}
 	ctx, cancel := s.sourceAccessContext(ctx)
 	defer cancel()
-	if _, err := s.sourceAudit(in.Authority).sources(ctx, sources); err != nil {
+	if _, err := s.sourceAudit(in.Authority, in.ConversationID).sources(ctx, sources); err != nil {
 		return out, err
 	}
 	var record persistence.ConversationArtifactRecord

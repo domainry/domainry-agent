@@ -1,0 +1,6 @@
+=== RUN   TestPrivateAttachmentIndexBrowserRecovery
+    conversation_attachment_index_browser_test.go:126: open Agent module: agent.conversation.knowledge_document_mapping_required
+--- FAIL: TestPrivateAttachmentIndexBrowserRecovery (0.47s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	0.983s
+FAIL

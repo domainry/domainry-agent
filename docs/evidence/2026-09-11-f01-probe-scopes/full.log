@@ -1,0 +1,189 @@
+?   	github.com/domainry/domainry-agent/capability	[no test files]
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	(cached)
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-playground	[no test files]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/definition	(cached)
+ok  	github.com/domainry/domainry-agent/integration	(cached)
+ok  	github.com/domainry/domainry-agent/internal/application	(cached)
+ok  	github.com/domainry/domainry-agent/internal/architecture	(cached)
+?   	github.com/domainry/domainry-agent/internal/assembly/conversation	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	1.220s
+?   	github.com/domainry/domainry-agent/internal/assembly/saas	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	115.814s
+ok  	github.com/domainry/domainry-agent/internal/capability	(cached)
+?   	github.com/domainry/domainry-agent/internal/composition	[no test files]
+?   	github.com/domainry/domainry-agent/internal/dataaccess	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/execution	(cached)
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence	(cached)
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/base	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	(cached)
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost	(cached)
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	(cached)
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	(cached)
+ok  	github.com/domainry/domainry-agent/internal/transport/http/playground	(cached)
+?   	github.com/domainry/domainry-agent/internal/transport/http/product	[no test files]
+?   	github.com/domainry/domainry-agent/internal/transport/http/web	[no test files]
+ok  	github.com/domainry/domainry-agent/module	(cached)
+ok  	github.com/domainry/domainry-agent/remote	(cached)
+ok  	github.com/domainry/domainry-agent/server	(cached)
+?   	github.com/domainry/domainry-agent/testsupport	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/databasetest	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/producttest	[no test files]
+?   	github.com/domainry/domainry-agent/web	[no test files]
+?   	github.com/domainry/domainry-agent/webhost	[no test files]
+ok  	github.com/domainry/domainry-integration/capability	(cached)
+ok  	github.com/domainry/domainry-integration/cmd/integration-server	3.442s
+ok  	github.com/domainry/domainry-integration/internal/adapter/integrationsdk	(cached)
+ok  	github.com/domainry/domainry-integration/internal/application/integration	(cached)
+ok  	github.com/domainry/domainry-integration/internal/architecture	2.719s
+ok  	github.com/domainry/domainry-integration/internal/assembly/module	2.682s
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	12.691s
+?   	github.com/domainry/domainry-integration/internal/domain/integration/model	[no test files]
+?   	github.com/domainry/domainry-integration/internal/domain/integration/repository	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/domain/integration/service	(cached)
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/connectortransport	(cached)
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/architecture	3.444s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	(cached)
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/migration	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/schema	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/security	(cached)
+ok  	github.com/domainry/domainry-integration/internal/transport/http/module	3.824s
+?   	github.com/domainry/domainry-integration/internal/transport/http/saas	[no test files]
+ok  	github.com/domainry/domainry-integration/module	10.318s
+ok  	github.com/domainry/domainry-connectors/catalog	4.755s
+ok  	github.com/domainry/domainry-connectors/internal/accounting/journal	(cached)
+ok  	github.com/domainry/domainry-connectors/internal/adapter/connectorsdk	3.861s
+ok  	github.com/domainry/domainry-connectors/internal/application/connector	(cached)
+ok  	github.com/domainry/domainry-connectors/internal/architecture	2.738s
+?   	github.com/domainry/domainry-connectors/internal/assembly/module	[no test files]
+ok  	github.com/domainry/domainry-connectors/internal/databasesql	3.091s
+?   	github.com/domainry/domainry-connectors/internal/domain/connector/model	[no test files]
+?   	github.com/domainry/domainry-connectors/internal/domain/connector/repository	[no test files]
+ok  	github.com/domainry/domainry-connectors/internal/domain/connector/service	(cached)
+ok  	github.com/domainry/domainry-connectors/internal/feishu	(cached)
+ok  	github.com/domainry/domainry-connectors/internal/feishucollaboration	(cached)
+?   	github.com/domainry/domainry-connectors/internal/googlebigquery	[no test files]
+?   	github.com/domainry/domainry-connectors/internal/infrastructure/catalog	[no test files]
+ok  	github.com/domainry/domainry-connectors/internal/microsoftteams	(cached)
+ok  	github.com/domainry/domainry-connectors/internal/mqtttelemetry	(cached)
+ok  	github.com/domainry/domainry-connectors/internal/notificationmessage	(cached)
+ok  	github.com/domainry/domainry-connectors/internal/oauth2	(cached)
+?   	github.com/domainry/domainry-connectors/internal/releaseverify	[no test files]
+ok  	github.com/domainry/domainry-connectors/internal/shopify	(cached)
+?   	github.com/domainry/domainry-connectors/internal/snowflakesql	[no test files]
+ok  	github.com/domainry/domainry-connectors/internal/tally	(cached)
+?   	github.com/domainry/domainry-connectors/module	[no test files]
+ok  	github.com/domainry/domainry-connectors/providers/accounting/freee	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/accounting/money_forward	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/accounting/quickbooks	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/ads_audience/meta_ads	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/analytics_warehouse/bigquery	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/analytics_warehouse/snowflake	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/app_review/google_play_console	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/cal_com	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/calendly	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/feishu_calendar	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/google_calendar	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/microsoft_booking	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/bank_reconciliation/plaid	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/calendar/holidays_jp	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/dingtalk	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/discord	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/enterprise_wechat	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/feishu	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/google_workspace	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/line	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/line_works	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/microsoft_365	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/slack	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/teams	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/customer_feedback/delighted	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/customer_feedback/surveymonkey	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/customer_feedback/trustpilot	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/customer_feedback/typeform	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/asana	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/jira	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/linear	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/monday	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/netsuite	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/odoo	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/sap_business_one	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/document_generation/pdf	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/ecommerce/shopify	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/email/smtp	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/esign/adobe_sign	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/esign/docusign	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/esign/fadada	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/esign/signnow	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/event_webinar/zoom_webinar	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/expense_ocr/llm_proxy	0.619s
+ok  	github.com/domainry/domainry-connectors/providers/external_database/bigquery	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/external_database/mysql	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/external_database/postgres	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/external_database/snowflake	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/external_database/sqlserver	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/feishu_collaboration/feishu	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/file_storage/local	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/file_storage/s3	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/google_workspace/google	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/help_center/confluence	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/help_center/gitbook	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/help_center/help_scout_docs	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/help_center/intercom_articles	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/help_center/notion_docs	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/help_center/readme	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/help_center/zendesk_guide	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/iot_telemetry/aws_iot	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/iot_telemetry/datadog_metrics	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/iot_telemetry/mqtt	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/knowledge_base/http_api	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/kyc_risk/persona	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/lead_source/tally	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/lms/moodle	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/lms/talentlms	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/logistics/authorized_carrier_gateway	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/logistics/dhl	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/logistics/fedex	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/logistics/freightos	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/logistics/sf_express	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/logistics/shopify_fulfillment	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/logistics/ups	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/map_address/nominatim	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/marketplace/etsy	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/mcp_tool/mcp	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/microsoft_365/microsoft	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/notification/web_push	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/observability_compliance/prometheus	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/openai/openai	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/payment/alipay	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/payment/stripe	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/payment/wechat_pay	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/product_event/posthog	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/saas_tool/composio	0.484s
+ok  	github.com/domainry/domainry-connectors/providers/social_message/facebook_messenger	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/sso/oidc	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/support/zendesk	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/tariff_classification/brazil_portal_unico_classif	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/tariff_classification/china_hs_bianma	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/telephony/twilio	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/trade_statistics/comex_stat	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/weather/open_meteo	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/webhook/http	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/website_form/tally	(cached)
+ok  	github.com/domainry/domainry-connectors/providers/whatsapp/meta_cloud_api	(cached)
+?   	github.com/domainry/domainry-connectors/scripts/generate_catalog	[no test files]
+ok  	github.com/domainry/domainry-connectors/scripts/generate_provider_registry	(cached)
+?   	github.com/domainry/domainry-connectors/scripts/generate_verification_manifests	[no test files]
+?   	github.com/domainry/domainry-connectors/scripts/verify_alipay_sandbox_live	[no test files]
+?   	github.com/domainry/domainry-connectors/scripts/verify_composio_connection	[no test files]
+?   	github.com/domainry/domainry-connectors/scripts/verify_provider_release	[no test files]
+?   	github.com/domainry/domainry-connectors/scripts/verify_stripe_japan_live	[no test files]
+?   	github.com/domainry/domainry-connectors/scripts/verify_tenant_read_probe	[no test files]
+?   	github.com/domainry/domainry-connectors/scripts/verify_wechat_pay_controlled_live	[no test files]

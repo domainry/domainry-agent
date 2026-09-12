@@ -1,0 +1,11 @@
+=== RUN   TestToolSettingsBuiltProductBrowser
+    tool_settings_browser_test.go:8: bootstrap /auth/password/change: 400
+--- FAIL: TestToolSettingsBuiltProductBrowser (0.37s)
+FAIL
+FAIL	github.com/domainry/domainry-work/internal/assembly/saas	0.859s
+=== RUN   TestToolSettingsBuiltProductBrowser
+    tool_settings_browser_test.go:8: bootstrap /auth/password/change: 400
+--- FAIL: TestToolSettingsBuiltProductBrowser (0.34s)
+FAIL
+FAIL	github.com/domainry/domainry-pm/internal/assembly/saas	1.190s
+FAIL

@@ -1,0 +1,25 @@
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart/approved_restart
+    account_write_test.go:77: POST /agent/conversations: status 400, want 200, body {"code":"agent.conversation.create_invalid"}
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart/single_then_reject
+    account_write_test.go:77: POST /agent/conversations: status 400, want 200, body {"code":"agent.conversation.create_invalid"}
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart/revoke_before_approval
+    account_write_test.go:56: GET /tools/preferences: status 503, want 200, body {"code":"tools.settings.unavailable"}
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart/unknown_original_receipt
+    account_write_test.go:77: POST /agent/conversations: status 400, want 200, body {"code":"agent.conversation.create_invalid"}
+--- FAIL: TestAccountWritesThroughIdentityProviderHTTPAndRestart (140.13s)
+    --- FAIL: TestAccountWritesThroughIdentityProviderHTTPAndRestart/approved_restart (31.34s)
+    --- FAIL: TestAccountWritesThroughIdentityProviderHTTPAndRestart/single_then_reject (28.82s)
+    --- FAIL: TestAccountWritesThroughIdentityProviderHTTPAndRestart/revoke_before_approval (36.91s)
+    --- FAIL: TestAccountWritesThroughIdentityProviderHTTPAndRestart/unknown_original_receipt (43.06s)
+=== RUN   TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort
+=== RUN   TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort/calendar
+=== RUN   TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort/mail
+=== RUN   TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort/both
+--- PASS: TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort (0.00s)
+    --- PASS: TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort/calendar (0.00s)
+    --- PASS: TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort/mail (0.00s)
+    --- PASS: TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort/both (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	141.044s
+FAIL

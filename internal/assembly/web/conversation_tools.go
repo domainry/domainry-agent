@@ -2,6 +2,7 @@ package web
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -12,6 +13,9 @@ import (
 )
 
 func (h *Host) registerConversationToolPermissions(ctx context.Context) error {
+	if h.identityBorrowed {
+		return nil
+	}
 	const owner = "agent:conversation_tools"
 	reader, ok := h.Identity.Permissions().(identitysdk.PermissionSnapshotReader)
 	if !ok {
@@ -25,6 +29,20 @@ func (h *Host) registerConversationToolPermissions(ctx context.Context) error {
 	for _, action := range agentsdk.ConversationToolActions() {
 		permission := action.Permission
 		definitions = append(definitions, identitysdk.PermissionDefinition{PermissionKey: permission.Key, ResourceKey: permission.ResourceKey, OperationKey: permission.OperationKey, Label: permission.Label, Category: permission.Category, SourceKind: action.SourceKind})
+	}
+	for _, d := range h.toolDefinitions {
+		alreadyPublished := false
+		for _, p := range definitions {
+			alreadyPublished = alreadyPublished || p.PermissionKey == d.ActionKey
+		}
+		if alreadyPublished {
+			continue
+		}
+		i := strings.LastIndexByte(d.ActionKey, '.')
+		if i < 1 {
+			return fmt.Errorf("invalid product tool action")
+		}
+		definitions = append(definitions, identitysdk.PermissionDefinition{PermissionKey: d.ActionKey, ResourceKey: d.ActionKey[:i], OperationKey: d.ActionKey[i+1:], Label: d.Description, Category: "product", SourceKind: "agent"})
 	}
 	permission := agentsdk.ConversationInteractionPermission()
 	definitions = append(definitions, identitysdk.PermissionDefinition{PermissionKey: permission.Key, ResourceKey: permission.ResourceKey, OperationKey: permission.OperationKey, Label: permission.Label, Category: permission.Category, SourceKind: "agent"})
@@ -70,7 +88,9 @@ func (h *Host) AuthorizeConversationTool(ctx context.Context, in agentsdk.Conver
 	}
 	registered := false
 	definitions := append(agentsdk.PersonalConversationTools(), agentsdk.KnowledgeConversationTools()...)
-	definitions = append(definitions, agentsdk.KnowledgeLibraryCatalogTool())
+	definitions = append(definitions, agentsdk.KnowledgeLibraryCatalogTool(), agentsdk.KnowledgeExtractionTool())
+	definitions = append(definitions, agentsdk.AttachmentConversationTools()...)
+	definitions = append(definitions, h.toolDefinitions...)
 	definitions = append(definitions, agentsdk.BusinessConversationTools()...)
 	definitions = append(definitions, agentsdk.BusinessActionConversationTools()...)
 	definitions = append(definitions, agentsdk.BusinessWorkflowConversationTools()...)
@@ -91,19 +111,20 @@ func (h *Host) AuthorizeConversationInteraction(ctx context.Context, a agentsdk.
 	return h.authorizeConversationAction(ctx, a, agentsdk.ConversationInteractionPermission().Key)
 }
 
+func (h *Host) AuthorizeConversationExecution(ctx context.Context, in agentsdk.ConversationExecutionAuthorizationRequest) (bool, error) {
+	// Send/resume currently declare authenticated access, not a separate role
+	// permission. Apply that same policy to the live principal in the worker.
+	_, known, err := h.resolveConversationPrincipal(ctx, in.Authority)
+	return known, err
+}
+
+var _ agentsdk.ConversationExecutionAuthorizer = (*Host)(nil)
+
 func (h *Host) authorizeConversationAction(ctx context.Context, a agentsdk.ConversationAuthority, actionKey string) (agentsdk.ConversationToolAuthorization, error) {
 	var out agentsdk.ConversationToolAuthorization
-	if !a.Known || a.RuntimeID != h.runtimeID || (a.WorkspaceID == "" || !h.external && a.WorkspaceID != string(h.application.WorkspaceID)) || a.UserID == "" {
-		return out, nil
-	}
-	// Resolve the current subject for trusted background work. Never reuse the
-	// cookie, token or policy bundle captured when the message was submitted.
-	resolution, err := h.Identity.Principals().Resolve(ctx, identitysdk.PrincipalResolutionRequest{Application: identitysdk.ApplicationScope{WorkspaceID: identitysdk.WorkspaceID(a.WorkspaceID), ApplicationKey: h.application.ApplicationKey}, SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
-	if err != nil {
+	resolution, known, err := h.resolveConversationPrincipal(ctx, a)
+	if err != nil || !known {
 		return out, err
-	}
-	if !resolution.Principal.Known || resolution.Principal.UserID != a.UserID || resolution.Principal.WorkspaceID != a.WorkspaceID {
-		return out, nil
 	}
 	separator := strings.LastIndexByte(actionKey, '.')
 	if separator < 1 {
@@ -121,4 +142,21 @@ func (h *Host) authorizeConversationAction(ctx context.Context, a agentsdk.Conve
 	out.Revision = string(resolution.AccessBundle.AuthorizationRevision)
 	out.Evidence = map[string]any{"source": "identity", "action": actionKey, "decision": decision.Code}
 	return out, nil
+}
+
+func (h *Host) resolveConversationPrincipal(ctx context.Context, a agentsdk.ConversationAuthority) (identitysdk.PrincipalResolution, bool, error) {
+	if !a.Known || a.RuntimeID != h.runtimeID || (a.WorkspaceID == "" || !h.external && a.WorkspaceID != string(h.application.WorkspaceID)) || a.UserID == "" {
+		return identitysdk.PrincipalResolution{}, false, nil
+	}
+	// Resolve the current subject for trusted background work. Never reuse the
+	// cookie, token or policy bundle captured when the message was submitted.
+	resolution, err := h.Identity.Principals().Resolve(ctx, identitysdk.PrincipalResolutionRequest{Application: identitysdk.ApplicationScope{WorkspaceID: identitysdk.WorkspaceID(a.WorkspaceID), ApplicationKey: h.application.ApplicationKey}, SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
+	if err != nil {
+		var denied *identitysdk.Error
+		if errors.As(err, &denied) && (denied.StatusCode == 401 || denied.StatusCode == 403 || denied.StatusCode == 404 || denied.Code == "identity.subject_not_found") {
+			return resolution, false, nil
+		}
+		return resolution, false, err
+	}
+	return resolution, resolution.Principal.Known && resolution.Principal.UserID == a.UserID && resolution.Principal.WorkspaceID == a.WorkspaceID, nil
 }

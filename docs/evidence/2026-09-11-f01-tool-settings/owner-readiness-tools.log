@@ -1,0 +1,14 @@
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	0.900s
+?   	github.com/domainry/domainry-tools/calculation	[no test files]
+?   	github.com/domainry/domainry-tools/internal/adapter/recordtools	[no test files]
+ok  	github.com/domainry/domainry-tools/internal/application/preferences	1.591s
+ok  	github.com/domainry/domainry-tools/internal/application/tool	1.979s [no tests to run]
+ok  	github.com/domainry/domainry-tools/internal/architecture	0.466s
+ok  	github.com/domainry/domainry-tools/internal/assembly/preferences	1.236s [no tests to run]
+?   	github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences	[no test files]
+?   	github.com/domainry/domainry-tools/internal/transport/http/preferences	[no test files]
+?   	github.com/domainry/domainry-tools/module	[no test files]
+?   	github.com/domainry/domainry-tools/timeutil	[no test files]
+?   	github.com/domainry/domainry-tools-sdk	[no test files]
+?   	github.com/domainry/domainry-tools-sdk/modulehost	[no test files]
+?   	github.com/domainry/domainry-tools-sdk/schema	[no test files]

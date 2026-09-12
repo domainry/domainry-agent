@@ -1,13 +1,16 @@
 package module
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/url"
 	"os"
 	"regexp"
+	"slices"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/domainry/domainry-agent/internal/application"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
@@ -24,6 +27,10 @@ type KnowledgeLibraryConfig struct {
 	LibraryID       string
 	Knowledge       KnowledgeConfig
 	ManageDocuments bool
+	// PermissionIDs is trusted, startup-only policy. A managed source uses the
+	// same IDs for upload and retrieval. Omission generates a private library
+	// scope; live membership and Identity still authorize every operation.
+	PermissionIDs []string
 }
 
 func knowledgeLibraryEnvironment(raw string) ([]KnowledgeLibraryConfig, error) {
@@ -43,6 +50,7 @@ func knowledgeLibraryEnvironment(raw string) ([]KnowledgeLibraryConfig, error) {
 		TopK            int                       `json:"top_k"`
 		ResponseMapping *KnowledgeResponseMapping `json:"response_mapping"`
 		ManageDocuments bool                      `json:"manage_documents"`
+		PermissionIDs   []string                  `json:"permission_ids"`
 	}
 	decoder := json.NewDecoder(strings.NewReader(raw))
 	decoder.DisallowUnknownFields()
@@ -59,7 +67,7 @@ func knowledgeLibraryEnvironment(raw string) ([]KnowledgeLibraryConfig, error) {
 		if !envName.MatchString(in.APIKeyEnv) {
 			return nil, fmt.Errorf("each knowledge library requires an API key environment variable name")
 		}
-		out = append(out, KnowledgeLibraryConfig{LibraryID: in.LibraryID, ManageDocuments: in.ManageDocuments, Knowledge: KnowledgeConfig{BaseURL: in.BaseURL, TeamID: in.TeamID, KBID: in.KBID, WorkspaceID: in.WorkspaceID, APIKey: os.Getenv(in.APIKeyEnv), TopK: in.TopK, ResponseMapping: in.ResponseMapping}})
+		out = append(out, KnowledgeLibraryConfig{LibraryID: in.LibraryID, ManageDocuments: in.ManageDocuments, PermissionIDs: in.PermissionIDs, Knowledge: KnowledgeConfig{BaseURL: in.BaseURL, TeamID: in.TeamID, KBID: in.KBID, WorkspaceID: in.WorkspaceID, APIKey: os.Getenv(in.APIKeyEnv), TopK: in.TopK, ResponseMapping: in.ResponseMapping}})
 	}
 	return out, nil
 }
@@ -87,7 +95,7 @@ func libraryRemoteIdentity(c KnowledgeConfig) string {
 	return string(key)
 }
 
-func assembleLibraryKnowledge(options *ConversationOptions, configured []KnowledgeLibraryConfig, raw string, legacy KnowledgeConfig) error {
+func assembleLibraryKnowledge(options *ConversationOptions, configured []KnowledgeLibraryConfig, raw string, legacy KnowledgeConfig, runtimeID string) error {
 	if raw != "" {
 		if len(configured) > 0 {
 			return fmt.Errorf("configure knowledge library bindings only once")
@@ -117,6 +125,9 @@ func assembleLibraryKnowledge(options *ConversationOptions, configured []Knowled
 			return fmt.Errorf("a remote knowledge base cannot be shared by different library or default bindings")
 		}
 		seen[identity] = true
+		if err := bindLibraryPermissions(&binding, runtimeID); err != nil {
+			return err
+		}
 		binding.Knowledge.DocumentManagement = binding.ManageDocuments
 		source, err := provider.NewKnowledge(binding.Knowledge)
 		if err != nil || source == nil {
@@ -124,5 +135,43 @@ func assembleLibraryKnowledge(options *ConversationOptions, configured []Knowled
 		}
 		options.LibraryKnowledge = append(options.LibraryKnowledge, application.LibraryKnowledgeBinding{LibraryID: binding.LibraryID, WorkspaceID: strings.TrimSpace(binding.Knowledge.WorkspaceID), Source: source, ManageDocuments: binding.ManageDocuments})
 	}
+	return nil
+}
+
+func bindLibraryPermissions(binding *KnowledgeLibraryConfig, runtimeID string) error {
+	if binding.Knowledge.DocumentPermissionIDs != nil {
+		return fmt.Errorf("configure fixed library permissions through PermissionIDs only")
+	}
+	if binding.ManageDocuments {
+		if binding.Knowledge.PermissionIDs != nil || binding.Knowledge.AuthorizeWorkspace != nil {
+			return fmt.Errorf("managed libraries cannot use dynamic permission or workspace policy")
+		}
+	}
+	if len(binding.PermissionIDs) == 0 && binding.Knowledge.PermissionIDs == nil {
+		if strings.TrimSpace(runtimeID) == "" || strings.TrimSpace(binding.Knowledge.WorkspaceID) == "" || strings.TrimSpace(binding.LibraryID) == "" {
+			return fmt.Errorf("private library scope requires a fixed runtime, workspace and library")
+		}
+		// Reading uses the same default scope even when writes are disabled.
+		// Otherwise turning off uploads would invalidate already managed files.
+		raw, _ := json.Marshal([]string{runtimeID, strings.TrimSpace(binding.Knowledge.WorkspaceID), binding.LibraryID})
+		binding.PermissionIDs = []string{fmt.Sprintf("scope:agent:library:%x", sha256.Sum256(raw))}
+	}
+	if len(binding.PermissionIDs) == 0 {
+		return nil
+	}
+	// The current Connector bounds one user's configured IDs to 100. Each ID
+	// also obeys the verified upstream contract; never trim an opaque ACL ID.
+	if len(binding.PermissionIDs) > 100 || binding.Knowledge.PermissionIDs != nil {
+		return fmt.Errorf("configure library retrieval permissions once, with at most 100 IDs")
+	}
+	ids := slices.Clone(binding.PermissionIDs)
+	for _, id := range ids {
+		if id == "" || len(id) > 128 || strings.TrimSpace(id) != id || !utf8.ValidString(id) || strings.ContainsFunc(id, func(r rune) bool { return r < 0x20 || r == 0x7f }) {
+			return fmt.Errorf("invalid library retrieval permission ID")
+		}
+	}
+	slices.Sort(ids)
+	ids = slices.Compact(ids)
+	binding.Knowledge.DocumentPermissionIDs = ids
 	return nil
 }

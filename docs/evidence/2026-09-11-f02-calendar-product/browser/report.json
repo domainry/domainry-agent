@@ -1,0 +1,260 @@
+{
+  "steps": [
+    "five product-selected calendar tools show unavailable before actual OAuth grant and available after owner authorization",
+    "actual browser message completes six persisted tool calls through Identity, Tools, Integration, Google protocol HTTP and model protocol HTTP; all-day dates, DST offsets and complete paging survive"
+  ],
+  "javascriptErrors": [],
+  "snapshots": [
+    {
+      "title": "日历安排与空闲",
+      "conversation": {
+        "id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+        "title": "日历安排与空闲",
+        "runtime_id": "accounts-runtime",
+        "workspace_id": "accounts-workspace",
+        "user_id": "admin",
+        "archived": false,
+        "memory_enabled": false,
+        "last_seq": 2,
+        "revision": 3,
+        "created_at": "2026-09-11T12:49:03.236Z",
+        "updated_at": "2026-09-11T12:49:05.158Z"
+      },
+      "messages": {
+        "items": [
+          {
+            "id": "msg_b8ab75bfbf9a0ab7a1eff168a710b98a",
+            "conversation_id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+            "run_id": "crun_c33111a39b5e361a77e73eb262810393",
+            "seq": 1,
+            "role": "user",
+            "content": "读取 2026-11-01 America/New_York 的完整日历安排、事件详情与共同空闲。",
+            "created_at": "2026-09-11T12:49:03.608616Z"
+          },
+          {
+            "id": "msg_63cce6b25a4ca756cad76b46b9a1dd9d",
+            "conversation_id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+            "run_id": "crun_c33111a39b5e361a77e73eb262810393",
+            "seq": 2,
+            "role": "assistant",
+            "content": "已读取 2 项安排。全天工作坊：2026-11-01，排他结束日期 2026-11-02。\n\n事件详情：CALENDAR-BODY：讨论实际议程与预算。\n\n共同空闲（绝对时刻）：[{\"start\":\"2026-11-01T04:00:00Z\",\"end\":\"2026-11-01T05:30:00Z\"},{\"start\":\"2026-11-01T06:30:00Z\",\"end\":\"2026-11-02T05:00:00Z\"}]",
+            "created_at": "2026-09-11T12:49:05.158829Z"
+          }
+        ]
+      },
+      "run": {
+        "id": "crun_c33111a39b5e361a77e73eb262810393",
+        "conversation_id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+        "client_message_id": "cdb1cf5d-870b-4241-9f06-8676ab8d8f4a",
+        "status": "completed",
+        "user_seq": 1,
+        "assistant_message_id": "msg_63cce6b25a4ca756cad76b46b9a1dd9d",
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 50,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "calendar-accounts",
+                "name": "calendar_accounts",
+                "arguments": "{\"operation\":\"calendar_events\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"key\":\"account_oauth_cW6ma4-ecfY39C96q379tnTv4HBWDoxdPMWC-pFaVoY\",\"name\":\"个人日历\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\"}],\"operation\":\"calendar_events\",\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_cW6ma4-ecfY39C96q379tnTv4HBWDoxdPMWC-pFaVoY\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T12:49:02.722309Z\",\"operation\":\"calendar_events\",\"contract_sha256\":\"9f0e6e40b6bc664b0d21d1581cbe0897aaf87be532428b679ab6473e17d585eb\"}]}",
+                "result_reference": {
+                  "conversation_id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+                  "run_id": "crun_c33111a39b5e361a77e73eb262810393",
+                  "step": 0,
+                  "call_id": "calendar-accounts",
+                  "sha256": "1a7a84ca106a2a705a26636641fcfa42cd825b5bff3a012dff1f1cabbe1dfb89"
+                }
+              }
+            ]
+          },
+          {
+            "number": 1,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "calendar-list",
+                "name": "calendar_list",
+                "arguments": "{\"account_key\":\"account_oauth_cW6ma4-ecfY39C96q379tnTv4HBWDoxdPMWC-pFaVoY\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"primary\",\"name\":\"工作日历\",\"time_zone\":\"America/New_York\",\"primary\":true},{\"id\":\"secondary\",\"name\":\"共享日历\",\"time_zone\":\"America/New_York\",\"primary\":false}],\"complete\":true,\"text_truncated\":false},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_cW6ma4-ecfY39C96q379tnTv4HBWDoxdPMWC-pFaVoY\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T12:49:02.722309Z\",\"operation\":\"calendar_list\",\"contract_sha256\":\"30741361ad9b26653d6ed4422169bacc7dd81227a658d44e32c02dab176eda62\"}],\"read_at\":\"2026-09-11T12:49:04.015333Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+                  "run_id": "crun_c33111a39b5e361a77e73eb262810393",
+                  "step": 1,
+                  "call_id": "calendar-list",
+                  "sha256": "95fe1917d1a9edf3c4f99899fc365744e2b520d7cb74513029eddcc47d4a1d4c"
+                }
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "calendar-events",
+                "name": "calendar_events",
+                "arguments": "{\"account_key\":\"account_oauth_cW6ma4-ecfY39C96q379tnTv4HBWDoxdPMWC-pFaVoY\",\"calendar_id\":\"primary\",\"time_zone\":\"America/New_York\",\"window\":{\"start\":\"2026-11-01T00:00:00-04:00\",\"end\":\"2026-11-02T00:00:00-05:00\"}}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"all-day\",\"calendar_id\":\"primary\",\"title\":\"全天工作坊\",\"status\":\"confirmed\",\"start\":{\"date\":\"2026-11-01\"},\"end\":{\"date\":\"2026-11-02\"},\"series_id\":\"workshop-series\",\"original_start\":{\"date\":\"2026-10-25\"},\"transparency\":\"transparent\",\"text_truncated\":false,\"description_truncated\":false}],\"next_cursor\":\"calendar-page-2\",\"complete\":false,\"time_zone\":\"America/New_York\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_cW6ma4-ecfY39C96q379tnTv4HBWDoxdPMWC-pFaVoY\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T12:49:02.722309Z\",\"operation\":\"calendar_events\",\"contract_sha256\":\"9f0e6e40b6bc664b0d21d1581cbe0897aaf87be532428b679ab6473e17d585eb\"}],\"read_at\":\"2026-09-11T12:49:04.218866Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+                  "run_id": "crun_c33111a39b5e361a77e73eb262810393",
+                  "step": 2,
+                  "call_id": "calendar-events",
+                  "sha256": "56964f5e517d2135bf5453af87473cd1f97b39036d0c6228ff0d6c488cb72bf2"
+                }
+              }
+            ]
+          },
+          {
+            "number": 3,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "calendar-events-next",
+                "name": "calendar_events",
+                "arguments": "{\"account_key\":\"account_oauth_cW6ma4-ecfY39C96q379tnTv4HBWDoxdPMWC-pFaVoY\",\"calendar_id\":\"primary\",\"cursor\":\"calendar-page-2\",\"time_zone\":\"America/New_York\",\"window\":{\"start\":\"2026-11-01T00:00:00-04:00\",\"end\":\"2026-11-02T00:00:00-05:00\"}}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"items\":[{\"id\":\"dst\",\"calendar_id\":\"primary\",\"title\":\"跨回拨会议\",\"start\":{\"date_time\":\"2026-11-01T01:30:00-04:00\"},\"end\":{\"date_time\":\"2026-11-01T01:30:00-05:00\"},\"text_truncated\":false,\"description_truncated\":false}],\"complete\":true,\"time_zone\":\"America/New_York\"},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_cW6ma4-ecfY39C96q379tnTv4HBWDoxdPMWC-pFaVoY\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T12:49:02.722309Z\",\"operation\":\"calendar_events\",\"contract_sha256\":\"9f0e6e40b6bc664b0d21d1581cbe0897aaf87be532428b679ab6473e17d585eb\"}],\"read_at\":\"2026-09-11T12:49:04.428008Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+                  "run_id": "crun_c33111a39b5e361a77e73eb262810393",
+                  "step": 3,
+                  "call_id": "calendar-events-next",
+                  "sha256": "bb2b29c94b1419615a84177483f13f30137b35edeb00160bba759ea77c459334"
+                }
+              }
+            ]
+          },
+          {
+            "number": 4,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "calendar-event",
+                "name": "calendar_event",
+                "arguments": "{\"account_key\":\"account_oauth_cW6ma4-ecfY39C96q379tnTv4HBWDoxdPMWC-pFaVoY\",\"calendar_id\":\"primary\",\"event_id\":\"all-day\",\"time_zone\":\"America/New_York\"}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"id\":\"all-day\",\"calendar_id\":\"primary\",\"title\":\"全天工作坊\",\"description\":\"CALENDAR-BODY：讨论实际议程与预算。\",\"status\":\"confirmed\",\"start\":{\"date\":\"2026-11-01\"},\"end\":{\"date\":\"2026-11-02\"},\"series_id\":\"workshop-series\",\"original_start\":{\"date\":\"2026-10-25\"},\"transparency\":\"transparent\",\"text_truncated\":false,\"description_truncated\":false},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_cW6ma4-ecfY39C96q379tnTv4HBWDoxdPMWC-pFaVoY\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T12:49:02.722309Z\",\"operation\":\"calendar_event\",\"contract_sha256\":\"7f8cc71141600ec42d4c1f32975a4bdc231bd3ad8b802dbfcd0c4626595aa2b0\"}],\"read_at\":\"2026-09-11T12:49:04.657132Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+                  "run_id": "crun_c33111a39b5e361a77e73eb262810393",
+                  "step": 4,
+                  "call_id": "calendar-event",
+                  "sha256": "1191cac945e8ae9ce0e18892a141ac346079f31de3a7ad0ff7fa9cc993452638"
+                }
+              }
+            ]
+          },
+          {
+            "number": 5,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "calendar-availability",
+                "name": "calendar_availability",
+                "arguments": "{\"account_key\":\"account_oauth_cW6ma4-ecfY39C96q379tnTv4HBWDoxdPMWC-pFaVoY\",\"calendar_ids\":[\"primary\",\"secondary\"],\"time_zone\":\"America/New_York\",\"window\":{\"start\":\"2026-11-01T00:00:00-04:00\",\"end\":\"2026-11-02T00:00:00-05:00\"}}",
+                "status": "completed",
+                "result_preview": "{\"data\":{\"window\":{\"start\":\"2026-11-01T00:00:00-04:00\",\"end\":\"2026-11-02T00:00:00-05:00\"},\"calendars\":[{\"calendar_id\":\"primary\",\"complete\":true,\"busy_count\":1},{\"calendar_id\":\"secondary\",\"complete\":true,\"busy_count\":0}],\"free\":[{\"start\":\"2026-11-01T04:00:00Z\",\"end\":\"2026-11-01T05:30:00Z\"},{\"start\":\"2026-11-01T06:30:00Z\",\"end\":\"2026-11-02T05:00:00Z\"}],\"complete\":true},\"sources\":[{\"workspace_id\":\"accounts-workspace\",\"connection_key\":\"account_oauth_cW6ma4-ecfY39C96q379tnTv4HBWDoxdPMWC-pFaVoY\",\"connector_key\":\"google_workspace\",\"provider_key\":\"google\",\"account_updated_at\":\"2026-09-11T12:49:02.722309Z\",\"operation\":\"calendar_availability\",\"contract_sha256\":\"5a7c7afc967fbb5ec27323d47728b66e1f32357969366db8a00b8731f1b93013\"}],\"read_at\":\"2026-09-11T12:49:04.900192Z\"}",
+                "result_reference": {
+                  "conversation_id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+                  "run_id": "crun_c33111a39b5e361a77e73eb262810393",
+                  "step": 5,
+                  "call_id": "calendar-availability",
+                  "sha256": "a2e35dd430acd7a110b4419f25c4d6044155f97b882905540a14b643c29cc087"
+                }
+              }
+            ]
+          },
+          {
+            "number": 6,
+            "attempt": 1,
+            "status": "completed",
+            "text": "已读取 2 项安排。全天工作坊：2026-11-01，排他结束日期 2026-11-02。\n\n事件详情：CALENDAR-BODY：讨论实际议程与预算。\n\n共同空闲（绝对时刻）：[{\"start\":\"2026-11-01T04:00:00Z\",\"end\":\"2026-11-01T05:30:00Z\"},{\"start\":\"2026-11-01T06:30:00Z\",\"end\":\"2026-11-02T05:00:00Z\"}]",
+            "calls": []
+          }
+        ],
+        "created_at": "2026-09-11T12:49:03.608616Z",
+        "updated_at": "2026-09-11T12:49:05.159038Z"
+      }
+    }
+  ],
+  "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(!(await page.locator('main').innerText()).includes('CALENDAR-BODY'))\n",
+  "lastState": {
+    "conversation": {
+      "id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+      "title": "日历安排与空闲",
+      "runtime_id": "accounts-runtime",
+      "workspace_id": "accounts-workspace",
+      "user_id": "admin",
+      "archived": false,
+      "memory_enabled": false,
+      "last_seq": 2,
+      "revision": 3,
+      "created_at": "2026-09-11T12:49:03.236Z",
+      "updated_at": "2026-09-11T12:49:05.158Z"
+    },
+    "messages": {
+      "items": [
+        {
+          "id": "msg_b8ab75bfbf9a0ab7a1eff168a710b98a",
+          "conversation_id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+          "run_id": "crun_c33111a39b5e361a77e73eb262810393",
+          "seq": 1,
+          "role": "user",
+          "content": "读取 2026-11-01 America/New_York 的完整日历安排、事件详情与共同空闲。",
+          "created_at": "2026-09-11T12:49:03.608616Z"
+        },
+        {
+          "access_error": "source_access_unavailable",
+          "id": "msg_63cce6b25a4ca756cad76b46b9a1dd9d",
+          "conversation_id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+          "run_id": "crun_c33111a39b5e361a77e73eb262810393",
+          "seq": 2,
+          "role": "assistant",
+          "content": "这条历史回复的资料来源当前无法验证，内容暂不提供。",
+          "created_at": "2026-09-11T12:49:05.158829Z"
+        }
+      ]
+    },
+    "run": {
+      "access_error": "source_access_unavailable",
+      "id": "crun_c33111a39b5e361a77e73eb262810393",
+      "conversation_id": "conv_ef769ec8515e31ac59ca58f940ed3afe",
+      "client_message_id": "cdb1cf5d-870b-4241-9f06-8676ab8d8f4a",
+      "status": "completed",
+      "user_seq": 1,
+      "assistant_message_id": "msg_63cce6b25a4ca756cad76b46b9a1dd9d",
+      "attempt": 1,
+      "draft_bytes": 0,
+      "last_event_seq": 50,
+      "created_at": "2026-09-11T12:49:03.608616Z",
+      "updated_at": "2026-09-11T12:49:05.159038Z"
+    }
+  }
+}

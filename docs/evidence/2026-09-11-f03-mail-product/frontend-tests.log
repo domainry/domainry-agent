@@ -1,0 +1,266 @@
+
+> domainry-agent-playground@0.0.0 test
+> node --experimental-strip-types --test src/conversation-state.test.ts src/external-session.test.ts src/knowledge-document-state.test.ts src/knowledge-datasource-state.test.ts src/execution-outcome.test.ts src/file-preview-state.test.ts src/attachment-index-state.test.ts
+
+TAP version 13
+# Subtest: index receipt is bound to the exact conversation, attachment and original
+ok 1 - index receipt is bound to the exact conversation, attachment and original
+  ---
+  duration_ms: 6.464292
+  type: 'test'
+  ...
+# Subtest: indexing and lookup are each one scoped request without original bytes
+ok 2 - indexing and lookup are each one scoped request without original bytes
+  ---
+  duration_ms: 43.677917
+  type: 'test'
+  ...
+# Subtest: index response rejects another file or missing authoritative capabilities
+ok 3 - index response rejects another file or missing authoritative capabilities
+  ---
+  duration_ms: 0.491875
+  type: 'test'
+  ...
+# Subtest: unknown writes and cleanup are not shown as retryable uploads or completion
+ok 4 - unknown writes and cleanup are not shown as retryable uploads or completion
+  ---
+  duration_ms: 0.432167
+  type: 'test'
+  ...
+# Subtest: mutation response keeps the attachment list within its keyset window
+ok 5 - mutation response keeps the attachment list within its keyset window
+  ---
+  duration_ms: 8.799583
+  type: 'test'
+  ...
+# Subtest: cancellation preserves effects, distinguishes unstarted calls and accepts the actual late receipt
+ok 6 - cancellation preserves effects, distinguishes unstarted calls and accepts the actual late receipt
+  ---
+  duration_ms: 2.724959
+  type: 'test'
+  ...
+# Subtest: only actual completed knowledge citations become verified links and revocation hides them
+ok 7 - only actual completed knowledge citations become verified links and revocation hides them
+  ---
+  duration_ms: 0.3915
+  type: 'test'
+  ...
+# Subtest: artifact scope survives uncertain send without borrowing memory/todo grants or carrying to the next request
+ok 8 - artifact scope survives uncertain send without borrowing memory/todo grants or carrying to the next request
+  ---
+  duration_ms: 3.036333
+  type: 'test'
+  ...
+# Subtest: artifact retry preserves exact version and decimal strings and cannot target unrelated paths
+ok 9 - artifact retry preserves exact version and decimal strings and cannot target unrelated paths
+  ---
+  duration_ms: 0.369833
+  type: 'test'
+  ...
+# Subtest: todo and memory scopes stay separate through refresh, uncertain retry and next send
+ok 10 - todo and memory scopes stay separate through refresh, uncertain retry and next send
+  ---
+  duration_ms: 0.215458
+  type: 'test'
+  ...
+# Subtest: todo retry preserves the exact target, revision and payload and rejects unrelated endpoints
+ok 11 - todo retry preserves the exact target, revision and payload and rejects unrelated endpoints
+  ---
+  duration_ms: 1.405291
+  type: 'test'
+  ...
+# Subtest: todo date-only deadlines preserve the user's calendar day and precise times use the stored zone
+ok 12 - todo date-only deadlines preserve the user's calendar day and precise times use the stored zone
+  ---
+  duration_ms: 103.902291
+  type: 'test'
+  ...
+# Subtest: waiting snapshots retain questions and reject cross-run or stale response events
+ok 13 - waiting snapshots retain questions and reject cross-run or stale response events
+  ---
+  duration_ms: 5.952042
+  type: 'test'
+  ...
+# Subtest: a restricted snapshot ignores queued tool events and hides stale reply text
+ok 14 - a restricted snapshot ignores queued tool events and hides stale reply text
+  ---
+  duration_ms: 0.756458
+  type: 'test'
+  ...
+# Subtest: a completed run can show its saved final step after the server clears the draft
+ok 15 - a completed run can show its saved final step after the server clears the draft
+  ---
+  duration_ms: 0.459333
+  type: 'test'
+  ...
+# Subtest: tool argument fragments stay previews and reconnect resumes Unicode byte offsets
+ok 16 - tool argument fragments stay previews and reconnect resumes Unicode byte offsets
+  ---
+  duration_ms: 3.838917
+  type: 'test'
+  ...
+# Subtest: drafts survive refresh and stay isolated by conversation and scope
+ok 17 - drafts survive refresh and stay isolated by conversation and scope
+  ---
+  duration_ms: 0.91625
+  type: 'test'
+  ...
+# Subtest: an uncertain send reuses its identity after refresh and acknowledgement clears only that draft
+ok 18 - an uncertain send reuses its identity after refresh and acknowledgement clears only that draft
+  ---
+  duration_ms: 0.330875
+  type: 'test'
+  ...
+# Subtest: personal memory scope stays with one logical send and cannot expand on retry
+ok 19 - personal memory scope stays with one logical send and cannot expand on retry
+  ---
+  duration_ms: 0.207875
+  type: 'test'
+  ...
+# Subtest: late acknowledgement cannot erase newer text or another logical send from another tab
+ok 20 - late acknowledgement cannot erase newer text or another logical send from another tab
+  ---
+  duration_ms: 1.721167
+  type: 'test'
+  ...
+# Subtest: disabled or full storage retains current-page drafts without stale disk text overwriting them
+ok 21 - disabled or full storage retains current-page drafts without stale disk text overwriting them
+  ---
+  duration_ms: 0.312792
+  type: 'test'
+  ...
+# Subtest: provider errors explain the next action and unknown provider text is never displayed
+ok 22 - provider errors explain the next action and unknown provider text is never displayed
+  ---
+  duration_ms: 105.377375
+  type: 'test'
+  ...
+# Subtest: HTTP, network and malformed successful responses retain distinct safe error categories
+ok 23 - HTTP, network and malformed successful responses retain distinct safe error categories
+  ---
+  duration_ms: 220.154541
+  type: 'test'
+  ...
+# Subtest: refresh retries the same scoped request once and never replays a mutation under another account
+ok 24 - refresh retries the same scoped request once and never replays a mutation under another account
+  ---
+  duration_ms: 3.054292
+  type: 'test'
+  ...
+# Subtest: an in-flight response from a prior login is discarded after an account change
+ok 25 - an in-flight response from a prior login is discarded after an account change
+  ---
+  duration_ms: 0.199875
+  type: 'test'
+  ...
+# Subtest: a saved reply does not hide a failed operation or mistake workflow acceptance for completion
+ok 26 - a saved reply does not hide a failed operation or mistake workflow acceptance for completion
+  ---
+  duration_ms: 2.1555
+  type: 'test'
+  ...
+# Subtest: failure projects actual effects and directs recovery to the first unfinished call
+ok 27 - failure projects actual effects and directs recovery to the first unfinished call
+  ---
+  duration_ms: 0.952667
+  type: 'test'
+  ...
+# Subtest: unfinished model generation can resume without repeating successful effects
+ok 28 - unfinished model generation can resume without repeating successful effects
+  ---
+  duration_ms: 0.110709
+  type: 'test'
+  ...
+# Subtest: waiting approval, denied evidence and closed interactions expose no retry
+ok 29 - waiting approval, denied evidence and closed interactions expose no retry
+  ---
+  duration_ms: 0.15625
+  type: 'test'
+  ...
+# Subtest: streamed completion disposition survives terminal projection and unknown terminal states are never successes
+ok 30 - streamed completion disposition survives terminal projection and unknown terminal states are never successes
+  ---
+  duration_ms: 0.123917
+  type: 'test'
+  ...
+# Subtest: external sessions never refresh Identity or replay writes after an account change
+ok 31 - external sessions never refresh Identity or replay writes after an account change
+  ---
+  duration_ms: 41.888583
+  type: 'test'
+  ...
+# Subtest: preview accepts only managed document identities, never source URLs
+ok 32 - preview accepts only managed document identities, never source URLs
+  ---
+  duration_ms: 2.751833
+  type: 'test'
+  ...
+# Subtest: download response controls filename, supports Unicode and rejects paths
+ok 33 - download response controls filename, supports Unicode and rejects paths
+  ---
+  duration_ms: 0.845041
+  type: 'test'
+  ...
+# Subtest: private citations open only their scoped attachment original
+ok 34 - private citations open only their scoped attachment original
+  ---
+  duration_ms: 0.649083
+  type: 'test'
+  ...
+# Subtest: binding receipts contain only a bounded source key and frozen revision
+ok 35 - binding receipts contain only a bounded source key and frozen revision
+  ---
+  duration_ms: 1.048958
+  type: 'test'
+  ...
+# Subtest: a confirmed binding is one PUT and a lost response retries the same frozen assignment
+ok 36 - a confirmed binding is one PUT and a lost response retries the same frozen assignment
+  ---
+  duration_ms: 242.223416
+  type: 'test'
+  ...
+# Subtest: catalog validates scope, pagination and effective permission flags
+ok 37 - catalog validates scope, pagination and effective permission flags
+  ---
+  duration_ms: 182.970375
+  type: 'test'
+  ...
+# Subtest: document upload retry receipts remain bounded and pending/indexed/deleting states stay distinct
+ok 38 - document upload retry receipts remain bounded and pending/indexed/deleting states stay distinct
+  ---
+  duration_ms: 4.211208
+  type: 'test'
+  ...
+# Subtest: document upload sends one binary request with its persisted identity and rejects unrelated receipts
+ok 39 - document upload sends one binary request with its persisted identity and rejects unrelated receipts
+  ---
+  duration_ms: 31.924417
+  type: 'test'
+  ...
+# Subtest: original downloads verify bytes and hash and discard body completion after an account change
+ok 40 - original downloads verify bytes and hash and discard body completion after an account change
+  ---
+  duration_ms: 49.501834
+  type: 'test'
+  ...
+# Subtest: attachment copy receipts bind a source and stable target without keeping file bytes
+ok 41 - attachment copy receipts bind a source and stable target without keeping file bytes
+  ---
+  duration_ms: 2.920834
+  type: 'test'
+  ...
+# Subtest: a pending transfer remains recoverable during a source outage without enabling new writes or bypassing target access
+ok 42 - a pending transfer remains recoverable during a source outage without enabling new writes or bypassing target access
+  ---
+  duration_ms: 1.104834
+  type: 'test'
+  ...
+1..42
+# tests 42
+# suites 0
+# pass 42
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 921.151667

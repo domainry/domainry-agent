@@ -1,0 +1,98 @@
+{
+  "model": "in-process deterministic SDK model; real Report/Identity/Runtime/Agent/SQLite",
+  "phases": [
+    "UI login/create/send; 2 catalog + 3 query pages; actual updated rows, source and bounded completeness",
+    "full owner/module/Identity disk restart restores actual saved report answer",
+    "field permission revoked hides prior answer and tool content",
+    "restored permission requires fresh query; mobile 390px no document overflow",
+    "business read revoked removes report tool and does not claim successful execution"
+  ],
+  "runs": [
+    {
+      "conversation": "conv_21338e7d7e33c43413dc88181675ff9b",
+      "id": "crun_6f788310a1cd8c47671ed5b7adba44b6",
+      "status": "completed",
+      "calls": [
+        {
+          "name": "report_query",
+          "status": "completed",
+          "arguments": "{\"operation\":\"catalog\",\"page_size\":1}",
+          "result_preview": "{\"operation\":\"catalog\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"80b0e79e7a4bc6d41347da59410590af7ff09fd7449774131dabebbb05b045e7\",\"catalog\":{\"reports\":[{\"key\":\"customer_balances\",\"name\":\"customer_balances\",\"definition_version\":\"cfa2d729c0e333f959d15c5f683d213f8bb26d0295a88110159ac2773c4d9eb6\",\"parameters\":[],\"result_schema\":[{\"key\":\"balance\",\"type\":\"integer\",\"kind\":\"dimension\"}],\"row_limit\":10}],\"next_cursor\":\"eyJmaW5nZXJwcmludCI6ImRkZTBlN2I5NjNkNzI0YjM4ZWRjYTQ1MmM2Yjc1MzExOTYxZGU0MDIyZDk3ODkyMGE4YmZhNzYxOWZhM2E1YzQiLCJwb3NpdGlvbiI6MSwicHJvb2YiOiI5YTdiNTQzMTFhYTU5OWMwZjJmOTA4OGM0ZTE2MjRhYmM0MGYwZjk5MTIxNGQ3MzNlNGM5NDg5ZjVjOTIzZTNhIn0\",\"truncated\":true}}"
+        },
+        {
+          "name": "report_query",
+          "status": "completed",
+          "arguments": "{\"cursor\":\"eyJmaW5nZXJwcmludCI6ImRkZTBlN2I5NjNkNzI0YjM4ZWRjYTQ1MmM2Yjc1MzExOTYxZGU0MDIyZDk3ODkyMGE4YmZhNzYxOWZhM2E1YzQiLCJwb3NpdGlvbiI6MSwicHJvb2YiOiI5YTdiNTQzMTFhYTU5OWMwZjJmOTA4OGM0ZTE2MjRhYmM0MGYwZjk5MTIxNGQ3MzNlNGM5NDg5ZjVjOTIzZTNhIn0\",\"operation\":\"catalog\",\"page_size\":1}",
+          "result_preview": "{\"operation\":\"catalog\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"06c189b064033f85204aa40407d4eb0d7d2f0f1aa6737e040bf28f94ace6c6b0\",\"catalog\":{\"reports\":[{\"key\":\"customer_names\",\"name\":\"customer_names\",\"definition_version\":\"787d85140027d608695a0b7943bbd3b6a29a9a4f4c54155536e232aa9e989463\",\"parameters\":[],\"result_schema\":[{\"key\":\"name\",\"type\":\"text\",\"kind\":\"dimension\"}],\"row_limit\":10}],\"truncated\":false}}"
+        },
+        {
+          "name": "report_query",
+          "status": "completed",
+          "arguments": "{\"operation\":\"query\",\"page_size\":1,\"report_key\":\"customer_names\"}",
+          "result_preview": "{\"operation\":\"query\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"4c222e1f23e183de72d32c579044092fa30a8da6526e0240b027d24ea3f736b6\",\"result\":{\"summary\":{\"key\":\"customer_names\",\"name\":\"customer_names\",\"rows\":[{\"dimensions\":{\"name\":\"Beta\"}}],\"row_count\":1,\"source_row_count\":-1,\"execution_mode\":\"object_sql_v1\",\"result_schema\":[{\"key\":\"name\",\"type\":\"text\",\"kind\":\"dimension\"}],\"page_size\":1,\"next_cursor\":\"eyJ2IjoyLCJmaW5nZXJwcmludCI6ImViZDBlODFlZTlmMTZmNTU4ZTY0ZDhhNzZiMGEzODFmOTc0OTZhNGU5ZmY0OWY0OGVkZTAwMGZkNWQ3N2FlZDUiLCJzb3VyY2VfdmVyc2lvbl9zaGEyNTYiOiIwOGI0NWY1ZjZjZjVjYTVjNjdjNDg0ODYwN2JkODRlMGUwZDQ0NjlmNTQ1MWQ4ODRiZmY2ODI2NzhhMTZkMTc2IiwibGFzdF9yb3dfa2V5IjoiIiwib2NjdXJyZW5jZSI6MCwiZXhlY3V0aW9uX2N1cnNvciI6ImV5SjJJam94TENKMllXeDFaWE1pT2x0N0ltdHBibVFpT2lKMFpYaDBJaXdpZG1Gc2RXVWlPaUpDWlhSaEluMHNleUpyYVc1a0lqb2lkR1Y0ZENJc0luWmhiSFZsSWpvaVkzVnpkRzl0WlhKZlkzVnpkRzl0WlhKZlluSnZkM05sY2w5Q1pYUmhJbjFkZlEiLCJwb3NpdGlvbiI6MSwiY2hlY2tzdW0iOiI4ZjU0NWIxNTIxZDBjZTQ4ODYzOTZkZmViNDZlNzRmMTIyZThlNjcxODY3NThjYThkOTQ3NTlkNDdkMDllZDQyIn0\",\"truncated\":true,\"total\":3,\"total_semantics\":\"exact\"},\"source\":{\"report_key\":\"customer_names\",\"definition_version\":\"787d85140027d608695a0b7943bbd3b6a29a9a4f4c54155536e232aa9e989463\",\"data_version\":\"08b45f5f6cf5ca5c67c4848607bd84e0e0d4469f5451d884bff682678a16d176\",\"queried_at\":\"2026-09-11T22:53:55.962542Z\",\"row_limit\":10,\"complete\":false,\"proof\":\"30b247b2372c6bbcd9bc9419b73227b31a229e4aaffc47e0b759aa089bc7c612\"}}}"
+        },
+        {
+          "name": "report_query",
+          "status": "completed",
+          "arguments": "{\"cursor\":\"eyJ2IjoyLCJmaW5nZXJwcmludCI6ImViZDBlODFlZTlmMTZmNTU4ZTY0ZDhhNzZiMGEzODFmOTc0OTZhNGU5ZmY0OWY0OGVkZTAwMGZkNWQ3N2FlZDUiLCJzb3VyY2VfdmVyc2lvbl9zaGEyNTYiOiIwOGI0NWY1ZjZjZjVjYTVjNjdjNDg0ODYwN2JkODRlMGUwZDQ0NjlmNTQ1MWQ4ODRiZmY2ODI2NzhhMTZkMTc2IiwibGFzdF9yb3dfa2V5IjoiIiwib2NjdXJyZW5jZSI6MCwiZXhlY3V0aW9uX2N1cnNvciI6ImV5SjJJam94TENKMllXeDFaWE1pT2x0N0ltdHBibVFpT2lKMFpYaDBJaXdpZG1Gc2RXVWlPaUpDWlhSaEluMHNleUpyYVc1a0lqb2lkR1Y0ZENJc0luWmhiSFZsSWpvaVkzVnpkRzl0WlhKZlkzVnpkRzl0WlhKZlluSnZkM05sY2w5Q1pYUmhJbjFkZlEiLCJwb3NpdGlvbiI6MSwiY2hlY2tzdW0iOiI4ZjU0NWIxNTIxZDBjZTQ4ODYzOTZkZmViNDZlNzRmMTIyZThlNjcxODY3NThjYThkOTQ3NTlkNDdkMDllZDQyIn0\",\"operation\":\"query\",\"page_size\":1,\"report_key\":\"customer_names\"}",
+          "result_preview": "{\"operation\":\"query\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"6a433c34976ce368cbdff9d9b8122d2a884044f86f0124d293cd54af2ea10bd9\",\"result\":{\"summary\":{\"key\":\"customer_names\",\"name\":\"customer_names\",\"rows\":[{\"dimensions\":{\"name\":\"Gamma\"}}],\"row_count\":1,\"source_row_count\":-1,\"execution_mode\":\"object_sql_v1\",\"result_schema\":[{\"key\":\"name\",\"type\":\"text\",\"kind\":\"dimension\"}],\"page_size\":1,\"next_cursor\":\"eyJ2IjoyLCJmaW5nZXJwcmludCI6ImViZDBlODFlZTlmMTZmNTU4ZTY0ZDhhNzZiMGEzODFmOTc0OTZhNGU5ZmY0OWY0OGVkZTAwMGZkNWQ3N2FlZDUiLCJzb3VyY2VfdmVyc2lvbl9zaGEyNTYiOiIwOGI0NWY1ZjZjZjVjYTVjNjdjNDg0ODYwN2JkODRlMGUwZDQ0NjlmNTQ1MWQ4ODRiZmY2ODI2NzhhMTZkMTc2IiwibGFzdF9yb3dfa2V5IjoiIiwib2NjdXJyZW5jZSI6MCwiZXhlY3V0aW9uX2N1cnNvciI6ImV5SjJJam94TENKMllXeDFaWE1pT2x0N0ltdHBibVFpT2lKMFpYaDBJaXdpZG1Gc2RXVWlPaUpIWVcxdFlTSjlMSHNpYTJsdVpDSTZJblJsZUhRaUxDSjJZV3gxWlNJNkltTjFjM1J2YldWeVgyTjFjM1J2YldWeVgySnliM2R6WlhKZlIyRnRiV0VpZlYxOSIsInBvc2l0aW9uIjoyLCJjaGVja3N1bSI6Ijc2MTYzYzEyNzkzOGZhYTI3MGMyNDRhZjdjNGRhNmQ3ZmRhNThiMmM1N2YxZTEyZjkwYzcxYjlhNjAxNjkwMjcifQ\",\"truncated\":true,\"total\":3,\"total_semantics\":\"exact\"},\"source\":{\"report_key\":\"customer_names\",\"definition_version\":\"787d85140027d608695a0b7943bbd3b6a29a9a4f4c54155536e232aa9e989463\",\"data_version\":\"08b45f5f6cf5ca5c67c4848607bd84e0e0d4469f5451d884bff682678a16d176\",\"queried_at\":\"2026-09-11T22:53:56.9671Z\",\"row_limit\":10,\"complete\":false,\"proof\":\"ff83a530d765bf74d2aa562f93a9ec4a2d78c163de15b04ff6b68214757628b5\"}}}"
+        },
+        {
+          "name": "report_query",
+          "status": "completed",
+          "arguments": "{\"cursor\":\"eyJ2IjoyLCJmaW5nZXJwcmludCI6ImViZDBlODFlZTlmMTZmNTU4ZTY0ZDhhNzZiMGEzODFmOTc0OTZhNGU5ZmY0OWY0OGVkZTAwMGZkNWQ3N2FlZDUiLCJzb3VyY2VfdmVyc2lvbl9zaGEyNTYiOiIwOGI0NWY1ZjZjZjVjYTVjNjdjNDg0ODYwN2JkODRlMGUwZDQ0NjlmNTQ1MWQ4ODRiZmY2ODI2NzhhMTZkMTc2IiwibGFzdF9yb3dfa2V5IjoiIiwib2NjdXJyZW5jZSI6MCwiZXhlY3V0aW9uX2N1cnNvciI6ImV5SjJJam94TENKMllXeDFaWE1pT2x0N0ltdHBibVFpT2lKMFpYaDBJaXdpZG1Gc2RXVWlPaUpIWVcxdFlTSjlMSHNpYTJsdVpDSTZJblJsZUhRaUxDSjJZV3gxWlNJNkltTjFjM1J2YldWeVgyTjFjM1J2YldWeVgySnliM2R6WlhKZlIyRnRiV0VpZlYxOSIsInBvc2l0aW9uIjoyLCJjaGVja3N1bSI6Ijc2MTYzYzEyNzkzOGZhYTI3MGMyNDRhZjdjNGRhNmQ3ZmRhNThiMmM1N2YxZTEyZjkwYzcxYjlhNjAxNjkwMjcifQ\",\"operation\":\"query\",\"page_size\":1,\"report_key\":\"customer_names\"}",
+          "result_preview": "{\"operation\":\"query\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"dc9ccd1d82e7702c2e37554d952649b2584da8200064b95e7b2b9bf041cc8fd4\",\"result\":{\"summary\":{\"key\":\"customer_names\",\"name\":\"customer_names\",\"rows\":[{\"dimensions\":{\"name\":\"Updated Acme\"}}],\"row_count\":1,\"source_row_count\":-1,\"execution_mode\":\"object_sql_v1\",\"result_schema\":[{\"key\":\"name\",\"type\":\"text\",\"kind\":\"dimension\"}],\"page_size\":1,\"truncated\":false,\"total\":3,\"total_semantics\":\"exact\"},\"source\":{\"report_key\":\"customer_names\",\"definition_version\":\"787d85140027d608695a0b7943bbd3b6a29a9a4f4c54155536e232aa9e989463\",\"data_version\":\"08b45f5f6cf5ca5c67c4848607bd84e0e0d4469f5451d884bff682678a16d176\",\"queried_at\":\"2026-09-11T22:53:58.069573Z\",\"row_limit\":10,\"complete\":false,\"proof\":\"1b4726755a48a98c0e3d2b4b7435d2f8f661377bf75c2aea04b813f4278da0a3\"}}}"
+        }
+      ]
+    },
+    {
+      "conversation": "conv_a3a30784fd5178fb904775a1c82824d2",
+      "id": "crun_5144c2dd93e106c81165c08fabf73769",
+      "status": "completed",
+      "calls": [
+        {
+          "name": "report_query",
+          "status": "completed",
+          "arguments": "{\"operation\":\"catalog\",\"page_size\":1}",
+          "result_preview": "{\"operation\":\"catalog\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"80b0e79e7a4bc6d41347da59410590af7ff09fd7449774131dabebbb05b045e7\",\"catalog\":{\"reports\":[{\"key\":\"customer_balances\",\"name\":\"customer_balances\",\"definition_version\":\"cfa2d729c0e333f959d15c5f683d213f8bb26d0295a88110159ac2773c4d9eb6\",\"parameters\":[],\"result_schema\":[{\"key\":\"balance\",\"type\":\"integer\",\"kind\":\"dimension\"}],\"row_limit\":10}],\"next_cursor\":\"eyJmaW5nZXJwcmludCI6ImQ5MGE3N2UzMzVmMDJmNGM2ZTUwZWIxNTMzYjIyODQwNzFhMzE4MTE5ZjI3MzFhN2Q0ZmU1YjVhYjBlOGRlZTgiLCJwb3NpdGlvbiI6MSwicHJvb2YiOiI4YjA1ZmIxY2NjYzNiODYxZDdjNDRhNzRkZWFlNTJmNjgzOGYwODgyZDE0MTIyYzA4ZWZhMTM5MWMxNGZmZTIxIn0\",\"truncated\":true}}"
+        },
+        {
+          "name": "report_query",
+          "status": "completed",
+          "arguments": "{\"cursor\":\"eyJmaW5nZXJwcmludCI6ImQ5MGE3N2UzMzVmMDJmNGM2ZTUwZWIxNTMzYjIyODQwNzFhMzE4MTE5ZjI3MzFhN2Q0ZmU1YjVhYjBlOGRlZTgiLCJwb3NpdGlvbiI6MSwicHJvb2YiOiI4YjA1ZmIxY2NjYzNiODYxZDdjNDRhNzRkZWFlNTJmNjgzOGYwODgyZDE0MTIyYzA4ZWZhMTM5MWMxNGZmZTIxIn0\",\"operation\":\"catalog\",\"page_size\":1}",
+          "result_preview": "{\"operation\":\"catalog\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"cf3f2d045940af35b037e248fd55bb37bcee52a1cfcf9dbe7ff85e207036c002\",\"catalog\":{\"reports\":[{\"key\":\"customer_names\",\"name\":\"customer_names\",\"definition_version\":\"787d85140027d608695a0b7943bbd3b6a29a9a4f4c54155536e232aa9e989463\",\"parameters\":[],\"result_schema\":[{\"key\":\"name\",\"type\":\"text\",\"kind\":\"dimension\"}],\"row_limit\":10}],\"truncated\":false}}"
+        },
+        {
+          "name": "report_query",
+          "status": "completed",
+          "arguments": "{\"operation\":\"query\",\"page_size\":1,\"report_key\":\"customer_names\"}",
+          "result_preview": "{\"operation\":\"query\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"4c222e1f23e183de72d32c579044092fa30a8da6526e0240b027d24ea3f736b6\",\"result\":{\"summary\":{\"key\":\"customer_names\",\"name\":\"customer_names\",\"rows\":[{\"dimensions\":{\"name\":\"Beta\"}}],\"row_count\":1,\"source_row_count\":-1,\"execution_mode\":\"object_sql_v1\",\"result_schema\":[{\"key\":\"name\",\"type\":\"text\",\"kind\":\"dimension\"}],\"page_size\":1,\"next_cursor\":\"eyJ2IjoyLCJmaW5nZXJwcmludCI6IjVhYTcyYzM0ZGM2OGZlYmM0MjMxYWZhOWFiOWYwMDZlODEwMjlmY2Y5ZTFkNWNlMmMyZjg2YTAzMjY0Mzg2Y2IiLCJzb3VyY2VfdmVyc2lvbl9zaGEyNTYiOiIwOGI0NWY1ZjZjZjVjYTVjNjdjNDg0ODYwN2JkODRlMGUwZDQ0NjlmNTQ1MWQ4ODRiZmY2ODI2NzhhMTZkMTc2IiwibGFzdF9yb3dfa2V5IjoiIiwib2NjdXJyZW5jZSI6MCwiZXhlY3V0aW9uX2N1cnNvciI6ImV5SjJJam94TENKMllXeDFaWE1pT2x0N0ltdHBibVFpT2lKMFpYaDBJaXdpZG1Gc2RXVWlPaUpDWlhSaEluMHNleUpyYVc1a0lqb2lkR1Y0ZENJc0luWmhiSFZsSWpvaVkzVnpkRzl0WlhKZlkzVnpkRzl0WlhKZlluSnZkM05sY2w5Q1pYUmhJbjFkZlEiLCJwb3NpdGlvbiI6MSwiY2hlY2tzdW0iOiI2ZTc1ZTFmMmZkNWMyZGM0MDQ0ZDhiNDgzNzVlODEwMWNmZDAzMmRjNjM3MTBhOWE3MTEwZTQ5ZmVlYjQzN2Q1In0\",\"truncated\":true,\"total\":3,\"total_semantics\":\"exact\"},\"source\":{\"report_key\":\"customer_names\",\"definition_version\":\"787d85140027d608695a0b7943bbd3b6a29a9a4f4c54155536e232aa9e989463\",\"data_version\":\"08b45f5f6cf5ca5c67c4848607bd84e0e0d4469f5451d884bff682678a16d176\",\"queried_at\":\"2026-09-11T22:54:08.957527Z\",\"row_limit\":10,\"complete\":false,\"proof\":\"ae2a6f3fad6a8e1d7afdb7c25642d5d3200c19dc69d7e25c0ca71ff7bed4bb89\"}}}"
+        },
+        {
+          "name": "report_query",
+          "status": "completed",
+          "arguments": "{\"cursor\":\"eyJ2IjoyLCJmaW5nZXJwcmludCI6IjVhYTcyYzM0ZGM2OGZlYmM0MjMxYWZhOWFiOWYwMDZlODEwMjlmY2Y5ZTFkNWNlMmMyZjg2YTAzMjY0Mzg2Y2IiLCJzb3VyY2VfdmVyc2lvbl9zaGEyNTYiOiIwOGI0NWY1ZjZjZjVjYTVjNjdjNDg0ODYwN2JkODRlMGUwZDQ0NjlmNTQ1MWQ4ODRiZmY2ODI2NzhhMTZkMTc2IiwibGFzdF9yb3dfa2V5IjoiIiwib2NjdXJyZW5jZSI6MCwiZXhlY3V0aW9uX2N1cnNvciI6ImV5SjJJam94TENKMllXeDFaWE1pT2x0N0ltdHBibVFpT2lKMFpYaDBJaXdpZG1Gc2RXVWlPaUpDWlhSaEluMHNleUpyYVc1a0lqb2lkR1Y0ZENJc0luWmhiSFZsSWpvaVkzVnpkRzl0WlhKZlkzVnpkRzl0WlhKZlluSnZkM05sY2w5Q1pYUmhJbjFkZlEiLCJwb3NpdGlvbiI6MSwiY2hlY2tzdW0iOiI2ZTc1ZTFmMmZkNWMyZGM0MDQ0ZDhiNDgzNzVlODEwMWNmZDAzMmRjNjM3MTBhOWE3MTEwZTQ5ZmVlYjQzN2Q1In0\",\"operation\":\"query\",\"page_size\":1,\"report_key\":\"customer_names\"}",
+          "result_preview": "{\"operation\":\"query\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"251f7c28a49a9b3d95c12466db72cd492bc4cc27fa21bb92082f59a57d60003f\",\"result\":{\"summary\":{\"key\":\"customer_names\",\"name\":\"customer_names\",\"rows\":[{\"dimensions\":{\"name\":\"Gamma\"}}],\"row_count\":1,\"source_row_count\":-1,\"execution_mode\":\"object_sql_v1\",\"result_schema\":[{\"key\":\"name\",\"type\":\"text\",\"kind\":\"dimension\"}],\"page_size\":1,\"next_cursor\":\"eyJ2IjoyLCJmaW5nZXJwcmludCI6IjVhYTcyYzM0ZGM2OGZlYmM0MjMxYWZhOWFiOWYwMDZlODEwMjlmY2Y5ZTFkNWNlMmMyZjg2YTAzMjY0Mzg2Y2IiLCJzb3VyY2VfdmVyc2lvbl9zaGEyNTYiOiIwOGI0NWY1ZjZjZjVjYTVjNjdjNDg0ODYwN2JkODRlMGUwZDQ0NjlmNTQ1MWQ4ODRiZmY2ODI2NzhhMTZkMTc2IiwibGFzdF9yb3dfa2V5IjoiIiwib2NjdXJyZW5jZSI6MCwiZXhlY3V0aW9uX2N1cnNvciI6ImV5SjJJam94TENKMllXeDFaWE1pT2x0N0ltdHBibVFpT2lKMFpYaDBJaXdpZG1Gc2RXVWlPaUpIWVcxdFlTSjlMSHNpYTJsdVpDSTZJblJsZUhRaUxDSjJZV3gxWlNJNkltTjFjM1J2YldWeVgyTjFjM1J2YldWeVgySnliM2R6WlhKZlIyRnRiV0VpZlYxOSIsInBvc2l0aW9uIjoyLCJjaGVja3N1bSI6IjUyYzI3NzAzMDgyM2RkMGU3N2IyYmFkNjZlZjMzMjU0ODJmN2ZlOTkwNmZkYWY4NWRkZmNkYjc3OTViZjAzNDcifQ\",\"truncated\":true,\"total\":3,\"total_semantics\":\"exact\"},\"source\":{\"report_key\":\"customer_names\",\"definition_version\":\"787d85140027d608695a0b7943bbd3b6a29a9a4f4c54155536e232aa9e989463\",\"data_version\":\"08b45f5f6cf5ca5c67c4848607bd84e0e0d4469f5451d884bff682678a16d176\",\"queried_at\":\"2026-09-11T22:54:09.930768Z\",\"row_limit\":10,\"complete\":false,\"proof\":\"70364db85e5ef5ca02f1f43b315660ddadcfca23c6b2291f822a56d6525b2e39\"}}}"
+        },
+        {
+          "name": "report_query",
+          "status": "completed",
+          "arguments": "{\"cursor\":\"eyJ2IjoyLCJmaW5nZXJwcmludCI6IjVhYTcyYzM0ZGM2OGZlYmM0MjMxYWZhOWFiOWYwMDZlODEwMjlmY2Y5ZTFkNWNlMmMyZjg2YTAzMjY0Mzg2Y2IiLCJzb3VyY2VfdmVyc2lvbl9zaGEyNTYiOiIwOGI0NWY1ZjZjZjVjYTVjNjdjNDg0ODYwN2JkODRlMGUwZDQ0NjlmNTQ1MWQ4ODRiZmY2ODI2NzhhMTZkMTc2IiwibGFzdF9yb3dfa2V5IjoiIiwib2NjdXJyZW5jZSI6MCwiZXhlY3V0aW9uX2N1cnNvciI6ImV5SjJJam94TENKMllXeDFaWE1pT2x0N0ltdHBibVFpT2lKMFpYaDBJaXdpZG1Gc2RXVWlPaUpIWVcxdFlTSjlMSHNpYTJsdVpDSTZJblJsZUhRaUxDSjJZV3gxWlNJNkltTjFjM1J2YldWeVgyTjFjM1J2YldWeVgySnliM2R6WlhKZlIyRnRiV0VpZlYxOSIsInBvc2l0aW9uIjoyLCJjaGVja3N1bSI6IjUyYzI3NzAzMDgyM2RkMGU3N2IyYmFkNjZlZjMzMjU0ODJmN2ZlOTkwNmZkYWY4NWRkZmNkYjc3OTViZjAzNDcifQ\",\"operation\":\"query\",\"page_size\":1,\"report_key\":\"customer_names\"}",
+          "result_preview": "{\"operation\":\"query\",\"source_identity\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"request_sha256\":\"974bf068bae60e3d970048da1bf90837567d9b8adc968a97f2342f40618982cb\",\"result\":{\"summary\":{\"key\":\"customer_names\",\"name\":\"customer_names\",\"rows\":[{\"dimensions\":{\"name\":\"Updated Acme\"}}],\"row_count\":1,\"source_row_count\":-1,\"execution_mode\":\"object_sql_v1\",\"result_schema\":[{\"key\":\"name\",\"type\":\"text\",\"kind\":\"dimension\"}],\"page_size\":1,\"truncated\":false,\"total\":3,\"total_semantics\":\"exact\"},\"source\":{\"report_key\":\"customer_names\",\"definition_version\":\"787d85140027d608695a0b7943bbd3b6a29a9a4f4c54155536e232aa9e989463\",\"data_version\":\"08b45f5f6cf5ca5c67c4848607bd84e0e0d4469f5451d884bff682678a16d176\",\"queried_at\":\"2026-09-11T22:54:11.16038Z\",\"row_limit\":10,\"complete\":false,\"proof\":\"6a48616d8ab9347ecf2c822359cdc34cca8be07064b4980eded9420d6b2de12e\"}}}"
+        }
+      ]
+    },
+    {
+      "conversation": "conv_0c6605ef5c9188c5030cd7171221be59",
+      "id": "crun_d0f51b203790f5def366fca4918aef1f",
+      "status": "completed",
+      "calls": []
+    }
+  ],
+  "pageErrors": [],
+  "mobile": {
+    "width": 390,
+    "scroll": 390
+  },
+  "passed": true
+}

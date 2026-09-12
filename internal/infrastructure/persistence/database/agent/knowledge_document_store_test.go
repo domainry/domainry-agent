@@ -21,10 +21,19 @@ func TestKnowledgeDocumentLeaseTakeoverNeverRepeatsPutOrRevivesDeletion(t *testi
 	if err = repo.ActivateKnowledgeDocumentSource(ctx, agentsdk.KnowledgeDocumentStorageScope{RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, LibraryID: lib.ID}, source); err != nil {
 		t.Fatal(err)
 	}
-	r, err := repo.ReserveKnowledgeDocument(ctx, persistence.KnowledgeDocumentReserve{LibraryID: lib.ID, ClientID: "file", Filename: "a.txt", ContentType: "text/plain", SHA256: strings.Repeat("b", 64), Bytes: 1, SourceID: source}, a)
+	input := persistence.KnowledgeDocumentReserve{LibraryID: lib.ID, ClientID: "file", Filename: "a.txt", ContentType: "text/plain", SHA256: strings.Repeat("b", 64), Bytes: 1, SourceID: source, AccessPolicySHA256: strings.Repeat("c", 64)}
+	r, err := repo.ReserveKnowledgeDocument(ctx, input, a)
 	if err != nil {
 		t.Fatal(err)
 	}
+	requestID := r.PutRequestID
+	if requestID == "" || r.AccessPolicySHA256 != input.AccessPolicySHA256 {
+		t.Fatal("reservation omitted stable command/policy")
+	}
+	changed := input
+	changed.AccessPolicySHA256 = strings.Repeat("d", 64)
+	_, err = repo.ReserveKnowledgeDocument(ctx, changed, a)
+	requireConversationCode(t, err, "idempotency_conflict")
 	r, err = repo.CommitKnowledgeDocumentContent(ctx, r.Document.ID, r.Document.Revision, "private-ref", a)
 	if err != nil {
 		t.Fatal(err)
@@ -44,9 +53,12 @@ func TestKnowledgeDocumentLeaseTakeoverNeverRepeatsPutOrRevivesDeletion(t *testi
 	if err != nil || !found {
 		t.Fatal("takeover", err)
 	}
-	_, started, err = restarted.StartKnowledgeDocumentPut(ctx, newLease)
+	after, started, err := restarted.StartKnowledgeDocumentPut(ctx, newLease)
 	if err != nil || started {
 		t.Fatal("uncertain upload repeated", err)
+	}
+	if after.PutRequestID != requestID || after.AccessPolicySHA256 != input.AccessPolicySHA256 {
+		t.Fatal("takeover replaced logical command/policy")
 	}
 	err = restarted.ApplyKnowledgeDocumentProgress(ctx, old, persistence.KnowledgeDocumentProgress{Event: "indexed", IndexStatus: "INDEXED"})
 	requireConversationCode(t, err, "document_lease_lost")
@@ -71,6 +83,15 @@ func TestKnowledgeDocumentLeaseTakeoverNeverRepeatsPutOrRevivesDeletion(t *testi
 	requireConversationCode(t, err, "document_cleanup_unconfirmed")
 	if err = restarted.StartKnowledgeDocumentDelete(ctx, lease); err != nil {
 		t.Fatal(err)
+	}
+	err = restarted.ApplyKnowledgeDocumentProgress(ctx, lease, persistence.KnowledgeDocumentProgress{Event: "deleted"})
+	requireConversationCode(t, err, "document_cleanup_unconfirmed")
+	if err = restarted.ApplyKnowledgeDocumentProgress(ctx, lease, persistence.KnowledgeDocumentProgress{Event: "delete_acknowledged", RetryAt: now}); err != nil {
+		t.Fatal(err)
+	}
+	lease, found, err = restarted.ClaimKnowledgeDocumentWork(ctx, a.RuntimeID, "cleanup", now.Add(4*time.Minute), time.Minute)
+	if err != nil || !found {
+		t.Fatal("acknowledged cleanup claim", err)
 	}
 	if err = restarted.ApplyKnowledgeDocumentProgress(ctx, lease, persistence.KnowledgeDocumentProgress{Event: "deleted"}); err != nil {
 		t.Fatal(err)

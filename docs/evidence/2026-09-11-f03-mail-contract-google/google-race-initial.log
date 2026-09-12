@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-connectors/internal/mailcontent	1.734s
+ok  	github.com/domainry/domainry-connectors/internal/mailpaging	1.378s
+ok  	github.com/domainry/domainry-connectors/providers/google_workspace/google	1.591s

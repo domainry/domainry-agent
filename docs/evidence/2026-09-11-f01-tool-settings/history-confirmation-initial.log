@@ -1,0 +1,9 @@
+=== RUN   TestToolSettingsConfirmationAndResumeRecheckDurableChoice
+    tool_settings_confirmation_test.go:51: POST /agent/conversations/conv_73841418515dbf8b9a034ca039f988a9/runs/crun_a9677bbab1cd7dc18603b6efbc245b5a/respond: status 403, want 200, body {"code":"agent.conversation.tool_access_denied"}
+--- FAIL: TestToolSettingsConfirmationAndResumeRecheckDurableChoice (1.41s)
+=== RUN   TestToolSettingsCurrentIdentityCatalogConnectionAndRestart
+    tool_settings_test.go:210: PASS Identity/action/current catalog, Agent whitelist, actual calculation, disable/re-enable, CAS/lost response, owner input rejection, restart, permission revocation, OAuth actual grant, missing scope and account revoke
+--- PASS: TestToolSettingsCurrentIdentityCatalogConnectionAndRestart (2.28s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	4.157s
+FAIL

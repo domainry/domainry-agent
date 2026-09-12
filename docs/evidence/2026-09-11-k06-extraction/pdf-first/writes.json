@@ -1,0 +1,15 @@
+[
+  {
+    "method": "POST",
+    "doc_id": "dka_6da471f7578e1f547b3194159374fb5aee823cbb6d6460e9c5985527b11c86d6",
+    "filename": "synthetic-extraction.pdf",
+    "permission_header": "[\"scope:agent:library:bf62b6ddb8af3f27a677018e8769cb73c01b46cffe72e9d5b7a55d6dc460195b\"]",
+    "request_id": "kput_0bb42770a42e5dd62d35f6eb0efabc0759f91c5c23f36348105b8ca7af4e9287",
+    "http_status": 200
+  },
+  {
+    "method": "DELETE",
+    "doc_id": "dka_6da471f7578e1f547b3194159374fb5aee823cbb6d6460e9c5985527b11c86d6",
+    "http_status": 200
+  }
+]

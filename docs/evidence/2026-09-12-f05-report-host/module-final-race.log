@@ -1,0 +1,8 @@
+=== RUN   TestConversationReportRPCUsesRealReportOwner
+    conversation_business_reports_rpc_test.go:114: real Report v0.1.7 / SDK v0.1.6, Runtime, Identity and SQLite: local and service summary/ObjectSQL, stable pages, cursor scope, field/read revocation, undeclared input, cross-workspace rejection and complete restart
+--- PASS: TestConversationReportRPCUsesRealReportOwner (35.43s)
+=== RUN   TestConversationBusinessBrowserAndRestart
+    conversation_business_web_test.go:114: Business browser HTTP verified: conversation=conv_0158211f6a3c4be58b7cded0d1b4240a, queries=3, get=1; full restart and field/read revocation passed
+--- PASS: TestConversationBusinessBrowserAndRestart (112.75s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	150.235s

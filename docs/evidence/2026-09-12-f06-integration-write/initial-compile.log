@@ -1,0 +1,1 @@
+Initial targeted race invocation failed to compile: connection_account_writes_test.go:51:114: cannot use map[string]any as *connector.ResourceHealthReport in struct literal. Test fixture field removed; production code unchanged.

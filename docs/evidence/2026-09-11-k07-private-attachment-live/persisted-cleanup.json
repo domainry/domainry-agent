@@ -1,0 +1,16 @@
+{
+  "attachment_id": "att_cfb828883d4569e9c06ca771eacccbeb",
+  "state": "deleted",
+  "body_ref_cleared": true,
+  "index": {
+    "last_check_revision": 6,
+    "put_started": true,
+    "put_acknowledged": false,
+    "index_observed": true,
+    "delete_started": true,
+    "delete_acknowledged": true
+  },
+  "remaining_original_bins": 0,
+  "parse_cache_exists": false,
+  "inspection": "read-only SQLite query and filesystem enumeration; no Identity account data copied"
+}

@@ -1,0 +1,8 @@
+=== RUN   TestPrivateAttachmentIndexLiveHarnessProtocol
+    conversation_attachment_index_live_test.go:43: private index not ready {0x897123b0750 att_e228477e15afd92cd46b6b65077716ba conv_4d6d2de2b7ab075261adca4e08a09526 private-attachment-acceptance.md text/markdown 221 8e19c27b1dbd4ad0e0a45a92d4fa32fa280d8136607eb42abdf5dce34cbe7bc0 conversation_private failed QUEUED 6 attachment_put_unconfirmed 2026-09-11 02:52:49.177 +0000 UTC 2026-09-11 02:53:19.263 +0000 UTC}
+--- FAIL: TestPrivateAttachmentIndexLiveHarnessProtocol (120.50s)
+=== RUN   TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart
+--- PASS: TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart (1.07s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	122.613s
+FAIL

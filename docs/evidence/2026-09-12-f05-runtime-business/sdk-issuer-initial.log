@@ -1,0 +1,20 @@
+=== RUN   TestHTTPBusinessProfilePreservesAllPorts
+    businessrpc_test.go:239: 16 actual HTTP methods; current identity/tool checks each time; 64-bit JSON numbers retained; no retry; workflow accepted remains nonterminal
+--- PASS: TestHTTPBusinessProfilePreservesAllPorts (0.01s)
+=== RUN   TestCurrentPolicyAndTransportAdmission
+--- PASS: TestCurrentPolicyAndTransportAdmission (0.01s)
+=== RUN   TestCancellationAndLostWriteResponse
+=== RUN   TestCancellationAndLostWriteResponse/cancel
+=== RUN   TestCancellationAndLostWriteResponse/unknown-write
+--- PASS: TestCancellationAndLostWriteResponse (0.00s)
+    --- PASS: TestCancellationAndLostWriteResponse/cancel (0.00s)
+    --- PASS: TestCancellationAndLostWriteResponse/unknown-write (0.00s)
+=== RUN   TestRedirectAndBounds
+    businessrpc_test.go:408: protocol domainry-agent-business-host-v1 contract 38b96dc758553d733ea6e93efcd357475759166dbbe62f433ff9d5843689c0d2
+--- PASS: TestRedirectAndBounds (0.05s)
+=== RUN   TestContractAndConfigurationFailBeforeIO
+    businessrpc_test.go:414: public contract changed without compatibility review: 38b96dc758553d733ea6e93efcd357475759166dbbe62f433ff9d5843689c0d2
+--- FAIL: TestContractAndConfigurationFailBeforeIO (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent-sdk/businessrpc	0.483s
+FAIL

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -113,7 +114,7 @@ func TestBusinessActionConfirmationRestartDuplicateAndReconciliation(t *testing.
 		return (&executionModel{}).answerResult(), nil
 	}}
 	options := application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -137,7 +138,7 @@ func TestBusinessActionConfirmationRestartDuplicateAndReconciliation(t *testing.
 		t.Fatal("personal write scope authorized a business mutation")
 	}
 	service.Close()
-	service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -192,7 +193,7 @@ func TestBusinessActionRejectsApprovalAfterPermissionOrContractChanges(t *testin
 			model := &executionModel{step: func(int, agentsdk.ConversationStepRequest) (agentsdk.ConversationStepResult, error) {
 				return resultToolCall("invoke_action", "rename", businessActionCall()), nil
 			}}
-			service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})
+			service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -249,7 +250,7 @@ func TestBusinessActionInvalidPayloadFeedsBackWithoutConfirmation(t *testing.T) 
 		}
 		return (&executionModel{}).answerResult(), nil
 	}}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})
 	if err != nil {
 		t.Fatal(err)
 	}

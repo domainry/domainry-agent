@@ -1,0 +1,5 @@
+=== RUN   TestConversationGovernedReportRespectsOwnerDataScope
+    conversation_report_evidence_rpc_test.go:218: real Identity owner-scope permission, Record RLS, Report query and source validation: 3 owned versus 5 all rows (including the base fixture's Other record)
+--- PASS: TestConversationGovernedReportRespectsOwnerDataScope (28.41s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	30.573s

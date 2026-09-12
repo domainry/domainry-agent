@@ -6,7 +6,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	"github.com/domainry/domainry-agent/internal/artifact"
+	"github.com/domainry/domainry-knowledge/artifact"
 )
 
 func TestArtifactToolEffectResultAndEventCommitTogether(t *testing.T) {

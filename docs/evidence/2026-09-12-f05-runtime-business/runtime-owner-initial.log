@@ -1,0 +1,5 @@
+# github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.test]
+../domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_rpc_test.go:201:178: cannot use "RPC Created" (untyped string constant) as "encoding/json".RawMessage value in struct literal
+../domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_rpc_test.go:279:209: cannot use "Unexpected" (untyped string constant) as "encoding/json".RawMessage value in struct literal
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [build failed]
+FAIL

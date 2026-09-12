@@ -1,0 +1,56 @@
+?   	github.com/domainry/domainry-agent/capability	[no test files]
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	1.772s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-playground	[no test files]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/definition	0.435s
+ok  	github.com/domainry/domainry-agent/integration	79.849s
+ok  	github.com/domainry/domainry-agent/internal/application	0.580s
+ok  	github.com/domainry/domainry-agent/internal/architecture	1.811s
+ok  	github.com/domainry/domainry-agent/internal/artifact	1.455s
+?   	github.com/domainry/domainry-agent/internal/assembly/saas	[no test files]
+--- FAIL: TestKnowledgeDocumentTransfersIdentityHTTPProtocol (366.03s)
+    knowledge_document_transfer_live_test.go:118: Real product copy indexed; personal scope rejected by shared target, shared reader queried and downloaded
+    knowledge_document_transfer_live_test.go:118: document remained needs_reconcile/document_put_unconfirmed, wanted ready
+    knowledge_document_transfer_live_test.go:339: Transfer recovery database and ownership manifest retained: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/TestKnowledgeDocumentTransfersIdentityHTTPProtocol2801440596/001
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	400.222s
+--- FAIL: TestAgentCapabilityOwnsAllProductRoutesAndAuthoringValidation (0.05s)
+    binding_test.go:41: Agent operations=72 projections=15
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/capability	2.198s
+?   	github.com/domainry/domainry-agent/internal/composition	[no test files]
+?   	github.com/domainry/domainry-agent/internal/dataaccess	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/execution	(cached)
+ok  	github.com/domainry/domainry-agent/internal/extraction	3.154s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/artifactstorage	1.484s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/attachmentstorage	2.603s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/connectortransport	(cached)
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/documentstorage	2.807s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence	1.712s
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/base	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	3.794s
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost	3.291s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	2.809s
+--- FAIL: TestAgentOwnsOpenAPIForEveryHTTPRoute (0.00s)
+    adapter_test.go:153: Agent OpenAPI operations=72
+--- FAIL: TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest (0.01s)
+    adapter_test.go:186: actions=107 routes=22
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/transport/http/module	3.552s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/playground	4.303s
+?   	github.com/domainry/domainry-agent/internal/transport/http/web	[no test files]
+--- FAIL: TestModuleDescriptor (0.04s)
+    factory_test.go:114: Agent migrations=14
+FAIL
+FAIL	github.com/domainry/domainry-agent/module	4.640s
+ok  	github.com/domainry/domainry-agent/remote	4.958s
+--- FAIL: TestSaaSManifestOwnsEveryServiceRouteAndInjectsCurrentAction (0.00s)
+    server_test.go:90: Agent SaaS actions=94, want 93
+FAIL
+FAIL	github.com/domainry/domainry-agent/server	4.803s
+?   	github.com/domainry/domainry-agent/testsupport	[no test files]
+?   	github.com/domainry/domainry-agent/web	[no test files]
+FAIL

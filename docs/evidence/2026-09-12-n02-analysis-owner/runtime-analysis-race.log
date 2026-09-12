@@ -1,0 +1,5 @@
+=== RUN   TestReportAnalysisRealOwnerFullSQLiteAggregationAndCurrentPermissions
+    report_analysis_integration_test.go:254: real SQLite: 1203 authorized input rows, 1201 matching rows, 2 excluded tenant/owner rows; aggregation, comparison, trend, table/rules, NULL, overflow, same-time version, owner reopen and field revocation passed
+--- PASS: TestReportAnalysisRealOwnerFullSQLiteAggregationAndCurrentPermissions (1.71s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/runtime	3.605s

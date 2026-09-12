@@ -1,0 +1,102 @@
+# github.com/domainry/domainry-tools/internal/adapter/recordtools
+../domainry-agent-sdk/conversation_attachment_http.go:3:8: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/adapter/recordtools
+../domainry-agent-sdk/conversation_http.go:7:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/adapter/recordtools
+../domainry-tools-sdk/settings_http.go:5:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/adapter/recordtools
+../domainry-tools-sdk/schema/json.go:8:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+FAIL	github.com/domainry/domainry-tools/internal/adapter/recordtools [setup failed]
+# github.com/domainry/domainry-tools/internal/application/preferences
+../domainry-agent-sdk/conversation_attachment_http.go:3:8: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/application/preferences
+../domainry-tools-sdk/settings_http.go:5:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+FAIL	github.com/domainry/domainry-tools/internal/application/preferences [setup failed]
+# github.com/domainry/domainry-tools/internal/application/tool
+../domainry-agent-sdk/conversation_attachment_http.go:3:8: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/application/tool
+../domainry-tools-sdk/settings_http.go:5:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/application/tool
+../domainry-tools-sdk/schema/json.go:8:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+FAIL	github.com/domainry/domainry-tools/internal/application/tool [setup failed]
+# github.com/domainry/domainry-tools/internal/assembly/preferences
+../domainry-agent-sdk/conversation_attachment_http.go:3:8: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/assembly/preferences
+../domainry-tools-sdk/settings_http.go:5:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/assembly/preferences
+../domainry-tools-sdk/modulehost/settings.go:6:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/assembly/preferences
+../domainry-tools-sdk/modulehost/settings.go:7:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/assembly/preferences
+../domainry-tools-sdk/modulehost/settings.go:8:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/assembly/preferences
+../domainry-tools-sdk/modulehost/settings.go:9:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/assembly/preferences
+../domainry-tools/internal/infrastructure/persistence/database/preferences/store.go:17:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+FAIL	github.com/domainry/domainry-tools/internal/assembly/preferences [setup failed]
+# github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences
+../domainry-tools-sdk/modulehost/settings.go:6:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences
+../domainry-tools-sdk/modulehost/settings.go:7:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences
+../domainry-tools-sdk/modulehost/settings.go:8:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences
+../domainry-tools/internal/infrastructure/persistence/database/preferences/store.go:17:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences
+../domainry-tools-sdk/modulehost/settings.go:9:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences
+../domainry-agent-sdk/conversation_attachment_http.go:3:8: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences
+../domainry-tools-sdk/settings_http.go:5:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+FAIL	github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences [setup failed]
+# github.com/domainry/domainry-tools/internal/transport/http/preferences
+../domainry-tools-sdk/settings_http.go:5:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/transport/http/preferences
+../domainry-agent-sdk/conversation_attachment_http.go:3:8: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/transport/http/preferences
+../domainry-agent-sdk/conversation_http.go:7:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/transport/http/preferences
+../domainry-tools-sdk/modulehost/settings.go:7:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/internal/transport/http/preferences
+../domainry-tools-sdk/modulehost/settings.go:9:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+FAIL	github.com/domainry/domainry-tools/internal/transport/http/preferences [setup failed]
+# github.com/domainry/domainry-tools/module
+../domainry-tools-sdk/settings_http.go:5:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/module
+../domainry-agent-sdk/conversation_attachment_http.go:3:8: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/module
+../domainry-tools-sdk/modulehost/settings.go:6:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/module
+../domainry-tools-sdk/modulehost/settings.go:7:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/module
+../domainry-tools-sdk/modulehost/settings.go:8:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/module
+../domainry-tools-sdk/modulehost/settings.go:9:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/module
+../domainry-agent-sdk/conversation_http.go:7:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/module
+../domainry-tools-sdk/schema/json.go:8:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools/module
+../domainry-tools/internal/infrastructure/persistence/database/preferences/store.go:17:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+FAIL	github.com/domainry/domainry-tools/module [setup failed]
+# github.com/domainry/domainry-tools-sdk
+../domainry-agent-sdk/conversation_attachment_http.go:3:8: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools-sdk
+../domainry-tools-sdk/settings_http.go:5:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+FAIL	github.com/domainry/domainry-tools-sdk [setup failed]
+# github.com/domainry/domainry-tools-sdk/modulehost
+../domainry-tools-sdk/modulehost/settings.go:6:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools-sdk/modulehost
+../domainry-tools-sdk/modulehost/settings.go:7:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools-sdk/modulehost
+../domainry-tools-sdk/modulehost/settings.go:8:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+# github.com/domainry/domainry-tools-sdk/modulehost
+../domainry-tools-sdk/modulehost/settings.go:9:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+FAIL	github.com/domainry/domainry-tools-sdk/modulehost [setup failed]
+# github.com/domainry/domainry-tools-sdk/schema
+../domainry-tools-sdk/schema/json.go:8:2: github.com/domainry/domainry-identity-sdk@v0.1.105: reading github.com/domainry/domainry-identity-sdk/go.mod at revision v0.1.105: unknown revision v0.1.105
+FAIL	github.com/domainry/domainry-tools-sdk/schema [setup failed]
+?   	github.com/domainry/domainry-tools/calculation	[no test files]
+ok  	github.com/domainry/domainry-tools/internal/architecture	1.072s
+?   	github.com/domainry/domainry-tools/timeutil	[no test files]
+FAIL

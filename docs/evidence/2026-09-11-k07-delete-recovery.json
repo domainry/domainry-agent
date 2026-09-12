@@ -1,0 +1,136 @@
+{
+  "date": "2026-09-11",
+  "scope": "K07 idempotent deletion recovery; library and private attachment workers through public SDK",
+  "batch_complete": true,
+  "k07_complete": false,
+  "todo_completed": 48,
+  "todo_total": 81,
+  "real_verdent": true,
+  "real_private_fixture": true,
+  "real_verdent_attachment_product": false,
+  "real_model": false,
+  "browser_rerun": false,
+  "user_host_deployed": false,
+  "contract": {
+    "provider": "knowledge_base/http_api",
+    "revision": "1.3.0",
+    "delete_idempotency": "natural",
+    "upload_idempotency": "none",
+    "delete_contract_sha256": "e4bec5d6d992035b91bf019b55a609307dc56f401c89ef78709f74f57e8e8aa8",
+    "upstream_commit": "dbf61406e55b8a446f026cde941ce7f9a9f33bda"
+  },
+  "observations": {
+    "live_seconds": 33.76,
+    "real_deletions_sent": 2,
+    "same_immutable_target": true,
+    "first_real_receipt_dropped_before_provider": true,
+    "second_receipt_duplicate_zero_statistics": true,
+    "cleanup_verified": true,
+    "synthetic_doc_id": "domainry-agent-acceptance-20260911-a31585af5252"
+  },
+  "checks": {
+    "expanded_regressions": "pass",
+    "agent_full": "pass",
+    "sdk_full": "pass",
+    "connector_catalog": "pass",
+    "connector_release_deterministic": "pass",
+    "catalog_current": "pass",
+    "targeted_race": "pass",
+    "vet": "pass",
+    "synthetic_helper_4_tests": "pass",
+    "receipt_statistics_independently_verified": "pass"
+  },
+  "coverage": [
+    "attachment SaaS service restart and explicit status check recover the same delete, original bytes physically removed",
+    "library resumed DeleteStarted record obtains positive ACK before cleanup",
+    "failed recovery preserves original, command, and backoff",
+    "changed private policy makes zero network calls",
+    "changed physical source rejected during service binding before IO",
+    "source without optional recovery stays uncertain even when private metadata says missing",
+    "foreign owner/runtime/workspace and unauthenticated recovery rejected before IO",
+    "disabled document management and invalid target rejected before IO",
+    "cancelled context and expired lease do not dispatch recovery",
+    "official Connector makes exactly one attempt, old contract hash rejected"
+  ],
+  "remaining": [
+    "dedicated attachment KB configuration and real Identity/Module/HTTP private-attachment product acceptance",
+    "unconfirmed upload including forced termination before dispatch still needs verified source reconciliation; do not retry blindly"
+  ],
+  "files": [
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/agent-full.log",
+      "bytes": 2778,
+      "sha256": "7e1c904e0678edad088d2351b1f82a31c827a4debfcc34a9a19d9fc24e8f1d2a"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/catalog-current.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/connector-catalog.log",
+      "bytes": 148,
+      "sha256": "344b06b134527fd0698f211709b2557c8208b023d20f15224421ccd0aa39a8a9"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/connector-release.log",
+      "bytes": 156,
+      "sha256": "bd9d9b34ca3afd2d372de447f4a7d26c36d1787332f721381857e31d572cd5f7"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/expanded-final.log",
+      "bytes": 2692,
+      "sha256": "9cf968492ebad12432977d825f6e08763faa8e790b5ba1198b22aaf86f8b6602"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/expanded-initial.log",
+      "bytes": 2892,
+      "sha256": "f1693c4dd1b3554022fcf9e09507323b6f96cd090999574e4a4efe1266757e3b"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/helper.log",
+      "bytes": 102,
+      "sha256": "913c18e247d3de9be031506782674b98d8fecdfef02adb8cbeda455ac5273fca"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/live-manifest.json",
+      "bytes": 2247,
+      "sha256": "6e9cf72b4132cfea93470455b4eb10e24ee694a59ee80a8a207af3f71ac74c69"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/live.log",
+      "bytes": 1113,
+      "sha256": "248bbcd9a0bf9986069f5db140af3de0a4241c614cc518e9cef5059f2962f32e"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/race.log",
+      "bytes": 2692,
+      "sha256": "3aae57ac4ca1a40d4dd320007a9c0db01d0fff4ae9d869edcff2d4067db3f1cb"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/sdk-full.log",
+      "bytes": 540,
+      "sha256": "a77dca29fe9f1693cd9392058bbc285227506ba1b565b135a9625f12e63fe9bc"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/targeted-initial-compile.log",
+      "bytes": 687,
+      "sha256": "cc7e022423ea74737a7e4646c8b9b85e023992d64315fc89d941a235bf1a4d94"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/targeted-retry.log",
+      "bytes": 127,
+      "sha256": "a86129fdf0211933986de32b268076b942bdc6b13cabf0c0f711b9a17ad3fb4c"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/upstream-contract.json",
+      "bytes": 5855,
+      "sha256": "a5878672730f71e403b35e169e3e2bfef35a2dd0e42b69638d7dd8340e39b46e"
+    },
+    {
+      "path": "evidence/2026-09-11-k07-delete-recovery/vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

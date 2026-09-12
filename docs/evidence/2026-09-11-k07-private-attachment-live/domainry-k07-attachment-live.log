@@ -1,0 +1,5 @@
+Private attachment evidence: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-k07-attachment-live-gnder4r0
+=== RUN   TestLivePrivateAttachmentIndexIdentityHTTP
+--- PASS: TestLivePrivateAttachmentIndexIdentityHTTP (58.90s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	59.616s

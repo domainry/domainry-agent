@@ -1,0 +1,5 @@
+ok  	github.com/domainry/domainry-connector-sdk	3.137s
+ok  	github.com/domainry/domainry-connector-sdk/calendar	1.741s
+ok  	github.com/domainry/domainry-connector-sdk/contracttest	1.381s
+ok  	github.com/domainry/domainry-connector-sdk/examples/minimal	2.122s
+ok  	github.com/domainry/domainry-connector-sdk/mail	2.464s

@@ -1,0 +1,7 @@
+ok  	github.com/domainry/domainry-connector-sdk	2.077s
+ok  	github.com/domainry/domainry-connector-sdk/contracttest	1.816s
+ok  	github.com/domainry/domainry-connector-sdk/examples/minimal	2.233s
+ok  	github.com/domainry/domainry-integration/internal/domain/integration/service	2.559s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	5.402s
+ok  	github.com/domainry/domainry-connectors/providers/google_workspace/google	1.881s
+ok  	github.com/domainry/domainry-connectors/providers/microsoft_365/microsoft	2.297s

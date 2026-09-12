@@ -1,0 +1,4 @@
+=== RUN   TestExternalAccountsCurrentIdentityOwnershipAndRestart
+--- PASS: TestExternalAccountsCurrentIdentityOwnershipAndRestart (2.03s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	3.357s

@@ -1,0 +1,6 @@
+=== RUN   TestMailProductIdentityDraftSourcesAndRestart
+    mail_tools_test.go:108: GET /agent/artifacts/art_7c4bc60222aa12db48134006fe7638a2: status 503, want 403, body {"code":"agent.conversation.tool_unavailable"}
+--- FAIL: TestMailProductIdentityDraftSourcesAndRestart (5.68s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	6.160s
+FAIL

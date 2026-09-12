@@ -1,0 +1,10 @@
+ok  	github.com/domainry/domainry-integration-sdk	0.637s
+?   	github.com/domainry/domainry-integration-sdk/modulehost	[no test files]
+--- FAIL: TestRemoteBindingUsesStableRuntimeAndDeliveryIdentity (0.00s)
+    factory_test.go:69: list query=workspace_id=workspace-a&user_id=user-a
+    factory_test.go:69: list query=workspace_id=workspace-a&user_id=user-a
+    factory_test.go:164: items=[]integrationsdk.WebPushSubscription(nil) err=call Integration SaaS: Get "http://127.0.0.1:63654/integration/v1/web-push-subscriptions?workspace_id=workspace-a&user_id=user-a": EOF
+FAIL
+FAIL	github.com/domainry/domainry-integration-sdk/remote	1.204s
+?   	github.com/domainry/domainry-integration-sdk/saashost	[no test files]
+FAIL

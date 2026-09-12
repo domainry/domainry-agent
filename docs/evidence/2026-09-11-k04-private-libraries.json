@@ -1,0 +1,855 @@
+{
+  "complete": true,
+  "inflight_model_calls_after_revocation": 24,
+  "inflight_model_calls_before_revocation": 24,
+  "model": "deterministic permission probe",
+  "observations": [
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-148740163350",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-1f90b90e69a8",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "fetch",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    },
+    {
+      "kb_id": "kb-3bbd8f1d3249",
+      "operation": "search",
+      "permission_ids": [
+        "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read"
+      ],
+      "http_status": 200
+    }
+  ],
+  "passed": [
+    "personal-a-owner",
+    "personal-b-owner",
+    "b-cannot-read-a",
+    "a-cannot-read-b",
+    "shared-non-member",
+    "shared-reader",
+    "foreign-document-id",
+    "forged-permissions",
+    "host-restart",
+    "identity-revocation",
+    "identity-restored",
+    "removed-member-new-request",
+    "membership-revocation",
+    "editor-read",
+    "manager-read-and-manage",
+    "reader-cannot-manage",
+    "revoked-during-fetch"
+  ],
+  "real_identity": true,
+  "real_knowledge": true,
+  "runs": {
+    "a-cannot-read-b": "crun_5e13202162a55aaa322a41d2b6df40e8",
+    "b-cannot-read-a": "crun_508580a3a0953f011761badae6129549",
+    "foreign-document-id": "crun_edb1658d8a09e893b93417e44b126112",
+    "forged-permissions": "crun_b59209781104b202fe7e63b0cc860044",
+    "personal-a-owner": "crun_2ae0f07539a6a27f29e266cbcf7bd62b",
+    "personal-b-owner": "crun_507dcd10c9e6b0c86cf03333978b9884",
+    "removed-member-new-request": "crun_a9cf37d88cfa5204c166d198cd696103",
+    "revoked-during-fetch": "crun_e85b533de066493b69dcdaa5e3646110",
+    "shared-non-member": "crun_916aa7e05813e24157a0b6068c619e9d",
+    "shared-reader": "crun_3a319896b8478015d7d253bd1c78dfbf"
+  },
+  "cleanup": [
+    {
+      "role": "personal-a-first",
+      "kb_id": "kb-148740163350",
+      "doc_id": "domainry-agent-acceptance-20260910-94e4082c8838",
+      "marker": "QINGHE-023BD804C4EA",
+      "permission_id": "scope:domainry-k01:d554453a34074d12af61c9b59308de72:library:read",
+      "delete_acknowledged": true,
+      "cleanup_verified": true,
+      "search_http_status": 200,
+      "search_err_code": 0,
+      "hits_count": 0,
+      "deleted_document_found": false
+    },
+    {
+      "role": "personal-a-final",
+      "kb_id": "kb-148740163350",
+      "doc_id": "domainry-agent-acceptance-20260910-293eca9788e1",
+      "marker": "QINGHE-6B1AC43B052A",
+      "permission_id": "scope:domainry-k01:94375bac3905423b802804f38bb37860:library:read",
+      "delete_acknowledged": true,
+      "cleanup_verified": true,
+      "search_http_status": 200,
+      "search_err_code": 0,
+      "hits_count": 0,
+      "deleted_document_found": false
+    },
+    {
+      "role": "personal-b",
+      "kb_id": "kb-1f90b90e69a8",
+      "doc_id": "domainry-agent-acceptance-20260910-05fdb82c7cf6",
+      "marker": "QINGHE-FA3EE4B5180A",
+      "permission_id": "scope:domainry-k01:df6e427bf44747328059e97da9abbf66:library:read",
+      "delete_acknowledged": true,
+      "cleanup_verified": true,
+      "search_http_status": 200,
+      "search_err_code": 0,
+      "hits_count": 0,
+      "deleted_document_found": false
+    },
+    {
+      "role": "shared",
+      "kb_id": "kb-3bbd8f1d3249",
+      "doc_id": "domainry-agent-acceptance-20260910-b35721a17de8",
+      "marker": "QINGHE-909BDD390E5C",
+      "permission_id": "scope:domainry-k01:a2dcece8ace2464ba2720e4369e1b0b5:library:read",
+      "delete_acknowledged": true,
+      "cleanup_verified": true,
+      "search_http_status": 200,
+      "search_err_code": 0,
+      "hits_count": 1,
+      "deleted_document_found": false
+    }
+  ]
+}

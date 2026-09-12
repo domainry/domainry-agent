@@ -1,0 +1,63 @@
+?   	github.com/domainry/domainry-agent/capability	[no test files]
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	1.414s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-playground	[no test files]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/definition	(cached)
+ok  	github.com/domainry/domainry-agent/integration	79.421s
+ok  	github.com/domainry/domainry-agent/internal/application	0.665s
+ok  	github.com/domainry/domainry-agent/internal/architecture	1.442s
+?   	github.com/domainry/domainry-agent/internal/assembly/saas	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	74.530s
+ok  	github.com/domainry/domainry-agent/internal/capability	(cached)
+?   	github.com/domainry/domainry-agent/internal/composition	[no test files]
+?   	github.com/domainry/domainry-agent/internal/dataaccess	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/execution	(cached)
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence	(cached)
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/base	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	(cached)
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost	(cached)
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	(cached)
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	1.639s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/playground	(cached)
+?   	github.com/domainry/domainry-agent/internal/transport/http/web	[no test files]
+ok  	github.com/domainry/domainry-agent/module	1.614s
+ok  	github.com/domainry/domainry-agent/remote	(cached)
+ok  	github.com/domainry/domainry-agent/server	(cached)
+?   	github.com/domainry/domainry-agent/testsupport	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/producttest	[no test files]
+?   	github.com/domainry/domainry-agent/web	[no test files]
+?   	github.com/domainry/domainry-agent/webhost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk	(cached)
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	(cached)
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+ok  	github.com/domainry/domainry-tools	(cached)
+?   	github.com/domainry/domainry-tools/calculation	[no test files]
+?   	github.com/domainry/domainry-tools/records	[no test files]
+?   	github.com/domainry/domainry-tools/schema	[no test files]
+?   	github.com/domainry/domainry-tools/timeutil	[no test files]
+?   	github.com/domainry/domainry-tools-sdk	[no test files]
+?   	github.com/domainry/domainry-tools-sdk/schema	[no test files]
+ok  	github.com/domainry/domainry-todo	(cached)
+?   	github.com/domainry/domainry-todo/contract	[no test files]
+?   	github.com/domainry/domainry-knowledge/application	[no test files]
+ok  	github.com/domainry/domainry-knowledge/artifact	(cached)
+ok  	github.com/domainry/domainry-knowledge/extraction	(cached)
+ok  	github.com/domainry/domainry-knowledge/provider	(cached)
+ok  	github.com/domainry/domainry-knowledge/records	(cached)
+ok  	github.com/domainry/domainry-knowledge/storage/artifacts	(cached)
+ok  	github.com/domainry/domainry-knowledge/storage/attachments	(cached)
+ok  	github.com/domainry/domainry-knowledge/storage/documents	(cached)
+ok  	github.com/domainry/domainry-knowledge/store	(cached)
+ok  	github.com/domainry/domainry-knowledge/transport	(cached)
+ok  	github.com/domainry/domainry-pm	2.922s
+?   	github.com/domainry/domainry-pm/cmd/domainry-pm	[no test files]
+ok  	github.com/domainry/domainry-work	3.349s
+?   	github.com/domainry/domainry-work/cmd/domainry-work	[no test files]

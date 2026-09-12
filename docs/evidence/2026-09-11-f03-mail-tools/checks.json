@@ -1,0 +1,8 @@
+{
+  "gofmt": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "tools_git_check": "not applicable: directory has no Git metadata",
+  "calendar_public_definitions_source_sha256": "c345c4a2f4a5786dd142b00f0f2a335c530efe2dbda6ed37e552bc7e8b4ee360"
+}

@@ -1,0 +1,17 @@
+=== RUN   TestCalendarReadOAuthHTTPModuleSaaSAndRestart
+=== RUN   TestCalendarReadOAuthHTTPModuleSaaSAndRestart/google/module
+    calendar_read_flow_test.go:295: /read got 400 want 200: {"code":"backend.integration.connection_account_failed"}
+=== RUN   TestCalendarReadOAuthHTTPModuleSaaSAndRestart/google/saas
+    calendar_read_flow_test.go:295: /read got 400 want 200: {"code":"backend.integration.connection_account_failed"}
+=== RUN   TestCalendarReadOAuthHTTPModuleSaaSAndRestart/microsoft/module
+    calendar_read_flow_test.go:295: /read got 400 want 200: {"code":"backend.integration.connection_account_failed"}
+=== RUN   TestCalendarReadOAuthHTTPModuleSaaSAndRestart/microsoft/saas
+    calendar_read_flow_test.go:295: /read got 400 want 200: {"code":"backend.integration.connection_account_failed"}
+--- FAIL: TestCalendarReadOAuthHTTPModuleSaaSAndRestart (13.65s)
+    --- FAIL: TestCalendarReadOAuthHTTPModuleSaaSAndRestart/google/module (3.29s)
+    --- FAIL: TestCalendarReadOAuthHTTPModuleSaaSAndRestart/google/saas (4.12s)
+    --- FAIL: TestCalendarReadOAuthHTTPModuleSaaSAndRestart/microsoft/module (2.21s)
+    --- FAIL: TestCalendarReadOAuthHTTPModuleSaaSAndRestart/microsoft/saas (4.03s)
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/assembly/saas	14.249s
+FAIL

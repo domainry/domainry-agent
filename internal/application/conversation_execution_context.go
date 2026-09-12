@@ -65,7 +65,7 @@ func (s *ConversationService) compactConversationExecution(ctx context.Context, 
 			if message.Role != "tool" || message.ResultReference == nil || len(message.Content) <= limit {
 				continue
 			}
-			result, err := s.authorizedConversationResult(ctx, *message.ResultReference, claim.Authority, current, map[string]bool{})
+			result, err := s.authorizedConversationResult(ctx, *message.ResultReference, claim.Authority, current, map[string]bool{}, claim.Run.ConversationID)
 			if err != nil {
 				return in, err
 			}

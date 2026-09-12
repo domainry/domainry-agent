@@ -19,14 +19,15 @@ import (
 const maxRequestBytes = 2 << 20
 
 type Config struct {
-	APIKey                string
-	Conversations         agentsdk.ConversationService
-	ConversationRuntimeID string
-	Runner                agentsdk.TaskRunner
-	Interactive           agentsdk.InteractiveRunner
-	DialogState           agentsdk.AgentDialogStateService
-	Repositories          agentpersistence.Binding
-	Lifecycle             agentpersistence.AgentLifecycleRepository
+	APIKey                  string
+	Conversations           agentsdk.ConversationService
+	ConversationRuntimeID   string
+	ConversationWorkspaceID string // optional fixed scope of a standalone deployment
+	Runner                  agentsdk.TaskRunner
+	Interactive             agentsdk.InteractiveRunner
+	DialogState             agentsdk.AgentDialogStateService
+	Repositories            agentpersistence.Binding
+	Lifecycle               agentpersistence.AgentLifecycleRepository
 }
 type Server struct {
 	config  Config

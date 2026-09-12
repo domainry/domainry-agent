@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -131,7 +132,7 @@ func TestExecutionReferencesSurviveTurnsSummariesAndServiceRestart(t *testing.T)
 		return agentsdk.ConversationStepResult{}, fmt.Errorf("unexpected tool")
 	}
 	options := application.ConversationOptions{ToolHost: host, ContextBytes: 20000, SummaryBytes: 512, Poll: 5 * time.Millisecond}
-	service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -166,7 +167,7 @@ func TestExecutionReferencesSurviveTurnsSummariesAndServiceRestart(t *testing.T)
 		t.Fatal("test did not replace the summary repeatedly")
 	}
 	service.Close()
-	service, err = application.NewConversationService(repo, model, conversationAuthority().RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -199,7 +200,7 @@ func TestExecutionReadPaginationIsolationAndRevocation(t *testing.T) {
 				return executionAnswer("已提交。"), nil
 			}
 			options := application.ConversationOptions{ToolHost: host, Poll: 5 * time.Millisecond}
-			service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, options)
+			service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -297,7 +298,7 @@ func TestExecutionReadPaginationIsolationAndRevocation(t *testing.T) {
 				}
 				return executionAnswer("已查看记录。"), nil
 			}
-			service, err = application.NewConversationService(repo, model, conversationAuthority().RuntimeID, options)
+			service, err = conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -318,7 +319,7 @@ func TestExecutionReadPaginationIsolationAndRevocation(t *testing.T) {
 				host.mu.Lock()
 				host.allowed = false
 				host.mu.Unlock()
-				service, err = application.NewConversationService(repo, model, conversationAuthority().RuntimeID, options)
+				service, err = conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -363,7 +364,7 @@ func TestExecutionReadPaginationIsolationAndRevocation(t *testing.T) {
 					}
 					return executionAnswer("原工具权限已撤销。"), nil
 				}
-				service, err = application.NewConversationService(repo, model, conversationAuthority().RuntimeID, options)
+				service, err = conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
 				if err != nil {
 					t.Fatal(err)
 				}

@@ -1,0 +1,15 @@
+[
+  {
+    "method": "POST",
+    "doc_id": "dka_575cb1ef68afee167818aa81a06ad96ea58e29af72c467ec35043a1d98bf530b",
+    "filename": "synthetic-extraction.xlsx",
+    "permission_header": "[\"scope:agent:library:d095c5b8636f37c7ade85e33e9a3b291e71a84384ec9c369d14294a5c1cc93c7\"]",
+    "request_id": "kput_be6bfdd9f3b3bb58d4fcba6d058edd72a7adbb24a0cc485e877b8e5821b18122",
+    "http_status": 200
+  },
+  {
+    "method": "DELETE",
+    "doc_id": "dka_575cb1ef68afee167818aa81a06ad96ea58e29af72c467ec35043a1d98bf530b",
+    "http_status": 200
+  }
+]

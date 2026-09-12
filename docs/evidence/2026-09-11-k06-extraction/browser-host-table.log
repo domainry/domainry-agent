@@ -1,0 +1,5 @@
+=== RUN   TestKnowledgeExtractionBrowserAcceptance
+    knowledge_documents_test.go:381: Temporary browser acceptance ready at http://127.0.0.1:8092
+--- PASS: TestKnowledgeExtractionBrowserAcceptance (59.32s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	60.007s

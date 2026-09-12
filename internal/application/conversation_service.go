@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	knowledge "github.com/domainry/domainry-knowledge/contract"
 	"log/slog"
 	"strings"
 	"sync"
@@ -15,16 +16,35 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
+	"github.com/domainry/domainry-agent/definition"
 	"github.com/domainry/domainry-agent/internal/execution"
+	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
 
 type ConversationOptions struct {
+	KnowledgeFactory knowledge.Factory
+	Agent            *agentsdk.AgentSchema
+	Skills           []agentsdk.SkillSchema
+	// ToolDefinitions declares optional product-owned registrations for profile validation.
+	ToolDefinitions []agentsdk.ConversationToolDefinition
+	// AssembleTools attaches product tool implementations before workers start.
+	// Its base also offers ConversationConfirmationVerifier. Capture that port
+	// before adding wrappers when an extension requires durable exact approval.
+	AssembleTools func(agentsdk.ConversationToolHost) (agentsdk.ConversationToolHost, error)
+	// BindToolPolicy receives the final Agent/Skill selection before availability
+	// filtering and before workers start. Deployment owns the resulting policy;
+	// the engine does not depend on a settings implementation or its database.
+	BindToolPolicy func(toolsdk.Catalog, toolsdk.Availability) (toolsdk.Availability, error)
+
+	ExecutionAuthorizer                                       agentsdk.ConversationExecutionAuthorizer
 	DocumentStorage                                           agentsdk.KnowledgeDocumentStorage
 	DocumentPoll                                              time.Duration
 	LibraryKnowledge                                          []LibraryKnowledgeBinding
+	KnowledgeDatasources                                      agentsdk.KnowledgeDatasourceCatalog
 	LibraryAuthorizer                                         agentsdk.KnowledgeLibraryAuthorizer
 	AttachmentStorage                                         agentsdk.ConversationAttachmentStorage
 	AttachmentAuthorizer                                      agentsdk.ConversationAttachmentAuthorizer
+	AttachmentKnowledge                                       []agentsdk.ConversationAttachmentKnowledgeBinding
 	Business                                                  agentsdk.ConversationBusinessSource
 	ArtifactStorage                                           agentsdk.ConversationArtifactStorage
 	ArtifactExportTTL                                         time.Duration
@@ -41,54 +61,41 @@ type ConversationOptions struct {
 }
 
 type conversationActive struct {
-	cancel context.CancelFunc
-	fence  int64
+	cancel  context.CancelFunc
+	fence   int64
+	attempt int
 }
 type ConversationService struct {
-	repo             agentpersistence.ConversationRepository
-	model            agentsdk.ConversationModel
-	runtimeID, owner string
-	options          ConversationOptions
-	wake             chan struct{}
-	attachmentWake   chan struct{}
-	documentWake     chan struct{}
-	cancel           context.CancelFunc
-	lifetime         context.Context
-	wg               sync.WaitGroup
-	mu               sync.Mutex
-	active           map[string]conversationActive
+	profile             *definition.Profile
+	knowledgeOnce       sync.Once
+	knowledgeModule     knowledge.Service
+	repo                agentpersistence.ConversationRepository
+	model               agentsdk.ConversationModel
+	runtimeID, owner    string
+	options             ConversationOptions
+	wake                chan struct{}
+	attachmentWake      chan struct{}
+	attachmentIndexWake chan struct{}
+	documentWake        chan struct{}
+	cancel              context.CancelFunc
+	lifetime            context.Context
+	wg                  sync.WaitGroup
+	mu                  sync.Mutex
+	active              map[string]conversationActive
 }
 
 func NewConversationService(repo agentpersistence.ConversationRepository, model agentsdk.ConversationModel, runtimeID string, options ConversationOptions) (*ConversationService, error) {
 	if repo == nil || strings.TrimSpace(runtimeID) == "" || len(runtimeID) > 255 {
 		return nil, fmt.Errorf("conversation repository and runtime identity are required")
 	}
-	if options.LibraryAuthorizer != nil {
-		if _, ok := repo.(agentpersistence.KnowledgeLibraryRepository); !ok {
-			return nil, fmt.Errorf("knowledge library authorization requires library persistence")
-		}
+	if options.ExecutionAuthorizer == nil {
+		options.ExecutionAuthorizer, _ = options.PersonalAuthorizer.(agentsdk.ConversationExecutionAuthorizer)
 	}
-	if options.AttachmentStorage != nil {
-		if _, ok := repo.(agentpersistence.ConversationAttachmentRepository); !ok || options.AttachmentAuthorizer == nil {
-			return nil, fmt.Errorf("attachment storage requires attachment persistence and current authorization")
-		}
+	if options.ExecutionAuthorizer == nil {
+		options.ExecutionAuthorizer, _ = options.ToolHost.(agentsdk.ConversationExecutionAuthorizer)
 	}
-	if options.DocumentStorage != nil {
-		if _, ok := repo.(agentpersistence.KnowledgeDocumentRepository); !ok || options.LibraryAuthorizer == nil {
-			return nil, fmt.Errorf("document storage requires document persistence and library authorization")
-		}
-	}
-	if options.DocumentPoll == 0 {
-		options.DocumentPoll = 2 * time.Second
-	}
-	if options.DocumentPoll < 10*time.Millisecond || options.DocumentPoll > time.Minute {
-		return nil, fmt.Errorf("invalid document polling interval")
-	}
-	if options.ArtifactExportTTL == 0 {
-		options.ArtifactExportTTL = time.Hour
-	}
-	if options.ArtifactExportTTL < time.Second || options.ArtifactExportTTL > 24*time.Hour || options.ArtifactExportTTL%time.Second != 0 {
-		return nil, fmt.Errorf("invalid artifact export lifetime")
+	if err := validateAttachmentKnowledge(repo, &options); err != nil {
+		return nil, err
 	}
 	if options.ContextBytes == 0 {
 		options.ContextBytes = 65536
@@ -145,23 +152,17 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	} else if options.ToolAvailability != nil {
 		return nil, fmt.Errorf("conversation tool availability requires a tool host")
 	}
-	if documents, ok := repo.(agentpersistence.KnowledgeDocumentRepository); ok && options.Knowledge != nil {
-		if source, ok := options.Knowledge.(agentsdk.ManagedKnowledgeDocumentSource); ok {
-			if _, ok := options.Knowledge.(agentsdk.ConversationKnowledgeSource); !ok {
-				return nil, fmt.Errorf("managed document source requires knowledge revalidation")
-			}
-			options.Knowledge = &documentGuardedKnowledge{base: options.Knowledge, source: source, repo: documents}
-		}
-	}
-	if len(options.LibraryKnowledge) > 0 {
+	if len(options.LibraryKnowledge) > 0 || options.KnowledgeDatasources != nil {
 		if options.ToolHost == nil {
 			return nil, fmt.Errorf("library knowledge retrieval requires a tool-capable conversation host")
 		}
-		source, err := newLibraryKnowledgeSource(repo, runtimeID, options.LibraryAuthorizer, options.LibraryKnowledge, options.Knowledge)
+	}
+	if options.KnowledgeFactory != nil {
+		prepared, err := options.KnowledgeFactory.Prepare(repo, runtimeID, knowledgeOptions(options))
 		if err != nil {
 			return nil, err
 		}
-		options.Knowledge = source
+		options.Knowledge = prepared
 	}
 	var personalHost *PersonalConversationHost
 	if personal, ok := options.ToolHost.(*PersonalConversationHost); ok {
@@ -192,12 +193,26 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 		if options.KnowledgeBytes < 256 || options.KnowledgeBytes+options.MaxInputBytes+options.SummaryBytes+2048 >= options.ContextBytes {
 			return nil, fmt.Errorf("invalid conversation knowledge budget")
 		}
-		if options.ToolHost != nil {
-			source, ok := options.Knowledge.(agentsdk.ConversationKnowledgeSource)
-			if !ok || options.PersonalAuthorizer == nil {
-				return nil, fmt.Errorf("knowledge tools require a revalidating knowledge source and a host authorizer")
-			}
-			options.ToolHost = &knowledgeConversationHost{base: options.ToolHost, authorizer: options.PersonalAuthorizer, source: source, repo: repo}
+	}
+	if options.ToolHost != nil && options.Knowledge != nil {
+		source, ok := options.Knowledge.(agentsdk.ConversationKnowledgeSource)
+		if options.PersonalAuthorizer == nil || options.Knowledge != nil && !ok {
+			return nil, fmt.Errorf("knowledge tools require a revalidating knowledge source and a host authorizer")
+		}
+		if _, ok := repo.(agentpersistence.ConversationSourceRepository); !ok {
+			return nil, fmt.Errorf("knowledge conversations require source access persistence")
+		}
+		options.ToolHost = &knowledgeConversationHost{base: options.ToolHost, authorizer: options.PersonalAuthorizer, source: source, repo: repo}
+	}
+	if options.ToolHost != nil && len(options.AttachmentKnowledge) > 0 {
+		if options.PersonalAuthorizer == nil {
+			return nil, fmt.Errorf("attachment tools require current action authorization")
+		}
+		if _, ok := repo.(agentpersistence.ConversationSourceRepository); !ok {
+			return nil, fmt.Errorf("attachment tools require source access persistence")
+		}
+		if _, ok := repo.(agentpersistence.ConversationAttachmentKnowledgeRepository); !ok {
+			return nil, fmt.Errorf("attachment tools require scoped metadata persistence")
 		}
 	}
 	if options.ContextBytes < 4096 || options.MaxInputBytes < 1 || options.MaxOutputBytes < 1 || options.SummaryBytes < 256 || options.MaxInputBytes+options.SummaryBytes+1024 >= options.ContextBytes || options.Workers < 1 || options.Workers > 32 || options.Lease < 300*time.Millisecond || options.Poll <= 0 || options.RunTimeout <= 0 {
@@ -212,19 +227,31 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	}
 	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, wake: make(chan struct{}, options.Workers), attachmentWake: make(chan struct{}, 1), active: map[string]conversationActive{}}
 	s.documentWake = make(chan struct{}, 1)
+	s.attachmentIndexWake = make(chan struct{}, 1)
 	if personalHost != nil {
 		personalHost.artifacts = s
+	}
+	if options.ToolHost != nil && len(options.AttachmentKnowledge) > 0 {
+		s.options.ToolHost = &attachmentKnowledgeHost{base: options.ToolHost, service: s}
+	}
+	if err := s.configureProfile(); err != nil {
+		return nil, err
+	}
+	if s.options.ToolHost != nil && s.options.BindToolPolicy != nil {
+		policy, err := s.options.BindToolPolicy(s.options.ToolHost, s.options.ToolAvailability)
+		if err != nil {
+			return nil, err
+		}
+		if policy == nil {
+			return nil, fmt.Errorf("bound tool policy is required")
+		}
+		s.options.ToolAvailability = policy
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	s.cancel = cancel
 	s.lifetime = ctx
-	if options.DocumentStorage != nil {
-		s.wg.Add(1)
-		go s.knowledgeDocumentWorker(ctx, repo.(agentpersistence.KnowledgeDocumentRepository))
-	}
-	if options.AttachmentStorage != nil {
-		s.wg.Add(1)
-		go s.cleanupAttachments(ctx, repo.(agentpersistence.ConversationAttachmentRepository))
+	if options.AttachmentStorage != nil || options.DocumentStorage != nil {
+		s.knowledgeService().Start(ctx)
 	}
 	if interactions, ok := repo.(agentpersistence.ConversationInteractionRepository); ok {
 		s.wg.Add(1)
@@ -238,7 +265,13 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	}
 	return s, nil
 }
-func (s *ConversationService) Close() { s.cancel(); s.wg.Wait() }
+func (s *ConversationService) Close() {
+	s.cancel()
+	s.wg.Wait()
+	if s.knowledgeModule != nil {
+		s.knowledgeModule.Close()
+	}
+}
 
 func (s *ConversationService) ConversationReady(ctx context.Context) error {
 	if s.model == nil {
@@ -349,6 +382,9 @@ func (s *ConversationService) Send(ctx context.Context, id string, in agentsdk.C
 	if s.model == nil {
 		return agentsdk.ConversationRun{}, conversationFailure("unavailable", "model_not_configured")
 	}
+	if err := s.authorizeConversationExecution(ctx, id, "", "send", a); err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
 	out, err := s.repo.Enqueue(ctx, id, in, a)
 	if err == nil {
 		s.signal()
@@ -370,7 +406,7 @@ func (s *ConversationService) Messages(ctx context.Context, id string, in agents
 	if _, ok := s.repo.(agentpersistence.ConversationSourceRepository); ok {
 		ctx, cancel := s.sourceAccessContext(ctx)
 		defer cancel()
-		audit := s.sourceAudit(a)
+		audit := s.sourceAudit(a, id)
 		for i, message := range out.Items {
 			out.Items[i].Citations = nil
 			if message.Role != "assistant" || message.RunID == "" {
@@ -414,7 +450,7 @@ func (s *ConversationService) Events(ctx context.Context, id, run string, after 
 	if _, ok := s.repo.(agentpersistence.ConversationSourceRepository); ok {
 		ctx, cancel := s.sourceAccessContext(ctx)
 		defer cancel()
-		if _, err := s.sourceAudit(a).run(ctx, agentsdk.ConversationRunReference{ConversationID: id, RunID: run}); err != nil {
+		if _, err := s.sourceAudit(a, id).run(ctx, agentsdk.ConversationRunReference{ConversationID: id, RunID: run}); err != nil {
 			return agentsdk.ConversationEventPage{}, conversationFailure("forbidden", sourceAccessCode(err))
 		}
 	}
@@ -427,7 +463,7 @@ func (s *ConversationService) Cancel(ctx context.Context, id, run string, a agen
 	out, err := s.repo.Cancel(ctx, id, run, a)
 	if err == nil {
 		s.mu.Lock()
-		if active, ok := s.active[run]; ok {
+		if active, ok := s.active[run]; ok && out.Status == "cancelled" && active.attempt == out.Attempt {
 			active.cancel()
 		}
 		s.mu.Unlock()
@@ -443,6 +479,9 @@ func (s *ConversationService) Resume(ctx context.Context, id, run string, a agen
 	}
 	if s.model == nil {
 		return agentsdk.ConversationRun{}, conversationFailure("unavailable", "model_not_configured")
+	}
+	if err := s.authorizeConversationExecution(ctx, id, run, "resume", a); err != nil {
+		return agentsdk.ConversationRun{}, err
 	}
 	out, err := s.repo.Resume(ctx, id, run, a)
 	if err == nil {
@@ -500,7 +539,7 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 	defer cancel()
 	// Keys are generated globally, while storage still fences every scoped write.
 	s.mu.Lock()
-	s.active[claim.Run.ID] = conversationActive{cancel: cancel, fence: claim.Fence}
+	s.active[claim.Run.ID] = conversationActive{cancel: cancel, fence: claim.Fence, attempt: claim.Run.Attempt}
 	s.mu.Unlock()
 	defer func() {
 		s.mu.Lock()
@@ -528,7 +567,12 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 		}
 	}()
 	defer func() { cancel(); <-heartbeatDone }()
-	input, found, err := s.repo.ModelInput(ctx, claim, nil)
+	var input agentsdk.ConversationModelRequest
+	found := false
+	err := s.authorizeConversationClaim(ctx, claim, "execute")
+	if err == nil {
+		input, found, err = s.repo.ModelInput(ctx, claim, nil)
+	}
 	if err == nil && !found {
 		input, err = s.buildConversationContext(ctx, claim)
 		if err == nil {
@@ -539,7 +583,7 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 		if found {
 			err = s.checkRunSources(ctx, agentsdk.ConversationRunReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID}, claim.Authority)
 		} else {
-			_, err = s.sourceAudit(claim.Authority).sources(ctx, input.Sources)
+			_, err = s.sourceAudit(claim.Authority, claim.Run.ConversationID).sources(ctx, input.Sources)
 		}
 	}
 	if err == nil && conversationContextSize(input.Messages) > s.options.ContextBytes {
@@ -570,6 +614,11 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 	if parent.Err() != nil {
 		return
 	} // release by lease expiry after graceful shutdown
+	if code == "" {
+		if err := s.authorizeConversationClaim(ctx, claim, "commit"); err != nil {
+			code = conversationModelFailureCode(err, "execution_authorization_unavailable")
+		}
+	}
 	if ctx.Err() != nil {
 		code = "execution_interrupted"
 	}
@@ -593,6 +642,8 @@ func conversationModelFailureCode(err error, fallback string) string {
 	if errors.As(err, &failure) {
 		code := strings.TrimPrefix(failure.Code, "agent.conversation.")
 		switch code {
+		case "execution_access_denied", "execution_authorization_unavailable":
+			return code
 		case "source_access_unavailable", "source_reference_invalid", "source_read_unavailable", "source_limit_exceeded", "source_snapshot_changed":
 			return code
 		case "model_changed", "execution_limit", "execution_context_exceeded", "tool_catalog_invalid", "tool_access_denied", "tool_unavailable", "tool_availability_failed", "tool_changed", "tool_confirmation_required", "tool_result_uncertain", "tool_result_invalid", "interaction_unavailable", "interaction_closed", "interaction_expired", "interaction_access_denied", "question_must_be_separate":

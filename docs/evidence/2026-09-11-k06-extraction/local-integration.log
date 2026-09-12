@@ -1,0 +1,38 @@
+=== RUN   TestLocalSpreadsheetConversationAuthorizationAndRestart
+=== RUN   TestLocalSpreadsheetConversationAuthorizationAndRestart/restart
+=== RUN   TestLocalSpreadsheetConversationAuthorizationAndRestart/revoke_during_parse
+=== RUN   TestLocalSpreadsheetConversationAuthorizationAndRestart/delete_during_parse
+--- PASS: TestLocalSpreadsheetConversationAuthorizationAndRestart (0.25s)
+    --- PASS: TestLocalSpreadsheetConversationAuthorizationAndRestart/restart (0.13s)
+    --- PASS: TestLocalSpreadsheetConversationAuthorizationAndRestart/revoke_during_parse (0.06s)
+    --- PASS: TestLocalSpreadsheetConversationAuthorizationAndRestart/delete_during_parse (0.06s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	1.256s
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/quote
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/offset
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/citation
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/location
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/value
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/complete
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/schema
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/source
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/citation-location
+--- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource (0.01s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/quote (0.00s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/offset (0.00s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/citation (0.00s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/location (0.00s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/value (0.00s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/complete (0.00s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/schema (0.00s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/source (0.00s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/citation-location (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.358s
+=== RUN   TestActualXLSXOriginalPreservesValuesAndCellLocations
+--- PASS: TestActualXLSXOriginalPreservesValuesAndCellLocations (0.00s)
+=== RUN   TestParserRejectsHostileFilesAndCancellation
+--- PASS: TestParserRejectsHostileFilesAndCancellation (0.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/documentparser	0.673s

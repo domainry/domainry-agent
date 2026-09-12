@@ -10,6 +10,9 @@ import (
 )
 
 func (s *ConversationService) generateConversationReply(ctx context.Context, claim agentpersistence.ConversationClaim, input agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
+	if err := s.authorizeConversationClaim(ctx, claim, "model"); err != nil {
+		return agentsdk.ConversationModelResult{}, err
+	}
 	streamer, ok := s.model.(agentsdk.ConversationStreamingModel)
 	if !ok {
 		return s.model.GenerateConversation(ctx, input)

@@ -1,0 +1,14 @@
+import { build } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { cpSync, mkdirSync } from 'node:fs';
+const shared=dirname(fileURLToPath(import.meta.url));
+const root=resolve(process.argv[2]||process.cwd());
+const name=process.argv[3];
+if(!name)throw new Error('Product name is required');
+const target=resolve(root,'dist');
+await build({root,configFile:false,plugins:[react(),tailwindcss()],define:{'import.meta.env.VITE_PRODUCT_NAME':JSON.stringify(name)},resolve:{alias:{'@':resolve(shared,'src')}},worker:{format:'es'},build:{outDir:target,emptyOutDir:true,rollupOptions:{input:{main:resolve(root,'index.html'),callback:resolve(root,'oauth-callback.html')}}}});
+const pdf=resolve(target,'file-viewer/pdfjs');mkdirSync(pdf,{recursive:true});
+for(const file of ['cmaps','standard_fonts','wasm','LICENSE'])cpSync(resolve(shared,'node_modules/pdfjs-dist',file),resolve(pdf,file),{recursive:true});

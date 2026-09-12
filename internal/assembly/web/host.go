@@ -11,92 +11,143 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
-	"github.com/domainry/domainry-agent/internal/infrastructure/artifactstorage"
-	"github.com/domainry/domainry-agent/internal/infrastructure/attachmentstorage"
-	"github.com/domainry/domainry-agent/internal/infrastructure/documentstorage"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/base"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	identitymodule "github.com/domainry/domainry-identity/module"
-	"golang.org/x/sys/unix"
-	_ "modernc.org/sqlite"
+	integrationsdk "github.com/domainry/domainry-integration-sdk"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
+	"github.com/domainry/domainry-orm/driver"
+	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
 
 type Options struct {
-	DatabasePath, RuntimeID, WorkspaceID, ApplicationKey string
-	Agent                                                agentmodule.Options
-	Identity                                             identitymodule.Options
-	ExternalIdentity                                     identitysdk.ExternalDatabaseFactory
-	ExternalRoles                                        []identitysdk.ProjectRoleDefinition
-	KnowledgePermissions                                 map[string]string // local permission name -> upstream permission ID
+	CalendarTools, MailTools, WebTools                       bool
+	CalendarWriteTools, MailWriteTools                       bool
+	ReportTools                                              bool
+	AnalysisTools                                            bool
+	WebConnectionKey                                         string
+	ToolAccountRequirements                                  map[string][]ToolAccountRequirement
+	DatabaseDriver, DatabaseDSN, DatabaseSchema, StoragePath string
+	ToolDefinitions                                          []agentsdk.ConversationToolDefinition
+	Prepare                                                  func(context.Context, *Host) error
+	DatabasePath, RuntimeID, WorkspaceID, ApplicationKey     string
+	Agent                                                    agentmodule.Options
+	Identity                                                 identitymodule.Options
+	// IdentityBinding borrows an already scoped Identity owner. The caller keeps
+	// its lifecycle and permission-publication ownership; this host only consumes it.
+	IdentityBinding      identitysdk.Binding
+	ExternalIdentity     identitysdk.ExternalDatabaseFactory
+	ExternalRoles        []identitysdk.ProjectRoleDefinition
+	Integration          integrationsdk.Binding
+	KnowledgePermissions map[string]string // local permission name -> upstream permission ID
 }
 
 type Host struct {
-	Agent                agentsdk.Binding
-	Identity             identitysdk.Binding
-	db                   *sql.DB
-	lock                 *os.File
-	runtimeID            string
-	application          identitysdk.ApplicationRef
-	registrar            *webhost.Registrar
-	knowledgePermissions map[string]string
-	artifactFiles        *artifactstorage.Files
-	attachmentFiles      *attachmentstorage.Files
-	documentFiles        *documentstorage.Files
-	external             bool
+	accountToolDefinitions   []toolsdk.Definition
+	accountToolAvailability  map[string]toolsdk.Availability
+	reportToolAvailability   toolsdk.Availability
+	analysisToolAvailability toolsdk.Availability
+	toolAccountRequirements  map[string][]ToolAccountRequirement
+	toolDefinitions          []agentsdk.ConversationToolDefinition
+	Agent                    agentsdk.Binding
+	Identity                 identitysdk.Binding
+	Integration              integrationsdk.Binding
+	ToolSettings             toolsdk.SettingsBinding
+	db                       *sql.DB
+	connection               *persistence.Connection
+	storageRelease           func() error
+	profile                  driver.Profile
+	runtimeID                string
+	application              identitysdk.ApplicationRef
+	registrar                *webhost.Registrar
+	knowledgePermissions     map[string]string
+	artifactFiles            *knowledgemodule.ArtifactFiles
+	attachmentFiles          *knowledgemodule.AttachmentFiles
+	documentFiles            *knowledgemodule.DocumentFiles
+	external                 bool
+	identityBorrowed         bool
+	businessSource           agentsdk.ConversationBusinessSource
 }
 
 func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
-	if options.DatabasePath == "" || options.RuntimeID == "" || options.WorkspaceID == "" || options.ApplicationKey == "" {
-		return nil, fmt.Errorf("web host database and application identity are required")
+	if options.RuntimeID == "" || options.WorkspaceID == "" || options.ApplicationKey == "" {
+		return nil, fmt.Errorf("web host application identity is required")
 	}
-	path, err := filepath.Abs(options.DatabasePath)
+	if options.IdentityBinding != nil && options.ExternalIdentity != nil {
+		return nil, fmt.Errorf("configure only one shared or external Identity binding")
+	}
+	if err := configureAccountDefinitions(&options); err != nil {
+		return nil, err
+	}
+	if err := configureReportDefinitions(&options); err != nil {
+		return nil, err
+	}
+	if err := configureAnalysisDefinitions(&options); err != nil {
+		return nil, err
+	}
+	connection, profile, err := persistence.OpenConnection(ctx, options.DatabaseDriver, persistence.ConnectionOptions{Path: options.DatabasePath, DSN: options.DatabaseDSN, Schema: options.DatabaseSchema})
 	if err != nil {
 		return nil, err
 	}
-	if err = os.MkdirAll(filepath.Dir(path), 0700); err != nil {
-		return nil, err
-	}
-	lock, err := os.OpenFile(path+".lock", os.O_CREATE|os.O_RDWR, 0600)
-	if err != nil {
-		return nil, err
-	}
-	h := &Host{lock: lock, runtimeID: options.RuntimeID, external: options.ExternalIdentity != nil}
+	h := &Host{toolAccountRequirements: cloneToolAccountRequirements(options.ToolAccountRequirements), db: connection.DB, connection: connection, profile: profile, runtimeID: options.RuntimeID, external: options.ExternalIdentity != nil, toolDefinitions: options.ToolDefinitions, Integration: options.Integration, identityBorrowed: options.IdentityBinding != nil, businessSource: options.Agent.ConversationOptions.Business}
 	defer func() {
 		if resultErr != nil {
 			_ = h.Close(context.Background())
 		}
 	}()
-	// The lock remains held for the pool's lifetime. This SQLite web host is a
-	// single process; modules may recursively submit migrations during startup.
-	if err = unix.Flock(int(lock.Fd()), unix.LOCK_EX|unix.LOCK_NB); err != nil {
-		return nil, fmt.Errorf("web database is already in use: %w", err)
+	if options.CalendarTools || options.MailTools || options.WebTools || options.CalendarWriteTools || options.MailWriteTools {
+		if err = h.bindAccountTools(&options); err != nil {
+			return nil, err
+		}
 	}
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0600)
+	if options.ReportTools {
+		if err = h.bindReportTools(&options); err != nil {
+			return nil, err
+		}
+	}
+	if options.AnalysisTools {
+		if err = h.bindAnalysisTools(&options); err != nil {
+			return nil, err
+		}
+	}
+	// Keep the original SQLite sidecar paths. Network databases require an
+	// explicit local storage path, independent of the DSN (which may be secret).
+	path := options.StoragePath
+	if path == "" {
+		path = connection.FilePath
+	}
+	if path == "" {
+		return nil, fmt.Errorf("StoragePath is required for local files with a network database")
+	}
+	path, err = filepath.Abs(path)
 	if err != nil {
 		return nil, err
 	}
-	_ = file.Close()
-	h.db, err = sql.Open("sqlite", path)
+	if path != connection.FilePath {
+		h.storageRelease, err = base.LockFile(path + ".lock")
+		if err != nil {
+			return nil, err
+		}
+	}
+	renderer, err := persistence.Renderer(connection.Driver, connection.Schema)
 	if err != nil {
 		return nil, err
 	}
-	h.db.SetMaxOpenConns(1)
-	renderer, err := persistence.Renderer("sqlite", "")
-	if err != nil {
-		return nil, err
-	}
-	h.registrar = &webhost.Registrar{DB: h.db, Renderer: renderer}
+	h.registrar = &webhost.Registrar{DB: h.db, Renderer: renderer, DatabaseDriver: connection.Driver, Namespace: connection.Schema, Profile: profile}
 	if err = h.registrar.Prepare(ctx); err != nil {
 		return nil, err
 	}
 	application := identitysdk.ApplicationRef{WorkspaceID: identitysdk.WorkspaceID(options.WorkspaceID), ApplicationKey: identitysdk.ApplicationKey(options.ApplicationKey)}
 	h.application = application
 	handle := identitysdk.DatabaseHandle{
-		Pool: h.db, Driver: "sqlite", FilePath: path, Migrations: h.registrar, ModuleMigrations: h.registrar,
+		Pool: h.db, Driver: connection.Driver, Schema: connection.Schema, FilePath: connection.FilePath, Migrations: h.registrar, ModuleMigrations: h.registrar,
 	}
-	if h.external {
+	if h.identityBorrowed {
+		h.Identity, err = bindSharedIdentity(options.IdentityBinding, application)
+	} else if h.external {
 		workspaces := &webhost.ExternalWorkspaces{Registrar: h.registrar}
 		if err = workspaces.Prepare(ctx); err != nil {
 			return nil, err
@@ -109,10 +160,18 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	if err != nil {
 		return nil, fmt.Errorf("open Identity module: %w", err)
 	}
-	if _, err = h.Identity.Applications().Register(ctx, identitysdk.ApplicationRegistration{Application: application}); err != nil {
+	if err = h.validateBusinessBinding(); err != nil {
 		return nil, err
 	}
+	if !h.identityBorrowed {
+		if _, err = h.Identity.Applications().Register(ctx, identitysdk.ApplicationRegistration{Application: application}); err != nil {
+			return nil, err
+		}
+	}
 	if err = h.registerConversationToolPermissions(ctx); err != nil {
+		return nil, err
+	}
+	if err = h.registerIntegrationPermissions(ctx); err != nil {
 		return nil, err
 	}
 	if len(options.KnowledgePermissions) > 0 && options.Agent.Knowledge.PermissionIDs != nil {
@@ -140,25 +199,28 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 		options.Agent.Knowledge.AuthorizeWorkspace = h.authorizeKnowledgeWorkspace
 	}
 	if options.Agent.ConversationOptions.ArtifactStorage == nil {
-		h.artifactFiles, err = artifactstorage.NewFiles(path + ".artifacts")
+		h.artifactFiles, err = knowledgemodule.NewArtifactFiles(path + ".artifacts")
 		if err != nil {
 			return nil, fmt.Errorf("open artifact storage: %w", err)
 		}
 		options.Agent.ConversationOptions.ArtifactStorage = h.artifactFiles
 	}
 	if options.Agent.ConversationOptions.AttachmentStorage == nil {
-		h.attachmentFiles, err = attachmentstorage.NewFiles(path + ".attachments")
+		h.attachmentFiles, err = knowledgemodule.NewAttachmentFiles(path + ".attachments")
 		if err != nil {
 			return nil, fmt.Errorf("open attachment storage: %w", err)
 		}
 		options.Agent.ConversationOptions.AttachmentStorage = h.attachmentFiles
 	}
 	if options.Agent.ConversationOptions.DocumentStorage == nil {
-		h.documentFiles, err = documentstorage.NewFiles(path + ".documents")
+		h.documentFiles, err = knowledgemodule.NewDocumentFiles(path + ".documents")
 		if err != nil {
 			return nil, fmt.Errorf("open document storage: %w", err)
 		}
 		options.Agent.ConversationOptions.DocumentStorage = h.documentFiles
+	}
+	if err := os.RemoveAll(path + ".parses"); err != nil {
+		return nil, fmt.Errorf("remove retired document cache: %w", err)
 	}
 	if options.Agent.ConversationOptions.AttachmentAuthorizer == nil {
 		options.Agent.ConversationOptions.AttachmentAuthorizer = h
@@ -166,14 +228,56 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	if options.Agent.ConversationOptions.LibraryAuthorizer == nil {
 		options.Agent.ConversationOptions.LibraryAuthorizer = h
 	}
+	if options.Prepare != nil {
+		if err = options.Prepare(ctx, h); err != nil {
+			return nil, err
+		}
+	}
+	previousToolPolicy := options.Agent.ConversationOptions.BindToolPolicy
+	options.Agent.ConversationOptions.BindToolPolicy = func(catalog toolsdk.Catalog, previous toolsdk.Availability) (toolsdk.Availability, error) {
+		if previousToolPolicy != nil {
+			var err error
+			previous, err = previousToolPolicy(catalog, previous)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return h.bindToolSettings(ctx, catalog, previous)
+	}
 	h.Agent, err = agentmodule.NewFactory(options.Agent).OpenModule(ctx, agentsdk.ApplicationRef{RuntimeID: options.RuntimeID}, h)
 	if err != nil {
 		return nil, fmt.Errorf("open Agent module: %w", err)
 	}
+	binder, ok := h.Agent.(modulehost.ConversationApplicationHostBinder)
+	if !ok {
+		return nil, fmt.Errorf("Agent module does not support conversation host binding")
+	}
+	if err = binder.BindConversationHost(h); err != nil {
+		return nil, fmt.Errorf("bind Agent conversation host: %w", err)
+	}
+	// Finish every owner migration, including policies bound during conversation
+	// assembly, before releasing the host startup lock.
+	if connection.ReleaseStartup != nil {
+		if err = connection.ReleaseStartup(); err != nil {
+			return nil, err
+		}
+	}
 	return h, nil
 }
 
+// Identity and personal capabilities are ready before conversation recovery
+// starts. This web host does not need the legacy Runtime task/application ports.
+func (*Host) DeferConversationHostBinding() bool                            { return true }
+func (h *Host) ConversationAuthorizer() agentsdk.ConversationToolAuthorizer { return h }
+func (h *Host) ConversationBusinessSource() agentsdk.ConversationBusinessSource {
+	return h.businessSource
+}
+
+var _ modulehost.DeferredConversationHost = (*Host)(nil)
+var _ modulehost.ConversationApplicationHost = (*Host)(nil)
+
 func (h *Host) RuntimeID() string                         { return h.runtimeID }
+func (h *Host) DatabaseProfile() driver.Profile           { return h.profile }
 func (h *Host) Database() modulehost.Database             { return h.db }
 func (h *Host) Dialect() modulehost.Dialect               { return h.registrar.Renderer }
 func (h *Host) Migrations() modulehost.MigrationRegistrar { return h.registrar }
@@ -202,21 +306,25 @@ func (h *Host) Close(ctx context.Context) error {
 		h.attachmentFiles = nil
 	}
 	if h.Identity != nil {
-		if err := h.Identity.Close(ctx); result == nil {
-			result = err
+		if !h.identityBorrowed {
+			if err := h.Identity.Close(ctx); result == nil {
+				result = err
+			}
 		}
 		h.Identity = nil
 	}
-	if h.db != nil {
-		if err := h.db.Close(); result == nil {
+	if h.connection != nil {
+		if err := h.connection.Close(); result == nil {
 			result = err
 		}
+		h.connection = nil
 		h.db = nil
 	}
-	if h.lock != nil {
-		_ = unix.Flock(int(h.lock.Fd()), unix.LOCK_UN)
-		_ = h.lock.Close()
-		h.lock = nil
+	if h.storageRelease != nil {
+		if err := h.storageRelease(); result == nil {
+			result = err
+		}
+		h.storageRelease = nil
 	}
 	return result
 }

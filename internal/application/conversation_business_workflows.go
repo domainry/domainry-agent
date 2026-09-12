@@ -89,5 +89,9 @@ func (h *businessConversationHost) invokeBusinessWorkflowTool(ctx context.Contex
 			return personalToolFailure("business_source_changed"), nil
 		}
 	}
-	return personalToolResult(evidence)
+	result, err := personalToolResult(evidence)
+	if err == nil && in.Call.Name == "workflow_start" {
+		result.Completion = "accepted"
+	}
+	return result, err
 }

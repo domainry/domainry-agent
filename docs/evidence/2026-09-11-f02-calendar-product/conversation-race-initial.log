@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-agent/internal/assembly/web [github.com/domainry/domainry-agent/internal/assembly/web.test]
+internal/assembly/web/calendar_tools_test.go:61:14: invalid operation: len(b) > limit (mismatched types int and int64)
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web [build failed]
+FAIL

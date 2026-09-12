@@ -1,0 +1,11 @@
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation/module
+    conversation_report_tools_test.go:231: browser POST /agent/conversations/conv_84d8e21042b6ae2844fbfe616e31888d/messages status=403 want=202 body={"code":"agent.conversation.execution_access_denied"}
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation/service-product
+    conversation_report_tools_test.go:235: real Report, Tools, Agent, Identity and SQLite: 5 calls, saved conversation, complete restart, field/read revocation, old result invalidation, fresh query after restored permission; model decisions are a protocol fixture
+--- FAIL: TestReportToolConversationWithRealOwnerAndRevalidation (64.34s)
+    --- FAIL: TestReportToolConversationWithRealOwnerAndRevalidation/module (26.05s)
+    --- PASS: TestReportToolConversationWithRealOwnerAndRevalidation/service-product (38.29s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	65.104s
+FAIL

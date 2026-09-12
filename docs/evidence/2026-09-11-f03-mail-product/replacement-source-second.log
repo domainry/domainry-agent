@@ -1,0 +1,5 @@
+=== RUN   TestMailDraftDoesNotAdoptReplacementAccount
+    mail_draft_source_test.go:62: all four mail tools available on replacement account; both stored draft versions and original answer remain denied by mail source authorizer; zero vendor IO
+--- PASS: TestMailDraftDoesNotAdoptReplacementAccount (5.12s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	5.940s

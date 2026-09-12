@@ -1,0 +1,5 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+    conversation_business_product_service_test.go:258: actual Identity OS process, independent Agent web host and Runtime business/Report HTTP: 298 business and 2643 Identity SDK requests; product login, catalog/pages/detail, explicit confirmation, duplicate response, field/read revocation, preserved-source history, unavailable owner and complete process/binding/database restart; isolated Identity application quota 12000/minute
+--- PASS: TestConversationBusinessProductWithSharedIdentityService (128.79s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	130.787s

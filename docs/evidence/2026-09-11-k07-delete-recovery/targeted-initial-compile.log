@@ -1,0 +1,6 @@
+# github.com/domainry/domainry-agent/integration_test [github.com/domainry/domainry-agent/integration.test]
+integration/knowledge_document_policy_integration_test.go:107: cannot use noDeleteRecoverySource{…} (value of struct type noDeleteRecoverySource) as agentsdk.ConversationKnowledgeSource value in struct literal: noDeleteRecoverySource does not implement agentsdk.ConversationKnowledgeSource (missing method ReadKnowledge)
+ok  	github.com/domainry/domainry-agent/internal/application	0.374s [no tests to run]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	0.732s [no tests to run]
+FAIL	github.com/domainry/domainry-agent/integration [build failed]
+FAIL

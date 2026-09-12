@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-agent/internal/assembly/web [github.com/domainry/domainry-agent/internal/assembly/web.test]
+internal/assembly/web/conversation_attachment_index_live_test.go:169:21: cannot use func(agentsdk.ConversationAuthority) []string {…} (value of type func(agentsdk.ConversationAuthority) []string) as func(context.Context, agentsdk.ConversationAuthority) ([]string, error) value in assignment
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web [build failed]
+FAIL

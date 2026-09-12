@@ -1,0 +1,33 @@
+{
+  "gofmt": {
+    "exit_code": 0,
+    "files": [
+      "cmd/domainry-agent-web/main.go",
+      "internal/assembly/web/host.go",
+      "internal/assembly/web/account_tools.go",
+      "internal/assembly/web/account_tools_test.go",
+      "internal/assembly/web/integration_accounts_test.go",
+      "internal/assembly/web/web_tools_fixture_test.go",
+      "internal/assembly/web/web_tools_test.go",
+      "internal/assembly/web/web_tools_browser_test.go",
+      "internal/assembly/web/web_report_source_test.go",
+      "internal/assembly/product/product.go",
+      "internal/assembly/product/record_product.go",
+      "testsupport/producttest/product.go"
+    ],
+    "output": ""
+  },
+  "git_diff_check": {
+    "domainry-agent": {
+      "exit_code": 0,
+      "output": ""
+    },
+    "domainry-work": "not applicable: no Git metadata",
+    "domainry-pm": "not applicable: no Git metadata"
+  },
+  "final_fixture_verification": {
+    "gofmt_output": "",
+    "git_diff_check_exit_code": 0,
+    "vet_log": "fixture-final-vet.log"
+  }
+}

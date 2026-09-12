@@ -1,0 +1,6 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+    conversation_business_product_service_test.go:66: Identity process exited: exit status 2; see /Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-f05-business-service/identity-process.log
+--- FAIL: TestConversationBusinessProductWithSharedIdentityService (3.19s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	4.074s
+FAIL

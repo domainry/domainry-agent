@@ -1,0 +1,11 @@
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation/module
+    conversation_report_tools_test.go:179: business browser run incomplete: {"id":"crun_160f12740cd427211599d68df240ac9e","conversation_id":"conv_fe52741a1411a01a97a4ae44e0b43d77","client_message_id":"business-query-1789165145524662000","status":"failed","user_seq":1,"attempt":1,"draft_bytes":0,"last_event_seq":3,"error_code":"tool_catalog_invalid","created_at":"2026-09-11T22:19:05.555357Z","updated_at":"2026-09-11T22:19:05.656232Z"}
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation/service-product
+    conversation_report_tools_test.go:179: business browser run incomplete: {"id":"crun_5da8eb28461b153eae725a451b33b00b","conversation_id":"conv_8095169bc5069047d845b27bbf8b3a06","client_message_id":"business-query-1789165146748775000","status":"failed","user_seq":1,"attempt":1,"draft_bytes":0,"last_event_seq":3,"error_code":"tool_catalog_invalid","created_at":"2026-09-11T22:19:06.751259Z","updated_at":"2026-09-11T22:19:06.864046Z"}
+--- FAIL: TestReportToolConversationWithRealOwnerAndRevalidation (2.38s)
+    --- FAIL: TestReportToolConversationWithRealOwnerAndRevalidation/module (1.19s)
+    --- FAIL: TestReportToolConversationWithRealOwnerAndRevalidation/service-product (1.19s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	3.012s
+FAIL

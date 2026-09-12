@@ -1,0 +1,8 @@
+All changed Go files are formatted.
+domainry-agent exit 0  
+domainry-agent-sdk exit 0  
+domainry-runtime exit 0  
+domainry-report exit 0  
+domainry-report-sdk exit 0  
+llm-proxy head: a32407a678ea7f96d70b7557765e2a01262184d4
+llm-proxy worktree clean

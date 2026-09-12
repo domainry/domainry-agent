@@ -1,0 +1,27 @@
+=== RUN   TestPrivateAttachmentIndexBrowserRecovery
+PASS browser upload saves private original with one request; no automatic remote index
+PASS lost start response survives reload and host restart; original receipt lookup works without source configuration
+PASS durable check acknowledgement recovers after restart; positive remote status resolves unknown PUT without another upload
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert(await panel().getByRole('button',{name:'核对索引状态',exact:true}).isEnabled())
+
+    at file:///Users/tiger/Projects/domainry-agent/frontend/tests/attachment-index.browser.mjs:66:113 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+    conversation_attachment_index_browser_test.go:206: index UI browser failed exit status 1
+--- FAIL: TestPrivateAttachmentIndexBrowserRecovery (6.92s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	7.681s
+FAIL

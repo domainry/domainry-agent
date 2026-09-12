@@ -1,0 +1,7 @@
+# github.com/domainry/domainry-integration-sdk_test [github.com/domainry/domainry-integration-sdk.test]
+./connection_account_writes_test.go:41:23: cannot use route.Pattern (value of type func() string) as string value in argument to strings.Contains
+FAIL	github.com/domainry/domainry-integration-sdk [build failed]
+?   	github.com/domainry/domainry-integration-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-integration-sdk/remote	1.408s
+?   	github.com/domainry/domainry-integration-sdk/saashost	[no test files]
+FAIL

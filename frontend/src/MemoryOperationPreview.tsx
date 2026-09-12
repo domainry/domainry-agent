@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import { request, type Memory } from "./api.ts";
 import { describeError } from "./errors.ts";
 
-export function MemoryOperationPreview({ tool, argumentsText }: { tool: string; argumentsText: string }) {
+export function MemoryOperationPreview({ tool, argumentsText, onReady }: { tool: string; argumentsText: string; onReady?: (ready: boolean) => void }) {
   const [memory, setMemory] = useState<Memory | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(tool === "memory_forget");
   let args: Partial<Memory> & { expected_revision?: number } = {};
   try { args = JSON.parse(argumentsText); } catch { /* The executor validates the frozen arguments. */ }
   const id = args.id;
+  const ready = tool === "memory_save" ? typeof args.title === "string" && !!args.title && typeof args.content === "string" && !!args.content
+    : !loading && !error && !!memory && memory.revision === args.expected_revision;
+  useEffect(() => { onReady?.(ready); }, [ready, onReady]);
   useEffect(() => {
     if (tool !== "memory_forget" || !id) return;
     const controller = new AbortController();

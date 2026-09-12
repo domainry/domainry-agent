@@ -19,9 +19,13 @@ func clearAgentEnvironment(t *testing.T) {
 	for _, name := range []string{"AGENT_HTTP_BASE_URL", "AGENT_HTTP_API_KEY", "AGENT_HTTP_AGENT_ID", "AGENT_SAAS_API_KEY", "AGENT_SAAS_RUNTIME_ID", "AGENT_CONVERSATION_PROVIDER", "AGENT_CONVERSATION_PROTOCOL", "AGENT_CONVERSATION_BASE_URL", "AGENT_CONVERSATION_MODEL_URL", "AGENT_CONVERSATION_MODEL_API_KEY", "AGENT_CONVERSATION_MODEL", "AGENT_PROVIDER_API_KEY"} {
 		t.Setenv(name, "")
 	}
+	for _, name := range []string{"IDENTITY_ENDPOINT", "IDENTITY_TENANT_ID", "IDENTITY_WORKSPACE_ID", "IDENTITY_ISSUER", "IDENTITY_AUDIENCE", "IDENTITY_SERVICE_ACCESS_TOKEN", "IDENTITY_CAPABILITY_CONTRACT_SHA256"} {
+		t.Setenv(name, "")
+	}
 }
 func TestConversationExecutableStartsWithoutLegacyProvider(t *testing.T) {
 	clearAgentEnvironment(t)
+	configureIdentityFixture(t)
 	t.Setenv("AGENT_SAAS_API_KEY", "service-key")
 	t.Setenv("AGENT_SAAS_RUNTIME_ID", "runtime")
 	t.Setenv("AGENT_CONVERSATION_PROVIDER", "gateway")

@@ -1,0 +1,4 @@
+=== RUN   TestLocalWorkersPersistProviderStateBeforeDispatchingEvent
+--- PASS: TestLocalWorkersPersistProviderStateBeforeDispatchingEvent (0.01s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	0.922s

@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-integration/cmd/integration-server [github.com/domainry/domainry-integration/cmd/integration-server.test]
+cmd/integration-server/oauth_process_test.go:128:156: undefined: integrationsdk.ConnectionAccountPersonal
+FAIL	github.com/domainry/domainry-integration/cmd/integration-server [build failed]
+FAIL

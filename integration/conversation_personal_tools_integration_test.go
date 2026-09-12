@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"strings"
 	"testing"
 
@@ -12,6 +13,10 @@ import (
 )
 
 type personalReadAuthorizer struct{}
+
+func (personalReadAuthorizer) AuthorizeConversationExecution(_ context.Context, in agentsdk.ConversationExecutionAuthorizationRequest) (bool, error) {
+	return in.Authority.Known, nil
+}
 
 func (personalReadAuthorizer) AuthorizeConversationTool(_ context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolAuthorization, error) {
 	return agentsdk.ConversationToolAuthorization{Granted: in.Authority.Known, Revision: "read-test"}, nil
@@ -45,7 +50,7 @@ func TestPersonalHostWithoutResponsePolicyDoesNotAdvertiseQuestions(t *testing.T
 func TestTodoLookupExplainsFilteredEmptyResultsWithoutBroadeningAccess(t *testing.T) {
 	repo := conversationRepository(t)
 	a := conversationAuthority()
-	service, err := application.NewConversationService(repo, nil, a.RuntimeID, application.ConversationOptions{PersonalAuthorizer: personalReadAuthorizer{}})
+	service, err := conversationassembly.NewService(repo, nil, a.RuntimeID, application.ConversationOptions{PersonalAuthorizer: personalReadAuthorizer{}})
 	if err != nil {
 		t.Fatal(err)
 	}

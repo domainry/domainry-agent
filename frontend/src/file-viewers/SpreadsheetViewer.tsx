@@ -1,0 +1,27 @@
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "../components/ui/button";
+import { loadOffice } from "./office-load";
+import type { DisplaySheet } from "./office-types";
+const ROWS = 50, COLS = 16;
+function columnName(col: number): string { let name = ""; for (; col > 0; col = Math.floor((col - 1) / 26)) name = String.fromCharCode(65 + (col - 1) % 26) + name; return name; }
+export default function SpreadsheetViewer({ blob, location }: { blob: Blob; location?: { sheet?: string; cell?: string; row?: number } }) {
+  const [sheets, setSheets] = useState<DisplaySheet[]>([]), [index, setIndex] = useState(0), [rowPage, setRowPage] = useState(0), [colPage, setColPage] = useState(0), [error, setError] = useState("");
+  const [address, setAddress] = useState(location?.cell || ""), [selected, setSelected] = useState("");
+  const sheet = sheets[index];
+  const cells = useMemo(() => new Map(sheet?.cells.map(cell => [`${cell.row}:${cell.col}`, cell])), [sheet]);
+  function jump(value: string) { const match = /^([A-Z]{1,3})([1-9][0-9]{0,5})$/.exec(value.toUpperCase()); if (!match || !sheet) { setError("请输入有效单元格，例如 B12。"); return; } const col = [...match[1]].reduce((n, c) => n * 26 + c.charCodeAt(0) - 64, 0), row = Number(match[2]); if (row > sheet.rows || col > sheet.cols) { setError("该位置超出当前工作表范围。"); return; } setError(""); setRowPage(Math.floor((row - 1) / ROWS)); setColPage(Math.floor((col - 1) / COLS)); setSelected(`${row}:${col}`); }
+  useEffect(() => { const abort = new AbortController(); void loadOffice(blob, "xlsx", abort.signal).then(result => { if (abort.signal.aborted) return; setSheets(result.sheets!); const selected = result.sheets!.findIndex(s => s.name === location?.sheet); if (selected >= 0) setIndex(selected); }).catch(error => { if (!abort.signal.aborted) setError(error.message); }); return () => abort.abort(); }, [blob, location?.sheet]);
+  useEffect(() => { if (sheet && location?.cell && sheet.name === location.sheet) jump(location.cell); }, [sheet]);
+  const rows = sheet ? Array.from({ length: Math.min(ROWS, Math.max(0, sheet.rows - rowPage * ROWS)) }, (_, i) => rowPage * ROWS + i + 1).filter(r => !sheet.hiddenRows.includes(r)) : [];
+  const cols = sheet ? Array.from({ length: Math.min(COLS, Math.max(0, sheet.cols - colPage * COLS)) }, (_, i) => colPage * COLS + i + 1).filter(c => !sheet.hiddenCols.includes(c)) : [];
+  const spans = new Map<string, { master: string; rowSpan: number; colSpan: number } | null>();
+  for (const merge of sheet?.merges || []) { const rr = rows.filter(r => r >= merge.top && r <= merge.bottom), cc = cols.filter(c => c >= merge.left && c <= merge.right); for (const r of rr) for (const c of cc) spans.set(`${r}:${c}`, r === rr[0] && c === cc[0] ? { master: `${merge.top}:${merge.left}`, rowSpan: rr.length, colSpan: cc.length } : null); }
+  const current = cells.get(selected);
+  return <div className="file-viewer" data-static-ui-list>{error && <p role="alert">{error}</p>}{!sheet && !error && <p role="status">正在打开工作簿…</p>}{sheet && <>
+    <div className="file-toolbar"><label>工作表 <select aria-label="工作表" value={index} onChange={event => { setIndex(Number(event.target.value)); setRowPage(0); setColPage(0); setSelected(""); setError(""); }}>{sheets.map((s, i) => <option value={i} key={i}>{s.name}</option>)}</select></label><form onSubmit={event => { event.preventDefault(); jump(address); }}><label>定位单元格 <input value={address} onChange={event => setAddress(event.target.value)} placeholder="B12" maxLength={10} /></label><Button variant="outline" type="submit">定位</Button></form></div>
+    <p className="subtle">{sheet.rows} 行 × {sheet.cols} 列 · 只读预览，公式显示文件保存的结果；图表与嵌入对象请下载查看。</p>
+    {current && <p className="spreadsheet-value"><strong>{columnName(current.col)}{current.row}</strong> {current.formula ? `=${current.formula} → ` : ""}{current.text}</p>}
+    <div className="spreadsheet-scroll"><table className="spreadsheet-grid" aria-label={`${sheet.name} 工作表`}><colgroup><col style={{ width: 50 }} />{cols.map(c => <col key={c} style={{ width: sheet.widths[c] || 110 }} />)}</colgroup><thead><tr><th scope="col">行</th>{cols.map(c => <th key={c} scope="col">{columnName(c)}</th>)}</tr></thead><tbody>{rows.map(r => <tr key={r} style={{ height: sheet.heights[r] }}><th scope="row">{r}</th>{cols.map(c => { const key = `${r}:${c}`, span = spans.get(key); if (span === null) return null; const cell = cells.get(span?.master || key); return <td key={c} rowSpan={span?.rowSpan} colSpan={span?.colSpan} style={cell?.style} data-selected={selected === (span?.master || key)} onClick={() => { setSelected(span?.master || key); setAddress(`${columnName(cell?.col || c)}${cell?.row || r}`); }}>{cell?.text || ""}</td>; })}</tr>)}</tbody></table></div>
+    <nav className="file-toolbar" aria-label="工作表行分页" data-static-ui-pagination><Button variant="outline" disabled={rowPage === 0} onClick={() => setRowPage(p => p - 1)}>上一页行</Button><span>第 {rowPage + 1} / {Math.max(1, Math.ceil(sheet.rows / ROWS))} 页</span><Button variant="outline" disabled={(rowPage + 1) * ROWS >= sheet.rows} onClick={() => setRowPage(p => p + 1)}>下一页行</Button><Button variant="outline" disabled={colPage === 0} onClick={() => setColPage(p => p - 1)}>前一组列</Button><span>{columnName(colPage * COLS + 1)}–{columnName(Math.max(1, Math.min(sheet.cols, (colPage + 1) * COLS)))}</span><Button variant="outline" disabled={(colPage + 1) * COLS >= sheet.cols} onClick={() => setColPage(p => p + 1)}>后一组列</Button></nav>
+  </>}</div>;
+}

@@ -1,0 +1,7 @@
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	1.912s
+--- FAIL: TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart (17.73s)
+    conversation_attachment_index_test.go:213: retrieval did not finish
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	18.660s
+ok  	github.com/domainry/domainry-agent/integration	3.441s
+FAIL

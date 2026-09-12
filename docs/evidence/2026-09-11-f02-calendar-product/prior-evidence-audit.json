@@ -1,0 +1,324 @@
+{
+  "complete": true,
+  "count": 53,
+  "entries": [
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/boundary-catalog.log",
+      "sha256": "bdf61b94016f235401ab3c043f8ab6787a6c03b089ad555d03e5585fb67776d0",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/catalog-generation.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/connectors-full.log",
+      "sha256": "fa255731f82f70f4e29afd2c121b31d66aacb968ad43060b8ea927d48586cec6",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/contracts-provider.log",
+      "sha256": "d916f024169d3aba28cb755dc56d8db8943cd52835a0e790f834611ab3a05150",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/diff-check.json",
+      "sha256": "a4b873e242b6a0679c9869413c873d7d9166b98a1050033517fc33595a2f73bb",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/initial.log",
+      "sha256": "2a8fed304c5bd2641cbb5aee958f33c98813b2d0f1daa470b4d912236920a16e",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/integration-final.log",
+      "sha256": "301cd4b9e59b41bfb11835abf93693c6be86e73089916457665a0e9a2a9da87e",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/integration-regression.log",
+      "sha256": "8430f4f00a8092038cdf0184b2c648096d70858fa37e1ee80454230896e6f427",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/integration-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/local-time-identity.log",
+      "sha256": "1a8340c654eab8032b5fc1f57c016f093a79ec60dc7e9f9e8e435381b0ba6f61",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/race-final.log",
+      "sha256": "0cd856b057273fe9f541566b4315e42aa1b9ac3846d7f73ace0731b935595dc0",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/worker-deadline-final.log",
+      "sha256": "38823ee23020cbe9b2796dbf3ebe77ba4e80c1ff4dc4bf51720363b48bb067b1",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/worker-deadline-initial.log",
+      "sha256": "80973a2e124c93c5246a87b35681e71743d3e470eed5247f0b19bd056193ffcc",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-google-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-google-calendar/worker-deadline-race.log",
+      "sha256": "7bcd0bfd207d485e3cec642e3d2fa147dd825d6f2adc428b8ba5b5c1e30397e4",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-microsoft-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/boundary-catalog.log",
+      "sha256": "bdf61b94016f235401ab3c043f8ab6787a6c03b089ad555d03e5585fb67776d0",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-microsoft-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/catalog-generation.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-microsoft-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/connectors-full.log",
+      "sha256": "f479e8654e56d2a80699102fba7459dcaec7fd43f0bc1c973b7438c7e070fe53",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-microsoft-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/diff-check.json",
+      "sha256": "007b816a532b55a52d5fcd2b4cc34cadca787e9e5d775e30d439612d63825752",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-microsoft-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/integration-compatibility.log",
+      "sha256": "b459a9a8791437a0f8973f170c2cce001c749c19c6e84400d7f98819c3120507",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-microsoft-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/provider-initial.log",
+      "sha256": "37ccf0a78f8d5fb2d5c32046fbd97fc51d96a607c4884904c115cba5c3243381",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-microsoft-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/provider-race.log",
+      "sha256": "49bc183c40275f2ebf5c930554a410e39b182a8e2e9aec83e1e242cad6002955",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-microsoft-calendar.json",
+      "path": "docs/evidence/2026-09-11-f02-microsoft-calendar/provider-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/agent-web-compatibility.log",
+      "sha256": "9beb31d43479d0a03551396d514b70bf3f04f3670ccaabfd550051f65432e893",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/architecture-owner-final.log",
+      "sha256": "f0993553d93accd06ed1efa77f2b5654119fd93489f21c47114cfcb333cc756b",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/boundary-catalog.log",
+      "sha256": "bdf61b94016f235401ab3c043f8ab6787a6c03b089ad555d03e5585fb67776d0",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/browser-sdk.log",
+      "sha256": "0dcb99901a53bd466db86cc8667b40bf23ae14a8023a975ec92a046a0e754055",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/catalog-generation.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/connectors-full.log",
+      "sha256": "491feb56cb2355c0f5dd8c7d66260541d134aa86c3cae361c1e569b801623eb3",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/diff-check.json",
+      "sha256": "8d09dcb60c521e0a5f3b1ed573b6664f29a70856412f8fafe5ca02f35ec5c231",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/http-read-architecture-final.log",
+      "sha256": "fc2463be8e67e4f83bf323eb3d3e485f4a16f6c79b703ab2d26d1a1615629436",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/http-read-diagnostic.log",
+      "sha256": "edc930b612593e58ea152a4f5d47307d3f127d20013d2c5dacb8a51796697318",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/http-read-race-final.log",
+      "sha256": "a4cd0d5592b9e14b396a068b501025050c994a7281a3caaf01b76b981d3050e4",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/http-read-race-initial.log",
+      "sha256": "2480f1cf27c6942f3ae19cac92b41fd0e46972e62a68129d1fe9e0f44fd85209",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/http-read-race.log",
+      "sha256": "bb9a88b64332fb8e5da65a15e670ae2b5699e981ef8f0942c921e034118a7ec5",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-full-final.log",
+      "sha256": "860db4a145bc7b50b6e2472221034848e7da2f3b60dc67065deb6b04255f238c",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-full.log",
+      "sha256": "5ec450702af53e46a6bf644aab32245a1f02a7738eddecea496e48f8e26206c9",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-sdk-final.log",
+      "sha256": "ef90f42f77245a48962c91a9981bfce14a9b664d76a1a9de3390020e865b806b",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-sdk-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-sdk.log",
+      "sha256": "e43cce8015f8c9ef39756f0a4fa933ea8ad1804604c2dab3f7431b64d9477f4c",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-vet-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/owner-initial.log",
+      "sha256": "c86eaadbb1ef94a2399997f48e505949c4ffa55a0cf9c99a2584ece091951129",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/owner-read-race-initial.log",
+      "sha256": "1144504609cdc12a968a990bcb433c4e1737d491e71d5584076b652a5fe4f1dd",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/owner-read-race.log",
+      "sha256": "fb0515149aa6e0c92a505c700f36042324a7ec97fdae28e3303bf54dbf0b1153",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/provider-scopes.log",
+      "sha256": "d6535406902786e4d8f6a2da5134a5dbc53a3f9ec193a50505bd43cfc7d9db82",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/sdk-scopes-race.log",
+      "sha256": "63a0c079691164099ddbc9e4063f2a124349e8a8f28540ad52c0d78c12e8f591",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/transport-categories.log",
+      "sha256": "6c7abfb7f4d12f8de4ae79685cf51ed74ba2b68dbce686a8116a85acc2e9437d",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-account-read.json",
+      "path": "docs/evidence/2026-09-11-f02-account-read/transport-initial.log",
+      "sha256": "7759172a0b57cf730b91ace2f99b599aeed7fe2b7917539eda8208e397009925",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-calendar-tools.json",
+      "path": "docs/evidence/2026-09-11-f02-calendar-tools/diff-check.log",
+      "sha256": "16fe521de56b762a2ed6bb75c04179b3ceb2f2fe6df0dff877f8df07e5851474",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-calendar-tools.json",
+      "path": "docs/evidence/2026-09-11-f02-calendar-tools/full-race.log",
+      "sha256": "8288ffe910ac93d83b576ac50786322587eb7bf32a1eeb66a66333c4fd2a5d08",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-calendar-tools.json",
+      "path": "docs/evidence/2026-09-11-f02-calendar-tools/public-race-initial.log",
+      "sha256": "0bc083b4ee97da4ed17cd562acaa7503e80291f661485ea1c7577d8007cb7f9d",
+      "verified": true
+    },
+    {
+      "manifest": "docs/evidence/2026-09-11-f02-calendar-tools.json",
+      "path": "docs/evidence/2026-09-11-f02-calendar-tools/vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified": true
+    }
+  ]
+}

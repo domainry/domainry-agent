@@ -6,9 +6,10 @@
   "scripts": {
     "build": "tsc --noEmit && vite build",
     "check": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/conversation-state.test.ts src/external-session.test.ts src/knowledge-document-state.test.ts"
+    "test": "node --experimental-strip-types --test src/conversation-state.test.ts src/external-session.test.ts src/knowledge-document-state.test.ts src/knowledge-datasource-state.test.ts src/execution-outcome.test.ts src/file-preview-state.test.ts src/attachment-index-state.test.ts src/account-write-state.test.ts"
   },
   "dependencies": {
+    "@domainry/integration-client": "file:../../domainry-integration-sdk/browser",
     "@streamdown/cjk": "^1.0.3",
     "@streamdown/code": "^1.1.1",
     "@streamdown/math": "^1.0.2",
@@ -18,14 +19,20 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "cn": "^0.2.6",
+    "docx-preview": "0.4.0",
+    "exceljs": "4.4.0",
+    "fflate": "0.8.2",
     "lucide-react": "^0.577.0",
     "nanoid": "^5.1.16",
+    "numfmt": "3.2.6",
+    "pdfjs-dist": "6.3.289",
     "radix-ui": "^1.6.7",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "streamdown": "^2.6.0",
     "tailwind-merge": "^3.5.0",
-    "use-stick-to-bottom": "^1.1.6"
+    "use-stick-to-bottom": "^1.1.6",
+    "@domainry/tools-client": "file:../../domainry-tools-sdk/browser"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.0",

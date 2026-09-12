@@ -1,0 +1,6 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+    conversation_business_product_service_test.go:162: PUT /identity/users/admin/account-and-roles status=403 want=200 body={"code":"auth.permission_denied","error":{"code":"auth.permission_denied"}}
+--- FAIL: TestConversationBusinessProductWithSharedIdentityService (15.65s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	16.612s
+FAIL

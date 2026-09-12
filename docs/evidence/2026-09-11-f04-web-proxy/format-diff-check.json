@@ -1,0 +1,40 @@
+[
+  {
+    "repository": "domainry-connectors",
+    "command": "git diff --check",
+    "exit_code": 0
+  },
+  {
+    "repository": "domainry-integration",
+    "command": "git diff --check",
+    "exit_code": 0
+  },
+  {
+    "repository": "anti/llm-proxy",
+    "command": "git diff --check",
+    "exit_code": 0
+  },
+  {
+    "repository": "domainry-agent",
+    "command": "git diff --check",
+    "exit_code": 0
+  },
+  {
+    "repository": "domainry-connectors",
+    "command": "gofmt -l selected changed Go sources",
+    "exit_code": 0,
+    "unformatted_files": []
+  },
+  {
+    "repository": "domainry-integration",
+    "command": "gofmt -l selected changed Go sources",
+    "exit_code": 0,
+    "unformatted_files": []
+  },
+  {
+    "repository": "anti/llm-proxy",
+    "command": "gofmt -l selected changed Go sources",
+    "exit_code": 0,
+    "unformatted_files": []
+  }
+]

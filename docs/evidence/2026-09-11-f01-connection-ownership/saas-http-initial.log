@@ -1,0 +1,6 @@
+=== RUN   TestConnectionAccountSaaSProductAuthorizationSurvivesRemoteBoundaryAndRestart
+    connection_accounts_test.go:158: GET /integration/connection-accounts/personal-a: status=403 want=400 body={"code":"backend.integration.permission_denied"}
+--- FAIL: TestConnectionAccountSaaSProductAuthorizationSurvivesRemoteBoundaryAndRestart (0.41s)
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/assembly/saas	1.922s
+FAIL

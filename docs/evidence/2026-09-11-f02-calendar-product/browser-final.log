@@ -1,0 +1,25 @@
+=== RUN   TestCalendarToolsBuiltBrowser
+PASS five product-selected calendar tools show unavailable before actual OAuth grant and available after owner authorization
+PASS actual browser message completes six persisted tool calls through Identity, Tools, Integration, Google protocol HTTP and model protocol HTTP; all-day dates, DST offsets and complete paging survive
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: '打开工作导航', exact: true })[22m
+
+    at openSettings (/Users/tiger/Projects/domainry-agent/frontend/tests/calendar-tools.browser.mjs:19:164)
+    at async file:///Users/tiger/Projects/domainry-agent/frontend/tests/calendar-tools.browser.mjs:58:94 {
+  log: [
+    "  - waiting for getByRole('button', { name: '打开工作导航', exact: true })"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.22.0
+    calendar_tools_browser_test.go:102: calendar browser exit status 1
+--- FAIL: TestCalendarToolsBuiltBrowser (39.09s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	39.571s
+FAIL

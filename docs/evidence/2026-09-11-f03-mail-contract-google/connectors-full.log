@@ -1,0 +1,132 @@
+ok  	github.com/domainry/domainry-connectors/catalog	0.899s
+ok  	github.com/domainry/domainry-connectors/internal/accounting/journal	1.486s
+ok  	github.com/domainry/domainry-connectors/internal/adapter/connectorsdk	1.133s
+ok  	github.com/domainry/domainry-connectors/internal/application/connector	(cached)
+ok  	github.com/domainry/domainry-connectors/internal/architecture	(cached)
+?   	github.com/domainry/domainry-connectors/internal/assembly/module	[no test files]
+ok  	github.com/domainry/domainry-connectors/internal/databasesql	(cached)
+?   	github.com/domainry/domainry-connectors/internal/domain/connector/model	[no test files]
+?   	github.com/domainry/domainry-connectors/internal/domain/connector/repository	[no test files]
+ok  	github.com/domainry/domainry-connectors/internal/domain/connector/service	(cached)
+ok  	github.com/domainry/domainry-connectors/internal/feishu	1.544s
+ok  	github.com/domainry/domainry-connectors/internal/feishucollaboration	1.861s
+?   	github.com/domainry/domainry-connectors/internal/googlebigquery	[no test files]
+?   	github.com/domainry/domainry-connectors/internal/infrastructure/catalog	[no test files]
+ok  	github.com/domainry/domainry-connectors/internal/mailcontent	2.234s
+ok  	github.com/domainry/domainry-connectors/internal/mailpaging	2.546s
+ok  	github.com/domainry/domainry-connectors/internal/microsoftteams	2.978s
+ok  	github.com/domainry/domainry-connectors/internal/mqtttelemetry	3.254s
+ok  	github.com/domainry/domainry-connectors/internal/notificationmessage	(cached)
+ok  	github.com/domainry/domainry-connectors/internal/oauth2	3.460s
+?   	github.com/domainry/domainry-connectors/internal/releaseverify	[no test files]
+ok  	github.com/domainry/domainry-connectors/internal/shopify	3.665s
+?   	github.com/domainry/domainry-connectors/internal/snowflakesql	[no test files]
+ok  	github.com/domainry/domainry-connectors/internal/tally	5.401s
+?   	github.com/domainry/domainry-connectors/module	[no test files]
+ok  	github.com/domainry/domainry-connectors/providers/accounting/freee	8.118s
+ok  	github.com/domainry/domainry-connectors/providers/accounting/money_forward	8.243s
+ok  	github.com/domainry/domainry-connectors/providers/accounting/quickbooks	9.037s
+ok  	github.com/domainry/domainry-connectors/providers/ads_audience/meta_ads	9.183s
+ok  	github.com/domainry/domainry-connectors/providers/analytics_warehouse/bigquery	9.783s
+ok  	github.com/domainry/domainry-connectors/providers/analytics_warehouse/snowflake	9.694s
+ok  	github.com/domainry/domainry-connectors/providers/app_review/google_play_console	9.773s
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/cal_com	9.722s
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/calendly	9.724s
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/feishu_calendar	8.030s
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/google_calendar	4.796s
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/microsoft_booking	4.997s
+ok  	github.com/domainry/domainry-connectors/providers/bank_reconciliation/plaid	4.152s
+ok  	github.com/domainry/domainry-connectors/providers/calendar/holidays_jp	4.439s
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/dingtalk	3.831s
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/discord	3.867s
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/enterprise_wechat	3.844s
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/feishu	3.721s
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/google_workspace	3.784s
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/line	3.407s
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/line_works	3.393s
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/microsoft_365	3.441s
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/slack	3.526s
+ok  	github.com/domainry/domainry-connectors/providers/collaboration/teams	3.418s
+ok  	github.com/domainry/domainry-connectors/providers/customer_feedback/delighted	3.462s
+ok  	github.com/domainry/domainry-connectors/providers/customer_feedback/surveymonkey	3.437s
+ok  	github.com/domainry/domainry-connectors/providers/customer_feedback/trustpilot	3.448s
+ok  	github.com/domainry/domainry-connectors/providers/customer_feedback/typeform	3.463s
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/asana	3.406s
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/jira	3.789s
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/linear	3.761s
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/monday	3.738s
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/netsuite	3.755s
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/odoo	3.776s
+ok  	github.com/domainry/domainry-connectors/providers/delivery_operations/sap_business_one	3.743s
+ok  	github.com/domainry/domainry-connectors/providers/document_generation/pdf	3.800s
+ok  	github.com/domainry/domainry-connectors/providers/ecommerce/shopify	3.622s
+ok  	github.com/domainry/domainry-connectors/providers/email/smtp	3.678s
+ok  	github.com/domainry/domainry-connectors/providers/esign/adobe_sign	3.728s
+ok  	github.com/domainry/domainry-connectors/providers/esign/docusign	3.315s
+ok  	github.com/domainry/domainry-connectors/providers/esign/fadada	3.400s
+ok  	github.com/domainry/domainry-connectors/providers/esign/signnow	3.388s
+ok  	github.com/domainry/domainry-connectors/providers/event_webinar/zoom_webinar	3.418s
+ok  	github.com/domainry/domainry-connectors/providers/expense_ocr/llm_proxy	3.380s
+ok  	github.com/domainry/domainry-connectors/providers/external_database/bigquery	3.418s
+ok  	github.com/domainry/domainry-connectors/providers/external_database/mysql	3.421s
+ok  	github.com/domainry/domainry-connectors/providers/external_database/postgres	3.508s
+ok  	github.com/domainry/domainry-connectors/providers/external_database/snowflake	3.713s
+ok  	github.com/domainry/domainry-connectors/providers/external_database/sqlserver	3.706s
+ok  	github.com/domainry/domainry-connectors/providers/feishu_collaboration/feishu	3.882s
+ok  	github.com/domainry/domainry-connectors/providers/file_storage/local	3.860s
+ok  	github.com/domainry/domainry-connectors/providers/file_storage/s3	3.865s
+ok  	github.com/domainry/domainry-connectors/providers/google_workspace/google	3.688s
+ok  	github.com/domainry/domainry-connectors/providers/help_center/confluence	3.705s
+ok  	github.com/domainry/domainry-connectors/providers/help_center/gitbook	3.848s
+ok  	github.com/domainry/domainry-connectors/providers/help_center/help_scout_docs	3.849s
+ok  	github.com/domainry/domainry-connectors/providers/help_center/intercom_articles	3.772s
+ok  	github.com/domainry/domainry-connectors/providers/help_center/notion_docs	3.570s
+ok  	github.com/domainry/domainry-connectors/providers/help_center/readme	3.606s
+ok  	github.com/domainry/domainry-connectors/providers/help_center/zendesk_guide	3.465s
+ok  	github.com/domainry/domainry-connectors/providers/iot_telemetry/aws_iot	3.538s
+ok  	github.com/domainry/domainry-connectors/providers/iot_telemetry/datadog_metrics	3.469s
+ok  	github.com/domainry/domainry-connectors/providers/iot_telemetry/mqtt	3.512s
+ok  	github.com/domainry/domainry-connectors/providers/knowledge_base/http_api	3.584s
+ok  	github.com/domainry/domainry-connectors/providers/kyc_risk/persona	3.458s
+ok  	github.com/domainry/domainry-connectors/providers/lead_source/tally	3.474s
+ok  	github.com/domainry/domainry-connectors/providers/lms/moodle	3.471s
+ok  	github.com/domainry/domainry-connectors/providers/lms/talentlms	3.467s
+ok  	github.com/domainry/domainry-connectors/providers/logistics/authorized_carrier_gateway	3.424s
+ok  	github.com/domainry/domainry-connectors/providers/logistics/dhl	3.402s
+ok  	github.com/domainry/domainry-connectors/providers/logistics/fedex	3.384s
+ok  	github.com/domainry/domainry-connectors/providers/logistics/freightos	3.442s
+ok  	github.com/domainry/domainry-connectors/providers/logistics/sf_express	3.392s
+ok  	github.com/domainry/domainry-connectors/providers/logistics/shopify_fulfillment	3.215s
+ok  	github.com/domainry/domainry-connectors/providers/logistics/ups	3.356s
+ok  	github.com/domainry/domainry-connectors/providers/map_address/nominatim	3.370s
+ok  	github.com/domainry/domainry-connectors/providers/marketplace/etsy	3.295s
+ok  	github.com/domainry/domainry-connectors/providers/mcp_tool/mcp	3.281s
+ok  	github.com/domainry/domainry-connectors/providers/microsoft_365/microsoft	3.342s
+ok  	github.com/domainry/domainry-connectors/providers/notification/web_push	3.271s
+ok  	github.com/domainry/domainry-connectors/providers/observability_compliance/prometheus	3.406s
+ok  	github.com/domainry/domainry-connectors/providers/openai/openai	3.375s
+ok  	github.com/domainry/domainry-connectors/providers/payment/alipay	3.632s
+ok  	github.com/domainry/domainry-connectors/providers/payment/stripe	3.352s
+ok  	github.com/domainry/domainry-connectors/providers/payment/wechat_pay	3.503s
+ok  	github.com/domainry/domainry-connectors/providers/product_event/posthog	3.442s
+ok  	github.com/domainry/domainry-connectors/providers/saas_tool/composio	3.405s
+ok  	github.com/domainry/domainry-connectors/providers/social_message/facebook_messenger	3.444s
+ok  	github.com/domainry/domainry-connectors/providers/sso/oidc	3.397s
+ok  	github.com/domainry/domainry-connectors/providers/support/zendesk	3.404s
+ok  	github.com/domainry/domainry-connectors/providers/tariff_classification/brazil_portal_unico_classif	3.480s
+ok  	github.com/domainry/domainry-connectors/providers/tariff_classification/china_hs_bianma	3.460s
+ok  	github.com/domainry/domainry-connectors/providers/telephony/twilio	3.196s
+ok  	github.com/domainry/domainry-connectors/providers/trade_statistics/comex_stat	3.448s
+ok  	github.com/domainry/domainry-connectors/providers/weather/open_meteo	3.644s
+ok  	github.com/domainry/domainry-connectors/providers/webhook/http	3.761s
+ok  	github.com/domainry/domainry-connectors/providers/website_form/tally	3.759s
+ok  	github.com/domainry/domainry-connectors/providers/whatsapp/meta_cloud_api	4.008s
+?   	github.com/domainry/domainry-connectors/scripts/generate_catalog	[no test files]
+ok  	github.com/domainry/domainry-connectors/scripts/generate_provider_registry	(cached)
+?   	github.com/domainry/domainry-connectors/scripts/generate_verification_manifests	[no test files]
+?   	github.com/domainry/domainry-connectors/scripts/verify_alipay_sandbox_live	[no test files]
+?   	github.com/domainry/domainry-connectors/scripts/verify_composio_connection	[no test files]
+?   	github.com/domainry/domainry-connectors/scripts/verify_provider_release	[no test files]
+?   	github.com/domainry/domainry-connectors/scripts/verify_stripe_japan_live	[no test files]
+?   	github.com/domainry/domainry-connectors/scripts/verify_tenant_read_probe	[no test files]
+?   	github.com/domainry/domainry-connectors/scripts/verify_wechat_pay_controlled_live	[no test files]

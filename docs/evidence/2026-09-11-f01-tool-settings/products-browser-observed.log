@@ -1,0 +1,10 @@
+=== RUN   TestToolSettingsBuiltProductBrowser
+PASS domainry-work Tools browser: 3 scenes
+--- PASS: TestToolSettingsBuiltProductBrowser (4.53s)
+PASS
+ok  	github.com/domainry/domainry-work/internal/assembly/saas	4.965s
+=== RUN   TestToolSettingsBuiltProductBrowser
+PASS domainry-pm Tools browser: 3 scenes
+--- PASS: TestToolSettingsBuiltProductBrowser (4.32s)
+PASS
+ok  	github.com/domainry/domainry-pm/internal/assembly/saas	5.094s

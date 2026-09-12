@@ -3,6 +3,7 @@ package integration_test
 import (
 	"context"
 	"errors"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -55,7 +56,7 @@ func TestConversationCatalogConnectionChangesAndFrozenResume(t *testing.T) {
 		return model.answerResult(), nil
 	}
 	options := application.ConversationOptions{ToolHost: host}
-	s, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, options)
+	s, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,14 +75,16 @@ func TestConversationCatalogConnectionChangesAndFrozenResume(t *testing.T) {
 	}
 	s.Close()
 	host.ready.Store(false)
-	s, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	s, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if _, err = s.Resume(t.Context(), c.ID, run.ID, a); err != nil {
 		t.Fatal(err)
 	}
-	if got := waitConversation(t, s, c.ID, run.ID); got.Status != "failed" || got.ErrorCode != "tool_access_denied" {
+	// The shared source audit now rejects every disabled tool before replaying
+	// its accepted result, including extension/local tools.
+	if got := waitConversation(t, s, c.ID, run.ID); got.Status != "failed" || got.ErrorCode != "tool_unavailable" {
 		t.Fatalf("disconnected=%+v", got)
 	}
 	model.mu.Lock()
@@ -115,7 +118,7 @@ func TestConversationCatalogRechecksConnectionAfterConcreteAuthorization(t *test
 		}
 		return model.callResult(`{"title":"must not write"}`), nil
 	}
-	s, err := application.NewConversationService(conversationRepository(t), model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
+	s, err := conversationassembly.NewService(conversationRepository(t), model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
 	if err != nil {
 		t.Fatal(err)
 	}

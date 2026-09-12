@@ -1,0 +1,68 @@
+{
+  "cleanup_verified": true,
+  "content": "# 资料库文档生命周期合成验收\n\n本文件仅用于自动测试，不含真实个人或业务资料。\n\n验收标识：LIBRARY-DOCUMENT-A31585AF5252。\n\n费用规则：收到发票后 30 日付款；合成金额为 123.45 元。\n",
+  "content_readable": true,
+  "delete_acknowledged": true,
+  "delete_attempted": true,
+  "delete_receipts": [
+    {
+      "err_code": 0,
+      "data": {
+        "degraded_reason": null,
+        "error": null,
+        "error_code": null,
+        "ok": true,
+        "operator": "purge_doc",
+        "output_refs": {},
+        "stats": {
+          "docs_deleted": 1,
+          "rows_deleted": 4,
+          "s3_objects_deleted": 2,
+          "vectors_deleted": 1
+        }
+      }
+    },
+    {
+      "err_code": 0,
+      "data": {
+        "degraded_reason": null,
+        "error": null,
+        "ignored": true,
+        "ok": true,
+        "operator": "purge_doc",
+        "output_refs": {},
+        "reason": "duplicate_event",
+        "stats": {
+          "docs_deleted": 0,
+          "rows_deleted": 0,
+          "s3_objects_deleted": 0,
+          "vectors_deleted": 0
+        }
+      }
+    }
+  ],
+  "delete_recovery_verified": true,
+  "delete_response_lost": true,
+  "delete_urls": [
+    "https://api.verdent.ai/v1/kb/kbs/kb-3bbd8f1d3249/documents?doc_id=domainry-agent-acceptance-20260911-a31585af5252",
+    "https://api.verdent.ai/v1/kb/kbs/kb-3bbd8f1d3249/documents?doc_id=domainry-agent-acceptance-20260911-a31585af5252"
+  ],
+  "doc_id": "domainry-agent-acceptance-20260911-a31585af5252",
+  "fetch_chunks": 1,
+  "filename": "domainry-agent-synthetic-acceptance.md",
+  "index_status": "INDEXED",
+  "kb_id": "kb-3bbd8f1d3249",
+  "marker": "LIBRARY-DOCUMENT-A31585AF5252",
+  "origin": "https://api.verdent.ai",
+  "permission_id": "scope:domainry-k01:d17ea8eaae7333a9a1f27d0abaf61cb0:library:read",
+  "permission_ids": [
+    "scope:domainry-k01:d17ea8eaae7333a9a1f27d0abaf61cb0:library:read"
+  ],
+  "preflight_missing": true,
+  "search_matched": true,
+  "team_id": "1470194374940573696",
+  "upload_acknowledged": true,
+  "upload_attempted": true,
+  "upload_request_id": "domainry-k01-upload-d17ea8eaae7333a9a1f27d0abaf61cb0",
+  "visibility": "private"
+}

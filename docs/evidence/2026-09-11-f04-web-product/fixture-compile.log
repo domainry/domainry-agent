@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-agent/internal/assembly/web [github.com/domainry/domainry-agent/internal/assembly/web.test]
+internal/assembly/web/integration_accounts_test.go:208:22: invalid append: argument must be a slice; have providers (variable of struct type "github.com/domainry/domainry-connector-sdk".ProviderSet)
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web [build failed]
+FAIL

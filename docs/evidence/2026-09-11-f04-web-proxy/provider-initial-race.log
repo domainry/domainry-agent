@@ -1,0 +1,16 @@
+=== RUN   TestAdapterIdentityAndNoImplicitProbe
+--- PASS: TestAdapterIdentityAndNoImplicitProbe (0.00s)
+=== RUN   TestSearchTranslationAndSourceNormalization
+--- PASS: TestSearchTranslationAndSourceNormalization (0.00s)
+=== RUN   TestFetchEnvelopeAndUnknownCompleteness
+--- PASS: TestFetchEnvelopeAndUnknownCompleteness (0.00s)
+=== RUN   TestSourcePolicyAndUTF8Bounds
+--- PASS: TestSourcePolicyAndUTF8Bounds (0.00s)
+=== RUN   TestMalformedResponsesErrorsAndNoRetries
+--- PASS: TestMalformedResponsesErrorsAndNoRetries (0.01s)
+=== RUN   TestInvalidConfigurationCredentialAndInputDoNotDispatch
+--- PASS: TestInvalidConfigurationCredentialAndInputDoNotDispatch (0.01s)
+=== RUN   TestActualHTTPProtocolAndCancellation
+--- PASS: TestActualHTTPProtocolAndCancellation (0.00s)
+PASS
+ok  	github.com/domainry/domainry-connectors/providers/web/llm_proxy	1.691s

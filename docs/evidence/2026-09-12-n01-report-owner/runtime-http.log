@@ -1,0 +1,6 @@
+=== RUN   TestConversationGovernedReportRPCUsesRealOwnerAndCurrentData
+    conversation_report_evidence_rpc_test.go:124: POST /records/customer/items/customer_customer_acme/actions/customer.rename status=400 want=200 body={"capability_key":"action.definition","code":"backend.action.expected_updated_at_required","contract_version":"runtime-authoring-v1","error":"backend.action.expected_updated_at_required","field_path":"updated_at","message":"backend.action.expected_updated_at_required","message_key":"backend.action.expected_updated_at_required","params":{"action":"customer.rename","field":"updated_at"},"request_id":"req_18dbd76e8eef4c22beb1c2a37fd69327"}
+--- FAIL: TestConversationGovernedReportRPCUsesRealOwnerAndCurrentData (2.97s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	3.784s
+FAIL

@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-identity/internal/infrastructure/persistence/mysql/schema
+../domainry-identity/internal/infrastructure/persistence/mysql/schema/profile.go:63:20: database.QueryRowContext undefined (type "github.com/domainry/domainry-identity/internal/infrastructure/persistence/driver".SchemaDatabase has no field or method QueryRowContext)
+FAIL	github.com/domainry/domainry-agent/internal/assembly/product [build failed]
+FAIL

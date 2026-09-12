@@ -1,0 +1,4 @@
+=== RUN   TestCalendarProductIdentityConversationAndRestart
+--- PASS: TestCalendarProductIdentityConversationAndRestart (115.65s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	117.468s

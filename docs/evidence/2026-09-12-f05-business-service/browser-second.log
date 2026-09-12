@@ -1,0 +1,24 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+403 !== 200
+
+    at file:///Users/tiger/Projects/domainry-agent/frontend/tests/business-service.browser.mjs:75:60 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 403,
+  expected: 200,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.22.0
+    conversation_business_product_service_test.go:267: actual shared Identity business browser exit status 1
+--- FAIL: TestConversationBusinessProductWithSharedIdentityService (14.26s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	15.074s
+FAIL

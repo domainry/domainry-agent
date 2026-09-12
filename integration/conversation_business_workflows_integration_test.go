@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"strings"
 	"sync"
 	"testing"
@@ -121,7 +122,7 @@ func TestConversationWorkflowConfirmedStartRestartReconcileAndProgress(t *testin
 		}
 	}}
 	options := application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,7 +146,7 @@ func TestConversationWorkflowConfirmedStartRestartReconcileAndProgress(t *testin
 		t.Fatal("unconfirmed start")
 	}
 	service.Close()
-	service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}

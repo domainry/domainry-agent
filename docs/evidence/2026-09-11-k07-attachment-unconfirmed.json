@@ -1,0 +1,144 @@
+{
+  "date": "2026-09-11",
+  "todo": "K07",
+  "todo_complete": false,
+  "unconfirmed_upload_increment_complete": true,
+  "source_parser": false,
+  "new_schema_migrations": 0,
+  "scope": {
+    "host": "actual Identity, Module HTTP, SQLite and built frontend",
+    "knowledge_service": "isolated official Connector protocol fixture with lost upload response and delayed document visibility",
+    "model": "not called",
+    "live_knowledge_rerun": false,
+    "real_knowledge_prior_evidence": "docs/evidence/2026-09-11-k07-private-attachment-live.json"
+  },
+  "production_change": "persist needs_reconcile for attempted uploads without acknowledgement or observed indexing; frontend preserves polling and authorized original preview/download",
+  "host_audit": {
+    "check_revision": 8,
+    "complete": true,
+    "hidden_fetches": 2,
+    "original_bytes_preserved": true,
+    "original_cleaned": true,
+    "positive_index_observed": true,
+    "remote_deletes": 1,
+    "remote_puts": 1,
+    "source_parser": false,
+    "unconfirmed_upload_scenario": true,
+    "upstream_put_acknowledged": false
+  },
+  "browser_report": {
+    "passed": true,
+    "seconds": 11.98,
+    "steps": [
+      "unknown remote upload is explicitly pending reconciliation; original remains available and no new upload is offered",
+      "pending remote result does not block authorized PDF rendering or exact original download",
+      "full host restart and original request replay retain the same attachment; repeated not-found inspections do not repeat upload or fabricate completion",
+      "Identity revocation blocks reconciliation while original uncertain state persists; restoration and mobile display work",
+      "later positive remote observation resolves the same upload without changing its identity or uploading again",
+      "deletion revokes original access and clears the resolved remote document exactly once"
+    ],
+    "baselines": [
+      {
+        "label": "desktop-unconfirmed-upload",
+        "quality_failures": [],
+        "page_overflow": false
+      },
+      {
+        "label": "mobile-unconfirmed-upload",
+        "quality_failures": [],
+        "page_overflow": false
+      }
+    ]
+  },
+  "original_sha256": "04b53692ecd93bab02e31b43499d98937d39d8c906726dce34b9de0fd1c36268",
+  "validation": {
+    "storage_unknown_upload_and_deletion_tests": true,
+    "agent_go_test_all": true,
+    "sdk_go_test_all": true,
+    "storage_race": true,
+    "go_vet": true,
+    "frontend_tests_passed": 42,
+    "frontend_build": true,
+    "screenshot_review": "desktop and mobile inspected; no horizontal overflow or overlapping controls"
+  },
+  "preserved_failure": {
+    "attempt": 1,
+    "seconds": 3.99,
+    "reason": "test script API GET omitted required X-Agent-Scope; host correctly returned 409; fixed before final acceptance"
+  },
+  "open_scope_question": "Whether K07 follows existing B04 pending reconciliation when outcome cannot be known, or expands the knowledge service to provide definitive cancel/retry receipts; question sent to user, K07 unchanged pending answer.",
+  "evidence_files": [
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/browser-1/failure.png",
+      "sha256": "bcc54812b5d1067be34296ada9bc6f5bae433bf9ebb861d7f3539c2c97912ea7"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/browser-1/original.pdf",
+      "sha256": "04b53692ecd93bab02e31b43499d98937d39d8c906726dce34b9de0fd1c36268"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/browser-1/report.json",
+      "sha256": "34fd74261f2681e762125ce6845eee6a8606c1fb0f8d0e3763aa83557657fb2f"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/browser-2/desktop-unconfirmed-upload.png",
+      "sha256": "0cfe105fc08d1b7d90c8cfda962590bff14a8dd0ff556df5bd65e9e6e994997c"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/browser-2/download.pdf",
+      "sha256": "04b53692ecd93bab02e31b43499d98937d39d8c906726dce34b9de0fd1c36268"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/browser-2/host-audit.json",
+      "sha256": "127f21e15ba1f11b1aaa5ab9b9bac183ae39a1f18e3012b3e3a1a57e1d54dc96"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/browser-2/mobile-unconfirmed-upload.png",
+      "sha256": "94659cc1567ec78bcec336aa19d452cbe5168552668be93209d44281039e3528"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/browser-2/original.pdf",
+      "sha256": "04b53692ecd93bab02e31b43499d98937d39d8c906726dce34b9de0fd1c36268"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/browser-2/report.json",
+      "sha256": "59b8ad8f5965f578aefddcb68c0897fc05cd2138cbb19411c252f2536cce241c"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/domainry-k07-unconfirmed-agent-full.log",
+      "sha256": "5b5b094b371dc5ef49cc448eab755f919b8fd554064b59b7ea8e1c3d0a88b372"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/domainry-k07-unconfirmed-browser-1.log",
+      "sha256": "61e1b37a810619e5f32e4bb6e3c6b678e8ec1473685313150cfeb47fb8b86f25"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/domainry-k07-unconfirmed-browser-2.log",
+      "sha256": "5dfb2de3e01ee3ce307dff6882ccc3c49ca7f8d7a45472448f55dd98fcbe1fdc"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/domainry-k07-unconfirmed-frontend-build.log",
+      "sha256": "d5cd517ce891b9bf01e99a3d4ef0759da42d0a0ccc24f152c6c01077dc1ff3f5"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/domainry-k07-unconfirmed-frontend-test.log",
+      "sha256": "19308b8a27fdfe119a1c8270d3fd7994051defceb6dcaeebbd39b41a9d9b7db0"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/domainry-k07-unconfirmed-race.log",
+      "sha256": "821631a42d31778a71a040bfc3a619930385b6e151a20fcd3e1cb812fa206eeb"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/domainry-k07-unconfirmed-sdk-full.log",
+      "sha256": "2332c30b10a51b40379ba079c0c250b2e96d017b1b8ef4cc75e1b48ac6fb43c6"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/domainry-k07-unconfirmed-store.log",
+      "sha256": "aa78ed13ae96ccfcdabf68e15b672087faffca1ddf4c310c26efb075f657de7a"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-attachment-unconfirmed/domainry-k07-unconfirmed-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

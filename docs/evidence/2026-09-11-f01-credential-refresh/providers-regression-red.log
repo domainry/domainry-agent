@@ -1,0 +1,27 @@
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure/call/http
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure/call/network
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure/connection-test/http
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure/connection-test/network
+--- PASS: TestRotatedCredentialsSurviveFollowupFailure (0.00s)
+    --- PASS: TestRotatedCredentialsSurviveFollowupFailure/call/http (0.00s)
+    --- PASS: TestRotatedCredentialsSurviveFollowupFailure/call/network (0.00s)
+    --- PASS: TestRotatedCredentialsSurviveFollowupFailure/connection-test/http (0.00s)
+    --- PASS: TestRotatedCredentialsSurviveFollowupFailure/connection-test/network (0.00s)
+PASS
+ok  	github.com/domainry/domainry-connectors/providers/appointment_scheduling/google_calendar	1.008s
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure/call/http
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure/call/network
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure/connection-test/http
+    refresh_failure_test.go:63: successfully rotated credentials were discarded
+=== RUN   TestRotatedCredentialsSurviveFollowupFailure/connection-test/network
+    refresh_failure_test.go:63: successfully rotated credentials were discarded
+--- FAIL: TestRotatedCredentialsSurviveFollowupFailure (0.00s)
+    --- PASS: TestRotatedCredentialsSurviveFollowupFailure/call/http (0.00s)
+    --- PASS: TestRotatedCredentialsSurviveFollowupFailure/call/network (0.00s)
+    --- FAIL: TestRotatedCredentialsSurviveFollowupFailure/connection-test/http (0.00s)
+    --- FAIL: TestRotatedCredentialsSurviveFollowupFailure/connection-test/network (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-connectors/providers/microsoft_365/microsoft	0.634s
+FAIL

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http/httptest"
 	"strings"
 	"sync/atomic"
@@ -82,7 +83,7 @@ func TestBusinessCursorPaginationContinuesWithoutInventedPageNumbers(t *testing.
 			return (&executionModel{}).answerResult(), nil
 		}
 	}}
-	service, err := application.NewConversationService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: personalReadAuthorizer{}, Business: source})
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: personalReadAuthorizer{}, Business: source})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -252,7 +253,7 @@ func TestBusinessToolsPreserveScopePaginationAndEvidenceAcrossRestart(t *testing
 		}
 	}}
 	options := application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -270,7 +271,7 @@ func TestBusinessToolsPreserveScopePaginationAndEvidenceAcrossRestart(t *testing
 	}
 	expected = <-frozen
 	service.Close()
-	service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -327,7 +328,7 @@ func TestBusinessUnexpectedFieldsAreRejectedBeforeModel(t *testing.T) {
 		}
 		return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "业务服务的返回字段与请求不符，本次未使用该结果。"}, FinishReason: "stop"}, nil
 	}}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: &overbroadBusinessSource{}})
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: &overbroadBusinessSource{}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -366,7 +367,7 @@ func TestBusinessSaaSReadAndRevocation(t *testing.T) {
 			return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "客户名称为客户乙。"}, FinishReason: "stop"}, nil
 		}
 	}}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})
 	if err != nil {
 		t.Fatal(err)
 	}

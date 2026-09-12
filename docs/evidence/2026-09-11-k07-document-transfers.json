@@ -1,0 +1,219 @@
+{
+  "date": "2026-09-11",
+  "todo": "K07",
+  "todo_complete": false,
+  "increment_complete": true,
+  "scope": "Cross-library immutable copy/move, distinct remote scopes, source retirement, durable retry and browser acknowledgment recovery",
+  "production_change": "Allow an existing target receipt to be checked during knowledge source outage; retain current target role/archive/action checks and require a binding for new transfers",
+  "verification": {
+    "atomic_store_cases": 5,
+    "saas_test_seconds": 30.39,
+    "race_store_package_seconds": 2.661,
+    "race_integration_package_seconds": 34.237,
+    "frontend_tests_passed": 36,
+    "build": "passed",
+    "architecture_test": "passed",
+    "vet": "passed",
+    "browser_initial_steps": [
+      "private source explicitly copied to shared library; action revocation and recovery, desktop/mobile confirmation",
+      "copy and original are independent; deleting private origin preserves shared copy",
+      "lost move response recovered after complete host restart and source configuration removal using the same request; old source denied"
+    ],
+    "browser_baselines": [
+      {
+        "label": "copy-desktop",
+        "qualityFailures": [],
+        "pageOverflow": false
+      },
+      {
+        "label": "copy-mobile",
+        "qualityFailures": [],
+        "pageOverflow": false
+      },
+      {
+        "label": "move-desktop",
+        "qualityFailures": [],
+        "pageOverflow": false
+      },
+      {
+        "label": "pending-recovery-mobile",
+        "qualityFailures": [],
+        "pageOverflow": false
+      }
+    ],
+    "browser_remaining_scope": "remaining recovery/index/cleanup",
+    "browser_remaining_complete": true,
+    "browser_remaining_steps": [
+      "lost move response recovered after complete host restart and source configuration removal using the same request; old source denied",
+      "source configuration restored, final target indexed and deleted; no pending transfer receipt"
+    ],
+    "browser_host_test_seconds": 69.54,
+    "browser_errors": [],
+    "browser_external_requests": [],
+    "remote_three_documents_put_delete_each": 1,
+    "real_verdent_called": false,
+    "fixture": "Actual Identity/Module/HTTP/SaaS/SQLite/original storage and official Connector; local synthetic knowledge HTTP responses"
+  },
+  "failed_attempts_preserved": [
+    "SaaS test compile error using wrong SDK result shape",
+    "SaaS search run failed before stable ordering of multi-document fixture results",
+    "First browser final index wait 20 seconds shorter than 30-second persisted worker retry",
+    "First targeted browser retry local variable shadowing"
+  ],
+  "remaining": [
+    "Direct conversation-private attachment indexing through Connector",
+    "Actual Verdent cross-KB transfer and ACL/cleanup acceptance"
+  ],
+  "artifacts": [
+    {
+      "path": "/private/tmp/domainry-k07-transfer-store.log",
+      "bytes": 1157,
+      "sha256": "673906395b6427441cbf4e6faed29a203c858c66b8dd6a4e3894e7ef5a046fc7"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-saas.log",
+      "bytes": 323,
+      "sha256": "3a396e5c22f1a39635360db3fbbc37477ffd1a608c39c65361b2989e69f5b744"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-saas-2.log",
+      "bytes": 304,
+      "sha256": "56a121d86262eb850f827b449cc67293076e00dd45f0203eb5b2bc9699e6e5f6"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-saas-3.log",
+      "bytes": 453,
+      "sha256": "80e565d5e21b67ac894bdfc37eb02186a7fce9478df13636bb17c626a41bbe94"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-race.log",
+      "bytes": 158,
+      "sha256": "460d020444ea90343233c047d764d0e65e1ef50922cef4d71b0e1d93df40e85b"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-ui-unit.log",
+      "bytes": 5185,
+      "sha256": "75af901f8605c72fe88547dfc24c5622c8644ee9d6088b08cca3c951f2de24f4"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-ui-build.log",
+      "bytes": 32264,
+      "sha256": "03f228f0ec32efc71fca1393688675718da6012cc7e7bc51b35b3a1b01672dac"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-architecture.log",
+      "bytes": 71,
+      "sha256": "6cbc82cee48df2ed04558e333d817e066f1967acb550637d933ebd5a8edca475"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser.log",
+      "bytes": 1068,
+      "sha256": "388b5fbc75be2bcc0cbe3a6315e50eb92f887d536f555261667eebe06178a9c2"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser-host.log",
+      "bytes": 437,
+      "sha256": "58392a213b7eb144de10a81c641e7057d59190e7730a37032589fecd152ac84c"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser-retry.log",
+      "bytes": 296,
+      "sha256": "2b75ae11edbd65e66efbff94e8e9e156b071cc67df8b4ed07b5636cdfb358e63"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser-host-retry.log",
+      "bytes": 437,
+      "sha256": "d8d92da20a191eaa2d6834cf2277b7149956e10d699cea1c856aaad47e9c16f3"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser-final.log",
+      "bytes": 235,
+      "sha256": "c47861b91743f250b33d80e9c4acdcd4ddf6ce3c9397fb35491719b6b8f2d4c1"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser-host-final.log",
+      "bytes": 317,
+      "sha256": "2e6242b0c44b48e618c233e1552b3e94f8c8d22f0dc003c187bbd6440c0508ef"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser/report.json",
+      "bytes": 86326,
+      "sha256": "8075b9491ff2fc61f16b7377e02089bde418e9579239625a719b2b7d430a94cd"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser-retry/report.json",
+      "bytes": 244,
+      "sha256": "994126217842c707fc18fec35316edc7be77ba978e854d205a7af1e807b2588d"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser-final/report.json",
+      "bytes": 1109,
+      "sha256": "d71aaac0a926b617c9d7e8215293e8747fe8840ce46ce962eeb218e6ed0f3fbd"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/document-transfer-state.ts",
+      "bytes": 2209,
+      "sha256": "c8ebf606a699ffce8812b20d3809f3c5363a604db72142d7f83bc2660d3cfe65"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/KnowledgeDocumentTransferDialog.tsx",
+      "bytes": 8275,
+      "sha256": "a07dca4d1bb2e48b72d50d48883f3b4c17c27f0aa8fb0e1a361a7565d73d7cf5"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/knowledge-document-state.test.ts",
+      "bytes": 7114,
+      "sha256": "06c19195a011a03cb3d131f6fb69bf94dfdfbc2e110765ed0d84bb94c21e7c8b"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/tests/document-transfer.browser.mjs",
+      "bytes": 10372,
+      "sha256": "badcd44e8ab390ed6ccec1db598d13a77229b2e86691452106c1f3e804011739"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/knowledge_document_transfer_store_test.go",
+      "bytes": 6213,
+      "sha256": "ab8e32c2aa06305aae3af0ef59e4dcc446a0b2b98015a2510a031c4280ca7f60"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/integration/knowledge_document_transfer_integration_test.go",
+      "bytes": 14723,
+      "sha256": "1c9ae7d21f4f2dc1b65d8a137baf20fbc879f902b7f75386cab987a3ad981ec2"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/knowledge_documents_test.go",
+      "bytes": 16992,
+      "sha256": "d2ec100a8e43322adc14a5a59c0dba105e2d7be13621d9b0d765f4af459b9fc8"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser/copy-desktop.png",
+      "bytes": 153633,
+      "sha256": "69aa48458bc778f93e68442e8711eb0bb140af5c5e6d8d115ee01e177ac90687"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser/copy-mobile.png",
+      "bytes": 84002,
+      "sha256": "c4fb20f050deb1becfe3399222f5bad0a8580da22539ed972b68cb76c3dcb627"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser/failure.png",
+      "bytes": 150067,
+      "sha256": "100fad95618f28fc04c1c3174fbbeff64cb90bc41fc2f43926787b0412c9052d"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser/move-desktop.png",
+      "bytes": 156822,
+      "sha256": "31f122e3e7aea8fa8cbb4ae9d780e9aedded64aeb65eeb52957a30f277203887"
+    },
+    {
+      "path": "/private/tmp/domainry-k07-transfer-browser/pending-recovery-mobile.png",
+      "bytes": 95409,
+      "sha256": "1dbdd7c38521c6da98f673e067a8bd8a7b258e13f377e500b2cd1a22df9341c2"
+    }
+  ]
+}

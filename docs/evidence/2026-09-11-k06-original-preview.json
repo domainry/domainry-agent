@@ -1,0 +1,188 @@
+{
+  "date": "2026-09-11",
+  "todo": "K06",
+  "todo_complete": false,
+  "original_parser_removal_complete": true,
+  "viewer_implementation_present": true,
+  "scope": "Connector retrieval followed by authorized original-file display; no Agent original-file parser or index",
+  "verification": {
+    "agent_all": "passed",
+    "sdk_all_including_pre_removal_definition_snapshot": "passed",
+    "frontend_tests": {
+      "passed": 35
+    },
+    "build": "passed",
+    "vet": "passed",
+    "upgrade_cleanup_and_original_preservation": "passed",
+    "retired_source_reuse": "denied",
+    "focused_race": "passed",
+    "broad_race": "terminated for stack diagnosis after prolonged existing outcome test; not passed",
+    "isolated_outcome_race": "passed, 44.78 seconds",
+    "browser_pdf_desktop_mobile": "passed in first retry",
+    "browser_source_docx_xlsx_lifecycle": "functional assertions passed; machine baseline failed on Excel collection ownership",
+    "browser_host_final": "passed, 54.35 seconds",
+    "browser_errors": 0,
+    "browser_external_requests": 0
+  },
+  "remaining": [
+    "Recheck Excel desktop/mobile machine baseline after moving collection marker to common table/paginator root; build passed, no browser retest yet",
+    "Verify binary private-attachment preview entry in browser",
+    "External-only hits require an original-file capability; never synthesize an original from snippets"
+  ],
+  "limits": [
+    "PDF/DOCX/XLSX preview only; legacy DOC/XLS and encrypted files use explicit download fallback",
+    "Office browser rendering has documented expansion/time/size limits and does not promise complete desktop Office fidelity"
+  ],
+  "artifacts": [
+    {
+      "path": "/tmp/domainry-no-parser-all-latest.log",
+      "bytes": 2762,
+      "sha256": "4f30872c0230f5ea2fed5e6ad9f474b03e7e0aed3b3fe19c0f3e4bdfc3efebb5"
+    },
+    {
+      "path": "/tmp/domainry-no-parser-sdk-final.log",
+      "bytes": 540,
+      "sha256": "d7b5ccad36e701f469c962bc87430a5c11ca208edf80f1b0315500070c4bdc3a"
+    },
+    {
+      "path": "/tmp/domainry-no-parser-history-final.log",
+      "bytes": 68,
+      "sha256": "bf2df5a5d07ba814fcf612cf2d989acf940b6fba5bb9994617003ca0f63059cf"
+    },
+    {
+      "path": "/tmp/domainry-no-parser-retirement.log",
+      "bytes": 137,
+      "sha256": "eff056db107746fd270e96172d7b6dd122013f88e36b1dee15f5802961492f9c"
+    },
+    {
+      "path": "/tmp/domainry-no-parser-final-focused.log",
+      "bytes": 137,
+      "sha256": "ba7c01c520eaaa5578ae5629d3b655308e766739e7e67e22e7c760cd86ad8192"
+    },
+    {
+      "path": "/tmp/domainry-no-parser-focused-race.log",
+      "bytes": 138,
+      "sha256": "817df0e4ad5e24389a11ddc4ac65d71edcef16aa1a3b0dbbc771a1103604e2a3"
+    },
+    {
+      "path": "/tmp/domainry-no-parser-outcome-race.log",
+      "bytes": 469,
+      "sha256": "59267f96456e42dc02a8554155b015a2205973953fab844a731f0fd71331a10c"
+    },
+    {
+      "path": "/tmp/domainry-no-parser-race.log",
+      "bytes": 41703,
+      "sha256": "f648f14b6d2f4ef321b1061f1fda1287a1570799f82ac5ab6df246911e530428"
+    },
+    {
+      "path": "/tmp/domainry-no-parser-vet-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-tests-final.log",
+      "bytes": 5048,
+      "sha256": "d4373a5e6a2e9c5efab9f7a42946231c75afe49d3a8b413055ef60c2a0384cae"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-build-final.log",
+      "bytes": 32264,
+      "sha256": "9be55a06daff2f1221eda9d640dcef9e2f9ca51784f9453e5c9f1ae435695c9f"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-state.log",
+      "bytes": 465,
+      "sha256": "f41e621705dbf62f7d6b332b3a7fe46560e5917c161eb673fe3c6d44f5af34b7"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser.log",
+      "bytes": 582,
+      "sha256": "d6be0db09079abb893e4d09f3f83226122d6f69f6475774e13ba9f687c9a6444"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-host.log",
+      "bytes": 433,
+      "sha256": "230642f4fc8f5176f4a646bf495c48024cf8e0ee1a4d72a7ea50d203383bf49a"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-retry.log",
+      "bytes": 500,
+      "sha256": "f2d0dfc1e577905d371f736b37c74f05da61b7704b8c3e0d92ed1829dcef86bc"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-host-retry.log",
+      "bytes": 433,
+      "sha256": "5ba9a673cac0c238057653f9f56f318c0a7042a0295a20a1db3d5e73f92191ed"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-final.log",
+      "bytes": 1197,
+      "sha256": "3a8be7b0bbe53ed9d94eeded478aada0a3a6cf2f3c35b4315364316875bcafbb"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-host-final.log",
+      "bytes": 313,
+      "sha256": "a6e456d072e032f4c25a9741a372c8ed21c7e6ab49eb0e56604bc1f7a89746b4"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser/report.json",
+      "bytes": 525,
+      "sha256": "18deb71d2993040357325309569e7a66e3321f8251c5b34d4695461bd131069d"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-retry/report.json",
+      "bytes": 47764,
+      "sha256": "2b08b3700d1f539f1285997e5a7522e4a880eca0ce50a050d223569ad3c600c7"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-final/report.json",
+      "bytes": 151245,
+      "sha256": "ba68592f000368ac6b99f03c7ca949dffc175036474cdb86ec81710e91953bee"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-retry/desktop-pdf.png",
+      "bytes": 114767,
+      "sha256": "cd054bf52a337b81dac3d5b8217f2b3e76fc4c26e235c30a6594ac99aed0157f"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-retry/mobile-pdf.png",
+      "bytes": 46374,
+      "sha256": "e4981b0c1fdac606c83e2c2c9cb1315002903332f5349a01ef17774a0316095b"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-final/retrieval-original.png",
+      "bytes": 95483,
+      "sha256": "cdf2e14660fe587cfea44a5dc4770ee4bb35764a57f5cc9de40c8da647bc5bb5"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-final/desktop-docx.png",
+      "bytes": 75986,
+      "sha256": "9610d33b52041c70499b9bc6bc8a8ae734ea83e5a0d5cdaab4d7280c449e3f17"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-final/mobile-docx.png",
+      "bytes": 57022,
+      "sha256": "da2cae6fac968dd841efdb80fc47250a098adf6f71cfce3308d85f477742ca04"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-final/desktop-xlsx.png",
+      "bytes": 74140,
+      "sha256": "36d3564f8e24112a1593517a3150e220ba1b3c3a151315b72c32d0bf4d908ae2"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-final/mobile-xlsx.png",
+      "bytes": 55101,
+      "sha256": "7a84a5f9377fa3638c0bdb282b25fc656162423bdcf69177eedbee76b4f1de90"
+    },
+    {
+      "path": "/tmp/domainry-file-preview-browser-final/revoked-original.png",
+      "bytes": 48640,
+      "sha256": "e9637706d4713dfc2878b42979c33f5d915d57f336d5a2236478c3c2c5c2cfb9"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent-sdk/testdata/knowledge_history_v3_v4.json",
+      "bytes": 10303,
+      "sha256": "eedd7e5bed1d3e8f5c8c52a578b6ac243e8d2f99d98f19abcaec844ebf745392"
+    }
+  ]
+}

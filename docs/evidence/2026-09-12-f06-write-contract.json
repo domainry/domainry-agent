@@ -1,0 +1,282 @@
+{
+  "todo": "F06",
+  "complete": false,
+  "stage": "calendar-mail-write-contracts",
+  "captured_at": "2026-09-12T02:43:23.733422+08:00",
+  "path_base": "/Users/tiger/Projects",
+  "contracts": {
+    "calendarwrite": {
+      "sha256": "7535ffee48efcb9bdd8686ac25a5b3f8c9aa9be39cbe6a4298f603e0f66d5001",
+      "operations": {
+        "calendar_event_inspect": "88e0c7794f9f9e111b8e03629cf73c5cdf3f7dd7fbca11ecc5d09914a93c9aec",
+        "calendar_event_create": "c4ce975e8194b9c2bb55c1bbe59ac28757125abc39b7afdfe642a39aae39dcc9",
+        "calendar_event_update": "1c8515a32de5a9874549b5628008365ea8913fe937340e543029828d2e50c42d"
+      }
+    },
+    "mailwrite": {
+      "sha256": "18d472fe742b5cdc77a61827fb82b36b4bd1e604b57d8826a70824582f8cbd57",
+      "operations": {
+        "mail_send": "27f290e180d111a97a202e01372ecffd2f4ab6480369728ca6aa85d502c92895",
+        "mail_reply": "ca1227cbb9b9f854bcae93ded73bc12845bbc8b6714581b73f0f6aab0f4b4da1"
+      }
+    }
+  },
+  "source_files": [
+    {
+      "path": "domainry-agent/docs/account-write-boundaries.md",
+      "bytes": 4965,
+      "sha256": "2d9495d8abed298133f0cf6871cbdacd028bd48e4638a21286ab84e3e02a0805"
+    },
+    {
+      "path": "domainry-agent/docs/agent-capabilities-todo.md",
+      "bytes": 117801,
+      "sha256": "e0f5a9400b221c32792bca157cd3fe6b81a257ae97884f03f2321683ee6911b6"
+    },
+    {
+      "path": "domainry-agent/docs/remaining-capability-boundaries.md",
+      "bytes": 11449,
+      "sha256": "bd8b0c19cd194d374b512ec521bb06c8689092ff2c2778b6c80e20f750e1c7df"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-12-f06-write-contract.md",
+      "bytes": 5254,
+      "sha256": "4e2ee5cccc4b4859af4a3dbcc3ce02ddea4e72816ff68eb6313cbfd211d11792"
+    },
+    {
+      "path": "domainry-connector-sdk/AGENTS.md",
+      "bytes": 369,
+      "sha256": "7bc3690ea6b592740b4d13939978ec4a42cf874e7d2a7407c12648aee3622e6c"
+    },
+    {
+      "path": "domainry-connector-sdk/Makefile",
+      "bytes": 821,
+      "sha256": "810897d2e5bf3361aaae903d726b559004fcaa617a311ff1a7201a5f85587c8e"
+    },
+    {
+      "path": "domainry-connector-sdk/README.md",
+      "bytes": 6257,
+      "sha256": "15a515e05936f82c33ec830d1c6426c1f31a167d0dc862e88bbd76999173ad63"
+    },
+    {
+      "path": "domainry-connector-sdk/calendar/calendar.go",
+      "bytes": 3109,
+      "sha256": "02641a4e3110148cb764440c24404c88e9e53535c130a85f069f2300dc01b812"
+    },
+    {
+      "path": "domainry-connector-sdk/calendar/identity.go",
+      "bytes": 1449,
+      "sha256": "99e1f6e03e84c2791632793dbb27b74926bd82b0e2fb4d964c644001f519a4ad"
+    },
+    {
+      "path": "domainry-connector-sdk/calendar/validation.go",
+      "bytes": 3720,
+      "sha256": "cde31851046041c9b193a158ce19f333b761ebc98eab31e02aafccbaa4d86de3"
+    },
+    {
+      "path": "domainry-connector-sdk/calendarwrite/contract.go",
+      "bytes": 3793,
+      "sha256": "2ae4ecb90a644ca3c08f963b545bb6c9e9ce5bfdc5dd738b38d62c2cd600f44a"
+    },
+    {
+      "path": "domainry-connector-sdk/calendarwrite/contract_test.go",
+      "bytes": 12594,
+      "sha256": "0437875409108409bef239ff942059022d63396382bf673e4d1be052ec1e16d8"
+    },
+    {
+      "path": "domainry-connector-sdk/calendarwrite/decode.go",
+      "bytes": 1277,
+      "sha256": "d63b27971581c015061662a3077efcc90cbe638646a0eebecbe469e4a6e5bf53"
+    },
+    {
+      "path": "domainry-connector-sdk/calendarwrite/identity.go",
+      "bytes": 1449,
+      "sha256": "2a39aeecf4aa8270f33c84901618d523e7478421e017ed6f305896b289281281"
+    },
+    {
+      "path": "domainry-connector-sdk/calendarwrite/validation.go",
+      "bytes": 8377,
+      "sha256": "3d257a8c07126ba98971f9202b3112980ab0e638b3c97f78b6b5ea8e99993174"
+    },
+    {
+      "path": "domainry-connector-sdk/contract_identity.go",
+      "bytes": 9635,
+      "sha256": "fe24c8972388465767ff96295d4e1d4e221e3980fbad9312bc552d7db2c50fa2"
+    },
+    {
+      "path": "domainry-connector-sdk/external_module_test.go",
+      "bytes": 10301,
+      "sha256": "1c36d703e57a0aeb34bf36823748e4ae3c26297e0f981b9076be90cd4d056f51"
+    },
+    {
+      "path": "domainry-connector-sdk/go.mod",
+      "bytes": 61,
+      "sha256": "dfc83ea1f4abb1f0369543015f7886bba0bd7845ec10bb620df7a6ac36b08ef8"
+    },
+    {
+      "path": "domainry-connector-sdk/mail/identity.go",
+      "bytes": 1325,
+      "sha256": "28183569a339da105c8d902263b34b246c4d83fa07160d197f5f1adad69cb8c6"
+    },
+    {
+      "path": "domainry-connector-sdk/mail/mail.go",
+      "bytes": 2673,
+      "sha256": "a2cd9c59c58ecaba02d31dd318bbbd334b9f5586bcb13abb2d078528d3bbb72d"
+    },
+    {
+      "path": "domainry-connector-sdk/mail/validation.go",
+      "bytes": 3887,
+      "sha256": "4d6896d63a9c272a5373d9667410e435c189318fc52bb99719ae5459152fbed0"
+    },
+    {
+      "path": "domainry-connector-sdk/mailwrite/contract.go",
+      "bytes": 2044,
+      "sha256": "6e982ff22bfd7a8c0dfffc83c0a908e03dec52d4302e4ec72df8b6cdfdb377b5"
+    },
+    {
+      "path": "domainry-connector-sdk/mailwrite/contract_test.go",
+      "bytes": 8613,
+      "sha256": "fb574c27654fb9abacda38c516efacdc007eaef98157ffcc6e296f02ee93052e"
+    },
+    {
+      "path": "domainry-connector-sdk/mailwrite/decode.go",
+      "bytes": 1040,
+      "sha256": "f51f5722ee3629825ccc187e4878b187caced792d3924f9401db43fc860ae155"
+    },
+    {
+      "path": "domainry-connector-sdk/mailwrite/identity.go",
+      "bytes": 1323,
+      "sha256": "c644abe7dcb83dbd80556cf25e4005324ff65c8816072028fe5183e282c20cd2"
+    },
+    {
+      "path": "domainry-connector-sdk/mailwrite/validation.go",
+      "bytes": 4381,
+      "sha256": "c9cc3d4b33451e689e4aa0046f90b1af414e6af04df1c68e9c98f36f4f101e24"
+    },
+    {
+      "path": "domainry-connector-sdk/operation.go",
+      "bytes": 10324,
+      "sha256": "25456d2c61633967ecdc8a60cb1b3b4253f07fa90ab877db0bb76bd3ee7d0dee"
+    },
+    {
+      "path": "domainry-connector-sdk/reliability.go",
+      "bytes": 7571,
+      "sha256": "93af1ad188887f7f433acf5467cecf467b7be5cb0b8d3e3712d2dc120e9ac2c2"
+    }
+  ],
+  "reviewed_unchanged_sources": [
+    {
+      "path": "domainry-connectors/AGENTS.md",
+      "bytes": 430,
+      "sha256": "63548ae50dc2ac4b9cbca2734bc66858217e522dd629b07de8a4a03e6b0082cb"
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/provider.go",
+      "bytes": 14170,
+      "sha256": "2d9c09fce1290109880cad1f02d60b6a4c6cff281a6741e7c8f354f56ab5ed8d"
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/operations.go",
+      "bytes": 13715,
+      "sha256": "421849fee39d94690cd7ea6e63d8d0a57a0d247675b28fd49135aafbea07591a"
+    },
+    {
+      "path": "domainry-connectors/providers/google_workspace/google/calendar.go",
+      "bytes": 11008,
+      "sha256": "f6160b204be98bc71aa1bda40abae6a4d6fcd901bd1a783f43c7bba1b8c415b8"
+    },
+    {
+      "path": "domainry-connectors/providers/microsoft_365/microsoft/provider.go",
+      "bytes": 13213,
+      "sha256": "08453e5da80dc7938d238336bef403d28b26405f3023fac630a89345328e7914"
+    },
+    {
+      "path": "domainry-integration/AGENTS.md",
+      "bytes": 948,
+      "sha256": "5e3f639297d2ac0c921871ecb28ecc5887b195fd77c9fa1a64f60fc31b39de13"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_reads.go",
+      "bytes": 2485,
+      "sha256": "12cd5bae094bdfdc1259425506f1c2fe49d533697fd49176400c1e5b45b60066"
+    },
+    {
+      "path": "domainry-integration/internal/infrastructure/persistence/database/integration/operations_store.go",
+      "bytes": 11776,
+      "sha256": "05140e4b341b411891acfec5212187ef5af8b1188e29a8340cbd86477b9ee2c1"
+    },
+    {
+      "path": "domainry-tools/internal/adapter/calendartools/adapter.go",
+      "bytes": 3386,
+      "sha256": "03ba650a77147606ad7006b728eae2e97f4f3a0808524fe35068768e977feaf5"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f06-write-contract/calendar-identity.log",
+      "bytes": 255,
+      "sha256": "d2bae622ec3eb212875fce473a917148d3f25e2654e0f23a133762efca074996"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f06-write-contract/calendar-initial.log",
+      "bytes": 344,
+      "sha256": "fecf30f4e6d00ebddf31aca08125f705f7f94ad8c087d5c9e5684c073428dec5"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f06-write-contract/calendar-race.log",
+      "bytes": 69,
+      "sha256": "65d184e3a7ebbe506c4defd2a2f215b56eb82f5111079fbf305e710d0d8b314b"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f06-write-contract/contract-identities.log",
+      "bytes": 130,
+      "sha256": "c0019d4f425a3082ec481278673b37664423d30b554d34af2b7269b0442ae79a"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f06-write-contract/sdk-boundary-format-license.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f06-write-contract/sdk-full-race.log",
+      "bytes": 512,
+      "sha256": "2179ab26876e1c39c7a362bacf960a3ac1ad4fbb0744cc69bc05c1ac7be07040"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f06-write-contract/sdk-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f06-write-contract/write-final-race.log",
+      "bytes": 13910,
+      "sha256": "4dbc84c48b7db56712d4a2088a5bf9cd824c2567fc1c6ff7cbb31305746679ce"
+    }
+  ],
+  "verified": {
+    "sdk_race_packages": 8,
+    "external_module_compile": true,
+    "calendarwrite_race_seconds": 1.747,
+    "mailwrite_race_seconds": 2.329,
+    "sdk_vet": true,
+    "sdk_boundary_format_license": true,
+    "read_contracts_unchanged": true,
+    "llm_proxy_working_tree_clean": true
+  },
+  "remaining": [
+    "Google Provider native writes and protocol matrix",
+    "Microsoft Provider native writes, concurrency and protocol matrix",
+    "Integration account write authority, exact request claim, bounded durable receipts and original-key reconciliation",
+    "Tools, Agent and product selection, source and confirmation",
+    "Actual host HTTP, end-to-end and built browser acceptance",
+    "Whole-product real vendor credentials, dependency publication and deployment remain separate requirements"
+  ],
+  "next": "Google Provider",
+  "not_claimed": [
+    "Provider registration",
+    "Real OAuth or vendor I/O",
+    "Actual email send or calendar mutation",
+    "End-to-end completion",
+    "Real Microsoft event concurrency behavior",
+    "F06 completion"
+  ]
+}

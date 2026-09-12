@@ -1,0 +1,6 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+    conversation_business_product_service_test.go:167: actual product tool catalog agent.business_host.forbidden
+--- FAIL: TestConversationBusinessProductWithSharedIdentityService (3.04s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	3.739s
+FAIL

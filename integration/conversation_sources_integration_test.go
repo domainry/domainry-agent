@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -152,7 +153,7 @@ func TestKnowledgeProvenanceProtectsDerivedRepliesSSEAndHistoryAcrossRestart(t *
 				}
 			}}
 			options := application.ConversationOptions{Knowledge: knowledge, ToolHost: personal, PersonalAuthorizer: policy}
-			service, err := application.NewConversationService(repo, model, a.RuntimeID, options)
+			service, err := conversationassembly.NewService(repo, model, a.RuntimeID, options)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -195,7 +196,7 @@ func TestKnowledgeProvenanceProtectsDerivedRepliesSSEAndHistoryAcrossRestart(t *
 			service.Close()
 			repo.legacy.Store(legacy)
 			visible.Store(false)
-			service, err = application.NewConversationService(repo, model, a.RuntimeID, options)
+			service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -222,7 +223,7 @@ func TestKnowledgeProvenanceProtectsDerivedRepliesSSEAndHistoryAcrossRestart(t *
 			send("search-after-revoke", "搜索旧回复")
 			// Read APIs still work with no model configured; source policy remains live.
 			service.Close()
-			service, err = application.NewConversationService(repo, nil, a.RuntimeID, application.ConversationOptions{Knowledge: knowledge, PersonalAuthorizer: policy})
+			service, err = conversationassembly.NewService(repo, nil, a.RuntimeID, application.ConversationOptions{Knowledge: knowledge, PersonalAuthorizer: policy})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -281,7 +282,7 @@ func TestSummarySourceChangesRebuildFromOriginalMessagesAndRetainUserConstraints
 		}
 		return sourceAnswer("已记录本轮讨论。"), nil
 	}
-	service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{Knowledge: knowledge, ToolHost: personal, PersonalAuthorizer: policy})
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{Knowledge: knowledge, ToolHost: personal, PersonalAuthorizer: policy})
 	if err != nil {
 		t.Fatal(err)
 	}

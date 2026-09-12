@@ -1,0 +1,82 @@
+?   	github.com/domainry/domainry-agent/capability	[no test files]
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	1.465s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-playground	[no test files]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/definition	(cached)
+ok  	github.com/domainry/domainry-agent/integration	84.951s
+ok  	github.com/domainry/domainry-agent/internal/application	0.510s
+ok  	github.com/domainry/domainry-agent/internal/architecture	(cached)
+?   	github.com/domainry/domainry-agent/internal/assembly/product	[no test files]
+?   	github.com/domainry/domainry-agent/internal/assembly/saas	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	93.377s
+ok  	github.com/domainry/domainry-agent/internal/capability	(cached)
+?   	github.com/domainry/domainry-agent/internal/composition	[no test files]
+?   	github.com/domainry/domainry-agent/internal/dataaccess	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/execution	(cached)
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence	1.034s
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/base	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	4.764s
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost	2.730s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	3.167s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	3.795s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/playground	4.563s
+?   	github.com/domainry/domainry-agent/internal/transport/http/product	[no test files]
+?   	github.com/domainry/domainry-agent/internal/transport/http/web	[no test files]
+ok  	github.com/domainry/domainry-agent/module	5.230s
+ok  	github.com/domainry/domainry-agent/remote	5.602s
+ok  	github.com/domainry/domainry-agent/server	5.139s
+?   	github.com/domainry/domainry-agent/testsupport	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/producttest	[no test files]
+?   	github.com/domainry/domainry-agent/web	[no test files]
+?   	github.com/domainry/domainry-agent/webhost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk	3.970s
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	(cached)
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+?   	github.com/domainry/domainry-tools-sdk	[no test files]
+?   	github.com/domainry/domainry-tools-sdk/schema	[no test files]
+?   	github.com/domainry/domainry-tools/calculation	[no test files]
+?   	github.com/domainry/domainry-tools/internal/adapter/recordtools	[no test files]
+ok  	github.com/domainry/domainry-tools/internal/application/tool	(cached)
+ok  	github.com/domainry/domainry-tools/internal/architecture	3.635s
+?   	github.com/domainry/domainry-tools/module	[no test files]
+?   	github.com/domainry/domainry-tools/timeutil	[no test files]
+?   	github.com/domainry/domainry-todo/contract	[no test files]
+ok  	github.com/domainry/domainry-todo/internal/architecture	3.193s
+?   	github.com/domainry/domainry-todo/internal/domain/todo/service	[no test files]
+ok  	github.com/domainry/domainry-todo/internal/infrastructure/persistence/database/todo	(cached)
+?   	github.com/domainry/domainry-todo/module	[no test files]
+ok  	github.com/domainry/domainry-knowledge/artifact	(cached)
+?   	github.com/domainry/domainry-knowledge/contract	[no test files]
+ok  	github.com/domainry/domainry-knowledge/extraction	(cached)
+?   	github.com/domainry/domainry-knowledge/internal/application/knowledge	[no test files]
+ok  	github.com/domainry/domainry-knowledge/internal/architecture	2.677s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/artifactstorage	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/attachmentstorage	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/connectortransport	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/documentstorage	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/persistence/database/knowledge	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/persistence/database/record	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/provider	(cached)
+?   	github.com/domainry/domainry-knowledge/module	[no test files]
+?   	github.com/domainry/domainry-pm/cmd/domainry-pm	[no test files]
+?   	github.com/domainry/domainry-pm/internal/application/requirement	[no test files]
+ok  	github.com/domainry/domainry-pm/internal/architecture	2.603s
+ok  	github.com/domainry/domainry-pm/internal/assembly/saas	3.854s
+?   	github.com/domainry/domainry-pm/internal/domain/requirement/model	[no test files]
+?   	github.com/domainry/domainry-pm/internal/domain/requirement/service	[no test files]
+?   	github.com/domainry/domainry-pm/internal/infrastructure/config	[no test files]
+?   	github.com/domainry/domainry-work/cmd/domainry-work	[no test files]
+?   	github.com/domainry/domainry-work/internal/application/office	[no test files]
+ok  	github.com/domainry/domainry-work/internal/architecture	2.073s
+ok  	github.com/domainry/domainry-work/internal/assembly/saas	4.579s
+?   	github.com/domainry/domainry-work/internal/domain/office/model	[no test files]
+?   	github.com/domainry/domainry-work/internal/domain/office/service	[no test files]
+?   	github.com/domainry/domainry-work/internal/infrastructure/config	[no test files]

@@ -10,6 +10,9 @@ import (
 )
 
 func (s *ConversationService) streamConversationExecutionStep(ctx context.Context, claim persistence.ConversationClaim, step persistence.ConversationExecutionStep) (agentsdk.ConversationStepResult, error) {
+	if err := s.authorizeConversationClaim(ctx, claim, "model"); err != nil {
+		return agentsdk.ConversationStepResult{}, err
+	}
 	raw, err := json.Marshal(step.Input)
 	if err != nil || len(raw) > s.options.ContextBytes {
 		return agentsdk.ConversationStepResult{}, conversationFailure("rate_limited", "execution_context_exceeded")

@@ -1,0 +1,64 @@
+=== RUN   TestPMProductIntegration
+=== RUN   TestPMProductIntegration/mysql
+--- PASS: TestPMProductIntegration (7.61s)
+    --- PASS: TestPMProductIntegration/mysql (7.60s)
+=== RUN   TestPMProductIntegration
+=== RUN   TestPMProductIntegration/mysql
+--- PASS: TestPMProductIntegration (7.13s)
+    --- PASS: TestPMProductIntegration/mysql (7.13s)
+=== RUN   TestPMProductIntegration
+=== RUN   TestPMProductIntegration/mysql
+--- PASS: TestPMProductIntegration (4.51s)
+    --- PASS: TestPMProductIntegration/mysql (4.51s)
+=== RUN   TestPMProductIntegration
+=== RUN   TestPMProductIntegration/mysql
+--- PASS: TestPMProductIntegration (5.33s)
+    --- PASS: TestPMProductIntegration/mysql (5.33s)
+=== RUN   TestPMProductIntegration
+=== RUN   TestPMProductIntegration/mysql
+--- PASS: TestPMProductIntegration (4.26s)
+    --- PASS: TestPMProductIntegration/mysql (4.26s)
+PASS
+ok  	github.com/domainry/domainry-pm/internal/assembly/saas	29.641s
+=== RUN   TestWorkProductIntegration
+=== RUN   TestWorkProductIntegration/mysql
+--- PASS: TestWorkProductIntegration (7.71s)
+    --- PASS: TestWorkProductIntegration/mysql (7.71s)
+=== RUN   TestWorkDocumentProductIntegration
+=== RUN   TestWorkDocumentProductIntegration/mysql
+--- PASS: TestWorkDocumentProductIntegration (7.02s)
+    --- PASS: TestWorkDocumentProductIntegration/mysql (7.02s)
+=== RUN   TestWorkProductIntegration
+=== RUN   TestWorkProductIntegration/mysql
+--- PASS: TestWorkProductIntegration (4.52s)
+    --- PASS: TestWorkProductIntegration/mysql (4.52s)
+=== RUN   TestWorkDocumentProductIntegration
+=== RUN   TestWorkDocumentProductIntegration/mysql
+--- PASS: TestWorkDocumentProductIntegration (5.56s)
+    --- PASS: TestWorkDocumentProductIntegration/mysql (5.56s)
+=== RUN   TestWorkProductIntegration
+=== RUN   TestWorkProductIntegration/mysql
+--- PASS: TestWorkProductIntegration (4.54s)
+    --- PASS: TestWorkProductIntegration/mysql (4.54s)
+=== RUN   TestWorkDocumentProductIntegration
+=== RUN   TestWorkDocumentProductIntegration/mysql
+--- PASS: TestWorkDocumentProductIntegration (5.53s)
+    --- PASS: TestWorkDocumentProductIntegration/mysql (5.53s)
+=== RUN   TestWorkProductIntegration
+=== RUN   TestWorkProductIntegration/mysql
+--- PASS: TestWorkProductIntegration (2.80s)
+    --- PASS: TestWorkProductIntegration/mysql (2.79s)
+=== RUN   TestWorkDocumentProductIntegration
+=== RUN   TestWorkDocumentProductIntegration/mysql
+--- PASS: TestWorkDocumentProductIntegration (2.91s)
+    --- PASS: TestWorkDocumentProductIntegration/mysql (2.91s)
+=== RUN   TestWorkProductIntegration
+=== RUN   TestWorkProductIntegration/mysql
+--- PASS: TestWorkProductIntegration (2.46s)
+    --- PASS: TestWorkProductIntegration/mysql (2.46s)
+=== RUN   TestWorkDocumentProductIntegration
+=== RUN   TestWorkDocumentProductIntegration/mysql
+--- PASS: TestWorkDocumentProductIntegration (3.11s)
+    --- PASS: TestWorkDocumentProductIntegration/mysql (3.11s)
+PASS
+ok  	github.com/domainry/domainry-work/internal/assembly/saas	47.281s

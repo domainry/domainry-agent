@@ -1,0 +1,32 @@
+=== RUN   TestKnowledgeDeleteRecoveryNeedsExplicitSourceAndUsableLease
+--- PASS: TestKnowledgeDeleteRecoveryNeedsExplicitSourceAndUsableLease (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.894s
+=== RUN   TestKnowledgeDeleteRecoveryPreservesAuthorizationAndTarget
+--- PASS: TestKnowledgeDeleteRecoveryPreservesAuthorizationAndTarget (0.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	1.436s
+=== RUN   TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss
+=== RUN   TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss/normal
+=== RUN   TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss/lost-delete-recovered
+--- PASS: TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss (5.03s)
+    --- PASS: TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss/normal (1.93s)
+    --- PASS: TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss/lost-delete-recovered (3.10s)
+=== RUN   TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable
+=== RUN   TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/queued-policy-changed
+=== RUN   TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/uncertain-policy-changed
+=== RUN   TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/private-delete-unacknowledged
+=== RUN   TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/delete-recovered
+=== RUN   TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/delete-retry-failed
+=== RUN   TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/delete-policy-changed
+=== RUN   TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/delete-source-changed
+--- PASS: TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable (1.28s)
+    --- PASS: TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/queued-policy-changed (0.14s)
+    --- PASS: TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/uncertain-policy-changed (0.12s)
+    --- PASS: TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/private-delete-unacknowledged (0.21s)
+    --- PASS: TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/delete-recovered (0.27s)
+    --- PASS: TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/delete-retry-failed (0.18s)
+    --- PASS: TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/delete-policy-changed (0.18s)
+    --- PASS: TestManagedDocumentPolicyChangesAndHiddenDeletionRemainRecoverable/delete-source-changed (0.17s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	8.182s

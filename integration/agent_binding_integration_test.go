@@ -332,7 +332,12 @@ func newSQLiteModuleHost(t *testing.T, runtimeID string) *sqliteModuleHost {
 	return &sqliteModuleHost{runtimeID: runtimeID, database: database, dialect: dialect.WithSchema(""), applied: map[string]struct{}{}}
 }
 
-func (h *sqliteModuleHost) RuntimeID() string                         { return h.runtimeID }
+func (h *sqliteModuleHost) RuntimeID() string { return h.runtimeID }
+
+func (h *sqliteModuleHost) AuthorizeConversationExecution(_ context.Context, in agentsdk.ConversationExecutionAuthorizationRequest) (bool, error) {
+	return in.Authority.Known && in.Authority.RuntimeID == h.runtimeID, nil
+}
+
 func (h *sqliteModuleHost) Database() modulehost.Database             { return h.database }
 func (h *sqliteModuleHost) Dialect() modulehost.Dialect               { return h.dialect }
 func (h *sqliteModuleHost) Migrations() modulehost.MigrationRegistrar { return h }

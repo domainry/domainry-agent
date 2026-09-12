@@ -1,0 +1,6 @@
+=== RUN   TestReportAnalysisRealOwnerFullSQLiteAggregationAndCurrentPermissions
+    report_analysis_integration_test.go:133: backend.internal_error
+--- FAIL: TestReportAnalysisRealOwnerFullSQLiteAggregationAndCurrentPermissions (0.12s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/runtime	1.191s
+FAIL

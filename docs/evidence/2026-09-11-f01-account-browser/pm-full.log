@@ -1,0 +1,7 @@
+?   	github.com/domainry/domainry-pm/cmd/domainry-pm	[no test files]
+?   	github.com/domainry/domainry-pm/internal/application/requirement	[no test files]
+ok  	github.com/domainry/domainry-pm/internal/architecture	1.164s
+ok  	github.com/domainry/domainry-pm/internal/assembly/saas	2.560s
+?   	github.com/domainry/domainry-pm/internal/domain/requirement/model	[no test files]
+?   	github.com/domainry/domainry-pm/internal/domain/requirement/service	[no test files]
+?   	github.com/domainry/domainry-pm/internal/infrastructure/config	[no test files]

@@ -1,0 +1,5 @@
+--- FAIL: TestContractIdentityAndReadIsolation (0.00s)
+    contract_test.go:23: calendar write contract SHA256=83d292801ff36985931d646e3d4fc2df1528036f05521d0964bdc0f37d15b64c
+FAIL
+FAIL	github.com/domainry/domainry-connector-sdk/calendarwrite	0.385s
+FAIL

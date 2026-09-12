@@ -1,0 +1,8 @@
+=== RUN   TestConnectionAccountContractSeparatesOwnershipFromCreatorEvidence
+--- PASS: TestConnectionAccountContractSeparatesOwnershipFromCreatorEvidence (0.00s)
+PASS
+ok  	github.com/domainry/domainry-integration-sdk	0.393s
+=== RUN   TestRemoteBindingUsesStableRuntimeAndDeliveryIdentity
+--- PASS: TestRemoteBindingUsesStableRuntimeAndDeliveryIdentity (0.00s)
+PASS
+ok  	github.com/domainry/domainry-integration-sdk/remote	0.542s

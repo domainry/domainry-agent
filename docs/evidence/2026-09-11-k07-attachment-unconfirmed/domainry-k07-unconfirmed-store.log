@@ -1,0 +1,6 @@
+=== RUN   TestAttachmentUnknownUploadSurvivesRestartWithoutResettingWrite
+--- PASS: TestAttachmentUnknownUploadSurvivesRestartWithoutResettingWrite (0.06s)
+=== RUN   TestAttachmentIndexDeletionFencesLateWritesAndRequiresAcknowledgement
+--- PASS: TestAttachmentIndexDeletionFencesLateWritesAndRequiresAcknowledgement (0.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	1.573s

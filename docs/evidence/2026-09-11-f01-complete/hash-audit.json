@@ -1,0 +1,1810 @@
+{
+  "historical_evidence": [
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/accounts-race.log",
+      "expected": "96c601d5a9e7cdfcd8ee99e8b53b7b6ea9e18e7b9f03347b9133503103af47de",
+      "actual": "96c601d5a9e7cdfcd8ee99e8b53b7b6ea9e18e7b9f03347b9133503103af47de",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/agent-full.log",
+      "expected": "12101170d236efdf2d485fe192915bb9b6e5f81a3b543edb9e46a1043336d643",
+      "actual": "12101170d236efdf2d485fe192915bb9b6e5f81a3b543edb9e46a1043336d643",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/agent-sdk-full.log",
+      "expected": "e03a9b0c839eecc7bc06a61712c248be03c655e3b9abbd654e569d20a59e0b34",
+      "actual": "e03a9b0c839eecc7bc06a61712c248be03c655e3b9abbd654e569d20a59e0b34",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/agent-vet.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-final/application-configured.png",
+      "expected": "ac89a1361efccb5d117bb59fcb3157ce97aad231578ca068c32ad842b2c5b161",
+      "actual": "ac89a1361efccb5d117bb59fcb3157ce97aad231578ca068c32ad842b2c5b161",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-final/authorization-rejected.png",
+      "expected": "8393077bf95f5f1ca741a277fc25d1c39f292828f9a7fa0651ea635d1d8f2e2a",
+      "actual": "8393077bf95f5f1ca741a277fc25d1c39f292828f9a7fa0651ea635d1d8f2e2a",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-final/host-audit.json",
+      "expected": "bc852c92fff84d99ac04fba3c26a18a4bcea761ef036d65fbbe64ee4b987ffe7",
+      "actual": "bc852c92fff84d99ac04fba3c26a18a4bcea761ef036d65fbbe64ee4b987ffe7",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-final/lost-response-restarted.png",
+      "expected": "12dd27fe92474bd6589308621747bfae5e3528e632c4bf4bbb52096d9b6053ed",
+      "actual": "12dd27fe92474bd6589308621747bfae5e3528e632c4bf4bbb52096d9b6053ed",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-final/mobile-revoked.png",
+      "expected": "6fd6fe0d77bf71470d13769ceeb709ccc310709b75c296ddfc5c58ae3583d693",
+      "actual": "6fd6fe0d77bf71470d13769ceeb709ccc310709b75c296ddfc5c58ae3583d693",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-final/personal-connected.png",
+      "expected": "d17d22a718a3521b1f6d5724a2b0f2d3ae581e888db3b77c906559257fae22ee",
+      "actual": "d17d22a718a3521b1f6d5724a2b0f2d3ae581e888db3b77c906559257fae22ee",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-final/report.json",
+      "expected": "97a51b885498815bd68c3c03c5c9ae382217d4350b81f803ae6dbce66f826373",
+      "actual": "97a51b885498815bd68c3c03c5c9ae382217d4350b81f803ae6dbce66f826373",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-final.log",
+      "expected": "57aa64b89e271fafd1881134ee41104e91f72939f98869ded9a37d6af8df2b57",
+      "actual": "57aa64b89e271fafd1881134ee41104e91f72939f98869ded9a37d6af8df2b57",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-initial/failure.png",
+      "expected": "9d41d00669b599084799f8e8522cc0de69496e5369cd10f2c1453f52822f89fc",
+      "actual": "9d41d00669b599084799f8e8522cc0de69496e5369cd10f2c1453f52822f89fc",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-initial/report.json",
+      "expected": "21aa38ad2b40ad8b7e03bf1aec38e50e92b75a5090059055338137e048d4ba36",
+      "actual": "21aa38ad2b40ad8b7e03bf1aec38e50e92b75a5090059055338137e048d4ba36",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-initial.log",
+      "expected": "4d2b899ec34336f32cfd74cb009c564c8318ef65e3669d37ecd4d7c482ea2ccb",
+      "actual": "4d2b899ec34336f32cfd74cb009c564c8318ef65e3669d37ecd4d7c482ea2ccb",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed/application-configured.png",
+      "expected": "17670cd82179c5db76891f5ca2b2db27e86e824b65510c89232e401c09d3fba2",
+      "actual": "17670cd82179c5db76891f5ca2b2db27e86e824b65510c89232e401c09d3fba2",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed/authorization-rejected.png",
+      "expected": "6976ccdc89a5cbe404711bdfb172c5e8641ede55460d7371fac4245d18805470",
+      "actual": "6976ccdc89a5cbe404711bdfb172c5e8641ede55460d7371fac4245d18805470",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed/failure.png",
+      "expected": "7e5daf03524688af94b772ae33293a3e35cc48203ec8a3cd0a87f7179e2e30e1",
+      "actual": "7e5daf03524688af94b772ae33293a3e35cc48203ec8a3cd0a87f7179e2e30e1",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed/lost-response-restarted.png",
+      "expected": "dd67d5f51883a1fb994b910f298a6f9223b425e2b86bea7968b87c7e9ef148c4",
+      "actual": "dd67d5f51883a1fb994b910f298a6f9223b425e2b86bea7968b87c7e9ef148c4",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed/personal-connected.png",
+      "expected": "5aa780ac49ddfefa9c3383aa5e1d1a581e69419d764d6731a2af6dc3ab04f727",
+      "actual": "5aa780ac49ddfefa9c3383aa5e1d1a581e69419d764d6731a2af6dc3ab04f727",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed/report.json",
+      "expected": "644e0bfd20d294b28b3d330a60ea74927ac2ff72810d4a55ac44a0190aa12fbf",
+      "actual": "644e0bfd20d294b28b3d330a60ea74927ac2ff72810d4a55ac44a0190aa12fbf",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-mobile-fixed.log",
+      "expected": "6c3298587fdb927ef31742b6614af01ccab02b03e9e8b98fa159ca10236cd135",
+      "actual": "6c3298587fdb927ef31742b6614af01ccab02b03e9e8b98fa159ca10236cd135",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-retry1/application-configured.png",
+      "expected": "98c78fe1529a0eca5acfb80d8397c42e59bd1e546a055bbb49defa628e5609f2",
+      "actual": "98c78fe1529a0eca5acfb80d8397c42e59bd1e546a055bbb49defa628e5609f2",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-retry1/authorization-rejected.png",
+      "expected": "cddf263887d2bf5b5215a11e2a3ccb6dec0ccec6b7a58e68bb3b50a945a7ed91",
+      "actual": "cddf263887d2bf5b5215a11e2a3ccb6dec0ccec6b7a58e68bb3b50a945a7ed91",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-retry1/host-audit.json",
+      "expected": "bc852c92fff84d99ac04fba3c26a18a4bcea761ef036d65fbbe64ee4b987ffe7",
+      "actual": "bc852c92fff84d99ac04fba3c26a18a4bcea761ef036d65fbbe64ee4b987ffe7",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-retry1/lost-response-restarted.png",
+      "expected": "e9649509472bd236a356246543f406d3f90d7158b8357d6ff61fbf4d75970023",
+      "actual": "e9649509472bd236a356246543f406d3f90d7158b8357d6ff61fbf4d75970023",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-retry1/mobile-revoked.png",
+      "expected": "98f7f6c2e2d88dff4fcac2d1cc20b01453c3ec9dbf699625a80b90615992a0ef",
+      "actual": "98f7f6c2e2d88dff4fcac2d1cc20b01453c3ec9dbf699625a80b90615992a0ef",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-retry1/personal-connected.png",
+      "expected": "5aa780ac49ddfefa9c3383aa5e1d1a581e69419d764d6731a2af6dc3ab04f727",
+      "actual": "5aa780ac49ddfefa9c3383aa5e1d1a581e69419d764d6731a2af6dc3ab04f727",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-retry1/report.json",
+      "expected": "db1c26f6367a93ab10b521ba5f39605d5be54d479fed4f667fbec07358e6428e",
+      "actual": "db1c26f6367a93ab10b521ba5f39605d5be54d479fed4f667fbec07358e6428e",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-retry1.log",
+      "expected": "e55358631601f6720c37bc8ddd104b7096e71beeea0d2c95d0de3ccc5036cc17",
+      "actual": "e55358631601f6720c37bc8ddd104b7096e71beeea0d2c95d0de3ccc5036cc17",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-verified/application-configured.png",
+      "expected": "b1f98c519bebcae72846d31eb6846503229308177d55e256e63790ef01dda6f9",
+      "actual": "b1f98c519bebcae72846d31eb6846503229308177d55e256e63790ef01dda6f9",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-verified/authorization-rejected.png",
+      "expected": "d650e77bce218a72f0d3ac398fce87c1cd6e6accfb40adcbbab2cdc6803462f9",
+      "actual": "d650e77bce218a72f0d3ac398fce87c1cd6e6accfb40adcbbab2cdc6803462f9",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-verified/failure.png",
+      "expected": "47c4f5dbf49d351faf2ba17c1760bbc7cb32d373f745ca774d6068cf2684b101",
+      "actual": "47c4f5dbf49d351faf2ba17c1760bbc7cb32d373f745ca774d6068cf2684b101",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-verified/personal-connected.png",
+      "expected": "5aa780ac49ddfefa9c3383aa5e1d1a581e69419d764d6731a2af6dc3ab04f727",
+      "actual": "5aa780ac49ddfefa9c3383aa5e1d1a581e69419d764d6731a2af6dc3ab04f727",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-verified/report.json",
+      "expected": "9f0309e0089ca75139ad5c99d9c6cb4bd858d49ff7cb3f985e9100dd822436cd",
+      "actual": "9f0309e0089ca75139ad5c99d9c6cb4bd858d49ff7cb3f985e9100dd822436cd",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/browser-verified.log",
+      "expected": "17dbb897ba60aec635cf2a9ca825e985565007200d3a59635ae6e814b0921ada",
+      "actual": "17dbb897ba60aec635cf2a9ca825e985565007200d3a59635ae6e814b0921ada",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/diff-check.log",
+      "expected": "20c251b5a1ec7864bdf141e0e4eb421cd3d8c1d944afd7f96a207a52d011713e",
+      "actual": "20c251b5a1ec7864bdf141e0e4eb421cd3d8c1d944afd7f96a207a52d011713e",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/frontend-build-mobile.log",
+      "expected": "36e49b1f6c7de5dace1899441ffdd1bc29a2e5c7b0562ca466f7fa5f5c36ee8c",
+      "actual": "36e49b1f6c7de5dace1899441ffdd1bc29a2e5c7b0562ca466f7fa5f5c36ee8c",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/frontend-build-setup.log",
+      "expected": "eb98e8ee26d39ad71c0fd52d59e842ec56b81d9e3edae4c5ecca9b2541680c60",
+      "actual": "eb98e8ee26d39ad71c0fd52d59e842ec56b81d9e3edae4c5ecca9b2541680c60",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/frontend-build.log",
+      "expected": "e7eed991ad3fab34d895859ed8cacf746b7e329d629b91bac20a754a047fb757",
+      "actual": "e7eed991ad3fab34d895859ed8cacf746b7e329d629b91bac20a754a047fb757",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/frontend-tests.log",
+      "expected": "5f17f84862ee7f49b671dc2093e49182cd018bbdfc99836df5a166fd93e42069",
+      "actual": "5f17f84862ee7f49b671dc2093e49182cd018bbdfc99836df5a166fd93e42069",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/identity-http-retry.log",
+      "expected": "b850ff3e366b8f5e9802aa453dab977b466e87544ff823746052e617a451a2d1",
+      "actual": "b850ff3e366b8f5e9802aa453dab977b466e87544ff823746052e617a451a2d1",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/identity-http-retry2.log",
+      "expected": "599c7aabd67b96e6562cbb5d27be266f8d0b2940c985885e384b18a0717417ca",
+      "actual": "599c7aabd67b96e6562cbb5d27be266f8d0b2940c985885e384b18a0717417ca",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/identity-http-retry3.log",
+      "expected": "56715ad18616815d4535846bf807843e33b53996677eb2bb965e921159a53722",
+      "actual": "56715ad18616815d4535846bf807843e33b53996677eb2bb965e921159a53722",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/identity-http-retry4.log",
+      "expected": "35f22939e3a662167f3efdf68df5e2c528b5c3953610bfa9d15f3a758be45586",
+      "actual": "35f22939e3a662167f3efdf68df5e2c528b5c3953610bfa9d15f3a758be45586",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/identity-http-retry5.log",
+      "expected": "e34c8f3a64f1f02c442adb4bacf573948f8dc95872b87150edc6ca22f64b80b8",
+      "actual": "e34c8f3a64f1f02c442adb4bacf573948f8dc95872b87150edc6ca22f64b80b8",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/identity-http-setup.log",
+      "expected": "1f549fec9787d328ec190639da15d4e69b5be5e35b176e1e75bd746c93aa993a",
+      "actual": "1f549fec9787d328ec190639da15d4e69b5be5e35b176e1e75bd746c93aa993a",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/identity-http.log",
+      "expected": "aa952a3156e967e72fdb0664bc64e74d473442c9d9bf502c8d550458853cef1d",
+      "actual": "aa952a3156e967e72fdb0664bc64e74d473442c9d9bf502c8d550458853cef1d",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/pm-frontend-build.log",
+      "expected": "67399b2e53173749db611f4e5f62e48e1cccdde3e5f7042af073ea944ca42cd8",
+      "actual": "67399b2e53173749db611f4e5f62e48e1cccdde3e5f7042af073ea944ca42cd8",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/pm-frontend-final.log",
+      "expected": "42aaae8afb979e61555a03d0fcbe42466dce1994c86312b9bad09b6f4efde995",
+      "actual": "42aaae8afb979e61555a03d0fcbe42466dce1994c86312b9bad09b6f4efde995",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/pm-full.log",
+      "expected": "2b8c69ae7454fcb7d97b685d3c5efed729ff2d7098d1059dcaec76360f302a1a",
+      "actual": "2b8c69ae7454fcb7d97b685d3c5efed729ff2d7098d1059dcaec76360f302a1a",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/saas-product-process-retry.log",
+      "expected": "d0aa0b6c0455a7aad0099cdbdf573555de904cba92dec95fd87f41980f4e29b6",
+      "actual": "d0aa0b6c0455a7aad0099cdbdf573555de904cba92dec95fd87f41980f4e29b6",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/saas-product-process-verified.log",
+      "expected": "844119a1b56194b802892937ab43a2c01480f5c06f85e192b618112f6a91ef13",
+      "actual": "844119a1b56194b802892937ab43a2c01480f5c06f85e192b618112f6a91ef13",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/saas-product-process.log",
+      "expected": "81cfa0b6cc927dcbe21d1fc44230c56171b997009803c46af67536daeeccb74b",
+      "actual": "81cfa0b6cc927dcbe21d1fc44230c56171b997009803c46af67536daeeccb74b",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/work-frontend-build.log",
+      "expected": "2c4133b69624eea604542f9996fa1596136196fcc63a0fc1aabb408c77729356",
+      "actual": "2c4133b69624eea604542f9996fa1596136196fcc63a0fc1aabb408c77729356",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/work-frontend-final.log",
+      "expected": "cbce9d83d44a6842f96200620d3536525370d26af9e177100cd6381cfa77500d",
+      "actual": "cbce9d83d44a6842f96200620d3536525370d26af9e177100cd6381cfa77500d",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-account-browser.json",
+      "path": "docs/evidence/2026-09-11-f01-account-browser/work-full.log",
+      "expected": "a0b2ac79abad77355fa8ff7b7b4a3d76b2859703ca7b01d2ec5995efed498cf9",
+      "actual": "a0b2ac79abad77355fa8ff7b7b4a3d76b2859703ca7b01d2ec5995efed498cf9",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-connection-ownership.json",
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/integration-full.log",
+      "expected": "4413450a39b0bc16fe9268d90f0287c25ca56e29a1fa27c27b1e541540faf6a6",
+      "actual": "4413450a39b0bc16fe9268d90f0287c25ca56e29a1fa27c27b1e541540faf6a6",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-connection-ownership.json",
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/sdk-full.log",
+      "expected": "ed12a76a5ad79fa091076fdec6fe16b3c98707c444b4c6566db8ef30c1b29ec8",
+      "actual": "ed12a76a5ad79fa091076fdec6fe16b3c98707c444b4c6566db8ef30c1b29ec8",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-connection-ownership.json",
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/race-http.log",
+      "expected": "a51ccb5cab03244926771ba85be3c8a433c1df47a68455d37d09dd26dc61c558",
+      "actual": "a51ccb5cab03244926771ba85be3c8a433c1df47a68455d37d09dd26dc61c558",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-connection-ownership.json",
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/saas-policy-final.log",
+      "expected": "5b0bd83da32efb8efe9482866111d100393308e35865285c4ea0bda9bfdf84c3",
+      "actual": "5b0bd83da32efb8efe9482866111d100393308e35865285c4ea0bda9bfdf84c3",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-connection-ownership.json",
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/integration-vet.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-connection-ownership.json",
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/sdk-vet.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-connection-ownership.json",
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/agent-boundary.log",
+      "expected": "b8366f18498e8f2338862d48560fa85e62467cab9156bbfffe1a6698a72d6a0b",
+      "actual": "b8366f18498e8f2338862d48560fa85e62467cab9156bbfffe1a6698a72d6a0b",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-connection-ownership.json",
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/targeted-initial.log",
+      "expected": "f562f6d57752e21b583857f95d0f3b42cec5b9e7bfef86a5f1266e5bedace0f6",
+      "actual": "f562f6d57752e21b583857f95d0f3b42cec5b9e7bfef86a5f1266e5bedace0f6",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-connection-ownership.json",
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/module-http-initial.log",
+      "expected": "8d338cdf0e67d22366137e73bdb80f2312511cc92a058dd49f2aed63921ccf85",
+      "actual": "8d338cdf0e67d22366137e73bdb80f2312511cc92a058dd49f2aed63921ccf85",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-connection-ownership.json",
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/saas-http-initial.log",
+      "expected": "04fcb5a14332258e6ca511c9f14be4e5d9fac5de1fca1e5159902acd997c290d",
+      "actual": "04fcb5a14332258e6ca511c9f14be4e5d9fac5de1fca1e5159902acd997c290d",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-connection-ownership.json",
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/integration-full-initial.log",
+      "expected": "fef73d6fabab15ccc136deaf3a98ed5c514d7b2fe935098068bb84647cd25ef3",
+      "actual": "fef73d6fabab15ccc136deaf3a98ed5c514d7b2fe935098068bb84647cd25ef3",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-connection-ownership.json",
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/sdk-full-initial.log",
+      "expected": "0f50ec9fc81f8d94a03b23ad9771aa136be5a63581f8eac6681086d0d92a2954",
+      "actual": "0f50ec9fc81f8d94a03b23ad9771aa136be5a63581f8eac6681086d0d92a2954",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-lifecycle.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-lifecycle/connectors-boundary.log",
+      "expected": "f5f8cc9324f9dda026406d4d7ed7e60955bfbd91dcaa20ee1638a657aafe3e35",
+      "actual": "f5f8cc9324f9dda026406d4d7ed7e60955bfbd91dcaa20ee1638a657aafe3e35",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-lifecycle.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-lifecycle/google-workspace-refresh.log",
+      "expected": "700b24b80ac136a579423048d464a969bb591452db95a512c88680d7fb435322",
+      "actual": "700b24b80ac136a579423048d464a969bb591452db95a512c88680d7fb435322",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-lifecycle.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-lifecycle/integration-full.log",
+      "expected": "cdd470cf9633cb258f0f7d0cb989071483ec480ec4871312bc2f72bae7be2844",
+      "actual": "cdd470cf9633cb258f0f7d0cb989071483ec480ec4871312bc2f72bae7be2844",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-lifecycle.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-lifecycle/integration-race.log",
+      "expected": "e47b61d2e6976992e44b5c33cf46a7e4450dc105044e742b3c9acfa11cb9b5f0",
+      "actual": "e47b61d2e6976992e44b5c33cf46a7e4450dc105044e742b3c9acfa11cb9b5f0",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-lifecycle.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-lifecycle/integration-vet.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-lifecycle.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-lifecycle/lifecycle-targeted.log",
+      "expected": "2f7cbd08921bd41f9f9c93a3c3816dbdcd2ab70b270c9e319f600360a3b31feb",
+      "actual": "2f7cbd08921bd41f9f9c93a3c3816dbdcd2ab70b270c9e319f600360a3b31feb",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-lifecycle.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-lifecycle/oauth-provider-audit.log",
+      "expected": "c7849fc6c62f74ce1d0a2145ea22b29951aa75fc7918ca1853ded669ec36e7e8",
+      "actual": "c7849fc6c62f74ce1d0a2145ea22b29951aa75fc7918ca1853ded669ec36e7e8",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-lifecycle.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-lifecycle/oauth-providers-full.log",
+      "expected": "2ceebf2e06dd3c7f6f3d48a845e355ba60fc95ec65f1989fce04d1fd98f4e003",
+      "actual": "2ceebf2e06dd3c7f6f3d48a845e355ba60fc95ec65f1989fce04d1fd98f4e003",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-lifecycle.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-lifecycle/secret-concurrency.log",
+      "expected": "a9c765190e2f1aa16e6cfc8965c28679d14ad7004eef66eb88e263e6bf3b09d7",
+      "actual": "a9c765190e2f1aa16e6cfc8965c28679d14ad7004eef66eb88e263e6bf3b09d7",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-lifecycle.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-lifecycle/worker-refresh.log",
+      "expected": "5af49ca97c884ab5b435a452c78a3e9cb299f77b32fa13f6d355f29a81a354f8",
+      "actual": "5af49ca97c884ab5b435a452c78a3e9cb299f77b32fa13f6d355f29a81a354f8",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/catalog-check-0.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/catalog-check-1.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/catalog-check-2.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/catalog-check-results.json",
+      "expected": "4fea032e5455e6a1c8391fb59d8e96bd1a5e1e46906e85cd3e5886e43e55c083",
+      "actual": "4fea032e5455e6a1c8391fb59d8e96bd1a5e1e46906e85cd3e5886e43e55c083",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/connectors-boundary-catalog.log",
+      "expected": "20e0c3d5cd77eb30b45417e67f2afe273b4151fc59458160f8e7248eaf6c08e0",
+      "actual": "20e0c3d5cd77eb30b45417e67f2afe273b4151fc59458160f8e7248eaf6c08e0",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/integration-fixture-initial.log",
+      "expected": "25e115280b8ed45141a5a9bec2c67c461baeae9bdcaa9824a20bcbaf6bb1e41e",
+      "actual": "25e115280b8ed45141a5a9bec2c67c461baeae9bdcaa9824a20bcbaf6bb1e41e",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/integration-full.log",
+      "expected": "44a2f84a9027e9f0bc4c5083ddec2576e0c8be4830cb1062494930cd9c070c5c",
+      "actual": "44a2f84a9027e9f0bc4c5083ddec2576e0c8be4830cb1062494930cd9c070c5c",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/integration-race.log",
+      "expected": "e18e549cac4625a3413cf81ab7174546f076bd9ac172ddfe9530494c67ddac90",
+      "actual": "e18e549cac4625a3413cf81ab7174546f076bd9ac172ddfe9530494c67ddac90",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/integration-regression-green-initial.log",
+      "expected": "ab2d528f93cd82359b6ad2f8ab256ddfd411431b312d195aaadac509d0802cc7",
+      "actual": "ab2d528f93cd82359b6ad2f8ab256ddfd411431b312d195aaadac509d0802cc7",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/integration-regression-matrix.log",
+      "expected": "7555299213f301fd15d50c518a63653e9181b79769707c05bf8bc6416ac92afe",
+      "actual": "7555299213f301fd15d50c518a63653e9181b79769707c05bf8bc6416ac92afe",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/integration-regression-red.log",
+      "expected": "2f318edd55a5deba0ab3ac9df4c00cf124e88d409b930b27ebb6f67bf53346ac",
+      "actual": "2f318edd55a5deba0ab3ac9df4c00cf124e88d409b930b27ebb6f67bf53346ac",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/integration-vet.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/module-fixture-initial.log",
+      "expected": "d3ed1a449214f50fe8b3e1b21352e23a70be5a345585046e29ad00924675e7f5",
+      "actual": "d3ed1a449214f50fe8b3e1b21352e23a70be5a345585046e29ad00924675e7f5",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/module-fixture-second.log",
+      "expected": "441856b7e142c98b09a91a35f8f4213683059c91b86d370215e33699315741a3",
+      "actual": "441856b7e142c98b09a91a35f8f4213683059c91b86d370215e33699315741a3",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/module-restart-green.log",
+      "expected": "b45a5b840b311cc7b31b0ef4c11c35b743d3d91db6899d1b62b1d50e808c4a02",
+      "actual": "b45a5b840b311cc7b31b0ef4c11c35b743d3d91db6899d1b62b1d50e808c4a02",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/providers-fixture-initial.log",
+      "expected": "0a9c53c62f639c8a21f726fc6189452af83b6292544fd28ffbf1ff1fd0193e44",
+      "actual": "0a9c53c62f639c8a21f726fc6189452af83b6292544fd28ffbf1ff1fd0193e44",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/providers-regression-green.log",
+      "expected": "d6f45d2b4065e9bdee926f2d31e30060274717bd80a4e9c8fbe16f28aec8297b",
+      "actual": "d6f45d2b4065e9bdee926f2d31e30060274717bd80a4e9c8fbe16f28aec8297b",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/providers-regression-red.log",
+      "expected": "c17bcdb1cfe178fc708dde72eb21ccf3871e645119601a4347fc949f35eec81d",
+      "actual": "c17bcdb1cfe178fc708dde72eb21ccf3871e645119601a4347fc949f35eec81d",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-credential-refresh.json",
+      "path": "docs/evidence/2026-09-11-f01-credential-refresh/providers-vet.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/agent-compatibility.log",
+      "expected": "bbed53e37fd1a54aa81129dee88f8e03a6e7a33e43f4a9e20fa85b4ac537a202",
+      "actual": "bbed53e37fd1a54aa81129dee88f8e03a6e7a33e43f4a9e20fa85b4ac537a202",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/browser-dependencies.log",
+      "expected": "219780da827085a5c47b7d155caf40097369152aeca61fa778693913bf1d5152",
+      "actual": "219780da827085a5c47b7d155caf40097369152aeca61fa778693913bf1d5152",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/browser-sdk-final.log",
+      "expected": "179c1509bb7d0aa133356226dac0811ca6811ace8eed9f349b08d17ccb53f8bc",
+      "actual": "179c1509bb7d0aa133356226dac0811ca6811ace8eed9f349b08d17ccb53f8bc",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/browser-sdk-verified.log",
+      "expected": "a9d0343719767ffe50845640300cd71106eda21cea885181df616779fab851eb",
+      "actual": "a9d0343719767ffe50845640300cd71106eda21cea885181df616779fab851eb",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/browser-sdk.log",
+      "expected": "2d9991bcdd2b4de71404cadeffc3409baa0770563af540b63e177168e88d07f7",
+      "actual": "2d9991bcdd2b4de71404cadeffc3409baa0770563af540b63e177168e88d07f7",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/capability-disclosure.log",
+      "expected": "caf072925d625e9581497623c57fb3ba6f1a6693133fa1df61cde0f6e5ef65e6",
+      "actual": "caf072925d625e9581497623c57fb3ba6f1a6693133fa1df61cde0f6e5ef65e6",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/catalog-generation.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/connector-sdk.log",
+      "expected": "03e09c1ad1148f3e7739b0fb10454c5e55f6d282732505ee7cb23a43cdbc47b7",
+      "actual": "03e09c1ad1148f3e7739b0fb10454c5e55f6d282732505ee7cb23a43cdbc47b7",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/connectors-boundary.log",
+      "expected": "868b1f6c370bedd86554eea894308e21c4b2b6ab36e809c93927d26ab1fcc876",
+      "actual": "868b1f6c370bedd86554eea894308e21c4b2b6ab36e809c93927d26ab1fcc876",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/connectors-full.log",
+      "expected": "4e54515517f9c47ccf83ba645c4d6413c2add8fa97135c7250d9c45946ca0729",
+      "actual": "4e54515517f9c47ccf83ba645c4d6413c2add8fa97135c7250d9c45946ca0729",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/connectors-vet.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/initial-protocol.log",
+      "expected": "13a513f08e40fea2e68da0f10b39184d93817e7942319d02ebab8ef95ae20216",
+      "actual": "13a513f08e40fea2e68da0f10b39184d93817e7942319d02ebab8ef95ae20216",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/integration-final.log",
+      "expected": "880f4a21b928155305098b23600e2aaaf721c71cac3dee7e82af825a0e9d23fb",
+      "actual": "880f4a21b928155305098b23600e2aaaf721c71cac3dee7e82af825a0e9d23fb",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/integration-full.log",
+      "expected": "ac8367be1e0371a9ebecfe3fc6285b50e72433a85c0da99425effafcaf7aa5bd",
+      "actual": "ac8367be1e0371a9ebecfe3fc6285b50e72433a85c0da99425effafcaf7aa5bd",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/integration-sdk.log",
+      "expected": "4c0875ca5d8b39f2bc1a45e9d20fa55f12f0903722ec4567b51cdc2148f42342",
+      "actual": "4c0875ca5d8b39f2bc1a45e9d20fa55f12f0903722ec4567b51cdc2148f42342",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/integration-vet.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/oauth-e2e-initial.log",
+      "expected": "5b555afbfc18411f9b44817a8def9a797be8a5dff5aebff7b410cc44d7dc5741",
+      "actual": "5b555afbfc18411f9b44817a8def9a797be8a5dff5aebff7b410cc44d7dc5741",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/oauth-race.log",
+      "expected": "ae0e14954636a0ab12cb484cb67f75656f47bea68662350feed475c4ca79667e",
+      "actual": "ae0e14954636a0ab12cb484cb67f75656f47bea68662350feed475c4ca79667e",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/providers-final.log",
+      "expected": "6ebbd4d17275258742e01e575708e4bcd7c3a3c1907f7b92f415cd61e9f8795e",
+      "actual": "6ebbd4d17275258742e01e575708e4bcd7c3a3c1907f7b92f415cd61e9f8795e",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/providers.log",
+      "expected": "781cfc90f11f2a81c5c50eaad4371afeb64ac545f31a9200aea58c4d2cd85eb6",
+      "actual": "781cfc90f11f2a81c5c50eaad4371afeb64ac545f31a9200aea58c4d2cd85eb6",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/sdk-disclosure.log",
+      "expected": "ba3f8e0c3a16e6789cdce3219663e24ea3bcf5ad04b4b772156c29c3c30a7002",
+      "actual": "ba3f8e0c3a16e6789cdce3219663e24ea3bcf5ad04b4b772156c29c3c30a7002",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/service-compile.log",
+      "expected": "31e0595d8888d29138be081167cdbb9fc090e035c115c676ba258e460b09b0d0",
+      "actual": "31e0595d8888d29138be081167cdbb9fc090e035c115c676ba258e460b09b0d0",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/service-http-initial.log",
+      "expected": "5d39802b9a2acae39b235fe71ffcbfaf207b2d5040394c37ba12afbb043b24f9",
+      "actual": "5d39802b9a2acae39b235fe71ffcbfaf207b2d5040394c37ba12afbb043b24f9",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/sessions-initial.log",
+      "expected": "32d7a32bd6871cdf1bcfcf753ba839b2ae33a091438ef8439ef4c1aa1dbf733d",
+      "actual": "32d7a32bd6871cdf1bcfcf753ba839b2ae33a091438ef8439ef4c1aa1dbf733d",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/standalone-initial.log",
+      "expected": "be1e61aac653fc6ad8b8bf626f9fcdefd271a0395dd011e8a9b998b4f4801c19",
+      "actual": "be1e61aac653fc6ad8b8bf626f9fcdefd271a0395dd011e8a9b998b4f4801c19",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/standalone-process-final.log",
+      "expected": "d31051be2bbb888e56b3b7f59606988409f6e9c844c7b7d6b2bde058f5ed6054",
+      "actual": "d31051be2bbb888e56b3b7f59606988409f6e9c844c7b7d6b2bde058f5ed6054",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/standalone-process-verified.log",
+      "expected": "2e6508cc5f14e627cd563a74d7b4f37cba03384466a1ac1f8945abe018fbe167",
+      "actual": "2e6508cc5f14e627cd563a74d7b4f37cba03384466a1ac1f8945abe018fbe167",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/standalone-process.log",
+      "expected": "4dad132a259fbebd5d2b0d0e55e35b23ae59b39f5139d4d7d1973a76b105dd31",
+      "actual": "4dad132a259fbebd5d2b0d0e55e35b23ae59b39f5139d4d7d1973a76b105dd31",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/standalone-race.log",
+      "expected": "d49cdedb1616755c9c1d666e62eabb1841c2d4818241fef8b49c9516670b7bb8",
+      "actual": "d49cdedb1616755c9c1d666e62eabb1841c2d4818241fef8b49c9516670b7bb8",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-oauth-protocol.json",
+      "path": "docs/evidence/2026-09-11-f01-oauth-protocol/standalone-verified.log",
+      "expected": "1b3e199778c8f630b26b57d34e2e68f1b145b52543c805c890a26a28b327a6f9",
+      "actual": "1b3e199778c8f630b26b57d34e2e68f1b145b52543c805c890a26a28b327a6f9",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/browser-initial/application-configured.png",
+      "expected": "1efb11d0e7c92d072d7c598a27cc619de935e371919bf7d95d3d7ffcd1ecdff2",
+      "actual": "1efb11d0e7c92d072d7c598a27cc619de935e371919bf7d95d3d7ffcd1ecdff2",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/browser-initial/authorization-rejected.png",
+      "expected": "d3a5adfd800d4307f6f2a555be86f55505bafcfc061f438391f0191bd086ae53",
+      "actual": "d3a5adfd800d4307f6f2a555be86f55505bafcfc061f438391f0191bd086ae53",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/browser-initial/host-audit.json",
+      "expected": "beef6e4a5989bb79f8c3b05175274a7c0646df72dfac589f631adc8eabaf30d0",
+      "actual": "beef6e4a5989bb79f8c3b05175274a7c0646df72dfac589f631adc8eabaf30d0",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/browser-initial/lost-response-restarted.png",
+      "expected": "e6fc87fb6a91bb408281c7e77760105e71de7554b3d1bbda55b5d59f3dc2081c",
+      "actual": "e6fc87fb6a91bb408281c7e77760105e71de7554b3d1bbda55b5d59f3dc2081c",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/browser-initial/mobile-revoked.png",
+      "expected": "726adc955f51f4d28690971cfd4a1da25b14811dccec916d8734d4f7b1e169be",
+      "actual": "726adc955f51f4d28690971cfd4a1da25b14811dccec916d8734d4f7b1e169be",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/browser-initial/personal-connected.png",
+      "expected": "ea668a1ea9f06c94aad1744f44a95b173b4eadd21b52e6a9f8f5e9375a5619d1",
+      "actual": "ea668a1ea9f06c94aad1744f44a95b173b4eadd21b52e6a9f8f5e9375a5619d1",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/browser-initial/report.json",
+      "expected": "9dfece6b12bbc9683520415dc8eea4dfa73b85ccf6b7af7f77d730124027be33",
+      "actual": "9dfece6b12bbc9683520415dc8eea4dfa73b85ccf6b7af7f77d730124027be33",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/browser-initial/scope-limited-mobile.png",
+      "expected": "18b009393f8651967d620ff706c5e90246e363d5597f1f50aac7b1ab36eb8d27",
+      "actual": "18b009393f8651967d620ff706c5e90246e363d5597f1f50aac7b1ab36eb8d27",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/browser-initial.log",
+      "expected": "ec1abe52bc23644a57c8fd52e893db09bb3de1b54ec89b4a77ed8791cb9c6da9",
+      "actual": "ec1abe52bc23644a57c8fd52e893db09bb3de1b54ec89b4a77ed8791cb9c6da9",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/browser-sdk.log",
+      "expected": "67ea6e47d29aeeeaf72281da85932d2f4886eaddd7c1cf0e874fa55247ac6e9b",
+      "actual": "67ea6e47d29aeeeaf72281da85932d2f4886eaddd7c1cf0e874fa55247ac6e9b",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/catalog-boundary.log",
+      "expected": "bdf61b94016f235401ab3c043f8ab6787a6c03b089ad555d03e5585fb67776d0",
+      "actual": "bdf61b94016f235401ab3c043f8ab6787a6c03b089ad555d03e5585fb67776d0",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/diff-check.json",
+      "expected": "ed119b362671007b4292a6d9d4fba4cb1d11d0a089c4bc31f3184856207bcb91",
+      "actual": "ed119b362671007b4292a6d9d4fba4cb1d11d0a089c4bc31f3184856207bcb91",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/frontend-build.log",
+      "expected": "a5342ae8983fe8ff652328eb54bfb977fbb8f6caeed3b600d94ee4d79aed3f61",
+      "actual": "a5342ae8983fe8ff652328eb54bfb977fbb8f6caeed3b600d94ee4d79aed3f61",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/full.log",
+      "expected": "1d8553e2add9f208db4a1c6f3801ce9415eec236b8b1088a32c28508cdd52e78",
+      "actual": "1d8553e2add9f208db4a1c6f3801ce9415eec236b8b1088a32c28508cdd52e78",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/identity-initial.log",
+      "expected": "d838ec5a29fec16d247e1db3a781332663fc16f1a9ff2427b44d58de2dd6a499",
+      "actual": "d838ec5a29fec16d247e1db3a781332663fc16f1a9ff2427b44d58de2dd6a499",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/owners-initial.log",
+      "expected": "10a768b27de51d8d5bbec1562730a27812b788cab07c73b3b1bdb8d2851f5e06",
+      "actual": "10a768b27de51d8d5bbec1562730a27812b788cab07c73b3b1bdb8d2851f5e06",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/partial-grant.log",
+      "expected": "49cb3a451eaafde1c39ee83ef35cfb63d2ec4ffe969367f7d1b63d4c0eb51703",
+      "actual": "49cb3a451eaafde1c39ee83ef35cfb63d2ec4ffe969367f7d1b63d4c0eb51703",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/pm-build.log",
+      "expected": "46359adbd7d9e3e7db2c85c8e36ca813690439c918feef5111ba31d7a5b4feb0",
+      "actual": "46359adbd7d9e3e7db2c85c8e36ca813690439c918feef5111ba31d7a5b4feb0",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/products.log",
+      "expected": "8ae0a8d65bc65d984af92379f1d6a957238e96917adf9927aff7df4fec208db9",
+      "actual": "8ae0a8d65bc65d984af92379f1d6a957238e96917adf9927aff7df4fec208db9",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/race.log",
+      "expected": "4485ed539a7b30d550a911ea52214b53c2424910decb3b57492aa824a75b8961",
+      "actual": "4485ed539a7b30d550a911ea52214b53c2424910decb3b57492aa824a75b8961",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/sdk-initial.log",
+      "expected": "173a04f785e0af721f6c0efd7e7fd682363c238b5282478bd66c46ac244b9a0d",
+      "actual": "173a04f785e0af721f6c0efd7e7fd682363c238b5282478bd66c46ac244b9a0d",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/tools-probe-separation.log",
+      "expected": "05b97ac59bf85fd1268711138d59a6d78d1ed6776d6d528269f0514b52fcf845",
+      "actual": "05b97ac59bf85fd1268711138d59a6d78d1ed6776d6d528269f0514b52fcf845",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/vet.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-probe-scopes.json",
+      "path": "docs/evidence/2026-09-11-f01-probe-scopes/work-build.log",
+      "expected": "184c9aff2e479262cbf91dc88a096f728cabac85d3319a8df13aedd50aa17777",
+      "actual": "184c9aff2e479262cbf91dc88a096f728cabac85d3319a8df13aedd50aa17777",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/account-browser-regression/application-configured.png",
+      "expected": "683a17ba828c34d13a1b9994dc5b265979c62a1799c52748e772f804ff815343",
+      "actual": "683a17ba828c34d13a1b9994dc5b265979c62a1799c52748e772f804ff815343",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/account-browser-regression/authorization-rejected.png",
+      "expected": "412dbb6dae58dec5f2cce503347d931be24bb58b891fae4d3d5e574460dadd10",
+      "actual": "412dbb6dae58dec5f2cce503347d931be24bb58b891fae4d3d5e574460dadd10",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/account-browser-regression/host-audit.json",
+      "expected": "bc852c92fff84d99ac04fba3c26a18a4bcea761ef036d65fbbe64ee4b987ffe7",
+      "actual": "bc852c92fff84d99ac04fba3c26a18a4bcea761ef036d65fbbe64ee4b987ffe7",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/account-browser-regression/lost-response-restarted.png",
+      "expected": "f7f24c075669f109b1fc5df97c8f96f5558036dabaeaf61c3c67a23f04a84fb0",
+      "actual": "f7f24c075669f109b1fc5df97c8f96f5558036dabaeaf61c3c67a23f04a84fb0",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/account-browser-regression/mobile-revoked.png",
+      "expected": "af03e51e85606d834a51dd6316d494439f5048b1d9144a26bc95eb5b6178e1a5",
+      "actual": "af03e51e85606d834a51dd6316d494439f5048b1d9144a26bc95eb5b6178e1a5",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/account-browser-regression/personal-connected.png",
+      "expected": "a56e0d8e9b64cce500906c00230d78de78c1dd7302f8459111babec31efc71e0",
+      "actual": "a56e0d8e9b64cce500906c00230d78de78c1dd7302f8459111babec31efc71e0",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/account-browser-regression/report.json",
+      "expected": "efc8903f1dafec7abfd799880a847b3ffef324d8b41b2583b2bc8c7bf94bf794",
+      "actual": "efc8903f1dafec7abfd799880a847b3ffef324d8b41b2583b2bc8c7bf94bf794",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/account-browser-regression.log",
+      "expected": "7062fd4e6195daac5a5fc25ba547d2f32ff48dba909f1dfda7655cb9b6cf4f25",
+      "actual": "7062fd4e6195daac5a5fc25ba547d2f32ff48dba909f1dfda7655cb9b6cf4f25",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-final/disabled-desktop.png",
+      "expected": "3d0766f8c69b091bd676edbfdd4d0254ce6a6d9905ff99e180113b2a4be67c69",
+      "actual": "3d0766f8c69b091bd676edbfdd4d0254ce6a6d9905ff99e180113b2a4be67c69",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-final/host-audit.json",
+      "expected": "c5db61680c53d43e4f6b1102d511055879a54d4a65b187442ec1ded4e9896965",
+      "actual": "c5db61680c53d43e4f6b1102d511055879a54d4a65b187442ec1ded4e9896965",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-final/mobile-settings.png",
+      "expected": "9ab29806f015b8e494198eeb18aca430d5376737121399890db74183a68f4728",
+      "actual": "9ab29806f015b8e494198eeb18aca430d5376737121399890db74183a68f4728",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-final/report.json",
+      "expected": "0d6d5307af13bc47278921e8f02eb68cf050ffaee8b21cfe5ef2660df904b60c",
+      "actual": "0d6d5307af13bc47278921e8f02eb68cf050ffaee8b21cfe5ef2660df904b60c",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-final.log",
+      "expected": "883015e060ecced556dff96df9dcb7d658eeff52f8362893da180f021caa75d8",
+      "actual": "883015e060ecced556dff96df9dcb7d658eeff52f8362893da180f021caa75d8",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-initial/disabled-desktop.png",
+      "expected": "9e050610ea5ba875d1a38d42b026fc18a8e5e48fe4ad6d115b56fa800f1525c4",
+      "actual": "9e050610ea5ba875d1a38d42b026fc18a8e5e48fe4ad6d115b56fa800f1525c4",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-initial/host-audit.json",
+      "expected": "c5db61680c53d43e4f6b1102d511055879a54d4a65b187442ec1ded4e9896965",
+      "actual": "c5db61680c53d43e4f6b1102d511055879a54d4a65b187442ec1ded4e9896965",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-initial/mobile-settings.png",
+      "expected": "19827925919aababf62ecb762e4cffcc1be39849a129279aae9e2605e21d0752",
+      "actual": "19827925919aababf62ecb762e4cffcc1be39849a129279aae9e2605e21d0752",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-initial/report.json",
+      "expected": "0d6d5307af13bc47278921e8f02eb68cf050ffaee8b21cfe5ef2660df904b60c",
+      "actual": "0d6d5307af13bc47278921e8f02eb68cf050ffaee8b21cfe5ef2660df904b60c",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-initial.log",
+      "expected": "38c2b5eea7639f635daf0992423c97a633cdc0651301ca3725f6999e2a1f259d",
+      "actual": "38c2b5eea7639f635daf0992423c97a633cdc0651301ca3725f6999e2a1f259d",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-verified/disabled-desktop.png",
+      "expected": "3d0766f8c69b091bd676edbfdd4d0254ce6a6d9905ff99e180113b2a4be67c69",
+      "actual": "3d0766f8c69b091bd676edbfdd4d0254ce6a6d9905ff99e180113b2a4be67c69",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-verified/host-audit.json",
+      "expected": "c5db61680c53d43e4f6b1102d511055879a54d4a65b187442ec1ded4e9896965",
+      "actual": "c5db61680c53d43e4f6b1102d511055879a54d4a65b187442ec1ded4e9896965",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-verified/mobile-settings.png",
+      "expected": "9ab29806f015b8e494198eeb18aca430d5376737121399890db74183a68f4728",
+      "actual": "9ab29806f015b8e494198eeb18aca430d5376737121399890db74183a68f4728",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-verified/report.json",
+      "expected": "0d6d5307af13bc47278921e8f02eb68cf050ffaee8b21cfe5ef2660df904b60c",
+      "actual": "0d6d5307af13bc47278921e8f02eb68cf050ffaee8b21cfe5ef2660df904b60c",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/browser-verified.log",
+      "expected": "06c7f08dd58172d5218dd3e1cb944acacd6abbd987fca259a66ea27d5f71a6df",
+      "actual": "06c7f08dd58172d5218dd3e1cb944acacd6abbd987fca259a66ea27d5f71a6df",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/diff-check.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/frontend-build-final.log",
+      "expected": "39f634611f8fd2ea6043e98031f00e7131aa81cdfa4257b2d0220a3452705487",
+      "actual": "39f634611f8fd2ea6043e98031f00e7131aa81cdfa4257b2d0220a3452705487",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/frontend-build-initial.log",
+      "expected": "50119a47f739bd36ff95610049edd031e061031e6aa36367617dbafd6f8aa459",
+      "actual": "50119a47f739bd36ff95610049edd031e061031e6aa36367617dbafd6f8aa459",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/frontend-install.log",
+      "expected": "98257f1c031787ef8ce024fe402e178ccf8908803463849480b2304f4462e605",
+      "actual": "98257f1c031787ef8ce024fe402e178ccf8908803463849480b2304f4462e605",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/frontend-tests.log",
+      "expected": "e95b5d96405de10db7fa941c571f4a1af37f518e61b122607d3448ac80fc0e56",
+      "actual": "e95b5d96405de10db7fa941c571f4a1af37f518e61b122607d3448ac80fc0e56",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/frozen-resume.log",
+      "expected": "32eeaefe0110b1230efd747e9f2eb1e00f3c82430eddbb338660f5c849b6cb4b",
+      "actual": "32eeaefe0110b1230efd747e9f2eb1e00f3c82430eddbb338660f5c849b6cb4b",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/full-final-retry.log",
+      "expected": "e9c504deb15318a4bf791e6517230e1cad4421b2570e1a9745ef6f53f3a86aca",
+      "actual": "e9c504deb15318a4bf791e6517230e1cad4421b2570e1a9745ef6f53f3a86aca",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/full-final.log",
+      "expected": "602165cc1533aa5724156628d66eaa9c42798188356ce2ad71d3d1242bf1f522",
+      "actual": "602165cc1533aa5724156628d66eaa9c42798188356ce2ad71d3d1242bf1f522",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/history-confirmation-final.log",
+      "expected": "a8b166e545259710ba9b5d471ba374067ebcb5675ac37de9f0f2a7628b6ce31b",
+      "actual": "a8b166e545259710ba9b5d471ba374067ebcb5675ac37de9f0f2a7628b6ce31b",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/history-confirmation-initial.log",
+      "expected": "c05987c445df26ca1177a42814a3c89fb601ea9f20f249aecb7ca7d7b340b2be",
+      "actual": "c05987c445df26ca1177a42814a3c89fb601ea9f20f249aecb7ca7d7b340b2be",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/identity-history.log",
+      "expected": "9a501d7c40e36de47a5c8bbc06e144269cef32a2236f23d807f2d3ec48f9034c",
+      "actual": "9a501d7c40e36de47a5c8bbc06e144269cef32a2236f23d807f2d3ec48f9034c",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/identity-http-final.log",
+      "expected": "dc46e0c503b4670a4d6bb8a5b8c90b21443e39712fad867c39dddeac638fa33b",
+      "actual": "dc46e0c503b4670a4d6bb8a5b8c90b21443e39712fad867c39dddeac638fa33b",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/identity-http-initial.log",
+      "expected": "49794a3e4c9c37083c1571370d65f110277488748421da05940b5286634f9eae",
+      "actual": "49794a3e4c9c37083c1571370d65f110277488748421da05940b5286634f9eae",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/integration-client-build.log",
+      "expected": "672a47b1656f0fd2f36f265ab675baab8e741140a81e2c82547912febf843dae",
+      "actual": "672a47b1656f0fd2f36f265ab675baab8e741140a81e2c82547912febf843dae",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/owner-http-compile-retry.log",
+      "expected": "0a285367063dd2b38636f49c74cf86f9efdb135a74714f43fbb999dada13363e",
+      "actual": "0a285367063dd2b38636f49c74cf86f9efdb135a74714f43fbb999dada13363e",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/owner-http-compile.log",
+      "expected": "854939165b74f223b842ad5ce94b7775f431a1655c7d919d891b3eeee8925fc0",
+      "actual": "854939165b74f223b842ad5ce94b7775f431a1655c7d919d891b3eeee8925fc0",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/owner-module-race.log",
+      "expected": "ec639f2769220109c0ba032b69347a454635189374707a8ae8cd1de419435ec4",
+      "actual": "ec639f2769220109c0ba032b69347a454635189374707a8ae8cd1de419435ec4",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/owner-readiness-tools.log",
+      "expected": "22db398757ef04ed6ae9c2c536bfe0b7b48d4a3b9b36773e131db0e771ed4a16",
+      "actual": "22db398757ef04ed6ae9c2c536bfe0b7b48d4a3b9b36773e131db0e771ed4a16",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/owners-full.log",
+      "expected": "a046d2793e038191094f9ff85da116b49b53441893aeaa97b79acb61463e02b9",
+      "actual": "a046d2793e038191094f9ff85da116b49b53441893aeaa97b79acb61463e02b9",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/pm-build.log",
+      "expected": "6cbaf988da55f3783fa5e7f92ffa888313077a3ad7278cded2422c84f45a4ead",
+      "actual": "6cbaf988da55f3783fa5e7f92ffa888313077a3ad7278cded2422c84f45a4ead",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/product-bind-initial.log",
+      "expected": "7896034d33420eb0460c1b2521811c194a2b59b34e0e621e911bfe3c9f8490cf",
+      "actual": "7896034d33420eb0460c1b2521811c194a2b59b34e0e621e911bfe3c9f8490cf",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/production-integration.log",
+      "expected": "3dc23e9f65eabf2ea4e41d476ff01c6e7aba4c543703469ad062495d984c1bbe",
+      "actual": "3dc23e9f65eabf2ea4e41d476ff01c6e7aba4c543703469ad062495d984c1bbe",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-final/domainry-pm/disabled.png",
+      "expected": "12014d7170aa28edce69e4a45c6ed5bc874fd7d3fba0382af28d7120fdb50ab7",
+      "actual": "12014d7170aa28edce69e4a45c6ed5bc874fd7d3fba0382af28d7120fdb50ab7",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-final/domainry-pm/report.json",
+      "expected": "2d979fb816f956a77451bf11a34225b665a4d67a0c3fce53784d54489cf150af",
+      "actual": "2d979fb816f956a77451bf11a34225b665a4d67a0c3fce53784d54489cf150af",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-final/domainry-work/failure.png",
+      "expected": "25104ef3ba6dcb3f3851056397f8a3fb1ec9d11762225573438326984c0dce51",
+      "actual": "25104ef3ba6dcb3f3851056397f8a3fb1ec9d11762225573438326984c0dce51",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-final/domainry-work/report.json",
+      "expected": "fcf4496c69a4ce961a45136fd052cd7fe62aa37d94808f0513cf5ededcddd25d",
+      "actual": "fcf4496c69a4ce961a45136fd052cd7fe62aa37d94808f0513cf5ededcddd25d",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-final.log",
+      "expected": "f688f27fc6c250e8bb5ffda871de433f959e3a154ce3e9abe5c3a2a30590719e",
+      "actual": "f688f27fc6c250e8bb5ffda871de433f959e3a154ce3e9abe5c3a2a30590719e",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-observed/domainry-pm/disabled.png",
+      "expected": "12014d7170aa28edce69e4a45c6ed5bc874fd7d3fba0382af28d7120fdb50ab7",
+      "actual": "12014d7170aa28edce69e4a45c6ed5bc874fd7d3fba0382af28d7120fdb50ab7",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-observed/domainry-pm/report.json",
+      "expected": "3782f84e92e963617ec17d29c347ce2aac157f74cc3f730a9ad77e11cc7eb65d",
+      "actual": "3782f84e92e963617ec17d29c347ce2aac157f74cc3f730a9ad77e11cc7eb65d",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-observed/domainry-work/disabled.png",
+      "expected": "37553473d9597a8c2d54f455693870eabfa017d5613ecbfdea2c57b8b912b46b",
+      "actual": "37553473d9597a8c2d54f455693870eabfa017d5613ecbfdea2c57b8b912b46b",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-observed/domainry-work/report.json",
+      "expected": "a72fbad53d2727c41d13d1c0331845755c9874e0324f5e5ec5abd38293f60d0d",
+      "actual": "a72fbad53d2727c41d13d1c0331845755c9874e0324f5e5ec5abd38293f60d0d",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-observed.log",
+      "expected": "124abce8094e837c6d8a993ec62e27c8672b756601ded58ca5b92ec2f7a4c0fd",
+      "actual": "124abce8094e837c6d8a993ec62e27c8672b756601ded58ca5b92ec2f7a4c0fd",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-retry/domainry-pm/disabled.png",
+      "expected": "42249b4a0dcb372313e78582804be64b6612669bf22c692b275eccdc88f06b87",
+      "actual": "42249b4a0dcb372313e78582804be64b6612669bf22c692b275eccdc88f06b87",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-retry/domainry-pm/report.json",
+      "expected": "2d979fb816f956a77451bf11a34225b665a4d67a0c3fce53784d54489cf150af",
+      "actual": "2d979fb816f956a77451bf11a34225b665a4d67a0c3fce53784d54489cf150af",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-retry/domainry-work/disabled.png",
+      "expected": "01afc1d65686b81ed42eb951b2b340de4febd72d0975b98c9d4617984692025f",
+      "actual": "01afc1d65686b81ed42eb951b2b340de4febd72d0975b98c9d4617984692025f",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-retry/domainry-work/report.json",
+      "expected": "0ab49a55a1e53d281a8002a739ee6fb81c07d956c3e1e7303301f2d36324062d",
+      "actual": "0ab49a55a1e53d281a8002a739ee6fb81c07d956c3e1e7303301f2d36324062d",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-retry.log",
+      "expected": "810336ba564ff83808b4106ec12e76251423563b2eca2cab71ae4d83ca324478",
+      "actual": "810336ba564ff83808b4106ec12e76251423563b2eca2cab71ae4d83ca324478",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-verified/domainry-pm/failure.png",
+      "expected": "9b751a772f6038455bd232c57ed459eaae46a353b8a466e03de1ed8fb40db0a2",
+      "actual": "9b751a772f6038455bd232c57ed459eaae46a353b8a466e03de1ed8fb40db0a2",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-verified/domainry-pm/report.json",
+      "expected": "29a31da29c2ccb19b1a59fe34e99b338bf6530414e09cbca995297e0ea718da1",
+      "actual": "29a31da29c2ccb19b1a59fe34e99b338bf6530414e09cbca995297e0ea718da1",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-verified/domainry-work/disabled.png",
+      "expected": "37553473d9597a8c2d54f455693870eabfa017d5613ecbfdea2c57b8b912b46b",
+      "actual": "37553473d9597a8c2d54f455693870eabfa017d5613ecbfdea2c57b8b912b46b",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-verified/domainry-work/report.json",
+      "expected": "0ab49a55a1e53d281a8002a739ee6fb81c07d956c3e1e7303301f2d36324062d",
+      "actual": "0ab49a55a1e53d281a8002a739ee6fb81c07d956c3e1e7303301f2d36324062d",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser-verified.log",
+      "expected": "45e06ada15d9abf3aee919163eb576adce3fa8cacc12dfefc99e5f13f4acbe89",
+      "actual": "45e06ada15d9abf3aee919163eb576adce3fa8cacc12dfefc99e5f13f4acbe89",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-browser.log",
+      "expected": "2364cbf489519f8b26d77e7fac02cc2f470c95ce22e0fb1fcd7606a425720bbe",
+      "actual": "2364cbf489519f8b26d77e7fac02cc2f470c95ce22e0fb1fcd7606a425720bbe",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/products-full.log",
+      "expected": "760840f1f77fdefb3a922870ac6dbdde19b8c139d01f60ab0fa2b9993777a178",
+      "actual": "760840f1f77fdefb3a922870ac6dbdde19b8c139d01f60ab0fa2b9993777a178",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/race-final.log",
+      "expected": "6cc98b98e181586a05321d7cdbde2fe920e903490f11125395482876d40e80d6",
+      "actual": "6cc98b98e181586a05321d7cdbde2fe920e903490f11125395482876d40e80d6",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/readiness-initial.log",
+      "expected": "f13a42acaa77a99a3f40e939c70b7be878a0129909af7ea0313c00158aae38b6",
+      "actual": "f13a42acaa77a99a3f40e939c70b7be878a0129909af7ea0313c00158aae38b6",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/readiness-product-check.log",
+      "expected": "62001ae94875886a8dd436a108a2ffe3aeb3180e5478a43373dc242b067110f8",
+      "actual": "62001ae94875886a8dd436a108a2ffe3aeb3180e5478a43373dc242b067110f8",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/readiness-receipt-fix.log",
+      "expected": "92aacbcca3d5d2c8d9ea4fff4f23755ea275c975c7aff32f76ed9daf56a07a2e",
+      "actual": "92aacbcca3d5d2c8d9ea4fff4f23755ea275c975c7aff32f76ed9daf56a07a2e",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/readiness-workspace.log",
+      "expected": "ffbcdd5de95f6d28eef62323122e40526822465fb2814453b1090b196e15bbf2",
+      "actual": "ffbcdd5de95f6d28eef62323122e40526822465fb2814453b1090b196e15bbf2",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/tools-client-install.log",
+      "expected": "a941066d38162d18c88ea4b096d8cf11d19b0d46b973f6d916e2f9b8794e1f36",
+      "actual": "a941066d38162d18c88ea4b096d8cf11d19b0d46b973f6d916e2f9b8794e1f36",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/tools-client-test.log",
+      "expected": "5b8f1ae4011f6a107510c114800604e92f79009acea72a9560e16ae9dccf7d00",
+      "actual": "5b8f1ae4011f6a107510c114800604e92f79009acea72a9560e16ae9dccf7d00",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/vet-final.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/vet.log",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings-product.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/work-build.log",
+      "expected": "562458c46b7738cf785443ec2c7619b3e74677a47fb9afb77326564150a1c6b9",
+      "actual": "562458c46b7738cf785443ec2c7619b3e74677a47fb9afb77326564150a1c6b9",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/owner-http-compile-retry.log",
+      "expected": "0a285367063dd2b38636f49c74cf86f9efdb135a74714f43fbb999dada13363e",
+      "actual": "0a285367063dd2b38636f49c74cf86f9efdb135a74714f43fbb999dada13363e",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/owner-http-compile.log",
+      "expected": "854939165b74f223b842ad5ce94b7775f431a1655c7d919d891b3eeee8925fc0",
+      "actual": "854939165b74f223b842ad5ce94b7775f431a1655c7d919d891b3eeee8925fc0",
+      "matches": true
+    },
+    {
+      "manifest": "2026-09-11-f01-tool-settings.json",
+      "path": "docs/evidence/2026-09-11-f01-tool-settings/owner-module-race.log",
+      "expected": "ec639f2769220109c0ba032b69347a454635189374707a8ae8cd1de419435ec4",
+      "actual": "ec639f2769220109c0ba032b69347a454635189374707a8ae8cd1de419435ec4",
+      "matches": true
+    }
+  ],
+  "latest_source_before_completion_documentation": [
+    {
+      "path": "README.md",
+      "matches": true,
+      "sha256": "2ed5fa4833733b8baa187f6453955376c31ba0c653ff6d28a80d0a1b34ce3829"
+    },
+    {
+      "path": "docs/agent-capabilities-todo.md",
+      "matches": true,
+      "sha256": "3c2d9ca95dbb9f030298626f3541d0b2642962a9f8beaad4e7aa9e378481031a"
+    },
+    {
+      "path": "docs/remaining-capability-boundaries.md",
+      "matches": true,
+      "sha256": "b1a2dddf66d7a0a299ecd24485ff7468978d7437bdba8ed03fdfebcf23ab60d6"
+    },
+    {
+      "path": "docs/testing-2026-09-11-f01-probe-scopes.md",
+      "matches": true,
+      "sha256": "42ce4d248ffa1781dc747ace4c600a3e49e607bd00712f70e27b91180178f2d8"
+    },
+    {
+      "path": "frontend/src/ExternalAccountsDialog.tsx",
+      "matches": true,
+      "sha256": "65a264d6cefc23d76889c383e8b9353036b6f0dc567ea1750afba61e6080f053"
+    },
+    {
+      "path": "frontend/tests/external-accounts.browser.mjs",
+      "matches": true,
+      "sha256": "00747490395c3e6c46dc83821b05dd0feb8e143d44b0c32f823266ec13eea754"
+    },
+    {
+      "path": "internal/assembly/web/integration_accounts_test.go",
+      "matches": true,
+      "sha256": "3eb6e8da9d173a989b529b6be664bf746437ea0f2dff25ce1ce954046fc1b53b"
+    },
+    {
+      "path": "internal/assembly/web/integration_accounts_browser_test.go",
+      "matches": true,
+      "sha256": "1caa1f63630daa82cbb896253189324a0722749c944e775781ef4699fe70d21d"
+    },
+    {
+      "path": "internal/assembly/web/tool_settings_test.go",
+      "matches": true,
+      "sha256": "a943b52f4d10bddb1da61442e926f244e5cda3c0632b3b6df87a35373a98ef00"
+    },
+    {
+      "path": "../domainry-connector-sdk/README.md",
+      "matches": true,
+      "sha256": "6399dac2915c4ba0710cdfabd33321d0410d897ee4eccdce30126556ab8d30f0"
+    },
+    {
+      "path": "../domainry-connector-sdk/oauth.go",
+      "matches": true,
+      "sha256": "e9b0d81c967abfff80df867d94cc9308b0cc338fe9d6ecb7b5fa424b414b4504"
+    },
+    {
+      "path": "../domainry-connector-sdk/oauth_test.go",
+      "matches": true,
+      "sha256": "0a2ff58069f2e98793be6c5c30581ca07851059da1d00e442f96a9fc31a23bb4"
+    },
+    {
+      "path": "../domainry-connector-sdk/registry.go",
+      "matches": true,
+      "sha256": "fce05fad120059932571e2bfc70e388a6eb6b2d1b48e96c5d8c9e9388091cb14"
+    },
+    {
+      "path": "../domainry-connector-sdk/contract.go",
+      "matches": true,
+      "sha256": "c0a3c63df5cc634db460e94370f000e1a4c0b9316ffb3cdb32a4e78f90001649"
+    },
+    {
+      "path": "../domainry-connector-sdk/contract_identity.go",
+      "matches": true,
+      "sha256": "f08244bb56b34387989a75a3fa7ea1be3dbd5cd6392461cca5f26d57271daa1f"
+    },
+    {
+      "path": "../domainry-connector-sdk/connector_test.go",
+      "matches": true,
+      "sha256": "30cb44bce526286b86ec07cef375f64148600b224ccdc11152cb4582c84d4d89"
+    },
+    {
+      "path": "../domainry-connector-sdk/identity.go",
+      "matches": true,
+      "sha256": "999735fa3bdeeadd9d76b2c599f33cf0e103376eade2d850e5893ef4f41a2843"
+    },
+    {
+      "path": "../domainry-connector-sdk/identity_test.go",
+      "matches": true,
+      "sha256": "7dd251d420be8083ada05c4bbbdc3cc6e0e01b58c06fe16d4829089d162adc5a"
+    },
+    {
+      "path": "../domainry-connector-sdk/external_module_test.go",
+      "matches": true,
+      "sha256": "c7e4076dfc156e4c56d7c9141aabaa0d0876d0b7ee1c5afc80f40ed237768876"
+    },
+    {
+      "path": "../domainry-connectors/providers/google_workspace/google/oauth.go",
+      "matches": true,
+      "sha256": "77f5a4771f4a9dcf52837a822d80943aa2c9193d685e973f6c4dd1a63e2b386a"
+    },
+    {
+      "path": "../domainry-connectors/providers/google_workspace/google/oauth_test.go",
+      "matches": true,
+      "sha256": "37879da8aebbf0c7ca9569a208907f7825f644f35dde9e26a445f36fdb6777db"
+    },
+    {
+      "path": "../domainry-connectors/providers/google_workspace/google/provider.go",
+      "matches": true,
+      "sha256": "b2b2d96c54505c40fecff32e85dd9fd70994f11dec0333c6107ab45853b4531a"
+    },
+    {
+      "path": "../domainry-connectors/providers/microsoft_365/microsoft/oauth.go",
+      "matches": true,
+      "sha256": "aa70ac2cf7aea798741e9dcdf17ab15091232fe195382b0a52bcf029d14efdab"
+    },
+    {
+      "path": "../domainry-connectors/providers/microsoft_365/microsoft/oauth_test.go",
+      "matches": true,
+      "sha256": "8b4483f16c37b74f0b52c193e529cd6a0033bad39a7732441c7806bcefd1b1da"
+    },
+    {
+      "path": "../domainry-connectors/providers/microsoft_365/microsoft/provider.go",
+      "matches": true,
+      "sha256": "1bb134a7f90a3d2d6595b290fb8fd192252e7a328abb5edecde25677daf83330"
+    },
+    {
+      "path": "../domainry-connectors/catalog/catalog.json",
+      "matches": true,
+      "sha256": "7fa7d5ac863e4c04f248a32c40ad0632869475a591b80c214c7b23fb46a5a8f6"
+    },
+    {
+      "path": "../domainry-integration-sdk/connection_accounts.go",
+      "matches": true,
+      "sha256": "0669cac021902c1b832454ff3a9bb9a7ecf3f9000639b041136c6ae0ba3e665f"
+    },
+    {
+      "path": "../domainry-integration-sdk/browser/src/types.ts",
+      "matches": true,
+      "sha256": "2d5d91a1e468e778dcdc00f1c52a0ba99543b5ad37411059d0a9783153fcaed9"
+    },
+    {
+      "path": "../domainry-integration-sdk/browser/dist/types.d.ts",
+      "matches": true,
+      "sha256": "f29b227fc5c5ed5d05517dc081cd04f2c705564db98df9699db53f5a4da140ca"
+    },
+    {
+      "path": "../domainry-integration/README.md",
+      "matches": true,
+      "sha256": "f830cc4bcbf40a8a1bc73346170c26cd1636b2b54d814b26f81b47a1ce715469"
+    },
+    {
+      "path": "../domainry-integration/internal/domain/integration/service/connection_test_scope.go",
+      "matches": true,
+      "sha256": "e41b89991ccb780b67ee9e1059a9581028d77b602e7c57332b1a2363ec4feb1b"
+    },
+    {
+      "path": "../domainry-integration/internal/domain/integration/service/connection_test_scope_test.go",
+      "matches": true,
+      "sha256": "e84df459609f6ffec185c4365e599b646e0cb404444580b4347e88ac7a38a35e"
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/connection_readiness.go",
+      "matches": true,
+      "sha256": "134b18e2ed0d9a7502bac118deba09a4664df17efdccc4c884e4bff029e4d9d8"
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/connection_readiness_test.go",
+      "matches": true,
+      "sha256": "ba63b12eda4c47b42f0e3d60f027ce3f0d0bdfa5596712b54b9725a15b2a3229"
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_store.go",
+      "matches": true,
+      "sha256": "85af6808135b9774a2cc1072d31e2123aca4e92ae69c0ae7adf4844f374c9c0f"
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/oauth_session_store_test.go",
+      "matches": true,
+      "sha256": "7ce24c80666a3c665862f693272cec71ccb070424594dc823825809374bf15c7"
+    }
+  ]
+}

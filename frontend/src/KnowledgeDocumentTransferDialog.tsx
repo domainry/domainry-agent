@@ -4,8 +4,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { request } from "./api.ts";
 import { ApiError, describeError } from "./errors.ts";
 import { sessionScope } from "./session.ts";
-import { documentCanWrite, documentLabel, documentPath, type KnowledgeDocument, type KnowledgeLibrary } from "./knowledge-document-state.ts";
-import { loadPendingTransfer, parsePendingTransfer, transferReceiptKey, type PendingTransfer, type TransferDraft } from "./document-transfer-state.ts";
+import { documentLabel, documentPath, type KnowledgeDocument, type KnowledgeLibrary } from "./knowledge-document-state.ts";
+import { canTransferToLibrary, loadPendingTransfer, parsePendingTransfer, transferReceiptKey, type PendingTransfer, type TransferDraft } from "./document-transfer-state.ts";
 
 type LibraryPage = { items: KnowledgeLibrary[]; complete: boolean; next_after?: string };
 export function KnowledgeDocumentTransferDialog({ draft, onClose, onReceipt, onOpenTarget }: { draft: TransferDraft; onClose: () => void; onReceipt: (value: PendingTransfer | null) => void; onOpenTarget: (id: string) => void }) {
@@ -27,7 +27,7 @@ export function KnowledgeDocumentTransferDialog({ draft, onClose, onReceipt, onO
     ]).then(([value, previous]) => { if (!abort.signal.aborted) { setPage(value); if (previous) setTarget(previous); } }).catch(failure => { if (!abort.signal.aborted) { setTarget(null); setPage({ items: [], complete: true }); setError(describeError(failure)); } }).finally(() => { if (!abort.signal.aborted) setLoading(false); });
     return () => abort.abort();
   }, [cursor, pending]);
-  const usable = (library: KnowledgeLibrary) => library.id !== source.library_id && documentCanWrite(library) && !library.archived && library.documents_configured;
+  const usable = (library: KnowledgeLibrary) => canTransferToLibrary(library, source.library_id, pending?.targetID);
   function clearReceipt(receipt: PendingTransfer) {
     if (parsePendingTransfer(localStorage.getItem(key))?.clientID === receipt.clientID) localStorage.removeItem(key);
     setPending(null); onReceipt(loadPendingTransfer());

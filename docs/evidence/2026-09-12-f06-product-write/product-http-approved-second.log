@@ -1,0 +1,8 @@
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart/approved_restart
+    account_write_test.go:77: run did not reach waiting_confirmation
+--- FAIL: TestAccountWritesThroughIdentityProviderHTTPAndRestart (29.38s)
+    --- FAIL: TestAccountWritesThroughIdentityProviderHTTPAndRestart/approved_restart (29.38s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	29.976s
+FAIL

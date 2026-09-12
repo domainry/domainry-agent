@@ -1,0 +1,8 @@
+=== RUN   TestPrivateAttachmentCommittedWritesDrainBeforeHostCloses
+=== RUN   TestPrivateAttachmentCommittedWritesDrainBeforeHostCloses/put
+=== RUN   TestPrivateAttachmentCommittedWritesDrainBeforeHostCloses/delete
+--- PASS: TestPrivateAttachmentCommittedWritesDrainBeforeHostCloses (0.35s)
+    --- PASS: TestPrivateAttachmentCommittedWritesDrainBeforeHostCloses/put (0.19s)
+    --- PASS: TestPrivateAttachmentCommittedWritesDrainBeforeHostCloses/delete (0.17s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	2.050s

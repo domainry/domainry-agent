@@ -1,0 +1,12 @@
+=== RUN   TestWebToolsBuiltBrowser
+PASS two selected Web tools become available with workspace service registration and no OAuth
+PASS six persisted tool calls drive source-bound report; result cards retain query, URLs, read time and unknown completeness
+PASS real Knowledge artifact UI previews, edits v3 and downloads source-preserving Markdown
+PASS tool revocation hides saved answer and report; full host restart preserves preference and authorized v3
+PASS current Identity read revocation removes displayed report and blocks derived content
+PASS authorized workspace member can use shared Web service while private conversation and report remain isolated
+PASS bounded page explicitly reports truncation and creates no report at 390px
+PASS revoked workspace connection makes both tools unavailable and denies historical sources
+--- PASS: TestWebToolsBuiltBrowser (23.43s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	23.918s

@@ -57,8 +57,11 @@ func (s *ConversationStore) Run(ctx context.Context, id, runID string, a agentsd
 	return v.Run, err
 }
 func (s *ConversationStore) saveRun(ctx context.Context, tx *sql.Tx, v, old conversationRunRow) error {
+	if conversationOwner(v.Authority) != conversationOwner(old.Authority) {
+		return conversationError("forbidden", "authority_invalid")
+	}
 	v.Run.UpdatedAt = time.Now().UTC()
-	q, args, err := query.NewUpdateBuilder(s.store.Renderer(), "_agent_conversation_runs").Set("payload_json", conversationJSON(v.Run)).Set("status", v.Run.Status).Set("lease_owner", v.Owner).Set("fence", v.Fence).Set("lease_expires_at", v.Expires).Set("event_seq", v.EventSeq).Where(query.And(conversationScope(v.Authority, v.Run.ConversationID), query.Equal("run_id", v.Run.ID), query.Equal("fence", old.Fence), query.Equal("status", old.Run.Status), query.Equal("event_seq", old.EventSeq))).Build()
+	q, args, err := query.NewUpdateBuilder(s.store.Renderer(), "_agent_conversation_runs").Set("payload_json", conversationJSON(v.Run)).Set("authority_json", conversationJSON(v.Authority)).Set("status", v.Run.Status).Set("lease_owner", v.Owner).Set("fence", v.Fence).Set("lease_expires_at", v.Expires).Set("event_seq", v.EventSeq).Where(query.And(conversationScope(old.Authority, v.Run.ConversationID), query.Equal("run_id", v.Run.ID), query.Equal("fence", old.Fence), query.Equal("status", old.Run.Status), query.Equal("event_seq", old.EventSeq))).Build()
 	return conversationCAS(ctx, tx, q, args, err)
 }
 func (s *ConversationStore) event(ctx context.Context, tx *sql.Tx, v *conversationRunRow, kind string, data map[string]any) error {
@@ -134,7 +137,16 @@ func (s *ConversationStore) Claim(ctx context.Context, runtimeID, owner string, 
 	}
 	err := s.transaction(ctx, func(tx *sql.Tx) error {
 		now := time.Now().UTC()
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns(conversationRunColumns...).Where(query.And(query.Equal("runtime_id", runtimeID), query.Or(query.Equal("status", "queued"), query.And(query.Equal("status", "running"), query.LessThanOrEqual("lease_expires_at", now.UnixMilli()))))).OrderBy(query.Ascending("created_at")).Limit(1).Build()
+		builder := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns(conversationRunColumns...).Where(query.And(query.Equal("runtime_id", runtimeID), query.Or(query.Equal("status", "queued"), query.And(query.Equal("status", "running"), query.LessThanOrEqual("lease_expires_at", now.UnixMilli()))))).OrderBy(query.Ascending("created_at")).Limit(1)
+		profile := s.store.Profile()
+		if profile != nil && profile.Capabilities().RowLock {
+			var err error
+			builder, err = profile.ApplyClaimLock(builder, profile.Capabilities().SkipLocked)
+			if err != nil {
+				return err
+			}
+		}
+		q, args, err := builder.Build()
 		if err != nil {
 			return err
 		}
@@ -325,12 +337,18 @@ func (s *ConversationStore) transition(ctx context.Context, id, runID string, a 
 				return conversationError("conflict", "run_superseded")
 			}
 			v.Run.Status = "queued"
+			// Explicit resumption refreshes the trusted role selection only;
+			// owner scope and frozen operations remain unchanged.
+			v.Authority = a
 			v.Run.ErrorCode = ""
 			v.Run.DraftText, v.Run.DraftBytes = "", 0
 			c.ActiveRunID = runID
 		} else {
 			if v.Run.Terminal() {
 				return nil
+			}
+			if err = s.interruptConversationWrites(ctx, tx, &v); err != nil {
+				return err
 			}
 			v.Run.Status = "cancelled"
 			c.ActiveRunID = ""

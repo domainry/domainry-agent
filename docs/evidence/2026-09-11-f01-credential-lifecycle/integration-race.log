@@ -1,0 +1,68 @@
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/succeeded
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/storage-failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/successful-provider-storage-failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/writer-unavailable
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/succeeded
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/storage-failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/successful-provider-storage-failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/writer-unavailable
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/succeeded
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/storage-failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/successful-provider-storage-failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/writer-unavailable
+--- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome (0.64s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/succeeded (0.05s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/failed (0.05s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/storage-failed (0.04s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/successful-provider-storage-failed (0.04s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/writer-unavailable (0.04s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/succeeded (0.04s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/failed (0.04s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/storage-failed (0.04s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/successful-provider-storage-failed (0.04s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/writer-unavailable (0.04s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/succeeded (0.04s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/failed (0.04s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/storage-failed (0.04s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/successful-provider-storage-failed (0.04s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/writer-unavailable (0.04s)
+=== RUN   TestProviderCredentialUpdateRejectsStaleAndRevokedSnapshotsAtomically
+=== RUN   TestProviderCredentialUpdateRejectsStaleAndRevokedSnapshotsAtomically/newer_refresh_wins
+=== RUN   TestProviderCredentialUpdateRejectsStaleAndRevokedSnapshotsAtomically/revocation_rolls_back_the_whole_returned_set
+--- PASS: TestProviderCredentialUpdateRejectsStaleAndRevokedSnapshotsAtomically (0.09s)
+    --- PASS: TestProviderCredentialUpdateRejectsStaleAndRevokedSnapshotsAtomically/newer_refresh_wins (0.04s)
+    --- PASS: TestProviderCredentialUpdateRejectsStaleAndRevokedSnapshotsAtomically/revocation_rolls_back_the_whole_returned_set (0.04s)
+=== RUN   TestProviderCredentialUpdateCompletesAfterCallerCancellation
+--- PASS: TestProviderCredentialUpdateCompletesAfterCallerCancellation (0.04s)
+=== RUN   TestProviderCallCannotReactivateCredentialRevokedDuringRequest
+--- PASS: TestProviderCallCannotReactivateCredentialRevokedDuringRequest (0.05s)
+=== RUN   TestConcurrentProviderRefreshCannotOverwriteNewerResult
+--- PASS: TestConcurrentProviderRefreshCannotOverwriteNewerResult (0.05s)
+=== RUN   TestBackgroundProviderPersistsRotationOnFailureAndHonorsRevocation
+=== RUN   TestBackgroundProviderPersistsRotationOnFailureAndHonorsRevocation/failed-request
+=== RUN   TestBackgroundProviderPersistsRotationOnFailureAndHonorsRevocation/revoked-during-request
+--- PASS: TestBackgroundProviderPersistsRotationOnFailureAndHonorsRevocation (0.11s)
+    --- PASS: TestBackgroundProviderPersistsRotationOnFailureAndHonorsRevocation/failed-request (0.05s)
+    --- PASS: TestBackgroundProviderPersistsRotationOnFailureAndHonorsRevocation/revoked-during-request (0.06s)
+=== RUN   TestReconciliationPersistsRotationForFailedOutcomeAndProviderError
+=== RUN   TestReconciliationPersistsRotationForFailedOutcomeAndProviderError/failed-outcome
+=== RUN   TestReconciliationPersistsRotationForFailedOutcomeAndProviderError/provider-error
+--- PASS: TestReconciliationPersistsRotationForFailedOutcomeAndProviderError (0.12s)
+    --- PASS: TestReconciliationPersistsRotationForFailedOutcomeAndProviderError/failed-outcome (0.07s)
+    --- PASS: TestReconciliationPersistsRotationForFailedOutcomeAndProviderError/provider-error (0.06s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	7.561s
+=== RUN   TestPublicModuleRetainsRotatedCredentialsAcrossRestart
+=== RUN   TestPublicModuleRetainsRotatedCredentialsAcrossRestart/call
+=== RUN   TestPublicModuleRetainsRotatedCredentialsAcrossRestart/delivery
+=== RUN   TestPublicModuleRetainsRotatedCredentialsAcrossRestart/connection-test
+--- PASS: TestPublicModuleRetainsRotatedCredentialsAcrossRestart (11.15s)
+    --- PASS: TestPublicModuleRetainsRotatedCredentialsAcrossRestart/call (3.81s)
+    --- PASS: TestPublicModuleRetainsRotatedCredentialsAcrossRestart/delivery (3.69s)
+    --- PASS: TestPublicModuleRetainsRotatedCredentialsAcrossRestart/connection-test (3.65s)
+PASS
+ok  	github.com/domainry/domainry-integration/module	18.006s

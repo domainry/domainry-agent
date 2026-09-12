@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -14,7 +15,6 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	agentremote "github.com/domainry/domainry-agent/remote"
@@ -52,7 +52,7 @@ func TestConversationModelToPersistedBrowserStreamAndDisconnectReplay(t *testing
 			if mode == "module" {
 				binding, err = agentmodule.NewFactory(agentmodule.Options{ConversationProvider: model, ConversationOptions: conversationOptions()}).OpenModule(ctx, agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, newSQLiteModuleHost(t, a.RuntimeID))
 			} else {
-				service, e := agentapplication.NewConversationService(conversationRepository(t), model, a.RuntimeID, conversationOptions())
+				service, e := conversationassembly.NewService(conversationRepository(t), model, a.RuntimeID, conversationOptions())
 				if e != nil {
 					t.Fatal(e)
 				}

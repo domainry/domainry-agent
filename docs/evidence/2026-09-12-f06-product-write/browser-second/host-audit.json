@@ -1,0 +1,16 @@
+{
+  "actual_google_provider": true,
+  "complete": true,
+  "effects": {
+    "calendar_create": 2,
+    "calendar_update": 1,
+    "mail_reply": 1,
+    "mail_send": 2
+  },
+  "model_http_requests": 21,
+  "oauth_protocol_exchanges": 1,
+  "real_identity_agent_tools_integration_sqlite": true,
+  "real_language_model": false,
+  "real_vendor_account": false,
+  "vendor_http_requests": 35
+}

@@ -1,0 +1,7 @@
+=== RUN   TestKnowledgeDocumentTransfersIdentityHTTPProtocol
+    knowledge_document_transfer_live_test.go:118: Real product copy indexed; personal scope rejected by shared target, shared reader queried and downloaded
+    knowledge_document_transfer_live_test.go:118: Move indexed after host restart; old shared download/history/remote scope denied, personal B target cited
+    knowledge_document_transfer_live_test.go:118: Three distinct KBs, two Identity users, copy/move permissions, restart and all cleanup verified: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/TestKnowledgeDocumentTransfersIdentityHTTPProtocol102404459/001
+--- PASS: TestKnowledgeDocumentTransfersIdentityHTTPProtocol (8.84s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	9.564s

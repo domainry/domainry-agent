@@ -1,0 +1,6 @@
+Observed initial SDK race failure (tool output excerpt; original redirected log was overwritten after a failed relative-path move):
+--- FAIL: TestCurrentIdentity (0.00s)
+    identity_test.go:12: CurrentIdentity() = {SDKVersion:v0.1.0-dev.19 ContractVersion:connector-contract-v16 ContractSHA256:664cb625e96fed3fcfd88c6b25e0087c63aa18e22dd2c960ab9d858b85941fee}, want {SDKVersion:v0.1.0-dev.18 ContractVersion:connector-contract-v16 ContractSHA256:664cb625e96fed3fcfd88c6b25e0087c63aa18e22dd2c960ab9d858b85941fee}
+FAIL github.com/domainry/domainry-connector-sdk 2.130s
+ok github.com/domainry/domainry-connector-sdk/web 1.909s
+The root identity test expectation was then updated; see sdk-full-race.log for the final complete run.

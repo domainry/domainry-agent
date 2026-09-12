@@ -1,0 +1,39 @@
+{
+  "synthetic": true,
+  "expected": {
+    "customer": "Qinghe Fixture",
+    "amount": "9007199254740993.25",
+    "signed_date": "2026-09-11",
+    "approval": "true",
+    "email": null,
+    "rows": [
+      [
+        "Pencil",
+        "2",
+        "1.20"
+      ],
+      [
+        "Paper",
+        "3",
+        "12.50"
+      ]
+    ]
+  },
+  "files": [
+    {
+      "filename": "synthetic-extraction.pdf",
+      "bytes": 1740,
+      "sha256": "1c4070779159f1a45f4fc7d11264d564c5972a0057dc08425a78cd0c75b465c6"
+    },
+    {
+      "filename": "synthetic-extraction.docx",
+      "bytes": 36974,
+      "sha256": "633db607d5a2eb5ca213719b5542d8c4c2b5c0ab3f9a626ec77da8f0832a82f4"
+    },
+    {
+      "filename": "synthetic-extraction.xlsx",
+      "bytes": 5239,
+      "sha256": "1c418895a86623474b9e3b00c3d9a6f1d9cd8f04ed28c8bf3a665dcce6f1c5b2"
+    }
+  ]
+}

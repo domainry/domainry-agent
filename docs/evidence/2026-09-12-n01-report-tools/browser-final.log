@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "phases": [
+    "UI login/create/send; 2 catalog + 3 query pages; actual updated rows, source and bounded completeness",
+    "full owner/module/Identity disk restart restores actual saved report answer",
+    "field permission revoked hides prior answer and tool content",
+    "restored permission requires fresh query; mobile 390px no document overflow",
+    "business read revoked removes report tool and does not claim successful execution"
+  ]
+}

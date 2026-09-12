@@ -1,0 +1,82 @@
+=== RUN   TestStructuredAnalysisLowersThroughRealReportCompiler
+=== RUN   TestStructuredAnalysisLowersThroughRealReportCompiler/aggregate
+=== RUN   TestStructuredAnalysisLowersThroughRealReportCompiler/compare
+=== RUN   TestStructuredAnalysisLowersThroughRealReportCompiler/trend
+=== RUN   TestStructuredAnalysisLowersThroughRealReportCompiler/table
+--- PASS: TestStructuredAnalysisLowersThroughRealReportCompiler (0.01s)
+    --- PASS: TestStructuredAnalysisLowersThroughRealReportCompiler/aggregate (0.00s)
+    --- PASS: TestStructuredAnalysisLowersThroughRealReportCompiler/compare (0.00s)
+    --- PASS: TestStructuredAnalysisLowersThroughRealReportCompiler/trend (0.00s)
+    --- PASS: TestStructuredAnalysisLowersThroughRealReportCompiler/table (0.00s)
+=== RUN   TestAnalysisFiltersAreBoundAndTyped
+--- PASS: TestAnalysisFiltersAreBoundAndTyped (0.00s)
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications/negative_limit
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications/output_collision
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications/unknown_rule_column
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications/sql_operator
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications/numeric_string
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications/mixed_modes
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications/future_calculation
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications/incompatible_units
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications/timezone
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications/unknown_dataset
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications/unknown_field
+=== RUN   TestAnalysisRejectsUnboundOrAmbiguousSpecifications/identity_value
+--- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications (0.00s)
+    --- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications/negative_limit (0.00s)
+    --- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications/output_collision (0.00s)
+    --- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications/unknown_rule_column (0.00s)
+    --- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications/sql_operator (0.00s)
+    --- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications/numeric_string (0.00s)
+    --- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications/mixed_modes (0.00s)
+    --- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications/future_calculation (0.00s)
+    --- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications/incompatible_units (0.00s)
+    --- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications/timezone (0.00s)
+    --- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications/unknown_dataset (0.00s)
+    --- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications/unknown_field (0.00s)
+    --- PASS: TestAnalysisRejectsUnboundOrAmbiguousSpecifications/identity_value (0.00s)
+=== RUN   TestAnalysisAggregatesUseMatchedAndNonNullCountsWithoutInputPageSampling
+--- PASS: TestAnalysisAggregatesUseMatchedAndNonNullCountsWithoutInputPageSampling (0.00s)
+=== RUN   TestAnalysisExactHalfEvenRoundingAndNegativeZero
+--- PASS: TestAnalysisExactHalfEvenRoundingAndNegativeZero (0.00s)
+=== RUN   TestAnalysisComparisonOuterGroupsZeroAndNegativeBaseline
+--- PASS: TestAnalysisComparisonOuterGroupsZeroAndNegativeBaseline (0.00s)
+=== RUN   TestAnalysisTrendUsesCalendarTimeAndPreviousObservedGroup
+--- PASS: TestAnalysisTrendUsesCalendarTimeAndPreviousObservedGroup (0.00s)
+=== RUN   TestAnalysisTableCalculationsRulesNullAndApproximateMetadata
+--- PASS: TestAnalysisTableCalculationsRulesNullAndApproximateMetadata (0.00s)
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/sentinel
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/more
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/cursor
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/partial_total
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/missing_column
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/null_flag
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/bad_number
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/bad_count
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/negative_count
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/more_non_null
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/zero_group
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/duplicate_group
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/oversize_cell
+=== RUN   TestAnalysisRejectsPartialOrMalformedHostResults/segments
+--- PASS: TestAnalysisRejectsPartialOrMalformedHostResults (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/sentinel (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/more (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/cursor (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/partial_total (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/missing_column (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/null_flag (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/bad_number (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/bad_count (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/negative_count (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/more_non_null (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/zero_group (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/duplicate_group (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/oversize_cell (0.00s)
+    --- PASS: TestAnalysisRejectsPartialOrMalformedHostResults/segments (0.00s)
+=== RUN   TestAnalysisEmptyAggregateAndTableHaveDistinctCountSemantics
+--- PASS: TestAnalysisEmptyAggregateAndTableHaveDistinctCountSemantics (0.00s)
+PASS
+ok  	github.com/domainry/domainry-report/internal/domain/report/service/analysis	1.708s

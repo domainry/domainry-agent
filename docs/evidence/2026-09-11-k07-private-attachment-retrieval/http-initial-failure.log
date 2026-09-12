@@ -1,0 +1,6 @@
+=== RUN   TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart
+    conversation_attachment_index_test.go:224: DELETE /agent/conversations/conv_aa463a692b198b5fa1a78b5facf66406?expected_revision=1: status 409, want 200, body {"code":"agent.conversation.revision_conflict"}
+--- FAIL: TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart (1.11s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	2.197s
+FAIL

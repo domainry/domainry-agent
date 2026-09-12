@@ -1,0 +1,27 @@
+ok  	github.com/domainry/domainry-integration/capability	1.602s
+ok  	github.com/domainry/domainry-integration/cmd/integration-server	7.248s
+ok  	github.com/domainry/domainry-integration/internal/adapter/integrationsdk	4.508s
+ok  	github.com/domainry/domainry-integration/internal/application/integration	5.584s
+--- FAIL: TestDomainAndApplicationDoNotDependOnSDKOrInfrastructure (0.00s)
+    layout_test.go:81: ../application/integration/connection_account_reads.go crosses internal layer boundary with "domainry-integration-sdk"
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/architecture	5.218s
+ok  	github.com/domainry/domainry-integration/internal/assembly/module	5.138s
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	14.144s
+?   	github.com/domainry/domainry-integration/internal/domain/integration/model	[no test files]
+?   	github.com/domainry/domainry-integration/internal/domain/integration/repository	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/domain/integration/service	6.319s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/connectortransport	6.847s
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/architecture	6.988s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	7.139s
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/migration	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/schema	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/security	7.671s
+ok  	github.com/domainry/domainry-integration/internal/transport/http/module	7.439s
+?   	github.com/domainry/domainry-integration/internal/transport/http/saas	[no test files]
+ok  	github.com/domainry/domainry-integration/module	10.194s
+FAIL

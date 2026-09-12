@@ -1,0 +1,756 @@
+{
+  "steps": [
+    "binary PDF uploaded, indexed and original download verified"
+  ],
+  "baselines": [
+    {
+      "label": "desktop-extraction",
+      "pageOverflow": false,
+      "interactiveInventory": [
+        {
+          "tag": "button",
+          "role": "",
+          "name": "新建会话",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 0,
+          "control_locator": {
+            "kind": "index",
+            "value": 0
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "搜索会话名称",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "搜索会话",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 1,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"搜索会话\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "显示归档会话",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 2,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"显示归档会话\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "文档字段与表格提取验收9月11日",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 3,
+          "control_locator": {
+            "kind": "index",
+            "value": 3
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "上一页会话",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 4,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"上一页会话\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下一页会话",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 5,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"下一页会话\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "个人待办事项与截止日期",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 6,
+          "control_locator": {
+            "kind": "index",
+            "value": 6
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "资料库个人资料、共享成员",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 7,
+          "control_locator": {
+            "kind": "index",
+            "value": 7
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "我的成果文档、表格与下载",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 8,
+          "control_locator": {
+            "kind": "index",
+            "value": 8
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "个人记忆偏好与约定",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 9,
+          "control_locator": {
+            "kind": "index",
+            "value": 9
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "退出登录",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 10,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"退出登录\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "附件",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 11,
+          "control_locator": {
+            "kind": "index",
+            "value": 11
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "会话操作",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 12,
+          "control_locator": {
+            "kind": "css",
+            "value": "#radix-_r_8_"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "使用个人记忆",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 13,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"使用个人记忆\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看处理记录",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 14,
+          "control_locator": {
+            "kind": "index",
+            "value": 14
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "将这条消息保存为记忆",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 15,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"将这条消息保存为记忆\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.pdf检索片段",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 16,
+          "control_locator": {
+            "kind": "index",
+            "value": 16
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.pdf读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 17,
+          "control_locator": {
+            "kind": "index",
+            "value": 17
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.pdf读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 18,
+          "control_locator": {
+            "kind": "index",
+            "value": 18
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 19,
+          "control_locator": {
+            "kind": "index",
+            "value": 19
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 20,
+          "control_locator": {
+            "kind": "index",
+            "value": 20
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 21,
+          "control_locator": {
+            "kind": "index",
+            "value": 21
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.pdf",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 22,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"查看来源：synthetic-extraction.pdf\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看处理记录",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 23,
+          "control_locator": {
+            "kind": "index",
+            "value": 23
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "复制回复",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 24,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"复制回复\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "将这条回复保存为记忆",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 25,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"将这条回复保存为记忆\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "Upload files",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "file"
+        },
+        {
+          "tag": "textarea",
+          "role": "",
+          "name": "消息",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "发送消息",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 26,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"发送消息\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        }
+      ],
+      "qualityFailures": [
+        {
+          "code": "STATIC_UI_LIST_CONTRACT_MISSING",
+          "target": "table:项目数量单价Pencil21.2Paper312.5",
+          "actual": "visible semantic collection outside [data-static-ui-list]",
+          "expected": "collection owner marked with data-static-ui-list"
+        },
+        {
+          "code": "STATIC_UI_CONTROL_NAME_MISSING",
+          "target": "button",
+          "actual": "no accessible name",
+          "expected": "visible or aria-label control name"
+        },
+        {
+          "code": "STATIC_UI_CONTROL_NAME_MISSING",
+          "target": "button",
+          "actual": "no accessible name",
+          "expected": "visible or aria-label control name"
+        },
+        {
+          "code": "STATIC_UI_CONTROL_NAME_MISSING",
+          "target": "button",
+          "actual": "no accessible name",
+          "expected": "visible or aria-label control name"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:你的智能工作空间",
+          "actual": "10px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "label:含归档",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:9月11日",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "span:第 1 页",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "div:我的工作空间",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "span:事项与截止日期",
+          "actual": "10px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "span:个人资料、共享成员",
+          "actual": "10px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "span:文档、表格与下载",
+          "actual": "10px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "span:偏好与约定",
+          "actual": "10px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:个人账号",
+          "actual": "10px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "div:工作空间 / 对话",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "span:/",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "span:已就绪",
+          "actual": "10px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "span:历史记录与上下文会自动保存",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "button:查看处理记录",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "button:将这条消息保存为记忆",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "span:Agent",
+          "actual": "10px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:已完成",
+          "actual": "9.6px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "pre:{}",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "pre:{ \"provider\": \"agent_libraries\", \"kb_id\": \"\", \"operation\": \"libraries\", \"query\":",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:已完成",
+          "actual": "9.6px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:检索片段",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:已完成",
+          "actual": "9.6px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:读取依据",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:已完成",
+          "actual": "9.6px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "small:读取依据",
+          "actual": "10.4px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "button:查看来源：synthetic-extraction.pdf",
+          "actual": "11.2px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "button:查看处理记录",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "button:将这条回复保存为记忆",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "span:本次操作权限",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "span:未授权写入",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "p:仅对本次请求生效，请按需要选择允许修改的内容。",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "span:Enter 发送 · Shift + Enter 换行",
+          "actual": "11px",
+          "expected": ">= 12px"
+        },
+        {
+          "code": "STATIC_UI_TEXT_TOO_SMALL",
+          "target": "p:对话与执行记录会自动保存，请核对重要结果。",
+          "actual": "10px",
+          "expected": ">= 12px"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "complete": false,
+  "ownedDocumentDeleted": true
+}

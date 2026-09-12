@@ -1,0 +1,34 @@
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/succeeded
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/storage-failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/successful-provider-storage-failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/writer-unavailable
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/succeeded
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/storage-failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/successful-provider-storage-failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/writer-unavailable
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/succeeded
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/storage-failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/successful-provider-storage-failed
+=== RUN   TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/writer-unavailable
+--- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome (0.03s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/succeeded (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/failed (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/storage-failed (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/successful-provider-storage-failed (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/call/writer-unavailable (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/succeeded (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/failed (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/storage-failed (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/successful-provider-storage-failed (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/delivery/writer-unavailable (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/succeeded (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/failed (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/storage-failed (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/successful-provider-storage-failed (0.00s)
+    --- PASS: TestCredentialRotationPersistsIndependentlyOfProviderOutcome/connection-test/writer-unavailable (0.00s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	0.684s

@@ -1,0 +1,18 @@
+[
+  {
+    "repo": "domainry-integration",
+    "command": "git diff --check",
+    "exit_code": 0
+  },
+  {
+    "repo": "domainry-agent",
+    "command": "git diff --check",
+    "exit_code": 0
+  },
+  {
+    "repo": "domainry-integration",
+    "command": "gofmt -l selected sources",
+    "exit_code": 0,
+    "unformatted_files": []
+  }
+]

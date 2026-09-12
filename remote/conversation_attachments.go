@@ -39,3 +39,19 @@ func (c *conversationClient) DeleteAttachment(ctx context.Context, conversationI
 }
 
 var _ agentsdk.ConversationAttachmentService = (*conversationClient)(nil)
+
+func (c *conversationClient) IndexAttachment(ctx context.Context, conversationID, id string, expected int64, a agentsdk.ConversationAuthority) (agentsdk.ConversationAttachment, error) {
+	var out agentsdk.ConversationAttachment
+	err := c.call(ctx, "attachments_index", agentsdk.ConversationRPCRequest{Authority: a, ConversationID: conversationID, AttachmentID: id, Revision: expected}, &out)
+	return out, err
+}
+
+var _ agentsdk.ConversationAttachmentIndexService = (*conversationClient)(nil)
+
+func (c *conversationClient) CheckAttachmentIndex(ctx context.Context, conversationID, id string, expected int64, a agentsdk.ConversationAuthority) (agentsdk.ConversationAttachment, error) {
+	var out agentsdk.ConversationAttachment
+	err := c.call(ctx, "attachments_check_index", agentsdk.ConversationRPCRequest{Authority: a, ConversationID: conversationID, AttachmentID: id, Revision: expected}, &out)
+	return out, err
+}
+
+var _ agentsdk.ConversationAttachmentIndexCheckService = (*conversationClient)(nil)

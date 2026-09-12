@@ -1,0 +1,18 @@
+{
+  "checks": [
+    {
+      "repo": "domainry-runtime",
+      "git_diff_check": "pass"
+    },
+    {
+      "repo": "domainry-agent-sdk",
+      "git_diff_check": "pass"
+    },
+    {
+      "repo": "domainry-agent",
+      "git_diff_check": "pass"
+    }
+  ],
+  "gofmt": "pass",
+  "note": "Historical logs are immutable; old contract and pre-issuer tests are superseded by final issuer checks."
+}

@@ -1,3 +1,4 @@
+import { FilePreviewDialog } from "./FilePreviewDialog";
 import { useEffect, useRef, useState } from "react";
 import { Download, FileText, RefreshCw, Trash2, Upload } from "lucide-react";
 import { Button } from "./components/ui/button";
@@ -5,7 +6,7 @@ import { Input } from "./components/ui/input";
 import { request } from "./api.ts";
 import { ApiError, describeError, errorMessage } from "./errors.ts";
 import { sessionScope } from "./session.ts";
-import { documentAccept, documentCanDownload, documentCanWrite, documentHash, documentLabel, documentMaxBytes, documentPath, documentStatusDetail, parsePendingDocument, readKnowledgeDocument, uploadKnowledgeDocument, type KnowledgeDocument, type KnowledgeDocumentPage, type KnowledgeLibrary, type PendingDocument } from "./knowledge-document-state.ts";
+import { documentAccept, documentCanDownload, documentCanWrite, documentHash, documentLabel, documentUploadMaxBytes, documentPath, documentStatusDetail, parsePendingDocument, readKnowledgeDocument, uploadKnowledgeDocument, type KnowledgeDocument, type KnowledgeDocumentPage, type KnowledgeLibrary, type PendingDocument } from "./knowledge-document-state.ts";
 
 export function KnowledgeDocumentsPanel({ library: initialLibrary, disabled, onBusyChange, onTransfer }: { library: KnowledgeLibrary; disabled: boolean; onBusyChange: (value: boolean) => void; onTransfer: (doc: KnowledgeDocument, library: KnowledgeLibrary) => void }) {
   const libraryID = initialLibrary.id;
@@ -15,6 +16,7 @@ export function KnowledgeDocumentsPanel({ library: initialLibrary, disabled, onB
   const [file, setFile] = useState<File | null>(null), [page, setPage] = useState<KnowledgeDocumentPage>({ items: [], complete: true });
   const [cursors, setCursors] = useState([""]), [refresh, setRefresh] = useState(0);
   const [selectedID, setSelectedID] = useState(""), [selected, setSelected] = useState<KnowledgeDocument | null>(null);
+  const [filePreview, setFilePreview] = useState(false);
   const [confirmation, setConfirmation] = useState<KnowledgeDocument | null>(null);
   const [busy, setBusy] = useState(false), [loading, setLoading] = useState(true), [available, setAvailable] = useState(false);
   const [error, setError] = useState(""), [loadError, setLoadError] = useState(""), [notice, setNotice] = useState("");
@@ -55,6 +57,7 @@ export function KnowledgeDocumentsPanel({ library: initialLibrary, disabled, onB
   const blocked = busy || disabled;
   const writable = available && documentCanWrite(library);
   const uploadEnabled = writable && library.documents_configured && !library.archived;
+  const maxUploadBytes = documentUploadMaxBytes(library);
   async function perform(action: (signal: AbortSignal) => Promise<void>) {
     if (lock.current || disabled) return;
     lock.current = true; setBusy(true); onBusyChange(true); setError(""); setNotice("");
@@ -75,7 +78,7 @@ export function KnowledgeDocumentsPanel({ library: initialLibrary, disabled, onB
   function clearPending() { localStorage.removeItem(storageKey); setPending(null); }
   async function upload(signal: AbortSignal) {
     if (!file || !uploadEnabled) return;
-    if (!file.size || file.size > documentMaxBytes) throw new ApiError("agent.conversation.document_size_invalid");
+    if (!file.size || file.size > maxUploadBytes) throw new ApiError("agent.conversation.document_size_invalid");
     if (!documentAccept.split(",").some(extension => file.name.toLowerCase().endsWith(extension))) throw new ApiError("agent.conversation.document_type_unsupported");
     const sha256 = await documentHash(await file.arrayBuffer());
     if (signal.aborted) return;
@@ -110,7 +113,7 @@ export function KnowledgeDocumentsPanel({ library: initialLibrary, disabled, onB
     {available && <>
       {library.archived ? <p className="subtle">资料库已归档，上传、下载和检索已暂停。编辑者仍可删除不需要的文档。</p> : !library.documents_configured ? <p className="subtle">此资料库尚未开放文档上传，请联系管理员连接支持入库的知识源。已经保存的原文件仍可按权限下载和删除。</p> : !writable ? <p className="subtle">你拥有阅读权限，可以查询和下载资料；上传与删除由编辑者或管理者操作。</p> : <div className="attachment-upload">
         <label htmlFor="library-document-file">选择资料文件</label><Input ref={input} id="library-document-file" type="file" accept={documentAccept} disabled={blocked || !uploadEnabled} onChange={event => { setFile(event.target.files?.[0] || null); setError(""); }} />
-        <p>PDF、Word、Excel、TXT、Markdown、CSV、TSV、JSON · 单文件最多 16 MiB</p>
+        <p>PDF、Word、Excel、TXT、Markdown、CSV、TSV、JSON · 单文件最多 {maxUploadBytes / (1024 * 1024)} MiB</p>
         <p>{library.kind === "shared" ? `上传到“${library.name}”后，此资料库的所有阅读成员都能访问文件。` : "文件仅自己可见，入库后可跨会话查询。"}</p>
         <Button disabled={blocked || !file || !uploadEnabled} onClick={() => void perform(upload)}><Upload size={16} />{busy ? "正在处理…" : pending ? "继续上次上传" : library.kind === "shared" ? "上传到共享资料库" : "保存到个人资料"}</Button>
       </div>}
@@ -119,8 +122,8 @@ export function KnowledgeDocumentsPanel({ library: initialLibrary, disabled, onB
     {loadError && <p role="alert" className="error-text">{loadError}</p>}{error && <p role="alert" className="error-text">{error}</p>}{notice && <p role="status" className="subtle">{notice}</p>}
     {!available && loading ? <p className="subtle">正在读取资料库文档…</p> : available && (page.items.length === 0 ? <p className="subtle">此页还没有可显示的文档。</p> : <div className="attachment-list">{page.items.map(item => <Button key={item.id} aria-pressed={item.id === selectedID} disabled={blocked} variant={item.id === selectedID ? "secondary" : "outline"} onClick={() => { if (item.id !== selectedID) setSelected(null); setConfirmation(null); setSelectedID(item.id); setError(""); setRefresh(n => n + 1); }}><FileText size={18} /><span><strong>{item.filename}</strong><small>{documentLabel(item)} · {(item.bytes / 1024).toFixed(1)} KiB</small></span></Button>)}</div>)}
     {(cursors.length > 1 || !page.complete) && <div className="interaction-actions"><Button size="sm" variant="outline" disabled={blocked || loading || cursors.length === 1} onClick={() => setCursors(values => values.slice(0, -1))}>上一页文档</Button><Button size="sm" variant="outline" disabled={blocked || loading || !page.next_after} onClick={() => setCursors(values => [...values, page.next_after!])}>下一页文档</Button></div>}
-    {selected && available && <section className="artifact-detail" aria-label="文档详情"><h4>{selected.filename}</h4><p className="subtle">{documentLabel(selected)} · {library.kind === "shared" ? "继承本资料库成员权限" : "仅自己可见"}</p><p className="subtle">{documentStatusDetail(selected)}</p>{selected.error_code && <p className="error-text">{errorMessage(selected.error_code)}</p>}
-      <div className="interaction-actions"><Button variant="outline" disabled={blocked || library.archived || !documentCanDownload(selected)} onClick={() => void perform(download)}><Download size={15} />下载原文件</Button><Button variant="outline" disabled={blocked || library.archived || !documentCanDownload(selected)} onClick={() => onTransfer(selected, library)}>复制／移动文档</Button>{writable && <Button variant="ghost" disabled={blocked || selected.state === "deleting" || selected.state === "deleted"} onClick={() => setConfirmation(selected)}><Trash2 size={15} />删除文档</Button>}</div>
+    {filePreview && selected && available && !library.archived && documentCanDownload(selected) && <FilePreviewDialog target={{ kind: "library", libraryID, id: selected.id }} title={selected.filename} onClose={() => setFilePreview(false)} />}{selected && available && <section className="artifact-detail" aria-label="文档详情"><h4>{selected.filename}</h4><p className="subtle">{documentLabel(selected)} · {library.kind === "shared" ? "继承本资料库成员权限" : "仅自己可见"}</p><p className="subtle">{documentStatusDetail(selected)}</p>{selected.error_code && <p className="error-text">{errorMessage(selected.error_code)}</p>}
+      <div className="interaction-actions"><Button variant="outline" disabled={blocked || library.archived || !documentCanDownload(selected)} onClick={() => setFilePreview(true)}>预览原文件</Button><Button variant="outline" disabled={blocked || library.archived || !documentCanDownload(selected)} onClick={() => void perform(download)}><Download size={15} />下载原文件</Button><Button variant="outline" disabled={blocked || library.archived || !documentCanDownload(selected)} onClick={() => onTransfer(selected, library)}>复制／移动文档</Button>{writable && <Button variant="ghost" disabled={blocked || selected.state === "deleting" || selected.state === "deleted"} onClick={() => setConfirmation(selected)}><Trash2 size={15} />删除文档</Button>}</div>
       {confirmation && <div className="memory-operation"><p>删除“{confirmation.filename}”？{library.kind === "shared" ? "资料库所有成员都将无法再检索或下载此文档。" : "此文档将停止检索和下载。"}原文件和索引随后在后台清理。</p><div className="interaction-actions"><Button variant="destructive" disabled={blocked} onClick={() => void perform(remove)}>确认删除文档</Button><Button variant="outline" disabled={blocked} onClick={() => setConfirmation(null)}>保留文档</Button></div></div>}
     </section>}
   </section>;

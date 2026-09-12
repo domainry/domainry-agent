@@ -1,0 +1,6 @@
+=== RUN   TestKnowledgeExtractionBrowserAcceptance
+    knowledge_documents_test.go:385: Temporary browser acceptance ready at http://127.0.0.1:8092
+    knowledge_documents_test.go:400: Browser original used one persistent parse and cleaned its private artifact
+--- PASS: TestKnowledgeExtractionBrowserAcceptance (65.89s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	66.777s

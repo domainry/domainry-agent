@@ -1,0 +1,67 @@
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart/approved_restart
+    account_write_model_test.go:27: model request 1: 2 messages
+    account_write_model_test.go:28: model request 1 returned after 77.792µs
+    account_write_model_test.go:27: model request 2: 7 messages
+    account_write_model_test.go:28: model request 2 returned after 103.166µs
+    account_write_model_test.go:27: model request 3: 10 messages
+    account_write_model_test.go:28: model request 3 returned after 92.917µs
+    account_write_model_test.go:27: model request 4: 13 messages
+    account_write_model_test.go:28: model request 4 returned after 126.916µs
+    account_write_model_test.go:27: model request 5: 15 messages
+    account_write_model_test.go:28: model request 5 returned after 342.458µs
+    account_write_model_test.go:27: model request 6: 20 messages
+    account_write_model_test.go:28: model request 6 returned after 164.792µs
+    account_write_test.go:193: actual OAuth/Identity/Agent/Tools/Integration/Provider chain: vendor HTTP=14 model HTTP=6 effects=map[calendar_create:1 calendar_update:1 mail_reply:1 mail_send:1]
+    account_write_test.go:50: vendor HTTP=14 model HTTP=6 effects=map[calendar_create:1 calendar_update:1 mail_reply:1 mail_send:1]
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart/single_then_reject
+    account_write_model_test.go:27: model request 1: 2 messages
+    account_write_model_test.go:28: model request 1 returned after 48.583µs
+    account_write_model_test.go:27: model request 2: 7 messages
+    account_write_model_test.go:28: model request 2 returned after 68.958µs
+    account_write_model_test.go:27: model request 3: 10 messages
+    account_write_model_test.go:28: model request 3 returned after 151.75µs
+    account_write_model_test.go:27: model request 4: 13 messages
+    account_write_model_test.go:28: model request 4 returned after 225.166µs
+    account_write_model_test.go:27: model request 5: 15 messages
+    account_write_model_test.go:28: model request 5 returned after 264.958µs
+    account_write_test.go:50: vendor HTTP=7 model HTTP=5 effects=map[calendar_create:1]
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart/revoke_before_approval
+    account_write_model_test.go:27: model request 1: 2 messages
+    account_write_model_test.go:28: model request 1 returned after 52.334µs
+    account_write_model_test.go:27: model request 2: 7 messages
+    account_write_model_test.go:28: model request 2 returned after 161.709µs
+    account_write_model_test.go:27: model request 3: 10 messages
+    account_write_model_test.go:28: model request 3 returned after 92.833µs
+    account_write_model_test.go:27: model request 4: 13 messages
+    account_write_model_test.go:28: model request 4 returned after 114.417µs
+    account_write_model_test.go:27: model request 5: 15 messages
+    account_write_model_test.go:28: model request 5 returned after 579.333µs
+    account_write_test.go:50: vendor HTTP=6 model HTTP=5 effects=map[]
+=== RUN   TestAccountWritesThroughIdentityProviderHTTPAndRestart/unknown_original_receipt
+    account_write_model_test.go:27: model request 1: 2 messages
+    account_write_model_test.go:28: model request 1 returned after 50.25µs
+    account_write_model_test.go:27: model request 2: 7 messages
+    account_write_model_test.go:28: model request 2 returned after 283.458µs
+    account_write_model_test.go:27: model request 3: 10 messages
+    account_write_model_test.go:28: model request 3 returned after 147.375µs
+    account_write_model_test.go:27: model request 4: 13 messages
+    account_write_model_test.go:28: model request 4 returned after 434.458µs
+    account_write_model_test.go:27: model request 5: 15 messages
+    account_write_model_test.go:28: model request 5 returned after 752.708µs
+    account_write_test.go:50: vendor HTTP=8 model HTTP=5 effects=map[mail_send:1]
+--- PASS: TestAccountWritesThroughIdentityProviderHTTPAndRestart (50.16s)
+    --- PASS: TestAccountWritesThroughIdentityProviderHTTPAndRestart/approved_restart (13.67s)
+    --- PASS: TestAccountWritesThroughIdentityProviderHTTPAndRestart/single_then_reject (10.75s)
+    --- PASS: TestAccountWritesThroughIdentityProviderHTTPAndRestart/revoke_before_approval (5.47s)
+    --- PASS: TestAccountWritesThroughIdentityProviderHTTPAndRestart/unknown_original_receipt (20.26s)
+=== RUN   TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort
+=== RUN   TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort/calendar
+=== RUN   TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort/mail
+=== RUN   TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort/both
+--- PASS: TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort (0.00s)
+    --- PASS: TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort/calendar (0.00s)
+    --- PASS: TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort/mail (0.00s)
+    --- PASS: TestAccountWriteCompositionRequiresExplicitOptInAndConfirmationPort/both (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	50.881s

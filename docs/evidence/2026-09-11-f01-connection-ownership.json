@@ -1,0 +1,234 @@
+{
+  "todo": "F01",
+  "date": "2026-09-11",
+  "status": "connection ownership substep verified; F01 incomplete",
+  "scope": [
+    "personal/workspace ownership",
+    "explicit per-action Identity access across Module and SaaS",
+    "safe user-facing projection",
+    "credential ownership",
+    "atomic revoke and restart"
+  ],
+  "not_verified": [
+    "initial OAuth",
+    "real Google/Microsoft account",
+    "Agent account browser UI",
+    "tool toggles",
+    "PostgreSQL/MySQL concurrent account publication",
+    "dependency release"
+  ],
+  "sources": [
+    {
+      "path": "../domainry-integration-sdk/connection_accounts.go",
+      "sha256": "c20266892a40e45f48494372021a92ffd0d0ebfce4dcb3b40f405f7175053fcc",
+      "bytes": 4876
+    },
+    {
+      "path": "../domainry-integration-sdk/connection_accounts_test.go",
+      "sha256": "d314a35395b21911520a6972dce29ebb76be3efb7dd5cc88b71486322de4d77b",
+      "bytes": 1821
+    },
+    {
+      "path": "../domainry-integration-sdk/http_adapter.go",
+      "sha256": "a2c578540ebc41e26f0b73f17ac80b0a3bb272ac8011b6ead3a86034e4b61832",
+      "bytes": 17121
+    },
+    {
+      "path": "../domainry-integration-sdk/http_adapter_test.go",
+      "sha256": "124c7af22352ecf85f88c4ed5092138c9802d8cd3b66979676638f75f8f7ac02",
+      "bytes": 2154
+    },
+    {
+      "path": "../domainry-integration-sdk/remote/factory.go",
+      "sha256": "4e793356bc06fcd1e47bec68235393b9f2e844c588466884f4aecaffb1516f55",
+      "bytes": 25529
+    },
+    {
+      "path": "../domainry-integration-sdk/remote/factory_test.go",
+      "sha256": "b8c47c58178ec24421dac04c4f9ffa6d74c2d61da4f3aef0e3a5bebb54e644c3",
+      "bytes": 11748
+    },
+    {
+      "path": "../domainry-integration/internal/domain/integration/model/integration_access.go",
+      "sha256": "68a61809e62ecb3a8ec32b3a72b58dfd578a6cb08b01be36751da22518f0f763",
+      "bytes": 1877
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_store.go",
+      "sha256": "3d4e60ed73eb87160466c95cc51518254e43a7c38ba23655b60cbf406f980b76",
+      "bytes": 20865
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_store_test.go",
+      "sha256": "490a41e69ad389b4255f49a39b50e1df12a9949ccd9121adbfdabf3b6d4fce7f",
+      "bytes": 15838
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/management_store.go",
+      "sha256": "70819a6d24264de66cc767e44650e9646a0b36c2b1a64a17519ccf31f0f2a947",
+      "bytes": 17651
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/schema/definition.go",
+      "sha256": "86e782ed7c8ea2df7c3edf0df78f5bd451043bacce00dee4ae387b2b5495afe6",
+      "bytes": 14422
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/schema_test.go",
+      "sha256": "9fa061a1c8b934c73d6cd30d36e17873e11afbbc95b2df71f33bbedee8a11d69",
+      "bytes": 611
+    },
+    {
+      "path": "../domainry-integration/internal/adapter/integrationsdk/binding.go",
+      "sha256": "27f0ee9a2df86c705550d387748b5acfbc3fdf7b55e202e403c733e8c0c9a965",
+      "bytes": 10047
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/module/adapter.go",
+      "sha256": "faa7289d8377f1a68445ffa46785f6c559052429774f3cf2ebde5f5649c2b6f2",
+      "bytes": 13945
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/module/management.go",
+      "sha256": "df28ee16c707712b86a677e7b54f3db8b6cb5afb05b663ed2988074bd779965a",
+      "bytes": 18252
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/module/authorization_test.go",
+      "sha256": "84c2d5f1ea291890f1e15bfac2f4681a2c47800d64f01164fe7fccb2cc3641e9",
+      "bytes": 5548
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/module/connection_accounts_test.go",
+      "sha256": "f6de389c7b04568cf8b5dc6ddb30f6652db0fda8d88892804fdca0f137957f55",
+      "bytes": 3469
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/saas/handler.go",
+      "sha256": "7a205ed8194237803fc6a4b259ddecd19e52354fbe73f4eea6c2d57564ea4d30",
+      "bytes": 7205
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/saas/management.go",
+      "sha256": "9cb761f3f400bf2b66227583216dc6ba8a3bad9fb3b44aac98616eb844adf979",
+      "bytes": 9493
+    },
+    {
+      "path": "../domainry-integration/internal/assembly/module/factory_test.go",
+      "sha256": "3955bf7fdd463bf5013385c159d004793805404ec764ed6f592782e77aec52d9",
+      "bytes": 9412
+    },
+    {
+      "path": "../domainry-integration/internal/assembly/saas/factory.go",
+      "sha256": "26f8136f21881146ce6149b2db3d623288f24f39409ca6b2e0e090064da94779",
+      "bytes": 4583
+    },
+    {
+      "path": "../domainry-integration/internal/assembly/saas/service_test.go",
+      "sha256": "4e1971e520feaf4f2364bebe7f5c4e19c9eed64c6eb470f164787a5579f431e9",
+      "bytes": 9313
+    },
+    {
+      "path": "../domainry-integration/internal/assembly/saas/connection_accounts_test.go",
+      "sha256": "0a22582f1b10e491cfebf9e5a326d7320d746be3f1d45cc42f5f1a69e2838380",
+      "bytes": 10445
+    },
+    {
+      "path": "../domainry-integration/module/connection_accounts_test.go",
+      "sha256": "c026ab77544a88f8cdae93f797bdd1b0480f6ec2ba26100f45f68952093e12fe",
+      "bytes": 10805
+    },
+    {
+      "path": "docs/testing-2026-09-11-f01-connection-ownership.md",
+      "sha256": "63e6e60fd03688c206f4da878c6cfd42f81e3920d0169c351b4a64f566bf2185",
+      "bytes": 7917
+    }
+  ],
+  "checks": [
+    {
+      "name": "Integration full",
+      "exit_code": 0,
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/integration-full.log",
+      "sha256": "4413450a39b0bc16fe9268d90f0287c25ca56e29a1fa27c27b1e541540faf6a6",
+      "bytes": 1927
+    },
+    {
+      "name": "SDK full",
+      "exit_code": 0,
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/sdk-full.log",
+      "sha256": "ed12a76a5ad79fa091076fdec6fe16b3c98707c444b4c6566db8ef30c1b29ec8",
+      "bytes": 273
+    },
+    {
+      "name": "account lifecycle / HTTP race",
+      "exit_code": 0,
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/race-http.log",
+      "sha256": "a51ccb5cab03244926771ba85be3c8a433c1df47a68455d37d09dd26dc61c558",
+      "bytes": 3118
+    },
+    {
+      "name": "SaaS valid owner deny final race",
+      "exit_code": 0,
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/saas-policy-final.log",
+      "sha256": "5b0bd83da32efb8efe9482866111d100393308e35865285c4ea0bda9bfdf84c3",
+      "bytes": 501
+    },
+    {
+      "name": "Integration vet",
+      "exit_code": 0,
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/integration-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "name": "SDK vet",
+      "exit_code": 0,
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/sdk-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "name": "Agent architecture",
+      "exit_code": 0,
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/agent-boundary.log",
+      "sha256": "b8366f18498e8f2338862d48560fa85e62467cab9156bbfffe1a6698a72d6a0b",
+      "bytes": 442
+    },
+    {
+      "name": "initial targeted",
+      "exit_code": 0,
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/targeted-initial.log",
+      "sha256": "f562f6d57752e21b583857f95d0f3b42cec5b9e7bfef86a5f1266e5bedace0f6",
+      "bytes": 1754
+    },
+    {
+      "name": "initial Module HTTP",
+      "exit_code": 0,
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/module-http-initial.log",
+      "sha256": "8d338cdf0e67d22366137e73bdb80f2312511cc92a058dd49f2aed63921ccf85",
+      "bytes": 504
+    },
+    {
+      "name": "initial SaaS fixture",
+      "exit_code": 1,
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/saas-http-initial.log",
+      "sha256": "04fcb5a14332258e6ca511c9f14be4e5d9fac5de1fca1e5159902acd997c290d",
+      "bytes": 430
+    },
+    {
+      "name": "initial Integration full",
+      "exit_code": 1,
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/integration-full-initial.log",
+      "sha256": "fef73d6fabab15ccc136deaf3a98ed5c514d7b2fe935098068bb84647cd25ef3",
+      "bytes": 2193
+    },
+    {
+      "name": "initial SDK full",
+      "exit_code": 1,
+      "path": "docs/evidence/2026-09-11-f01-connection-ownership/sdk-full-initial.log",
+      "sha256": "0f50ec9fc81f8d94a03b23ad9771aa136be5a63581f8eac6681086d0d92a2954",
+      "bytes": 717
+    }
+  ],
+  "workspace": "go 1.26.0\n\nuse (\n\t/Users/tiger/Projects/domainry-integration\n\t/Users/tiger/Projects/domainry-integration-sdk\n)\n"
+}

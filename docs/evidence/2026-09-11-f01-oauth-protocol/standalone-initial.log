@@ -1,0 +1,9 @@
+ok  	github.com/domainry/domainry-integration/cmd/integration-server	1.828s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/security	0.754s
+2026/09/11 13:58:41 http: TLS handshake error from 127.0.0.1:50924: remote error: tls: bad certificate
+--- FAIL: TestWorkAccountsDoesNotFollowRedirects (0.00s)
+    work_accounts_test.go:97: redirect replayed: 0 Integration work-account dispatch failed
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/infrastructure/connectortransport	1.299s
+ok  	github.com/domainry/domainry-integration/internal/architecture	2.389s
+FAIL

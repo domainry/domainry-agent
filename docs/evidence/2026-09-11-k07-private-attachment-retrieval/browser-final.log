@@ -1,0 +1,8 @@
+=== RUN   TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart
+PASS persisted Connector citation opens exact authorized PDF; pages and download work
+PASS Identity download revocation clears rendered bytes; restoration reopens original
+PASS browser reload retains private citation and original preview
+PASS revoked reply and citation hidden after reload; live permission restoration recovers them
+--- PASS: TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart (12.10s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	12.632s

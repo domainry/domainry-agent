@@ -1,0 +1,6 @@
+=== RUN   TestAccountWriteCalendarDescriptionRoundTripAtLimit
+    account_write_test.go:591: created plain text cannot be inspected again: google.calendar.invalid_response; bytes=0
+--- FAIL: TestAccountWriteCalendarDescriptionRoundTripAtLimit (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-connectors/providers/google_workspace/google	1.053s
+FAIL

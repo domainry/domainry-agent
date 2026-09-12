@@ -1,0 +1,12 @@
+=== RUN   TestPublicModuleRetainsRotatedCredentialsAcrossRestart
+=== RUN   TestPublicModuleRetainsRotatedCredentialsAcrossRestart/call
+=== RUN   TestPublicModuleRetainsRotatedCredentialsAcrossRestart/delivery
+    credential_rotation_test.go:78: first business failure was lost Integration delivery deduplication_key is required 0
+=== RUN   TestPublicModuleRetainsRotatedCredentialsAcrossRestart/connection-test
+--- FAIL: TestPublicModuleRetainsRotatedCredentialsAcrossRestart (0.97s)
+    --- PASS: TestPublicModuleRetainsRotatedCredentialsAcrossRestart/call (0.41s)
+    --- FAIL: TestPublicModuleRetainsRotatedCredentialsAcrossRestart/delivery (0.19s)
+    --- PASS: TestPublicModuleRetainsRotatedCredentialsAcrossRestart/connection-test (0.37s)
+FAIL
+FAIL	github.com/domainry/domainry-integration/module	1.661s
+FAIL

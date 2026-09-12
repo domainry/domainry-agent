@@ -1,0 +1,7 @@
+# github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration [github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration.test]
+../domainry-integration/internal/infrastructure/persistence/database/integration/connection_readiness_test.go:47:134: unknown field Status in struct literal of type integrationsdk.SecretInput
+FAIL	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration [build failed]
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	2.932s
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	0.997s
+ok  	github.com/domainry/domainry-agent/internal/architecture	1.713s [no tests to run]
+FAIL

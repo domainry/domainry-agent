@@ -1,0 +1,52 @@
+=== RUN   TestReportToolExecutesOwnerAndRevalidatesSavedRowsWithoutQuery
+--- PASS: TestReportToolExecutesOwnerAndRevalidatesSavedRowsWithoutQuery (0.01s)
+=== RUN   TestReportToolCatalogRechecksOwnerMetadata
+--- PASS: TestReportToolCatalogRechecksOwnerMetadata (0.01s)
+=== RUN   TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed
+=== RUN   TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/missing
+=== RUN   TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/identity
+=== RUN   TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/permission
+=== RUN   TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/owner
+=== RUN   TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/validation
+=== RUN   TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/execution
+=== RUN   TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/oversized
+--- PASS: TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed (0.03s)
+    --- PASS: TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/missing (0.00s)
+    --- PASS: TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/identity (0.00s)
+    --- PASS: TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/permission (0.00s)
+    --- PASS: TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/owner (0.00s)
+    --- PASS: TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/validation (0.00s)
+    --- PASS: TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/execution (0.00s)
+    --- PASS: TestReportToolUnconfiguredUnpermittedAndValidationOnlyFailClosed/oversized (0.01s)
+=== RUN   TestReportToolRejectsUntrustedInputsBeforeOwnerExecution
+--- PASS: TestReportToolRejectsUntrustedInputsBeforeOwnerExecution (0.03s)
+=== RUN   TestReportToolRejectsChangedSavedEnvelopeAndContent
+=== RUN   TestReportToolRejectsChangedSavedEnvelopeAndContent/status
+=== RUN   TestReportToolRejectsChangedSavedEnvelopeAndContent/completion
+=== RUN   TestReportToolRejectsChangedSavedEnvelopeAndContent/resource
+=== RUN   TestReportToolRejectsChangedSavedEnvelopeAndContent/request
+=== RUN   TestReportToolRejectsChangedSavedEnvelopeAndContent/host
+=== RUN   TestReportToolRejectsChangedSavedEnvelopeAndContent/user
+=== RUN   TestReportToolRejectsChangedSavedEnvelopeAndContent/row
+=== RUN   TestReportToolRejectsChangedSavedEnvelopeAndContent/source
+=== RUN   TestReportToolRejectsChangedSavedEnvelopeAndContent/extra
+=== RUN   TestReportToolRejectsChangedSavedEnvelopeAndContent/operation
+=== RUN   TestReportToolRejectsChangedSavedEnvelopeAndContent/catalog
+--- PASS: TestReportToolRejectsChangedSavedEnvelopeAndContent (0.07s)
+    --- PASS: TestReportToolRejectsChangedSavedEnvelopeAndContent/status (0.01s)
+    --- PASS: TestReportToolRejectsChangedSavedEnvelopeAndContent/completion (0.01s)
+    --- PASS: TestReportToolRejectsChangedSavedEnvelopeAndContent/resource (0.01s)
+    --- PASS: TestReportToolRejectsChangedSavedEnvelopeAndContent/request (0.01s)
+    --- PASS: TestReportToolRejectsChangedSavedEnvelopeAndContent/host (0.01s)
+    --- PASS: TestReportToolRejectsChangedSavedEnvelopeAndContent/user (0.00s)
+    --- PASS: TestReportToolRejectsChangedSavedEnvelopeAndContent/row (0.01s)
+    --- PASS: TestReportToolRejectsChangedSavedEnvelopeAndContent/source (0.01s)
+    --- PASS: TestReportToolRejectsChangedSavedEnvelopeAndContent/extra (0.01s)
+    --- PASS: TestReportToolRejectsChangedSavedEnvelopeAndContent/operation (0.01s)
+    --- PASS: TestReportToolRejectsChangedSavedEnvelopeAndContent/catalog (0.01s)
+PASS
+ok  	github.com/domainry/domainry-tools/internal/adapter/reporttools	2.151s
+=== RUN   TestLayeredLayoutAndPrivateImplementations
+--- PASS: TestLayeredLayoutAndPrivateImplementations (0.04s)
+PASS
+ok  	github.com/domainry/domainry-tools/internal/architecture	1.660s

@@ -1,0 +1,10 @@
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation/module
+    conversation_report_tools_test.go:284: real Report, Tools, Agent, Identity and SQLite: 5 calls per query, saved conversation, complete restart, field/read revocation, real data update hides saved answer, fresh query after restored permission/data update; model decisions are a protocol fixture
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation/service-product
+    conversation_report_tools_test.go:284: real Report, Tools, Agent, Identity and SQLite: 5 calls per query, saved conversation, complete restart, field/read revocation, real data update hides saved answer, fresh query after restored permission/data update; model decisions are a protocol fixture
+--- PASS: TestReportToolConversationWithRealOwnerAndRevalidation (111.85s)
+    --- PASS: TestReportToolConversationWithRealOwnerAndRevalidation/module (56.24s)
+    --- PASS: TestReportToolConversationWithRealOwnerAndRevalidation/service-product (55.61s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	112.569s

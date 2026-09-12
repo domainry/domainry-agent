@@ -1,0 +1,26 @@
+=== RUN   TestPrivateAttachmentIndexBrowserRecovery
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+409 !== 200
+
+    at detail (file:///Users/tiger/Projects/domainry-agent/frontend/tests/attachment-unconfirmed.browser.mjs:32:143)
+    at async until (file:///Users/tiger/Projects/domainry-agent/frontend/tests/attachment-unconfirmed.browser.mjs:31:109)
+    at async file:///Users/tiger/Projects/domainry-agent/frontend/tests/attachment-unconfirmed.browser.mjs:43:16 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 409,
+  expected: 200,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+    conversation_attachment_index_browser_test.go:221: index UI browser failed exit status 1
+--- FAIL: TestPrivateAttachmentIndexBrowserRecovery (3.99s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	6.075s
+FAIL

@@ -1,0 +1,9 @@
+Managed private document evidence: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-nyi_m1t1
+Real Identity/HTTP/SQLite/worker/Verdent; configured real model. Original files and write ownership remain in the recovery directory until cleanup is confirmed.
+=== RUN   TestLiveKnowledgeExtractionFileFormatsIdentityHTTP
+=== RUN   TestLiveKnowledgeExtractionFileFormatsIdentityHTTP/xlsx
+    knowledge_document_permissions_live_test.go:571: Private product upload, index, 3 visibility scopes, restart, citation and cleanup passed: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-nyi_m1t1/xlsx
+--- PASS: TestLiveKnowledgeExtractionFileFormatsIdentityHTTP (73.57s)
+    --- PASS: TestLiveKnowledgeExtractionFileFormatsIdentityHTTP/xlsx (73.57s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	73.987s

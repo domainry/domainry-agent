@@ -1,0 +1,9 @@
+
+> @domainry/integration-client@0.1.0-dev1 test
+> npm run build && node --test
+
+
+> @domainry/integration-client@0.1.0-dev1 build
+> tsc -p tsconfig.json
+
+sh: tsc: command not found

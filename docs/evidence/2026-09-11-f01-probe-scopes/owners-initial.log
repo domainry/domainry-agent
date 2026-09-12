@@ -1,0 +1,11 @@
+ok  	github.com/domainry/domainry-connector-sdk	1.679s
+ok  	github.com/domainry/domainry-connector-sdk/contracttest	0.641s
+ok  	github.com/domainry/domainry-connector-sdk/examples/minimal	2.228s
+ok  	github.com/domainry/domainry-integration-sdk	2.662s
+?   	github.com/domainry/domainry-integration-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-integration-sdk/remote	1.026s
+?   	github.com/domainry/domainry-integration-sdk/saashost	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/domain/integration/service	1.834s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	3.281s
+ok  	github.com/domainry/domainry-connectors/providers/google_workspace/google	2.725s
+ok  	github.com/domainry/domainry-connectors/providers/microsoft_365/microsoft	2.330s

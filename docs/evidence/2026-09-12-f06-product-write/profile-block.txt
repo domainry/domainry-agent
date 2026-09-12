@@ -1,0 +1,47 @@
+File: web.test
+Type: delay
+Time: 2026-09-12 05:11:01 CST
+Showing nodes accounting for 992.42s, 100% of 992.48s total
+Dropped 746 nodes (cum <= 4.96s)
+Showing top 40 nodes out of 116
+      flat  flat%   sum%        cum   cum%
+   830.04s 83.63% 83.63%    830.04s 83.63%  runtime.selectgo
+         0     0% 83.63%    172.67s 17.40%  testing.tRunner
+   162.38s 16.36%   100%    162.38s 16.36%  runtime.chanrecv1
+         0     0%   100%    149.93s 15.11%  testing.(*T).Run
+         0     0%   100%    147.28s 14.84%  net/http.(*Transport).dialConn.gowrap3
+         0     0%   100%    147.28s 14.84%  net/http.(*persistConn).writeLoop
+         0     0%   100%    145.99s 14.71%  database/sql.(*DB).connectionOpener
+         0     0%   100%    145.99s 14.71%  database/sql.OpenDB.gowrap1
+         0     0%   100%     97.70s  9.84%  testing.(*T).Run.gowrap1
+         0     0%   100%     83.12s  8.37%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).worker
+         0     0%   100%     83.12s  8.37%  github.com/domainry/domainry-agent/internal/application.NewConversationService.gowrap2
+         0     0%   100%     75.17s  7.57%  main.main
+         0     0%   100%     75.17s  7.57%  runtime.main
+         0     0%   100%     75.17s  7.57%  testing.(*M).Run
+         0     0%   100%     74.97s  7.55%  testing.runTests
+         0     0%   100%     74.97s  7.55%  testing.runTests.func1
+         0     0%   100%     74.97s  7.55%  github.com/domainry/domainry-agent/internal/assembly/web.TestAccountWritesThroughIdentityProviderHTTPAndRestart
+         0     0%   100%     67.64s  6.82%  github.com/domainry/domainry-agent/internal/application.(*TaskExecutionService).StartWorker.gowrap1
+         0     0%   100%     67.64s  6.82%  github.com/domainry/domainry-agent/internal/application.(*TaskExecutionService).loop
+         0     0%   100%     67.52s  6.80%  github.com/domainry/domainry-knowledge/internal/application/knowledge.(*Service).KnowledgeDocumentWorker
+         0     0%   100%     67.52s  6.80%  github.com/domainry/domainry-knowledge/internal/application/knowledge.(*Service).Start.func1.gowrap1
+         0     0%   100%     67.52s  6.80%  github.com/domainry/domainry-knowledge/internal/application/knowledge.(*Service).AttachmentIndexWorker
+         0     0%   100%     67.52s  6.80%  github.com/domainry/domainry-knowledge/internal/application/knowledge.(*Service).Start.func1.gowrap3
+         0     0%   100%     67.50s  6.80%  github.com/domainry/domainry-knowledge/internal/application/knowledge.(*Service).CleanupAttachments
+         0     0%   100%     67.50s  6.80%  github.com/domainry/domainry-knowledge/internal/application/knowledge.(*Service).Start.func1.gowrap2
+         0     0%   100%     66.52s  6.70%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).expireConversationInteractions
+         0     0%   100%     66.52s  6.70%  github.com/domainry/domainry-agent/internal/application.NewConversationService.gowrap1
+         0     0%   100%     60.43s  6.09%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).execute.func2
+         0     0%   100%     55.80s  5.62%  database/sql.(*DB).retry
+         0     0%   100%     55.78s  5.62%  database/sql.(*DB).conn
+         0     0%   100%     46.05s  4.64%  database/sql.(*DB).QueryContext
+         0     0%   100%     46.05s  4.64%  database/sql.(*DB).QueryContext.func1
+         0     0%   100%     46.05s  4.64%  database/sql.(*DB).query
+         0     0%   100%     38.82s  3.91%  github.com/domainry/domainry-identity-sdk/application.principals.Resolve
+         0     0%   100%     38.82s  3.91%  github.com/domainry/domainry-identity/internal/adapter/identitysdk.sdkPrincipalResolver.Resolve
+         0     0%   100%     38.78s  3.91%  github.com/domainry/domainry-agent/internal/assembly/web.(*Host).resolveConversationPrincipal
+         0     0%   100%     32.67s  3.29%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).QueryIdentityContext
+         0     0%   100%     22.73s  2.29%  github.com/domainry/domainry-agent/internal/assembly/web.TestAccountWritesThroughIdentityProviderHTTPAndRestart.func1
+         0     0%   100%     22.73s  2.29%  github.com/domainry/domainry-agent-sdk/browsergateway.NewHandler.func3
+         0     0%   100%     22.73s  2.29%  github.com/domainry/domainry-agent/internal/assembly/web.(*browser).call

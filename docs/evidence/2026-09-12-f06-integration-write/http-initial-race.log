@@ -1,0 +1,16 @@
+=== RUN   TestAccountWriteOAuthHTTPModuleSaaSAndRestart
+=== RUN   TestAccountWriteOAuthHTTPModuleSaaSAndRestart/google/module
+    account_write_flow_test.go:182: google/module: OAuth HTTP=2, vendor HTTP=13, create=1 PATCH=2 mail=3; two disk restarts, exact receipt recovery, conflict and unknown write never replayed
+=== RUN   TestAccountWriteOAuthHTTPModuleSaaSAndRestart/google/saas
+    account_write_flow_test.go:182: google/saas: OAuth HTTP=2, vendor HTTP=13, create=1 PATCH=2 mail=3; two disk restarts, exact receipt recovery, conflict and unknown write never replayed
+=== RUN   TestAccountWriteOAuthHTTPModuleSaaSAndRestart/microsoft/module
+    account_write_flow_test.go:182: microsoft/module: OAuth HTTP=2, vendor HTTP=11, create=1 PATCH=2 mail=3; two disk restarts, exact receipt recovery, conflict and unknown write never replayed
+=== RUN   TestAccountWriteOAuthHTTPModuleSaaSAndRestart/microsoft/saas
+    account_write_flow_test.go:182: microsoft/saas: OAuth HTTP=2, vendor HTTP=11, create=1 PATCH=2 mail=3; two disk restarts, exact receipt recovery, conflict and unknown write never replayed
+--- PASS: TestAccountWriteOAuthHTTPModuleSaaSAndRestart (52.79s)
+    --- PASS: TestAccountWriteOAuthHTTPModuleSaaSAndRestart/google/module (13.85s)
+    --- PASS: TestAccountWriteOAuthHTTPModuleSaaSAndRestart/google/saas (20.76s)
+    --- PASS: TestAccountWriteOAuthHTTPModuleSaaSAndRestart/microsoft/module (6.44s)
+    --- PASS: TestAccountWriteOAuthHTTPModuleSaaSAndRestart/microsoft/saas (11.74s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	54.688s

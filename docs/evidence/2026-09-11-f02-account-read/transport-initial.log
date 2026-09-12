@@ -1,0 +1,23 @@
+--- FAIL: TestFactoryAssemblesDeploymentNeutralModuleBinding (0.21s)
+    factory_test.go:113: build Integration capability disclosure: module "integration": module capability category is invalid
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/assembly/module	1.317s
+--- FAIL: TestConnectionAccountSaaSProductAuthorizationSurvivesRemoteBoundaryAndRestart (0.19s)
+    connection_accounts_test.go:61: build Integration capability disclosure: module "integration": module capability category is invalid
+--- FAIL: TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions (0.35s)
+    --- FAIL: TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions/module (0.17s)
+        oauth_flow_test.go:176: build Integration capability disclosure: module "integration": module capability category is invalid
+    --- FAIL: TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions/saas (0.18s)
+        oauth_flow_test.go:166: build Integration capability disclosure: module "integration": module capability category is invalid
+--- FAIL: TestServiceMatchesIntegrationSDKRemoteContract (0.19s)
+    service_test.go:98: build Integration capability disclosure: module "integration": module capability category is invalid
+--- FAIL: TestPublicBindingsPreserveModuleAndSaaSBusinessSemantics (0.19s)
+    public_binding_integration_test.go:61: build Integration capability disclosure: module "integration": module capability category is invalid
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/assembly/saas	2.802s
+--- FAIL: TestIntegrationCapabilityTracksRoutesConnectorsAndValidation (0.00s)
+    capability_test.go:23: module "integration": module capability category is invalid
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/transport/http/module	1.476s
+?   	github.com/domainry/domainry-integration/internal/transport/http/saas	[no test files]
+FAIL

@@ -1,0 +1,29 @@
+=== RUN   TestParseQueueLeaseTakeoverIsolationAndAtomicParentDeletion
+--- PASS: TestParseQueueLeaseTakeoverIsolationAndAtomicParentDeletion (0.02s)
+=== RUN   TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects
+=== RUN   TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects/sqlite
+=== RUN   TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects/postgres
+=== RUN   TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects/mysql
+--- PASS: TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects (0.00s)
+    --- PASS: TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects/sqlite (0.00s)
+    --- PASS: TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects/postgres (0.00s)
+    --- PASS: TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects/mysql (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.748s
+=== RUN   TestParseArtifactsStayPrivateAcrossReopenAndLateWrites
+--- PASS: TestParseArtifactsStayPrivateAcrossReopenAndLateWrites (0.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/parsestorage	1.062s
+=== RUN   TestLocalSpreadsheetConversationAuthorizationAndRestart
+=== RUN   TestLocalSpreadsheetConversationAuthorizationAndRestart/restart
+=== RUN   TestLocalSpreadsheetConversationAuthorizationAndRestart/revoke_during_parse
+=== RUN   TestLocalSpreadsheetConversationAuthorizationAndRestart/delete_during_parse
+--- PASS: TestLocalSpreadsheetConversationAuthorizationAndRestart (0.35s)
+    --- PASS: TestLocalSpreadsheetConversationAuthorizationAndRestart/restart (0.17s)
+    --- PASS: TestLocalSpreadsheetConversationAuthorizationAndRestart/revoke_during_parse (0.08s)
+    --- PASS: TestLocalSpreadsheetConversationAuthorizationAndRestart/delete_during_parse (0.10s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	0.825s
+testing: warning: no tests to run
+PASS
+ok  	github.com/domainry/domainry-agent/module	0.835s [no tests to run]

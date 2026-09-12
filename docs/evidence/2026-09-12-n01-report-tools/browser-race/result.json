@@ -1,0 +1,8 @@
+{
+  "model": "in-process deterministic SDK model; real Report/Identity/Runtime/Agent/SQLite",
+  "phases": [],
+  "runs": [],
+  "pageErrors": [],
+  "passed": false,
+  "error": "Error: browser fixture not ready\n    at file:///Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-n01-report-tools/browser-script.mjs:61:34\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)"
+}

@@ -1,0 +1,11 @@
+=== RUN   TestExternalAccountsBuiltBrowser
+PASS administrator explicitly enables actions, configures owner application, and edits without reading or replacing its secret
+PASS real redirect callback binds current Identity, strips URL secrets, persists one personal account, survives reload and tests connection
+PASS second real Identity user cannot see first personal account or administrator application config
+PASS provider denial is a durable rejected receipt and creates no account or token exchange
+PASS lost callback response recovers original receipt; reopening both persistent modules does not exchange code again
+PASS live Identity revocation applies immediately and remains revoked across restart; explicit restoration restores list
+PASS explicit revoke survives full reopen, remains scoped to selected account, and fits mobile viewport
+--- PASS: TestExternalAccountsBuiltBrowser (6.96s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	8.212s

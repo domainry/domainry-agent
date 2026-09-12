@@ -1,0 +1,55 @@
+
+> domainry-agent-playground@0.0.0 test
+> node --experimental-strip-types --test src/conversation-state.test.ts src/external-session.test.ts src/knowledge-document-state.test.ts src/knowledge-datasource-state.test.ts src/execution-outcome.test.ts
+
+(node:79093) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ cancellation preserves effects, distinguishes unstarted calls and accepts the actual late receipt (1.79225ms)
+✔ only actual completed knowledge citations become verified links and revocation hides them (5.334583ms)
+✔ artifact scope survives uncertain send without borrowing memory/todo grants or carrying to the next request (11.957583ms)
+✔ artifact retry preserves exact version and decimal strings and cannot target unrelated paths (0.916625ms)
+✔ todo and memory scopes stay separate through refresh, uncertain retry and next send (4.022583ms)
+✔ todo retry preserves the exact target, revision and payload and rejects unrelated endpoints (0.35825ms)
+✔ todo date-only deadlines preserve the user's calendar day and precise times use the stored zone (26.149209ms)
+✔ waiting snapshots retain questions and reject cross-run or stale response events (0.4215ms)
+✔ a restricted snapshot ignores queued tool events and hides stale reply text (0.508959ms)
+✔ a completed run can show its saved final step after the server clears the draft (0.356417ms)
+✔ tool argument fragments stay previews and reconnect resumes Unicode byte offsets (0.997833ms)
+✔ drafts survive refresh and stay isolated by conversation and scope (0.40525ms)
+✔ an uncertain send reuses its identity after refresh and acknowledgement clears only that draft (0.463792ms)
+✔ personal memory scope stays with one logical send and cannot expand on retry (0.395875ms)
+✔ late acknowledgement cannot erase newer text or another logical send from another tab (0.293208ms)
+✔ disabled or full storage retains current-page drafts without stale disk text overwriting them (0.42025ms)
+✔ provider errors explain the next action and unknown provider text is never displayed (0.476875ms)
+✔ HTTP, network and malformed successful responses retain distinct safe error categories (13.42375ms)
+✔ refresh retries the same scoped request once and never replays a mutation under another account (1.656791ms)
+✔ an in-flight response from a prior login is discarded after an account change (0.5585ms)
+(node:79094) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a saved reply does not hide a failed operation or mistake workflow acceptance for completion (2.42975ms)
+✔ failure projects actual effects and directs recovery to the first unfinished call (0.825459ms)
+✔ unfinished model generation can resume without repeating successful effects (0.711541ms)
+✔ waiting approval, denied evidence and closed interactions expose no retry (3.267834ms)
+✔ streamed completion disposition survives terminal projection and unknown terminal states are never successes (4.743833ms)
+(node:79095) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ external sessions never refresh Identity or replay writes after an account change (49.106ms)
+(node:79096) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ binding receipts contain only a bounded source key and frozen revision (2.222375ms)
+✔ a confirmed binding is one PUT and a lost response retries the same frozen assignment (47.358167ms)
+✔ catalog validates scope, pagination and effective permission flags (4.515833ms)
+(node:79097) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ document upload retry receipts remain bounded and pending/indexed/deleting states stay distinct (2.254209ms)
+✔ document upload sends one binary request with its persisted identity and rejects unrelated receipts (32.954666ms)
+✔ original downloads verify bytes and hash and discard body completion after an account change (7.015583ms)
+✔ attachment copy receipts bind a source and stable target without keeping file bytes (0.404709ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 328.328708

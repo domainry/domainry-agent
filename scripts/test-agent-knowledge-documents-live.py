@@ -11,7 +11,8 @@ from agent_private_configuration import load_service_credentials
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--live", action="store_true", required=True, help="explicitly upload, inspect and delete one new synthetic document")
-parser.parse_args()
+parser.add_argument("--delete-recovery", action="store_true", help="use a private fixture, lose the first real DELETE response and recover the same deletion")
+args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 directory = Path.home() / ("Library/Application Support/domainry-agent" if sys.platform == "darwin" else ".config/domainry-agent")
 config_path = Path(os.environ.get("AGENT_WEB_SERVICES_CONFIG", directory / "web-services.json")).expanduser()
@@ -27,6 +28,8 @@ if config_path.exists():
 if not (env.get("AGENT_KNOWLEDGE_API_KEY") or env.get("AGENT_PROVIDER_API_KEY")):
     sys.exit("Configure the knowledge service credential locally before running live acceptance.")
 env["AGENT_KNOWLEDGE_DOCUMENTS_LIVE"] = "1"
+if args.delete_recovery:
+    env["AGENT_KNOWLEDGE_DELETE_RECOVERY_LIVE"] = "1"
 env["AGENT_LIVE_EVIDENCE_DIR"] = tempfile.mkdtemp(prefix="domainry-knowledge-document-lifecycle-")
 print("Document lifecycle evidence: " + env["AGENT_LIVE_EVIDENCE_DIR"], flush=True)
 os.chdir(root)

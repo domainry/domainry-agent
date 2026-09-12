@@ -1,0 +1,6 @@
+=== RUN   TestExternalAccountsCurrentIdentityOwnershipAndRestart
+    integration_accounts_test.go:376: POST /integration/connection-accounts/account_oauth_Dr92lJcdN3_DYhwquw7e9vGQI47bvjSH1NpTFKItd5c/test: status 400, want 409, body {"code":"backend.integration.connection_account_failed"}
+--- FAIL: TestExternalAccountsCurrentIdentityOwnershipAndRestart (1.29s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	1.802s
+FAIL

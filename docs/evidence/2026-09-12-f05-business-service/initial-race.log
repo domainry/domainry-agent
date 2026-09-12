@@ -1,0 +1,5 @@
+# github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.test]
+runtime/bootstrap/integrationtest/conversation_business_product_service_test.go:48:45: cannot use businessProductServiceModel{} (value of struct type businessProductServiceModel) as agentsdk.ConversationModel value in argument to prepareBusinessWebFixtureWithModel: businessProductServiceModel does not implement agentsdk.ConversationModel (missing method GenerateConversation)
+runtime/bootstrap/integrationtest/conversation_business_product_service_test.go:120:53: cannot use businessProductServiceModel{} (value of struct type businessProductServiceModel) as agentsdk.ConversationModel value in struct literal: businessProductServiceModel does not implement agentsdk.ConversationModel (missing method GenerateConversation)
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [build failed]
+FAIL

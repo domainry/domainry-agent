@@ -1,0 +1,6 @@
+=== RUN   TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart
+    conversation_attachment_index_test.go:195: durable cleanup incomplete {{att_f36b7c1587a4790909d3b0727ea4c69f conv_9e0f23bc9423027d767fa8cfe7253f80 private.txt text/plain 37 cb088e5b8564c1992f90cf89d4748e613064d2a409e3027eace38be09b2a52fc conversation_private deleted INDEXED 10  2026-09-11 00:37:56.006 +0000 UTC 2026-09-11 00:37:56.236 +0000 UTC} e6149c64cc206b943ca2338a4bc4f3be3098ddb6b450ece49f05b9c35812f052 att_f36b7c1587a4790909d3b0727ea4c69f:cb088e5b8564c1992f90cf89d4748e613064d2a409e3027eace38be09b2a52fc 0x1d16ca556c30 0x1d16ca556c80}
+--- FAIL: TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart (0.73s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	1.700s
+FAIL

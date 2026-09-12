@@ -1,0 +1,37 @@
+{
+  "attachment_id": "att_cfb828883d4569e9c06ca771eacccbeb",
+  "cleanup_verified": true,
+  "conversation_id": "conv_1eb1927fac309bf755e6f205122983a1",
+  "delete_receipts": [
+    {
+      "err_code": 0,
+      "data": {
+        "degraded_reason": null,
+        "error": null,
+        "error_code": null,
+        "ok": true,
+        "operator": "purge_doc",
+        "output_refs": {},
+        "stats": {
+          "docs_deleted": 1,
+          "rows_deleted": 4,
+          "s3_objects_deleted": 2,
+          "vectors_deleted": 1
+        }
+      }
+    }
+  ],
+  "deletes": 1,
+  "doc_id": "dka_172cb143f5c0bf7f9051fc8a7b48ea76f95e0f411a2934bdb98127ca9d98e635",
+  "kb_id": "kb-1a07a88ed780",
+  "origin": "https://api.verdent.ai",
+  "original_sha256": "77ba277565e17de3bc65f0dd4c26e1a8ac1e32245c7cc2d2e15a9a96acea1a38",
+  "owner_isolation_verified": true,
+  "permission_id": "scope:agent:attachment:9ce9a6e58eefde2cdc0aec29325cb78be676c457aaa14718eb980ce1053c67c1",
+  "preflight_missing": true,
+  "private_visibility_verified": true,
+  "request_id": "aput_b98606c496fdbad74d5b5e26d2a9241ab20cef51bc5d50ecf1e189da61476fae",
+  "team_id": "1470194374940573696",
+  "upload_response_lost": true,
+  "uploads": 1
+}

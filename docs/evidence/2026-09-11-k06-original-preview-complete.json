@@ -1,0 +1,151 @@
+{
+  "date": "2026-09-11",
+  "todo": "K06",
+  "todo_complete": true,
+  "original_parser_removal_complete": true,
+  "scope": "Connector retrieval followed by authorized original-file display; no Agent original-file parser, body cache, or indexing implementation",
+  "previous_evidence": "2026-09-11-k06-original-preview.json",
+  "previous_failed_reports_preserved": true,
+  "verification": {
+    "agent_sdk_full_tests_build_upgrade_and_race": "Previously recorded evidence reused; not rerun",
+    "attachment_browser_complete": true,
+    "attachment_http_test_seconds": 1.276,
+    "attachment_browser_host_test_seconds": 45.19,
+    "steps": [
+      "pdf: private original rendered, desktop/mobile and exact download",
+      "docx: private original rendered, desktop/mobile and exact download",
+      "xlsx: private original rendered, desktop/mobile and exact download",
+      "cross-conversation original request denied",
+      "host restart, permission denial and recovery",
+      "deleted attachments stop serving original bytes"
+    ],
+    "baselines": [
+      {
+        "label": "desktop-pdf",
+        "qualityFailures": [],
+        "pageOverflow": false
+      },
+      {
+        "label": "mobile-pdf",
+        "qualityFailures": [],
+        "pageOverflow": false
+      },
+      {
+        "label": "desktop-docx",
+        "qualityFailures": [],
+        "pageOverflow": false
+      },
+      {
+        "label": "mobile-docx",
+        "qualityFailures": [],
+        "pageOverflow": false
+      },
+      {
+        "label": "desktop-xlsx",
+        "qualityFailures": [],
+        "pageOverflow": false
+      },
+      {
+        "label": "mobile-xlsx",
+        "qualityFailures": [],
+        "pageOverflow": false
+      },
+      {
+        "label": "revoked-attachment",
+        "qualityFailures": [],
+        "pageOverflow": false
+      }
+    ],
+    "browser_errors": [],
+    "external_requests": [],
+    "unexpected_model_or_index_work": [],
+    "originals_physically_deleted": true,
+    "original_parse_cache_created": false,
+    "visual_inspection": [
+      "desktop-pdf.png",
+      "mobile-xlsx.png"
+    ],
+    "fixture": "Actual Identity / HTTP / SQLite / file storage and built product; synthetic PDF/DOCX/XLSX, no knowledge service or model configured"
+  },
+  "limits": [
+    "External-only results without an authorized original retain source links",
+    "DOC/XLS, encrypted files and unsupported complex Office content use download fallback"
+  ],
+  "artifacts": [
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-11-k06-original-preview.json",
+      "bytes": 7149,
+      "sha256": "e8048e0788f8844f24ebf62206c8ad73d7af889a3770a0dbebc4be8bb8a43642"
+    },
+    {
+      "path": "/private/tmp/domainry-attachment-preview-browser/report.json",
+      "bytes": 125043,
+      "sha256": "9db5d0a925681bef12a2aa516005b2575412c2c1ccc4d8c4c24c0492bc36fe05"
+    },
+    {
+      "path": "/private/tmp/domainry-attachment-preview-host.log",
+      "bytes": 422,
+      "sha256": "d21289a819ee7671bbb24dbda76a84b646897f1721a0a2f053099e282d02b792"
+    },
+    {
+      "path": "/private/tmp/domainry-attachment-preview-http.log",
+      "bytes": 69,
+      "sha256": "55a9d7029536a299febbde68c44a56d2ecbbe571d9401866a80fa630470974f5"
+    },
+    {
+      "path": "/private/tmp/domainry-attachment-preview-browser.log",
+      "bytes": 366,
+      "sha256": "fb80cb19f7c8b538489315631c6db607eafaa5241025951e68d087ca7ea14518"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/tests/attachment-preview.browser.mjs",
+      "bytes": 10635,
+      "sha256": "64960ba277bdfa72f7ae216f14c3f75b962aeb70f0a74ada9e79ec2a835b05ab"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_attachment_test.go",
+      "bytes": 7437,
+      "sha256": "2edbf29aa906e31531dd3c4c22976c9de6254b97653b5b3da11a4249f2f50e38"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/integration/testdata/file-preview/two-page.pdf",
+      "bytes": 1496,
+      "sha256": "04b53692ecd93bab02e31b43499d98937d39d8c906726dce34b9de0fd1c36268"
+    },
+    {
+      "path": "/private/tmp/domainry-attachment-preview-browser/desktop-docx.png",
+      "bytes": 76278,
+      "sha256": "732ac0747822dbe5d32378b4d3bbce1b042d34676d4824fa2c84a81d64a34ff4"
+    },
+    {
+      "path": "/private/tmp/domainry-attachment-preview-browser/desktop-pdf.png",
+      "bytes": 115500,
+      "sha256": "26bd24767aad970d00cf347ca9bf051d9d5082cef0957c54a2a83b28a89c3fa7"
+    },
+    {
+      "path": "/private/tmp/domainry-attachment-preview-browser/desktop-xlsx.png",
+      "bytes": 74273,
+      "sha256": "69aa937dad71a26358bbd6370ec11cdbecbb9f9ee9bbadc99b487179480e4d4a"
+    },
+    {
+      "path": "/private/tmp/domainry-attachment-preview-browser/mobile-docx.png",
+      "bytes": 56518,
+      "sha256": "2962fe24519d43a746036a0510878c72618d42d19b710a60b43c21fa9cac8181"
+    },
+    {
+      "path": "/private/tmp/domainry-attachment-preview-browser/mobile-pdf.png",
+      "bytes": 67706,
+      "sha256": "0fcae3e8f67e8dfa9ba49b2ec28cf2821f5b14bbc53e97b82ede2bc50c1d0294"
+    },
+    {
+      "path": "/private/tmp/domainry-attachment-preview-browser/mobile-xlsx.png",
+      "bytes": 54888,
+      "sha256": "0e9485eff4e5abe2a8a67ba4205f93b8b823452b422640ec2f381173cd670e04"
+    },
+    {
+      "path": "/private/tmp/domainry-attachment-preview-browser/revoked-attachment.png",
+      "bytes": 48605,
+      "sha256": "6559f703217249b78d58812b20e9561fd65299d0e31f3f677a9a425cb44df4ac"
+    }
+  ]
+}

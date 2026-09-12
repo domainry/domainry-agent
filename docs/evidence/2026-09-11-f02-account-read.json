@@ -1,0 +1,420 @@
+{
+  "todo": "F02",
+  "complete": false,
+  "increment": "Current-account read authorization, SDK/owner layer boundaries, Google/Microsoft OAuth and calendar HTTP flows in Module/SaaS",
+  "captured_at": "2026-09-11T12:11:36.138191+00:00",
+  "completed_todos": 50,
+  "total_todos": 81,
+  "next_within_todo": "Tools calendar adapter; product composition; Agent page/conversation E2E",
+  "real_vendor_calendar_verified": false,
+  "product_calendar_browser_e2e_verified": false,
+  "verification": {
+    "connector_sdk_full_race_and_external_compile": "passed",
+    "owner_sqlite_and_architecture_race": "passed",
+    "final_http_four_topologies_race": "passed, 33.083s",
+    "integration_full_final": "passed",
+    "connectors_full": "passed",
+    "integration_sdk_full": "passed",
+    "browser_sdk_routes": 50,
+    "agent_web_compatibility": "passed before final internal DTO refactor; final external behavior reverified by HTTP race"
+  },
+  "corrected_failures": [
+    "Capability connections category exceeded 20 operations; split current-user account category and updated route assertions",
+    "Test Transport interpreted default MaxResponseBytes=0 as zero; aligned fixture with bounded host default",
+    "Application service imported Integration SDK; introduced internal domain DTOs and SDK adapter conversion without weakening architecture checks"
+  ],
+  "source_files": [
+    {
+      "path": "docs/agent-capabilities-todo.md",
+      "bytes": 99470,
+      "sha256": "9c032355c34f5a1f59a02fa31c6a8e7daf765a680fe41f0ea988538553a66e85"
+    },
+    {
+      "path": "docs/calendar-read-boundaries.md",
+      "bytes": 3403,
+      "sha256": "c3b63e3513703715d660b7d90f1756e25955e87542245b1be15e3cc2fb187463"
+    },
+    {
+      "path": "docs/testing-2026-09-11-f02-account-read.md",
+      "bytes": 7161,
+      "sha256": "2cb1f25f808d99836d5604c893ed75c809b5df9a702ba0d459cef6cb757038ba"
+    },
+    {
+      "path": "../domainry-connector-sdk/README.md",
+      "bytes": 3416,
+      "sha256": "1915356753113c62b2a497d50f777641ccf4a06339f5d46b99f0a41edf6686f1"
+    },
+    {
+      "path": "../domainry-connector-sdk/oauth_operation_scopes.go",
+      "bytes": 943,
+      "sha256": "0a2b244d056a3e0a5705f277ead9317c92b784de0aec95dea190d6535d7565d9"
+    },
+    {
+      "path": "../domainry-connector-sdk/oauth_operation_scopes_test.go",
+      "bytes": 2883,
+      "sha256": "07ad933d79adc3b467736e41561f8ea5574502df4b04edd837eb4a661198b2ae"
+    },
+    {
+      "path": "../domainry-connector-sdk/registry.go",
+      "bytes": 9873,
+      "sha256": "5896931df3bceb5883d06f01e8d940b5c9d7f0c8c302fe319dd156e41369ac90"
+    },
+    {
+      "path": "../domainry-connector-sdk/contract.go",
+      "bytes": 7803,
+      "sha256": "2a6e99bc880ffd6c47520cd2f759cbe9e1e26e8e1ba6812930d3c94c1ff1b08b"
+    },
+    {
+      "path": "../domainry-connector-sdk/contract_identity.go",
+      "bytes": 9635,
+      "sha256": "fe24c8972388465767ff96295d4e1d4e221e3980fbad9312bc552d7db2c50fa2"
+    },
+    {
+      "path": "../domainry-connector-sdk/identity.go",
+      "bytes": 728,
+      "sha256": "1bce97a18915b5d6e06c022cea2f1f2b3336a2b69faf8e9054d4cec917aa277b"
+    },
+    {
+      "path": "../domainry-connector-sdk/identity_test.go",
+      "bytes": 376,
+      "sha256": "393ab62e071cc9c3dcf6c10d1a29c2c52c2cb41e507f027f8e3dabdbdf181b3d"
+    },
+    {
+      "path": "../domainry-connector-sdk/connector_test.go",
+      "bytes": 37751,
+      "sha256": "dabf9932772d377c1f238f3509ee29165921f0d04d6d9d437e90fa21aec59c3e"
+    },
+    {
+      "path": "../domainry-connector-sdk/external_module_test.go",
+      "bytes": 8510,
+      "sha256": "faafff2d64f34f01c70b6c5f653b243c91c58cf32af732596dbd888e3f6050dd"
+    },
+    {
+      "path": "../domainry-connectors/catalog/catalog.json",
+      "bytes": 185950,
+      "sha256": "dcbeea90c6f633ed3c7a7170fcd42dbbfb09552e052b407cad1e9477d814717c"
+    },
+    {
+      "path": "../domainry-connectors/providers/google_workspace/google/calendar_scopes.go",
+      "bytes": 1234,
+      "sha256": "ab2019fe9708bd6b8a443fe50092322b3b1cdc63f1f5e080af8f424eb287022d"
+    },
+    {
+      "path": "../domainry-connectors/providers/google_workspace/google/calendar_scopes_test.go",
+      "bytes": 1473,
+      "sha256": "97362b0944b873449ef94b4feb38574a2ca3d21f0c63619871e70993aaaa288a"
+    },
+    {
+      "path": "../domainry-connectors/providers/microsoft_365/microsoft/calendar_scopes.go",
+      "bytes": 950,
+      "sha256": "e52f20ca633b144991149844b02639f7e515b060e1c70263bb3a54e331d7f3bb"
+    },
+    {
+      "path": "../domainry-connectors/providers/microsoft_365/microsoft/calendar_scopes_test.go",
+      "bytes": 1370,
+      "sha256": "a5bd355cbf20d7f977c869b42955f829f94a1a9e8b945261b2b353e7db3220ad"
+    },
+    {
+      "path": "../domainry-integration-sdk/README.md",
+      "bytes": 2970,
+      "sha256": "9f039f997103098a4b2874d61d233c5f358cb5b34bda0af448e3aa4bff696b0f"
+    },
+    {
+      "path": "../domainry-integration-sdk/connection_account_reads.go",
+      "bytes": 3705,
+      "sha256": "e9c3a8227d46dd02f2c7060ae6984a2eb79654df7be5b877c54b3107957965bf"
+    },
+    {
+      "path": "../domainry-integration-sdk/connection_account_reads_test.go",
+      "bytes": 1685,
+      "sha256": "18c95b49901f7f47faba4630f422d6b1757a23b9d9fd9913776cef0f84484720"
+    },
+    {
+      "path": "../domainry-integration-sdk/http_adapter.go",
+      "bytes": 19345,
+      "sha256": "c8c28761573ecec8a6257b42e9ad5fc8a2fc5e6ae4801ce6bdfef3b41243f29d"
+    },
+    {
+      "path": "../domainry-integration-sdk/http_adapter_test.go",
+      "bytes": 2154,
+      "sha256": "b98efcc029f2b02b5e05a356cecb5c7a6acc65707ccd14c887b37cacb2340a66"
+    },
+    {
+      "path": "../domainry-integration-sdk/remote/factory.go",
+      "bytes": 25742,
+      "sha256": "509d2301a788356a3b2d91d81063665e6735d712fbf780e44f3142d7542b8f25"
+    },
+    {
+      "path": "../domainry-integration-sdk/remote/connection_account_reads.go",
+      "bytes": 1422,
+      "sha256": "ee6e43b65ff8955554b7e595a8793d30c0282e4227315c6e19d9212ba5a34d5a"
+    },
+    {
+      "path": "../domainry-integration-sdk/browser/src/client.ts",
+      "bytes": 15532,
+      "sha256": "134be2659f7f4c6258a12439dcf31c84e74fdc9ed57273e3838ec12240bc7ca1"
+    },
+    {
+      "path": "../domainry-integration-sdk/browser/src/types.ts",
+      "bytes": 9836,
+      "sha256": "4eff1f42e4a01fbd0a5b72d1aedd1ad5c6896b1651cf29f42d08c9f10392ac7f"
+    },
+    {
+      "path": "../domainry-integration-sdk/browser/src/index.ts",
+      "bytes": 1441,
+      "sha256": "42e89b691659d2206b3cbe3326d179e05d6745928f6263dd6623b5b8dff63381"
+    },
+    {
+      "path": "../domainry-integration-sdk/browser/index.test.mjs",
+      "bytes": 7602,
+      "sha256": "6da4fbd0f1e2043155c82b050c346fa74fa59aeb5fedc5274641d2070ed936d8"
+    },
+    {
+      "path": "../domainry-integration/internal/application/integration/connection_account_reads.go",
+      "bytes": 3926,
+      "sha256": "d6724b15e14071f7e3e5fc7f05aa4cc47225401842e9f22ac8e14d50c5b2539e"
+    },
+    {
+      "path": "../domainry-integration/internal/adapter/integrationsdk/binding.go",
+      "bytes": 11126,
+      "sha256": "c3045cb7f577edb8346682b84043da73f382c56bfa54c60820de025b22823b08"
+    },
+    {
+      "path": "../domainry-integration/internal/adapter/integrationsdk/connection_account_reads.go",
+      "bytes": 1644,
+      "sha256": "0b4edb4217c9b54010b2cbdbb69070fcd29e47ead1ba30c9700802084fce7f5b"
+    },
+    {
+      "path": "../domainry-integration/internal/domain/integration/model/connection_account_reads.go",
+      "bytes": 3569,
+      "sha256": "2e0a0402e6dd24857f7e1ea8fa939aa26d7241c31d8f163f81219112552e14e1"
+    },
+    {
+      "path": "../domainry-integration/internal/domain/integration/model/integration_operations.go",
+      "bytes": 7386,
+      "sha256": "36ee0470803b95e5f241e459f094dbe36999c286222311a82d83c651a762c773"
+    },
+    {
+      "path": "../domainry-integration/internal/domain/integration/service/connection_test_scope.go",
+      "bytes": 1499,
+      "sha256": "6209d648123552b9a429fc5f3c36b178ff1952f6080f1339adb78a736564a0a5"
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_reads.go",
+      "bytes": 2485,
+      "sha256": "12cd5bae094bdfdc1259425506f1c2fe49d533697fd49176400c1e5b45b60066"
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_reads_test.go",
+      "bytes": 10021,
+      "sha256": "a5629c80e19046f8f5b2fad3742a2fe84c49fee3d3a70b7d1ba510df6b1d9cc1"
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/delivery_store.go",
+      "bytes": 12741,
+      "sha256": "07c18811cb19eb1013ef6cc37706a1aea25a70839806043c7e45de72a4c7f0b6"
+    },
+    {
+      "path": "../domainry-integration/internal/infrastructure/persistence/database/integration/operations_store.go",
+      "bytes": 11409,
+      "sha256": "fd576239c31ecce646d8889d0128d4bcbbfa9054c1ee6c60252c26d415fbbff2"
+    },
+    {
+      "path": "../domainry-integration/internal/assembly/module/factory.go",
+      "bytes": 4878,
+      "sha256": "89a6f6cd6c4739679edeb1e16498a644dbcaeebf238099e161d5e28905b50aab"
+    },
+    {
+      "path": "../domainry-integration/internal/assembly/module/factory_test.go",
+      "bytes": 9412,
+      "sha256": "cf0ba6b4b2d7816bfde5f8d07998a9a5a3efd891a37a772c6a768d195205483d"
+    },
+    {
+      "path": "../domainry-integration/internal/assembly/saas/factory.go",
+      "bytes": 5257,
+      "sha256": "a476e3385b7602f5b2c45765c4e563a5ebf43d2641598173ab7138c4633f955b"
+    },
+    {
+      "path": "../domainry-integration/internal/assembly/saas/service_test.go",
+      "bytes": 9313,
+      "sha256": "d1be23d4edd3059d78d6dd6d94d4d80c8163312d69257045dbb5d3d2744891d4"
+    },
+    {
+      "path": "../domainry-integration/internal/assembly/saas/calendar_read_flow_test.go",
+      "bytes": 19618,
+      "sha256": "6d28bc56c5a910096662dfe0d0981c474d3832be2072c47d20607ba01aca19d6"
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/module/adapter.go",
+      "bytes": 14980,
+      "sha256": "4cba4540e0b87c16633c0dbf1dc3d7c5decdc915d88e3d6a7681a661d549c3d9"
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/module/management.go",
+      "bytes": 18471,
+      "sha256": "e1b467fc762b7409b4e54919c173ca9961dada7ce6dbe822ac4622190b7f2660"
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/module/connection_account_reads.go",
+      "bytes": 1434,
+      "sha256": "2bc0cdb8452c9118925507b0655c406d611b707577ef7035732d257bdeb6e9ff"
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/module/capability.go",
+      "bytes": 26630,
+      "sha256": "d7e452dc9aeb2c1b42a045be32cb1d6d2a6b13dba3751208553159cddf41012b"
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/saas/handler.go",
+      "bytes": 7832,
+      "sha256": "e95c3a1c27fef4691a45bef626d218605d03af616821f47a858a3599c493da05"
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/saas/management.go",
+      "bytes": 9705,
+      "sha256": "ea89dd0187e462e638a3dc2f53972dad181e3494c95cbb62448a9cc343b77db6"
+    },
+    {
+      "path": "../domainry-integration/internal/transport/http/saas/connection_account_reads.go",
+      "bytes": 1397,
+      "sha256": "94c1d3f363b58cee693205bfb3e3c6acca52ff2c1290a09555cd67b499dcadcb"
+    },
+    {
+      "path": "../domainry-integration/internal/architecture/layout_test.go",
+      "bytes": 4309,
+      "sha256": "892591bb808a8008c416c09eab39ff729701d37ec696516d403fc52c2c9c7dbb"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/agent-web-compatibility.log",
+      "bytes": 70,
+      "sha256": "9beb31d43479d0a03551396d514b70bf3f04f3670ccaabfd550051f65432e893"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/architecture-owner-final.log",
+      "bytes": 4762,
+      "sha256": "f0993553d93accd06ed1efa77f2b5654119fd93489f21c47114cfcb333cc756b"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/boundary-catalog.log",
+      "bytes": 99,
+      "sha256": "bdf61b94016f235401ab3c043f8ab6787a6c03b089ad555d03e5585fb67776d0"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/browser-sdk.log",
+      "bytes": 887,
+      "sha256": "0dcb99901a53bd466db86cc8667b40bf23ae14a8023a975ec92a046a0e754055"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/catalog-generation.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/connectors-full.log",
+      "bytes": 11060,
+      "sha256": "491feb56cb2355c0f5dd8c7d66260541d134aa86c3cae361c1e569b801623eb3"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/diff-check.json",
+      "bytes": 552,
+      "sha256": "8d09dcb60c521e0a5f3b1ed573b6664f29a70856412f8fafe5ca02f35ec5c231"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/http-read-architecture-final.log",
+      "bytes": 1596,
+      "sha256": "fc2463be8e67e4f83bf323eb3d3e485f4a16f6c79b703ab2d26d1a1615629436"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/http-read-diagnostic.log",
+      "bytes": 508,
+      "sha256": "edc930b612593e58ea152a4f5d47307d3f127d20013d2c5dacb8a51796697318"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/http-read-race-final.log",
+      "bytes": 1595,
+      "sha256": "a4cd0d5592b9e14b396a068b501025050c994a7281a3caaf01b76b981d3050e4"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/http-read-race-initial.log",
+      "bytes": 1288,
+      "sha256": "2480f1cf27c6942f3ae19cac92b41fd0e46972e62a68129d1fe9e0f44fd85209"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/http-read-race.log",
+      "bytes": 1595,
+      "sha256": "bb9a88b64332fb8e5da65a15e670ae2b5699e981ef8f0942c921e034118a7ec5"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-full-final.log",
+      "bytes": 2100,
+      "sha256": "860db4a145bc7b50b6e2472221034848e7da2f3b60dc67065deb6b04255f238c"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-full.log",
+      "bytes": 2329,
+      "sha256": "5ec450702af53e46a6bf644aab32245a1f02a7738eddecea496e48f8e26206c9"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-sdk-final.log",
+      "bytes": 273,
+      "sha256": "ef90f42f77245a48962c91a9981bfce14a9b664d76a1a9de3390020e865b806b"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-sdk-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-sdk.log",
+      "bytes": 273,
+      "sha256": "e43cce8015f8c9ef39756f0a4fa933ea8ad1804604c2dab3f7431b64d9477f4c"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-vet-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/integration-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/owner-initial.log",
+      "bytes": 214,
+      "sha256": "c86eaadbb1ef94a2399997f48e505949c4ffa55a0cf9c99a2584ece091951129"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/owner-read-race-initial.log",
+      "bytes": 4255,
+      "sha256": "1144504609cdc12a968a990bcb433c4e1737d491e71d5584076b652a5fe4f1dd"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/owner-read-race.log",
+      "bytes": 4255,
+      "sha256": "fb0515149aa6e0c92a505c700f36042324a7ec97fdae28e3303bf54dbf0b1153"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/provider-scopes.log",
+      "bytes": 11946,
+      "sha256": "d6535406902786e4d8f6a2da5134a5dbc53a3f9ec193a50505bd43cfc7d9db82"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/sdk-scopes-race.log",
+      "bytes": 14681,
+      "sha256": "63a0c079691164099ddbc9e4063f2a124349e8a8f28540ad52c0d78c12e8f591"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/transport-categories.log",
+      "bytes": 692,
+      "sha256": "6c7abfb7f4d12f8de4ae79685cf51ed74ba2b68dbce686a8116a85acc2e9437d"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-f02-account-read/transport-initial.log",
+      "bytes": 1899,
+      "sha256": "7759172a0b57cf730b91ace2f99b599aeed7fe2b7917539eda8208e397009925"
+    }
+  ]
+}

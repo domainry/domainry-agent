@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-integration/cmd/integration-server	22.540s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/security	8.661s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/connectortransport	9.078s

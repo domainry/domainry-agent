@@ -1,0 +1,14 @@
+=== RUN   TestConversationBusinessProductWithSharedIdentityService
+    conversation_business_product_service_test.go:173: scope authorization business_catalog true true <nil> <nil>
+    conversation_business_product_service_test.go:173: scope authorization query_records true true <nil> <nil>
+    conversation_business_product_service_test.go:173: scope authorization get_record true true <nil> <nil>
+    conversation_business_product_service_test.go:173: scope authorization query_related_records true true <nil> <nil>
+    conversation_business_product_service_test.go:173: scope authorization invoke_action true true <nil> <nil>
+    conversation_business_product_service_test.go:173: scope authorization workflow_start true true <nil> <nil>
+    conversation_business_product_service_test.go:173: scope authorization workflow_get true true <nil> <nil>
+    conversation_business_product_service_test.go:177: empty action/workflow preflight agent.business_host.forbidden <nil>
+    conversation_business_product_service_test.go:179: actual product tool catalog agent.business_host.forbidden
+--- FAIL: TestConversationBusinessProductWithSharedIdentityService (3.05s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	3.834s
+FAIL

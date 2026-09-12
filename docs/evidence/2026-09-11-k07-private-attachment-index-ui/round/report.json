@@ -1,0 +1,41 @@
+{
+  "complete": false,
+  "steps": [],
+  "baselines": [],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/agent/conversations",
+      "query": "?limit=15&search=&include_archived=false&before_id="
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations",
+      "query": "?limit=15&search=&include_archived=false&before_id="
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations/conv_2d4e677fde3ce2d999eddb06a09aca82",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations/conv_2d4e677fde3ce2d999eddb06a09aca82/messages",
+      "query": "?limit=30&before_seq=0"
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations/conv_2d4e677fde3ce2d999eddb06a09aca82/attachments",
+      "query": "?after=&limit=20"
+    },
+    {
+      "method": "POST",
+      "path": "/agent/conversations/conv_2d4e677fde3ce2d999eddb06a09aca82/attachments",
+      "query": "?client_id=faef9925-3214-4317-9045-44e143f3f9ce&filename=browser-private.pdf"
+    }
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "lostResponses": [],
+  "failure": "TypeError: response.status is not a function"
+}

@@ -1,0 +1,5 @@
+=== RUN   TestConnectionAccountSaaSProductAuthorizationSurvivesRemoteBoundaryAndRestart
+    connection_accounts_test.go:199: Product HTTP -> SDK remote -> authenticated SaaS HTTP -> SQLite: exact per-action ownership authorization, forged input, explicit deny, safe diagnostics, two host restarts and revoke replay passed
+--- PASS: TestConnectionAccountSaaSProductAuthorizationSurvivesRemoteBoundaryAndRestart (10.06s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	11.761s

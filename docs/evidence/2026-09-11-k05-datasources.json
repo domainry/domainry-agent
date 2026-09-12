@@ -1,0 +1,234 @@
+{
+  "schema": "agent.acceptance.knowledge_datasources.v1",
+  "todo": "K05",
+  "status": "passed",
+  "runtime_modes": [
+    "module",
+    "saas"
+  ],
+  "storage": "SQLite; ORM migration 11; transactionally persisted source identity, private policy digest, library revision and actor",
+  "live": {
+    "model": "deterministic tool/citation driver",
+    "external_knowledge": "real Verdent",
+    "seconds": 102.35,
+    "cases": [
+      {
+        "case": "personal_a",
+        "report": {
+          "absent_from_search": true,
+          "cleanup_search_hits": 1,
+          "cleanup_verified": true,
+          "complete": true,
+          "conversation_citation": true,
+          "conversation_run_id": "crun_c56d616a9e6038e325bf965a2c46cb86",
+          "database": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-lpr2hh7y/personal_a/managed.db",
+          "document_id": "kdoc_50130a3782acf55f16e6aad41e35bde6",
+          "dynamic_binding": true,
+          "indexed": true,
+          "kb_id": "kb-3bbd8f1d3249",
+          "library_id": "lib_dc581b09ef6a5c01804e3ab968512f94",
+          "library_kind": "personal",
+          "marker": "QINGHE-PRIVATE-UPLOAD-87BD31F0EA4E83E11B115D4D",
+          "model": "deterministic",
+          "origin": "https://api.verdent.ai",
+          "original_after_catalog_removal": true,
+          "private_acl": true,
+          "read_after_catalog_restore": true,
+          "restart_original": true,
+          "runtime_id": "managed-live-87bd31f0ea4e83e11b115d4d",
+          "synthetic": true,
+          "team_id": "1470194374940573696",
+          "visibility_matching": true,
+          "visibility_omitted": true,
+          "visibility_wrong": true,
+          "workspace_id": "managed-live"
+        },
+        "writes": [
+          {
+            "method": "POST",
+            "doc_id": "dka_95b4238429998d54a6f35ce7d9e91cfa1acbb1103eba5383e8e79f5e7b07480a",
+            "filename": "document-1cf2263b85da3586bd9522e7464fb42c.md",
+            "permission_header": "[\"scope:agent:library:3fa90ae4c7678afe5f0d48df4437f65c00737305e6213fc7f70a1d9ed8f58fd8\"]",
+            "request_id": "kput_231c2038940ebf677d1da132958de507d149d733ba50a1dd3326f6fb7a73ff10",
+            "http_status": 200
+          },
+          {
+            "method": "DELETE",
+            "doc_id": "dka_95b4238429998d54a6f35ce7d9e91cfa1acbb1103eba5383e8e79f5e7b07480a",
+            "http_status": 200
+          }
+        ]
+      },
+      {
+        "case": "personal_b",
+        "report": {
+          "absent_from_search": true,
+          "cleanup_search_hits": 0,
+          "cleanup_verified": true,
+          "complete": true,
+          "conversation_citation": true,
+          "conversation_run_id": "crun_011eccedce5aed70bfb29e070ec44886",
+          "database": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-lpr2hh7y/personal_b/managed.db",
+          "document_id": "kdoc_e83d4c3131e9d36b43129cfe745446ae",
+          "dynamic_binding": true,
+          "indexed": true,
+          "kb_id": "kb-148740163350",
+          "library_id": "lib_f75cf55a90d919ddc6d93133e78ae306",
+          "library_kind": "personal",
+          "marker": "QINGHE-PRIVATE-UPLOAD-B417D44AEA17CEAAD66CE5E4",
+          "model": "deterministic",
+          "origin": "https://api.verdent.ai",
+          "original_after_catalog_removal": true,
+          "private_acl": true,
+          "read_after_catalog_restore": true,
+          "restart_original": true,
+          "runtime_id": "managed-live-b417d44aea17ceaad66ce5e4",
+          "synthetic": true,
+          "team_id": "1470194374940573696",
+          "visibility_matching": true,
+          "visibility_omitted": true,
+          "visibility_wrong": true,
+          "workspace_id": "managed-live"
+        },
+        "writes": [
+          {
+            "method": "POST",
+            "doc_id": "dka_aff1a0ba1618b4afda501e94fb148de517985acc40f27109a01a51ecf4d9dfcc",
+            "filename": "document-1cf2263b85da3586bd9522e7464fb42c.md",
+            "permission_header": "[\"scope:agent:library:4a3a834203aee0acf124cbea7fbd5c296d8d5af2f1ba715b129026f1bf095a13\"]",
+            "request_id": "kput_65161cf7a103f177a4b133b4f9b5cc2d708ee4295cda7d6f709adfc98b60b2d3",
+            "http_status": 200
+          },
+          {
+            "method": "DELETE",
+            "doc_id": "dka_aff1a0ba1618b4afda501e94fb148de517985acc40f27109a01a51ecf4d9dfcc",
+            "http_status": 200
+          }
+        ]
+      },
+      {
+        "case": "shared",
+        "report": {
+          "absent_from_search": true,
+          "cleanup_search_hits": 0,
+          "cleanup_verified": true,
+          "complete": true,
+          "conversation_citation": true,
+          "conversation_run_id": "crun_aa66af0078207144498345e9610a45db",
+          "database": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-managed-private-live-lpr2hh7y/shared/managed.db",
+          "document_id": "kdoc_86408507843a2034367becb6ec983819",
+          "dynamic_binding": true,
+          "indexed": true,
+          "kb_id": "kb-1f90b90e69a8",
+          "library_id": "lib_e7a49ea9b361aa00b1320b265fc7df2a",
+          "library_kind": "shared",
+          "marker": "QINGHE-PRIVATE-UPLOAD-2C71D15B1A8D5EC303263090",
+          "model": "deterministic",
+          "origin": "https://api.verdent.ai",
+          "original_after_catalog_removal": true,
+          "private_acl": true,
+          "read_after_catalog_restore": true,
+          "restart_original": true,
+          "runtime_id": "managed-live-2c71d15b1a8d5ec303263090",
+          "synthetic": true,
+          "team_id": "1470194374940573696",
+          "visibility_matching": true,
+          "visibility_omitted": true,
+          "visibility_wrong": true,
+          "workspace_id": "managed-live"
+        },
+        "writes": [
+          {
+            "method": "POST",
+            "doc_id": "dka_7a9ce50875b62d6cede8d2b8fb97c29eec6159cc1a91b78a67aaa2512b50bea2",
+            "filename": "document-1cf2263b85da3586bd9522e7464fb42c.md",
+            "permission_header": "[\"scope:agent:library:4827cad15b63f5fa40afab433570a04cab01d52e90237971b47ae90d06da702f\"]",
+            "request_id": "kput_b987fdd31dc62a44d473c6c06b698a97320f97448c8fbb339c4ceced374f8e67",
+            "http_status": 200
+          },
+          {
+            "method": "DELETE",
+            "doc_id": "dka_7a9ce50875b62d6cede8d2b8fb97c29eec6159cc1a91b78a67aaa2512b50bea2",
+            "http_status": 200
+          }
+        ]
+      }
+    ],
+    "scope_note": "Three fresh isolated Agent hosts, one per physical KB; does not claim a shared-host cross-user upload test. Shared-host three-KB retrieval and membership isolation were accepted separately in K04."
+  },
+  "browser": {
+    "backend": "real Identity, HTTP, SQLite and worker; knowledge and model protocol fixtures",
+    "functional": "2026-09-11-k05-datasources/browser-functional.json",
+    "visual_final": "2026-09-11-k05-datasources/browser-visual-final.json",
+    "rounds": {
+      "initial": "assertion read stale DOM immediately after refresh; no product defect",
+      "repair1": "full functional flow passed; baseline found font sizes below 12px",
+      "repair2": "only affected desktop/mobile typography and baseline; passed"
+    },
+    "errors": []
+  },
+  "checks": {
+    "agent_full": {
+      "status": "passed",
+      "log": "2026-09-11-k05-datasources/agent_full.log",
+      "sha256": "81246af43e7a529030193a0b9ede9556479a2aecabc4ae938faaa27abc3cdadd"
+    },
+    "sdk_full": {
+      "status": "passed",
+      "log": "2026-09-11-k05-datasources/sdk_full.log",
+      "sha256": "bae53d906d7d9f7863b43382e8d30e407d614c30da0269cff92e3021322d48de"
+    },
+    "race": {
+      "status": "passed",
+      "log": "2026-09-11-k05-datasources/race.log",
+      "sha256": "055eb0ea1db65102c321f29ce44a3eb9c5118850c8a15fcc47cb3903deeffd5f"
+    },
+    "vet": {
+      "status": "passed",
+      "log": "2026-09-11-k05-datasources/vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "alias_final": {
+      "status": "passed",
+      "log": "2026-09-11-k05-datasources/alias_final.log",
+      "sha256": "d01215cd0f6f51f67f1ad3066ac87bc7abf215a7e715de9cd2861ece8ec09e6b"
+    },
+    "frontend_tests": {
+      "status": "passed",
+      "log": "2026-09-11-k05-datasources/frontend_tests.log",
+      "sha256": "9853b71598b8545a547ecdc6f73a373f9dd3dc06869d576b951f6676c1acb7b4"
+    },
+    "frontend_build": {
+      "status": "passed",
+      "log": "2026-09-11-k05-datasources/frontend_build.log",
+      "sha256": "4f67353b289f7e8cb85b96850dcdf82812ab347650bcbb48ee3d51513fe333b4"
+    },
+    "live_three_kb": {
+      "status": "passed",
+      "log": "2026-09-11-k05-datasources/live_three_kb.log",
+      "sha256": "360afabd9331e9d1d15364af833aa6656b27ab7d6e03f69b370a3436cfb2877b"
+    },
+    "browser_functional_host": {
+      "status": "passed",
+      "log": "2026-09-11-k05-datasources/browser_functional_host.log",
+      "sha256": "02f6f027e36cb4e2a282122559959e3c1a241d102c3aeab5703db6acd6dd41ff"
+    },
+    "browser_visual_host": {
+      "status": "passed",
+      "log": "2026-09-11-k05-datasources/browser_visual_host.log",
+      "sha256": "968c9b324265b61bd19cb18b20a144b174587caaea8b6a7ef9be8336216a4493"
+    }
+  },
+  "earlier_failures": {
+    "module_fixture": "test mapping used document_id instead of declared doc_id; corrected",
+    "query_boundary": "undeclared query accepted; now rejected and retested",
+    "catalog_goldens": "route and migration counts updated for two declared endpoints and migration 11"
+  },
+  "limits": [
+    "No physical KB creation or credential editing in browser",
+    "Binding source/policy cannot be changed or released by this API; cross-library migration belongs to K07",
+    "K06 document field/table extraction remains unimplemented",
+    "No new actual-model/browser/remote combined test is claimed",
+    "PostgreSQL, MySQL and multi-instance validation remains H08"
+  ]
+}

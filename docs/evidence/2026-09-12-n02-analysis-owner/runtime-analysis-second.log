@@ -1,0 +1,6 @@
+=== RUN   TestReportAnalysisRealOwnerFullSQLiteAggregationAndCurrentPermissions
+    report_analysis_integration_test.go:244: rows=0x2af7210c0a50 want=0; row={InputCounts:map[dataset:1203] NonNullCounts:map[mean:1202 rows:1203] Values:map[mean:0x2af7210c0a60 rows:0x2af7210c0a50] Anomalies:[] Issues:[]}
+--- FAIL: TestReportAnalysisRealOwnerFullSQLiteAggregationAndCurrentPermissions (0.13s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/runtime	0.901s
+FAIL

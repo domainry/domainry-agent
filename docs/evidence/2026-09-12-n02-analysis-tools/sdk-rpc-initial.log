@@ -1,0 +1,10 @@
+--- FAIL: TestHTTPBusinessProfilePreservesAllPorts (0.00s)
+    businessrpc_test.go:233: analysis_catalog count 0
+    businessrpc_test.go:233: analysis_run count 0
+    businessrpc_test.go:233: analysis_authorize_result count 0
+    businessrpc_test.go:239: 16 actual HTTP methods; current identity/tool checks each time; 64-bit JSON numbers retained; no retry; workflow accepted remains nonterminal
+--- FAIL: TestContractAndConfigurationFailBeforeIO (0.00s)
+    businessrpc_test.go:415: public contract changed without compatibility review: 5e23dc1eb20035f6f04716413b49f873afa6720b672e941410acfc7384c3e67b
+FAIL
+FAIL	github.com/domainry/domainry-agent-sdk/businessrpc	0.747s
+FAIL

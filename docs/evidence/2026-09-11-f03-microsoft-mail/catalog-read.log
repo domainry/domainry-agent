@@ -1,0 +1,5 @@
+ok  	github.com/domainry/domainry-connectors/catalog	0.913s
+ok  	github.com/domainry/domainry-connectors/internal/adapter/connectorsdk	(cached)
+?   	github.com/domainry/domainry-connectors/internal/infrastructure/catalog	[no test files]
+?   	github.com/domainry/domainry-connectors/internal/assembly/module	[no test files]
+?   	github.com/domainry/domainry-connectors/module	[no test files]

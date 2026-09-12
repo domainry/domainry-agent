@@ -1,0 +1,24 @@
+{
+  "unchanged_google_sdk_and_shared_files": 60,
+  "production_dependency_count": 219,
+  "forbidden_implementation_dependencies": [],
+  "llm_proxy_worktree_clean": true,
+  "llm_proxy_head": "a32407a678ea7f96d70b7557765e2a01262184d4",
+  "catalog_changed_providers": [
+    [
+      "microsoft_365",
+      "microsoft"
+    ]
+  ],
+  "catalog_sdk_unchanged": true,
+  "provider_revision_before": "1.2.0",
+  "provider_revision_after": "1.3.0",
+  "added_operations": [
+    "calendar_event_create",
+    "calendar_event_inspect",
+    "calendar_event_update",
+    "mail_reply",
+    "mail_send"
+  ],
+  "new_test_functions": 15
+}

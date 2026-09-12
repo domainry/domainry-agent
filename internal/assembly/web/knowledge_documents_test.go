@@ -23,6 +23,12 @@ import (
 )
 
 func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
+	testKnowledgeDocumentsIdentityHTTP(t, false, false)
+}
+func TestKnowledgeDatasourcesIdentityHTTPAndPersistentOriginal(t *testing.T) {
+	testKnowledgeDocumentsIdentityHTTP(t, true, false)
+}
+func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 	const initial, changed = "Initial-Document-Test!2", "Changed-Document-Test!3"
 	t.Setenv("AUTH_DEFAULT_PASSWORD", initial)
 	t.Setenv("AUTH_JWT_SECRET", "document-test-signing-key-long-enough")
@@ -31,6 +37,7 @@ func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
 	var mu sync.Mutex
 	type remoteDocument struct {
 		filename, body, status string
+		kb                     string
 		exists                 bool
 		puts, deletes          int
 	}
@@ -39,7 +46,7 @@ func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		defer mu.Unlock()
-		if r.URL.Path == "/v1/kb/kbs/project/documents" {
+		if strings.HasPrefix(r.URL.Path, "/v1/kb/kbs/") && strings.HasSuffix(r.URL.Path, "/documents") {
 			id := r.URL.Query().Get("doc_id")
 			d := documents[id]
 			if d == nil {
@@ -48,10 +55,22 @@ func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
 			}
 			if r.Method == "POST" {
 				d.puts++
+				d.kb = strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/v1/kb/kbs/"), "/documents")
+				if dynamic && (r.Header.Get("X-KB-Permission-Ids") == "" || r.Header.Get("X-KB-Request-ID") == "") {
+					t.Error("dynamic source push omitted private policy or request ID")
+				}
 				d.exists = true
 				d.filename = r.URL.Query().Get("filename")
 				raw, _ := io.ReadAll(r.Body)
 				d.body = string(raw)
+				if strings.HasSuffix(d.filename, ".pdf") || strings.HasSuffix(d.filename, ".docx") {
+					// Explicit knowledge-service fixture output; never interpret binary PDF bytes as text.
+					d.body = knowledgeExtractionBrowserText
+				}
+				if extract && strings.HasSuffix(d.filename, ".xlsx") {
+					// Connector search summary; original bytes are only displayed by the browser.
+					d.body = "Synthetic Invoice: 9 rows x 1 column; no cell values"
+				}
 				d.status = "INDEXED"
 				if holdIndex {
 					d.status = "PENDING"
@@ -68,7 +87,7 @@ func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
 		if r.URL.Path == "/v1/kb/search" {
 			hits := []any{}
 			for id, d := range documents {
-				if d.exists && d.status == "INDEXED" {
+				if d.exists && d.status == "INDEXED" && d.kb == in["kb_id"] {
 					hits = append(hits, map[string]any{"doc_id": id, "title": d.filename, "body": d.body})
 				}
 			}
@@ -77,7 +96,7 @@ func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
 		}
 		id, _ := in["doc_id"].(string)
 		d := documents[id]
-		if d == nil || !d.exists {
+		if d == nil || !d.exists || d.kb != in["kb_id"] {
 			io.WriteString(w, `{"err_code":1004}`)
 			return
 		}
@@ -85,6 +104,22 @@ func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
 	}))
 	defer upstream.Close()
 	options := Options{DatabasePath: filepath.Join(t.TempDir(), "documents.db"), RuntimeID: "document-runtime", WorkspaceID: "document-workspace", ApplicationKey: "document-app", Agent: agentmodule.Options{ConversationProvider: libraryKnowledgeWebModel{}, ConversationOptions: agentmodule.ConversationOptions{DocumentPoll: 10 * time.Millisecond}}}
+
+	if extract {
+		options.Agent.ConversationProvider = knowledgeExtractionWebModel{}
+	}
+
+	mapping := &agentmodule.KnowledgeResponseMapping{Search: &agentmodule.KnowledgeCitationMapping{Items: "/hits", Many: true, DocumentID: "/doc_id", Title: "/title", Excerpt: "/body"}, Fetch: &agentmodule.KnowledgeCitationMapping{Items: "/data", DocumentID: "/doc_id", Title: "/title", Excerpt: "/body"}}
+	knowledge := agentmodule.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "fixture-secret-not-for-browser", TeamID: "team", KBID: "project", WorkspaceID: options.WorkspaceID, ResponseMapping: mapping}
+	if dynamic {
+		for _, key := range []string{"first", "second", "third"} {
+			config := knowledge
+			if key != "first" {
+				config.KBID = key
+			}
+			options.Agent.KnowledgeDatasources = append(options.Agent.KnowledgeDatasources, agentmodule.KnowledgeDatasourceConfig{Key: key, Name: "知识源 " + key, Knowledge: config})
+		}
+	}
 	host, err := Open(t.Context(), options)
 	if err != nil {
 		t.Fatal(err)
@@ -124,7 +159,14 @@ func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
 					out = append(out, identitysdk.ProjectRolePermission{PermissionKey: p.Key, DataScope: identitysdk.DataScopeAll})
 				}
 			}
-			for _, tool := range agentsdk.LibraryKnowledgeConversationTools() {
+			tools := agentsdk.LibraryKnowledgeConversationTools()
+			if extract {
+				tools = append(tools, agentsdk.KnowledgeExtractionTool())
+			}
+			for _, tool := range tools {
+				if tool.Key == denied {
+					continue
+				}
 				out = append(out, identitysdk.ProjectRolePermission{PermissionKey: tool.ActionKey, DataScope: identitysdk.DataScopeOwner})
 			}
 			return out
@@ -158,7 +200,10 @@ func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
 		return response
 	}
 	upload(query, "http://127.0.0.1:8091", 503) // Library existence alone does not grant remote writes.
-	options.Agent.KnowledgeLibraries = []agentmodule.KnowledgeLibraryConfig{{LibraryID: lib.ID, ManageDocuments: true, Knowledge: agentmodule.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "fixture", TeamID: "team", KBID: "project", WorkspaceID: options.WorkspaceID, ResponseMapping: &agentmodule.KnowledgeResponseMapping{Search: &agentmodule.KnowledgeCitationMapping{Items: "/hits", Many: true, DocumentID: "/doc_id", Title: "/title", Excerpt: "/body"}, Fetch: &agentmodule.KnowledgeCitationMapping{Items: "/data", DocumentID: "/doc_id", Title: "/title", Excerpt: "/body"}}}}}
+	if !dynamic {
+		options.Agent.KnowledgeLibraries = []agentmodule.KnowledgeLibraryConfig{{LibraryID: lib.ID, ManageDocuments: true, Knowledge: knowledge}}
+	}
+
 	reopen := func() {
 		t.Helper()
 		if err := host.Close(context.Background()); err != nil {
@@ -172,8 +217,61 @@ func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
 		b = newBrowser()
 		b.login("admin@example.com", changed)
 	}
-	reopen()
-	if err := json.Unmarshal(b.call("GET", "/agent/knowledge-libraries/"+lib.ID, "", 200).Body.Bytes(), &lib); err != nil || !lib.DocumentsConfigured {
+
+	if dynamic {
+		sourcePath := "/agent/knowledge-libraries/" + lib.ID + "/sources"
+		bindPath := "/agent/knowledge-libraries/" + lib.ID + "/source"
+		var page agentsdk.KnowledgeLibrarySources
+		readSources := func() {
+			t.Helper()
+			if err := json.Unmarshal(b.call("GET", sourcePath+"?limit=1", "", 200).Body.Bytes(), &page); err != nil {
+				t.Fatal(err)
+			}
+		}
+		readSources()
+		if !lib.SourcesManageable || page.Status != "unbound" || !page.CanBind || len(page.Items) != 1 || !page.Items[0].Available || page.NextAfter != "first" || page.Complete {
+			t.Fatal("unbound capabilities or pagination", page)
+		}
+		rawPage := b.call("GET", sourcePath+"?after=first&limit=1", "", 200).Body.String()
+		if !strings.Contains(rawPage, `"key":"second"`) || strings.Contains(rawPage, knowledge.APIKey) || strings.Contains(rawPage, upstream.URL) {
+			t.Fatal("invalid source projection")
+		}
+		b.call("GET", sourcePath+"?permission_ids=all", "", 400)
+		b.call("GET", sourcePath+"?limit=1&limit=2", "", 400)
+		b.call("PUT", bindPath+"?permission_ids=all", `{"datasource_key":"first","expected_revision":1}`, 400)
+		b.call("PUT", bindPath, `{"datasource_key":"first","expected_revision":1,"permission_ids":["all"]}`, 400)
+		grant("libraries_bind_source")
+		readSources()
+		if page.CanBind || page.Items[0].Available {
+			t.Fatal("Identity denied but source offered")
+		}
+		b.call("PUT", bindPath, `{"datasource_key":"first","expected_revision":1}`, 403)
+		grant("libraries_sources")
+		b.call("GET", sourcePath, "", 403)
+		grant("")
+		b.call("PUT", bindPath, `{"datasource_key":"unknown","expected_revision":1}`, 404)
+		b.call("PUT", bindPath, `{"datasource_key":"first","expected_revision":99}`, 409)
+		readSources()
+		if !page.Items[0].Available {
+			t.Fatal("failed binding consumed source")
+		}
+		input := `{"datasource_key":"first","expected_revision":` + fmtRevision(lib.Revision) + `}`
+		if err := json.Unmarshal(b.call("PUT", bindPath, input, 200).Body.Bytes(), &lib); err != nil || !lib.DocumentsConfigured || lib.DatasourceKey != "first" {
+			t.Fatal("binding did not enable upload immediately", err)
+		}
+		revision := lib.Revision
+		if err := json.Unmarshal(b.call("PUT", bindPath, input, 200).Body.Bytes(), &lib); err != nil || lib.Revision != revision {
+			t.Fatal("binding replay repeated mutation", err)
+		}
+		b.call("PUT", bindPath, `{"datasource_key":"second","expected_revision":`+fmtRevision(lib.Revision)+`}`, 409)
+		readSources()
+		if page.Status != "connected" || page.Items[0].Available {
+			t.Fatal("binding not visible", page)
+		}
+	} else {
+		reopen()
+	}
+	if err := json.Unmarshal(b.call("GET", "/agent/knowledge-libraries/"+lib.ID, "", 200).Body.Bytes(), &lib); err != nil || !lib.DocumentsConfigured || lib.DocumentMaxBytes != 10<<20 {
 		t.Fatal("managed document capability missing", err)
 	}
 	upload(query, "http://untrusted.example", 403)
@@ -209,6 +307,42 @@ func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
 	if !bytes.Equal(b.call("GET", downloadPath, "", 200).Body.Bytes(), raw) {
 		t.Fatal("restart lost original")
 	}
+
+	if dynamic {
+		originalSources := options.Agent.KnowledgeDatasources
+		assertUnavailable := func() {
+			t.Helper()
+			reopen()
+			var current agentsdk.KnowledgeLibrary
+			if e := json.Unmarshal(b.call("GET", "/agent/knowledge-libraries/"+lib.ID, "", 200).Body.Bytes(), &current); e != nil || current.DocumentsConfigured || current.KnowledgeConfigured || current.DatasourceKey != "first" {
+				t.Fatal("changed source remained active", e)
+			}
+			sourcePage := b.call("GET", "/agent/knowledge-libraries/"+lib.ID+"/sources", "", 200).Body.String()
+			if !strings.Contains(sourcePage, `"status":"unavailable"`) {
+				t.Fatal("unavailable source not explained")
+			}
+			if !bytes.Equal(b.call("GET", downloadPath, "", 200).Body.Bytes(), raw) {
+				t.Fatal("configuration change lost original")
+			}
+		}
+		options.Agent.KnowledgeDatasources = nil
+		assertUnavailable()
+		options.Agent.KnowledgeLibraries = []agentmodule.KnowledgeLibraryConfig{{LibraryID: lib.ID, Knowledge: knowledge, ManageDocuments: true}}
+		assertUnavailable() // Startup configuration cannot adopt a durable user binding.
+		options.Agent.KnowledgeLibraries = nil
+		changedSources := append([]agentmodule.KnowledgeDatasourceConfig(nil), originalSources...)
+		changedSources[0].Knowledge.KBID = "changed-physical-kb"
+		options.Agent.KnowledgeDatasources = changedSources
+		assertUnavailable()
+		changedSources[0] = originalSources[0]
+		changedSources[0].PermissionIDs = []string{"changed-policy"}
+		assertUnavailable()
+		options.Agent.KnowledgeDatasources = originalSources
+		reopen()
+		if e := json.Unmarshal(b.call("GET", "/agent/knowledge-libraries/"+lib.ID, "", 200).Body.Bytes(), &lib); e != nil || !lib.DocumentsConfigured {
+			t.Fatal("restored config did not recover persisted binding", e)
+		}
+	}
 	response := b.call("DELETE", statusPath+"?expected_revision="+fmtRevision(doc.Revision), "", 200)
 	if !strings.Contains(response.Body.String(), `"state":"deleting"`) {
 		t.Fatal("cleanup incorrectly reported complete")
@@ -223,11 +357,23 @@ func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
 		mu.Unlock()
 		controls := map[string]func(){
 			"restart_document_host":      reopen,
+			"revoke_extract":             func() { grant("knowledge_extract") },
 			"revoke_document_download":   func() { grant("documents_download") },
 			"revoke_document_list":       func() { grant("documents_list") },
 			"revoke_document_import":     func() { grant("documents_import_attachment") },
+			"revoke_document_transfer":   func() { grant("documents_transfer") },
 			"revoke_attachment_download": func() { grant("attachments_download") },
 			"restore_documents":          func() { grant("") },
+			"resume_document_indexing": func() {
+				mu.Lock()
+				defer mu.Unlock()
+				holdIndex = false
+				for _, d := range documents {
+					if d.exists {
+						d.status = "INDEXED"
+					}
+				}
+			},
 			"index_documents": func() {
 				mu.Lock()
 				defer mu.Unlock()
@@ -237,6 +383,15 @@ func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
 					}
 				}
 			},
+		}
+
+		if dynamic {
+			b.call("POST", "/agent/knowledge-libraries", `{"client_id":"browser-unbound","kind":"shared","name":"待连接共享资料"}`, 200)
+			catalog := options.Agent.KnowledgeDatasources
+			controls["remove_datasource_config"] = func() { options.Agent.KnowledgeDatasources = nil; reopen() }
+			controls["restore_datasource_config"] = func() { options.Agent.KnowledgeDatasources = catalog; reopen() }
+			controls["revoke_source_bind"] = func() { grant("libraries_bind_source") }
+			controls["revoke_source_list"] = func() { grant("libraries_sources") }
 		}
 		servePersonalToolAcceptanceWithHost(t, func() *Host { return host }, options, controls)
 		mu.Lock()

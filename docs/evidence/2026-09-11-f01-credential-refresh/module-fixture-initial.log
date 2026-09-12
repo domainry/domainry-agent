@@ -1,0 +1,14 @@
+=== RUN   TestPublicModuleRetainsRotatedCredentialsAcrossRestart
+=== RUN   TestPublicModuleRetainsRotatedCredentialsAcrossRestart/call
+    credential_rotation_test.go:57: synchronize Integration provider catalog: validate Integration provider descriptor: connector provider crm/rotation_probe secret field: field token has invalid secret lifecycle metadata
+=== RUN   TestPublicModuleRetainsRotatedCredentialsAcrossRestart/delivery
+    credential_rotation_test.go:57: synchronize Integration provider catalog: validate Integration provider descriptor: connector provider crm/rotation_probe secret field: field token has invalid secret lifecycle metadata
+=== RUN   TestPublicModuleRetainsRotatedCredentialsAcrossRestart/connection-test
+    credential_rotation_test.go:57: synchronize Integration provider catalog: validate Integration provider descriptor: connector provider crm/rotation_probe secret field: field token has invalid secret lifecycle metadata
+--- FAIL: TestPublicModuleRetainsRotatedCredentialsAcrossRestart (0.24s)
+    --- FAIL: TestPublicModuleRetainsRotatedCredentialsAcrossRestart/call (0.09s)
+    --- FAIL: TestPublicModuleRetainsRotatedCredentialsAcrossRestart/delivery (0.08s)
+    --- FAIL: TestPublicModuleRetainsRotatedCredentialsAcrossRestart/connection-test (0.07s)
+FAIL
+FAIL	github.com/domainry/domainry-integration/module	0.941s
+FAIL

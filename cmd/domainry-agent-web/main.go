@@ -17,9 +17,11 @@ import (
 	"syscall"
 	"time"
 
+	productassembly "github.com/domainry/domainry-agent/internal/assembly/product"
 	webassembly "github.com/domainry/domainry-agent/internal/assembly/web"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	webhttp "github.com/domainry/domainry-agent/web"
+	identitysdk "github.com/domainry/domainry-identity-sdk"
 	identitymodule "github.com/domainry/domainry-identity/module"
 )
 
@@ -34,7 +36,10 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	if externalOptions.ExternalIdentity == nil {
+	if externalOptions.ExternalIdentity != nil && strings.TrimSpace(os.Getenv("IDENTITY_ENDPOINT")) != "" {
+		return errors.New("configure only one shared or external Identity source")
+	}
+	if externalOptions.ExternalIdentity == nil && strings.TrimSpace(os.Getenv("IDENTITY_ENDPOINT")) == "" {
 		// Identity supports development defaults; a real-user host requires explicit
 		// stable secrets instead. They are never written to logs or browser config.
 		for _, key := range []string{"AUTH_JWT_SECRET", "IDENTITY_DATA_SECRET_KEY", "AUTH_DEFAULT_PASSWORD"} {
@@ -73,23 +78,72 @@ func run() error {
 	defer stop()
 	runtimeID, workspaceID, applicationKey := env("AGENT_WEB_RUNTIME_ID", "agent-web"), env("AGENT_WEB_WORKSPACE_ID", "agent-workspace"), env("AGENT_WEB_APPLICATION_KEY", "domainry-agent-web")
 	agentOptions := agentmodule.OptionsFromEnvironment()
+	application := identitysdk.ApplicationRef{WorkspaceID: identitysdk.WorkspaceID(workspaceID), ApplicationKey: identitysdk.ApplicationKey(applicationKey)}
+	sharedIdentity, err := productassembly.OpenSharedIdentityFromEnvironment(ctx, application)
+	if err != nil {
+		return err
+	}
+	if sharedIdentity != nil {
+		defer sharedIdentity.Close(context.Background())
+	}
+	business, err := productassembly.OpenBusinessFromEnvironment(ctx, runtimeID, application, sharedIdentity)
+	if err != nil {
+		return err
+	}
+	if business != nil {
+		agentOptions.ConversationOptions.Business = business
+	}
+	integration, err := productassembly.OpenIntegrationFromEnvironment(ctx, runtimeID)
+	if err != nil {
+		return err
+	}
+	if integration != nil {
+		defer integration.Close(context.Background())
+	}
 	var knowledgePermissions map[string]string
 	if raw := strings.TrimSpace(os.Getenv("AGENT_WEB_KNOWLEDGE_PERMISSIONS")); raw != "" {
 		if len(raw) > 65536 || json.Unmarshal([]byte(raw), &knowledgePermissions) != nil || knowledgePermissions == nil {
 			return errors.New("AGENT_WEB_KNOWLEDGE_PERMISSIONS must be a JSON object mapping local permission names to upstream permission IDs")
 		}
 	}
-	options := webassembly.Options{DatabasePath: path, RuntimeID: runtimeID, WorkspaceID: workspaceID, ApplicationKey: applicationKey, Agent: agentOptions, Identity: identitymodule.OptionsFromEnvironment(), KnowledgePermissions: knowledgePermissions, ExternalIdentity: externalOptions.ExternalIdentity, ExternalRoles: externalOptions.ExternalRoles}
+	options := webassembly.Options{DatabasePath: path, RuntimeID: runtimeID, WorkspaceID: workspaceID, ApplicationKey: applicationKey, Agent: agentOptions, Identity: identitymodule.OptionsFromEnvironment(), IdentityBinding: sharedIdentity, KnowledgePermissions: knowledgePermissions, ExternalIdentity: externalOptions.ExternalIdentity, ExternalRoles: externalOptions.ExternalRoles, Integration: integration}
+	options.CalendarTools = true
+	options.MailTools = true
+	options.WebTools = true
+	options.CalendarWriteTools = true
+	options.MailWriteTools = true
+	options.ReportTools = true
+	options.WebConnectionKey = env("INTEGRATION_WEB_CONNECTION_KEY", "")
 	host, err := webassembly.Open(ctx, options)
 	if err != nil {
 		return err
 	}
 	defer host.Close(context.Background())
-	handler, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: runtimeID, WorkspaceID: workspaceID, ApplicationKey: applicationKey, Origin: origin, Model: agentOptions.ConversationModel, Files: os.DirFS(frontend)})
+	adapters, err := host.IntegrationAdapters()
 	if err != nil {
 		return err
 	}
-	server := &http.Server{Addr: address, Handler: handler, ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 30 * time.Second, WriteTimeout: 40 * time.Second, IdleTimeout: 60 * time.Second}
+	navigation := map[string]string{}
+	if len(adapters) > 0 {
+		navigation["/oauth/callback"] = "oauth-callback.html"
+	}
+	toolAdapters, err := host.ToolSettingsAdapters()
+	if err != nil {
+		return err
+	}
+	adapters = append(adapters, toolAdapters...)
+	routes := host.AccountSetupRoutes()
+	if routes == nil {
+		routes = map[string]http.Handler{}
+	}
+	for pattern, handler := range host.ToolSettingsSetupRoutes() {
+		routes[pattern] = handler
+	}
+	handler, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: runtimeID, WorkspaceID: workspaceID, ApplicationKey: applicationKey, Origin: origin, Model: agentOptions.ConversationModel, Files: os.DirFS(frontend), ModuleAdapters: adapters, NavigationFiles: navigation, ApplicationRoutes: routes})
+	if err != nil {
+		return err
+	}
+	server := &http.Server{Addr: address, Handler: handler, ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 30 * time.Second, WriteTimeout: 60 * time.Second, IdleTimeout: 60 * time.Second}
 	done := make(chan error, 1)
 	certificate, key := os.Getenv("AGENT_WEB_TLS_CERT"), os.Getenv("AGENT_WEB_TLS_KEY")
 	if (certificate == "") != (key == "") {

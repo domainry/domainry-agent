@@ -1,0 +1,6 @@
+{
+  "steps": [],
+  "javascriptErrors": [],
+  "sensitiveReferrers": 0,
+  "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '外部账号', exact: true }) to be visible\u001b[22m\n"
+}

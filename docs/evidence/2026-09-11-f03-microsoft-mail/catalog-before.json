@@ -1,0 +1,4777 @@
+{
+  "contract_version": "domainry-official-connector-catalog-v2",
+  "sdk": {
+    "version": "v0.1.0-dev.17",
+    "contract_version": "connector-contract-v16",
+    "contract_sha256": "664cb625e96fed3fcfd88c6b25e0087c63aa18e22dd2c960ab9d858b85941fee"
+  },
+  "providers": [
+    {
+      "connector_key": "accounting",
+      "provider_key": "freee",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/accounting/freee",
+      "package_name": "freee",
+      "constructor": "New",
+      "descriptor_sha256": "15e6e5afc08fe599be97876544d1e5b153224ba0c17fd562a69ecd5b3018353e",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "accounting_freee_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "efab921b190d3318a618b13ca59ab983ba47cb5977c989a11a0d5e9d5f400036",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/accounting/freee",
+        "isolated_profile": "accounting_freee_isolated_v1",
+        "isolated_command": "go test ./providers/accounting/freee",
+        "live_profile": "freee_test_company_read_probe_v1",
+        "live_command": "go run ./scripts/verify_tenant_read_probe --provider accounting/freee",
+        "required_secrets": [
+          "FREEE_TEST_COMPANY_ID",
+          "FREEE_TEST_ACCESS_TOKEN"
+        ]
+      },
+      "operations": [
+        {
+          "key": "create_journal_entry",
+          "mode": "enqueue",
+          "contract_sha256": "0f26937182a10d05c71591466024e86216688cdd1006d94edc8f0f32b93825da"
+        }
+      ]
+    },
+    {
+      "connector_key": "accounting",
+      "provider_key": "money_forward",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/accounting/money_forward",
+      "package_name": "moneyforward",
+      "constructor": "New",
+      "descriptor_sha256": "601c980fdf7f4fffff2cd3098e43129e744728fe9eb972ee5c8dea6fa8624843",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "accounting_money_forward_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "00767a17324a934c8b82811da55715b780458b2bad49b13ef248b20e0a661921",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/accounting/money_forward",
+        "isolated_profile": "accounting_money_forward_isolated_v1",
+        "isolated_command": "go test ./providers/accounting/money_forward",
+        "live_profile": "money_forward_test_office_read_probe_v1",
+        "live_command": "go run ./scripts/verify_tenant_read_probe --provider accounting/money_forward",
+        "required_secrets": [
+          "MONEY_FORWARD_TEST_ACCESS_TOKEN"
+        ]
+      },
+      "operations": [
+        {
+          "key": "create_journal_entry",
+          "mode": "enqueue",
+          "contract_sha256": "0f26937182a10d05c71591466024e86216688cdd1006d94edc8f0f32b93825da"
+        }
+      ]
+    },
+    {
+      "connector_key": "accounting",
+      "provider_key": "quickbooks",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/accounting/quickbooks",
+      "package_name": "quickbooks",
+      "constructor": "New",
+      "descriptor_sha256": "ab46ba878f24388f0162b348a851ca81f48a727ca65970f832329b8ab62d60be",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "accounting_quickbooks_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "93ec91aeaff64f8f554cea4aa4223432e7db04a4284a73b4ec67a0901f88f8cc",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/accounting/quickbooks",
+        "isolated_profile": "accounting_quickbooks_isolated_v1",
+        "isolated_command": "go test ./providers/accounting/quickbooks",
+        "live_profile": "quickbooks_sandbox_read_probe_v1",
+        "live_command": "go run ./scripts/verify_tenant_read_probe --provider accounting/quickbooks",
+        "required_secrets": [
+          "QUICKBOOKS_SANDBOX_COMPANY_ID",
+          "QUICKBOOKS_SANDBOX_ACCESS_TOKEN"
+        ]
+      },
+      "operations": [
+        {
+          "key": "cdc_sync",
+          "mode": "call",
+          "contract_sha256": "b25eda2f8884aa97351fd25f5cded1e9ccf5fa475a98250d542ad2912f47414e"
+        },
+        {
+          "key": "create_customer",
+          "mode": "call",
+          "contract_sha256": "fcd6995a11b35e2e2056085ac5871be40a8ca51bb15ddc167e530f8d2be40f14"
+        },
+        {
+          "key": "create_invoice",
+          "mode": "call",
+          "contract_sha256": "cd7ef89b653202b85b0ef26a2d92f1ab7a99785d8b0602c67c330351084e06c6"
+        },
+        {
+          "key": "create_journal_entry",
+          "mode": "enqueue",
+          "contract_sha256": "85fe2779166332efc7b3ffc11ce6ba01c167929370cdd1bd096d81fd3701a0b4"
+        },
+        {
+          "key": "create_payment",
+          "mode": "call",
+          "contract_sha256": "6636da69abfc7ec2dd5628672d3a93c2e823d1ca9e18e6b9bbde96d50f614ba0"
+        },
+        {
+          "key": "list_accounts",
+          "mode": "call",
+          "contract_sha256": "795ed0b64be558e7da9f2705dd208b35b8d1b4a1cec2398e840816ff2ad18150"
+        },
+        {
+          "key": "list_customers",
+          "mode": "call",
+          "contract_sha256": "a8550753aaebce829648374815ca4d02c545ce18b7220e4b56af770357a01c0a"
+        },
+        {
+          "key": "list_invoices",
+          "mode": "call",
+          "contract_sha256": "0912055bdf0133dad49b17d626ecd82271a8c3948d533124ad8b0fcbc8a4cff0"
+        },
+        {
+          "key": "list_payments",
+          "mode": "call",
+          "contract_sha256": "a052a8cf7cc3716527843b5af451a1ddc90fb4297bed4ab8dd99a145b6113c3a"
+        },
+        {
+          "key": "list_tax_codes",
+          "mode": "call",
+          "contract_sha256": "c05c58a112ea80c051e02e558f709cefa269ac479621a3c9aa61dfe5b6919949"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "c8225d47c872988fd3b3056de9599379ece193e2525a0603fd33b29299e84d96"
+        },
+        {
+          "key": "update_customer",
+          "mode": "call",
+          "contract_sha256": "a4ed8b11ec4107e6f2e736005724b7fd25dbff282545c98c3f955990c03d075f"
+        },
+        {
+          "key": "update_invoice",
+          "mode": "call",
+          "contract_sha256": "379f1662d9ef860602d0bccb9be3fa95f5a30687128dc6db3e5a43f1428cce0a"
+        }
+      ]
+    },
+    {
+      "connector_key": "ads_audience",
+      "provider_key": "meta_ads",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/ads_audience/meta_ads",
+      "package_name": "metaads",
+      "constructor": "New",
+      "descriptor_sha256": "921a63401d1bff5f1b6465a6b2c3e936f928ff0525112a8a92de4c3bab4a728e",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "ads_audience_meta_ads_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "641b85b62afe4ee044be1dbdceb03d3496ea76c295c93fa4971a4191153fefb6",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/ads_audience/meta_ads",
+        "isolated_profile": "ads_audience_meta_ads_isolated_v1",
+        "isolated_command": "go test ./providers/ads_audience/meta_ads"
+      },
+      "operations": [
+        {
+          "key": "list_custom_audiences",
+          "mode": "call",
+          "contract_sha256": "28a016c19174c6ed2b92a5245ecd1fefd937a2abc13887aa6927ec52c30c8700"
+        }
+      ]
+    },
+    {
+      "connector_key": "analytics_warehouse",
+      "provider_key": "bigquery",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/analytics_warehouse/bigquery",
+      "package_name": "bigquery",
+      "constructor": "New",
+      "descriptor_sha256": "c099de48c62d0cfd5732e0d4da1933d37fdef38e8dec3b4450f022b129e6fa94",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "analytics_warehouse_bigquery_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "3e0e7b4fa1c2eee1caee812911d8a1a7cdae70a542d930cd28ce4e428374dc6a",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/analytics_warehouse/bigquery",
+        "isolated_profile": "analytics_warehouse_bigquery_isolated_v1",
+        "isolated_command": "go test ./providers/analytics_warehouse/bigquery"
+      },
+      "operations": [
+        {
+          "key": "list_tables",
+          "mode": "call",
+          "contract_sha256": "05a9e4c852f9eb6717263fee63ae62f4110945dfb09de90ef903ad87859b4690"
+        },
+        {
+          "key": "sample_query",
+          "mode": "call",
+          "contract_sha256": "cfe4d686d9d9f685d4fcd364ab5b70ba086869076684864b66c8fc965ca64594"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "30db39d8f12566e5a218413c5ba468aed3a1825527b3f4fca5b54fe307f635b5"
+        }
+      ]
+    },
+    {
+      "connector_key": "analytics_warehouse",
+      "provider_key": "snowflake",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/analytics_warehouse/snowflake",
+      "package_name": "snowflake",
+      "constructor": "New",
+      "descriptor_sha256": "55617ec2c0c4d3ceae1f47bb8b2ae8b013815ef20dc08bb0f19c1bfc9afbb703",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "analytics_warehouse_snowflake_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "a98fba1ace3af809a76d6ee090d2c0af67451e7dc2dd35add7cbb3ead386c63b",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/analytics_warehouse/snowflake",
+        "isolated_profile": "analytics_warehouse_snowflake_isolated_v1",
+        "isolated_command": "go test ./providers/analytics_warehouse/snowflake"
+      },
+      "operations": [
+        {
+          "key": "list_tables",
+          "mode": "call",
+          "contract_sha256": "05a9e4c852f9eb6717263fee63ae62f4110945dfb09de90ef903ad87859b4690"
+        },
+        {
+          "key": "sample_query",
+          "mode": "call",
+          "contract_sha256": "cfe4d686d9d9f685d4fcd364ab5b70ba086869076684864b66c8fc965ca64594"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "30db39d8f12566e5a218413c5ba468aed3a1825527b3f4fca5b54fe307f635b5"
+        }
+      ]
+    },
+    {
+      "connector_key": "app_review",
+      "provider_key": "google_play_console",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/app_review/google_play_console",
+      "package_name": "googleplayconsole",
+      "constructor": "New",
+      "descriptor_sha256": "faf4a6f4ec61679f6de94c0416124a7e52c91dd539d93099ef04765730b5e7fb",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "app_review_google_play_console_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "eac83a8339abd1c343013ac51c4a70c14dccc38453a3899b07ef8d2aa386715c",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/app_review/google_play_console",
+        "isolated_profile": "app_review_google_play_console_isolated_v1",
+        "isolated_command": "go test ./providers/app_review/google_play_console"
+      },
+      "operations": [
+        {
+          "key": "list_reviews",
+          "mode": "call",
+          "contract_sha256": "1f66d52b94c81cfeeae5c04361222593c8f6061d0a67b73e3116295b0dcd5975"
+        },
+        {
+          "key": "reply_review",
+          "mode": "call",
+          "contract_sha256": "09151a2a48bca2386217e16f8d3b23458421687fedab5ad05b9392b84fd82c8b"
+        }
+      ]
+    },
+    {
+      "connector_key": "appointment_scheduling",
+      "provider_key": "cal_com",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/appointment_scheduling/cal_com",
+      "package_name": "calcom",
+      "constructor": "New",
+      "descriptor_sha256": "fdb17fb5f820f9e568e9966920bc3ebaf8ac957b440779afbef41a25e08458c8",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "appointment_scheduling_cal_com_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "3e8448f4e0268ff9376b15892a6a26834ce9d899d3c82fd98f2a00dc0f5f0e58",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/appointment_scheduling/cal_com",
+        "isolated_profile": "appointment_scheduling_cal_com_isolated_v1",
+        "isolated_command": "go test ./providers/appointment_scheduling/cal_com"
+      },
+      "operations": [
+        {
+          "key": "cancel_scheduled_event",
+          "mode": "call",
+          "contract_sha256": "09d521d641dcd334b09676d0c9d2f8bc1771ed648206cef4c5fdc231d32fa082"
+        },
+        {
+          "key": "create_booking",
+          "mode": "call",
+          "contract_sha256": "928778cc82cac4f36f946f071d8b588e37eb555170f9878281aca249e29c66e1"
+        },
+        {
+          "key": "list_event_types",
+          "mode": "call",
+          "contract_sha256": "5cc6e50948aa95cf6c9acbe02050ba4ef273f59b19fb67771fe5c00542bbc02b"
+        },
+        {
+          "key": "list_scheduled_events",
+          "mode": "call",
+          "contract_sha256": "03718b1dd1f9c62875e87ab34f8c29d7b15ae3ec62aebe8d10ddf1748a8a6e94"
+        },
+        {
+          "key": "reschedule_scheduled_event",
+          "mode": "call",
+          "contract_sha256": "4a086743e91ae464065a1075fa4493efeb5c94fda5d60b1446bd1033b81a0b76"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "7fb4c29cab409b99b675ce439ae7c376287217e18c25d5466e6c4cbd4c45b891"
+        }
+      ]
+    },
+    {
+      "connector_key": "appointment_scheduling",
+      "provider_key": "calendly",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/appointment_scheduling/calendly",
+      "package_name": "calendly",
+      "constructor": "New",
+      "descriptor_sha256": "0aaa79890f54e272610e7ecbc4a1026ac63505a6674b5a7824438067b3c5fa7f",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "appointment_scheduling_calendly_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "e8a8c719b2beaf6154d565a94e8463741ab0320ccd411a5f0c604d38de1fbe37",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/appointment_scheduling/calendly",
+        "isolated_profile": "appointment_scheduling_calendly_isolated_v1",
+        "isolated_command": "go test ./providers/appointment_scheduling/calendly"
+      },
+      "operations": [
+        {
+          "key": "cancel_scheduled_event",
+          "mode": "call",
+          "contract_sha256": "09d521d641dcd334b09676d0c9d2f8bc1771ed648206cef4c5fdc231d32fa082"
+        },
+        {
+          "key": "create_scheduling_link",
+          "mode": "call",
+          "contract_sha256": "fa4ab81794652f4e3ce2492ff356b9f2541d8d322e3b85fff29a6aa6a36524fc"
+        },
+        {
+          "key": "list_event_types",
+          "mode": "call",
+          "contract_sha256": "5cc6e50948aa95cf6c9acbe02050ba4ef273f59b19fb67771fe5c00542bbc02b"
+        },
+        {
+          "key": "list_scheduled_events",
+          "mode": "call",
+          "contract_sha256": "03718b1dd1f9c62875e87ab34f8c29d7b15ae3ec62aebe8d10ddf1748a8a6e94"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "7fb4c29cab409b99b675ce439ae7c376287217e18c25d5466e6c4cbd4c45b891"
+        }
+      ]
+    },
+    {
+      "connector_key": "appointment_scheduling",
+      "provider_key": "feishu_calendar",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/appointment_scheduling/feishu_calendar",
+      "package_name": "feishucalendar",
+      "constructor": "New",
+      "descriptor_sha256": "d5dc130615c9962af617fed3ec5dbc807ef2ca758805dece4ee9ab20a6504b31",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "appointment_scheduling_feishu_calendar_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "681ac6aeedd97bda81d75d85ce4f38e831ee55206f288929e1ef006890bfaef9",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/appointment_scheduling/feishu_calendar",
+        "isolated_profile": "appointment_scheduling_feishu_calendar_isolated_v1",
+        "isolated_command": "go test ./providers/appointment_scheduling/feishu_calendar"
+      },
+      "operations": [
+        {
+          "key": "create_booking",
+          "mode": "call",
+          "contract_sha256": "928778cc82cac4f36f946f071d8b588e37eb555170f9878281aca249e29c66e1"
+        },
+        {
+          "key": "enqueue_booking",
+          "mode": "enqueue",
+          "contract_sha256": "425b4b8fdc9a5865424285463c073951321d757d50dfbf1dc01b6f05eb507146"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "7fb4c29cab409b99b675ce439ae7c376287217e18c25d5466e6c4cbd4c45b891"
+        }
+      ]
+    },
+    {
+      "connector_key": "appointment_scheduling",
+      "provider_key": "google_calendar",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/appointment_scheduling/google_calendar",
+      "package_name": "googlecalendar",
+      "constructor": "New",
+      "descriptor_sha256": "fd03ee5cbe2141a7ee6f4f13465e3c0c07d833deb88c515aaab2b33912ef37b9",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "appointment_scheduling_google_calendar_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "53d551df1cd17f63f43823b5f8f572d6ef8a6036369e66f6fa38e4d7fe24d089",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/appointment_scheduling/google_calendar",
+        "isolated_profile": "appointment_scheduling_google_calendar_isolated_v1",
+        "isolated_command": "go test ./providers/appointment_scheduling/google_calendar"
+      },
+      "operations": [
+        {
+          "key": "cancel_scheduled_event",
+          "mode": "call",
+          "contract_sha256": "09d521d641dcd334b09676d0c9d2f8bc1771ed648206cef4c5fdc231d32fa082"
+        },
+        {
+          "key": "create_booking",
+          "mode": "call",
+          "contract_sha256": "928778cc82cac4f36f946f071d8b588e37eb555170f9878281aca249e29c66e1"
+        },
+        {
+          "key": "enqueue_booking",
+          "mode": "enqueue",
+          "contract_sha256": "425b4b8fdc9a5865424285463c073951321d757d50dfbf1dc01b6f05eb507146"
+        },
+        {
+          "key": "list_scheduled_events",
+          "mode": "call",
+          "contract_sha256": "03718b1dd1f9c62875e87ab34f8c29d7b15ae3ec62aebe8d10ddf1748a8a6e94"
+        },
+        {
+          "key": "reschedule_scheduled_event",
+          "mode": "call",
+          "contract_sha256": "4a086743e91ae464065a1075fa4493efeb5c94fda5d60b1446bd1033b81a0b76"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "7fb4c29cab409b99b675ce439ae7c376287217e18c25d5466e6c4cbd4c45b891"
+        },
+        {
+          "key": "watch_scheduled_events",
+          "mode": "call",
+          "contract_sha256": "19cd60e96e5ac3aa0b44eeb5a6329d19cf2416233256f9ffd1f5b0ee943ce25a"
+        }
+      ]
+    },
+    {
+      "connector_key": "appointment_scheduling",
+      "provider_key": "microsoft_booking",
+      "provider_revision": "1.0.1",
+      "import_path": "github.com/domainry/domainry-connectors/providers/appointment_scheduling/microsoft_booking",
+      "package_name": "microsoftbooking",
+      "constructor": "New",
+      "descriptor_sha256": "188bf0ec026b3f7e9b3f2ed3ace3e9d80f9677e474fd719091a20832ea8bf935",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "appointment_scheduling_microsoft_booking_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "62bf92484d2a4b53f3acce9c3cfc7ac776cd73a98f64cef7437d13f66f0f74b4",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/appointment_scheduling/microsoft_booking",
+        "isolated_profile": "appointment_scheduling_microsoft_booking_isolated_v1",
+        "isolated_command": "go test ./providers/appointment_scheduling/microsoft_booking"
+      },
+      "operations": [
+        {
+          "key": "cancel_scheduled_event",
+          "mode": "call",
+          "contract_sha256": "09d521d641dcd334b09676d0c9d2f8bc1771ed648206cef4c5fdc231d32fa082"
+        },
+        {
+          "key": "create_booking",
+          "mode": "call",
+          "contract_sha256": "928778cc82cac4f36f946f071d8b588e37eb555170f9878281aca249e29c66e1"
+        },
+        {
+          "key": "list_scheduled_events",
+          "mode": "call",
+          "contract_sha256": "03718b1dd1f9c62875e87ab34f8c29d7b15ae3ec62aebe8d10ddf1748a8a6e94"
+        },
+        {
+          "key": "reschedule_scheduled_event",
+          "mode": "call",
+          "contract_sha256": "4a086743e91ae464065a1075fa4493efeb5c94fda5d60b1446bd1033b81a0b76"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "7fb4c29cab409b99b675ce439ae7c376287217e18c25d5466e6c4cbd4c45b891"
+        }
+      ]
+    },
+    {
+      "connector_key": "bank_reconciliation",
+      "provider_key": "plaid",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/bank_reconciliation/plaid",
+      "package_name": "plaid",
+      "constructor": "New",
+      "descriptor_sha256": "74ea3298ab0fa142e113076089dee297849cdd404fdc69efc0ed56e48a3fddeb",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "bank_reconciliation_plaid_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "c0db616426dbdb833e1b9fd406e31227af6b2b4808aad9168ddb50a2d36b13ff",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/bank_reconciliation/plaid",
+        "isolated_profile": "bank_reconciliation_plaid_isolated_v1",
+        "isolated_command": "go test ./providers/bank_reconciliation/plaid"
+      },
+      "operations": [
+        {
+          "key": "get_accounts",
+          "mode": "call",
+          "contract_sha256": "2b9c30e77e81764fbf1fa539b1082ba8e9e8c8aa7d2abb210aac68abe34ac827"
+        },
+        {
+          "key": "sync_transactions",
+          "mode": "call",
+          "contract_sha256": "e0d805dd5a1f5191a59b108b640a6958b6be2b69d646d5db8506a4a45486a6e6"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "ab98da9d50679388e48506edf0c31abcc58a9c55ddc278ec13c220eb9d7d2e07"
+        }
+      ]
+    },
+    {
+      "connector_key": "calendar",
+      "provider_key": "holidays_jp",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/calendar/holidays_jp",
+      "package_name": "holidaysjp",
+      "constructor": "New",
+      "descriptor_sha256": "44fcfa071797e9a91ce7ec0e58ac646c6d7a68a83d40ddcf97cdece9df40b58b",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "calendar_holidays_jp_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "8efdd0163e76b7af85cdd6d84a58447422069e17951436542d83fcc0b48cf74b",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/calendar/holidays_jp",
+        "isolated_profile": "calendar_holidays_jp_isolated_v1",
+        "isolated_command": "go test ./providers/calendar/holidays_jp"
+      },
+      "operations": [
+        {
+          "key": "list_factors",
+          "mode": "call",
+          "contract_sha256": "baac11fb6b727ea609ed4d7ab70221c2cef8048ef1df2d5e9d00c31ce505228c"
+        }
+      ]
+    },
+    {
+      "connector_key": "collaboration",
+      "provider_key": "dingtalk",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/collaboration/dingtalk",
+      "package_name": "dingtalk",
+      "constructor": "New",
+      "descriptor_sha256": "6d75f054fc7048ccd0246bb15166fcaa45fe4e60ab41c37b02a634f7fe802834",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "collaboration_dingtalk_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "e9d2e77921c15cd6d8164f1d221ba390061e2ef5cf30268d1d9c291b8919a794",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/collaboration/dingtalk",
+        "isolated_profile": "collaboration_dingtalk_isolated_v1",
+        "isolated_command": "go test ./providers/collaboration/dingtalk"
+      },
+      "operations": [
+        {
+          "key": "send_message",
+          "mode": "enqueue",
+          "contract_sha256": "5dc35c6a31a177b460a433d8d33524d57f4c9cbbf08a8a84e0bda46ad512c324"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a354f65a655c7afc141199c44f831137989741466e5c064d4a872fdb8dec4916"
+        }
+      ]
+    },
+    {
+      "connector_key": "collaboration",
+      "provider_key": "discord",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/collaboration/discord",
+      "package_name": "discord",
+      "constructor": "New",
+      "descriptor_sha256": "b237638b4ea17d6bd26501dfe98b915f97fa6da9e92416a056408a442b86a81a",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "collaboration_discord_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "025e1f75a626a8ae6f455efd777d44eca70e0955f9fc5fb67147c248cdbb4dee",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/collaboration/discord",
+        "isolated_profile": "collaboration_discord_isolated_v1",
+        "isolated_command": "go test ./providers/collaboration/discord"
+      },
+      "operations": [
+        {
+          "key": "send_message",
+          "mode": "enqueue",
+          "contract_sha256": "5dc35c6a31a177b460a433d8d33524d57f4c9cbbf08a8a84e0bda46ad512c324"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a354f65a655c7afc141199c44f831137989741466e5c064d4a872fdb8dec4916"
+        }
+      ]
+    },
+    {
+      "connector_key": "collaboration",
+      "provider_key": "enterprise_wechat",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/collaboration/enterprise_wechat",
+      "package_name": "enterprisewechat",
+      "constructor": "New",
+      "descriptor_sha256": "0a40722be77564452e8e26411f6314249d5463b3530834e4a74c72043496a43f",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "collaboration_enterprise_wechat_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "9ae069f49dedea1a0f294df44fb5fa089b145a5a665bed4445f3b33b3742927b",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/collaboration/enterprise_wechat",
+        "isolated_profile": "collaboration_enterprise_wechat_isolated_v1",
+        "isolated_command": "go test ./providers/collaboration/enterprise_wechat"
+      },
+      "operations": [
+        {
+          "key": "send_message",
+          "mode": "enqueue",
+          "contract_sha256": "5dc35c6a31a177b460a433d8d33524d57f4c9cbbf08a8a84e0bda46ad512c324"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a354f65a655c7afc141199c44f831137989741466e5c064d4a872fdb8dec4916"
+        }
+      ]
+    },
+    {
+      "connector_key": "collaboration",
+      "provider_key": "feishu",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/collaboration/feishu",
+      "package_name": "feishu",
+      "constructor": "New",
+      "descriptor_sha256": "85931929f394b77245a7810f5f3a6e31720286f4b387a2ff2f3dababc9561e20",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "collaboration_feishu_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "8432148e30d584b37c49c544c8f594e3132eb5abf2b294b9b01441dd5aff988f",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/collaboration/feishu",
+        "isolated_profile": "collaboration_feishu_isolated_v1",
+        "isolated_command": "go test ./providers/collaboration/feishu",
+        "live_profile": "feishu_test_tenant_read_probe_v1",
+        "live_command": "go run ./scripts/verify_tenant_read_probe --provider collaboration/feishu",
+        "required_secrets": [
+          "FEISHU_TEST_APP_ID",
+          "FEISHU_TEST_APP_SECRET"
+        ]
+      },
+      "operations": [
+        {
+          "key": "send_message",
+          "mode": "enqueue",
+          "contract_sha256": "5dc35c6a31a177b460a433d8d33524d57f4c9cbbf08a8a84e0bda46ad512c324"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a354f65a655c7afc141199c44f831137989741466e5c064d4a872fdb8dec4916"
+        }
+      ]
+    },
+    {
+      "connector_key": "collaboration",
+      "provider_key": "google_workspace",
+      "provider_revision": "1.0.1",
+      "import_path": "github.com/domainry/domainry-connectors/providers/collaboration/google_workspace",
+      "package_name": "googleworkspace",
+      "constructor": "New",
+      "descriptor_sha256": "77b6ca444ef9f60e5955cfdfaade320e522c74bbc0339b04804e83080ec40015",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "collaboration_google_workspace_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "b0be0fb5e786a7b6da902311e4ee9f02422ba5cee857454b93045909fc5087e3",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/collaboration/google_workspace",
+        "isolated_profile": "collaboration_google_workspace_isolated_v1",
+        "isolated_command": "go test ./providers/collaboration/google_workspace",
+        "live_profile": "google_chat_test_space_read_probe_v1",
+        "live_command": "go run ./scripts/verify_tenant_read_probe --provider collaboration/google_workspace",
+        "required_secrets": [
+          "GOOGLE_CHAT_TEST_SPACE",
+          "GOOGLE_CHAT_TEST_ACCESS_TOKEN"
+        ]
+      },
+      "operations": [
+        {
+          "key": "send_message",
+          "mode": "enqueue",
+          "contract_sha256": "5dc35c6a31a177b460a433d8d33524d57f4c9cbbf08a8a84e0bda46ad512c324"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a354f65a655c7afc141199c44f831137989741466e5c064d4a872fdb8dec4916"
+        }
+      ]
+    },
+    {
+      "connector_key": "collaboration",
+      "provider_key": "line",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/collaboration/line",
+      "package_name": "line",
+      "constructor": "New",
+      "descriptor_sha256": "776caa823bb4c3a709be62f4e4989a86a881ef6ff4f73f5c53711cd6485fcd4f",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "collaboration_line_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "be2cdf1bc890dcea302ad2a3d1514cad01ecbf1a4f39df1f12af3d58d187e8a6",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/collaboration/line",
+        "isolated_profile": "collaboration_line_isolated_v1",
+        "isolated_command": "go test ./providers/collaboration/line"
+      },
+      "operations": [
+        {
+          "key": "send_message",
+          "mode": "enqueue",
+          "contract_sha256": "5dc35c6a31a177b460a433d8d33524d57f4c9cbbf08a8a84e0bda46ad512c324"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a354f65a655c7afc141199c44f831137989741466e5c064d4a872fdb8dec4916"
+        }
+      ]
+    },
+    {
+      "connector_key": "collaboration",
+      "provider_key": "line_works",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/collaboration/line_works",
+      "package_name": "lineworks",
+      "constructor": "New",
+      "descriptor_sha256": "004e6136f08fb37424f213c2d73a6a55df513169064b01ce08ac9107a5d529e0",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "collaboration_line_works_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "c36c7599a06bd5a66fabf3f24408431dc8ea2d8dc4fbbb40170e5ae21b1d5ad7",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/collaboration/line_works",
+        "isolated_profile": "collaboration_line_works_isolated_v1",
+        "isolated_command": "go test ./providers/collaboration/line_works"
+      },
+      "operations": [
+        {
+          "key": "send_message",
+          "mode": "enqueue",
+          "contract_sha256": "5dc35c6a31a177b460a433d8d33524d57f4c9cbbf08a8a84e0bda46ad512c324"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a354f65a655c7afc141199c44f831137989741466e5c064d4a872fdb8dec4916"
+        }
+      ]
+    },
+    {
+      "connector_key": "collaboration",
+      "provider_key": "microsoft_365",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/collaboration/microsoft_365",
+      "package_name": "microsoft365",
+      "constructor": "New",
+      "descriptor_sha256": "9e58e896b0caafc91cc3399a9d1b4f20896cd88b11db65ff25d34f6da8ea5cbe",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "collaboration_microsoft_365_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "8c28e3c9610ebd5b6b2b03d0d12bc33eeedb92d4c72b841d5967702c372622a6",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/collaboration/microsoft_365",
+        "isolated_profile": "collaboration_microsoft_365_isolated_v1",
+        "isolated_command": "go test ./providers/collaboration/microsoft_365",
+        "live_profile": "microsoft_365_test_tenant_read_probe_v1",
+        "live_command": "go run ./scripts/verify_tenant_read_probe --provider collaboration/microsoft_365",
+        "required_secrets": [
+          "MICROSOFT_365_TEST_TEAM_ID",
+          "MICROSOFT_365_TEST_ACCESS_TOKEN"
+        ]
+      },
+      "operations": [
+        {
+          "key": "send_message",
+          "mode": "enqueue",
+          "contract_sha256": "5dc35c6a31a177b460a433d8d33524d57f4c9cbbf08a8a84e0bda46ad512c324"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a354f65a655c7afc141199c44f831137989741466e5c064d4a872fdb8dec4916"
+        }
+      ]
+    },
+    {
+      "connector_key": "collaboration",
+      "provider_key": "slack",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/collaboration/slack",
+      "package_name": "slack",
+      "constructor": "New",
+      "descriptor_sha256": "84dbdedd727f42b68a7f960462b5439fde12d8b1f47645a15dd0772056524add",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "collaboration_slack_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "9438e3c12308f159374b39eda93877098ecd8bc70a3c9dccac8db32a687b9192",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/collaboration/slack",
+        "isolated_profile": "collaboration_slack_isolated_v1",
+        "isolated_command": "go test ./providers/collaboration/slack",
+        "live_profile": "slack_test_workspace_read_probe_v1",
+        "live_command": "go run ./scripts/verify_tenant_read_probe --provider collaboration/slack",
+        "required_secrets": [
+          "SLACK_TEST_BOT_TOKEN"
+        ]
+      },
+      "operations": [
+        {
+          "key": "send_message",
+          "mode": "enqueue",
+          "contract_sha256": "5dc35c6a31a177b460a433d8d33524d57f4c9cbbf08a8a84e0bda46ad512c324"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a354f65a655c7afc141199c44f831137989741466e5c064d4a872fdb8dec4916"
+        }
+      ]
+    },
+    {
+      "connector_key": "collaboration",
+      "provider_key": "teams",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/collaboration/teams",
+      "package_name": "teams",
+      "constructor": "New",
+      "descriptor_sha256": "3297f2aed14a064249d3b95d6faae0ce7dc749bdf450f17b6ba9161b889a84df",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "collaboration_teams_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "cb1105d8dcff5a1e75371d023a4344ac783baf55e5d7c095cb58d46192f7f84c",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/collaboration/teams",
+        "isolated_profile": "collaboration_teams_isolated_v1",
+        "isolated_command": "go test ./providers/collaboration/teams"
+      },
+      "operations": [
+        {
+          "key": "send_message",
+          "mode": "enqueue",
+          "contract_sha256": "5dc35c6a31a177b460a433d8d33524d57f4c9cbbf08a8a84e0bda46ad512c324"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a354f65a655c7afc141199c44f831137989741466e5c064d4a872fdb8dec4916"
+        }
+      ]
+    },
+    {
+      "connector_key": "customer_feedback",
+      "provider_key": "delighted",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/customer_feedback/delighted",
+      "package_name": "delighted",
+      "constructor": "New",
+      "descriptor_sha256": "2e46bb49a23f60045eaa5774b8a2b1d0985e778cf09a8686d39d63f2655f2e40",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "customer_feedback_delighted_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "a00a56fb2d976fb1fd50a0c87d3bc4ea09245c0136cc0888c2644c9a26b4b225",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/customer_feedback/delighted",
+        "isolated_profile": "customer_feedback_delighted_isolated_v1",
+        "isolated_command": "go test ./providers/customer_feedback/delighted"
+      },
+      "operations": [
+        {
+          "key": "list_responses",
+          "mode": "call",
+          "contract_sha256": "4a91cb108284b0275c4e5b2980a3492b766f207dc5b8891b0ead4aae66fec922"
+        }
+      ]
+    },
+    {
+      "connector_key": "customer_feedback",
+      "provider_key": "surveymonkey",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/customer_feedback/surveymonkey",
+      "package_name": "surveymonkey",
+      "constructor": "New",
+      "descriptor_sha256": "e6ac5e5e1b2790714475311a293fe4b7e9c3b71193c2453158946260af85cc4d",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "customer_feedback_surveymonkey_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "1df3d3c08635b55ac2ba6ba49aa1f53a3cea8546d062f9d124259fb9f90302c6",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/customer_feedback/surveymonkey",
+        "isolated_profile": "customer_feedback_surveymonkey_isolated_v1",
+        "isolated_command": "go test ./providers/customer_feedback/surveymonkey"
+      },
+      "operations": [
+        {
+          "key": "get_form",
+          "mode": "call",
+          "contract_sha256": "7adc05c1b448a5c935e78c0c50a8d20fea52ea1b541e250c75c33de841af0cf9"
+        },
+        {
+          "key": "list_responses",
+          "mode": "call",
+          "contract_sha256": "4a91cb108284b0275c4e5b2980a3492b766f207dc5b8891b0ead4aae66fec922"
+        }
+      ]
+    },
+    {
+      "connector_key": "customer_feedback",
+      "provider_key": "trustpilot",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/customer_feedback/trustpilot",
+      "package_name": "trustpilot",
+      "constructor": "New",
+      "descriptor_sha256": "ef63f1d4fab578ac864dcc2e075ef083ab0b6f8db6cbe46fbe2ccd7e282b8338",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "customer_feedback_trustpilot_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "efe81c986a85bfa7bde8291d31c597a8a2c60be56d49cbc387b1bbebd3f84feb",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/customer_feedback/trustpilot",
+        "isolated_profile": "customer_feedback_trustpilot_isolated_v1",
+        "isolated_command": "go test ./providers/customer_feedback/trustpilot"
+      },
+      "operations": [
+        {
+          "key": "get_form",
+          "mode": "call",
+          "contract_sha256": "7adc05c1b448a5c935e78c0c50a8d20fea52ea1b541e250c75c33de841af0cf9"
+        },
+        {
+          "key": "list_responses",
+          "mode": "call",
+          "contract_sha256": "4a91cb108284b0275c4e5b2980a3492b766f207dc5b8891b0ead4aae66fec922"
+        }
+      ]
+    },
+    {
+      "connector_key": "customer_feedback",
+      "provider_key": "typeform",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/customer_feedback/typeform",
+      "package_name": "typeform",
+      "constructor": "New",
+      "descriptor_sha256": "4aaadb87032aefff677945a81226b47d62a1ce4136195b93e026e48271f3a442",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "customer_feedback_typeform_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "ec27f873699914693ebb6b5cce1b26c9fe531d3ea26be09519f2d0663b6f566d",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/customer_feedback/typeform",
+        "isolated_profile": "customer_feedback_typeform_isolated_v1",
+        "isolated_command": "go test ./providers/customer_feedback/typeform"
+      },
+      "operations": [
+        {
+          "key": "get_form",
+          "mode": "call",
+          "contract_sha256": "7adc05c1b448a5c935e78c0c50a8d20fea52ea1b541e250c75c33de841af0cf9"
+        },
+        {
+          "key": "list_responses",
+          "mode": "call",
+          "contract_sha256": "4a91cb108284b0275c4e5b2980a3492b766f207dc5b8891b0ead4aae66fec922"
+        }
+      ]
+    },
+    {
+      "connector_key": "delivery_operations",
+      "provider_key": "asana",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/delivery_operations/asana",
+      "package_name": "asana",
+      "constructor": "New",
+      "descriptor_sha256": "b8d1d816000eeaf5b8f2ac2b9784f7ed8e684f7ac70b07a9efeb917848ad0242",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "delivery_operations_asana_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "24e22d5aac7dbad1140facf714f6c90ccc8a4808d41b6186594db3d3a693cf49",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/delivery_operations/asana",
+        "isolated_profile": "delivery_operations_asana_isolated_v1",
+        "isolated_command": "go test ./providers/delivery_operations/asana"
+      },
+      "operations": [
+        {
+          "key": "create_delivery_item",
+          "mode": "call",
+          "contract_sha256": "9a097cf1ba8cda7547fc06582abe5babfc4a4f7a7b58d8d824fc436fdc36cbd6"
+        },
+        {
+          "key": "list_delivery_items",
+          "mode": "call",
+          "contract_sha256": "b3503478e21cbb172628db3b0e0e4eb10afeb50a0c7451f067369dc4fbadb4a6"
+        },
+        {
+          "key": "list_delivery_projects",
+          "mode": "call",
+          "contract_sha256": "044bd4d279359354f6fe310a889682bc10ce2b4b9f5e6e58cf89a4f5a66e202c"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "e105356cce844443110d0fe5f4b4ab76bb3dc52bff4d7abf2147f02fffb0df9f"
+        },
+        {
+          "key": "transition_delivery_item",
+          "mode": "call",
+          "contract_sha256": "5d455d95a0b8a58ce17bb61ff1f971ba648863c67de0c3b6bde8424f0e8d150e"
+        },
+        {
+          "key": "update_delivery_item",
+          "mode": "call",
+          "contract_sha256": "b076f0651614ba18b76b0a70c89e7672495ba0bb0b52f23014e353f7c1666630"
+        }
+      ]
+    },
+    {
+      "connector_key": "delivery_operations",
+      "provider_key": "jira",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/delivery_operations/jira",
+      "package_name": "jira",
+      "constructor": "New",
+      "descriptor_sha256": "15df50173fc6b59feb2d4cac65df73a01cca1b46941d84763e5f4696417ba665",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "delivery_operations_jira_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "05bd8bfdcd1bd08595a73c9afcb778951b115b2f42297005da48f723bb6b5f97",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/delivery_operations/jira",
+        "isolated_profile": "delivery_operations_jira_isolated_v1",
+        "isolated_command": "go test ./providers/delivery_operations/jira"
+      },
+      "operations": [
+        {
+          "key": "create_delivery_item",
+          "mode": "call",
+          "contract_sha256": "9a097cf1ba8cda7547fc06582abe5babfc4a4f7a7b58d8d824fc436fdc36cbd6"
+        },
+        {
+          "key": "list_delivery_items",
+          "mode": "call",
+          "contract_sha256": "b3503478e21cbb172628db3b0e0e4eb10afeb50a0c7451f067369dc4fbadb4a6"
+        },
+        {
+          "key": "list_delivery_projects",
+          "mode": "call",
+          "contract_sha256": "044bd4d279359354f6fe310a889682bc10ce2b4b9f5e6e58cf89a4f5a66e202c"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "e105356cce844443110d0fe5f4b4ab76bb3dc52bff4d7abf2147f02fffb0df9f"
+        },
+        {
+          "key": "transition_delivery_item",
+          "mode": "call",
+          "contract_sha256": "5d455d95a0b8a58ce17bb61ff1f971ba648863c67de0c3b6bde8424f0e8d150e"
+        },
+        {
+          "key": "update_delivery_item",
+          "mode": "call",
+          "contract_sha256": "b076f0651614ba18b76b0a70c89e7672495ba0bb0b52f23014e353f7c1666630"
+        }
+      ]
+    },
+    {
+      "connector_key": "delivery_operations",
+      "provider_key": "linear",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/delivery_operations/linear",
+      "package_name": "linear",
+      "constructor": "New",
+      "descriptor_sha256": "332f7754e5dd9bd66e04dbed3b2b1a17196f0c9662083c5876b5a4c298257f10",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "delivery_operations_linear_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "3723dd863f497fc98bed5cc92a0d724f7966d005ad6a54f2f9062c47969d9b68",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/delivery_operations/linear",
+        "isolated_profile": "delivery_operations_linear_isolated_v1",
+        "isolated_command": "go test ./providers/delivery_operations/linear"
+      },
+      "operations": [
+        {
+          "key": "create_delivery_item",
+          "mode": "call",
+          "contract_sha256": "9a097cf1ba8cda7547fc06582abe5babfc4a4f7a7b58d8d824fc436fdc36cbd6"
+        },
+        {
+          "key": "list_delivery_items",
+          "mode": "call",
+          "contract_sha256": "b3503478e21cbb172628db3b0e0e4eb10afeb50a0c7451f067369dc4fbadb4a6"
+        },
+        {
+          "key": "list_delivery_projects",
+          "mode": "call",
+          "contract_sha256": "044bd4d279359354f6fe310a889682bc10ce2b4b9f5e6e58cf89a4f5a66e202c"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "e105356cce844443110d0fe5f4b4ab76bb3dc52bff4d7abf2147f02fffb0df9f"
+        },
+        {
+          "key": "transition_delivery_item",
+          "mode": "call",
+          "contract_sha256": "5d455d95a0b8a58ce17bb61ff1f971ba648863c67de0c3b6bde8424f0e8d150e"
+        },
+        {
+          "key": "update_delivery_item",
+          "mode": "call",
+          "contract_sha256": "b076f0651614ba18b76b0a70c89e7672495ba0bb0b52f23014e353f7c1666630"
+        }
+      ]
+    },
+    {
+      "connector_key": "delivery_operations",
+      "provider_key": "monday",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/delivery_operations/monday",
+      "package_name": "monday",
+      "constructor": "New",
+      "descriptor_sha256": "c8dcd99f469f6c22c27227a1b5c4f916297d6a11fbfdc7bab8dbf6050a0e42b9",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "delivery_operations_monday_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "f80d05ccdd776b1882573aa5e56b50420d7f532c7da8e464c8ed3eca073b586a",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/delivery_operations/monday",
+        "isolated_profile": "delivery_operations_monday_isolated_v1",
+        "isolated_command": "go test ./providers/delivery_operations/monday"
+      },
+      "operations": [
+        {
+          "key": "create_delivery_item",
+          "mode": "call",
+          "contract_sha256": "9a097cf1ba8cda7547fc06582abe5babfc4a4f7a7b58d8d824fc436fdc36cbd6"
+        },
+        {
+          "key": "list_delivery_items",
+          "mode": "call",
+          "contract_sha256": "b3503478e21cbb172628db3b0e0e4eb10afeb50a0c7451f067369dc4fbadb4a6"
+        },
+        {
+          "key": "list_delivery_projects",
+          "mode": "call",
+          "contract_sha256": "044bd4d279359354f6fe310a889682bc10ce2b4b9f5e6e58cf89a4f5a66e202c"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "e105356cce844443110d0fe5f4b4ab76bb3dc52bff4d7abf2147f02fffb0df9f"
+        },
+        {
+          "key": "transition_delivery_item",
+          "mode": "call",
+          "contract_sha256": "5d455d95a0b8a58ce17bb61ff1f971ba648863c67de0c3b6bde8424f0e8d150e"
+        },
+        {
+          "key": "update_delivery_item",
+          "mode": "call",
+          "contract_sha256": "b076f0651614ba18b76b0a70c89e7672495ba0bb0b52f23014e353f7c1666630"
+        }
+      ]
+    },
+    {
+      "connector_key": "delivery_operations",
+      "provider_key": "netsuite",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/delivery_operations/netsuite",
+      "package_name": "netsuite",
+      "constructor": "New",
+      "descriptor_sha256": "e189f2416df38120a4556ed543f84cd11a6540b5c76875ed06a4166445210c79",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "delivery_operations_netsuite_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "c71d72e9a74ea43e0ae4752268088e4bc3b3693c4f3ce6985bbb93411eb4a482",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/delivery_operations/netsuite",
+        "isolated_profile": "delivery_operations_netsuite_isolated_v1",
+        "isolated_command": "go test ./providers/delivery_operations/netsuite"
+      },
+      "operations": [
+        {
+          "key": "create_delivery_item",
+          "mode": "call",
+          "contract_sha256": "9a097cf1ba8cda7547fc06582abe5babfc4a4f7a7b58d8d824fc436fdc36cbd6"
+        },
+        {
+          "key": "list_delivery_items",
+          "mode": "call",
+          "contract_sha256": "b3503478e21cbb172628db3b0e0e4eb10afeb50a0c7451f067369dc4fbadb4a6"
+        },
+        {
+          "key": "list_delivery_projects",
+          "mode": "call",
+          "contract_sha256": "044bd4d279359354f6fe310a889682bc10ce2b4b9f5e6e58cf89a4f5a66e202c"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "e105356cce844443110d0fe5f4b4ab76bb3dc52bff4d7abf2147f02fffb0df9f"
+        },
+        {
+          "key": "transition_delivery_item",
+          "mode": "call",
+          "contract_sha256": "5d455d95a0b8a58ce17bb61ff1f971ba648863c67de0c3b6bde8424f0e8d150e"
+        },
+        {
+          "key": "update_delivery_item",
+          "mode": "call",
+          "contract_sha256": "b076f0651614ba18b76b0a70c89e7672495ba0bb0b52f23014e353f7c1666630"
+        }
+      ]
+    },
+    {
+      "connector_key": "delivery_operations",
+      "provider_key": "odoo",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/delivery_operations/odoo",
+      "package_name": "odoo",
+      "constructor": "New",
+      "descriptor_sha256": "017617a603ed0a5a574c7828a1c25144ba21c12b3f9a9bea329c8239cc3fce86",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "delivery_operations_odoo_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "ed0a4f8bdfa6732f8e6fcc8afe9ede928ada184a7357bea48c21304fbfa55db5",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/delivery_operations/odoo",
+        "isolated_profile": "delivery_operations_odoo_isolated_v1",
+        "isolated_command": "go test ./providers/delivery_operations/odoo"
+      },
+      "operations": [
+        {
+          "key": "create_delivery_item",
+          "mode": "call",
+          "contract_sha256": "9a097cf1ba8cda7547fc06582abe5babfc4a4f7a7b58d8d824fc436fdc36cbd6"
+        },
+        {
+          "key": "list_delivery_items",
+          "mode": "call",
+          "contract_sha256": "b3503478e21cbb172628db3b0e0e4eb10afeb50a0c7451f067369dc4fbadb4a6"
+        },
+        {
+          "key": "list_delivery_projects",
+          "mode": "call",
+          "contract_sha256": "044bd4d279359354f6fe310a889682bc10ce2b4b9f5e6e58cf89a4f5a66e202c"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "e105356cce844443110d0fe5f4b4ab76bb3dc52bff4d7abf2147f02fffb0df9f"
+        },
+        {
+          "key": "transition_delivery_item",
+          "mode": "call",
+          "contract_sha256": "5d455d95a0b8a58ce17bb61ff1f971ba648863c67de0c3b6bde8424f0e8d150e"
+        },
+        {
+          "key": "update_delivery_item",
+          "mode": "call",
+          "contract_sha256": "b076f0651614ba18b76b0a70c89e7672495ba0bb0b52f23014e353f7c1666630"
+        }
+      ]
+    },
+    {
+      "connector_key": "delivery_operations",
+      "provider_key": "sap_business_one",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/delivery_operations/sap_business_one",
+      "package_name": "sapbusinessone",
+      "constructor": "New",
+      "descriptor_sha256": "13e1c223079d4508fec1e1a7dc4f931bb75b73126ae27062fed998afe0d18758",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "delivery_operations_sap_business_one_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "134cbb1171613a0d4d58036204db9fbed9eaf6dd324a9cdfed027b2432ac769d",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/delivery_operations/sap_business_one",
+        "isolated_profile": "delivery_operations_sap_business_one_isolated_v1",
+        "isolated_command": "go test ./providers/delivery_operations/sap_business_one"
+      },
+      "operations": [
+        {
+          "key": "create_delivery_item",
+          "mode": "call",
+          "contract_sha256": "9a097cf1ba8cda7547fc06582abe5babfc4a4f7a7b58d8d824fc436fdc36cbd6"
+        },
+        {
+          "key": "list_delivery_items",
+          "mode": "call",
+          "contract_sha256": "b3503478e21cbb172628db3b0e0e4eb10afeb50a0c7451f067369dc4fbadb4a6"
+        },
+        {
+          "key": "list_delivery_projects",
+          "mode": "call",
+          "contract_sha256": "044bd4d279359354f6fe310a889682bc10ce2b4b9f5e6e58cf89a4f5a66e202c"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "e105356cce844443110d0fe5f4b4ab76bb3dc52bff4d7abf2147f02fffb0df9f"
+        },
+        {
+          "key": "transition_delivery_item",
+          "mode": "call",
+          "contract_sha256": "5d455d95a0b8a58ce17bb61ff1f971ba648863c67de0c3b6bde8424f0e8d150e"
+        },
+        {
+          "key": "update_delivery_item",
+          "mode": "call",
+          "contract_sha256": "b076f0651614ba18b76b0a70c89e7672495ba0bb0b52f23014e353f7c1666630"
+        }
+      ]
+    },
+    {
+      "connector_key": "document_generation",
+      "provider_key": "pdf",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/document_generation/pdf",
+      "package_name": "pdf",
+      "constructor": "New",
+      "descriptor_sha256": "38429d879dc7d5855ce23e73180e4e9262f1363003e9196d50c3c95622333fe3",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "document_generation_pdf_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "b57e3903ac70e4401df0dc7ea1ad84376b3ab2bd4379ac2d787b79a68a7fa1f7",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/document_generation/pdf",
+        "isolated_profile": "document_generation_pdf_isolated_v1",
+        "isolated_command": "go test ./providers/document_generation/pdf"
+      },
+      "operations": [
+        {
+          "key": "render_pdf",
+          "mode": "call",
+          "contract_sha256": "d11160b6a449ea92590653e020ca9c5f190dc827294d657e8f039ded32c9f5d9"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "43d62754d16693942e4c9a1db92adc684a59f3e194a46de790c3be96cc0b1039"
+        }
+      ]
+    },
+    {
+      "connector_key": "ecommerce",
+      "provider_key": "shopify",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/ecommerce/shopify",
+      "package_name": "shopify",
+      "constructor": "New",
+      "descriptor_sha256": "f636671bb3a4614418a8f277e8270fe65bc80a74b8cc4cc094607f4c115ea0af",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "ecommerce_shopify_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "1d23ee18f043d0296e4c8c06fef497137d4c7cd1c10046ebb777d8b50d2165e5",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/ecommerce/shopify",
+        "isolated_profile": "ecommerce_shopify_isolated_v1",
+        "isolated_command": "go test ./providers/ecommerce/shopify",
+        "live_profile": "shopify_test_shop_read_probe_v1",
+        "live_command": "go run ./scripts/verify_tenant_read_probe --provider ecommerce/shopify",
+        "required_secrets": [
+          "SHOPIFY_TEST_SHOP_DOMAIN",
+          "SHOPIFY_TEST_ACCESS_TOKEN"
+        ]
+      },
+      "operations": [
+        {
+          "key": "list_customers",
+          "mode": "call",
+          "contract_sha256": "ea5f5eb3f5d3bcb52c0005a2a9db6ed52ee6cbfc7c3b2b26ec92dde74bc1f1e2"
+        },
+        {
+          "key": "list_orders",
+          "mode": "call",
+          "contract_sha256": "3a475ad243535c09802fe152f355871eafda77f644accfde7f8ac970f9e15be5"
+        },
+        {
+          "key": "list_products",
+          "mode": "call",
+          "contract_sha256": "0d934939ee4152ac74aafce69825c9154a744b8856338ee02169ab0599c1c666"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "4149001f97eb3c94cc8f349e8b595521d0b50f769c8a6cc8cb0571925a07a219"
+        }
+      ]
+    },
+    {
+      "connector_key": "email",
+      "provider_key": "smtp",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/email/smtp",
+      "package_name": "smtp",
+      "constructor": "New",
+      "descriptor_sha256": "78b13cc86010b80c8f60d23ea48ef7f2dd360cbbba1c302a45fd3c1b3967d978",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "email_smtp_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "4fc7cf6aebab1dca4f4653e20b684597f02b4ea24a2d3e4a4e701f787b195684",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/email/smtp",
+        "isolated_profile": "email_smtp_isolated_v1",
+        "isolated_command": "go test ./providers/email/smtp"
+      },
+      "operations": [
+        {
+          "key": "send_email",
+          "mode": "enqueue",
+          "contract_sha256": "87d29625473521b5201c0110d40191aa1086fcfb75395f250b4173abbcbb274b"
+        },
+        {
+          "key": "send_file_email",
+          "mode": "enqueue",
+          "contract_sha256": "3c91521147ec9c087a6c04612ba0ecd63a30248f3afa6691850437f0ad154483"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "6f25b4a2fc713dbb566f56a7a1ae5121ea5a3740710f4cdf3618da0492c6eb34"
+        }
+      ]
+    },
+    {
+      "connector_key": "esign",
+      "provider_key": "adobe_sign",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/esign/adobe_sign",
+      "package_name": "adobesign",
+      "constructor": "New",
+      "descriptor_sha256": "4831c30b116fd3e5a2ec196d6cfbe0c7c593deeb7f2f01a2ac120b4498e5ab85",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "esign_adobe_sign_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "1db8149907fff3ff91fcc1f85e3b7718a79045bd5a85d588dd7ec6fb45433021",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/esign/adobe_sign",
+        "isolated_profile": "esign_adobe_sign_isolated_v1",
+        "isolated_command": "go test ./providers/esign/adobe_sign"
+      },
+      "operations": [
+        {
+          "key": "create_envelope",
+          "mode": "call",
+          "contract_sha256": "cffe2007f4352b8542e199f6578f5476b0a0aa7a7bc3ccf3875916e90da8b663"
+        },
+        {
+          "key": "create_recipient_view",
+          "mode": "call",
+          "contract_sha256": "0defebfe26cb6649fb00973fd883fc7a9bf9a20ef911570d206975a49190b045"
+        },
+        {
+          "key": "get_envelope",
+          "mode": "call",
+          "contract_sha256": "d7dbda5c4ae2787e050cdf5935aed6a8d429a2ebddc93643dcd991aca972d267"
+        },
+        {
+          "key": "list_envelope_status_changes",
+          "mode": "call",
+          "contract_sha256": "f5fd79d5a3011418986efdf1216f47099c8bd45956cab5201b5a62f4c3cbbd6e"
+        },
+        {
+          "key": "send_envelope",
+          "mode": "call",
+          "contract_sha256": "4936ba0cd6632815d0548c127cfcb36411edbe98990641559161dfec8b4221df"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "973cfc9b2671622a791ab84975fb9aa853730640a998307ae0f66f38847ce6fa"
+        },
+        {
+          "key": "void_envelope",
+          "mode": "call",
+          "contract_sha256": "49b989e409f53805a2135308785ebe4c8170fc16044805aafde6c32f875dcd9f"
+        }
+      ]
+    },
+    {
+      "connector_key": "esign",
+      "provider_key": "docusign",
+      "provider_revision": "1.0.1",
+      "import_path": "github.com/domainry/domainry-connectors/providers/esign/docusign",
+      "package_name": "docusign",
+      "constructor": "New",
+      "descriptor_sha256": "2a9c34d88e5ee82e49ba1901170b0bdbaa264faa8e51470286deb823d93bf601",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "esign_docusign_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "7beb0b91f23b939caf18c9014d82dc946c85ea7c4d2899bb54e3c007882ed169",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/esign/docusign",
+        "isolated_profile": "esign_docusign_isolated_v1",
+        "isolated_command": "go test ./providers/esign/docusign"
+      },
+      "operations": [
+        {
+          "key": "create_envelope",
+          "mode": "call",
+          "contract_sha256": "cffe2007f4352b8542e199f6578f5476b0a0aa7a7bc3ccf3875916e90da8b663"
+        },
+        {
+          "key": "create_recipient_view",
+          "mode": "call",
+          "contract_sha256": "0defebfe26cb6649fb00973fd883fc7a9bf9a20ef911570d206975a49190b045"
+        },
+        {
+          "key": "get_envelope",
+          "mode": "call",
+          "contract_sha256": "d7dbda5c4ae2787e050cdf5935aed6a8d429a2ebddc93643dcd991aca972d267"
+        },
+        {
+          "key": "list_envelope_status_changes",
+          "mode": "call",
+          "contract_sha256": "f5fd79d5a3011418986efdf1216f47099c8bd45956cab5201b5a62f4c3cbbd6e"
+        },
+        {
+          "key": "send_envelope",
+          "mode": "call",
+          "contract_sha256": "4936ba0cd6632815d0548c127cfcb36411edbe98990641559161dfec8b4221df"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "973cfc9b2671622a791ab84975fb9aa853730640a998307ae0f66f38847ce6fa"
+        },
+        {
+          "key": "void_envelope",
+          "mode": "call",
+          "contract_sha256": "49b989e409f53805a2135308785ebe4c8170fc16044805aafde6c32f875dcd9f"
+        }
+      ]
+    },
+    {
+      "connector_key": "esign",
+      "provider_key": "fadada",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/esign/fadada",
+      "package_name": "fadada",
+      "constructor": "New",
+      "descriptor_sha256": "59586dd325e7164e9a38169702913d74b753e823fa37e05a6e1fec1c2cf2a445",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "esign_fadada_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "1a9a465765f2445c8874f383df94a7c1ef9cb5ba73e59cee88a0a89fd04cf3aa",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/esign/fadada",
+        "isolated_profile": "esign_fadada_isolated_v1",
+        "isolated_command": "go test ./providers/esign/fadada"
+      },
+      "operations": [
+        {
+          "key": "create_envelope",
+          "mode": "call",
+          "contract_sha256": "cffe2007f4352b8542e199f6578f5476b0a0aa7a7bc3ccf3875916e90da8b663"
+        },
+        {
+          "key": "create_recipient_view",
+          "mode": "call",
+          "contract_sha256": "0defebfe26cb6649fb00973fd883fc7a9bf9a20ef911570d206975a49190b045"
+        },
+        {
+          "key": "get_envelope",
+          "mode": "call",
+          "contract_sha256": "d7dbda5c4ae2787e050cdf5935aed6a8d429a2ebddc93643dcd991aca972d267"
+        },
+        {
+          "key": "send_envelope",
+          "mode": "call",
+          "contract_sha256": "4936ba0cd6632815d0548c127cfcb36411edbe98990641559161dfec8b4221df"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "973cfc9b2671622a791ab84975fb9aa853730640a998307ae0f66f38847ce6fa"
+        },
+        {
+          "key": "void_envelope",
+          "mode": "call",
+          "contract_sha256": "49b989e409f53805a2135308785ebe4c8170fc16044805aafde6c32f875dcd9f"
+        }
+      ]
+    },
+    {
+      "connector_key": "esign",
+      "provider_key": "signnow",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/esign/signnow",
+      "package_name": "signnow",
+      "constructor": "New",
+      "descriptor_sha256": "8d99ae248ea1b85f054b8aa1ae08a3e6a78cf3a2f6fe771f18b152b96dd98557",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "esign_signnow_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "3f895f5dbfe7b9231218eea4fcb543d0b4e074fe3442bf47389c2737d516217f",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/esign/signnow",
+        "isolated_profile": "esign_signnow_isolated_v1",
+        "isolated_command": "go test ./providers/esign/signnow"
+      },
+      "operations": [
+        {
+          "key": "create_recipient_view",
+          "mode": "call",
+          "contract_sha256": "0defebfe26cb6649fb00973fd883fc7a9bf9a20ef911570d206975a49190b045"
+        },
+        {
+          "key": "get_envelope",
+          "mode": "call",
+          "contract_sha256": "d7dbda5c4ae2787e050cdf5935aed6a8d429a2ebddc93643dcd991aca972d267"
+        },
+        {
+          "key": "send_envelope",
+          "mode": "call",
+          "contract_sha256": "4936ba0cd6632815d0548c127cfcb36411edbe98990641559161dfec8b4221df"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "973cfc9b2671622a791ab84975fb9aa853730640a998307ae0f66f38847ce6fa"
+        },
+        {
+          "key": "void_envelope",
+          "mode": "call",
+          "contract_sha256": "49b989e409f53805a2135308785ebe4c8170fc16044805aafde6c32f875dcd9f"
+        }
+      ]
+    },
+    {
+      "connector_key": "event_webinar",
+      "provider_key": "zoom_webinar",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/event_webinar/zoom_webinar",
+      "package_name": "zoomwebinar",
+      "constructor": "New",
+      "descriptor_sha256": "f3c2569f0d2bd02cea21f17d9aa20b68d40729fa774ff40685115ecb97b182b0",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "event_webinar_zoom_webinar_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "22652c166defbd16b03b2d6acd66e917c28cfb349199c7503fc118bc12756074",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/event_webinar/zoom_webinar",
+        "isolated_profile": "event_webinar_zoom_webinar_isolated_v1",
+        "isolated_command": "go test ./providers/event_webinar/zoom_webinar"
+      },
+      "operations": [
+        {
+          "key": "get_webinar",
+          "mode": "call",
+          "contract_sha256": "da36b84d0419c549c0e6f46e634d22b759404a68bbad21da2511cc3a80234969"
+        },
+        {
+          "key": "list_registrants",
+          "mode": "call",
+          "contract_sha256": "abfb0c88ce7cc1304cb070a7e322c431a1f4733e58e7e2a1bcffa60d2bae9480"
+        },
+        {
+          "key": "list_webinars",
+          "mode": "call",
+          "contract_sha256": "2294b19886fd4558fe4e93799db4658e6627d2e2bbc07c9dcce34513501b8f3d"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "716ab5c39dae386ae28b7895342303b1beb226176127e3c730bc2322ca5cbf6f"
+        }
+      ]
+    },
+    {
+      "connector_key": "expense_ocr",
+      "provider_key": "llm_proxy",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/expense_ocr/llm_proxy",
+      "package_name": "llmproxy",
+      "constructor": "New",
+      "descriptor_sha256": "c99acf2edccba1fe583d258b57cffa70b0f5d6e8b9b7b67b5f56a96a04d0d4f6",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "expense_ocr_llm_proxy_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "646964d73e3ef0f4ce8a3676dfd9f01084f9cc3a9883a6150fe15a2fb0310e6f",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/expense_ocr/llm_proxy",
+        "isolated_profile": "expense_ocr_llm_proxy_isolated_v1",
+        "isolated_command": "go test ./providers/expense_ocr/llm_proxy"
+      },
+      "operations": [
+        {
+          "key": "parse_expense",
+          "mode": "call",
+          "contract_sha256": "89bef2cb4a352bc78376493d7cf182aaf313ad70211a745c15c059c17fde7b4b"
+        }
+      ]
+    },
+    {
+      "connector_key": "external_database",
+      "provider_key": "bigquery",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/external_database/bigquery",
+      "package_name": "bigquery",
+      "constructor": "New",
+      "descriptor_sha256": "3813400320d556f76093c7b63d325d133856e7a9d9b03f107d10fa422e2fa0d1",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "external_database_bigquery_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "216f5b7749df2eaa68f59d199c6c5b2bf708d376881dce2e32890e18df9a7174",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/external_database/bigquery",
+        "isolated_profile": "external_database_bigquery_isolated_v1",
+        "isolated_command": "go test ./providers/external_database/bigquery"
+      },
+      "operations": [
+        {
+          "key": "list_tables",
+          "mode": "call",
+          "contract_sha256": "d03d37a2abbe4b3ee52533969701dfe6cab3521c59307580d31363ef702a14fe"
+        },
+        {
+          "key": "sample_query",
+          "mode": "call",
+          "contract_sha256": "8cdaa65782d29c2bff21b1c26d6f895440443c2c280f9107180f9c1ffc9b2ba2"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "52de68ed6a73aefa755d209a067f2d0e9697d6840e1fda86cdf9be4ed764b853"
+        }
+      ]
+    },
+    {
+      "connector_key": "external_database",
+      "provider_key": "mysql",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/external_database/mysql",
+      "package_name": "mysql",
+      "constructor": "New",
+      "descriptor_sha256": "fcfa523811d3cc08e0d6a165e46b0b6556a5b31d88aedac09d235598070abf17",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "external_database_mysql_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "ec69909237f201f4728f55f0e79ca72de09e0ceeb388389f4e5792d7bd4e92e8",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/external_database/mysql",
+        "isolated_profile": "external_database_mysql_isolated_v1",
+        "isolated_command": "go test ./providers/external_database/mysql"
+      },
+      "operations": [
+        {
+          "key": "list_tables",
+          "mode": "call",
+          "contract_sha256": "d03d37a2abbe4b3ee52533969701dfe6cab3521c59307580d31363ef702a14fe"
+        },
+        {
+          "key": "sample_query",
+          "mode": "call",
+          "contract_sha256": "8cdaa65782d29c2bff21b1c26d6f895440443c2c280f9107180f9c1ffc9b2ba2"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "52de68ed6a73aefa755d209a067f2d0e9697d6840e1fda86cdf9be4ed764b853"
+        }
+      ]
+    },
+    {
+      "connector_key": "external_database",
+      "provider_key": "postgres",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/external_database/postgres",
+      "package_name": "postgres",
+      "constructor": "New",
+      "descriptor_sha256": "cee4f8064a1506a57bdd4cc2c304cb99bdf65ed3999ae4367e4f2ba3f75832a2",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "external_database_postgres_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "6078c12fb7615a0f054a8be3f34ece6bb86472480112f8effc2f3e992b3aad20",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/external_database/postgres",
+        "isolated_profile": "external_database_postgres_isolated_v1",
+        "isolated_command": "go test ./providers/external_database/postgres"
+      },
+      "operations": [
+        {
+          "key": "list_tables",
+          "mode": "call",
+          "contract_sha256": "d03d37a2abbe4b3ee52533969701dfe6cab3521c59307580d31363ef702a14fe"
+        },
+        {
+          "key": "sample_query",
+          "mode": "call",
+          "contract_sha256": "8cdaa65782d29c2bff21b1c26d6f895440443c2c280f9107180f9c1ffc9b2ba2"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "52de68ed6a73aefa755d209a067f2d0e9697d6840e1fda86cdf9be4ed764b853"
+        }
+      ]
+    },
+    {
+      "connector_key": "external_database",
+      "provider_key": "snowflake",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/external_database/snowflake",
+      "package_name": "snowflake",
+      "constructor": "New",
+      "descriptor_sha256": "56e37e80d770e4d679b3337c2ccb2a4b660c0e79b865222ba4fb1536c464d3e1",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "external_database_snowflake_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "0d9be5b78d0e0875a771faffe582430f37549908cb3c7c01d545e740883f06d5",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/external_database/snowflake",
+        "isolated_profile": "external_database_snowflake_isolated_v1",
+        "isolated_command": "go test ./providers/external_database/snowflake"
+      },
+      "operations": [
+        {
+          "key": "list_tables",
+          "mode": "call",
+          "contract_sha256": "d03d37a2abbe4b3ee52533969701dfe6cab3521c59307580d31363ef702a14fe"
+        },
+        {
+          "key": "sample_query",
+          "mode": "call",
+          "contract_sha256": "8cdaa65782d29c2bff21b1c26d6f895440443c2c280f9107180f9c1ffc9b2ba2"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "52de68ed6a73aefa755d209a067f2d0e9697d6840e1fda86cdf9be4ed764b853"
+        }
+      ]
+    },
+    {
+      "connector_key": "external_database",
+      "provider_key": "sqlserver",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/external_database/sqlserver",
+      "package_name": "sqlserver",
+      "constructor": "New",
+      "descriptor_sha256": "d0c4864c9d2961f3a02f70701be65c577f3715bba7f4d52eff90fd2276306d51",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "external_database_sqlserver_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "42387eaae9aef08b5f8afc1e61866f7546f4fbcee158cedabaa5c997eb086496",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/external_database/sqlserver",
+        "isolated_profile": "external_database_sqlserver_isolated_v1",
+        "isolated_command": "go test ./providers/external_database/sqlserver"
+      },
+      "operations": [
+        {
+          "key": "list_tables",
+          "mode": "call",
+          "contract_sha256": "d03d37a2abbe4b3ee52533969701dfe6cab3521c59307580d31363ef702a14fe"
+        },
+        {
+          "key": "sample_query",
+          "mode": "call",
+          "contract_sha256": "8cdaa65782d29c2bff21b1c26d6f895440443c2c280f9107180f9c1ffc9b2ba2"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "52de68ed6a73aefa755d209a067f2d0e9697d6840e1fda86cdf9be4ed764b853"
+        }
+      ]
+    },
+    {
+      "connector_key": "feishu_collaboration",
+      "provider_key": "feishu",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/feishu_collaboration/feishu",
+      "package_name": "feishu",
+      "constructor": "New",
+      "descriptor_sha256": "a682432a8926053f14130e01f9dc1c2658a840eafc4157f5bd852a13b841c8d7",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "feishu_collaboration_feishu_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "a71ec6bf996929c0da1277cba8e049bbad66ee2e5d664dd276d2839b818c4f48",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/feishu_collaboration/feishu",
+        "isolated_profile": "feishu_collaboration_feishu_isolated_v1",
+        "isolated_command": "go test ./providers/feishu_collaboration/feishu"
+      },
+      "operations": [
+        {
+          "key": "send_message",
+          "mode": "enqueue",
+          "contract_sha256": "f4e5855b952b0c58704e7a30f51af50efb2f4c3cc878a329a56aa08a7755e279"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "0d6f0301c181a15f6994dc2a94f7dc0fbe56ee80ced619b4e1c1e1b83ddee318"
+        }
+      ]
+    },
+    {
+      "connector_key": "file_storage",
+      "provider_key": "local",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/file_storage/local",
+      "package_name": "local",
+      "constructor": "New",
+      "descriptor_sha256": "097d49c2860b06efe826a6439cffcace8a6d9040f73a1f303785b2e37853b147",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "file_storage_local_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "d684523b52e0ccf2fcfe794c0cf0a4c676713d58c5c2a2036d30bf9ceee44b6a",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/file_storage/local",
+        "isolated_profile": "file_storage_local_isolated_v1",
+        "isolated_command": "go test ./providers/file_storage/local"
+      },
+      "operations": [
+        {
+          "key": "delete",
+          "mode": "call",
+          "contract_sha256": "6a170bdbf602291c72d9f37fd2dfbf3591f0c32cf8ce3b751062e3fcd20dbbb8"
+        },
+        {
+          "key": "get_text",
+          "mode": "call",
+          "contract_sha256": "37a7acbfb6ba0e7382a9e39668290cc2d62e0d74567e5029a240712b799210dc"
+        },
+        {
+          "key": "put_text",
+          "mode": "call",
+          "contract_sha256": "98623acc286f328d5bb9208fd741e85c0b147fa24eb685e602982d83760750ec"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "e1d1443180eb710663214176b0c6987a8086f9260203b88b57bdcaf3fbcb6964"
+        }
+      ]
+    },
+    {
+      "connector_key": "file_storage",
+      "provider_key": "s3",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/file_storage/s3",
+      "package_name": "s3",
+      "constructor": "New",
+      "descriptor_sha256": "81859408636b2f4d34d003b2530fe4a1d7d67572854ffc9278c89b8a99bf655f",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "file_storage_s3_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "66b350dcbf6fd667b5c12b6538cbad0c0a454fe03c199bde4bcdf9544fedf354",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/file_storage/s3",
+        "isolated_profile": "file_storage_s3_isolated_v1",
+        "isolated_command": "go test ./providers/file_storage/s3"
+      },
+      "operations": [
+        {
+          "key": "delete",
+          "mode": "call",
+          "contract_sha256": "6a170bdbf602291c72d9f37fd2dfbf3591f0c32cf8ce3b751062e3fcd20dbbb8"
+        },
+        {
+          "key": "get_text",
+          "mode": "call",
+          "contract_sha256": "37a7acbfb6ba0e7382a9e39668290cc2d62e0d74567e5029a240712b799210dc"
+        },
+        {
+          "key": "put_text",
+          "mode": "call",
+          "contract_sha256": "98623acc286f328d5bb9208fd741e85c0b147fa24eb685e602982d83760750ec"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "e1d1443180eb710663214176b0c6987a8086f9260203b88b57bdcaf3fbcb6964"
+        }
+      ]
+    },
+    {
+      "connector_key": "google_workspace",
+      "provider_key": "google",
+      "provider_revision": "1.1.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/google_workspace/google",
+      "package_name": "google",
+      "constructor": "New",
+      "descriptor_sha256": "e81d6e84d935d0d71804f97aac9982e904258009d352735ae5343ab800485694",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "google_workspace_google_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "69c17803c1860538cf45449c053d88c4e427945befe5dbfb8d43b7e6aba9197a",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/google_workspace/google",
+        "isolated_profile": "google_workspace_google_isolated_v1",
+        "isolated_command": "go test ./providers/google_workspace/google"
+      },
+      "operations": [
+        {
+          "key": "calendar_availability",
+          "mode": "call",
+          "contract_sha256": "5a7c7afc967fbb5ec27323d47728b66e1f32357969366db8a00b8731f1b93013"
+        },
+        {
+          "key": "calendar_event",
+          "mode": "call",
+          "contract_sha256": "7f8cc71141600ec42d4c1f32975a4bdc231bd3ad8b802dbfcd0c4626595aa2b0"
+        },
+        {
+          "key": "calendar_events",
+          "mode": "call",
+          "contract_sha256": "9f0e6e40b6bc664b0d21d1581cbe0897aaf87be532428b679ab6473e17d585eb"
+        },
+        {
+          "key": "calendar_list",
+          "mode": "call",
+          "contract_sha256": "30741361ad9b26653d6ed4422169bacc7dd81227a658d44e32c02dab176eda62"
+        },
+        {
+          "key": "gmail_get_message",
+          "mode": "call",
+          "contract_sha256": "fd63131ba3621a277bad6d12cae583c3b7dbb8d6160efb9ff9ecc497bf199bbc"
+        },
+        {
+          "key": "gmail_get_profile",
+          "mode": "call",
+          "contract_sha256": "d7a362cc7bc11aaa5eb1d7e84e45ddff284a177eeb295238fb11070f6c9dec26"
+        },
+        {
+          "key": "gmail_list_messages",
+          "mode": "call",
+          "contract_sha256": "f696580b2823fe0924ece61a97fb667bfe9127c6ee7bc39d159757ab81df2d92"
+        },
+        {
+          "key": "gmail_send_message",
+          "mode": "enqueue",
+          "contract_sha256": "9f76169c0993f9abc01a70f4a27b0e04e49a2ab318bd23a6ee3cbe8c9b2ff649"
+        },
+        {
+          "key": "gmail_stop",
+          "mode": "call",
+          "contract_sha256": "c4503fac2720b68a86dfe33a4e6f4e82fa2d00e67968af62e55d2f5a93f7df38"
+        },
+        {
+          "key": "gmail_watch",
+          "mode": "call",
+          "contract_sha256": "45250915092fe46cc248ff760cb8456526cc4733f32813008d35a3fb6e0f746d"
+        },
+        {
+          "key": "pubsub_acknowledge",
+          "mode": "call",
+          "contract_sha256": "bc3fcb26ff6a343ed9b80209d039bb4b8c06288f8cc9fcfe11f3ee31fb0c9bfd"
+        },
+        {
+          "key": "pubsub_delete_subscription",
+          "mode": "call",
+          "contract_sha256": "55bd9833c49c013c0859bf924214fae535c675f2f668f4fcd529ce0c2d4deaa1"
+        },
+        {
+          "key": "pubsub_ensure_subscription",
+          "mode": "call",
+          "contract_sha256": "a27eaa2ee1147c0a2f875e75490650754f62225e467db833bbe764469e43f69d"
+        },
+        {
+          "key": "pubsub_ensure_topic",
+          "mode": "call",
+          "contract_sha256": "eb5762e09843dba2872b999b4a0fc8565e43c8bcf456c035e7729f8bf788d213"
+        },
+        {
+          "key": "pubsub_get_topic_policy",
+          "mode": "call",
+          "contract_sha256": "ba762cbb3149c394b412928911be1f36213296fa81b3507681a2bb69475a3651"
+        },
+        {
+          "key": "pubsub_pull",
+          "mode": "call",
+          "contract_sha256": "5f0be78aa9e49fc990b4200de0c7fe9331c6ae9dc0c170a93f658286bce56ccf"
+        },
+        {
+          "key": "pubsub_set_topic_policy",
+          "mode": "call",
+          "contract_sha256": "5b857ff9a6e6d73a87abc3256d46329c33fd883f4a41ab9b7b0098a0e6d16c2f"
+        },
+        {
+          "key": "sync_calendar",
+          "mode": "call",
+          "contract_sha256": "99bf434b3985bb7b3257936be1be59af60caebcf287ecf06ef8daaacb047989a"
+        },
+        {
+          "key": "sync_drive_file_refs",
+          "mode": "call",
+          "contract_sha256": "2101dde3285ca7a4e53983bd2c9bb5ed52792c3fb556103585658f4cbb7f93bc"
+        },
+        {
+          "key": "sync_email_history",
+          "mode": "call",
+          "contract_sha256": "44e4ad5abfa1a37448d571030b9cb5a0e550ce3012f0baccf69084ab345bbfa1"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "b5024bf0fdfcd11b45b9f7a7bfe304582c76ba5a1119246a7e66184035d43371"
+        }
+      ]
+    },
+    {
+      "connector_key": "help_center",
+      "provider_key": "confluence",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/help_center/confluence",
+      "package_name": "confluence",
+      "constructor": "New",
+      "descriptor_sha256": "3d1ef5066950a01244cd8a374e2dd43d0eead8e4c2407d9a2501f2bf515fdc8c",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "help_center_confluence_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "232f22101c987cf663c62a062f03fa1b84875dc0db537c9251957bf72d79ca7b",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/help_center/confluence",
+        "isolated_profile": "help_center_confluence_isolated_v1",
+        "isolated_command": "go test ./providers/help_center/confluence"
+      },
+      "operations": [
+        {
+          "key": "create_article",
+          "mode": "call",
+          "contract_sha256": "cce53c916d333a914c28902f4c8360abbf20a76e06147d95fb891fecc2425f2d"
+        },
+        {
+          "key": "get_article",
+          "mode": "call",
+          "contract_sha256": "1916ca191c9366feba71009db3bbf3cdb2290f1ddc3bdd469f4231abe177198d"
+        },
+        {
+          "key": "list_articles",
+          "mode": "call",
+          "contract_sha256": "a45fa9b5ee9c273cd8046e83b34b67be26b4098f018644e956d25c06cb225dd6"
+        },
+        {
+          "key": "list_collections",
+          "mode": "call",
+          "contract_sha256": "ffddef53d4878282741447a24b469090a75b893e4033fe7dd933f719c7c14374"
+        },
+        {
+          "key": "search_articles",
+          "mode": "call",
+          "contract_sha256": "79a5f5f9af7b0ad49508900a3a7f38fb0fbabe138bf399eb89358271a2452f36"
+        },
+        {
+          "key": "update_article",
+          "mode": "call",
+          "contract_sha256": "b9057eb433a9bd4e5511b80365d769bd88ed8c3355736c1a2a909ba068eacc95"
+        }
+      ]
+    },
+    {
+      "connector_key": "help_center",
+      "provider_key": "gitbook",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/help_center/gitbook",
+      "package_name": "gitbook",
+      "constructor": "New",
+      "descriptor_sha256": "ecd4a5177c86f9a137378b1ae26177779f17453f1a012d724790eac67cae8254",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "help_center_gitbook_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "d86fb28207ea38cc4c3661dc001f0eb8ebe7a7db415a279aeb9bf9fcfb20586c",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/help_center/gitbook",
+        "isolated_profile": "help_center_gitbook_isolated_v1",
+        "isolated_command": "go test ./providers/help_center/gitbook"
+      },
+      "operations": [
+        {
+          "key": "get_article",
+          "mode": "call",
+          "contract_sha256": "1916ca191c9366feba71009db3bbf3cdb2290f1ddc3bdd469f4231abe177198d"
+        },
+        {
+          "key": "list_articles",
+          "mode": "call",
+          "contract_sha256": "a45fa9b5ee9c273cd8046e83b34b67be26b4098f018644e956d25c06cb225dd6"
+        },
+        {
+          "key": "list_collections",
+          "mode": "call",
+          "contract_sha256": "ffddef53d4878282741447a24b469090a75b893e4033fe7dd933f719c7c14374"
+        },
+        {
+          "key": "search_articles",
+          "mode": "call",
+          "contract_sha256": "79a5f5f9af7b0ad49508900a3a7f38fb0fbabe138bf399eb89358271a2452f36"
+        }
+      ]
+    },
+    {
+      "connector_key": "help_center",
+      "provider_key": "help_scout_docs",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/help_center/help_scout_docs",
+      "package_name": "helpscoutdocs",
+      "constructor": "New",
+      "descriptor_sha256": "650438c360b3c4015b28f5f0697756aeaf00355243d9e36f2633a8f175c6d425",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "help_center_help_scout_docs_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "ebfa15a5a0585289781e285c6adfac62327ed53545d61e7738ae55df03c31387",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/help_center/help_scout_docs",
+        "isolated_profile": "help_center_help_scout_docs_isolated_v1",
+        "isolated_command": "go test ./providers/help_center/help_scout_docs"
+      },
+      "operations": [
+        {
+          "key": "create_article",
+          "mode": "call",
+          "contract_sha256": "cce53c916d333a914c28902f4c8360abbf20a76e06147d95fb891fecc2425f2d"
+        },
+        {
+          "key": "get_article",
+          "mode": "call",
+          "contract_sha256": "1916ca191c9366feba71009db3bbf3cdb2290f1ddc3bdd469f4231abe177198d"
+        },
+        {
+          "key": "list_articles",
+          "mode": "call",
+          "contract_sha256": "a45fa9b5ee9c273cd8046e83b34b67be26b4098f018644e956d25c06cb225dd6"
+        },
+        {
+          "key": "list_collections",
+          "mode": "call",
+          "contract_sha256": "ffddef53d4878282741447a24b469090a75b893e4033fe7dd933f719c7c14374"
+        },
+        {
+          "key": "search_articles",
+          "mode": "call",
+          "contract_sha256": "79a5f5f9af7b0ad49508900a3a7f38fb0fbabe138bf399eb89358271a2452f36"
+        },
+        {
+          "key": "update_article",
+          "mode": "call",
+          "contract_sha256": "b9057eb433a9bd4e5511b80365d769bd88ed8c3355736c1a2a909ba068eacc95"
+        }
+      ]
+    },
+    {
+      "connector_key": "help_center",
+      "provider_key": "intercom_articles",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/help_center/intercom_articles",
+      "package_name": "intercomarticles",
+      "constructor": "New",
+      "descriptor_sha256": "410b9e4180b8a52ef18519dc5057195fe264274c714cf0d31099431c9243733f",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "help_center_intercom_articles_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "c82fd537e79ace4226d3611873e3c57419418862e42c7c7ff4fce9c67e3cf007",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/help_center/intercom_articles",
+        "isolated_profile": "help_center_intercom_articles_isolated_v1",
+        "isolated_command": "go test ./providers/help_center/intercom_articles"
+      },
+      "operations": [
+        {
+          "key": "create_article",
+          "mode": "call",
+          "contract_sha256": "cce53c916d333a914c28902f4c8360abbf20a76e06147d95fb891fecc2425f2d"
+        },
+        {
+          "key": "get_article",
+          "mode": "call",
+          "contract_sha256": "1916ca191c9366feba71009db3bbf3cdb2290f1ddc3bdd469f4231abe177198d"
+        },
+        {
+          "key": "list_articles",
+          "mode": "call",
+          "contract_sha256": "a45fa9b5ee9c273cd8046e83b34b67be26b4098f018644e956d25c06cb225dd6"
+        },
+        {
+          "key": "list_collections",
+          "mode": "call",
+          "contract_sha256": "ffddef53d4878282741447a24b469090a75b893e4033fe7dd933f719c7c14374"
+        },
+        {
+          "key": "search_articles",
+          "mode": "call",
+          "contract_sha256": "79a5f5f9af7b0ad49508900a3a7f38fb0fbabe138bf399eb89358271a2452f36"
+        },
+        {
+          "key": "update_article",
+          "mode": "call",
+          "contract_sha256": "b9057eb433a9bd4e5511b80365d769bd88ed8c3355736c1a2a909ba068eacc95"
+        }
+      ]
+    },
+    {
+      "connector_key": "help_center",
+      "provider_key": "notion_docs",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/help_center/notion_docs",
+      "package_name": "notiondocs",
+      "constructor": "New",
+      "descriptor_sha256": "2fe7d9cc1f8c5cd9f23d6291911d2a063a462942cec96a5d085af1bd57f0ea75",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "help_center_notion_docs_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "f1ac7edef04f36b3154022db2d0390c73d05e70392c5ec10cc17687f05662665",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/help_center/notion_docs",
+        "isolated_profile": "help_center_notion_docs_isolated_v1",
+        "isolated_command": "go test ./providers/help_center/notion_docs"
+      },
+      "operations": [
+        {
+          "key": "create_article",
+          "mode": "call",
+          "contract_sha256": "cce53c916d333a914c28902f4c8360abbf20a76e06147d95fb891fecc2425f2d"
+        },
+        {
+          "key": "get_article",
+          "mode": "call",
+          "contract_sha256": "1916ca191c9366feba71009db3bbf3cdb2290f1ddc3bdd469f4231abe177198d"
+        },
+        {
+          "key": "list_articles",
+          "mode": "call",
+          "contract_sha256": "a45fa9b5ee9c273cd8046e83b34b67be26b4098f018644e956d25c06cb225dd6"
+        },
+        {
+          "key": "list_collections",
+          "mode": "call",
+          "contract_sha256": "ffddef53d4878282741447a24b469090a75b893e4033fe7dd933f719c7c14374"
+        },
+        {
+          "key": "search_articles",
+          "mode": "call",
+          "contract_sha256": "79a5f5f9af7b0ad49508900a3a7f38fb0fbabe138bf399eb89358271a2452f36"
+        },
+        {
+          "key": "update_article",
+          "mode": "call",
+          "contract_sha256": "b9057eb433a9bd4e5511b80365d769bd88ed8c3355736c1a2a909ba068eacc95"
+        }
+      ]
+    },
+    {
+      "connector_key": "help_center",
+      "provider_key": "readme",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/help_center/readme",
+      "package_name": "readme",
+      "constructor": "New",
+      "descriptor_sha256": "9b3fe849362c45973f844801229014a60860df0a1ee755c34108fa450eb45ee6",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "help_center_readme_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "33d36faa5aca08b88254fe09837287e4d50c69cc5e04f26a617c924dc3968137",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/help_center/readme",
+        "isolated_profile": "help_center_readme_isolated_v1",
+        "isolated_command": "go test ./providers/help_center/readme"
+      },
+      "operations": [
+        {
+          "key": "create_article",
+          "mode": "call",
+          "contract_sha256": "cce53c916d333a914c28902f4c8360abbf20a76e06147d95fb891fecc2425f2d"
+        },
+        {
+          "key": "get_article",
+          "mode": "call",
+          "contract_sha256": "1916ca191c9366feba71009db3bbf3cdb2290f1ddc3bdd469f4231abe177198d"
+        },
+        {
+          "key": "list_articles",
+          "mode": "call",
+          "contract_sha256": "a45fa9b5ee9c273cd8046e83b34b67be26b4098f018644e956d25c06cb225dd6"
+        },
+        {
+          "key": "list_collections",
+          "mode": "call",
+          "contract_sha256": "ffddef53d4878282741447a24b469090a75b893e4033fe7dd933f719c7c14374"
+        },
+        {
+          "key": "search_articles",
+          "mode": "call",
+          "contract_sha256": "79a5f5f9af7b0ad49508900a3a7f38fb0fbabe138bf399eb89358271a2452f36"
+        },
+        {
+          "key": "update_article",
+          "mode": "call",
+          "contract_sha256": "b9057eb433a9bd4e5511b80365d769bd88ed8c3355736c1a2a909ba068eacc95"
+        }
+      ]
+    },
+    {
+      "connector_key": "help_center",
+      "provider_key": "zendesk_guide",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/help_center/zendesk_guide",
+      "package_name": "zendeskguide",
+      "constructor": "New",
+      "descriptor_sha256": "7857814654623d03adadea3e74825fc26cccc219478515c81d071f21a19e3ede",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "help_center_zendesk_guide_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "a29fcb40b4dc1412e24da71eeae401f5999163484ab30456b1dea3315488b189",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/help_center/zendesk_guide",
+        "isolated_profile": "help_center_zendesk_guide_isolated_v1",
+        "isolated_command": "go test ./providers/help_center/zendesk_guide"
+      },
+      "operations": [
+        {
+          "key": "create_article",
+          "mode": "call",
+          "contract_sha256": "cce53c916d333a914c28902f4c8360abbf20a76e06147d95fb891fecc2425f2d"
+        },
+        {
+          "key": "get_article",
+          "mode": "call",
+          "contract_sha256": "1916ca191c9366feba71009db3bbf3cdb2290f1ddc3bdd469f4231abe177198d"
+        },
+        {
+          "key": "list_articles",
+          "mode": "call",
+          "contract_sha256": "a45fa9b5ee9c273cd8046e83b34b67be26b4098f018644e956d25c06cb225dd6"
+        },
+        {
+          "key": "list_collections",
+          "mode": "call",
+          "contract_sha256": "ffddef53d4878282741447a24b469090a75b893e4033fe7dd933f719c7c14374"
+        },
+        {
+          "key": "search_articles",
+          "mode": "call",
+          "contract_sha256": "79a5f5f9af7b0ad49508900a3a7f38fb0fbabe138bf399eb89358271a2452f36"
+        },
+        {
+          "key": "update_article",
+          "mode": "call",
+          "contract_sha256": "b9057eb433a9bd4e5511b80365d769bd88ed8c3355736c1a2a909ba068eacc95"
+        }
+      ]
+    },
+    {
+      "connector_key": "iot_telemetry",
+      "provider_key": "aws_iot",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/iot_telemetry/aws_iot",
+      "package_name": "awsiot",
+      "constructor": "New",
+      "descriptor_sha256": "ebb6c84b9727db64a437b493090ac14026f2185d820c34873ff39a47eb7c78d9",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "iot_telemetry_aws_iot_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "a0596a237790fcbfe96a75bde4276128cec0e76c920e44473a1b43a368bf352e",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/iot_telemetry/aws_iot",
+        "isolated_profile": "iot_telemetry_aws_iot_isolated_v1",
+        "isolated_command": "go test ./providers/iot_telemetry/aws_iot"
+      },
+      "operations": [
+        {
+          "key": "publish_telemetry",
+          "mode": "call",
+          "contract_sha256": "b6fb13a6411ad45e592310c76fba08e7ca986a148b10a9ed5f270afdc7e30714"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "dcb85be24768ffdff7ccda9db4c93254baac73b864885b7ad1527d2c48e401ac"
+        }
+      ]
+    },
+    {
+      "connector_key": "iot_telemetry",
+      "provider_key": "datadog_metrics",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/iot_telemetry/datadog_metrics",
+      "package_name": "datadogmetrics",
+      "constructor": "New",
+      "descriptor_sha256": "a4294ef47c36c74c34f388c50846494c41ecf3f77fdfc65dc0f23f21d63c11f8",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "iot_telemetry_datadog_metrics_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "e3bd8e53d34f7e237cae74677a48820d426dfe0c4d5053387df72b7ecf62d24a",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/iot_telemetry/datadog_metrics",
+        "isolated_profile": "iot_telemetry_datadog_metrics_isolated_v1",
+        "isolated_command": "go test ./providers/iot_telemetry/datadog_metrics"
+      },
+      "operations": [
+        {
+          "key": "publish_telemetry",
+          "mode": "call",
+          "contract_sha256": "b6fb13a6411ad45e592310c76fba08e7ca986a148b10a9ed5f270afdc7e30714"
+        }
+      ]
+    },
+    {
+      "connector_key": "iot_telemetry",
+      "provider_key": "mqtt",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/iot_telemetry/mqtt",
+      "package_name": "mqtt",
+      "constructor": "New",
+      "descriptor_sha256": "d0cc3fb9b81b3f62e926bf6800c84c778ec8bb57ce3f2d8978e619cb806e837d",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "iot_telemetry_mqtt_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "5b4f36a12d29265427a48707ad1c54d7936e31293c368070397b8c4155fb0058",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/iot_telemetry/mqtt",
+        "isolated_profile": "iot_telemetry_mqtt_isolated_v1",
+        "isolated_command": "go test ./providers/iot_telemetry/mqtt"
+      },
+      "operations": [
+        {
+          "key": "publish_telemetry",
+          "mode": "call",
+          "contract_sha256": "b6fb13a6411ad45e592310c76fba08e7ca986a148b10a9ed5f270afdc7e30714"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "dcb85be24768ffdff7ccda9db4c93254baac73b864885b7ad1527d2c48e401ac"
+        }
+      ]
+    },
+    {
+      "connector_key": "knowledge_base",
+      "provider_key": "http_api",
+      "provider_revision": "1.3.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/knowledge_base/http_api",
+      "package_name": "httpapi",
+      "constructor": "New",
+      "descriptor_sha256": "f22f375fd1eca5539d577aba6e7e3a267520522e2e0d3e167559ffd24cc11e2e",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "knowledge_base_http_api_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "2b614aa3f0cccb4e617c034829bd9dc915002bd5d2e8289598a2e7683ea054fa",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/knowledge_base/http_api",
+        "isolated_profile": "knowledge_base_http_api_isolated_v1",
+        "isolated_command": "go test ./providers/knowledge_base/http_api"
+      },
+      "operations": [
+        {
+          "key": "delete_document",
+          "mode": "call",
+          "contract_sha256": "e4bec5d6d992035b91bf019b55a609307dc56f401c89ef78709f74f57e8e8aa8"
+        },
+        {
+          "key": "document_status",
+          "mode": "call",
+          "contract_sha256": "7b5608d5de92711c8069d7f0df8e41c789175584f5cd94dbe6e1e714331eb9cb"
+        },
+        {
+          "key": "fetch",
+          "mode": "call",
+          "contract_sha256": "31256a5720fc482b2fd0cd0b259936a58f8bc903c712a66f567c934f42a6b80e"
+        },
+        {
+          "key": "put_document",
+          "mode": "call",
+          "contract_sha256": "ada514ca5026f94fbe6191208dcd185567e2124d0fa04caba9d0ef8795d0f3c1"
+        },
+        {
+          "key": "search",
+          "mode": "call",
+          "contract_sha256": "573e693a2b63cd71a5f0937f5d1be49124e36d312de707160a5524ec00ab6c6a"
+        }
+      ]
+    },
+    {
+      "connector_key": "kyc_risk",
+      "provider_key": "persona",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/kyc_risk/persona",
+      "package_name": "persona",
+      "constructor": "New",
+      "descriptor_sha256": "b1b8480e1835b0e99832f523ddcf38256e008c0d0b24e0d749e7764a4081db9e",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "kyc_risk_persona_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "ace76168f86769047975bdb2f6b300bdccb75036d45acccfe0de088eddb33f26",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/kyc_risk/persona",
+        "isolated_profile": "kyc_risk_persona_isolated_v1",
+        "isolated_command": "go test ./providers/kyc_risk/persona"
+      },
+      "operations": [
+        {
+          "key": "create_inquiry",
+          "mode": "call",
+          "contract_sha256": "e395f4963677a5611366b70a74d1b6e55697b0739b681a1457f926338ac6cad9"
+        },
+        {
+          "key": "get_inquiry",
+          "mode": "call",
+          "contract_sha256": "a6f8e804a8e861263d105aee9c1adc6385e6a18708b1d6b625b1bd15a78e5189"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "fe9ce1de2e18f232c663478afd697ca16683de6b3c4977e24cdf1b1a6db9a105"
+        }
+      ]
+    },
+    {
+      "connector_key": "lead_source",
+      "provider_key": "tally",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/lead_source/tally",
+      "package_name": "tally",
+      "constructor": "New",
+      "descriptor_sha256": "bf214cd250a98d6616eed76ac869a268d23fbf3ea63f3e94b6f9a3b7c93271d8",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "lead_source_tally_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "9d606df00c9efdd6eace961f3b3911cffdeb2f0075cb0c7fede1df7e050e55ad",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/lead_source/tally",
+        "isolated_profile": "lead_source_tally_isolated_v1",
+        "isolated_command": "go test ./providers/lead_source/tally"
+      },
+      "operations": [
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "6f96577a2f01dc10aac94035a8d3c511677014e6443cd099c176017da1edac5f"
+        }
+      ]
+    },
+    {
+      "connector_key": "lms",
+      "provider_key": "moodle",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/lms/moodle",
+      "package_name": "moodle",
+      "constructor": "New",
+      "descriptor_sha256": "9ce66313d22c367e850beec16825e3c6e151e1e3203719147cf7633b63886688",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "lms_moodle_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "bd51b884c0921c4c8e3c270ee9b5393ec8fca64e807c6770fb8a382a73b79421",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/lms/moodle",
+        "isolated_profile": "lms_moodle_isolated_v1",
+        "isolated_command": "go test ./providers/lms/moodle"
+      },
+      "operations": [
+        {
+          "key": "list_courses",
+          "mode": "call",
+          "contract_sha256": "c94745f0431bcceb8943b07c11c30d9305fb715566fe048add3580b42696bd75"
+        },
+        {
+          "key": "list_enrolled_users",
+          "mode": "call",
+          "contract_sha256": "c36f2ee1bac3092d5df2f0a763007ae68d81c60c4890f9898bfc5d1e899f4d1b"
+        },
+        {
+          "key": "search_users",
+          "mode": "call",
+          "contract_sha256": "260d267d7d6a6852d49f86e45599135a6b4cd1cbf08b04e46ed9d91ec165a4eb"
+        }
+      ]
+    },
+    {
+      "connector_key": "lms",
+      "provider_key": "talentlms",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/lms/talentlms",
+      "package_name": "talentlms",
+      "constructor": "New",
+      "descriptor_sha256": "b74b58bb988780c00f44149b8f777faf95b70aa7fd38f2f94c732133799a6ffd",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "lms_talentlms_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "770a90926d128f53c51dfba67e76d29d40d3dc6bbb2435dcdde89fb212ae4247",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/lms/talentlms",
+        "isolated_profile": "lms_talentlms_isolated_v1",
+        "isolated_command": "go test ./providers/lms/talentlms"
+      },
+      "operations": [
+        {
+          "key": "list_courses",
+          "mode": "call",
+          "contract_sha256": "c94745f0431bcceb8943b07c11c30d9305fb715566fe048add3580b42696bd75"
+        },
+        {
+          "key": "list_enrolled_users",
+          "mode": "call",
+          "contract_sha256": "c36f2ee1bac3092d5df2f0a763007ae68d81c60c4890f9898bfc5d1e899f4d1b"
+        },
+        {
+          "key": "search_users",
+          "mode": "call",
+          "contract_sha256": "260d267d7d6a6852d49f86e45599135a6b4cd1cbf08b04e46ed9d91ec165a4eb"
+        }
+      ]
+    },
+    {
+      "connector_key": "logistics",
+      "provider_key": "authorized_carrier_gateway",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/logistics/authorized_carrier_gateway",
+      "package_name": "authorizedcarriergateway",
+      "constructor": "New",
+      "descriptor_sha256": "5382b3fd1b016f1a984cf318323d0347401915a4b2de7bd78bbc887349995779",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "logistics_authorized_carrier_gateway_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "bb5683b85cb64a4954f9c8d29cb4559d34cfdd8e533d7bf7b856904e99c9f229",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/logistics/authorized_carrier_gateway",
+        "isolated_profile": "logistics_authorized_carrier_gateway_isolated_v1",
+        "isolated_command": "go test ./providers/logistics/authorized_carrier_gateway"
+      },
+      "operations": [
+        {
+          "key": "quote_rates",
+          "mode": "call",
+          "contract_sha256": "a6627675c6255587f553fc126f777f470f464b92d8b48514f211c2f01ba8eee5"
+        }
+      ]
+    },
+    {
+      "connector_key": "logistics",
+      "provider_key": "dhl",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/logistics/dhl",
+      "package_name": "dhl",
+      "constructor": "New",
+      "descriptor_sha256": "ee4ef98c3e5d2d4ca7d45f9fbe9adc34cd09cc98b3113433a6a60751ca8e9973",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "logistics_dhl_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "87f90b162ddaa4366d471474b507df85700517b4937221fa40c0553a17176190",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/logistics/dhl",
+        "isolated_profile": "logistics_dhl_isolated_v1",
+        "isolated_command": "go test ./providers/logistics/dhl"
+      },
+      "operations": [
+        {
+          "key": "cancel_pickup",
+          "mode": "call",
+          "contract_sha256": "17d2b2701de1e7671dd1423881e4b8ea75012bc029b37a9bc5cfd6c658191251"
+        },
+        {
+          "key": "create_pickup",
+          "mode": "call",
+          "contract_sha256": "7c0941e68c3960504e16c80709fe8141a8f4b7362b8f0282b055e098b519aa3c"
+        },
+        {
+          "key": "create_shipment",
+          "mode": "call",
+          "contract_sha256": "8f1c2297627d8f3654725508a02f3b796fd5a90efe178bffe8587316abbb062a"
+        },
+        {
+          "key": "quote_rates",
+          "mode": "call",
+          "contract_sha256": "a6627675c6255587f553fc126f777f470f464b92d8b48514f211c2f01ba8eee5"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a2879c297028e5fee189b49203b9a3f9c4c96182c7b68f928006edc6bd93408d"
+        },
+        {
+          "key": "track_shipment",
+          "mode": "call",
+          "contract_sha256": "bfe77eb2a7601443a0c0f731a79fbfcf490315105b98c084adf77f312ef4f24e"
+        },
+        {
+          "key": "update_pickup",
+          "mode": "call",
+          "contract_sha256": "ed13aed64a970c35ebd948d689dd6ee16a0b9c8280b90aeba03eafaaeb874d7e"
+        }
+      ]
+    },
+    {
+      "connector_key": "logistics",
+      "provider_key": "fedex",
+      "provider_revision": "1.0.1",
+      "import_path": "github.com/domainry/domainry-connectors/providers/logistics/fedex",
+      "package_name": "fedex",
+      "constructor": "New",
+      "descriptor_sha256": "984746d6c3e01bc4b49d23f12f0bd56e59b8073ac5c36f88db83abe3caf0ab42",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "logistics_fedex_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "7497aa5de216e7e40c1d375417335b307d4921d4425b5dcea04cc49f5b90b44c",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/logistics/fedex",
+        "isolated_profile": "logistics_fedex_isolated_v1",
+        "isolated_command": "go test ./providers/logistics/fedex"
+      },
+      "operations": [
+        {
+          "key": "cancel_pickup",
+          "mode": "call",
+          "contract_sha256": "17d2b2701de1e7671dd1423881e4b8ea75012bc029b37a9bc5cfd6c658191251"
+        },
+        {
+          "key": "create_pickup",
+          "mode": "call",
+          "contract_sha256": "7c0941e68c3960504e16c80709fe8141a8f4b7362b8f0282b055e098b519aa3c"
+        },
+        {
+          "key": "create_shipment",
+          "mode": "call",
+          "contract_sha256": "8f1c2297627d8f3654725508a02f3b796fd5a90efe178bffe8587316abbb062a"
+        },
+        {
+          "key": "quote_rates",
+          "mode": "call",
+          "contract_sha256": "a6627675c6255587f553fc126f777f470f464b92d8b48514f211c2f01ba8eee5"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a2879c297028e5fee189b49203b9a3f9c4c96182c7b68f928006edc6bd93408d"
+        },
+        {
+          "key": "track_shipment",
+          "mode": "call",
+          "contract_sha256": "bfe77eb2a7601443a0c0f731a79fbfcf490315105b98c084adf77f312ef4f24e"
+        }
+      ]
+    },
+    {
+      "connector_key": "logistics",
+      "provider_key": "freightos",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/logistics/freightos",
+      "package_name": "freightos",
+      "constructor": "New",
+      "descriptor_sha256": "5ad4fb10968f6052bdb3fc9bb45cba26f6370b184f51ae36b5b7ca3e2daebfe1",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "logistics_freightos_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "9e54a230892c040542e3b9199a557c81a0d2fd634242dbc9e51cc9b3df77faa9",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/logistics/freightos",
+        "isolated_profile": "logistics_freightos_isolated_v1",
+        "isolated_command": "go test ./providers/logistics/freightos"
+      },
+      "operations": [
+        {
+          "key": "quote_rates",
+          "mode": "call",
+          "contract_sha256": "a6627675c6255587f553fc126f777f470f464b92d8b48514f211c2f01ba8eee5"
+        }
+      ]
+    },
+    {
+      "connector_key": "logistics",
+      "provider_key": "sf_express",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/logistics/sf_express",
+      "package_name": "sfexpress",
+      "constructor": "New",
+      "descriptor_sha256": "03926a44bb73d59cb309a85405d739e8dba27078f535ee7746d82b903d7681e3",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "logistics_sf_express_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "39c504571a67fe1657027ec409241f5bc354084a8849524b3470967f8b8856ce",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/logistics/sf_express",
+        "isolated_profile": "logistics_sf_express_isolated_v1",
+        "isolated_command": "go test ./providers/logistics/sf_express"
+      },
+      "operations": [
+        {
+          "key": "create_shipment",
+          "mode": "call",
+          "contract_sha256": "8f1c2297627d8f3654725508a02f3b796fd5a90efe178bffe8587316abbb062a"
+        },
+        {
+          "key": "create_shipment_operation",
+          "mode": "start_operation",
+          "contract_sha256": "bb880e48d6809395f2383c10ead2d2b2a411bcc1542b8996ee957e11ad057f4e"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a2879c297028e5fee189b49203b9a3f9c4c96182c7b68f928006edc6bd93408d"
+        },
+        {
+          "key": "track_shipment",
+          "mode": "call",
+          "contract_sha256": "bfe77eb2a7601443a0c0f731a79fbfcf490315105b98c084adf77f312ef4f24e"
+        }
+      ]
+    },
+    {
+      "connector_key": "logistics",
+      "provider_key": "shopify_fulfillment",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/logistics/shopify_fulfillment",
+      "package_name": "shopifyfulfillment",
+      "constructor": "New",
+      "descriptor_sha256": "9fc8b54c87f923bbdc15b061cf932d041db33b5245539f990895a0ffb28ecf90",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "logistics_shopify_fulfillment_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "4a166926ee1c9a1ccea5fe8c9d5b4da3830a80f20181de57079dddb59aa5b7d9",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/logistics/shopify_fulfillment",
+        "isolated_profile": "logistics_shopify_fulfillment_isolated_v1",
+        "isolated_command": "go test ./providers/logistics/shopify_fulfillment"
+      },
+      "operations": [
+        {
+          "key": "cancel_fulfillment",
+          "mode": "call",
+          "contract_sha256": "9415831e72591b5b6221b5aebc00decc85d45195eb3c6e6f071c0dba845e37d3"
+        },
+        {
+          "key": "create_fulfillment",
+          "mode": "call",
+          "contract_sha256": "7f0c7a1c961f6ddeb87cc0fb7509173c80ef3d9ce9881d09ac05a91fa63a4309"
+        },
+        {
+          "key": "list_fulfillment_orders",
+          "mode": "call",
+          "contract_sha256": "c796a62c2a0968d432d629c8e0dd2b4624e8422d2c47b20fca61f31e31261dbf"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a2879c297028e5fee189b49203b9a3f9c4c96182c7b68f928006edc6bd93408d"
+        },
+        {
+          "key": "update_fulfillment_tracking",
+          "mode": "call",
+          "contract_sha256": "7a0b2011f77672ad8e615bb50062e853179ad4650383fc625d44bbf59a1794c7"
+        }
+      ]
+    },
+    {
+      "connector_key": "logistics",
+      "provider_key": "ups",
+      "provider_revision": "1.0.1",
+      "import_path": "github.com/domainry/domainry-connectors/providers/logistics/ups",
+      "package_name": "ups",
+      "constructor": "New",
+      "descriptor_sha256": "c6f91b7c7dde7018f85035cbcc1052703139927527e320c4a58dbdec31a230ee",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "logistics_ups_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "d769c8dfef577556dde8fd617dded76df42852da46d3bbe625cd096e2522e4e2",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/logistics/ups",
+        "isolated_profile": "logistics_ups_isolated_v1",
+        "isolated_command": "go test ./providers/logistics/ups"
+      },
+      "operations": [
+        {
+          "key": "create_shipment",
+          "mode": "call",
+          "contract_sha256": "8f1c2297627d8f3654725508a02f3b796fd5a90efe178bffe8587316abbb062a"
+        },
+        {
+          "key": "quote_rates",
+          "mode": "call",
+          "contract_sha256": "a6627675c6255587f553fc126f777f470f464b92d8b48514f211c2f01ba8eee5"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "a2879c297028e5fee189b49203b9a3f9c4c96182c7b68f928006edc6bd93408d"
+        },
+        {
+          "key": "track_shipment",
+          "mode": "call",
+          "contract_sha256": "bfe77eb2a7601443a0c0f731a79fbfcf490315105b98c084adf77f312ef4f24e"
+        }
+      ]
+    },
+    {
+      "connector_key": "map_address",
+      "provider_key": "nominatim",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/map_address/nominatim",
+      "package_name": "nominatim",
+      "constructor": "New",
+      "descriptor_sha256": "98198a81af8afcd22576784b0ab66553c3cac77d0b5b63cf0ba43935bb845a0d",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "map_address_nominatim_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "96c6b473b5ac17e63d790bf9d87d028a5ff453ae8d421cdec92507b2b55372dc",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/map_address/nominatim",
+        "isolated_profile": "map_address_nominatim_isolated_v1",
+        "isolated_command": "go test ./providers/map_address/nominatim"
+      },
+      "operations": [
+        {
+          "key": "reverse_geocode",
+          "mode": "call",
+          "contract_sha256": "9c4b5701bd8e698437d72f1788fa480214a121d70b6907cd695f7c87bac38600"
+        },
+        {
+          "key": "search_address",
+          "mode": "call",
+          "contract_sha256": "574d53285e7ad9f9af2ac2ee3a9288b8e032ab3db54885d8bbf6bd654e52cfb2"
+        }
+      ]
+    },
+    {
+      "connector_key": "marketplace",
+      "provider_key": "etsy",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/marketplace/etsy",
+      "package_name": "etsy",
+      "constructor": "New",
+      "descriptor_sha256": "acfd53ce678bf6a2155210c1d23e2227dea8838cca26a627d1c059fa00786ab8",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "marketplace_etsy_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "d525c5721e1eefc7cad49ce962a7be7d12743c1af06004d623212d8b6b3a2bb4",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/marketplace/etsy",
+        "isolated_profile": "marketplace_etsy_isolated_v1",
+        "isolated_command": "go test ./providers/marketplace/etsy"
+      },
+      "operations": [
+        {
+          "key": "list_listings",
+          "mode": "call",
+          "contract_sha256": "df992b4774ae6237cb3bf7a64771bedfed46ed88d00ac92b13781e064c903327"
+        },
+        {
+          "key": "list_orders",
+          "mode": "call",
+          "contract_sha256": "7786ead8684eac7098bbd8352cacb464897691aee8fc02fc7db7b02668797f9c"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "b098b0312858c224a55e668d19d9c71b77489b4f868c9dada7b9d6939cb6668d"
+        }
+      ]
+    },
+    {
+      "connector_key": "mcp_tool",
+      "provider_key": "mcp",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/mcp_tool/mcp",
+      "package_name": "mcp",
+      "constructor": "New",
+      "descriptor_sha256": "1ee23664f0fa645e5d69272ca83574b3a77a61a9b4d2cd5ec4430951a3594963",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "mcp_tool_mcp_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "1d87dd66e2b89ef514e642fb6ee088e048cef87c913a31dfcf014ccf95bc0d61",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/mcp_tool/mcp",
+        "isolated_profile": "mcp_tool_mcp_isolated_v1",
+        "isolated_command": "go test ./providers/mcp_tool/mcp"
+      },
+      "operations": [
+        {
+          "key": "call_tool",
+          "mode": "call",
+          "contract_sha256": "1a88ffb95d28a14734d2c5a417da8a6626a94b64f37a0ffa5051fbe7abf5beba"
+        },
+        {
+          "key": "list_tools",
+          "mode": "call",
+          "contract_sha256": "80912e3d2921f06343a653cb32559bad4b1085bb86f793599ae6da341f4df929"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "2f4a1bc6298cb8d22d02956dc2c1992cc24354638153e07967015bc4d592c9f3"
+        }
+      ]
+    },
+    {
+      "connector_key": "microsoft_365",
+      "provider_key": "microsoft",
+      "provider_revision": "1.1.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/microsoft_365/microsoft",
+      "package_name": "microsoft",
+      "constructor": "New",
+      "descriptor_sha256": "333e91e5e338a7efc4b09240ec5da8bd9d8c50da9d084c770d7e018120ad6084",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "microsoft_365_microsoft_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "056f9a860c9bf8a7c5b3c38cdfb88d4fe3e5f6e71e47519addcc22ce158beba0",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/microsoft_365/microsoft",
+        "isolated_profile": "microsoft_365_microsoft_isolated_v1",
+        "isolated_command": "go test ./providers/microsoft_365/microsoft"
+      },
+      "operations": [
+        {
+          "key": "calendar_availability",
+          "mode": "call",
+          "contract_sha256": "5a7c7afc967fbb5ec27323d47728b66e1f32357969366db8a00b8731f1b93013"
+        },
+        {
+          "key": "calendar_event",
+          "mode": "call",
+          "contract_sha256": "7f8cc71141600ec42d4c1f32975a4bdc231bd3ad8b802dbfcd0c4626595aa2b0"
+        },
+        {
+          "key": "calendar_events",
+          "mode": "call",
+          "contract_sha256": "9f0e6e40b6bc664b0d21d1581cbe0897aaf87be532428b679ab6473e17d585eb"
+        },
+        {
+          "key": "calendar_list",
+          "mode": "call",
+          "contract_sha256": "30741361ad9b26653d6ed4422169bacc7dd81227a658d44e32c02dab176eda62"
+        },
+        {
+          "key": "sync_calendar",
+          "mode": "call",
+          "contract_sha256": "6810952a3c33307bd1ccbc77db25e8bca1414438f617dd1802e13612903fb18e"
+        },
+        {
+          "key": "sync_contacts",
+          "mode": "call",
+          "contract_sha256": "5d65856b321e10b13702e0b6026ab5ed98ef1489a51b643ccb22c5147c279f7f"
+        },
+        {
+          "key": "sync_onedrive_file_refs",
+          "mode": "call",
+          "contract_sha256": "6559e67f2b17f63138e83fe87f743dbf40f3ac62bbaa1e5e5fb4d7cb24581528"
+        },
+        {
+          "key": "sync_outlook_mail",
+          "mode": "call",
+          "contract_sha256": "eb7187b4d91d9ef0cf586eb1a2a5158536fd04c31030df469097e81616dd7f92"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "7aaec32fcb96ac020946ade5744e637b848ed7d16e5277bc1055fae8574c45d2"
+        }
+      ]
+    },
+    {
+      "connector_key": "notification",
+      "provider_key": "web_push",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/notification/web_push",
+      "package_name": "webpush",
+      "constructor": "New",
+      "descriptor_sha256": "e23f2c00bd52ba4cbabffbc5f008d4a31d36fd619b56fc70b82ec90210a9915d",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "notification_web_push_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "79a25d9f0bf6c3a0bfe225d27a79a3d326f7a4239ecabe40c09f07a775a4fff1",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/notification/web_push",
+        "isolated_profile": "notification_web_push_isolated_v1",
+        "isolated_command": "go test ./providers/notification/web_push"
+      },
+      "operations": [
+        {
+          "key": "send",
+          "mode": "enqueue",
+          "contract_sha256": "9279b82133298849994dcb257c632bad4f5979f061fd668a8dd6c7701c4a17e9"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "d66a0f8d3be976ecbc3125daa0c3aea1231c4858104fe87ebbdd5907dd9ced5f"
+        }
+      ]
+    },
+    {
+      "connector_key": "observability_compliance",
+      "provider_key": "prometheus",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/observability_compliance/prometheus",
+      "package_name": "prometheus",
+      "constructor": "New",
+      "descriptor_sha256": "e7c947d06437734f29c8e594df59657569afd87123ccacff0856d6ff1e900ff2",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "observability_compliance_prometheus_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "bc32fd488f2b344682d04ac1fc0099124d577a03ee66a43a2c57a327373517bb",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/observability_compliance/prometheus",
+        "isolated_profile": "observability_compliance_prometheus_isolated_v1",
+        "isolated_command": "go test ./providers/observability_compliance/prometheus"
+      },
+      "operations": [
+        {
+          "key": "query",
+          "mode": "call",
+          "contract_sha256": "0be7ab94ddbd24c068df3d1d68181b5eb1375566ee02f153084c1b03f02be53e"
+        },
+        {
+          "key": "query_range",
+          "mode": "call",
+          "contract_sha256": "4bd93814810003573be08b1985c93394694c6619a5d233d760c7e2539e06d131"
+        }
+      ]
+    },
+    {
+      "connector_key": "openai",
+      "provider_key": "openai",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/openai/openai",
+      "package_name": "openai",
+      "constructor": "New",
+      "descriptor_sha256": "e17306c95cb0789206c297c86372f619074205753dbed052d3833e458ea4b67b",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "openai_openai_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "508a4df9f1380b0307717d454e6b7884fd4027a19f74dd2a2b3e663d4c28a4c6",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/openai/openai",
+        "isolated_profile": "openai_openai_isolated_v1",
+        "isolated_command": "go test ./providers/openai/openai"
+      },
+      "operations": [
+        {
+          "key": "create_response",
+          "mode": "enqueue",
+          "contract_sha256": "3029fbc7e63e1f906495eae0f4ce7447c997da3191ea54cb4c0493c5d043fd98"
+        },
+        {
+          "key": "generate_response",
+          "mode": "call",
+          "contract_sha256": "bd206eb4f1c36de448f30a0d50b5793558740a475b67227d0241b9acc63f7182"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "c32f989f227d070a59b68d587a1f8d4ac99c48a56fc79cdc08b4acba23955b26"
+        }
+      ]
+    },
+    {
+      "connector_key": "payment",
+      "provider_key": "alipay",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/payment/alipay",
+      "package_name": "alipay",
+      "constructor": "New",
+      "descriptor_sha256": "f8f0dece37e2104257c571370221967f487f8cf101b3a9853587bdf752fb5e0b",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "payment_alipay_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "b81461e08ffdab18f915454b6fd20cbacc71835ee471428f01bcb159629c7cf7",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure",
+          "webhook_signature_and_normalization"
+        ],
+        "test_command": "go test ./providers/payment/alipay",
+        "isolated_profile": "payment_alipay_isolated_v1",
+        "isolated_command": "go test ./providers/payment/alipay",
+        "live_profile": "alipay_sandbox_native_payment_v1",
+        "live_command": "go run ./scripts/verify_alipay_sandbox_live",
+        "required_secrets": [
+          "ALIPAY_SANDBOX",
+          "ALIPAY_APP_ID",
+          "ALIPAY_MERCHANT_PRIVATE_KEY"
+        ]
+      },
+      "operations": [
+        {
+          "key": "close_payment_order",
+          "mode": "enqueue",
+          "contract_sha256": "f14e0fcb52024a8c9e892092cedc6507e82dd96e88042665a070f5060f2625de"
+        },
+        {
+          "key": "create_native_payment_order",
+          "mode": "enqueue",
+          "contract_sha256": "daec256080e3012b8ce9fa55860490afc15816beb97804a4b178142bceb985b1"
+        },
+        {
+          "key": "create_payment_refund",
+          "mode": "enqueue",
+          "contract_sha256": "c996f9ba7ff9dd650043d08dba82d8b3f771ce1d24553837623ac061801a2ece"
+        },
+        {
+          "key": "query_payment_order",
+          "mode": "call",
+          "contract_sha256": "014e6b5d4a4abd51ddd078d287e30f26fdc99a1fb28830cfa1b3a3391b17586d"
+        },
+        {
+          "key": "query_payment_refund",
+          "mode": "call",
+          "contract_sha256": "fd7709bce3675ef1a386beede661281e1a6063447dba66b5507c8f84336d4a82"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "73084e236e350007d31eaf5ce0a27fbd7d2f5813ad8b779ff01d0f3af43c2d3c"
+        }
+      ]
+    },
+    {
+      "connector_key": "payment",
+      "provider_key": "stripe",
+      "provider_revision": "0.1.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/payment/stripe",
+      "package_name": "stripe",
+      "constructor": "New",
+      "descriptor_sha256": "bab53ffb01431a95bbaf14a0f9f06ddf645a1fb0c89b56591c0a6b5b024dc2cf",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "payment_stripe_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "9550a9a8de5c5d49ac0ef7ad8e78aee680f8c64b0404836b0fba5ff4bb409cac",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "japan_checkout_card_paypay_konbini",
+          "network_failure_semantics",
+          "payment_intent_idempotency",
+          "provider_error_classification",
+          "refund_and_reconciliation",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure",
+          "webhook_signature_and_normalization"
+        ],
+        "test_command": "go test ./providers/payment/stripe",
+        "isolated_profile": "payment_stripe_isolated_v1",
+        "isolated_command": "go test ./providers/payment/stripe",
+        "live_profile": "stripe_japan_online_v1",
+        "live_command": "go run ./scripts/verify_stripe_japan_live",
+        "required_secrets": [
+          "STRIPE_SECRET_KEY"
+        ]
+      },
+      "operations": [
+        {
+          "key": "attach_payment_method",
+          "mode": "call",
+          "contract_sha256": "e2f444ffef727ce6f240273256be220ffd0fe223b73b6815b4e43ea2f9028f7c"
+        },
+        {
+          "key": "cancel_payment_intent",
+          "mode": "call",
+          "contract_sha256": "109f962189a9963ef9b6e09aa814b28a48bcd445208bec3d4c74fe2aa23338aa"
+        },
+        {
+          "key": "cancel_subscription",
+          "mode": "call",
+          "contract_sha256": "720ece628b9c75636a6c7fe1a44dc568b5d016eec32e631e034843fe56f374eb"
+        },
+        {
+          "key": "capture_payment_intent",
+          "mode": "call",
+          "contract_sha256": "571ef8f119a72f85f2b4f1b2d21b5d0153e810ccb4716b48182f8ce66f3e834c"
+        },
+        {
+          "key": "confirm_payment_intent",
+          "mode": "call",
+          "contract_sha256": "e36aaeaee4d17c5857e08d23fdf64d0c8d4de3e80f6642e8916e370e0750559f"
+        },
+        {
+          "key": "create_checkout_session",
+          "mode": "call",
+          "contract_sha256": "c738a8d163f36f9ae08a0371c1eadd6b0c842a09865347f5234584a7396a8915"
+        },
+        {
+          "key": "create_connect_account_link",
+          "mode": "call",
+          "contract_sha256": "cd7c83a3c514ca2f11a8853c55a0586b0fa8529c9bc23f57ed73c6f518563282"
+        },
+        {
+          "key": "create_customer",
+          "mode": "call",
+          "contract_sha256": "6e0b42eba190200293ab73cf935ef8641273e690cd28c04b2e67bbf2f74599d1"
+        },
+        {
+          "key": "create_invoice",
+          "mode": "call",
+          "contract_sha256": "34d47730401eae489e75d9e14d30008b241695ae6a5cc2a6fb203d236f6ebc99"
+        },
+        {
+          "key": "create_invoice_item",
+          "mode": "call",
+          "contract_sha256": "836f6b25c381606f7f60496c7532beecf8dc56de0272410dbcf58b3d22d978ca"
+        },
+        {
+          "key": "create_payment_intent",
+          "mode": "call",
+          "contract_sha256": "2ca92145bda3cfb9d6f9647c3e3fc87606408940fbc12a4ba0fa18fb87cf2239"
+        },
+        {
+          "key": "create_payout",
+          "mode": "call",
+          "contract_sha256": "f82f8611689689b6003c309c7cb654f0438f3edee103a48e1a629864eba3201d"
+        },
+        {
+          "key": "create_refund",
+          "mode": "call",
+          "contract_sha256": "40ca0548c411f14e528a89d01e485b998b9721eab6295d195f4ba14da5b35545"
+        },
+        {
+          "key": "create_subscription",
+          "mode": "call",
+          "contract_sha256": "94e264279d7df49982a778fd3fbcb511584e50009d125a7b1ecc4ef9c91d157c"
+        },
+        {
+          "key": "detach_payment_method",
+          "mode": "call",
+          "contract_sha256": "78403a1273f0a23991b6054f918a619a1392190a2c2489cffda06aea6e336a7c"
+        },
+        {
+          "key": "expire_checkout_session",
+          "mode": "call",
+          "contract_sha256": "4c108dc3a6df07b2666141f062abb3836f08ccc67805a0cc2a03f662079cd4c2"
+        },
+        {
+          "key": "finalize_invoice",
+          "mode": "call",
+          "contract_sha256": "b7abcdde69c132dacda6b2c31b24b2bbd829d8c9a835f9b9f2912987aaf70f92"
+        },
+        {
+          "key": "list_balance_transactions",
+          "mode": "call",
+          "contract_sha256": "fb1fc8262823e43a8f912007767b682e362f787603a1a3dfbb93f1efcd71ad22"
+        },
+        {
+          "key": "list_disputes",
+          "mode": "call",
+          "contract_sha256": "208b0c9ac9b019bc8dbcebcc199e0e49db6f11ac09391cc122583843ba8a0842"
+        },
+        {
+          "key": "list_payouts",
+          "mode": "call",
+          "contract_sha256": "b1d4cfb4e95d9c4290f033344bf236712983c98c3a964b574fdfc01218dea383"
+        },
+        {
+          "key": "list_refunds",
+          "mode": "call",
+          "contract_sha256": "ff61675f12c7f7dbe32ed795a76dd5c1f419890ae0990a3d2996a2d0e2a097b7"
+        },
+        {
+          "key": "pay_invoice",
+          "mode": "call",
+          "contract_sha256": "624eaf9dbd7d388d3076e43bd0dc852603c7defd6cf295b1ccf0ae8c586af5b3"
+        },
+        {
+          "key": "process_card_payment",
+          "mode": "start_operation",
+          "contract_sha256": "ec6b87d9409c8d1d36d7e0feea410ad1971718a96331a7d5ec259401772a2262"
+        },
+        {
+          "key": "retrieve_connect_account",
+          "mode": "call",
+          "contract_sha256": "81b9bb9fee0ba7e97ab004482c5fe0edac56f845b3d7452dbf634cecbfeced0d"
+        },
+        {
+          "key": "retrieve_payment_intent",
+          "mode": "call",
+          "contract_sha256": "4beb8120d056009700e5b51d618ce1d1f6bc0dd65b0e24055fe561552a3576ec"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "73084e236e350007d31eaf5ce0a27fbd7d2f5813ad8b779ff01d0f3af43c2d3c"
+        },
+        {
+          "key": "update_customer",
+          "mode": "call",
+          "contract_sha256": "ab15ce72a3dccbfb2791e1ecbb0319b011cb99083de2a340c32755552d1b7a19"
+        },
+        {
+          "key": "update_dispute",
+          "mode": "call",
+          "contract_sha256": "db960b550f914f7783fbf28d908a985df7b3400a0945a8c2b2738a9bc08a512b"
+        },
+        {
+          "key": "update_subscription",
+          "mode": "call",
+          "contract_sha256": "a289ab0708829363d3fa16c1c0b92a14ddac845e03f2d0a3209a62efd662925e"
+        },
+        {
+          "key": "void_invoice",
+          "mode": "call",
+          "contract_sha256": "e9d93da08066c1ea759bbcd86226c8c92beac08735974835df74319c8ce9903e"
+        }
+      ]
+    },
+    {
+      "connector_key": "payment",
+      "provider_key": "wechat_pay",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/payment/wechat_pay",
+      "package_name": "wechatpay",
+      "constructor": "New",
+      "descriptor_sha256": "c1275ad87e8efe3c2dd4bcd72b1f53c45848f5c942b594ffe4b82d2a871314cf",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "payment_wechat_pay_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "808901b240a2d5b8f632a5d402fa0c4d20626acbc3130ff2c8916e635d49b38b",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure",
+          "webhook_signature_and_normalization"
+        ],
+        "test_command": "go test ./providers/payment/wechat_pay",
+        "isolated_profile": "payment_wechat_pay_isolated_v1",
+        "isolated_command": "go test ./providers/payment/wechat_pay",
+        "live_profile": "wechat_pay_controlled_test_merchant_v1",
+        "live_command": "go run ./scripts/verify_wechat_pay_controlled_live",
+        "required_secrets": [
+          "WECHAT_PAY_CONTROLLED_TEST",
+          "WECHAT_PAY_APP_ID",
+          "WECHAT_PAY_MERCHANT_ID",
+          "WECHAT_PAY_MERCHANT_SERIAL_NO",
+          "WECHAT_PAY_MERCHANT_PRIVATE_KEY"
+        ]
+      },
+      "operations": [
+        {
+          "key": "close_payment_order",
+          "mode": "enqueue",
+          "contract_sha256": "f14e0fcb52024a8c9e892092cedc6507e82dd96e88042665a070f5060f2625de"
+        },
+        {
+          "key": "create_native_payment_order",
+          "mode": "enqueue",
+          "contract_sha256": "daec256080e3012b8ce9fa55860490afc15816beb97804a4b178142bceb985b1"
+        },
+        {
+          "key": "create_payment_refund",
+          "mode": "enqueue",
+          "contract_sha256": "c996f9ba7ff9dd650043d08dba82d8b3f771ce1d24553837623ac061801a2ece"
+        },
+        {
+          "key": "query_payment_order",
+          "mode": "call",
+          "contract_sha256": "014e6b5d4a4abd51ddd078d287e30f26fdc99a1fb28830cfa1b3a3391b17586d"
+        },
+        {
+          "key": "query_payment_refund",
+          "mode": "call",
+          "contract_sha256": "fd7709bce3675ef1a386beede661281e1a6063447dba66b5507c8f84336d4a82"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "73084e236e350007d31eaf5ce0a27fbd7d2f5813ad8b779ff01d0f3af43c2d3c"
+        }
+      ]
+    },
+    {
+      "connector_key": "product_event",
+      "provider_key": "posthog",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/product_event/posthog",
+      "package_name": "posthog",
+      "constructor": "New",
+      "descriptor_sha256": "072db1c3d6898c95319ca08b23b188b10f8a49fad9d0002e624c458da0cb4342",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "product_event_posthog_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "a4cbf7bf56888d384524917153481ac45c4d2e4177eaa4f9bdca35f0cc51e1f0",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/product_event/posthog",
+        "isolated_profile": "product_event_posthog_isolated_v1",
+        "isolated_command": "go test ./providers/product_event/posthog"
+      },
+      "operations": [
+        {
+          "key": "capture_event",
+          "mode": "call",
+          "contract_sha256": "c98ecb5bf19cd010568f071d804037182eb62ca757de71dd91452aed9f9e01af"
+        },
+        {
+          "key": "list_events",
+          "mode": "call",
+          "contract_sha256": "5d6ca4a461d8943d579c3f55599892a5eb2d1023f3b2862aec3029df8a1da588"
+        }
+      ]
+    },
+    {
+      "connector_key": "saas_tool",
+      "provider_key": "composio",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/saas_tool/composio",
+      "package_name": "composio",
+      "constructor": "New",
+      "descriptor_sha256": "479271d1fb368bcdb9db6cf45c6bf2ab400aee9d52d13cdf40e784d1210d9c23",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "saas_tool_composio_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "85cceab75bdc2f0bd44cfc3cf46b71a93c891c45925197527b5313c018c5afd5",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/saas_tool/composio",
+        "isolated_profile": "saas_tool_composio_isolated_v1",
+        "isolated_command": "go test ./providers/saas_tool/composio"
+      },
+      "operations": [
+        {
+          "key": "enqueue_tool",
+          "mode": "enqueue",
+          "contract_sha256": "0cf1d30aaa2dc890e3cb88ab029609de02467193bf830d57a1b05e108303bce2"
+        },
+        {
+          "key": "query_tool",
+          "mode": "call",
+          "contract_sha256": "93cfa61db905c26f8a724e3ee94c927e535992b34943a7e37c788578025fe0fa"
+        },
+        {
+          "key": "start_tool",
+          "mode": "start_operation",
+          "contract_sha256": "cb26e85b978c2c5c8808761c9a7d625e1afe84cf5a79a897eb74fa5d42e90651"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "8c1ecffd82e1a09355ebb88a4e59937367f47b01a7c64c0d91f44f828e7e47f8"
+        }
+      ]
+    },
+    {
+      "connector_key": "social_message",
+      "provider_key": "facebook_messenger",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/social_message/facebook_messenger",
+      "package_name": "facebookmessenger",
+      "constructor": "New",
+      "descriptor_sha256": "fadec660b4e0517039c22691d76505c6a549be3639f7226fb942e3139def1855",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "social_message_facebook_messenger_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "e739ea19de6d26b44b24aaeb6688872330f31b8f1ab18d800339362a192647f1",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure",
+          "webhook_signature_and_normalization"
+        ],
+        "test_command": "go test ./providers/social_message/facebook_messenger",
+        "isolated_profile": "social_message_facebook_messenger_isolated_v1",
+        "isolated_command": "go test ./providers/social_message/facebook_messenger"
+      },
+      "operations": [
+        {
+          "key": "send_message",
+          "mode": "call",
+          "contract_sha256": "a9b43aa09225808ca109a1772ce1dd9d99db3ef9759209a87e08e34126373d3c"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "eb6666daf4e750a585c727c6805da45c2978f4f59ea8ec57a385445d939d2ac2"
+        }
+      ]
+    },
+    {
+      "connector_key": "sso",
+      "provider_key": "oidc",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/sso/oidc",
+      "package_name": "oidc",
+      "constructor": "New",
+      "descriptor_sha256": "2a14eb52af8ccd84816b137800d5b11c4c602d031c13c9a8e525a773b5856ed8",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "sso_oidc_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "f748964a45e8e314ac89179a30bb1aa5736de69c1431d4fdfbfa8a5b4878c309",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/sso/oidc",
+        "isolated_profile": "sso_oidc_isolated_v1",
+        "isolated_command": "go test ./providers/sso/oidc"
+      },
+      "operations": [
+        {
+          "key": "list_users",
+          "mode": "call",
+          "contract_sha256": "66b1c57c2f4d62ed19a5f4f99f6b8f5fcec849358864e77f3e4d42b909b1246f"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "8b4f574c082bb27e303f29179aefd5329fd2b63d33163d5f41f2f0397057c6b4"
+        }
+      ]
+    },
+    {
+      "connector_key": "support",
+      "provider_key": "zendesk",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/support/zendesk",
+      "package_name": "zendesk",
+      "constructor": "New",
+      "descriptor_sha256": "ed99fb444e51c54c237407003293d0f5489481ad29e10d382a980e87c691e34a",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "support_zendesk_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "6b4c340b3246629070c9c423b0dae9b5cbdf644d61f19e00e2704c8e494dd1fc",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure",
+          "webhook_signature_and_normalization"
+        ],
+        "test_command": "go test ./providers/support/zendesk",
+        "isolated_profile": "support_zendesk_isolated_v1",
+        "isolated_command": "go test ./providers/support/zendesk"
+      },
+      "operations": [
+        {
+          "key": "create_ticket",
+          "mode": "call",
+          "contract_sha256": "3f0d1ce44121769894129f731b88a5b83ce477391be225786229db585442ba62"
+        },
+        {
+          "key": "get_ticket",
+          "mode": "call",
+          "contract_sha256": "0354f269e0db3078f6a4877a7f45ba678b1b1ba76481ff4496c0526a420ebdcb"
+        },
+        {
+          "key": "list_tickets",
+          "mode": "call",
+          "contract_sha256": "a931dc2ef958b59469f8355f6b263f4df98beaa173e7d55a54b9d1525143469c"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "5de3016b7110c0a48e1a61d761301a4727f307dc6725540d5fa335dc44d5e5c7"
+        },
+        {
+          "key": "update_ticket",
+          "mode": "call",
+          "contract_sha256": "2092e0a53be456bcc29319084863f6914a7a163eb1f2dc6518e1a7fc90e4f749"
+        }
+      ]
+    },
+    {
+      "connector_key": "tariff_classification",
+      "provider_key": "brazil_portal_unico_classif",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/tariff_classification/brazil_portal_unico_classif",
+      "package_name": "brazilportalunicoclassif",
+      "constructor": "New",
+      "descriptor_sha256": "33afe03dc902f872f8c98c3767ffef7f5fca646de3ebbe6edfc9755addd85dc8",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "tariff_classification_brazil_portal_unico_classif_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "7c3bc710623fb79e395a2ebf7b4b826fe61f731aad3c27d064556307d1005a5d",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/tariff_classification/brazil_portal_unico_classif",
+        "isolated_profile": "tariff_classification_brazil_portal_unico_classif_isolated_v1",
+        "isolated_command": "go test ./providers/tariff_classification/brazil_portal_unico_classif"
+      },
+      "operations": [
+        {
+          "key": "match_brazil_ncm_candidates",
+          "mode": "call",
+          "contract_sha256": "5eadec2c2f6e65ec2912008800b8ab71122b2b2390c2dbfc9ffd5b8597581850"
+        }
+      ]
+    },
+    {
+      "connector_key": "tariff_classification",
+      "provider_key": "china_hs_bianma",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/tariff_classification/china_hs_bianma",
+      "package_name": "chinahsbianma",
+      "constructor": "New",
+      "descriptor_sha256": "da702f598b16f57b789729ef8cdd6238be0ef451a9bab034423f5f7eef7843bf",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "tariff_classification_china_hs_bianma_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "c4f98e4483a861f2d395ece276cf9d3267c6e9c0fd2f95118ca43148e8f9c413",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/tariff_classification/china_hs_bianma",
+        "isolated_profile": "tariff_classification_china_hs_bianma_isolated_v1",
+        "isolated_command": "go test ./providers/tariff_classification/china_hs_bianma"
+      },
+      "operations": [
+        {
+          "key": "search_china_hs_candidates",
+          "mode": "call",
+          "contract_sha256": "84e27b750eb9744679510ad3302b3b906705a7f186fbcb6bd127e0191b7c3bd7"
+        }
+      ]
+    },
+    {
+      "connector_key": "telephony",
+      "provider_key": "twilio",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/telephony/twilio",
+      "package_name": "twilio",
+      "constructor": "New",
+      "descriptor_sha256": "e1e25052f2a95405ea6162c1cf8bdaaa752b87ce1891b9bbe04196a4307a99f2",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "telephony_twilio_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "3b3c9a750d5ae8334d01feab162def71a501f20d099898a3d8ad4165b32f6133",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure",
+          "webhook_signature_and_normalization"
+        ],
+        "test_command": "go test ./providers/telephony/twilio",
+        "isolated_profile": "telephony_twilio_isolated_v1",
+        "isolated_command": "go test ./providers/telephony/twilio"
+      },
+      "operations": [
+        {
+          "key": "send_sms",
+          "mode": "call",
+          "contract_sha256": "7182e865f86096f212d4ec8bf86fce67a19efe3e6dac7b726cabb53afa3d4343"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "c71765c363077d5a07897a82d99be9ebdb751eafd4772b8e3356e1503fc11077"
+        }
+      ]
+    },
+    {
+      "connector_key": "trade_statistics",
+      "provider_key": "comex_stat",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/trade_statistics/comex_stat",
+      "package_name": "comexstat",
+      "constructor": "New",
+      "descriptor_sha256": "16f31782ce807e0381a6bcea687db2f75affc4083e783adafd3e70fde458efd0",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "trade_statistics_comex_stat_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "927bc51524fe7a1a45d556ba98a68fad3ba92b09fc9dbf84d14bd70dfb92e518",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/trade_statistics/comex_stat",
+        "isolated_profile": "trade_statistics_comex_stat_isolated_v1",
+        "isolated_command": "go test ./providers/trade_statistics/comex_stat"
+      },
+      "operations": [
+        {
+          "key": "query_import_statistics",
+          "mode": "call",
+          "contract_sha256": "9b4f3fc0f5f205ae880eb1fa360561c594617a3bb5c725edcf26b2a603c06501"
+        }
+      ]
+    },
+    {
+      "connector_key": "weather",
+      "provider_key": "open_meteo",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/weather/open_meteo",
+      "package_name": "openmeteo",
+      "constructor": "New",
+      "descriptor_sha256": "696747ed6927ca7fd43609a6ce264cd3addcd04702eadb4dcbe3edb6bb3a7e42",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "weather_open_meteo_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "85e46d0736ca3c30d908b70e11578055a68236aad5e8d8b6e3f0ca271a5db72a",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/weather/open_meteo",
+        "isolated_profile": "weather_open_meteo_isolated_v1",
+        "isolated_command": "go test ./providers/weather/open_meteo"
+      },
+      "operations": [
+        {
+          "key": "get_daily",
+          "mode": "call",
+          "contract_sha256": "65073ca1eb88e5161ba84d107734b1c611cae21cd0ea487290fb4cdc539b9378"
+        }
+      ]
+    },
+    {
+      "connector_key": "webhook",
+      "provider_key": "http",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/webhook/http",
+      "package_name": "http",
+      "constructor": "New",
+      "descriptor_sha256": "c99211116a23249d4cf3b438c677f935adf9507f0c49f726ed07dda61a58ea67",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "webhook_http_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "c062d4dcfc093fa8f3aec5439c0cb84c6531aa416c74d3ba8845781f74323f69",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/webhook/http",
+        "isolated_profile": "webhook_http_isolated_v1",
+        "isolated_command": "go test ./providers/webhook/http"
+      },
+      "operations": [
+        {
+          "key": "send",
+          "mode": "enqueue",
+          "contract_sha256": "824c3f35b0f8917ba4fd37f5cd4a7269704676172d9cb3c83d89de6daccb3e18"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "f22bc1f275ee012047c0bccc20745051a0eeafb7e73f3c496772d1f3fc07bbed"
+        }
+      ]
+    },
+    {
+      "connector_key": "website_form",
+      "provider_key": "tally",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/website_form/tally",
+      "package_name": "tally",
+      "constructor": "New",
+      "descriptor_sha256": "acf8c40e3b830db57a4bb6a5835b7695540b65aa6ed837e73feda5399243e75a",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "website_form_tally_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "306b3220fcdf747b519b88cbfd4731ccf96d40f0cd64e96037c17c311fabe408",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure"
+        ],
+        "test_command": "go test ./providers/website_form/tally",
+        "isolated_profile": "website_form_tally_isolated_v1",
+        "isolated_command": "go test ./providers/website_form/tally"
+      },
+      "operations": [
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "3ce97fb19f44f28519ade0d333a952105df3dc4c33c444ce358f64a9bd8cc53b"
+        }
+      ]
+    },
+    {
+      "connector_key": "whatsapp",
+      "provider_key": "meta_cloud_api",
+      "provider_revision": "1.0.0",
+      "import_path": "github.com/domainry/domainry-connectors/providers/whatsapp/meta_cloud_api",
+      "package_name": "metacloudapi",
+      "constructor": "New",
+      "descriptor_sha256": "05abf5b532313ba3f4c36c7d9c2890e6343b9687d418ae64288c921cc41ddfa0",
+      "verification": {
+        "contract_version": "domainry-provider-verification-v1",
+        "profile": "whatsapp_meta_cloud_api_deterministic_v1",
+        "mode": "deterministic",
+        "manifest_sha256": "9b91ba30cab3571359e81ad0fda829c2dea45e02b2109f99c360b57db843385c",
+        "suites": [
+          "adapter_contract",
+          "error_classification",
+          "network_failure_semantics",
+          "request_translation",
+          "response_normalization",
+          "secret_non_disclosure",
+          "webhook_signature_and_normalization"
+        ],
+        "test_command": "go test ./providers/whatsapp/meta_cloud_api",
+        "isolated_profile": "whatsapp_meta_cloud_api_isolated_v1",
+        "isolated_command": "go test ./providers/whatsapp/meta_cloud_api"
+      },
+      "operations": [
+        {
+          "key": "list_templates",
+          "mode": "call",
+          "contract_sha256": "02e9b6f198a1bf75c997c9bd79775e7f989a166a148923f29da731e29b21d568"
+        },
+        {
+          "key": "send_message",
+          "mode": "call",
+          "contract_sha256": "96e5ebdfa3a2fcde368c2e2379d8d852e7a2526aa1b5d091638bac5e46236966"
+        },
+        {
+          "key": "test_connection",
+          "mode": "call",
+          "contract_sha256": "3c4028bc879a87aab6cacbdfa44b36583693f053fdc805b01e92938d874b349f"
+        }
+      ]
+    }
+  ]
+}

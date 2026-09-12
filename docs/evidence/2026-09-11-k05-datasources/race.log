@@ -1,0 +1,4 @@
+ok  	github.com/domainry/domainry-agent/module	4.481s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	4.223s
+ok  	github.com/domainry/domainry-agent/integration	5.680s
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	26.166s

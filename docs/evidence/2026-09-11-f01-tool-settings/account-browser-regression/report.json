@@ -1,0 +1,21 @@
+{
+  "steps": [
+    "administrator explicitly enables actions, configures owner application, and edits without reading or replacing its secret",
+    "real redirect callback binds current Identity, strips URL secrets, persists one personal account, survives reload and tests connection",
+    "second real Identity user cannot see first personal account or administrator application config",
+    "provider denial is a durable rejected receipt and creates no account or token exchange",
+    "changing Identity during vendor navigation prevents callback submission and token exchange; original owner can inspect the pending session",
+    "lost callback response recovers original receipt; reopening both persistent modules does not exchange code again",
+    "live Identity revocation applies immediately and remains revoked across restart; explicit restoration restores list",
+    "explicit revoke survives full reopen, remains scoped to selected account, and fits mobile viewport"
+  ],
+  "javascriptErrors": [],
+  "sensitiveReferrers": 0,
+  "mobileLayout": {
+    "left": 4.609375,
+    "right": 385.390625,
+    "viewport": 390,
+    "content": 379,
+    "width": 379
+  }
+}

@@ -1,0 +1,27 @@
+=== RUN   TestExternalAccountsBuiltBrowser
+PASS administrator explicitly enables actions, configures owner application, and edits without reading or replacing its secret
+PASS real redirect callback binds current Identity, strips URL secrets, persists one personal account, survives reload and tests connection
+PASS second real Identity user cannot see first personal account or administrator application config
+PASS provider denial is a durable rejected receipt and creates no account or token exchange
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: /^外部账号/ }) to be visible[22m
+
+    at login (/Users/tiger/Projects/domainry-agent/frontend/tests/external-accounts.browser.mjs:25:104)
+    at async file:///Users/tiger/Projects/domainry-agent/frontend/tests/external-accounts.browser.mjs:82:83 {
+  log: [
+    "  - waiting for getByRole('button', { name: /^外部账号/ }) to be visible"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.22.0
+    integration_accounts_browser_test.go:104: account browser acceptance failed exit status 1
+--- FAIL: TestExternalAccountsBuiltBrowser (19.97s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	21.555s
+FAIL

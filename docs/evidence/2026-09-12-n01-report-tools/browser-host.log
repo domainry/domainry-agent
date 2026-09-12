@@ -1,0 +1,8 @@
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation
+=== RUN   TestReportToolConversationWithRealOwnerAndRevalidation/module
+    conversation_report_tools_test.go:284: real Report, Tools, Agent, Identity and SQLite: 5 calls per query, saved conversation, complete restart, field/read revocation, real data update hides saved answer, fresh query after restored permission/data update; model decisions are a protocol fixture
+    conversation_report_tools_test.go:289: Browser acceptance ready: http://127.0.0.1:8093/#conv_c5be02f9f9829ebc75cfeb84e9c299b7; synthetic login admin@example.com, password Business-Browser-Changed!2026
+--- PASS: TestReportToolConversationWithRealOwnerAndRevalidation (130.94s)
+    --- PASS: TestReportToolConversationWithRealOwnerAndRevalidation/module (130.94s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	131.894s

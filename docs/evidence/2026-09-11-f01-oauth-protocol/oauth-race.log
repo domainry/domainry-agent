@@ -1,0 +1,28 @@
+=== RUN   TestOAuthSessionAtomicallyCreatesPrivateAccountAndReplaysReceipt
+--- PASS: TestOAuthSessionAtomicallyCreatesPrivateAccountAndReplaysReceipt (0.08s)
+=== RUN   TestOAuthSessionRejectsCrossUserWorkspaceScopeAndState
+--- PASS: TestOAuthSessionRejectsCrossUserWorkspaceScopeAndState (0.05s)
+=== RUN   TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay
+=== RUN   TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay/deny
+=== RUN   TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay/unknown
+=== RUN   TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay/cancel
+--- PASS: TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay (0.19s)
+    --- PASS: TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay/deny (0.05s)
+    --- PASS: TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay/unknown (0.05s)
+    --- PASS: TestOAuthSessionHandlesRejectionUnknownAndExpiredWithoutReplay/cancel (0.05s)
+=== RUN   TestOAuthApplicationChangeDuringExchangeRollsBackCredentialsAndNeedsNewAuthorization
+--- PASS: TestOAuthApplicationChangeDuringExchangeRollsBackCredentialsAndNeedsNewAuthorization (0.05s)
+=== RUN   TestOAuthConcurrentCallbacksAndCancellationPersistOneEncryptedAccount
+--- PASS: TestOAuthConcurrentCallbacksAndCancellationPersistOneEncryptedAccount (0.13s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	6.439s
+=== RUN   TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions
+=== RUN   TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions/module
+    oauth_flow_test.go:312: Actual Google Provider + host Transport + local token HTTP: configuration authorization, PKCE, private ciphertext, cross-user rejection, two host restarts, single-use callback, uncertain result without retry, independent account and revoked receipt passed
+=== RUN   TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions/saas
+    oauth_flow_test.go:312: Actual Google Provider + host Transport + local token HTTP: configuration authorization, PKCE, private ciphertext, cross-user rejection, two host restarts, single-use callback, uncertain result without retry, independent account and revoked receipt passed
+--- PASS: TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions (16.47s)
+    --- PASS: TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions/module (6.13s)
+    --- PASS: TestOAuthModuleAndSaaSHTTPUseGoogleProviderAndDurableOneTimeSessions/saas (10.35s)
+PASS
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	22.767s

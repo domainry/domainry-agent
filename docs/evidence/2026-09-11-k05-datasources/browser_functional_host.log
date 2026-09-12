@@ -1,0 +1,5 @@
+=== RUN   TestKnowledgeDatasourcesIdentityHTTPAndPersistentOriginal
+    knowledge_documents_test.go:360: Temporary browser acceptance ready at http://127.0.0.1:8092
+--- PASS: TestKnowledgeDatasourcesIdentityHTTPAndPersistentOriginal (29.34s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	29.814s

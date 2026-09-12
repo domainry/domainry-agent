@@ -1,0 +1,8 @@
+=== RUN   TestConversationReportRPCUsesRealReportOwner
+    conversation_business_reports_rpc_test.go:114: real Report v0.1.7 / SDK v0.1.6, Runtime, Identity and SQLite: local and service summary/ObjectSQL, stable pages, cursor scope, field/read revocation, undeclared input, cross-workspace rejection and complete restart
+--- PASS: TestConversationReportRPCUsesRealReportOwner (32.44s)
+=== RUN   TestConversationBusinessRPCRealOwnersAndRestart
+    conversation_business_rpc_test.go:286: actual Runtime/Identity/Record/Action/Workflow + SQLite, 33 service HTTP calls; one lost-response Action effect, one nonterminal workflow; source/receipt checks and original-key reconciliation survive complete restart
+--- PASS: TestConversationBusinessRPCRealOwnersAndRestart (34.83s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	69.195s

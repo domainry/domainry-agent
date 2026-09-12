@@ -1,0 +1,25 @@
+ok  	github.com/domainry/domainry-integration/capability	2.268s
+?   	github.com/domainry/domainry-integration/cmd/integration-server	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/adapter/integrationsdk	2.380s
+ok  	github.com/domainry/domainry-integration/internal/application/integration	3.660s
+ok  	github.com/domainry/domainry-integration/internal/architecture	3.004s
+ok  	github.com/domainry/domainry-integration/internal/assembly/module	4.499s
+--- FAIL: TestConnectionAccountSaaSProductAuthorizationSurvivesRemoteBoundaryAndRestart (0.35s)
+    connection_accounts_test.go:158: GET /integration/connection-accounts/personal-a: status=403 want=400 body={"code":"backend.integration.permission_denied"}
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/assembly/saas	7.041s
+?   	github.com/domainry/domainry-integration/internal/domain/integration/model	[no test files]
+?   	github.com/domainry/domainry-integration/internal/domain/integration/repository	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/domain/integration/service	5.333s
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/architecture	6.117s
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	4.701s
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/migration	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/schema	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/transport/http/module	6.196s
+?   	github.com/domainry/domainry-integration/internal/transport/http/saas	[no test files]
+ok  	github.com/domainry/domainry-integration/module	6.417s
+FAIL

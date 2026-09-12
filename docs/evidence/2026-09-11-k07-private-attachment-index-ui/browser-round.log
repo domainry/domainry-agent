@@ -1,0 +1,17 @@
+=== RUN   TestPrivateAttachmentIndexBrowserRecovery
+file:///Users/tiger/Projects/domainry-agent/frontend/tests/attachment-index.browser.mjs:31
+const control=async name=>{const response=await fetch(`${origin}/__acceptance/${name}`,{method:'POST'});assert.equal(response.status(),name==='state'?200:204);return response;};
+                                                                                                                              ^
+
+TypeError: response.status is not a function
+    at control (file:///Users/tiger/Projects/domainry-agent/frontend/tests/attachment-index.browser.mjs:31:127)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async stats (file:///Users/tiger/Projects/domainry-agent/frontend/tests/attachment-index.browser.mjs:32:28)
+    at async file:///Users/tiger/Projects/domainry-agent/frontend/tests/attachment-index.browser.mjs:45:90
+
+Node.js v24.19.0
+    conversation_attachment_index_browser_test.go:206: index UI browser failed exit status 1
+--- FAIL: TestPrivateAttachmentIndexBrowserRecovery (4.71s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	5.565s
+FAIL

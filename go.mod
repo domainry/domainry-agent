@@ -34,7 +34,7 @@ require (
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-sql-driver/mysql v1.10.0 // indirect
+	github.com/go-sql-driver/mysql v1.10.0
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -68,4 +68,16 @@ require (
 	modernc.org/libc v1.74.4 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
+)
+
+require (
+	github.com/domainry/domainry-todo v0.0.0
+	github.com/domainry/domainry-tools v0.0.0
+	github.com/domainry/domainry-tools-sdk v0.0.0
+)
+
+require (
+	github.com/domainry/domainry-integration v0.1.11
+	github.com/domainry/domainry-integration-sdk v0.1.4
+	github.com/domainry/domainry-knowledge v0.0.0
 )

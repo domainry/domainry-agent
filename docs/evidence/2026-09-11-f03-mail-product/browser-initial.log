@@ -1,0 +1,24 @@
+=== RUN   TestMailToolsBuiltBrowser
+PASS four product-selected mail tools become available after actual owner OAuth grant
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.check: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('checkbox', { name: '允许本次请求创建、修改或导出我的成果', exact: true })[22m
+
+    at create (/Users/tiger/Projects/domainry-agent/frontend/tests/mail-tools.browser.mjs:31:83)
+    at async file:///Users/tiger/Projects/domainry-agent/frontend/tests/mail-tools.browser.mjs:48:13 {
+  log: [
+    "  - waiting for getByRole('checkbox', { name: '允许本次请求创建、修改或导出我的成果', exact: true })"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.22.0
+    mail_tools_browser_test.go:105: mail browser exit status 1
+--- FAIL: TestMailToolsBuiltBrowser (34.66s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	35.418s
+FAIL

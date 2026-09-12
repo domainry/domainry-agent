@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"context"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http/httptest"
 	"sync/atomic"
 	"testing"
@@ -29,7 +30,7 @@ func (*libraryTestPolicy) ValidateKnowledgeLibraryMember(_ context.Context, user
 func TestKnowledgeLibrarySaaSContractAndLiveAuthorization(t *testing.T) {
 	repo, a := conversationRepository(t), conversationAuthority()
 	policy := &libraryTestPolicy{}
-	service, err := application.NewConversationService(repo, nil, a.RuntimeID, application.ConversationOptions{LibraryAuthorizer: policy})
+	service, err := conversationassembly.NewService(repo, nil, a.RuntimeID, application.ConversationOptions{LibraryAuthorizer: policy})
 	if err != nil {
 		t.Fatal(err)
 	}

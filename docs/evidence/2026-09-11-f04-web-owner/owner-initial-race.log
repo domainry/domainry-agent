@@ -1,0 +1,11 @@
+=== RUN   TestWebWorkspaceReadHTTPModuleSaaSAndRestart
+=== RUN   TestWebWorkspaceReadHTTPModuleSaaSAndRestart/module
+    web_read_flow_test.go:211: Integration Provider config field "allowed_source_hosts" must be json
+=== RUN   TestWebWorkspaceReadHTTPModuleSaaSAndRestart/saas
+    web_read_flow_test.go:224: non-OAuth service readiness invalid <nil>
+--- FAIL: TestWebWorkspaceReadHTTPModuleSaaSAndRestart (7.24s)
+    --- FAIL: TestWebWorkspaceReadHTTPModuleSaaSAndRestart/module (2.52s)
+    --- FAIL: TestWebWorkspaceReadHTTPModuleSaaSAndRestart/saas (4.71s)
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/assembly/saas	7.949s
+FAIL

@@ -1,0 +1,522 @@
+{
+  "steps": [
+    "real Chrome login reaches actual shared Identity and seven optional business tools",
+    "persisted catalog, three cursor pages and record detail render through independent product",
+    "browser requests actual rename and shows frozen target and payload before any mutation",
+    "actual Identity process plus all product and Runtime bindings restart with pending confirmation; browser approval changes the exact record",
+    "current field and read revocations hide saved source-derived answer; restoring the original authority reveals it",
+    "unavailable business owner hides old answer without fallback; restored owner revalidates the original source",
+    "completed reply and exact business effect survive another full restart and fit a 390px viewport"
+  ],
+  "javascriptErrors": [],
+  "snapshots": [
+    {
+      "conversation": {
+        "id": "conv_f510719d96c502587814e214e85f6874",
+        "title": "共享身份的业务查询",
+        "runtime_id": "business-browser-runtime",
+        "workspace_id": "workspace-primary",
+        "user_id": "admin",
+        "archived": false,
+        "memory_enabled": false,
+        "last_seq": 2,
+        "revision": 3,
+        "created_at": "2026-09-11T18:10:47.095Z",
+        "updated_at": "2026-09-11T18:10:52.777Z"
+      },
+      "messages": {
+        "items": [
+          {
+            "id": "msg_19654a19beb0f4e0025f801115932b7f",
+            "conversation_id": "conv_f510719d96c502587814e214e85f6874",
+            "run_id": "crun_4b9cfdfde4bad27d6892cd7ab51be29b",
+            "seq": 1,
+            "role": "user",
+            "content": "请通过业务目录发现客户对象和动作，再查询我能读取的全部客户：按名称升序，每页只查 1 条，使用返回的游标逐页查完；读取第一条客户的详情。最终列出每条客户的名称与余额。只使用工具实际返回的数据。",
+            "created_at": "2026-09-11T18:10:47.098622Z"
+          },
+          {
+            "id": "msg_0216d571b01386dd44250226bb95e9c1",
+            "conversation_id": "conv_f510719d96c502587814e214e85f6874",
+            "run_id": "crun_4b9cfdfde4bad27d6892cd7ab51be29b",
+            "seq": 2,
+            "role": "assistant",
+            "content": "已逐页读取可访问的客户，并读取第一条详情：\nAcme：10\nBeta：20\nGamma：30",
+            "created_at": "2026-09-11T18:10:52.777533Z"
+          }
+        ]
+      },
+      "run": {
+        "id": "crun_4b9cfdfde4bad27d6892cd7ab51be29b",
+        "conversation_id": "conv_f510719d96c502587814e214e85f6874",
+        "client_message_id": "business-query-1789150247096294000",
+        "status": "completed",
+        "user_seq": 1,
+        "assistant_message_id": "msg_0216d571b01386dd44250226bb95e9c1",
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 38,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "objects",
+                "name": "business_catalog",
+                "arguments": "{\"object_key\":\"customer\"}",
+                "status": "completed",
+                "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:4cd0aa8a434578db1b51427a6a0f2435ad786fb09144899cf589ae9e8ae7fe2b\",\"scope_sha256\":\"c23bc8794438196a2a6cc202a02ad1e16b8160c4c9ba87bd7d2b053027992704\",\"operation\":\"business_catalog\",\"input\":{\"object_key\":\"customer\"},\"data\":{\"items\":[{\"key\":\"customer\",\"label\":\"Customer\",\"version\":\"28fe3bb58cf9d2d5ca8b4d4e3a0cd7f871786db5d1f636a75ba0ffa531286442\",\"readable\":true,\"pagination\":\"cursor\",\"fields\":[{\"key\":\"balance\",\"label\":\"余额\",\"type\":\"integer\",\"filter_operators\":[\"eq\",\"ne\",\"in\",\"not_in\",\"is_null\",\"is_not_null\",\"gt\",\"gte\",\"lt\",\"lte\"],\"sortable\":true},{\"key\":\"name\",\"label\":\"Name\",\"type\":\"text\",\"filter_operators\":[\"eq\",\"ne\",\"in\",\"not_in\",\"is_null\",\"is_not_null\",\"contains\"],\"sortable\":true},{\"key\":\"status\",\"label\":\"状态\",\"type\":\"select\",\"filter_operators\":[\"eq\",\"ne\",\"in\",\"not_in\",\"is_null\",\"is_not_null\"],\"sortable\":true}],\"relations\":[{\"direction\":\"reverse\",\"key\":\"reverse:opportunity:customer\",\"label\":\"Opportunity / Customer\",\"object_key\":\"opportunity\"},{\"direction\":\"reverse\",\"key\":\"reverse:order:customer\",\"label\":\"订单 / customer\",\"object_key\":\"order\"},{\"direction\":\"reverse\",\"key\":\"reverse:project:customer\",\"label\":\"项目 / customer\",\"object_key\":\"project\"}]}],\"complete\":true}}",
+                "result_reference": {
+                  "conversation_id": "conv_f510719d96c502587814e214e85f6874",
+                  "run_id": "crun_4b9cfdfde4bad27d6892cd7ab51be29b",
+                  "step": 0,
+                  "call_id": "objects",
+                  "sha256": "3ef86aea8f6481bdd5451c8f58a490c4ea5a60ba6ebfae954f5f29c82d5e045a"
+                }
+              }
+            ]
+          },
+          {
+            "number": 1,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "actions",
+                "name": "business_catalog",
+                "arguments": "{\"kind\":\"actions\",\"object_key\":\"customer\"}",
+                "status": "completed",
+                "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:4cd0aa8a434578db1b51427a6a0f2435ad786fb09144899cf589ae9e8ae7fe2b\",\"scope_sha256\":\"c23bc8794438196a2a6cc202a02ad1e16b8160c4c9ba87bd7d2b053027992704\",\"operation\":\"business_catalog\",\"input\":{\"kind\":\"actions\",\"object_key\":\"customer\"},\"data\":{\"items\":[],\"actions\":[{\"key\":\"customer.deactivate\",\"label\":\"停用客户\",\"version\":\"129fde451564ec2fa3f889538cbdce26df537b4fc2be3468af14f5ebb8c8b851\",\"object_keys\":[\"customer\"],\"input_schema\":null},{\"key\":\"customer.register\",\"label\":\"创建客户\",\"version\":\"a98921c866f9415c7f092c982a7e025986b89c2ee4b41694313acd8a077e3b7e\",\"object_keys\":[\"customer\"],\"input_schema\":null},{\"key\":\"customer.rename\",\"label\":\"客户改名\",\"version\":\"ff3e11359ff5f038cc86cd561a6436f8e748e092c0807140238367651b58c016\",\"object_keys\":[\"customer\"],\"input_schema\":null}],\"complete\":true}}",
+                "result_reference": {
+                  "conversation_id": "conv_f510719d96c502587814e214e85f6874",
+                  "run_id": "crun_4b9cfdfde4bad27d6892cd7ab51be29b",
+                  "step": 1,
+                  "call_id": "actions",
+                  "sha256": "8707f90640ddcebc664b6d36ffb4446fb3bd37ff883880ee58e0774adaf1acd9"
+                }
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "records-1",
+                "name": "query_records",
+                "arguments": "{\"object_key\":\"customer\",\"fields\":[\"name\",\"balance\"],\"sort\":[{\"field\":\"name\",\"direction\":\"asc\"}],\"page_size\":1}",
+                "status": "completed",
+                "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:4cd0aa8a434578db1b51427a6a0f2435ad786fb09144899cf589ae9e8ae7fe2b\",\"scope_sha256\":\"c23bc8794438196a2a6cc202a02ad1e16b8160c4c9ba87bd7d2b053027992704\",\"operation\":\"query_records\",\"input\":{\"object_key\":\"customer\",\"fields\":[\"name\",\"balance\"],\"sort\":[{\"field\":\"name\",\"direction\":\"asc\"}],\"page_size\":1},\"data\":{\"object_key\":\"customer\",\"items\":[{\"id\":\"customer_customer_acme\",\"version\":\"2026-09-11T18:10:46Z\",\"data\":{\"balance\":10,\"name\":\"Acme\"}}],\"page\":1,\"page_size\":1,\"has_next\":true,\"next_cursor\":\"eyJ2IjoxLCJzY29wZSI6ImMyM2JjODc5NDQzODE5NmEyYTZjYzIwMmEwMmFkMWUxNmI4MTYwYzRjOWJhODdiZDdkMmIwNTMwMjc5OTI3MDQiLCJxdWVyeSI6IjQ5YTMwNTE3NWI2ZWU2NTYwYTQxNDQ5NWQ2OGQ4MDI2MmZmODRjNmU2Mzc5NDI1M2VjYWU2N2JiYmMwNGJkMTMiLCJwYWdlIjoyLCJ2YWx1ZXMiOlsiQWNtZSIsImN1c3RvbWVyX2N1c3RvbWVyX2FjbWUiXX0\",\"total\":3},\"host_proof\":\"1:df6d6e8744ae1927ea2a274063754c1f05a6872a5106cd89dc6c51a8dd5cca73:067f2a4f9ed7c4cf97ca91c351f6457f189cbfe0056167094bd112d3f5d7e2f5\"}",
+                "result_reference": {
+                  "conversation_id": "conv_f510719d96c502587814e214e85f6874",
+                  "run_id": "crun_4b9cfdfde4bad27d6892cd7ab51be29b",
+                  "step": 2,
+                  "call_id": "records-1",
+                  "sha256": "529cf885e82463c928b6e78351b16219dfe75fc35a6dd2be621ee13bb0ffd50d"
+                }
+              }
+            ]
+          },
+          {
+            "number": 3,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "records-2",
+                "name": "query_records",
+                "arguments": "{\"object_key\":\"customer\",\"fields\":[\"name\",\"balance\"],\"sort\":[{\"field\":\"name\",\"direction\":\"asc\"}],\"page_size\":1,\"cursor\":\"eyJ2IjoxLCJzY29wZSI6ImMyM2JjODc5NDQzODE5NmEyYTZjYzIwMmEwMmFkMWUxNmI4MTYwYzRjOWJhODdiZDdkMmIwNTMwMjc5OTI3MDQiLCJxdWVyeSI6IjQ5YTMwNTE3NWI2ZWU2NTYwYTQxNDQ5NWQ2OGQ4MDI2MmZmODRjNmU2Mzc5NDI1M2VjYWU2N2JiYmMwNGJkMTMiLCJwYWdlIjoyLCJ2YWx1ZXMiOlsiQWNtZSIsImN1c3RvbWVyX2N1c3RvbWVyX2FjbWUiXX0\"}",
+                "status": "completed",
+                "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:4cd0aa8a434578db1b51427a6a0f2435ad786fb09144899cf589ae9e8ae7fe2b\",\"scope_sha256\":\"c23bc8794438196a2a6cc202a02ad1e16b8160c4c9ba87bd7d2b053027992704\",\"operation\":\"query_records\",\"input\":{\"object_key\":\"customer\",\"fields\":[\"name\",\"balance\"],\"sort\":[{\"field\":\"name\",\"direction\":\"asc\"}],\"page_size\":1,\"cursor\":\"eyJ2IjoxLCJzY29wZSI6ImMyM2JjODc5NDQzODE5NmEyYTZjYzIwMmEwMmFkMWUxNmI4MTYwYzRjOWJhODdiZDdkMmIwNTMwMjc5OTI3MDQiLCJxdWVyeSI6IjQ5YTMwNTE3NWI2ZWU2NTYwYTQxNDQ5NWQ2OGQ4MDI2MmZmODRjNmU2Mzc5NDI1M2VjYWU2N2JiYmMwNGJkMTMiLCJwYWdlIjoyLCJ2YWx1ZXMiOlsiQWNtZSIsImN1c3RvbWVyX2N1c3RvbWVyX2FjbWUiXX0\"},\"data\":{\"object_key\":\"customer\",\"items\":[{\"id\":\"customer_customer_browser_Beta\",\"version\":\"2026-09-11T18:10:46Z\",\"data\":{\"balance\":20,\"name\":\"Beta\"}}],\"page\":2,\"page_size\":1,\"has_next\":true,\"next_cursor\":\"eyJ2IjoxLCJzY29wZSI6ImMyM2JjODc5NDQzODE5NmEyYTZjYzIwMmEwMmFkMWUxNmI4MTYwYzRjOWJhODdiZDdkMmIwNTMwMjc5OTI3MDQiLCJxdWVyeSI6IjQ5YTMwNTE3NWI2ZWU2NTYwYTQxNDQ5NWQ2OGQ4MDI2MmZmODRjNmU2Mzc5NDI1M2VjYWU2N2JiYmMwNGJkMTMiLCJwYWdlIjozLCJ2YWx1ZXMiOlsiQmV0YSIsImN1c3RvbWVyX2N1c3RvbWVyX2Jyb3dzZXJfQmV0YSJdfQ\"},\"host_proof\":\"1:df6d6e8744ae1927ea2a274063754c1f05a6872a5106cd89dc6c51a8dd5cca73:be7d32afde3c7931abe6d2c6c21eefc9395561a58f8f1f3e2f3f3efd78640606\"}",
+                "result_reference": {
+                  "conversation_id": "conv_f510719d96c502587814e214e85f6874",
+                  "run_id": "crun_4b9cfdfde4bad27d6892cd7ab51be29b",
+                  "step": 3,
+                  "call_id": "records-2",
+                  "sha256": "04c55ec9d17342659e57ddf6e7b53ca87d5d30584b2bd6b8991729da264222db"
+                }
+              }
+            ]
+          },
+          {
+            "number": 4,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "records-3",
+                "name": "query_records",
+                "arguments": "{\"object_key\":\"customer\",\"fields\":[\"name\",\"balance\"],\"sort\":[{\"field\":\"name\",\"direction\":\"asc\"}],\"page_size\":1,\"cursor\":\"eyJ2IjoxLCJzY29wZSI6ImMyM2JjODc5NDQzODE5NmEyYTZjYzIwMmEwMmFkMWUxNmI4MTYwYzRjOWJhODdiZDdkMmIwNTMwMjc5OTI3MDQiLCJxdWVyeSI6IjQ5YTMwNTE3NWI2ZWU2NTYwYTQxNDQ5NWQ2OGQ4MDI2MmZmODRjNmU2Mzc5NDI1M2VjYWU2N2JiYmMwNGJkMTMiLCJwYWdlIjozLCJ2YWx1ZXMiOlsiQmV0YSIsImN1c3RvbWVyX2N1c3RvbWVyX2Jyb3dzZXJfQmV0YSJdfQ\"}",
+                "status": "completed",
+                "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:4cd0aa8a434578db1b51427a6a0f2435ad786fb09144899cf589ae9e8ae7fe2b\",\"scope_sha256\":\"c23bc8794438196a2a6cc202a02ad1e16b8160c4c9ba87bd7d2b053027992704\",\"operation\":\"query_records\",\"input\":{\"object_key\":\"customer\",\"fields\":[\"name\",\"balance\"],\"sort\":[{\"field\":\"name\",\"direction\":\"asc\"}],\"page_size\":1,\"cursor\":\"eyJ2IjoxLCJzY29wZSI6ImMyM2JjODc5NDQzODE5NmEyYTZjYzIwMmEwMmFkMWUxNmI4MTYwYzRjOWJhODdiZDdkMmIwNTMwMjc5OTI3MDQiLCJxdWVyeSI6IjQ5YTMwNTE3NWI2ZWU2NTYwYTQxNDQ5NWQ2OGQ4MDI2MmZmODRjNmU2Mzc5NDI1M2VjYWU2N2JiYmMwNGJkMTMiLCJwYWdlIjozLCJ2YWx1ZXMiOlsiQmV0YSIsImN1c3RvbWVyX2N1c3RvbWVyX2Jyb3dzZXJfQmV0YSJdfQ\"},\"data\":{\"object_key\":\"customer\",\"items\":[{\"id\":\"customer_customer_browser_Gamma\",\"version\":\"2026-09-11T18:10:46Z\",\"data\":{\"balance\":30,\"name\":\"Gamma\"}}],\"page\":3,\"page_size\":1,\"has_next\":false},\"host_proof\":\"1:df6d6e8744ae1927ea2a274063754c1f05a6872a5106cd89dc6c51a8dd5cca73:5e3131269394ea7f7bbe78a324dc31d78abaa6c29afcf244f44657c3e7554fd4\"}",
+                "result_reference": {
+                  "conversation_id": "conv_f510719d96c502587814e214e85f6874",
+                  "run_id": "crun_4b9cfdfde4bad27d6892cd7ab51be29b",
+                  "step": 4,
+                  "call_id": "records-3",
+                  "sha256": "cfa7c001ad0082c3a08437fc54e64d377b4038b54ed99543bf0dbd0dcf935d2d"
+                }
+              }
+            ]
+          },
+          {
+            "number": 5,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "detail",
+                "name": "get_record",
+                "arguments": "{\"object_key\":\"customer\",\"record_id\":\"customer_customer_acme\",\"fields\":[\"name\",\"balance\"]}",
+                "status": "completed",
+                "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:4cd0aa8a434578db1b51427a6a0f2435ad786fb09144899cf589ae9e8ae7fe2b\",\"scope_sha256\":\"c23bc8794438196a2a6cc202a02ad1e16b8160c4c9ba87bd7d2b053027992704\",\"operation\":\"get_record\",\"input\":{\"object_key\":\"customer\",\"record_id\":\"customer_customer_acme\",\"fields\":[\"name\",\"balance\"]},\"data\":{\"id\":\"customer_customer_acme\",\"version\":\"2026-09-11T18:10:46Z\",\"data\":{\"balance\":10,\"name\":\"Acme\"}},\"host_proof\":\"1:df6d6e8744ae1927ea2a274063754c1f05a6872a5106cd89dc6c51a8dd5cca73:d9e8a87eef1a14e073b9985eba6275142937f9ca8ea3e5d155ce52c1cd311ec3\"}",
+                "result_reference": {
+                  "conversation_id": "conv_f510719d96c502587814e214e85f6874",
+                  "run_id": "crun_4b9cfdfde4bad27d6892cd7ab51be29b",
+                  "step": 5,
+                  "call_id": "detail",
+                  "sha256": "0adc0fa46a7cfbd0870e059631674d34a0909a71508795f7bf1de0722f47b414"
+                }
+              }
+            ]
+          },
+          {
+            "number": 6,
+            "attempt": 1,
+            "status": "completed",
+            "text": "已逐页读取可访问的客户，并读取第一条详情：\nAcme：10\nBeta：20\nGamma：30",
+            "calls": []
+          }
+        ],
+        "created_at": "2026-09-11T18:10:47.098622Z",
+        "updated_at": "2026-09-11T18:10:52.777627Z"
+      }
+    },
+    {
+      "conversation": {
+        "id": "conv_c970645388e0b7abfe3269c76be24899",
+        "title": "共享服务客户改名",
+        "runtime_id": "business-browser-runtime",
+        "workspace_id": "workspace-primary",
+        "user_id": "admin",
+        "archived": false,
+        "memory_enabled": false,
+        "last_seq": 1,
+        "active_run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+        "revision": 2,
+        "created_at": "2026-09-11T18:11:07.298Z",
+        "updated_at": "2026-09-11T18:11:07.649Z"
+      },
+      "messages": {
+        "items": [
+          {
+            "id": "msg_d3b04db3d869a6c4ceb80a2865fd20c0",
+            "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+            "run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+            "seq": 1,
+            "role": "user",
+            "content": "验收：改名",
+            "created_at": "2026-09-11T18:11:07.649626Z"
+          }
+        ]
+      },
+      "run": {
+        "id": "crun_66eb5de531f280c6e882a577edd512cc",
+        "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+        "client_message_id": "50601f7f-3633-482f-8bd1-21bedd8bad44",
+        "status": "waiting_confirmation",
+        "user_seq": 1,
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 17,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "action-contract",
+                "name": "business_catalog",
+                "arguments": "{\"kind\":\"actions\",\"object_key\":\"customer\",\"action_key\":\"customer.rename\"}",
+                "status": "completed",
+                "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:4cd0aa8a434578db1b51427a6a0f2435ad786fb09144899cf589ae9e8ae7fe2b\",\"scope_sha256\":\"c23bc8794438196a2a6cc202a02ad1e16b8160c4c9ba87bd7d2b053027992704\",\"operation\":\"business_catalog\",\"input\":{\"kind\":\"actions\",\"object_key\":\"customer\",\"action_key\":\"customer.rename\"},\"data\":{\"items\":[],\"actions\":[{\"key\":\"customer.rename\",\"label\":\"客户改名\",\"version\":\"26f9e7b5b720cf8f481a7069eeeb4430028754ee140e96c2afbfbee18008989a\",\"execution_version\":\"c57a426da9d89e2a91cf09e58e90b4390fefaff4e3384da6665d8a7655270e94\",\"kind\":\"record_update\",\"optimistic_concurrency\":true,\"object_keys\":[\"customer\"],\"input_schema\":{\"additionalProperties\":false,\"properties\":{\"expected_updated_at\":{\"description\":\"Use the version returned by get_record or query_records for this target.\",\"type\":\"string\"},\"name\":{\"type\":\"string\"}},\"required\":[\"expected_updated_at\",\"name\"],\"type\":\"object\"}}],\"complete\":true}}",
+                "result_reference": {
+                  "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+                  "run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+                  "step": 0,
+                  "call_id": "action-contract",
+                  "sha256": "f56b4bfdd73c6afddd881c9be53e75f02a55ed387be99d19fab25c66a4a8fdeb"
+                }
+              }
+            ]
+          },
+          {
+            "number": 1,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "target",
+                "name": "query_records",
+                "arguments": "{\"object_key\":\"customer\",\"fields\":[\"name\",\"status\"],\"filters\":[{\"field\":\"name\",\"operator\":\"eq\",\"value\":\"Agent Created\"}],\"page_size\":2}",
+                "status": "completed",
+                "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:4cd0aa8a434578db1b51427a6a0f2435ad786fb09144899cf589ae9e8ae7fe2b\",\"scope_sha256\":\"c23bc8794438196a2a6cc202a02ad1e16b8160c4c9ba87bd7d2b053027992704\",\"operation\":\"query_records\",\"input\":{\"object_key\":\"customer\",\"fields\":[\"name\",\"status\"],\"filters\":[{\"field\":\"name\",\"operator\":\"eq\",\"value\":\"Agent Created\"}],\"page_size\":2},\"data\":{\"object_key\":\"customer\",\"items\":[{\"id\":\"customer_1789150255768983000\",\"version\":\"2026-09-11T18:10:55.777432Z\",\"data\":{\"name\":\"Agent Created\",\"status\":\"active\"}}],\"page\":1,\"page_size\":2,\"has_next\":false,\"total\":1},\"host_proof\":\"1:df6d6e8744ae1927ea2a274063754c1f05a6872a5106cd89dc6c51a8dd5cca73:045d972979313392fac1b696f4b7a011d8f604e031dce407e2b76e91267604fb\"}",
+                "result_reference": {
+                  "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+                  "run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+                  "step": 1,
+                  "call_id": "target",
+                  "sha256": "33c16d00325217e1e4fe2d050807dcd8f91fe70e9b3757a6c84d8e2eb928fb6a"
+                }
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "write",
+                "id": "mutate",
+                "name": "invoke_action",
+                "arguments": "{\"object_key\":\"customer\",\"action_key\":\"customer.rename\",\"action_version\":\"c57a426da9d89e2a91cf09e58e90b4390fefaff4e3384da6665d8a7655270e94\",\"record_id\":\"customer_1789150255768983000\",\"data\":{\"expected_updated_at\":\"2026-09-11T18:10:55.777432Z\",\"name\":\"Agent Renamed\"}}",
+                "status": "waiting_confirmation"
+              }
+            ]
+          }
+        ],
+        "interaction": {
+          "id": "cint_8e6fca64f8526bc3c1e34684e3dec1c7",
+          "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+          "run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+          "step": 2,
+          "call_id": "mutate",
+          "kind": "confirmation",
+          "status": "pending",
+          "question": "请确认是否执行此操作；执行参数如下。",
+          "tool": "invoke_action",
+          "tool_version": "1",
+          "action_key": "agent.conversation_tools.invoke_action",
+          "arguments": "{\"object_key\":\"customer\",\"action_key\":\"customer.rename\",\"action_version\":\"c57a426da9d89e2a91cf09e58e90b4390fefaff4e3384da6665d8a7655270e94\",\"record_id\":\"customer_1789150255768983000\",\"data\":{\"expected_updated_at\":\"2026-09-11T18:10:55.777432Z\",\"name\":\"Agent Renamed\"}}",
+          "arguments_hash": "8193340453db2a17eebf620602f14835000f92394665af1179b3c21318e5904c",
+          "definition_hash": "d2c2452123eb95a8a1fdf5fc0735094d8362162e26bc97a4e56a38489bdac638",
+          "revision": 1,
+          "created_at": "2026-09-11T18:11:09.374316Z",
+          "expires_at": "2026-09-12T18:11:09.374316Z"
+        },
+        "created_at": "2026-09-11T18:11:07.649626Z",
+        "updated_at": "2026-09-11T18:11:09.374544Z"
+      }
+    },
+    {
+      "conversation": {
+        "id": "conv_c970645388e0b7abfe3269c76be24899",
+        "title": "共享服务客户改名",
+        "runtime_id": "business-browser-runtime",
+        "workspace_id": "workspace-primary",
+        "user_id": "admin",
+        "archived": false,
+        "memory_enabled": false,
+        "last_seq": 3,
+        "revision": 4,
+        "created_at": "2026-09-11T18:11:07.298Z",
+        "updated_at": "2026-09-11T18:11:44.162Z"
+      },
+      "messages": {
+        "items": [
+          {
+            "id": "msg_d3b04db3d869a6c4ceb80a2865fd20c0",
+            "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+            "run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+            "seq": 1,
+            "role": "user",
+            "content": "验收：改名",
+            "created_at": "2026-09-11T18:11:07.649626Z"
+          },
+          {
+            "interaction_id": "cint_8e6fca64f8526bc3c1e34684e3dec1c7",
+            "id": "msg_1459d2e7c81a09ae18c2711c83b0bdae",
+            "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+            "run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+            "seq": 2,
+            "role": "user",
+            "content": "确认执行：invoke_action",
+            "created_at": "2026-09-11T18:11:40.247816Z"
+          },
+          {
+            "id": "msg_d149f26ea5cf85c3bac30e35fd25e5a3",
+            "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+            "run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+            "seq": 3,
+            "role": "assistant",
+            "content": "已读取业务实际结果：{\"id\":\"customer_1789150255768983000\",\"version\":\"2026-09-11T18:11:42.24025Z\",\"data\":{\"name\":\"Agent Renamed\",\"status\":\"active\"}}",
+            "created_at": "2026-09-11T18:11:44.162926Z"
+          }
+        ]
+      },
+      "run": {
+        "id": "crun_66eb5de531f280c6e882a577edd512cc",
+        "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+        "client_message_id": "50601f7f-3633-482f-8bd1-21bedd8bad44",
+        "status": "completed",
+        "user_seq": 1,
+        "assistant_message_id": "msg_d149f26ea5cf85c3bac30e35fd25e5a3",
+        "attempt": 2,
+        "draft_bytes": 0,
+        "last_event_seq": 33,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "action-contract",
+                "name": "business_catalog",
+                "arguments": "{\"kind\":\"actions\",\"object_key\":\"customer\",\"action_key\":\"customer.rename\"}",
+                "status": "completed",
+                "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:4cd0aa8a434578db1b51427a6a0f2435ad786fb09144899cf589ae9e8ae7fe2b\",\"scope_sha256\":\"c23bc8794438196a2a6cc202a02ad1e16b8160c4c9ba87bd7d2b053027992704\",\"operation\":\"business_catalog\",\"input\":{\"kind\":\"actions\",\"object_key\":\"customer\",\"action_key\":\"customer.rename\"},\"data\":{\"items\":[],\"actions\":[{\"key\":\"customer.rename\",\"label\":\"客户改名\",\"version\":\"26f9e7b5b720cf8f481a7069eeeb4430028754ee140e96c2afbfbee18008989a\",\"execution_version\":\"c57a426da9d89e2a91cf09e58e90b4390fefaff4e3384da6665d8a7655270e94\",\"kind\":\"record_update\",\"optimistic_concurrency\":true,\"object_keys\":[\"customer\"],\"input_schema\":{\"additionalProperties\":false,\"properties\":{\"expected_updated_at\":{\"description\":\"Use the version returned by get_record or query_records for this target.\",\"type\":\"string\"},\"name\":{\"type\":\"string\"}},\"required\":[\"expected_updated_at\",\"name\"],\"type\":\"object\"}}],\"complete\":true}}",
+                "result_reference": {
+                  "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+                  "run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+                  "step": 0,
+                  "call_id": "action-contract",
+                  "sha256": "f56b4bfdd73c6afddd881c9be53e75f02a55ed387be99d19fab25c66a4a8fdeb"
+                }
+              }
+            ]
+          },
+          {
+            "number": 1,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "target",
+                "name": "query_records",
+                "arguments": "{\"object_key\":\"customer\",\"fields\":[\"name\",\"status\"],\"filters\":[{\"field\":\"name\",\"operator\":\"eq\",\"value\":\"Agent Created\"}],\"page_size\":2}",
+                "status": "completed",
+                "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:4cd0aa8a434578db1b51427a6a0f2435ad786fb09144899cf589ae9e8ae7fe2b\",\"scope_sha256\":\"c23bc8794438196a2a6cc202a02ad1e16b8160c4c9ba87bd7d2b053027992704\",\"operation\":\"query_records\",\"input\":{\"object_key\":\"customer\",\"fields\":[\"name\",\"status\"],\"filters\":[{\"field\":\"name\",\"operator\":\"eq\",\"value\":\"Agent Created\"}],\"page_size\":2},\"data\":{\"object_key\":\"customer\",\"items\":[{\"id\":\"customer_1789150255768983000\",\"version\":\"2026-09-11T18:10:55.777432Z\",\"data\":{\"name\":\"Agent Created\",\"status\":\"active\"}}],\"page\":1,\"page_size\":2,\"has_next\":false,\"total\":1},\"host_proof\":\"1:df6d6e8744ae1927ea2a274063754c1f05a6872a5106cd89dc6c51a8dd5cca73:045d972979313392fac1b696f4b7a011d8f604e031dce407e2b76e91267604fb\"}",
+                "result_reference": {
+                  "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+                  "run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+                  "step": 1,
+                  "call_id": "target",
+                  "sha256": "33c16d00325217e1e4fe2d050807dcd8f91fe70e9b3757a6c84d8e2eb928fb6a"
+                }
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "write",
+                "id": "mutate",
+                "name": "invoke_action",
+                "arguments": "{\"object_key\":\"customer\",\"action_key\":\"customer.rename\",\"action_version\":\"c57a426da9d89e2a91cf09e58e90b4390fefaff4e3384da6665d8a7655270e94\",\"record_id\":\"customer_1789150255768983000\",\"data\":{\"expected_updated_at\":\"2026-09-11T18:10:55.777432Z\",\"name\":\"Agent Renamed\"}}",
+                "status": "completed",
+                "resource_id": "conversation-tool:95f71ac03d5e0ddd4562eccd879c5d380f44b0b63d13cfa7cf8117ad41dca110",
+                "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:4cd0aa8a434578db1b51427a6a0f2435ad786fb09144899cf589ae9e8ae7fe2b\",\"scope_sha256\":\"c23bc8794438196a2a6cc202a02ad1e16b8160c4c9ba87bd7d2b053027992704\",\"operation\":\"invoke_action\",\"input\":{\"object_key\":\"customer\",\"action_key\":\"customer.rename\",\"action_version\":\"c57a426da9d89e2a91cf09e58e90b4390fefaff4e3384da6665d8a7655270e94\",\"record_id\":\"customer_1789150255768983000\",\"data\":{\"expected_updated_at\":\"2026-09-11T18:10:55.777432Z\",\"name\":\"Agent Renamed\"}},\"data\":{\"status\":\"completed\",\"invocation_id\":\"conversation-tool:95f71ac03d5e0ddd4562eccd879c5d380f44b0b63d13cfa7cf8117ad41dca110\",\"object_key\":\"customer\",\"action_key\":\"customer.rename\",\"record_id\":\"customer_1789150255768983000\",\"reference_count\":0}}",
+                "result_reference": {
+                  "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+                  "run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+                  "step": 2,
+                  "call_id": "mutate",
+                  "sha256": "f0115b3c35e97af578c7d14f1290ee8c225223a63d14337cce23e1a8f1790190"
+                }
+              }
+            ]
+          },
+          {
+            "number": 3,
+            "attempt": 2,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "verify",
+                "name": "get_record",
+                "arguments": "{\"object_key\":\"customer\",\"record_id\":\"customer_1789150255768983000\",\"fields\":[\"name\",\"status\"]}",
+                "status": "completed",
+                "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:4cd0aa8a434578db1b51427a6a0f2435ad786fb09144899cf589ae9e8ae7fe2b\",\"scope_sha256\":\"c23bc8794438196a2a6cc202a02ad1e16b8160c4c9ba87bd7d2b053027992704\",\"operation\":\"get_record\",\"input\":{\"object_key\":\"customer\",\"record_id\":\"customer_1789150255768983000\",\"fields\":[\"name\",\"status\"]},\"data\":{\"id\":\"customer_1789150255768983000\",\"version\":\"2026-09-11T18:11:42.24025Z\",\"data\":{\"name\":\"Agent Renamed\",\"status\":\"active\"}},\"host_proof\":\"1:df6d6e8744ae1927ea2a274063754c1f05a6872a5106cd89dc6c51a8dd5cca73:9d4a474120330f2f89da62caf3cd44ffae97b2ce26bb2deec85b5c4e95616dd9\"}",
+                "result_reference": {
+                  "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+                  "run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+                  "step": 3,
+                  "call_id": "verify",
+                  "sha256": "0a9b3044c27c3a1520e75a073c7647fae89f1e2b765ab96b007ef35c5b61515a"
+                }
+              }
+            ]
+          },
+          {
+            "number": 4,
+            "attempt": 2,
+            "status": "completed",
+            "text": "已读取业务实际结果：{\"id\":\"customer_1789150255768983000\",\"version\":\"2026-09-11T18:11:42.24025Z\",\"data\":{\"name\":\"Agent Renamed\",\"status\":\"active\"}}",
+            "calls": []
+          }
+        ],
+        "interaction": {
+          "id": "cint_8e6fca64f8526bc3c1e34684e3dec1c7",
+          "conversation_id": "conv_c970645388e0b7abfe3269c76be24899",
+          "run_id": "crun_66eb5de531f280c6e882a577edd512cc",
+          "step": 2,
+          "call_id": "mutate",
+          "kind": "confirmation",
+          "status": "approved",
+          "question": "请确认是否执行此操作；执行参数如下。",
+          "tool": "invoke_action",
+          "tool_version": "1",
+          "action_key": "agent.conversation_tools.invoke_action",
+          "arguments": "{\"object_key\":\"customer\",\"action_key\":\"customer.rename\",\"action_version\":\"c57a426da9d89e2a91cf09e58e90b4390fefaff4e3384da6665d8a7655270e94\",\"record_id\":\"customer_1789150255768983000\",\"data\":{\"expected_updated_at\":\"2026-09-11T18:10:55.777432Z\",\"name\":\"Agent Renamed\"}}",
+          "arguments_hash": "8193340453db2a17eebf620602f14835000f92394665af1179b3c21318e5904c",
+          "definition_hash": "d2c2452123eb95a8a1fdf5fc0735094d8362162e26bc97a4e56a38489bdac638",
+          "revision": 2,
+          "responded_by": "admin",
+          "created_at": "2026-09-11T18:11:09.374316Z",
+          "expires_at": "2026-09-12T18:11:09.374316Z",
+          "responded_at": "2026-09-11T18:11:40.247816Z"
+        },
+        "last_input_seq": 2,
+        "created_at": "2026-09-11T18:11:07.649626Z",
+        "updated_at": "2026-09-11T18:11:44.163008Z"
+      }
+    }
+  ],
+  "actualIdentityProcess": true,
+  "actualBusinessHTTP": true,
+  "realLanguageModel": false,
+  "complete": true
+}

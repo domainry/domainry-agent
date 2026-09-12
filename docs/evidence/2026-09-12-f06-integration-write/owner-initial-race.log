@@ -1,0 +1,67 @@
+=== RUN   TestAccountWriteStableIdentityBoundedReceiptAndCurrentAuthorization
+    connection_account_writes_test.go:128: constraint failed: UNIQUE constraint failed: _integration_connection_grants.workspace_id, _integration_connection_grants.connection_key (2067)
+--- FAIL: TestAccountWriteStableIdentityBoundedReceiptAndCurrentAuthorization (0.16s)
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/foreign-personal
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-workspace
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/no-access
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-principal
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/scope-exceeds-principal
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-source
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-hash
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/unknown-operation
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/read-effect
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/async
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/missing-declaration
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/missing-grant
+    connection_account_writes_test.go:165: constraint failed: UNIQUE constraint failed: _integration_connection_grants.workspace_id, _integration_connection_grants.connection_key (2067)
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/revoked-account
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/unknown-payload-field
+=== RUN   TestAccountWriteAuthorityRejectsBeforeProviderIO/invalid-recipient
+--- FAIL: TestAccountWriteAuthorityRejectsBeforeProviderIO (1.20s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/foreign-personal (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-workspace (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/no-access (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-principal (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/scope-exceeds-principal (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-source (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/wrong-hash (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/unknown-operation (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/read-effect (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/async (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/missing-declaration (0.08s)
+    --- FAIL: TestAccountWriteAuthorityRejectsBeforeProviderIO/missing-grant (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/revoked-account (0.09s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/unknown-payload-field (0.08s)
+    --- PASS: TestAccountWriteAuthorityRejectsBeforeProviderIO/invalid-recipient (0.08s)
+=== RUN   TestAccountWriteConcurrentClaimCannotSendTwice
+--- PASS: TestAccountWriteConcurrentClaimCannotSendTwice (0.25s)
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/unknown-error
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/uncertain
+    connection_account_writes_test.go:247: {{workspace-a shared crm probe 2026-09-11T19:54:46.8527Z mail_send 27f290e180d111a97a202e01372ecffd2f4ab6480369728ca6aa85d502c92895} account-write:2157cf95c339ebb0958cc9a82384963ddaa525ce5478c55b7100c254c6bb5004 failed 2026-09-11T19:54:46.878344Z []} <nil> 1
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/permanent
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/retryable
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/wrong-request-ref
+=== RUN   TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/extra-body
+--- FAIL: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed (0.64s)
+    --- PASS: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/unknown-error (0.11s)
+    --- FAIL: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/uncertain (0.10s)
+    --- PASS: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/permanent (0.11s)
+    --- PASS: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/retryable (0.11s)
+    --- PASS: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/wrong-request-ref (0.11s)
+    --- PASS: TestAccountWriteFailureAndInvalidReceiptsAreNeverReplayed/extra-body (0.11s)
+=== RUN   TestAccountWriteDisconnectPersistsSuccessAndRevokeHidesIt
+=== RUN   TestAccountWriteDisconnectPersistsSuccessAndRevokeHidesIt/caller-disconnect
+=== RUN   TestAccountWriteDisconnectPersistsSuccessAndRevokeHidesIt/revoke-during-call
+    connection_account_writes_test.go:273: constraint failed: UNIQUE constraint failed: _integration_connection_grants.workspace_id, _integration_connection_grants.connection_key (2067)
+    connection_account_writes_test.go:277: revoked response exposed
+--- FAIL: TestAccountWriteDisconnectPersistsSuccessAndRevokeHidesIt (0.20s)
+    --- PASS: TestAccountWriteDisconnectPersistsSuccessAndRevokeHidesIt/caller-disconnect (0.10s)
+    --- FAIL: TestAccountWriteDisconnectPersistsSuccessAndRevokeHidesIt/revoke-during-call (0.10s)
+=== RUN   TestAccountWriteInterruptedClaimAndReceiptStorageFailureStayUncertain
+    connection_account_writes_test.go:309: SQL logic error: index idx_integration_connection_account_owner already exists (1)
+--- FAIL: TestAccountWriteInterruptedClaimAndReceiptStorageFailureStayUncertain (0.11s)
+FAIL
+FAIL	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	3.537s
+FAIL

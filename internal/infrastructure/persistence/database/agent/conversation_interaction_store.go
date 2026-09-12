@@ -106,6 +106,10 @@ func (s *ConversationStore) WaitExecution(ctx context.Context, claim persistence
 		if definition.Key == "" {
 			return conversationError("conflict", "tool_definition_missing")
 		}
+		operations, err := frozenConfirmationOperations(step, wait)
+		if err != nil {
+			return err
+		}
 		var execution persistence.ConversationToolExecution
 		exists, err := s.readExecutionTool(ctx, tx, claim, wait.Step, call.ID, &execution)
 		if err != nil {
@@ -133,6 +137,7 @@ func (s *ConversationStore) WaitExecution(ctx context.Context, claim persistence
 				expires = now.Add(ttl)
 			}
 			record.Interaction = agentsdk.ConversationInteraction{ID: conversationID("cint_"), ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, Step: wait.Step, CallID: call.ID, Kind: wait.Kind, Status: "pending", Question: wait.Question, Choices: wait.Choices, Tool: call.Name, ToolVersion: definition.Version, ActionKey: definition.ActionKey, Arguments: call.Arguments, ArgumentsHash: conversationHash(call.Arguments), DefinitionHash: conversationHash(definition), Revision: 1, CreatedAt: now, ExpiresAt: expires}
+			record.Interaction.Operations = operations
 		} else if wait.Kind == "reconciliation" && record.Interaction.Kind == "reconciliation" && record.Interaction.Status == "cancelled" {
 			record.Interaction.Status = "pending"
 			record.Interaction.Revision++
@@ -148,7 +153,7 @@ func (s *ConversationStore) WaitExecution(ctx context.Context, claim persistence
 		v.Run.ErrorCode = ""
 		v.Owner, v.Expires = "", 0
 		v.Fence++
-		if err = s.event(ctx, tx, &v, "tool.waiting", map[string]any{"step": wait.Step, "call_id": call.ID, "status": v.Run.Status, "attempt": v.Run.Attempt}); err != nil {
+		if err = s.event(ctx, tx, &v, "tool.waiting", map[string]any{"step": wait.Step, "call_id": call.ID, "status": v.Run.Status, "effect": definition.Effect, "attempt": v.Run.Attempt}); err != nil {
 			return err
 		}
 		if err = s.event(ctx, tx, &v, "run."+v.Run.Status, map[string]any{"interaction": record.Interaction, "attempt": v.Run.Attempt}); err != nil {
@@ -162,6 +167,9 @@ func (s *ConversationStore) WaitExecution(ctx context.Context, claim persistence
 
 func (s *ConversationStore) RespondExecution(ctx context.Context, id, runID string, response agentsdk.ConversationInteractionResponse, a agentsdk.ConversationAuthority) (agentsdk.ConversationRun, error) {
 	var out agentsdk.ConversationRun
+	if response.Scope != "" && (response.Scope != "listed_operations" || response.Decision != "approve") {
+		return out, conversationError("bad_request", "interaction_scope_invalid")
+	}
 	if response.ExpectedRevision < 1 || !executionText(response.ClientID, 96, true) || !executionText(response.InteractionID, 96, true) || !executionText(response.Answer, 16384, false) {
 		return out, conversationError("bad_request", "interaction_response_invalid")
 	}
@@ -216,6 +224,11 @@ func (s *ConversationStore) RespondExecution(ctx context.Context, id, runID stri
 			return conversationError("bad_request", "interaction_response_invalid")
 		}
 		i.Status, i.Answer, i.RespondedBy, i.RespondedAt = status, response.Answer, a.UserID, &now
+		if response.Scope == "listed_operations" {
+			if err = s.approveListedOperations(ctx, tx, old, i); err != nil {
+				return err
+			}
+		}
 		i.Revision++
 		record.Response = &response
 		if err = s.writeInteraction(ctx, tx, a, record, false); err != nil {
@@ -223,7 +236,7 @@ func (s *ConversationStore) RespondExecution(ctx context.Context, id, runID stri
 		}
 		content := response.Answer
 		if i.Kind == "confirmation" {
-			content = map[string]string{"approve": "确认执行：", "reject": "拒绝执行："}[response.Decision] + i.Tool
+			content = confirmationResponseMessage(*i, response)
 		}
 		message := agentsdk.ConversationMessage{ID: conversationID("msg_"), ConversationID: id, RunID: runID, InteractionID: i.ID, Seq: c.LastSeq + 1, Role: "user", Content: content, CreatedAt: now}
 		if err = s.insertMessage(ctx, tx, message, a); err != nil {
@@ -231,6 +244,7 @@ func (s *ConversationStore) RespondExecution(ctx context.Context, id, runID stri
 		}
 		v := old
 		v.Run.Interaction = i
+		v.Authority = a
 		v.Run.LastInputSeq = message.Seq
 		v.Run.Status, v.Run.ErrorCode = "queued", ""
 		v.Run.DraftText, v.Run.DraftBytes = "", 0

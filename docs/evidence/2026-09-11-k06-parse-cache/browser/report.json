@@ -1,0 +1,2407 @@
+{
+  "steps": [
+    "actual binary XLSX uploaded, indexed and original download verified",
+    "actual XLSX original supplies exact amount and verified sheet/row in the source dialog",
+    "tool results display exact values, missing email, two table rows and verified source",
+    "persisted extraction survives host restart; current Identity revocation hides values and citations; restore revalidates",
+    "mobile result display, document deletion and historical extraction revocation"
+  ],
+  "baselines": [
+    {
+      "label": "desktop-extraction",
+      "pageOverflow": false,
+      "interactiveInventory": [
+        {
+          "tag": "button",
+          "role": "",
+          "name": "新建会话",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 0,
+          "control_locator": {
+            "kind": "index",
+            "value": 0
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "搜索会话名称",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "搜索会话",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 1,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"搜索会话\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "显示归档会话",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 2,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"显示归档会话\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "文档字段与表格提取验收9月11日",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 3,
+          "control_locator": {
+            "kind": "index",
+            "value": 3
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "上一页会话",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 4,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"上一页会话\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下一页会话",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 5,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"下一页会话\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "个人待办事项与截止日期",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 6,
+          "control_locator": {
+            "kind": "index",
+            "value": 6
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "资料库个人资料、共享成员",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 7,
+          "control_locator": {
+            "kind": "index",
+            "value": 7
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "我的成果文档、表格与下载",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 8,
+          "control_locator": {
+            "kind": "index",
+            "value": 8
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "个人记忆偏好与约定",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 9,
+          "control_locator": {
+            "kind": "index",
+            "value": 9
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "退出登录",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 10,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"退出登录\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "附件",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 11,
+          "control_locator": {
+            "kind": "index",
+            "value": 11
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "会话操作",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 12,
+          "control_locator": {
+            "kind": "css",
+            "value": "#radix-_r_8_"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "使用个人记忆",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 13,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"使用个人记忆\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看处理记录",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 14,
+          "control_locator": {
+            "kind": "index",
+            "value": 14
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "将这条消息保存为记忆",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 15,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"将这条消息保存为记忆\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx检索片段",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 16,
+          "control_locator": {
+            "kind": "index",
+            "value": 16
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 17,
+          "control_locator": {
+            "kind": "index",
+            "value": 17
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 18,
+          "control_locator": {
+            "kind": "index",
+            "value": 18
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 19,
+          "control_locator": {
+            "kind": "index",
+            "value": 19
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 20,
+          "control_locator": {
+            "kind": "index",
+            "value": 20
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 21,
+          "control_locator": {
+            "kind": "index",
+            "value": 21
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 22,
+          "control_locator": {
+            "kind": "index",
+            "value": 22
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 23,
+          "control_locator": {
+            "kind": "index",
+            "value": 23
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 24,
+          "control_locator": {
+            "kind": "index",
+            "value": 24
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 25,
+          "control_locator": {
+            "kind": "index",
+            "value": 25
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 26,
+          "control_locator": {
+            "kind": "index",
+            "value": 26
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 27,
+          "control_locator": {
+            "kind": "index",
+            "value": 27
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 28,
+          "control_locator": {
+            "kind": "index",
+            "value": 28
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 29,
+          "control_locator": {
+            "kind": "index",
+            "value": 29
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 30,
+          "control_locator": {
+            "kind": "index",
+            "value": 30
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 31,
+          "control_locator": {
+            "kind": "index",
+            "value": 31
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 32,
+          "control_locator": {
+            "kind": "index",
+            "value": 32
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "复制本页",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 33,
+          "control_locator": {
+            "kind": "index",
+            "value": 33
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下载本页",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 34,
+          "control_locator": {
+            "kind": "index",
+            "value": 34
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "上一页",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": true,
+          "control_index": 35,
+          "control_locator": {
+            "kind": "index",
+            "value": 35
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下一页",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": true,
+          "control_index": 36,
+          "control_locator": {
+            "kind": "index",
+            "value": 36
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 37,
+          "control_locator": {
+            "kind": "index",
+            "value": 37
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 38,
+          "control_locator": {
+            "kind": "index",
+            "value": 38
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 39,
+          "control_locator": {
+            "kind": "index",
+            "value": 39
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 40,
+          "control_locator": {
+            "kind": "index",
+            "value": 40
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 41,
+          "control_locator": {
+            "kind": "index",
+            "value": 41
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 42,
+          "control_locator": {
+            "kind": "index",
+            "value": 42
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看处理记录",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 43,
+          "control_locator": {
+            "kind": "index",
+            "value": 43
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "复制回复",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 44,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"复制回复\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "将这条回复保存为记忆",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 45,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"将这条回复保存为记忆\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "Upload files",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "file"
+        },
+        {
+          "tag": "textarea",
+          "role": "",
+          "name": "消息",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "发送消息",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 46,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"发送消息\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        }
+      ],
+      "qualityFailures": []
+    },
+    {
+      "label": "desktop-source",
+      "pageOverflow": false,
+      "interactiveInventory": [
+        {
+          "tag": "span",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "新建会话",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 0,
+          "control_locator": {
+            "kind": "index",
+            "value": 0
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "搜索会话名称",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "搜索会话",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 1,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"搜索会话\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "显示归档会话",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 2,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"显示归档会话\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "文档字段与表格提取验收9月11日",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 3,
+          "control_locator": {
+            "kind": "index",
+            "value": 3
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "上一页会话",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 4,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"上一页会话\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下一页会话",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 5,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"下一页会话\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "个人待办事项与截止日期",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 6,
+          "control_locator": {
+            "kind": "index",
+            "value": 6
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "资料库个人资料、共享成员",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 7,
+          "control_locator": {
+            "kind": "index",
+            "value": 7
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "我的成果文档、表格与下载",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 8,
+          "control_locator": {
+            "kind": "index",
+            "value": 8
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "个人记忆偏好与约定",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 9,
+          "control_locator": {
+            "kind": "index",
+            "value": 9
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "退出登录",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 10,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"退出登录\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "附件",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 11,
+          "control_locator": {
+            "kind": "index",
+            "value": 11
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "会话操作",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 12,
+          "control_locator": {
+            "kind": "css",
+            "value": "#radix-_r_8_"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "使用个人记忆",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 13,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"使用个人记忆\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看处理记录",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 14,
+          "control_locator": {
+            "kind": "index",
+            "value": 14
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "将这条消息保存为记忆",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 15,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"将这条消息保存为记忆\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx检索片段",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 16,
+          "control_locator": {
+            "kind": "index",
+            "value": 16
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 17,
+          "control_locator": {
+            "kind": "index",
+            "value": 17
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 18,
+          "control_locator": {
+            "kind": "index",
+            "value": 18
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 19,
+          "control_locator": {
+            "kind": "index",
+            "value": 19
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 20,
+          "control_locator": {
+            "kind": "index",
+            "value": 20
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 21,
+          "control_locator": {
+            "kind": "index",
+            "value": 21
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 22,
+          "control_locator": {
+            "kind": "index",
+            "value": 22
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 23,
+          "control_locator": {
+            "kind": "index",
+            "value": 23
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 24,
+          "control_locator": {
+            "kind": "index",
+            "value": 24
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 25,
+          "control_locator": {
+            "kind": "index",
+            "value": 25
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 26,
+          "control_locator": {
+            "kind": "index",
+            "value": 26
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 27,
+          "control_locator": {
+            "kind": "index",
+            "value": 27
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 28,
+          "control_locator": {
+            "kind": "index",
+            "value": 28
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 29,
+          "control_locator": {
+            "kind": "index",
+            "value": 29
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 30,
+          "control_locator": {
+            "kind": "index",
+            "value": 30
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 31,
+          "control_locator": {
+            "kind": "index",
+            "value": 31
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 32,
+          "control_locator": {
+            "kind": "index",
+            "value": 32
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "复制本页",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 33,
+          "control_locator": {
+            "kind": "index",
+            "value": 33
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下载本页",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 34,
+          "control_locator": {
+            "kind": "index",
+            "value": 34
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "上一页",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": true,
+          "control_index": 35,
+          "control_locator": {
+            "kind": "index",
+            "value": 35
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下一页",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": true,
+          "control_index": 36,
+          "control_locator": {
+            "kind": "index",
+            "value": 36
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 37,
+          "control_locator": {
+            "kind": "index",
+            "value": 37
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 38,
+          "control_locator": {
+            "kind": "index",
+            "value": 38
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 39,
+          "control_locator": {
+            "kind": "index",
+            "value": 39
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 40,
+          "control_locator": {
+            "kind": "index",
+            "value": 40
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 41,
+          "control_locator": {
+            "kind": "index",
+            "value": 41
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 42,
+          "control_locator": {
+            "kind": "index",
+            "value": 42
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看处理记录",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 43,
+          "control_locator": {
+            "kind": "index",
+            "value": 43
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "复制回复",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 44,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"复制回复\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "将这条回复保存为记忆",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 45,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"将这条回复保存为记忆\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "Upload files",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "file"
+        },
+        {
+          "tag": "textarea",
+          "role": "",
+          "name": "消息",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "发送消息",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 46,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"发送消息\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        },
+        {
+          "tag": "div",
+          "role": "dialog",
+          "name": "synthetic-extraction.xlsx查看本次取得的资料片段，核对回复中的依据。资料库编号：lib_d82f2e2d39c4f49e9215bd4a9af71981文档编号：kdoc_946407c826714820b0ece5e29ec80962文档读取结果中的片段工作表：Synthetic Invoic",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "关闭",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 47,
+          "control_locator": {
+            "kind": "index",
+            "value": 47
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "span",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        }
+      ],
+      "qualityFailures": []
+    },
+    {
+      "label": "mobile-extraction",
+      "pageOverflow": false,
+      "interactiveInventory": [
+        {
+          "tag": "button",
+          "role": "",
+          "name": "打开工作导航",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 0,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"打开工作导航\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "附件",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 1,
+          "control_locator": {
+            "kind": "index",
+            "value": 1
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "会话操作",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 2,
+          "control_locator": {
+            "kind": "css",
+            "value": "#radix-_r_0_"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "使用个人记忆",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 3,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"使用个人记忆\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看处理记录",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 4,
+          "control_locator": {
+            "kind": "index",
+            "value": 4
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "将这条消息保存为记忆",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 5,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"将这条消息保存为记忆\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx检索片段",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 6,
+          "control_locator": {
+            "kind": "index",
+            "value": 6
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 7,
+          "control_locator": {
+            "kind": "index",
+            "value": 7
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 8,
+          "control_locator": {
+            "kind": "index",
+            "value": 8
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 9,
+          "control_locator": {
+            "kind": "index",
+            "value": 9
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 10,
+          "control_locator": {
+            "kind": "index",
+            "value": 10
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 11,
+          "control_locator": {
+            "kind": "index",
+            "value": 11
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 12,
+          "control_locator": {
+            "kind": "index",
+            "value": 12
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 13,
+          "control_locator": {
+            "kind": "index",
+            "value": 13
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 14,
+          "control_locator": {
+            "kind": "index",
+            "value": 14
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 15,
+          "control_locator": {
+            "kind": "index",
+            "value": 15
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 16,
+          "control_locator": {
+            "kind": "index",
+            "value": 16
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 17,
+          "control_locator": {
+            "kind": "index",
+            "value": 17
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 18,
+          "control_locator": {
+            "kind": "index",
+            "value": 18
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 19,
+          "control_locator": {
+            "kind": "index",
+            "value": 19
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 20,
+          "control_locator": {
+            "kind": "index",
+            "value": 20
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 21,
+          "control_locator": {
+            "kind": "index",
+            "value": 21
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "synthetic-extraction.xlsx读取依据",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 22,
+          "control_locator": {
+            "kind": "index",
+            "value": 22
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "复制本页",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 23,
+          "control_locator": {
+            "kind": "index",
+            "value": 23
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下载本页",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 24,
+          "control_locator": {
+            "kind": "index",
+            "value": 24
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "上一页",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": true,
+          "control_index": 25,
+          "control_locator": {
+            "kind": "index",
+            "value": 25
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下一页",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": true,
+          "control_index": 26,
+          "control_locator": {
+            "kind": "index",
+            "value": 26
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 27,
+          "control_locator": {
+            "kind": "index",
+            "value": 27
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 28,
+          "control_locator": {
+            "kind": "index",
+            "value": 28
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 29,
+          "control_locator": {
+            "kind": "index",
+            "value": 29
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 30,
+          "control_locator": {
+            "kind": "index",
+            "value": 30
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 31,
+          "control_locator": {
+            "kind": "index",
+            "value": 31
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看来源：synthetic-extraction.xlsx",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 32,
+          "control_locator": {
+            "kind": "index",
+            "value": 32
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "查看处理记录",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 33,
+          "control_locator": {
+            "kind": "index",
+            "value": 33
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "复制回复",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 34,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"复制回复\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "将这条回复保存为记忆",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 35,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"将这条回复保存为记忆\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "Upload files",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "file"
+        },
+        {
+          "tag": "textarea",
+          "role": "",
+          "name": "消息",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "发送消息",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 36,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"发送消息\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        }
+      ],
+      "qualityFailures": []
+    }
+  ],
+  "errors": [],
+  "complete": true,
+  "ownedDocumentDeleted": true
+}

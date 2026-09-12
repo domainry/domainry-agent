@@ -1,0 +1,4 @@
+PASS binary PDF uploaded, indexed and original download verified
+PASS tool results display exact values, missing email, two table rows and verified source
+PASS persisted extraction survives host restart; current Identity revocation hides values and citations; restore revalidates
+PASS mobile result display, document deletion and historical extraction revocation

@@ -1,0 +1,163 @@
+{
+  "date": "2026-09-11",
+  "todo": "K07",
+  "todo_complete": false,
+  "live_private_attachment_increment_complete": true,
+  "production_configuration_changed": false,
+  "scope": {
+    "identity": "actual local Identity module, two fixture users",
+    "agent": "actual Module HTTP handlers and SQLite persistence with complete host restart",
+    "knowledge": "actual Verdent via official Connector, isolated synthetic-only KB",
+    "model": "deterministic tool driver",
+    "fixture": "synthetic Markdown; no user files",
+    "browser": "not rerun in this batch; earlier K06 original preview and K07 index/retrieval UI evidence remains separate"
+  },
+  "live": {
+    "attachment_id": "att_cfb828883d4569e9c06ca771eacccbeb",
+    "cleanup_verified": true,
+    "conversation_id": "conv_1eb1927fac309bf755e6f205122983a1",
+    "delete_receipts": [
+      {
+        "err_code": 0,
+        "data": {
+          "degraded_reason": null,
+          "error": null,
+          "error_code": null,
+          "ok": true,
+          "operator": "purge_doc",
+          "output_refs": {},
+          "stats": {
+            "docs_deleted": 1,
+            "rows_deleted": 4,
+            "s3_objects_deleted": 2,
+            "vectors_deleted": 1
+          }
+        }
+      }
+    ],
+    "deletes": 1,
+    "doc_id": "dka_172cb143f5c0bf7f9051fc8a7b48ea76f95e0f411a2934bdb98127ca9d98e635",
+    "kb_id": "kb-1a07a88ed780",
+    "origin": "https://api.verdent.ai",
+    "original_sha256": "77ba277565e17de3bc65f0dd4c26e1a8ac1e32245c7cc2d2e15a9a96acea1a38",
+    "owner_isolation_verified": true,
+    "permission_id": "scope:agent:attachment:9ce9a6e58eefde2cdc0aec29325cb78be676c457aaa14718eb980ce1053c67c1",
+    "preflight_missing": true,
+    "private_visibility_verified": true,
+    "request_id": "aput_b98606c496fdbad74d5b5e26d2a9241ab20cef51bc5d50ecf1e189da61476fae",
+    "team_id": "1470194374940573696",
+    "upload_response_lost": true,
+    "uploads": 1
+  },
+  "persisted_cleanup": {
+    "attachment_id": "att_cfb828883d4569e9c06ca771eacccbeb",
+    "state": "deleted",
+    "body_ref_cleared": true,
+    "index": {
+      "last_check_revision": 6,
+      "put_started": true,
+      "put_acknowledged": false,
+      "index_observed": true,
+      "delete_started": true,
+      "delete_acknowledged": true
+    },
+    "remaining_original_bins": 0,
+    "parse_cache_exists": false,
+    "inspection": "read-only SQLite query and filesystem enumeration; no Identity account data copied"
+  },
+  "results": [
+    {
+      "check": "real private attachment HTTP lifecycle",
+      "passed": true,
+      "test_seconds": 58.9,
+      "command": "python3 scripts/test-agent-attachment-index-live.py --live"
+    },
+    {
+      "check": "local live harness protocol rehearsal",
+      "passed": true,
+      "test_seconds": 32.6
+    },
+    {
+      "check": "Agent full Go suite",
+      "passed": true,
+      "command": "go test ./..."
+    },
+    {
+      "check": "final live harness protocol under race detector",
+      "passed": true,
+      "test_seconds": 48.62
+    },
+    {
+      "check": "Go vet",
+      "passed": true
+    },
+    {
+      "check": "launcher Python compilation",
+      "passed": true
+    }
+  ],
+  "coverage": [
+    "explicit index permission and forged ACL rejection",
+    "other user and other conversation original access denied",
+    "remote omitted/wrong ACL hidden, exact private ACL visible",
+    "lost successful upload response recovered by observation, one upload only",
+    "Connector search/read and persisted current-conversation citations",
+    "tool/download revocation hides content and citations, restoration succeeds",
+    "full host restart restores index/check receipt and exact original bytes",
+    "parent conversation deletion denies download immediately, remote purge acknowledged, original removed, remote fetch/search absence verified"
+  ],
+  "preserved_failures": [
+    "initial test callback signature compile error, fixed before any live run",
+    "local audit header case handling rejected the fixture upload; corrected with case-insensitive header lookup, rehearsal then passed"
+  ],
+  "remaining": [
+    "unknown upload with no observable remote completion still lacks a complete upstream upload receipt/idempotency contract; preserve original and request identity, do not blindly replay",
+    "full K07 checkbox remains pending; real-model/batch release acceptance remains separately scoped in H"
+  ],
+  "evidence_files": [
+    {
+      "path": "docs/evidence/2026-09-11-k07-private-attachment-live/attachment-manifest.json",
+      "sha256": "3d1da4f759d90a26f864c975e08be031697819d54f237e38a101042526241646"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-private-attachment-live/domainry-k07-attachment-live-agent-full.log",
+      "sha256": "b1d437b38d541d7e20f6c29aef448378f5e6470bab37c4be0cf0513a6e71c2f0"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-private-attachment-live/domainry-k07-attachment-live-harness-final.log",
+      "sha256": "856630a45c88b50b62b1dc1cd8038252a0f94253d8930cc01a3bb1ef00092bf5"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-private-attachment-live/domainry-k07-attachment-live-harness-retry.log",
+      "sha256": "3bbc2bd81c563e8903c2a062c16fa7d37e576e03d6441301a51e836fe9aa7f25"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-private-attachment-live/domainry-k07-attachment-live-harness.log",
+      "sha256": "336fee9d05df838313283f92d01885e6f02722b2c3ec9d6673dca2e725bdb12b"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-private-attachment-live/domainry-k07-attachment-live-race.log",
+      "sha256": "e902786dc6912bb81c8326ad3ef5844286a765d345fbbbec19c480fbd7296bd2"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-private-attachment-live/domainry-k07-attachment-live-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-private-attachment-live/domainry-k07-attachment-live.log",
+      "sha256": "f54516149f30434e1092641410e1bea8701fd26185a0edd29be91bdbd138ec52"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-private-attachment-live/knowledge-base.json",
+      "sha256": "86cd0645485fea64bc683a34621f8e70433f934b857925d46b905bf8bd751e93"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-private-attachment-live/persisted-cleanup.json",
+      "sha256": "e1c79481b1ecf0414a09044eca487651f3ae5aa3f9b94c0555f1ecc8ad0c4856"
+    },
+    {
+      "path": "docs/evidence/2026-09-11-k07-private-attachment-live/upload-source-contract.json",
+      "sha256": "9d031963bd03aa71d230879354e46d21da15ebdf18fe42a237ed5829b66b1765"
+    }
+  ]
+}

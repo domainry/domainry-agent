@@ -2,6 +2,7 @@ import type { Run } from "./api.ts";
 import type { ExecutionEvent } from "./execution-state.ts";
 
 export type Interaction = {
+	operations?: InteractionOperation[]; authorization_id?: string; approved_scope?: "listed_operations";
   id: string; conversation_id: string; run_id: string; step: number; call_id: string;
   kind: "input" | "confirmation" | "reconciliation";
   status: "pending" | "answered" | "approved" | "rejected" | "cancelled" | "expired" | "resolved";
@@ -9,7 +10,9 @@ export type Interaction = {
   action_key: string; arguments: string; arguments_hash: string; definition_hash: string;
   revision: number; answer?: string; responded_by?: string; expires_at: string;
 };
+export type InteractionOperation = Pick<Interaction, "call_id" | "tool" | "tool_version" | "action_key" | "arguments" | "arguments_hash" | "definition_hash">;
 export type InteractionResponse = {
+	scope?: "listed_operations";
   interaction_id: string; client_id: string; expected_revision: number;
   decision: "answer" | "approve" | "reject"; answer?: string;
 };

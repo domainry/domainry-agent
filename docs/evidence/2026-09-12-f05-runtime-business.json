@@ -1,0 +1,351 @@
+{
+  "todo": "F05",
+  "complete": false,
+  "stage": "real-runtime-business-owner-and-identity-domain",
+  "captured_at": "2026-09-12T01:07:00.126260+08:00",
+  "path_base": "/Users/tiger/Projects",
+  "protocol": "domainry-agent-business-host-v1",
+  "contract_sha256": "38b96dc758553d733ea6e93efcd357475759166dbbe62f433ff9d5843689c0d2",
+  "source_files": [
+    {
+      "path": "domainry-agent/docs/agent-capabilities-todo.md",
+      "bytes": 113805,
+      "sha256": "1e3b1dc72b0c8fda3bf9ebc4a312b4cba7c0251ba46463cf91cd1b817b2f62c4"
+    },
+    {
+      "path": "domainry-agent/docs/business-host-boundaries.md",
+      "bytes": 3315,
+      "sha256": "a1ed8fbaf1c471761ca4f3c79494c563f58145f31249e46f24ce164fb9868799"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-12-f05-business-contract.md",
+      "bytes": 4242,
+      "sha256": "5552346dc8d47fe8ba58229f944e819173ddf15140d5b34745dc7c03b021e211"
+    },
+    {
+      "path": "domainry-agent/docs/testing-2026-09-12-f05-runtime-business.md",
+      "bytes": 5587,
+      "sha256": "82b82eff3fff43fffb6339f1f5a62684309a5e4442a7f6866e430d289ac8a842"
+    },
+    {
+      "path": "domainry-agent-sdk/README.md",
+      "bytes": 18395,
+      "sha256": "d2cbb6a2f112b8b4d01038240d177cf8dcfe7053e1b2c64669d416ac142b176d"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/businessrpc_test.go",
+      "bytes": 18749,
+      "sha256": "0bd8eb19101c67fa652260ba2b9a4ca98d20027d2189be29f71c084984fbfd3f"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/client.go",
+      "bytes": 5266,
+      "sha256": "0259e713a07dac1c89c7e5ee2bb664c941a0b191670dc174b773bb82c0365a83"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/codec.go",
+      "bytes": 1165,
+      "sha256": "2f1cd11f64a9ca6787fde05513b62b2f5e56bb46629b4ebbff6128119c1f6072"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/dispatch.go",
+      "bytes": 3782,
+      "sha256": "7f0efc926dfaa876b04fce30b5fbe4fe23d0dae0d621abc593f200bb32e22121"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/methods.go",
+      "bytes": 5023,
+      "sha256": "d2c8c4284bc032817a701894b909545dc3cb1ebf739528f6e14fd30c859a5ea6"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/protocol.go",
+      "bytes": 6539,
+      "sha256": "3082362f19844027dd8121201a2cfa8ab543ad2e25188826b4659bb18fb80572"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/public_test.go",
+      "bytes": 727,
+      "sha256": "7868bc8953b196de6fd74e4b596a88fabc2e522001ff60a07d5448da76c87ba9"
+    },
+    {
+      "path": "domainry-agent-sdk/businessrpc/server.go",
+      "bytes": 6309,
+      "sha256": "e48fe3fa9565d41a275120afbc5bf7c2f2334c7849db7fc960296e4de65258c5"
+    },
+    {
+      "path": "domainry-agent-sdk/conversation_business.go",
+      "bytes": 12377,
+      "sha256": "b20ae3bf98443e15e1e1f87f84dc9d600a7ceadf493de4af9da9d8752779096c"
+    },
+    {
+      "path": "domainry-agent-sdk/conversation_business_actions.go",
+      "bytes": 5181,
+      "sha256": "d46e4ba32a924dd43d105dcd1b6bba098b2d567e6ab4232d12026ed643cdbcff"
+    },
+    {
+      "path": "domainry-agent-sdk/conversation_business_relations.go",
+      "bytes": 3650,
+      "sha256": "b978a6f539db53f2f52f0d4f3fbefa5544b466187003c5e5d1b2343d2bd9bcde"
+    },
+    {
+      "path": "domainry-agent-sdk/conversation_business_workflows.go",
+      "bytes": 5369,
+      "sha256": "54af0eedcaaa4d7005c78e609a8a95aec30ca0c27d76931fc863c1347571873f"
+    },
+    {
+      "path": "domainry-runtime/docs/architecture/runtime-idempotency-entrypoint-inventory.md",
+      "bytes": 37918,
+      "sha256": "1e54611832772eda60c525f2089e232a16d5eef422be0142baff63adc9ed0273"
+    },
+    {
+      "path": "domainry-runtime/docs/architecture/runtime-workspace-fallback-review-baseline.txt",
+      "bytes": 7442,
+      "sha256": "23136e766d90d774c76c4f8189a41bdab933d1ad38418db0ad262f96e01305b3"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_actions.go",
+      "bytes": 13407,
+      "sha256": "cbe0433fc2237f476ecc992cbfe5ed1b5f06e19e748822acc03093020de79d15"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_actions_test.go",
+      "bytes": 8176,
+      "sha256": "7a0dd4bcb555f49b08daf16b7a9d5266010ed3341e0bfe414c296c525c00128b"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_catalog.go",
+      "bytes": 7941,
+      "sha256": "4a590c59ea1fe8552700591064873e1e50f837eccd91f95d947df4d680fc77b3"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_catalog_test.go",
+      "bytes": 10188,
+      "sha256": "80869bb890c3a5e1dd70eb10821aa881e43b8535bb1bfd6f4e563fbe24c15548"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_cursor.go",
+      "bytes": 5166,
+      "sha256": "623286fbf973b955636ecea56816cb590e7c130485c6142c06f7b5cc320f58d6"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_evidence.go",
+      "bytes": 6466,
+      "sha256": "9c8fc573aab926d76a3d1bf7f483692dc08310e744681a142667d8812ec6df45"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_evidence_test.go",
+      "bytes": 11216,
+      "sha256": "2123f0456cd9036da93ffed546eccc5d3479b6e2a33806831ae81aa1de3779f7"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_host.go",
+      "bytes": 14661,
+      "sha256": "03770ba8a6ae9ab77f28cee3ffa34aeaeac73c8eef0e0101751527feeeddf69f"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_host_test.go",
+      "bytes": 15742,
+      "sha256": "26fbe4329286ab93afbc1a9b69cc454637d48e5c58342d1e147288f70b669fc0"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_identity_issuer_test.go",
+      "bytes": 1232,
+      "sha256": "7e0977a2b203dee513fadd2cb35e195d72639559f4c74d413fa478f0890a74fd"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_query.go",
+      "bytes": 5540,
+      "sha256": "5e6a9f6810144e592927aee99228d5b598db998c4e4d77c39135a6ed87556099"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_relations.go",
+      "bytes": 5477,
+      "sha256": "07b779ab16a3fc2459417f7f65c8ea2e42875ac3e8663cdc7fcecefc3e47b3df"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_relations_test.go",
+      "bytes": 10991,
+      "sha256": "e1b24790f161d209ebd99f26cddb72f5e808053f077b13aa5d7727cead1dd3e2"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_workflows.go",
+      "bytes": 12452,
+      "sha256": "c72bb8220de74d010eb0934392ee2ede4a291e850a5783d4af4a99b27d538318"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/agenthost/conversation_business_workflows_test.go",
+      "bytes": 10084,
+      "sha256": "df1011987dd9eb5e6b1d7045c89de01509593b215fbad108985959c56c70cdb8"
+    },
+    {
+      "path": "domainry-runtime/runtime/application/workflow/workflow_agent_invocation_application_service.go",
+      "bytes": 7264,
+      "sha256": "9d9c275aea93e46b9050ec32ec8fba9ed1b4875cffd64b288e5255a8f5456ae3"
+    },
+    {
+      "path": "domainry-runtime/runtime/bootstrap/bootstrap.go",
+      "bytes": 10871,
+      "sha256": "6d6d1f2a9fddb2baa3c81a568e11b0d194d1bb280d461b83902540f04ea773b8"
+    },
+    {
+      "path": "domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_rpc_test.go",
+      "bytes": 13027,
+      "sha256": "fc5d91a36961d11c0cdf950ac3ea3d4547fa6e69d7b91296237f57b5e6681a63"
+    },
+    {
+      "path": "domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_web_fixture_test.go",
+      "bytes": 10557,
+      "sha256": "2728bff233e3f4d1764237f75fb966c0345917c1b4f3155b02c3df841a786037"
+    },
+    {
+      "path": "domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_web_test.go",
+      "bytes": 6853,
+      "sha256": "0b1a95a0ba3d40978920df8a80d7f87b51b8289a9612a29239ab180271b8ceb9"
+    },
+    {
+      "path": "domainry-runtime/runtime/bootstrap/runtime/conversation_business.go",
+      "bytes": 2068,
+      "sha256": "15d6fabadb5f765a21564ab4a899026e4baeb3b7db2acf542d64af3b164544e8"
+    },
+    {
+      "path": "domainry-runtime/runtime/bootstrap/runtime/startup.go",
+      "bytes": 47995,
+      "sha256": "3f026bdb5e15d668b32f47d80b04f319c25037051d230378c1d9dd6eff0deb3f"
+    },
+    {
+      "path": "domainry-runtime/runtime/bootstrap/transport/conversation_business.go",
+      "bytes": 1982,
+      "sha256": "26ab1382964d26861a51bbf2f7fd1346e665e32a601f0093e2bb0edf2d15677e"
+    },
+    {
+      "path": "domainry-runtime/runtime/bootstrap/transport/http_integration_agent_handler_wiring.go",
+      "bytes": 25680,
+      "sha256": "5cf12d809d3f84798eb6df491692bb2f5278321fca5150acc742ceac916d71c7"
+    },
+    {
+      "path": "domainry-runtime/runtime/boundary/runtime_contract_inventory_test.go",
+      "bytes": 2924,
+      "sha256": "b3c724bdeeef657f9516d24f660d01cb0a0381a7e8ff9e3c2b1fbff507557a3f"
+    },
+    {
+      "path": "domainry-runtime/runtime/infrastructure/persistence/database/action/action_business_execution_store.go",
+      "bytes": 20180,
+      "sha256": "5cf65ed382b8d3b4562b26cffa9962a5a29add8f4ff9dd3150d1676a7fc9085b"
+    },
+    {
+      "path": "domainry-runtime/runtime/infrastructure/persistence/database/workspaceprovision/external_workspace.go",
+      "bytes": 4401,
+      "sha256": "c6a63d4b5cfd51d0d2a5e089951f890f317d9c1019279c04aaa59c4de8922af0"
+    },
+    {
+      "path": "domainry-runtime/scripts/contracts/runtime_idempotency_entrypoint_inventory.go",
+      "bytes": 13748,
+      "sha256": "8d41d6b42081d979994f75766c6a6b1ef6ff2de02242d0f54e4b8f9b65d9ea71"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/boundary-review.json",
+      "bytes": 3605,
+      "sha256": "22368deae167e658dfeca8f342dd673522d99dfab37fded5b444cbaa0fd6d737"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/format-check.json",
+      "bytes": 391,
+      "sha256": "5f4d64e2c87e00e7b24187776e5a738f7e43b8b1fcac446c1f3f6fad6e855f5a"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-assembly-initial.log",
+      "bytes": 249,
+      "sha256": "59839d6e79dc3a810e4e5b11bd920e083bd06ed6809bbafbb8ce87d863450c5c"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-baseline.log",
+      "bytes": 174,
+      "sha256": "ec69b984152e26e4ca3e455ed8dc8ec4372712cf922c58eec19ea88f42a4e3c1"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-boundary-final.log",
+      "bytes": 9842,
+      "sha256": "7617f3f364767b2771fd2aa7e3ee17c50167cff5453e25cfa3f317d91047c0c7"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-boundary-second.log",
+      "bytes": 1859,
+      "sha256": "d87f6824dc0e553b153aa25dbae157ab6197b956e0a33abf772ab9206a42eba0"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-final-check.log",
+      "bytes": 222,
+      "sha256": "9b672454aeef056a914191dbfefae5dbd5c9ce333ebeec051ef0da2483a89e2f"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-final-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-host-boundary.log",
+      "bytes": 8617,
+      "sha256": "ae3d13f86f129a423d9bf5aa287132490719db089368f45fc12311f239269410"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-issuer-initial.log",
+      "bytes": 79,
+      "sha256": "98e07c0077f1826c31139622024a631cc19aea552437fc8dea364b28539504b2"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-owner-final-race.log",
+      "bytes": 781,
+      "sha256": "cfdf0a474364bf7644785a2c13aea42d33b3cb9258465a0f8dc0f45c6678c6b8"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-owner-initial.log",
+      "bytes": 650,
+      "sha256": "c276fb84047c408bef757f646beb8ff910869b20362c681001a12fc38135c9e9"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-owner-issuer-race.log",
+      "bytes": 781,
+      "sha256": "3c0762dab7bdff48eaddec187ac656fd6b04347e3d679cf3374a078e9de84dd9"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-owner-second.log",
+      "bytes": 473,
+      "sha256": "f32e504b1f53763bb754e0feb4fa7aa0cd50199424124e7b20ef011e9cba0a6d"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/runtime-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/sdk-issuer-final-race.log",
+      "bytes": 601,
+      "sha256": "8bffc6b310dc1c6d88a154f305d63750c803694bf87c9bcb69a76636ec3d3301"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/sdk-issuer-initial.log",
+      "bytes": 1290,
+      "sha256": "3558151cca2ac48cdc5884fbcc4de43810acbb726d57f4951fe2d9023f135aa4"
+    },
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-runtime-business/sdk-issuer-vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "prior_manifests": [
+    {
+      "path": "domainry-agent/docs/evidence/2026-09-12-f05-business-contract.json",
+      "bytes": 3848,
+      "sha256": "89baf36603a3d3b32c480c6ddfcabe0cbdb78cdc4e032314b17ed1b0f562448b"
+    }
+  ],
+  "limitations": [
+    "Optional handler is verified over real local HTTP/SQLite owners; no independent production deployment is claimed.",
+    "Existing Module HTTP browser fixture was exercised; no Chrome or real model in this stage.",
+    "Trusted exact-confirmation test metadata is not product confirmation UI acceptance.",
+    "Product service configuration/shared Identity and full browser cross-service acceptance remain in F05."
+  ]
+}

@@ -1,0 +1,4 @@
+=== RUN   TestPrivateAttachmentIndexLiveHarnessProtocol
+--- PASS: TestPrivateAttachmentIndexLiveHarnessProtocol (32.60s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	33.312s

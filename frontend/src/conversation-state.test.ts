@@ -11,6 +11,26 @@ import { parseTodoMutation, todoDeadline } from "./todo-state.ts";
 import { parseArtifactMutation } from "./artifact-state.ts";
 import { citationMarkdown, runCitations, safeCitationURL, type Citation } from "./knowledge-state.ts";
 
+test("cancellation preserves effects, distinguishes unstarted calls and accepts the actual late receipt", () => {
+  const run: Run = {id:"run",conversation_id:"chat",status:"running",attempt:1,user_seq:1,draft_bytes:0,last_event_seq:0,
+    steps:[{number:0,attempt:1,status:"tools",text:"",calls:[
+      {id:"done",name:"write",arguments:"{}",status:"completed",resource_id:"saved"},
+      {id:"accepted",name:"write",arguments:"{}",status:"pending",resource_id:"job"},
+      {id:"unknown",name:"write",arguments:"{}",status:"uncertain"},
+      {id:"read",name:"read",arguments:"{}",status:"running"},
+      {id:"next",name:"write",arguments:"{}",status:"queued"},
+    ]}]};
+  const stopped = {...applyExecutionEvent(run,{seq:1,type:"run.cancelled",data:{attempt:1}}),status:"cancelled" as const};
+  assert.deepEqual(stopped.steps![0].calls.map(call=>call.status),["completed","pending","uncertain","interrupted","not_started"]);
+  assert.equal(stopped.steps![0].calls[0].resource_id,"saved");
+  assert.equal(stopped.steps![0].calls[1].resource_id,"job");
+  const receipt = applyExecutionEvent(stopped,{seq:2,type:"tool.completed",data:{attempt:1,step:0,call_id:"unknown",status:"completed",resource_id:"actual-result"}});
+  assert.equal(receipt.status,"cancelled");
+  assert.equal(receipt.steps![0].calls[2].resource_id,"actual-result");
+  assert.equal(receipt.steps![0].calls[4].status,"not_started");
+  assert.equal(run.steps![0].calls[3].status,"running");
+});
+
 test("only actual completed knowledge citations become verified links and revocation hides them", () => {
   const citation: Citation = { id: "kc_1234567890abcdef1234567890abcdef", provider: "test", kb_id: "kb", operation: "search", doc_id: "policy", title: "费用规则", excerpt: "金额 9007199254740993.01" };
   const run = { id: "run", conversation_id: "chat", status: "running", user_seq: 1, attempt: 1, draft_bytes: 0, last_event_seq: 2, steps: [{ number: 0, attempt: 1, text: "", status: "tools", calls: [{ id: "search", name: "knowledge_search", arguments: "{}", status: "running" }] }] } as Run;

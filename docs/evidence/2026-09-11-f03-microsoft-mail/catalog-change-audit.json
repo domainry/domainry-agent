@@ -1,0 +1,23 @@
+{
+  "changed_providers": [
+    [
+      "microsoft_365",
+      "microsoft"
+    ],
+    [
+      "google_workspace",
+      "google"
+    ]
+  ],
+  "sdk_before": {
+    "version": "v0.1.0-dev.17",
+    "contract_version": "connector-contract-v16",
+    "contract_sha256": "664cb625e96fed3fcfd88c6b25e0087c63aa18e22dd2c960ab9d858b85941fee"
+  },
+  "sdk_after": {
+    "version": "v0.1.0-dev.18",
+    "contract_version": "connector-contract-v16",
+    "contract_sha256": "664cb625e96fed3fcfd88c6b25e0087c63aa18e22dd2c960ab9d858b85941fee"
+  },
+  "unrelated_provider_entries_unchanged": true
+}

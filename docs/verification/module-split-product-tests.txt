@@ -1,0 +1,4 @@
+ok  	github.com/domainry/domainry-pm	1.703s
+?   	github.com/domainry/domainry-pm/cmd/domainry-pm	[no test files]
+ok  	github.com/domainry/domainry-work	2.179s
+?   	github.com/domainry/domainry-work/cmd/domainry-work	[no test files]

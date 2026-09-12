@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "domainry-integration/README.md",
+    "domainry-integration/internal/transport/http/saas/handler.go",
+    "domainry-integration/internal/transport/http/saas/connection_account_writes.go",
+    "domainry-integration/internal/transport/http/saas/connection_account_writes_test.go",
+    "domainry-integration/internal/assembly/module/factory.go",
+    "domainry-integration/internal/assembly/saas/factory.go",
+    "domainry-integration/internal/assembly/saas/account_write_flow_test.go",
+    "domainry-integration/internal/adapter/integrationsdk/connection_account_writes.go",
+    "domainry-integration/internal/adapter/integrationsdk/binding.go",
+    "domainry-integration/internal/adapter/accountwrite/codec.go",
+    "domainry-integration/internal/architecture/account_writes_test.go",
+    "domainry-integration/internal/application/integration/connection_account_writes.go",
+    "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_write_secrets_test.go",
+    "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_write_receipts.go",
+    "domainry-integration/internal/infrastructure/persistence/database/integration/provider_worker_store.go",
+    "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_write_executor.go",
+    "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_writes.go",
+    "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_writes_test.go",
+    "domainry-integration/internal/domain/integration/model/connection_account_writes.go",
+    "domainry-integration-sdk/README.md",
+    "domainry-integration-sdk/connection_account_writes.go",
+    "domainry-integration-sdk/connection_account_writes_test.go",
+    "domainry-integration-sdk/remote/factory.go",
+    "domainry-integration-sdk/remote/connection_account_writes.go",
+    "domainry-integration-sdk/remote/connection_account_writes_test.go"
+  ],
+  "unchanged_original_file_count": 137,
+  "read_paths_schema_public_browser_unchanged": [
+    "domainry-integration/internal/application/integration/connection_account_reads.go",
+    "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_reads.go",
+    "domainry-integration/internal/infrastructure/persistence/database/integration/operations_store.go",
+    "domainry-integration/internal/infrastructure/persistence/database/schema/definition.go",
+    "domainry-integration/internal/transport/http/module/adapter.go",
+    "domainry-integration-sdk/http_adapter.go",
+    "domainry-integration-sdk/browser/src/client.ts",
+    "domainry-integration-sdk/connection_account_reads.go"
+  ],
+  "prior_provider_sdk_files_unchanged": 90,
+  "no_new_schema": true,
+  "application_codec_dependency_count": 213,
+  "llm_proxy": {
+    "head": "a32407a678ea7f96d70b7557765e2a01262184d4",
+    "working_tree_clean": true
+  }
+}

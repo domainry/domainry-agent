@@ -1,0 +1,6 @@
+=== RUN   TestExternalAccountsCurrentIdentityOwnershipAndRestart
+    integration_accounts_test.go:232: role assignments: [] <nil>
+--- FAIL: TestExternalAccountsCurrentIdentityOwnershipAndRestart (1.56s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	2.188s
+FAIL

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"strings"
 	"testing"
 
@@ -92,7 +93,7 @@ func TestWorkflowCatalogDiscoveryPersistsAndReauthorizesWithoutExecution(t *test
 					return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "全局审核需要填写 reason；本次只查看了流程参数。"}, FinishReason: "stop"}, nil
 				}
 			}}
-			service, err := application.NewConversationService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})
+			service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})
 			if err != nil {
 				t.Fatal(err)
 			}

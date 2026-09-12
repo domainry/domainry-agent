@@ -1,0 +1,6 @@
+# github.com/domainry/domainry-runtime/runtime/infrastructure/persistence/database/report [github.com/domainry/domainry-runtime/runtime/infrastructure/persistence/database/report.test]
+runtime/infrastructure/persistence/database/report/report_analysis_version.go:46:128: cannot use "id" (untyped string constant) as "github.com/domainry/domainry-orm/query".Order value in argument to query.NewSelectBuilder(s.store.SQLRenderer, reportObjectSQLCTE(0)).Columns(columns...).OrderBy
+runtime/infrastructure/persistence/database/report/report_analysis_version.go:46:134: cannot use false (untyped bool constant) as "github.com/domainry/domainry-orm/query".Order value in argument to query.NewSelectBuilder(s.store.SQLRenderer, reportObjectSQLCTE(0)).Columns(columns...).OrderBy
+ok  	github.com/domainry/domainry-runtime/runtime/modulehost/report	1.016s
+FAIL	github.com/domainry/domainry-runtime/runtime/infrastructure/persistence/database/report [build failed]
+FAIL

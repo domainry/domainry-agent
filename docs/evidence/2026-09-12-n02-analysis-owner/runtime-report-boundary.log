@@ -1,0 +1,4 @@
+=== RUN   TestReportModuleOwnsProductHTTPAndApplicationBoundary
+--- PASS: TestReportModuleOwnsProductHTTPAndApplicationBoundary (0.14s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/boundary	1.541s

@@ -1,0 +1,32 @@
+[
+  {
+    "repo": "domainry-agent",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repo": "domainry-connector-sdk",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repo": "domainry-connectors",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repo": "domainry-integration-sdk",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repo": "domainry-integration",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]
