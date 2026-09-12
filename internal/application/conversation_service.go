@@ -390,11 +390,23 @@ func (s *ConversationService) Delete(ctx context.Context, id string, revision in
 	if revision < 1 {
 		return conversationFailure("bad_request", "revision_required")
 	}
-	err := s.repo.Delete(ctx, id, revision, a)
-	if err == nil {
-		s.wakeAttachmentCleanup()
+	requestID := "conversation-delete:" + conversationDigest([]any{a.RuntimeID, a.WorkspaceID, a.UserID, id, revision})
+	var err error
+	if repo, ok := s.repo.(agentpersistence.ConversationDeletionRepository); ok {
+		_, err = repo.DeleteForRequest(ctx, requestID, id, revision, a)
+	} else {
+		err = s.repo.Delete(ctx, id, revision, a)
 	}
-	return err
+	if err != nil {
+		return err
+	}
+	if owner, ok := s.knowledgeService().(knowledge.ConversationReferenceLifecycle); ok {
+		if _, err = owner.DeleteConversationReferencesForRequest(ctx, requestID, id, a); err != nil {
+			return err
+		}
+	}
+	s.wakeAttachmentCleanup()
+	return nil
 }
 func (s *ConversationService) Send(ctx context.Context, id string, in agentsdk.ConversationSend, a agentsdk.ConversationAuthority) (agentsdk.ConversationRun, error) {
 	if err := s.authorize(a); err != nil {

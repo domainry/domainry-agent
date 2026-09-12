@@ -19,6 +19,27 @@ func attachmentReservation(c, client string) persistence.ConversationAttachmentR
 	return persistence.ConversationAttachmentReserve{ClientID: client, ConversationID: c, Filename: "合同.pdf", ContentType: "application/pdf", SHA256: strings.Repeat("a", 64), Bytes: 2048}
 }
 
+func deleteConversationAcrossOwners(t *testing.T, repo *ConversationStore, conversation agentsdk.Conversation, a agentsdk.ConversationAuthority) {
+	t.Helper()
+	requestID := "test-conversation-delete:" + conversationHash([]any{conversationOwner(a), conversation.ID, conversation.Revision})
+	agentReceipt, err := repo.DeleteForRequest(t.Context(), requestID, conversation.ID, conversation.Revision, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	knowledgeReceipt, err := repo.knowledgeStore().DeleteConversationReferencesForRequest(t.Context(), requestID, conversation.ID, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	replayedAgent, err := repo.DeleteForRequest(t.Context(), requestID, conversation.ID, conversation.Revision, a)
+	if err != nil || string(replayedAgent) != string(agentReceipt) {
+		t.Fatal("Agent deletion receipt did not replay", err)
+	}
+	replayedKnowledge, err := repo.knowledgeStore().DeleteConversationReferencesForRequest(t.Context(), requestID, conversation.ID, a)
+	if err != nil || string(replayedKnowledge) != string(knowledgeReceipt) {
+		t.Fatal("Knowledge deletion receipt did not replay", err)
+	}
+}
+
 func TestAttachmentReservationStateFencesAndOwnerIsolation(t *testing.T) {
 	store, _ := openAgentStore(t)
 	repo, a, ctx := NewConversationStore(store), conversationTestAuthority(), t.Context()
@@ -120,7 +141,7 @@ func TestAttachmentReservationStateFencesAndOwnerIsolation(t *testing.T) {
 	requireConversationCode(t, err, "attachment_transition_invalid")
 }
 
-func TestAttachmentParentDeletionIsAtomicAndKeepsCleanupReferences(t *testing.T) {
+func TestAttachmentParentDeletionUsesOwnerReceiptsAndKeepsCleanupReferences(t *testing.T) {
 	store, _ := openAgentStore(t)
 	repo, a, ctx := NewConversationStore(store), conversationTestAuthority(), t.Context()
 	c, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "parent"}, a)
@@ -147,8 +168,8 @@ func TestAttachmentParentDeletionIsAtomicAndKeepsCleanupReferences(t *testing.T)
 	if err != nil || !next.Complete || len(next.Items) != 1 || next.Items[0].ID == page.Items[0].ID {
 		t.Fatal(next, err)
 	}
-	// SQLite test-only fault injection: ORM has no trigger builder. A parent
-	// deletion failure must roll back its attachment tombstones in the same tx.
+	// SQLite test-only fault injection: Agent must roll back its own deletion
+	// receipt. Knowledge remains untouched until its public owner request runs.
 	_, err = store.Database().ExecContext(ctx, `CREATE TRIGGER fail_attachment_parent_delete BEFORE DELETE ON _agent_conversations BEGIN SELECT RAISE(ABORT, 'injected parent deletion failure'); END`)
 	if err != nil {
 		t.Fatal(err)
@@ -163,9 +184,7 @@ func TestAttachmentParentDeletionIsAtomicAndKeepsCleanupReferences(t *testing.T)
 	if _, err = store.Database().ExecContext(ctx, `DROP TRIGGER fail_attachment_parent_delete`); err != nil {
 		t.Fatal(err)
 	}
-	if err = repo.Delete(ctx, c.ID, c.Revision, a); err != nil {
-		t.Fatal(err)
-	}
+	deleteConversationAcrossOwners(t, repo, c, a)
 	for _, id := range []string{first.Attachment.ID, second.Attachment.ID} {
 		row, err := repo.AttachmentRecord(ctx, id, a)
 		if err != nil || row.Attachment.State != "deleting" {
@@ -261,9 +280,7 @@ func TestAttachmentCleanupSurvivesDatabaseReopen(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := repo.Delete(ctx, conversation.ID, conversation.Revision, a); err != nil {
-		t.Fatal(err)
-	}
+	deleteConversationAcrossOwners(t, repo, conversation, a)
 	if err := db.Close(); err != nil {
 		t.Fatal(err)
 	}

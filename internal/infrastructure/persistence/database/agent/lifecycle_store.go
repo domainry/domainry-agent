@@ -2,6 +2,7 @@ package agent
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -31,6 +32,16 @@ func (s LifecycleStore) ListLifecycleCandidates(ctx context.Context, workspaceID
 		kinds = []kindRetention{{"session", queryValue.Retention}, {"proposal", queryValue.Retention}}
 	}
 	result := []agentpersistence.LifecycleCandidate{}
+	if strings.TrimSpace(queryValue.PolicyKey) == "agent.dialog.v1" {
+		conversations, conversationErr := s.listConversationLifecycleCandidates(ctx, workspaceID, queryValue)
+		if conversationErr != nil {
+			return nil, conversationErr
+		}
+		result = append(result, conversations...)
+		if queryValue.Limit > 0 && len(result) >= queryValue.Limit {
+			return result[:queryValue.Limit], nil
+		}
+	}
 	for _, item := range kinds {
 		builder := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_runtime_states", workspaceID).
 			Columns("state_key", "user_id", "role_key", "payload_json", "updated_at").
@@ -55,7 +66,7 @@ func (s LifecycleStore) ListLifecycleCandidates(ctx context.Context, workspaceID
 			if !agentLifecycleEligible(value.Kind, payload) {
 				continue
 			}
-			result = append(result, agentpersistence.LifecycleCandidate{State: value, ResourceID: value.Kind + ":" + value.Key})
+			result = append(result, agentpersistence.LifecycleCandidate{State: value, ResourceType: "agent.state", ResourceID: value.Kind + ":" + value.Key, UpdatedAt: time.Unix(0, value.UpdatedAt).UTC(), Payload: append(json.RawMessage(nil), payload...)})
 			if queryValue.Limit > 0 && len(result) >= queryValue.Limit {
 				_ = rows.Close()
 				return result, nil
@@ -68,6 +79,110 @@ func (s LifecycleStore) ListLifecycleCandidates(ctx context.Context, workspaceID
 		_ = rows.Close()
 	}
 	return result, nil
+}
+
+func (s LifecycleStore) listConversationLifecycleCandidates(ctx context.Context, workspaceID string, queryValue agentpersistence.LifecycleQuery) ([]agentpersistence.LifecycleCandidate, error) {
+	retention := queryValue.Retention
+	if value := queryValue.StatusRetention["archived"]; value > 0 {
+		retention = value
+	}
+	cutoff := queryValue.Now.Add(-retention).UTC().UnixMilli()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversations").Columns("owner_key", "conversation_id", "revision", "updated_at", "payload_json").Where(query.And(query.Equal("archived", 1), query.LessThanOrEqual("updated_at", cutoff))).OrderBy(query.Ascending("updated_at"), query.Ascending("conversation_id")).Build()
+	if err != nil {
+		return nil, err
+	}
+	rows, err := s.store.Database().QueryContext(ctx, statement, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	result := []agentpersistence.LifecycleCandidate{}
+	for rows.Next() {
+		var owner, id string
+		var revision, updated int64
+		var raw []byte
+		var conversation struct {
+			WorkspaceID string `json:"workspace_id"`
+		}
+		if err := rows.Scan(&owner, &id, &revision, &updated, &raw); err != nil {
+			return nil, err
+		}
+		if json.Unmarshal(raw, &conversation) != nil || conversation.WorkspaceID != workspaceID {
+			continue
+		}
+		active, activeErr := s.conversationLifecycleActive(ctx, owner, id)
+		if activeErr != nil {
+			return nil, activeErr
+		}
+		if active {
+			continue
+		}
+		payload, payloadErr := s.conversationLifecyclePayload(ctx, owner, id, raw)
+		if payloadErr != nil {
+			return nil, payloadErr
+		}
+		result = append(result, agentpersistence.LifecycleCandidate{ResourceType: "agent.conversation", ResourceID: id, OwnerKey: owner, Revision: revision, UpdatedAt: time.UnixMilli(updated).UTC(), Payload: payload})
+		if queryValue.Limit > 0 && len(result) >= queryValue.Limit {
+			break
+		}
+	}
+	return result, rows.Err()
+}
+
+func (s LifecycleStore) conversationLifecycleActive(ctx context.Context, owner, id string) (bool, error) {
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("status").Where(query.And(query.Equal("owner_key", owner), query.Equal("conversation_id", id))).Build()
+	if err != nil {
+		return false, err
+	}
+	rows, err := s.store.Database().QueryContext(ctx, statement, args...)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var status string
+		if err := rows.Scan(&status); err != nil {
+			return false, err
+		}
+		switch strings.ToLower(strings.TrimSpace(status)) {
+		case "queued", "running", "waiting", "pending", "uncertain":
+			return true, nil
+		}
+	}
+	return false, rows.Err()
+}
+
+func (s LifecycleStore) conversationLifecyclePayload(ctx context.Context, owner, id string, conversation []byte) (json.RawMessage, error) {
+	graph := map[string]any{"conversation": json.RawMessage(append([]byte(nil), conversation...))}
+	for _, table := range []string{"_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_inputs", "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable, conversationTaskTable} {
+		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("conversation_id", id))).Build()
+		if table == conversationTaskTable {
+			statement, args, err = query.NewSelectBuilder(s.store.Renderer(), table).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("source_conversation_id", id))).Build()
+		}
+		if err != nil {
+			return nil, err
+		}
+		rows, err := s.store.Database().QueryContext(ctx, statement, args...)
+		if err != nil {
+			return nil, err
+		}
+		items := []json.RawMessage{}
+		for rows.Next() {
+			var raw json.RawMessage
+			if err := rows.Scan(&raw); err != nil {
+				rows.Close()
+				return nil, err
+			}
+			items = append(items, append(json.RawMessage(nil), raw...))
+		}
+		if err := rows.Close(); err != nil {
+			return nil, err
+		}
+		if len(items) > 0 {
+			graph[table] = items
+		}
+	}
+	return json.Marshal(graph)
 }
 
 func agentLifecycleEligible(kind string, payload []byte) bool {
@@ -88,6 +203,9 @@ func agentLifecycleEligible(kind string, payload []byte) bool {
 }
 
 func (s LifecycleStore) DeleteLifecycleCandidate(ctx context.Context, workspaceID string, candidate agentpersistence.LifecycleCandidate) (bool, error) {
+	if candidate.ResourceType == "agent.conversation" {
+		return s.deleteConversationLifecycleCandidate(ctx, workspaceID, candidate)
+	}
 	statement, args, err := query.NewWorkspaceDeleteBuilder(s.store.Renderer(), "_agent_runtime_states", workspaceID).
 		Where(query.And(query.Equal("kind", candidate.State.Kind), query.Equal("state_key", candidate.State.Key), query.Equal("updated_at", candidate.State.UpdatedAt))).Build()
 	if err != nil {
@@ -99,6 +217,45 @@ func (s LifecycleStore) DeleteLifecycleCandidate(ctx context.Context, workspaceI
 	}
 	rows, err := result.RowsAffected()
 	return rows == 1, err
+}
+
+func (s LifecycleStore) deleteConversationLifecycleCandidate(ctx context.Context, workspaceID string, candidate agentpersistence.LifecycleCandidate) (bool, error) {
+	workspaceID, err := normalizeWorkspaceID(workspaceID)
+	if err != nil || candidate.OwnerKey == "" || candidate.ResourceID == "" || candidate.Revision < 1 {
+		return false, err
+	}
+	var deleted bool
+	err = (&ConversationStore{store: s.store}).transaction(ctx, func(tx *sql.Tx) error {
+		statement, args, buildErr := query.NewDeleteBuilder(s.store.Renderer(), "_agent_conversations").Where(query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("conversation_id", candidate.ResourceID), query.Equal("revision", candidate.Revision))).Build()
+		if buildErr != nil {
+			return buildErr
+		}
+		result, execErr := tx.ExecContext(ctx, statement, args...)
+		if execErr != nil {
+			return execErr
+		}
+		rows, execErr := result.RowsAffected()
+		if execErr != nil || rows != 1 {
+			return execErr
+		}
+		deleted = true
+		for _, table := range []string{"_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_inputs", "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable} {
+			statement, args, buildErr = query.NewDeleteBuilder(s.store.Renderer(), table).Where(query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("conversation_id", candidate.ResourceID))).Build()
+			if buildErr != nil {
+				return buildErr
+			}
+			if _, execErr = tx.ExecContext(ctx, statement, args...); execErr != nil {
+				return execErr
+			}
+		}
+		statement, args, buildErr = query.NewDeleteBuilder(s.store.Renderer(), conversationTaskTable).Where(query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("source_conversation_id", candidate.ResourceID))).Build()
+		if buildErr != nil {
+			return buildErr
+		}
+		_, execErr = tx.ExecContext(ctx, statement, args...)
+		return execErr
+	})
+	return deleted, err
 }
 
 var _ agentpersistence.AgentLifecycleRepository = LifecycleStore{}

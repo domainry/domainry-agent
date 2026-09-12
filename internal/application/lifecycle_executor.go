@@ -11,8 +11,6 @@ import (
 	lifecyclemodel "github.com/domainry/domainry-lifecycle-sdk/model"
 )
 
-const agentLifecycleResource = "agent.state"
-
 type LifecycleExecutor struct {
 	repository agentpersistence.AgentLifecycleRepository
 	archives   lifecyclecontract.ArchiveWriter
@@ -29,9 +27,10 @@ func (e LifecycleExecutor) Preview(ctx context.Context, workspaceID string, poli
 	if err != nil {
 		return lifecyclecontract.CleanupPreview{}, err
 	}
-	result := lifecyclecontract.CleanupPreview{Rows: int64(len(candidates)), Bytes: int64(len(candidates)) * 1024}
+	result := lifecyclecontract.CleanupPreview{Rows: int64(len(candidates))}
 	for _, candidate := range candidates {
-		updated := time.Unix(0, candidate.State.UpdatedAt).UTC()
+		updated := lifecycleCandidateUpdatedAt(candidate)
+		result.Bytes += int64(len(candidate.Payload))
 		if result.OldestEligible.IsZero() || updated.Before(result.OldestEligible) {
 			result.OldestEligible = updated
 		}
@@ -50,29 +49,28 @@ func (e LifecycleExecutor) ProcessBatch(ctx context.Context, job lifecyclemodel.
 	result := lifecyclemodel.CleanupBatchResult{Done: len(candidates) < batchSize}
 	for _, candidate := range candidates {
 		resourceID := candidate.ResourceID
+		resourceType := candidate.ResourceType
+		if resourceType == "" {
+			resourceType = "agent.state"
+		}
 		result.Scanned++
-		result.Checkpoint = agentLifecycleResource + ":" + resourceID
-		updated := time.Unix(0, candidate.State.UpdatedAt).UTC()
+		result.Checkpoint = resourceType + ":" + resourceID
+		updated := lifecycleCandidateUpdatedAt(candidate)
 		if result.OldestEligible.IsZero() || updated.Before(result.OldestEligible) {
 			result.OldestEligible = updated
 		}
-		if agentLifecycleHeld(holds, agentLifecycleResource, resourceID, job.UpdatedAt) {
+		if agentLifecycleHeld(holds, resourceType, resourceID, job.UpdatedAt) {
 			result.Skipped++
 			continue
 		}
 		if job.DryRun {
 			continue
 		}
-		raw, _ := json.Marshal(map[string]any{
-			"workspace_id": job.WorkspaceID,
-			"kind":         candidate.State.Kind,
-			"state_key":    candidate.State.Key,
-			"user_id":      candidate.State.UserID,
-			"role_key":     candidate.State.RoleKey,
-			"payload_json": json.RawMessage(candidate.State.Payload),
-			"updated_at":   candidate.State.UpdatedAt,
-		})
-		archived, archiveErr := e.archives.ArchivePayload(ctx, "agent", job, policy, agentLifecycleResource, resourceID, raw)
+		raw := candidate.Payload
+		if len(raw) == 0 {
+			raw, _ = json.Marshal(map[string]any{"workspace_id": job.WorkspaceID, "kind": candidate.State.Kind, "state_key": candidate.State.Key, "user_id": candidate.State.UserID, "role_key": candidate.State.RoleKey, "payload_json": json.RawMessage(candidate.State.Payload), "updated_at": candidate.State.UpdatedAt})
+		}
+		archived, archiveErr := e.archives.ArchivePayload(ctx, "agent", job, policy, resourceType, resourceID, raw)
 		if archiveErr != nil {
 			result.Failed++
 			return result, archiveErr
@@ -93,6 +91,13 @@ func (e LifecycleExecutor) ProcessBatch(ctx context.Context, job lifecyclemodel.
 		}
 	}
 	return result, nil
+}
+
+func lifecycleCandidateUpdatedAt(candidate agentpersistence.LifecycleCandidate) time.Time {
+	if !candidate.UpdatedAt.IsZero() {
+		return candidate.UpdatedAt.UTC()
+	}
+	return time.Unix(0, candidate.State.UpdatedAt).UTC()
 }
 
 func (e LifecycleExecutor) candidates(ctx context.Context, workspaceID string, policy lifecyclemodel.RetentionPolicy, now time.Time, limit int) ([]agentpersistence.LifecycleCandidate, error) {

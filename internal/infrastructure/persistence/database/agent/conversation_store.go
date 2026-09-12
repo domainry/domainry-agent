@@ -300,16 +300,33 @@ func (s *ConversationStore) Update(ctx context.Context, id string, in agentsdk.C
 	return out, err
 }
 func (s *ConversationStore) Delete(ctx context.Context, id string, revision int64, a agentsdk.ConversationAuthority) error {
-	return s.transaction(ctx, func(tx *sql.Tx) error {
+	_, err := s.DeleteForRequest(ctx, "conversation-delete:"+conversationHash([]any{conversationOwner(a), id, revision}), id, revision, a)
+	return err
+}
+
+func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id string, revision int64, a agentsdk.ConversationAuthority) (json.RawMessage, error) {
+	requestID = strings.TrimSpace(requestID)
+	if requestID == "" || len(requestID) > 96 {
+		return nil, conversationError("bad_request", "deletion_request_invalid")
+	}
+	owner := conversationOwner(a)
+	var receipt json.RawMessage
+	err := s.transaction(ctx, func(tx *sql.Tx) error {
+		lookup, args, buildErr := query.NewSelectBuilder(s.store.Renderer(), agentOperationReceiptTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("request_id", requestID))).Build()
+		if buildErr != nil {
+			return buildErr
+		}
+		if scanErr := tx.QueryRowContext(ctx, lookup, args...).Scan(&receipt); scanErr == nil {
+			return nil
+		} else if !errors.Is(scanErr, sql.ErrNoRows) {
+			return scanErr
+		}
 		c, err := s.get(ctx, tx, id, a)
 		if err != nil {
 			return err
 		}
 		if c.Revision != revision {
 			return conversationError("conflict", "revision_conflict")
-		}
-		if err := s.deleteConversationAttachments(ctx, tx, id, a); err != nil {
-			return err
 		}
 		q, args, e := query.NewDeleteBuilder(s.store.Renderer(), "_agent_conversations").Where(query.And(conversationScope(a, id), query.Equal("revision", revision))).Build()
 		if err = conversationCAS(ctx, tx, q, args, e); err != nil {
@@ -325,8 +342,15 @@ func (s *ConversationStore) Delete(ctx context.Context, id string, revision int6
 		if err = conversationExec(ctx, tx, q, args, e); err != nil {
 			return err
 		}
-		return nil
+		receipt, _ = json.Marshal(map[string]any{"request_id": requestID, "conversation_id": id, "revision": revision, "completed_at": time.Now().UTC()})
+		q, args, e = query.NewInsertBuilder(s.store.Renderer(), agentOperationReceiptTable).Columns("owner_key", "request_id", "payload_json").Values(owner, requestID, receipt).Build()
+		if e != nil {
+			return e
+		}
+		_, e = tx.ExecContext(ctx, q, args...)
+		return e
 	})
+	return receipt, err
 }
 func (s *ConversationStore) Messages(ctx context.Context, id string, in agentsdk.ConversationMessageQuery, a agentsdk.ConversationAuthority) (agentsdk.ConversationMessagePage, error) {
 	out := agentsdk.ConversationMessagePage{Items: []agentsdk.ConversationMessage{}}

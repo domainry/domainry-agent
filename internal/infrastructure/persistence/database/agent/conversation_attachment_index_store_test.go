@@ -245,9 +245,7 @@ func TestAttachmentIndexDeletionFencesLateWritesAndRequiresAcknowledgement(t *te
 	changed.PermissionID = "other-private-scope"
 	_, err = repo.QueueAttachmentIndex(ctx, r.Attachment.ID, r.Attachment.Revision, changed, a)
 	requireConversationCode(t, err, "attachment_source_changed")
-	if err = repo.Delete(ctx, c.ID, c.Revision, a); err != nil {
-		t.Fatal(err)
-	}
+	deleteConversationAcrossOwners(t, repo, c, a)
 	applyAttachmentIndex(t, repo, l, "put_acknowledged", "")
 	l = claimAttachmentIndex(t, repo)
 	applyAttachmentIndex(t, repo, l, "indexed", "INDEXED")
@@ -335,9 +333,7 @@ func TestAttachmentIndexDeleteBeforePutNeedsNoRemoteWrite(t *testing.T) {
 		t.Fatal(err)
 	}
 	l := claimAttachmentIndex(t, repo)
-	if err := repo.Delete(ctx, c.ID, c.Revision, a); err != nil {
-		t.Fatal(err)
-	}
+	deleteConversationAcrossOwners(t, repo, c, a)
 	if _, started, err := repo.StartAttachmentIndexPut(ctx, l); err != nil || started {
 		t.Fatal("PUT started after parent deletion", started, err)
 	}

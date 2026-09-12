@@ -24,7 +24,9 @@ import (
 	actioncontract "github.com/domainry/domainry-foundation/action"
 	"github.com/domainry/domainry-foundation/modulecapability"
 	"github.com/domainry/domainry-foundation/modulehttp"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
+	todomodule "github.com/domainry/domainry-todo/module"
 )
 
 type ConversationOptions = agentapplication.ConversationOptions
@@ -119,6 +121,19 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		conversationOptions.ExecutionAuthorizer, _ = host.(agentsdk.ConversationExecutionAuthorizer)
 	}
 	conversationRepository := agentstore.NewConversationStore(store)
+	todoStore, err := todomodule.NewStore(store.Database(), store.Renderer(), store.Profile(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("open Todo lifecycle store: %w", err)
+	}
+	binding.lifecycleSubjects = []lifecyclecontract.SubjectExecutionHandler{
+		agentstore.NewSubjectLifecycle(store, app.RuntimeID),
+		todomodule.NewSubjectLifecycle(todoStore, app.RuntimeID),
+		knowledgemodule.NewSubjectLifecycle(store, app.RuntimeID, knowledgemodule.Options{
+			AttachmentStorage: conversationOptions.AttachmentStorage,
+			ArtifactStorage:   conversationOptions.ArtifactStorage,
+			DocumentStorage:   conversationOptions.DocumentStorage,
+		}),
+	}
 	if !deferConversations && conversationOptions.ToolHost == nil {
 		if authorizer, ok := host.(agentsdk.ConversationToolAuthorizer); ok {
 			if _, capable := model.(agentsdk.ConversationAgentModel); capable {
@@ -189,6 +204,7 @@ type binding struct {
 	state                agentpersistence.AgentStateRepository
 	runs                 agentpersistence.AgentTaskRunRepository
 	lifecycle            agentpersistence.AgentLifecycleRepository
+	lifecycleSubjects    []lifecyclecontract.SubjectExecutionHandler
 	dialogState          agentsdk.AgentDialogStateService
 	taskState            agentpersistence.AgentTaskStateService
 	interactive          agentpersistence.AgentInteractiveStateService
@@ -272,6 +288,9 @@ func (b *binding) DefinitionRepository() agentpersistence.DefinitionRepository  
 func (b *binding) LifecycleExecutor(archives lifecyclecontract.ArchiveWriter) lifecyclecontract.OwnerLifecycleExecutor {
 	return agentapplication.NewLifecycleExecutor(b.lifecycle, archives)
 }
+func (b *binding) LifecycleSubjectHandlers() []lifecyclecontract.SubjectExecutionHandler {
+	return append([]lifecyclecontract.SubjectExecutionHandler(nil), b.lifecycleSubjects...)
+}
 func (b *binding) Conversations() agentsdk.ConversationService {
 	if b.conversations == nil {
 		return nil
@@ -305,3 +324,4 @@ var _ agentpersistence.ExecutionStateBinding = (*binding)(nil)
 var _ modulehttp.Provider = (*binding)(nil)
 var _ actioncontract.Provider = (*binding)(nil)
 var _ agentlifecycle.Binding = (*binding)(nil)
+var _ agentlifecycle.SubjectBinding = (*binding)(nil)

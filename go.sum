@@ -51,6 +51,8 @@ github.com/domainry/domainry-integration-sdk v0.1.5 h1:xEEvvd4TpMzf6p4GZaUj+cRVv
 github.com/domainry/domainry-integration-sdk v0.1.5/go.mod h1:M4Ak2dCyTupRhu+1eQbwo6/i3jJXxm46CSxPLiWaqO8=
 github.com/domainry/domainry-knowledge v0.1.0 h1:dSuITzNLKU6fFa00YC9aGqVLp59l+h6X4KgBzIFs+Vg=
 github.com/domainry/domainry-knowledge v0.1.0/go.mod h1:Gx2wEkVoifFcTq7q1MSuNkNIBoA2cgx/yjWaWDk2zaQ=
+github.com/domainry/domainry-knowledge v0.1.1 h1:QXfIk3GgERGjwQirhePPkx2NXOvIUgfT4oHNWOl2ErM=
+github.com/domainry/domainry-knowledge v0.1.1/go.mod h1:b5c8JG0a7dY4KTi2hCTI71J+BZ9CO59hAS8HxkcRfKs=
 github.com/domainry/domainry-lifecycle-sdk v0.1.8 h1:67cnb3oXLWpyP8Egd8x4bbvMlMsjSP4eNLx1TmlIrZM=
 github.com/domainry/domainry-lifecycle-sdk v0.1.8/go.mod h1:fRFRPcyQWD8hm0u9CH3vpn40EblOKuAodk2XCWCM8G4=
 github.com/domainry/domainry-metadata v0.1.7 h1:Nr0Ukeu+JG3sRkIIhQ7N2llSMus6kwhND3OWXT7uRsM=
@@ -69,6 +71,8 @@ github.com/domainry/domainry-scheduler-sdk v0.1.6 h1:Fy2JTDWHB7p47BEtL+7alDPK3bM
 github.com/domainry/domainry-scheduler-sdk v0.1.6/go.mod h1:H6QIU+jNZ92trSbu8wbF+gDg1iJRbI3w6nhK/o7HafQ=
 github.com/domainry/domainry-todo v0.1.0 h1:2PNKrZvcZXOR39Ccu01WUxG+p/pDJqF03udOcHWqqX8=
 github.com/domainry/domainry-todo v0.1.0/go.mod h1:vt0vf8XUjUOq6t0P78SaOhUZqkHAr04fu0iQ02vY5ps=
+github.com/domainry/domainry-todo v0.1.1 h1:si2hIzSLLq6oYrAMRwOKFTtf+cWqWZt5K/rSl7/D5U8=
+github.com/domainry/domainry-todo v0.1.1/go.mod h1:qDLKYw9HJvNOZmkzc8vn46P8Zkayyw9A3DcV/17gXcc=
 github.com/domainry/domainry-tools v0.1.0 h1:7L4nNvdt/+0ZunOcAsP/2cqXC0tDmrLrOLEATCJ2s9U=
 github.com/domainry/domainry-tools v0.1.0/go.mod h1:Y6ZOpkSf0Ec6ybYDiMzYZ7vvrgc1mq7e9KoJTl+htu8=
 github.com/domainry/domainry-tools v0.1.1 h1:hkIbrDSTp0H5cVx6QgB4bK891ba2EZbZOZEMwKi5IUA=
