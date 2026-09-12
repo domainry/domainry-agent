@@ -1,0 +1,233 @@
+{
+  "todo": "H02",
+  "status": "complete",
+  "captured_at": "2026-09-12T15:20:00Z",
+  "scope": "Agent conversation retention plus Agent/Todo/Knowledge user-data erasure through Lifecycle public contracts",
+  "retention": {
+    "policy_key": "agent.dialog.v1",
+    "default_installed_by_runtime": true,
+    "published_test_version": "2",
+    "test_retention_seconds": 86400,
+    "eligibility": "archived conversation with no active run; exact workspace and revision fence",
+    "archive_before_purge": true,
+    "archive_payload_includes": [
+      "conversation",
+      "messages",
+      "runs",
+      "summaries",
+      "events",
+      "inputs",
+      "steps",
+      "tool_calls_external_responses",
+      "interactions",
+      "tasks"
+    ],
+    "foreign_owner_references_purged_by_agent": false
+  },
+  "subject_erasure": {
+    "public_flow": [
+      "create",
+      "verify",
+      "preview",
+      "independent approve",
+      "execute",
+      "replay registered deletion"
+    ],
+    "completed_owners": [
+      "agent",
+      "todo",
+      "knowledge"
+    ],
+    "other_user_preserved": true,
+    "legal_hold_blocks_owner_erasure": true,
+    "durable_owner_receipts": true,
+    "knowledge_saved_copy_behavior": [
+      "personal copies removed",
+      "shared membership removed",
+      "shared creator references anonymized",
+      "unrelated shared copy preserved"
+    ],
+    "remote_deletion_requires_acknowledgement": true,
+    "remote_cleanup_fixture": true
+  },
+  "tests": [
+    {
+      "name": "agent full",
+      "command": "GOWORK=<temporary> GOCACHE=<temporary> go test ./...",
+      "pass": true,
+      "log": "2026-09-12-h02-lifecycle/agent-full.log"
+    },
+    {
+      "name": "agent sdk full",
+      "command": "GOWORK=<temporary> GOCACHE=<temporary> go test ./...",
+      "pass": true,
+      "log": "2026-09-12-h02-lifecycle/agent-sdk-full.log"
+    },
+    {
+      "name": "knowledge full",
+      "command": "GOWORK=<temporary> GOCACHE=<temporary> go test ./...",
+      "pass": true,
+      "log": "2026-09-12-h02-lifecycle/knowledge-full.log"
+    },
+    {
+      "name": "todo full",
+      "command": "GOWORK=<temporary> GOCACHE=<temporary> go test ./...",
+      "pass": true,
+      "log": "2026-09-12-h02-lifecycle/todo-full.log"
+    },
+    {
+      "name": "runtime bootstrap and boundary",
+      "command": "GOWORK=<temporary> GOCACHE=<temporary> go test ./runtime/bootstrap/runtime ./runtime/boundary",
+      "pass": true,
+      "log": "2026-09-12-h02-lifecycle/runtime-targets.log"
+    },
+    {
+      "name": "agent lifecycle race",
+      "command": "go test -race ./internal/infrastructure/persistence/database/agent -run <H02 tests> -count=1 -v",
+      "pass": true,
+      "log": "2026-09-12-h02-lifecycle/agent-lifecycle-race.log"
+    },
+    {
+      "name": "knowledge lifecycle race",
+      "command": "go test -race ./internal/infrastructure/persistence/database/knowledge -run TestSubjectLifecycle -count=1 -v",
+      "pass": true,
+      "log": "2026-09-12-h02-lifecycle/knowledge-lifecycle-race.log"
+    },
+    {
+      "name": "todo lifecycle race",
+      "command": "go test -race ./internal/infrastructure/persistence/database/todo -run TestSubjectLifecycleErasesOneOwnerAndReplaysReceipt -count=1 -v",
+      "pass": true,
+      "log": "2026-09-12-h02-lifecycle/todo-lifecycle-race.log"
+    },
+    {
+      "name": "runtime retention and subject erasure E2E race",
+      "command": "go test -race ./runtime/bootstrap/runtime -run TestRuntimeAgentRetentionAndSubjectErasureEndToEnd -count=1 -v",
+      "pass": true,
+      "log": "2026-09-12-h02-lifecycle/runtime-retention-subject-race.log"
+    },
+    {
+      "name": "five repository vet",
+      "command": "go vet ./... (Agent, Agent SDK, Knowledge, Todo); go vet ./runtime/bootstrap/runtime ./runtime/boundary (Runtime)",
+      "pass": true,
+      "logs": [
+        "2026-09-12-h02-lifecycle/agent-vet.log",
+        "2026-09-12-h02-lifecycle/agent-sdk-vet.log",
+        "2026-09-12-h02-lifecycle/knowledge-vet.log",
+        "2026-09-12-h02-lifecycle/todo-vet.log",
+        "2026-09-12-h02-lifecycle/runtime-vet.log"
+      ]
+    }
+  ],
+  "architecture": "2026-09-12-h02-lifecycle/architecture-audit.json",
+  "repositories": {
+    "domainry-agent": {
+      "head": "9bcef26f3f5033d5d3296cfb95e29b61b54818d0",
+      "status": [
+        " M docs/conversations.md",
+        " M internal/architecture/layout_test.go",
+        " M internal/infrastructure/persistence/database/agent/conversation_attachment_store.go",
+        " M internal/infrastructure/persistence/database/agent/conversation_attachment_store_test.go",
+        " M internal/infrastructure/persistence/database/agent/knowledge_bridge.go",
+        " M internal/infrastructure/persistence/database/agent/lifecycle_store.go",
+        " M module/factory_test.go",
+        "?? docs/evidence/2026-09-12-h02-lifecycle/",
+        "?? internal/infrastructure/persistence/database/agent/lifecycle_conversation_store_test.go"
+      ]
+    },
+    "domainry-agent-sdk": {
+      "head": "89148db3bd8bbd0aabd6eda23c19cdcda43380f9",
+      "status": []
+    },
+    "domainry-knowledge": {
+      "head": "6bc7bf13765cd11dae029e5dadc9490cf5f70c5a",
+      "status": []
+    },
+    "domainry-todo": {
+      "head": "b92049f9ac1ce9baaa72a4f73d42fb636a2a2ad8",
+      "status": []
+    },
+    "domainry-runtime": {
+      "head": "7d2ee0b80e11e269eca58415fa333ad6f74d6ab1",
+      "status": [
+        " M runtime/bootstrap/runtime/module_set_composition_test.go",
+        " M runtime/bootstrap/runtime/service_assembly.go"
+      ]
+    }
+  },
+  "source_files": [
+    {
+      "repository": "domainry-agent-sdk",
+      "path": "lifecycle/binding.go",
+      "sha256": "c2cce3dc78d3ca200a8930ac7299a6d0c7e3d9ca277f45a93b1f20bb4d5f73b5"
+    },
+    {
+      "repository": "domainry-agent-sdk",
+      "path": "persistence/conversation_repository.go",
+      "sha256": "6b83309865f2abbae16a23dd56f17176d9963ddad89bb5cf12ca903932c0f0cc"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/application/conversation_service.go",
+      "sha256": "8971c5c960dbe081970276204bebaea716c15caecefb9b70aff1594a83f38cb9"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/infrastructure/persistence/database/agent/subject_lifecycle.go",
+      "sha256": "baaf3e61e241e6ca4720712d8b84168314879503bdf50ff2277bf94215833a61"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/infrastructure/persistence/database/agent/lifecycle_store.go",
+      "sha256": "ddb35c0872f2f4eb1a63f45ed38362be26665072c8e53467b52508f5557e37c7"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/infrastructure/persistence/database/agent/knowledge_bridge.go",
+      "sha256": "36d31b412f2281113ffc3556ff9c19241ceec2cbc207df414d711090015680ee"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/infrastructure/persistence/database/agent/lifecycle_conversation_store_test.go",
+      "sha256": "31b610c914b140dbe5223cfc8b807a50427a4728be25b9165b738af4d4d9c565"
+    },
+    {
+      "repository": "domainry-knowledge",
+      "path": "contract/conversation_reference_lifecycle.go",
+      "sha256": "0780d5676062ca2b8e6b1644ec373c0b31bf7908382f76cd5d6b6921b1acf936"
+    },
+    {
+      "repository": "domainry-knowledge",
+      "path": "internal/infrastructure/persistence/database/knowledge/subject_lifecycle.go",
+      "sha256": "55251a131b89f6e553be15d6a1c4aec1aed3300c4f143a9018bfae99de91e7c1"
+    },
+    {
+      "repository": "domainry-knowledge",
+      "path": "internal/infrastructure/persistence/database/knowledge/conversation_reference_lifecycle.go",
+      "sha256": "4b4c9b6d5494816c812c045f9d7f8ebad30b301e1707a4b37d6cf6a2a1c30497"
+    },
+    {
+      "repository": "domainry-todo",
+      "path": "internal/infrastructure/persistence/database/todo/subject_lifecycle.go",
+      "sha256": "f07d2a37d4954fe260982250cd636df36e8ba0e4b02d4a94c896ab479cdeeabe"
+    },
+    {
+      "repository": "domainry-runtime",
+      "path": "runtime/bootstrap/runtime/service_assembly.go",
+      "sha256": "8d9911a65c89d63625f9c45d457924c1accecf6229fc963a1677eee529df4478"
+    },
+    {
+      "repository": "domainry-runtime",
+      "path": "runtime/bootstrap/runtime/module_set_composition_test.go",
+      "sha256": "20b94da4a8cd60dc25239ae599b21b1aa6439a9101515496393fd59c42b6b8c5"
+    }
+  ],
+  "limitations": [
+    "SQLite runtime composition is covered here; PostgreSQL/MySQL and multi-instance acceptance remain H08",
+    "external deletion uses an isolated protocol fixture because no vendor OAuth configuration was provided; service-owned OAuth configuration is outside H02",
+    "Runtime go.mod/go.sum and release lock are intentionally unchanged until H04"
+  ],
+  "llm_proxy": {
+    "role": "only the existing POST /tool/web_search and POST /tool/web_fetch_jina tool endpoints; never a model proxy",
+    "modified": false
+  }
+}

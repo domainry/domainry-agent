@@ -11,13 +11,20 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-orm/query"
 )
 
-type ConversationStore struct{ store *Store }
+type ConversationStore struct {
+	store *Store
+
+	capacityMu         sync.RWMutex
+	capacityConfigured bool
+	capacityLimits     agentsdk.ConversationExecutionLimits
+}
 
 func NewConversationStore(s *Store) *ConversationStore { return &ConversationStore{store: s} }
 

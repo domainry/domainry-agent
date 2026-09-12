@@ -237,7 +237,9 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 		if err = s.authorizeConversationClaim(ctx, claim, "summary"); err != nil {
 			return agentsdk.ConversationModelRequest{}, err
 		}
-		result, err := s.model.GenerateConversation(ctx, agentsdk.ConversationModelRequest{Messages: summaryMessages, Purpose: "summary", IdempotencyKey: "summary:" + c.ID + ":" + hash, MaxOutputBytes: s.options.SummaryBytes})
+		modelCtx, modelCancel := s.externalCallContext(ctx, 0)
+		result, err := s.model.GenerateConversation(modelCtx, agentsdk.ConversationModelRequest{Messages: summaryMessages, Purpose: "summary", IdempotencyKey: "summary:" + c.ID + ":" + hash, MaxOutputBytes: s.options.SummaryBytes})
+		modelCancel()
 		if err != nil {
 			return agentsdk.ConversationModelRequest{}, err
 		}

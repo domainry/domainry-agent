@@ -57,7 +57,9 @@ type ConversationOptions struct {
 	KnowledgeBytes                                            int
 	ContextBytes, MaxInputBytes, MaxOutputBytes, SummaryBytes int
 	Workers                                                   int
-	Lease, Poll, RunTimeout                                   time.Duration
+	MaxQueuedPerUser, MaxQueuedPerWorkspace                   int
+	MaxRunningPerUser, MaxRunningPerWorkspace                 int
+	Lease, Poll, RunTimeout, ExternalCallTimeout              time.Duration
 	InteractionTTL                                            time.Duration
 }
 
@@ -123,6 +125,9 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	}
 	if options.RunTimeout == 0 {
 		options.RunTimeout = 5 * time.Minute
+	}
+	if options.ExternalCallTimeout == 0 {
+		options.ExternalCallTimeout = min(2*time.Minute, options.RunTimeout)
 	}
 	if options.InteractionTTL == 0 {
 		options.InteractionTTL = 24 * time.Hour
@@ -218,8 +223,32 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 			return nil, fmt.Errorf("attachment tools require scoped metadata persistence")
 		}
 	}
-	if options.ContextBytes < 4096 || options.MaxInputBytes < 1 || options.MaxOutputBytes < 1 || options.SummaryBytes < 256 || options.MaxInputBytes+options.SummaryBytes+1024 >= options.ContextBytes || options.Workers < 1 || options.Workers > 32 || options.Lease < 300*time.Millisecond || options.Poll <= 0 || options.RunTimeout <= 0 {
+	if options.ContextBytes < 4096 || options.MaxInputBytes < 1 || options.MaxOutputBytes < 1 || options.SummaryBytes < 256 || options.MaxInputBytes+options.SummaryBytes+1024 >= options.ContextBytes || options.Workers < 1 || options.Workers > 32 || options.Lease < 300*time.Millisecond || options.Poll <= 0 || options.RunTimeout <= 0 || options.ExternalCallTimeout <= 0 || options.ExternalCallTimeout > 5*time.Minute {
 		return nil, fmt.Errorf("invalid conversation limits")
+	}
+	capacity, capacityEnabled := repo.(agentpersistence.ConversationCapacityRepository)
+	if capacityEnabled {
+		if options.MaxQueuedPerUser == 0 {
+			options.MaxQueuedPerUser = 8
+		}
+		if options.MaxQueuedPerWorkspace == 0 {
+			options.MaxQueuedPerWorkspace = max(128, options.Workers*16)
+		}
+		if options.MaxRunningPerUser == 0 {
+			options.MaxRunningPerUser = min(2, options.Workers)
+		}
+		if options.MaxRunningPerWorkspace == 0 {
+			options.MaxRunningPerWorkspace = options.Workers
+		}
+		limits := agentsdk.ConversationExecutionLimits{
+			MaxQueuedPerUser: options.MaxQueuedPerUser, MaxQueuedPerWorkspace: options.MaxQueuedPerWorkspace,
+			MaxRunningPerUser: options.MaxRunningPerUser, MaxRunningPerWorkspace: options.MaxRunningPerWorkspace,
+		}
+		if err := capacity.ConfigureConversationExecutionLimits(limits); err != nil {
+			return nil, err
+		}
+	} else if options.MaxQueuedPerUser != 0 || options.MaxQueuedPerWorkspace != 0 || options.MaxRunningPerUser != 0 || options.MaxRunningPerWorkspace != 0 {
+		return nil, fmt.Errorf("conversation capacity limits require capacity persistence")
 	}
 	var followUps agentpersistence.ConversationFollowUpEventRepository
 	if options.FollowUpPublisher != nil {
@@ -317,6 +346,16 @@ func (s *ConversationService) ConversationStreaming() bool {
 	return ok
 }
 func (s *ConversationService) ConversationExecutionEnabled() bool { return s.options.ToolHost != nil }
+func (s *ConversationService) ConversationExecutionCapacity(ctx context.Context, a agentsdk.ConversationAuthority) (agentsdk.ConversationExecutionCapacity, error) {
+	if err := s.authorize(a); err != nil {
+		return agentsdk.ConversationExecutionCapacity{}, err
+	}
+	repo, ok := s.repo.(agentpersistence.ConversationCapacityRepository)
+	if !ok {
+		return agentsdk.ConversationExecutionCapacity{}, conversationFailure("unavailable", "capacity_unavailable")
+	}
+	return repo.ConversationExecutionCapacity(ctx, a)
+}
 func conversationFailure(class, code string) error {
 	return &agentsdk.Error{Class: class, Code: "agent.conversation." + code}
 }
@@ -345,6 +384,40 @@ func (s *ConversationService) signal() {
 	case s.wake <- struct{}{}:
 	default:
 	}
+}
+
+func (s *ConversationService) externalCallContext(ctx context.Context, requested time.Duration) (context.Context, context.CancelFunc) {
+	timeout := s.options.ExternalCallTimeout
+	if timeout <= 0 {
+		timeout = requested
+	}
+	if timeout <= 0 {
+		timeout = 30 * time.Second
+	}
+	if requested > 0 && requested < timeout {
+		timeout = requested
+	}
+	return context.WithTimeout(ctx, timeout)
+}
+
+func (s *ConversationService) authorizeConversationTool(ctx context.Context, authorizer agentsdk.ConversationToolAuthorizer, request agentsdk.ConversationToolRequest) (agentsdk.ConversationToolAuthorization, error) {
+	callCtx, cancel := s.externalCallContext(ctx, 5*time.Second)
+	defer cancel()
+	authorization, err := authorizer.AuthorizeConversationTool(callCtx, request)
+	if callCtx.Err() != nil && ctx.Err() == nil {
+		return agentsdk.ConversationToolAuthorization{}, conversationFailure("unavailable", "tool_authorization_timeout")
+	}
+	return authorization, err
+}
+
+func (s *ConversationService) searchConversationKnowledge(ctx context.Context, query string, authority agentsdk.ConversationAuthority) (json.RawMessage, error) {
+	callCtx, cancel := s.externalCallContext(ctx, 30*time.Second)
+	defer cancel()
+	result, err := s.options.Knowledge.Search(callCtx, query, authority)
+	if callCtx.Err() != nil && ctx.Err() == nil {
+		return nil, conversationFailure("unavailable", "knowledge_timeout")
+	}
+	return result, err
 }
 
 func (s *ConversationService) Create(ctx context.Context, in agentsdk.ConversationCreate, a agentsdk.ConversationAuthority) (agentsdk.Conversation, error) {
@@ -674,10 +747,14 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 
 var _ agentsdk.ConversationService = (*ConversationService)(nil)
 var _ agentsdk.ConversationStatusProvider = (*ConversationService)(nil)
+var _ agentsdk.ConversationCapacityProvider = (*ConversationService)(nil)
 
 // Preserve only our stable provider categories; arbitrary model errors cannot
 // inject provider text, keys or unbounded error strings into a persisted run.
 func conversationModelFailureCode(err error, fallback string) string {
+	if errors.Is(err, context.DeadlineExceeded) {
+		return "provider_timeout"
+	}
 	var failure *agentsdk.Error
 	if errors.As(err, &failure) {
 		code := strings.TrimPrefix(failure.Code, "agent.conversation.")

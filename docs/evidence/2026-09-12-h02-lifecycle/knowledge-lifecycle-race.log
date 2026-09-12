@@ -1,0 +1,6 @@
+=== RUN   TestSubjectLifecycleRemovesPersonalCopiesAndAnonymizesSharedReferences
+--- PASS: TestSubjectLifecycleRemovesPersonalCopiesAndAnonymizesSharedReferences (0.26s)
+=== RUN   TestSubjectLifecycleKeepsRemoteDeletionEvidenceUntilAcknowledged
+--- PASS: TestSubjectLifecycleKeepsRemoteDeletionEvidenceUntilAcknowledged (0.07s)
+PASS
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/persistence/database/knowledge	1.741s

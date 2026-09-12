@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"sort"
@@ -76,7 +77,13 @@ func (s *ConversationService) registeredExecutionCatalog(ctx context.Context, a 
 	if s == nil || s.options.ToolHost == nil {
 		return nil, nil, conversationFailure("unavailable", "tool_host_unavailable")
 	}
-	definitions, err := s.options.ToolHost.ConversationTools(ctx, a)
+	catalogCtx, cancel := s.externalCallContext(ctx, 30*time.Second)
+	definitions, err := s.options.ToolHost.ConversationTools(catalogCtx, a)
+	catalogErr := catalogCtx.Err()
+	cancel()
+	if catalogErr != nil && ctx.Err() == nil {
+		return nil, nil, conversationFailure("unavailable", "tool_catalog_timeout")
+	}
 	if err != nil {
 		return nil, nil, err
 	}
@@ -115,7 +122,7 @@ func (s *ConversationService) availableExecutionCatalog(ctx context.Context, a a
 	}
 	// Bound the new connection checks, not the host's existing Identity/catalog
 	// resolution. Legacy hosts keep the caller's original execution deadline.
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := s.externalCallContext(ctx, 5*time.Second)
 	defer cancel()
 	available := make([]agentsdk.ConversationToolDefinition, 0, len(definitions))
 	for _, definition := range definitions {
@@ -139,7 +146,7 @@ func (s *ConversationService) conversationToolAvailable(ctx context.Context, a a
 	if s.options.ToolAvailability == nil {
 		return true, nil
 	}
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := s.externalCallContext(ctx, 5*time.Second)
 	defer cancel()
 	ready, err := s.options.ToolAvailability.ConversationToolAvailable(ctx, a, key)
 	if ctx.Err() != nil {
@@ -386,7 +393,7 @@ func (s *ConversationService) executeConversationTool(ctx context.Context, claim
 	if receipt := confirmationReceipt(interaction.Interaction, claim.Authority); receipt != nil {
 		request.Confirmation, request.ConfirmationID = receipt, receipt.ID
 	}
-	authorization, err := s.options.ToolHost.AuthorizeConversationTool(ctx, request)
+	authorization, err := s.authorizeConversationTool(ctx, s.options.ToolHost, request)
 	if auditErr := s.recordConversationAuthorization(ctx, claim, step.Number, call, frozen, authorization, request.ConfirmationID, err); auditErr != nil {
 		return agentsdk.ConversationToolResult{}, auditErr
 	}
@@ -464,18 +471,18 @@ func (s *ConversationService) executeConversationTool(ctx context.Context, claim
 			return agentsdk.ConversationToolResult{}, err
 		}
 	} else if call.Name == "execution_read" {
-		toolCtx, cancel := context.WithTimeout(ctx, time.Duration(frozen.TimeoutMillis)*time.Millisecond)
+		toolCtx, cancel := s.externalCallContext(ctx, time.Duration(frozen.TimeoutMillis)*time.Millisecond)
 		result = s.readConversationExecution(toolCtx, request)
 		cancel()
 	} else if call.Name == "tool_result_read" {
-		toolCtx, cancel := context.WithTimeout(ctx, time.Duration(frozen.TimeoutMillis)*time.Millisecond)
+		toolCtx, cancel := s.externalCallContext(ctx, time.Duration(frozen.TimeoutMillis)*time.Millisecond)
 		result = s.readConversationToolResult(toolCtx, request)
 		cancel()
 	} else {
 		if err := ctx.Err(); err != nil {
 			return agentsdk.ConversationToolResult{}, err
 		}
-		toolCtx, cancel := context.WithTimeout(ctx, time.Duration(frozen.TimeoutMillis)*time.Millisecond)
+		toolCtx, cancel := s.externalCallContext(ctx, time.Duration(frozen.TimeoutMillis)*time.Millisecond)
 		if replayed && (record.State == "uncertain" || frozen.Idempotency == "reconcile") {
 			result, err = s.options.ToolHost.ReconcileConversationTool(toolCtx, request)
 		} else {
@@ -484,6 +491,10 @@ func (s *ConversationService) executeConversationTool(ctx context.Context, claim
 		cancel()
 		if err != nil {
 			result = agentsdk.ConversationToolResult{Status: "failed", ErrorCode: "tool_failed", Content: json.RawMessage(`{"error":"tool_failed"}`)}
+			if errors.Is(err, context.DeadlineExceeded) && ctx.Err() == nil {
+				result.ErrorCode = "tool_timeout"
+				result.Content = json.RawMessage(`{"error":"tool_timeout"}`)
+			}
 			if ctx.Err() != nil {
 				result.ErrorCode = "execution_interrupted"
 				result.Content = json.RawMessage(`{"error":"execution_interrupted"}`)

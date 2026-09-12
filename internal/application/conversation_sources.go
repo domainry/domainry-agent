@@ -184,7 +184,7 @@ func (audit *conversationSourceAudit) inlineKnowledge(ctx context.Context, snaps
 	if len(messages) != 1 || messages[0].Role != "user" {
 		return conversationFailure("unavailable", "source_reference_invalid")
 	}
-	current, err := audit.s.options.Knowledge.Search(ctx, messages[0].Content, audit.a)
+	current, err := audit.s.searchConversationKnowledge(ctx, messages[0].Content, audit.a)
 	if err != nil {
 		return err
 	}
@@ -278,7 +278,7 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 			return nil, conversationFailure("forbidden", "business_access_denied")
 		}
 		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
-		auth, err := audit.s.options.ToolHost.AuthorizeConversationTool(ctx, request)
+		auth, err := audit.s.authorizeConversationTool(ctx, audit.s.options.ToolHost, request)
 		if err != nil {
 			return nil, err
 		}
@@ -306,7 +306,7 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 			return nil, conversationFailure("forbidden", "knowledge_access_denied")
 		}
 		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
-		auth, err := policy.AuthorizeConversationTool(ctx, request)
+		auth, err := audit.s.authorizeConversationTool(ctx, policy, request)
 		if err != nil {
 			return nil, err
 		}
@@ -333,7 +333,7 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 			return nil, conversationFailure("forbidden", "tool_access_denied")
 		}
 		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
-		auth, err := audit.s.options.ToolHost.AuthorizeConversationTool(ctx, request)
+		auth, err := audit.s.authorizeConversationTool(ctx, audit.s.options.ToolHost, request)
 		if err != nil {
 			return nil, err
 		}
@@ -444,7 +444,7 @@ func sourceAccessCode(err error) string {
 }
 
 func (s *ConversationService) sourceAccessContext(ctx context.Context) (context.Context, context.CancelFunc) {
-	return context.WithTimeout(ctx, 20*time.Second)
+	return s.externalCallContext(ctx, 20*time.Second)
 }
 
 func (s *ConversationService) checkRunSources(ctx context.Context, ref agentsdk.ConversationRunReference, a agentsdk.ConversationAuthority) error {

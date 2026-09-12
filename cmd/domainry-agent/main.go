@@ -143,7 +143,12 @@ func openService(store *agentstore.Store) (*server.Server, func(), error) {
 		if err != nil {
 			return nil, closeService, err
 		}
-		options := agentapplication.ConversationOptions{ExecutionAuthorizer: identity}
+		options, err := conversationOptionsFromEnvironment()
+		if err != nil {
+			_ = identity.Close(context.Background())
+			return nil, closeService, err
+		}
+		options.ExecutionAuthorizer = identity
 		if knowledge != nil {
 			options.Knowledge = knowledge
 		}
@@ -167,4 +172,48 @@ func openService(store *agentstore.Store) (*server.Server, func(), error) {
 		closeService()
 	}
 	return service, closeService, err
+}
+
+func conversationOptionsFromEnvironment() (agentapplication.ConversationOptions, error) {
+	var options agentapplication.ConversationOptions
+	integers := []struct {
+		name   string
+		target *int
+	}{
+		{"AGENT_CONVERSATION_WORKERS", &options.Workers},
+		{"AGENT_CONVERSATION_MAX_QUEUED_PER_USER", &options.MaxQueuedPerUser},
+		{"AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE", &options.MaxQueuedPerWorkspace},
+		{"AGENT_CONVERSATION_MAX_RUNNING_PER_USER", &options.MaxRunningPerUser},
+		{"AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE", &options.MaxRunningPerWorkspace},
+	}
+	for _, item := range integers {
+		raw := strings.TrimSpace(os.Getenv(item.name))
+		if raw == "" {
+			continue
+		}
+		value, err := strconv.Atoi(raw)
+		if err != nil || value <= 0 {
+			return options, errors.New(item.name + " must be a positive integer")
+		}
+		*item.target = value
+	}
+	durations := []struct {
+		name   string
+		target *time.Duration
+	}{
+		{"AGENT_CONVERSATION_RUN_TIMEOUT", &options.RunTimeout},
+		{"AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT", &options.ExternalCallTimeout},
+	}
+	for _, item := range durations {
+		raw := strings.TrimSpace(os.Getenv(item.name))
+		if raw == "" {
+			continue
+		}
+		value, err := time.ParseDuration(raw)
+		if err != nil || value <= 0 {
+			return options, errors.New(item.name + " must be a positive duration")
+		}
+		*item.target = value
+	}
+	return options, nil
 }

@@ -45,7 +45,7 @@ func configureIdentityFixture(t *testing.T) *identityFixture {
 	})
 	mux.HandleFunc("POST /identity/principal/resolve", func(w http.ResponseWriter, r *http.Request) {
 		var in identitysdk.PrincipalResolutionRequest
-		if json.NewDecoder(r.Body).Decode(&in) != nil || in.Application.WorkspaceID != "workspace" || in.Application.ApplicationKey != "agent-runtime" || r.Header.Get("Cookie") != "" {
+		if json.NewDecoder(r.Body).Decode(&in) != nil || r.Header.Get("X-Domainry-Workspace-ID") != "workspace" || r.Header.Get("X-Domainry-Application-Key") != "agent-runtime" || r.Header.Get("Cookie") != "" {
 			t.Error("principal request bypassed configured application scope")
 			http.Error(w, "invalid", 400)
 			return

@@ -45,9 +45,3 @@ func (s *ConversationStore) saveAttachment(ctx context.Context, tx *sql.Tx, reco
 func (s *ConversationStore) TransitionAttachment(ctx context.Context, id string, expected int64, in persistence.ConversationAttachmentTransition, a agentsdk.ConversationAuthority) (persistence.ConversationAttachmentRecord, error) {
 	return s.knowledgeStore().TransitionAttachment(ctx, id, expected, in, a)
 }
-
-// Called in the parent deletion transaction. Never discard cleanup references
-// or permit a late upload/index worker to restore access after conversation deletion.
-func (s *ConversationStore) deleteConversationAttachments(ctx context.Context, tx *sql.Tx, conversationID string, a agentsdk.ConversationAuthority) error {
-	return s.knowledgeStore().CompatDeleteConversationAttachments(ctx, tx, conversationID, a)
-}

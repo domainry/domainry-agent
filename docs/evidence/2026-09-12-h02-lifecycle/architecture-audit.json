@@ -1,0 +1,43 @@
+{
+  "agent_subject_handler_reads_or_deletes_no_foreign_owner_tables": {
+    "pass": true,
+    "matches": []
+  },
+  "agent_conversation_delete_transaction_has_no_knowledge_cleanup_call": {
+    "pass": true,
+    "matches": []
+  },
+  "knowledge_public_owner_bridge_is_separate": {
+    "pass": true
+  },
+  "runtime_composes_subject_owners_through_agent_sdk_extension": {
+    "pass": true
+  },
+  "runtime_dependency_lock_untouched_for_h02": {
+    "pass": true,
+    "status": [
+      " M runtime/bootstrap/runtime/module_set_composition_test.go",
+      " M runtime/bootstrap/runtime/service_assembly.go"
+    ]
+  },
+  "llm_proxy_workspaces_untouched": {
+    "pass": true,
+    "workspaces": [
+      {
+        "path": "/Users/tiger/Projects/devops/llm-proxy",
+        "status": []
+      },
+      {
+        "path": "/Users/tiger/Projects/anti/llm-proxy",
+        "status": []
+      }
+    ]
+  },
+  "boundary": {
+    "agent": "owns archived conversation eligibility, complete execution graph archive payload, fenced purge, and Agent subject data",
+    "todo": "owns todo rows and mutation receipts and returns its own durable subject-erasure receipt",
+    "knowledge": "owns attachments, artifacts, libraries, saved copies, physical content, remote deletion recovery, and its durable receipts",
+    "runtime": "composes opaque owner handlers and the Agent retention executor through public SDK contracts",
+    "lifecycle": "owns policy publication, legal holds, cleanup jobs, archives, subject request workflow, execution steps, and deletion replay registration"
+  }
+}

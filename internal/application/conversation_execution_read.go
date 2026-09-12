@@ -59,7 +59,7 @@ func (s *ConversationService) authorizeConversationRecord(ctx context.Context, c
 	if conversationDigest(definition.definition) != conversationDigest(source.Definition) {
 		return conversationFailure("conflict", "tool_changed")
 	}
-	auth, err := s.options.ToolHost.AuthorizeConversationTool(ctx, agentsdk.ConversationToolRequest{Authority: a, ConversationID: conversationID, RunID: runID, CorrelationID: runID, Step: source.Step, Call: source.Call, Definition: source.Definition})
+	auth, err := s.authorizeConversationTool(ctx, s.options.ToolHost, agentsdk.ConversationToolRequest{Authority: a, ConversationID: conversationID, RunID: runID, CorrelationID: runID, Step: source.Step, Call: source.Call, Definition: source.Definition})
 	if err != nil {
 		return err
 	}

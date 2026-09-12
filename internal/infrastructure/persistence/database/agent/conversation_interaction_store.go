@@ -226,6 +226,11 @@ func (s *ConversationStore) RespondExecution(ctx context.Context, id, runID stri
 		if status == "" {
 			return conversationError("bad_request", "interaction_response_invalid")
 		}
+		if status != "rejected" {
+			if err = s.checkConversationQueueCapacity(ctx, tx, a); err != nil {
+				return err
+			}
+		}
 		i.Status, i.Answer, i.RespondedBy, i.RespondedAt = status, response.Answer, a.UserID, &now
 		if response.Scope == "listed_operations" {
 			if err = s.approveListedOperations(ctx, tx, old, i); err != nil {

@@ -15,9 +15,11 @@ func (s *ConversationService) generateConversationReply(ctx context.Context, cla
 	}
 	streamer, ok := s.model.(agentsdk.ConversationStreamingModel)
 	if !ok {
-		return s.model.GenerateConversation(ctx, input)
+		modelCtx, cancel := s.externalCallContext(ctx, 0)
+		defer cancel()
+		return s.model.GenerateConversation(modelCtx, input)
 	}
-	streamCtx, cancel := context.WithCancel(ctx)
+	streamCtx, cancel := s.externalCallContext(ctx, 0)
 	defer cancel()
 	var draft strings.Builder
 	var deltaErr error

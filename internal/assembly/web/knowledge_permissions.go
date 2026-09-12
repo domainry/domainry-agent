@@ -10,6 +10,7 @@ import (
 	"unicode/utf8"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/requestcontext"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	"github.com/domainry/domainry-identity-sdk/authorization/evaluator"
 )
@@ -20,7 +21,7 @@ func (h *Host) authorizeKnowledgeWorkspace(ctx context.Context, a agentsdk.Conve
 	if !a.Known || a.RuntimeID != h.runtimeID || a.WorkspaceID == "" || a.UserID == "" {
 		return &agentsdk.Error{Class: "forbidden", Code: "agent.conversation.knowledge_access_denied"}
 	}
-	resolution, err := h.Identity.Principals().Resolve(ctx, identitysdk.PrincipalResolutionRequest{Application: identitysdk.ApplicationScope{WorkspaceID: identitysdk.WorkspaceID(a.WorkspaceID), ApplicationKey: h.application.ApplicationKey}, SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
+	resolution, err := h.Identity.Principals().Resolve(requestcontext.WithWorkspaceID(ctx, a.WorkspaceID), identitysdk.PrincipalResolutionRequest{SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
 	if err != nil {
 		return err
 	}
@@ -74,7 +75,7 @@ func (h *Host) knowledgePermissionIDs(ctx context.Context, a agentsdk.Conversati
 	if !a.Known || a.RuntimeID != h.runtimeID || (a.WorkspaceID == "" || !h.external && a.WorkspaceID != string(h.application.WorkspaceID)) || a.UserID == "" {
 		return nil, denied
 	}
-	resolution, err := h.Identity.Principals().Resolve(ctx, identitysdk.PrincipalResolutionRequest{Application: identitysdk.ApplicationScope{WorkspaceID: identitysdk.WorkspaceID(a.WorkspaceID), ApplicationKey: h.application.ApplicationKey}, SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
+	resolution, err := h.Identity.Principals().Resolve(requestcontext.WithWorkspaceID(ctx, a.WorkspaceID), identitysdk.PrincipalResolutionRequest{SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
 	if err != nil {
 		return nil, err
 	}

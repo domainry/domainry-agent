@@ -96,33 +96,47 @@ func (s LifecycleStore) listConversationLifecycleCandidates(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	result := []agentpersistence.LifecycleCandidate{}
+	type conversationRow struct {
+		owner, id         string
+		revision, updated int64
+		raw               []byte
+	}
+	scanned := []conversationRow{}
 	for rows.Next() {
-		var owner, id string
-		var revision, updated int64
-		var raw []byte
+		var row conversationRow
 		var conversation struct {
 			WorkspaceID string `json:"workspace_id"`
 		}
-		if err := rows.Scan(&owner, &id, &revision, &updated, &raw); err != nil {
+		if err := rows.Scan(&row.owner, &row.id, &row.revision, &row.updated, &row.raw); err != nil {
+			_ = rows.Close()
 			return nil, err
 		}
-		if json.Unmarshal(raw, &conversation) != nil || conversation.WorkspaceID != workspaceID {
+		if json.Unmarshal(row.raw, &conversation) != nil || conversation.WorkspaceID != workspaceID {
 			continue
 		}
-		active, activeErr := s.conversationLifecycleActive(ctx, owner, id)
+		scanned = append(scanned, row)
+	}
+	if err := rows.Err(); err != nil {
+		_ = rows.Close()
+		return nil, err
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	result := []agentpersistence.LifecycleCandidate{}
+	for _, row := range scanned {
+		active, activeErr := s.conversationLifecycleActive(ctx, row.owner, row.id)
 		if activeErr != nil {
 			return nil, activeErr
 		}
 		if active {
 			continue
 		}
-		payload, payloadErr := s.conversationLifecyclePayload(ctx, owner, id, raw)
+		payload, payloadErr := s.conversationLifecyclePayload(ctx, row.owner, row.id, row.raw)
 		if payloadErr != nil {
 			return nil, payloadErr
 		}
-		result = append(result, agentpersistence.LifecycleCandidate{ResourceType: "agent.conversation", ResourceID: id, OwnerKey: owner, Revision: revision, UpdatedAt: time.UnixMilli(updated).UTC(), Payload: payload})
+		result = append(result, agentpersistence.LifecycleCandidate{ResourceType: "agent.conversation", ResourceID: row.id, OwnerKey: row.owner, Revision: row.revision, UpdatedAt: time.UnixMilli(row.updated).UTC(), Payload: payload})
 		if queryValue.Limit > 0 && len(result) >= queryValue.Limit {
 			break
 		}

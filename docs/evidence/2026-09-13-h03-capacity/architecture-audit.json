@@ -1,0 +1,64 @@
+{
+  "todo": "H03",
+  "pass": true,
+  "checks": {
+    "agent_capacity_contract_is_optional": {
+      "pass": true,
+      "evidence": "ConversationCapacityProvider and ConversationCapacityRepository are optional SDK extensions; base service and repository interfaces were not expanded"
+    },
+    "agent_application_uses_sdk_persistence_port": {
+      "pass": true,
+      "evidence": "internal/architecture TestExecutionCapacityStaysInsideAgentSDKAndPersistenceBoundary passed under -race"
+    },
+    "agent_capacity_store_has_no_foreign_owner_dependency": {
+      "pass": true,
+      "forbidden_matches": [],
+      "evidence": "capacity store imports Agent SDK persistence plus ORM query only and contains no Runtime or Identity implementation/table reference"
+    },
+    "agent_multi_worker_capacity_is_durable": {
+      "pass": true,
+      "evidence": "runtime/workspace database guard serializes admission; indexed owner/workspace columns supply counts; process mutex only freezes immutable configuration"
+    },
+    "scheduler_owns_trigger_backlog": {
+      "pass": true,
+      "evidence": "Scheduler SDK optional projection, Scheduler run store, Runtime-scoped database guard, migration, HTTP mapping and worker configuration are all contained in Scheduler repositories"
+    },
+    "tools_owns_definition_timeout": {
+      "pass": true,
+      "evidence": "Tools Registry applies the selected tool Definition.TimeoutMillis; H03 adds only a contract behavior test"
+    },
+    "integration_owns_public_web_transport_timeout": {
+      "pass": true,
+      "evidence": "PublicWeb transport remains in Integration and its test covers both exact llm-proxy tool paths; no production Integration file changed in H03"
+    },
+    "no_global_cross_owner_timeout": {
+      "pass": true,
+      "evidence": "Agent bounds its calls, Tools bounds definitions, Scheduler bounds dispatch, and Integration/Connector host bounds outbound HTTP independently"
+    }
+  },
+  "boundary": {
+    "agent": "owns conversation user/workspace queue and running quotas, execution call budget, stable run/tool timeout outcomes, and its durable capacity guard",
+    "scheduler": "owns Runtime-scoped pending trigger count, durable trigger admission guard, worker dispatch deadline, and backlog HTTP status",
+    "tools": "owns the selected tool definition timeout applied at invocation",
+    "integration_connector_host": "owns outbound service HTTP deadline, origin/path allowlist, response bound, and safe transport error",
+    "llm_proxy": "provides only existing POST /tool/web_search and POST /tool/web_fetch_jina endpoints; it is not a model proxy for Agent and is not modified"
+  },
+  "llm_proxy_workspaces_untouched": {
+    "pass": true,
+    "workspaces": [
+      {
+        "path": "/Users/tiger/Projects/devops/llm-proxy",
+        "status": []
+      },
+      {
+        "path": "/Users/tiger/Projects/anti/llm-proxy",
+        "status": []
+      }
+    ]
+  },
+  "next_todo_not_implemented": {
+    "todo": "H04",
+    "pass": true,
+    "evidence": "Identity SDK contract drift is recorded as input to H04; H03 did not change Identity, release locks, or published dependency versions"
+  }
+}

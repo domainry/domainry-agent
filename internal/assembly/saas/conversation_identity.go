@@ -8,6 +8,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/requestcontext"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	identityremote "github.com/domainry/domainry-identity-sdk/remote"
 )
@@ -47,8 +48,7 @@ func (h *ConversationIdentity) AuthorizeConversationExecution(ctx context.Contex
 	}
 	// The public SDK sends the configured application service credential and
 	// performs a fresh principal resolution; no queued policy bundle is reused.
-	scope := identitysdk.ApplicationScope{TenantID: h.application.TenantID, WorkspaceID: h.application.WorkspaceID, ApplicationKey: h.application.ApplicationKey}
-	resolution, err := h.binding.Principals().Resolve(ctx, identitysdk.PrincipalResolutionRequest{Application: scope, SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
+	resolution, err := h.binding.Principals().Resolve(requestcontext.WithWorkspaceID(ctx, a.WorkspaceID), identitysdk.PrincipalResolutionRequest{SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
 	if err != nil {
 		return false, err
 	}

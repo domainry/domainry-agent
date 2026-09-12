@@ -10,6 +10,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/contracttest"
+	agentlifecycle "github.com/domainry/domainry-agent-sdk/lifecycle"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	schemastore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	capabilitycontracttest "github.com/domainry/domainry-foundation/modulecapability/contracttest"
@@ -110,11 +111,22 @@ func TestModuleDescriptor(t *testing.T) {
 	if b.Descriptor().Mode != agentsdk.DeploymentModeModule {
 		t.Fatalf("descriptor=%+v", b.Descriptor())
 	}
-	if len(host.applied) != 18 {
+	if len(host.applied) != 19 {
 		t.Fatalf("Agent migrations=%d", len(host.applied))
 	}
 	contracttest.VerifyBinding(t, b, agentsdk.DeploymentModeModule)
 	capabilitycontracttest.VerifyBinding(t, b)
+	subjects, ok := b.(agentlifecycle.SubjectBinding)
+	if !ok {
+		t.Fatal("Agent module omitted subject lifecycle binding")
+	}
+	owners := []string{}
+	for _, handler := range subjects.LifecycleSubjectHandlers() {
+		owners = append(owners, handler.Owner(t.Context()))
+	}
+	if strings.Join(owners, ",") != "agent,todo,knowledge" {
+		t.Fatalf("subject lifecycle owners=%v", owners)
+	}
 	ctx := agentsdk.WithAuthorizedServiceAction(t.Context(), agentsdk.ActionAgentTaskExecutionStart, agentsdk.AgentRuntimeServiceAudience)
 	result, err := b.TaskRunner().Start(ctx, agentsdk.TaskRequest{TaskRunID: "task", WorkspaceID: "workspace", IdempotencyKey: "key", Deadline: time.Now().Add(time.Minute), Task: agentsdk.AgentTaskDefinition{ContractVersion: agentsdk.AgentTaskContractVersion, Key: "review", Version: "1", AgentKey: "reviewer", Instruction: "review", InputSchema: map[string]any{"type": "object"}, OutputSchema: map[string]any{"type": "object"}, AllowedOutcomes: []string{"success"}, SideEffectMode: agentsdk.AgentTaskSideEffectAnalysisOnly, Enabled: true}})
 	if err != nil || result.ExternalRunID != "workspace/task" || result.Status != agentsdk.ProviderRunAccepted {

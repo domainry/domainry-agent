@@ -40,7 +40,7 @@ func (s *ConversationService) confirmationOperations(ctx context.Context, claim 
 			return nil
 		}
 		request := agentsdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, CorrelationID: claim.Run.ID, Step: step.Number, Call: call, Definition: frozen, LeaseOwner: claim.Owner, Fence: claim.Fence}
-		auth, err := s.options.ToolHost.AuthorizeConversationTool(ctx, request)
+		auth, err := s.authorizeConversationTool(ctx, s.options.ToolHost, request)
 		if err != nil || !auth.Granted {
 			return nil
 		}
@@ -75,7 +75,7 @@ func (s *ConversationService) authorizeListedOperations(ctx context.Context, i a
 			return conversationFailure("conflict", "tool_changed")
 		}
 		request := agentsdk.ConversationToolRequest{Authority: a, ConversationID: i.ConversationID, RunID: i.RunID, CorrelationID: i.RunID, Step: i.Step, Call: agentsdk.ConversationToolCall{ID: operation.CallID, Name: operation.Tool, Arguments: operation.Arguments}, Definition: tool.definition}
-		auth, err := s.options.ToolHost.AuthorizeConversationTool(ctx, request)
+		auth, err := s.authorizeConversationTool(ctx, s.options.ToolHost, request)
 		if err != nil {
 			return err
 		}

@@ -219,12 +219,12 @@ func (s *ConversationService) authorizeStoredToolResult(ctx context.Context, in 
 		return nil
 	}
 	if privateRemoteAttachmentCall(in.Call) {
-		ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+		ctx, cancel := s.externalCallContext(ctx, 30*time.Second)
 		defer cancel()
 		return s.authorizeAttachmentKnowledgeResult(ctx, in, result)
 	}
 	if policy, ok := s.options.ToolHost.(agentsdk.ConversationToolResultAuthorizer); ok {
-		ctx, cancel := context.WithTimeout(ctx, time.Duration(in.Definition.TimeoutMillis)*time.Millisecond)
+		ctx, cancel := s.externalCallContext(ctx, time.Duration(in.Definition.TimeoutMillis)*time.Millisecond)
 		defer cancel()
 		return policy.AuthorizeConversationToolResult(ctx, in, result)
 	}

@@ -5,12 +5,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	sdk "github.com/domainry/domainry-agent-sdk"
-	identity "github.com/domainry/domainry-identity-sdk"
-	identityhttp "github.com/domainry/domainry-identity-sdk/httpapi"
 	"net/http"
 	"strings"
 	"time"
+
+	sdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/requestcontext"
+	identity "github.com/domainry/domainry-identity-sdk"
+	identityhttp "github.com/domainry/domainry-identity-sdk/httpapi"
 )
 
 // SetupRoutes lets the signed-in administrator initialize product grants
@@ -123,8 +125,8 @@ func PermissionSetup(binding identity.Binding, key string, grants []identity.Pro
 			return
 		}
 		if r.Method == "GET" {
-			app := identity.ApplicationScope{WorkspaceID: identity.WorkspaceID(current.Principal.WorkspaceID), ApplicationKey: identity.ApplicationKey(key)}
-			assignments, err := binding.Projection().ListUserRoleAssignments(r.Context(), identity.UserRoleAssignmentQuery{Application: app, UserID: identity.SubjectID(current.Principal.UserID)})
+			ctx := requestcontext.WithWorkspaceID(r.Context(), current.Principal.WorkspaceID)
+			assignments, err := binding.Projection().ListUserRoleAssignments(ctx, identity.UserRoleAssignmentQuery{UserID: identity.SubjectID(current.Principal.UserID)})
 			if err != nil {
 				productError(w, err)
 				return
@@ -133,7 +135,7 @@ func PermissionSetup(binding identity.Binding, key string, grants []identity.Pro
 			for _, a := range assignments {
 				admin = admin || a.RoleID == "admin"
 			}
-			resolved, err := binding.Principals().Resolve(r.Context(), identity.PrincipalResolutionRequest{Application: app, SubjectID: identity.SubjectID(current.Principal.UserID), RoleKey: current.Principal.RoleKey})
+			resolved, err := binding.Principals().Resolve(ctx, identity.PrincipalResolutionRequest{SubjectID: identity.SubjectID(current.Principal.UserID), RoleKey: current.Principal.RoleKey})
 			if err != nil {
 				productError(w, err)
 				return
@@ -172,7 +174,7 @@ func initializeAdministratorPermissions(w http.ResponseWriter, r *http.Request, 
 			mux.Handle(route.Pattern(), adapter.Handler())
 		}
 	}
-	assignments, err := binding.Projection().ListUserRoleAssignments(r.Context(), identity.UserRoleAssignmentQuery{Application: identity.ApplicationScope{WorkspaceID: identity.WorkspaceID(current.Principal.WorkspaceID), ApplicationKey: identity.ApplicationKey(key)}, UserID: identity.SubjectID(current.Principal.UserID)})
+	assignments, err := binding.Projection().ListUserRoleAssignments(requestcontext.WithWorkspaceID(r.Context(), current.Principal.WorkspaceID), identity.UserRoleAssignmentQuery{UserID: identity.SubjectID(current.Principal.UserID)})
 	if err != nil {
 		productError(w, err)
 		return

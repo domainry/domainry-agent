@@ -192,7 +192,7 @@ func mutateTestRolePermissions(t *testing.T, host *Host, b *browser, transform f
 	if len(users) > 0 {
 		user = users[0]
 	}
-	assignments, err := host.Identity.Projection().ListUserRoleAssignments(t.Context(), identitysdk.UserRoleAssignmentQuery{Application: identitysdk.ApplicationScope{WorkspaceID: host.application.WorkspaceID, ApplicationKey: host.application.ApplicationKey}, UserID: identitysdk.SubjectID(user)})
+	assignments, err := host.Identity.Projection().ListUserRoleAssignments(t.Context(), identitysdk.UserRoleAssignmentQuery{UserID: identitysdk.SubjectID(user)})
 	if err != nil || len(assignments) == 0 {
 		t.Fatalf("role assignments: %v %v", assignments, err)
 	}

@@ -93,7 +93,7 @@ func (s *ConversationService) prepareConversationTaskStart(ctx context.Context, 
 				return agentsdk.ConversationTask{}, conversationFailure("forbidden", "tool_access_denied")
 			}
 		}
-		auth, authErr := s.options.ToolHost.AuthorizeConversationTool(ctx, agentsdk.ConversationToolRequest{
+		auth, authErr := s.authorizeConversationTool(ctx, s.options.ToolHost, agentsdk.ConversationToolRequest{
 			Authority: authority, ConversationID: conversationID, RunID: sourceRunID, CorrelationID: sourceRunID,
 			Call: agentsdk.ConversationToolCall{Name: key}, Definition: tool.definition,
 		})
@@ -399,7 +399,7 @@ func (s *ConversationService) authorizeConversationTaskControl(ctx context.Conte
 		}
 	}
 	raw, _ := json.Marshal(map[string]string{"id": id})
-	auth, err := s.options.PersonalAuthorizer.AuthorizeConversationTool(ctx, agentsdk.ConversationToolRequest{Authority: a, Definition: definition, Call: agentsdk.ConversationToolCall{Name: key, Arguments: string(raw)}})
+	auth, err := s.authorizeConversationTool(ctx, s.options.PersonalAuthorizer, agentsdk.ConversationToolRequest{Authority: a, Definition: definition, Call: agentsdk.ConversationToolCall{Name: key, Arguments: string(raw)}})
 	if err != nil {
 		return err
 	}
@@ -567,7 +567,7 @@ func (s *ConversationService) conversationFollowUpWorker(ctx context.Context, re
 	for ctx.Err() == nil {
 		claim, found, err := repo.ClaimConversationFollowUpEvent(ctx, s.runtimeID, s.owner, s.options.Lease)
 		if err == nil && found {
-			publishCtx, cancel := context.WithTimeout(ctx, min(30*time.Second, s.options.RunTimeout))
+			publishCtx, cancel := s.externalCallContext(ctx, min(30*time.Second, s.options.RunTimeout))
 			err = s.options.FollowUpPublisher.PublishConversationFollowUp(publishCtx, claim.Event)
 			cancel()
 			if err == nil {

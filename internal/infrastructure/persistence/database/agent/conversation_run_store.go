@@ -109,6 +109,9 @@ func (s *ConversationStore) Enqueue(ctx context.Context, id string, in agentsdk.
 		if c.ActiveRunID != "" {
 			return conversationError("conflict", "busy")
 		}
+		if err = s.checkConversationQueueCapacity(ctx, tx, a); err != nil {
+			return err
+		}
 		now := time.Now().UTC()
 		v := conversationRunRow{Authority: a, Run: agentsdk.ConversationRun{ID: conversationID("crun_"), ConversationID: id, ClientMessageID: in.ClientMessageID, RequestHash: hash, Status: "queued", UserSeq: c.LastSeq + 1, CreatedAt: now, UpdatedAt: now}}
 		if in.WriteScope != nil {
@@ -127,7 +130,7 @@ func (s *ConversationStore) Enqueue(ctx context.Context, id string, in agentsdk.
 		if err = s.event(ctx, tx, &v, "run.queued", map[string]any{"message_id": m.ID, "message_seq": m.Seq}); err != nil {
 			return err
 		}
-		q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("owner_key", "conversation_id", "run_id", "client_message_id", "runtime_id", "authority_json", "request_hash", "status", "lease_owner", "fence", "lease_expires_at", "event_seq", "created_at", "payload_json").Values(conversationOwner(a), id, v.Run.ID, in.ClientMessageID, a.RuntimeID, conversationJSON(a), hash, "queued", "", 0, 0, v.EventSeq, now.UnixMilli(), conversationJSON(v.Run)).Build()
+		q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("owner_key", "workspace_key", "conversation_id", "run_id", "client_message_id", "runtime_id", "authority_json", "request_hash", "status", "lease_owner", "fence", "lease_expires_at", "event_seq", "created_at", "payload_json").Values(conversationOwner(a), conversationHash([]string{a.RuntimeID, a.WorkspaceID}), id, v.Run.ID, in.ClientMessageID, a.RuntimeID, conversationJSON(a), hash, "queued", "", 0, 0, v.EventSeq, now.UnixMilli(), conversationJSON(v.Run)).Build()
 		out = v.Run
 		return conversationExec(ctx, tx, q, args, err)
 	})
@@ -141,54 +144,93 @@ func (s *ConversationStore) Claim(ctx context.Context, runtimeID, owner string, 
 	}
 	err := s.transaction(ctx, func(tx *sql.Tx) error {
 		now := time.Now().UTC()
-		builder := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns(conversationRunColumns...).Where(query.And(query.Equal("runtime_id", runtimeID), query.Or(query.Equal("status", "queued"), query.And(query.Equal("status", "running"), query.LessThanOrEqual("lease_expires_at", now.UnixMilli()))))).OrderBy(query.Ascending("created_at")).Limit(1)
-		profile := s.store.Profile()
-		if profile != nil && profile.Capabilities().RowLock {
-			var err error
-			builder, err = profile.ApplyClaimLock(builder, profile.Capabilities().SkipLocked)
+		const claimPageSize = 512
+		saturatedOwners := map[string]bool{}
+		saturatedWorkspaces := map[string]bool{}
+		for offset := 0; ; offset += claimPageSize {
+			builder := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns(conversationRunColumns...).Where(query.And(query.Equal("runtime_id", runtimeID), query.Or(query.Equal("status", "queued"), query.And(query.Equal("status", "running"), query.LessThanOrEqual("lease_expires_at", now.UnixMilli()))))).OrderBy(query.Ascending("created_at"), query.Ascending("run_id")).Limit(claimPageSize).Offset(offset)
+			profile := s.store.Profile()
+			if profile != nil && profile.Capabilities().RowLock {
+				var err error
+				builder, err = profile.ApplyClaimLock(builder, profile.Capabilities().SkipLocked)
+				if err != nil {
+					return err
+				}
+			}
+			q, args, err := builder.Build()
 			if err != nil {
 				return err
 			}
+			rows, err := tx.QueryContext(ctx, q, args...)
+			if err != nil {
+				return err
+			}
+			candidates := []conversationRunRow{}
+			for rows.Next() {
+				candidate, scanErr := scanConversationRun(rows)
+				if scanErr != nil {
+					_ = rows.Close()
+					return scanErr
+				}
+				candidates = append(candidates, candidate)
+			}
+			err = rows.Err()
+			_ = rows.Close()
+			if err != nil {
+				return err
+			}
+			for _, old := range candidates {
+				if old.Authority.RuntimeID != runtimeID {
+					return conversationError("forbidden", "runtime_denied")
+				}
+				if old.Run.Status == "queued" {
+					ownerKey := conversationOwner(old.Authority)
+					workspaceKey := conversationHash([]string{old.Authority.RuntimeID, old.Authority.WorkspaceID})
+					if saturatedOwners[ownerKey] || saturatedWorkspaces[workspaceKey] {
+						continue
+					}
+					if capacityErr := s.checkConversationRunningCapacity(ctx, tx, old.Authority); capacityErr != nil {
+						var coded *agentsdk.Error
+						if errors.As(capacityErr, &coded) && coded.Class == "rate_limited" {
+							switch coded.Code {
+							case "agent.conversation.user_execution_quota":
+								saturatedOwners[ownerKey] = true
+							case "agent.conversation.workspace_execution_quota":
+								saturatedWorkspaces[workspaceKey] = true
+							}
+							continue
+						}
+						return capacityErr
+					}
+				}
+				c, getErr := s.get(ctx, tx, old.Run.ConversationID, old.Authority)
+				if getErr != nil {
+					return getErr
+				}
+				if old.Run.BackgroundTask == nil && c.ActiveRunID != old.Run.ID {
+					return conversationError("conflict", "run_superseded")
+				}
+				v := old
+				v.Owner = owner
+				v.Fence++
+				v.Expires = now.Add(ttl).UnixMilli()
+				v.Run.Status = "running"
+				v.Run.Attempt++
+				v.Run.DraftText, v.Run.DraftBytes = "", 0
+				if err = s.event(ctx, tx, &v, "run.started", map[string]any{"attempt": v.Run.Attempt, "recovered": old.Run.Status == "running", "draft_reset": true}); err != nil {
+					return err
+				}
+				if err = s.saveRun(ctx, tx, v, old); err != nil {
+					return err
+				}
+				claim = agentpersistence.ConversationClaim{Authority: v.Authority, Run: v.Run, Owner: owner, Fence: v.Fence, ExpiresAt: time.UnixMilli(v.Expires)}
+				found = true
+				return nil
+			}
+			if len(candidates) < claimPageSize {
+				return nil
+			}
 		}
-		q, args, err := builder.Build()
-		if err != nil {
-			return err
-		}
-		old, err := scanConversationRun(tx.QueryRowContext(ctx, q, args...))
-		var coded *agentsdk.Error
-		if errors.As(err, &coded) && coded.Code == "agent.conversation.run_not_found" {
-			found = false
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-		if old.Authority.RuntimeID != runtimeID {
-			return conversationError("forbidden", "runtime_denied")
-		}
-		c, err := s.get(ctx, tx, old.Run.ConversationID, old.Authority)
-		if err != nil {
-			return err
-		}
-		if old.Run.BackgroundTask == nil && c.ActiveRunID != old.Run.ID {
-			return conversationError("conflict", "run_superseded")
-		}
-		v := old
-		v.Owner = owner
-		v.Fence++
-		v.Expires = now.Add(ttl).UnixMilli()
-		v.Run.Status = "running"
-		v.Run.Attempt++
-		v.Run.DraftText, v.Run.DraftBytes = "", 0
-		if err = s.event(ctx, tx, &v, "run.started", map[string]any{"attempt": v.Run.Attempt, "recovered": old.Run.Status == "running", "draft_reset": true}); err != nil {
-			return err
-		}
-		if err = s.saveRun(ctx, tx, v, old); err != nil {
-			return err
-		}
-		claim = agentpersistence.ConversationClaim{Authority: v.Authority, Run: v.Run, Owner: owner, Fence: v.Fence, ExpiresAt: time.UnixMilli(v.Expires)}
-		found = true
-		return nil
 	})
 	return claim, found, err
 }
@@ -349,6 +391,9 @@ func (s *ConversationStore) transition(ctx context.Context, id, runID string, a 
 			}
 			if !background && (c.ActiveRunID != "" && !(c.ActiveRunID == runID && v.Run.Status == "needs_reconciliation") || c.LastSeq != max(v.Run.UserSeq, v.Run.LastInputSeq)) {
 				return conversationError("conflict", "run_superseded")
+			}
+			if err = s.checkConversationQueueCapacity(ctx, tx, a); err != nil {
+				return err
 			}
 			v.Run.Status = "queued"
 			// Explicit resumption refreshes the trusted role selection only;

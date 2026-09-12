@@ -17,7 +17,7 @@ func (s *ConversationService) streamConversationExecutionStep(ctx context.Contex
 	if err != nil || len(raw) > s.options.ContextBytes {
 		return agentsdk.ConversationStepResult{}, conversationFailure("rate_limited", "execution_context_exceeded")
 	}
-	streamCtx, cancel := context.WithCancel(ctx)
+	streamCtx, cancel := s.externalCallContext(ctx, 0)
 	defer cancel()
 	text := ""
 	arguments := 0

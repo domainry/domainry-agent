@@ -1,0 +1,409 @@
+{
+  "todo": "H03",
+  "status": "complete",
+  "captured_at": "2026-09-13T00:21:35+08:00",
+  "scope": "Agent user/workspace queue and running quotas, Scheduler durable trigger backlog, and owner-bounded external call deadlines",
+  "agent_capacity": {
+    "defaults": {
+      "max_queued_per_user": 8,
+      "max_queued_per_workspace": "max(128, workers * 16)",
+      "max_running_per_user": "min(2, workers)",
+      "max_running_per_workspace": "workers",
+      "external_call_timeout": "min(2m, run_timeout)"
+    },
+    "external_call_timeout_max": "5m",
+    "durable_guard": "_agent_conversation_capacity_guards(runtime_id, workspace_key)",
+    "indexed_rows": [
+      "_agent_conversation_runs(runtime_id, workspace_key, status)",
+      "_agent_conversation_tasks(runtime_id, workspace_key, status)"
+    ],
+    "queue_includes": [
+      "queued conversation runs",
+      "queued background tasks",
+      "queued scheduled tasks"
+    ],
+    "stable_rejections": [
+      "agent.conversation.user_queue_full",
+      "agent.conversation.workspace_queue_full",
+      "agent.conversation.user_execution_quota",
+      "agent.conversation.workspace_execution_quota"
+    ]
+  },
+  "scheduler_backlog": {
+    "default": 10000,
+    "maximum": 1000000,
+    "pending_statuses": [
+      "leased",
+      "retrying"
+    ],
+    "scope": "runtime_id",
+    "durable_guard": "_scheduler_capacity_guards(runtime_id)",
+    "dispatch_timeout_default": "5m",
+    "dispatch_timeout_max": "30m",
+    "full_http_status": 429
+  },
+  "external_timeout_ownership": {
+    "agent": "model, streaming step, tool invoke/reconcile, authorization, availability, knowledge/source checks, and follow-up publish",
+    "tools": "selected Definition.TimeoutMillis",
+    "scheduler": "dispatch timeout, narrowed by a shorter definition timeout",
+    "integration_connector_host": "outbound HTTP timeout and response bound",
+    "write_timeout": "uncertain/external_result_unknown; no blind replay"
+  },
+  "tests": [
+    {
+      "name": "Agent full",
+      "command": "GOWORK=/tmp/domainry-h03-20260913-v2/go.work GOCACHE=/tmp/domainry-gocache-20260912 go test ./...",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/agent-full.log"
+    },
+    {
+      "name": "Agent SDK full against published dependencies",
+      "command": "GOWORK=off GOCACHE=/tmp/domainry-gocache-20260912 go test ./...",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/agent-sdk-full.log"
+    },
+    {
+      "name": "Scheduler full",
+      "command": "GOWORK=/tmp/domainry-h03-20260913-v2/go.work GOCACHE=/tmp/domainry-gocache-20260912 go test ./...",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/scheduler-full.log"
+    },
+    {
+      "name": "Scheduler SDK full",
+      "command": "GOWORK=/tmp/domainry-h03-20260913-v2/go.work GOCACHE=/tmp/domainry-gocache-20260912 go test ./...",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/scheduler-sdk-full.log"
+    },
+    {
+      "name": "Tools full",
+      "command": "GOWORK=/tmp/domainry-h03-20260913-v2/go.work GOCACHE=/tmp/domainry-gocache-20260912 go test ./...",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/tools-full.log"
+    },
+    {
+      "name": "Integration full",
+      "command": "GOWORK=/tmp/domainry-h03-20260913-v2/go.work GOCACHE=/tmp/domainry-gocache-20260912 go test ./...",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/integration-full.log"
+    },
+    {
+      "name": "Agent durable capacity race",
+      "command": "go test -race ./internal/infrastructure/persistence/database/agent -run 'TestConversationCapacityAdmissionIsAtomicAndWorkerSkipsSaturatedWorkspace|TestScheduledTaskBacklogSharesCapacityAndReplaySurvivesFullQueue' -count=1",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/agent-capacity-race.log"
+    },
+    {
+      "name": "Agent external timeout race",
+      "command": "go test -race ./integration -run 'TestConversationExternalModelTimeoutReleasesWorkerForAnotherWorkspace|TestConversationExternalToolTimeoutOverridesLongToolDefinition' -count=1",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/agent-external-race.log"
+    },
+    {
+      "name": "Agent Identity HTTP SQLite restart E2E",
+      "command": "go test ./internal/assembly/web -run '^TestConversationCapacityThroughIdentityHTTPAndSQLiteRestart$' -count=1 -v",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/agent-web-capacity-e2e.log",
+      "observed": {
+        "slow_model_timeout": "provider_timeout",
+        "overflow_http_status": 429,
+        "overflow_body": {
+          "code": "agent.conversation.user_queue_full"
+        },
+        "queued_run_completed": true,
+        "full_host_restart": true,
+        "submission_after_restart_completed": true
+      }
+    },
+    {
+      "name": "Agent Identity HTTP SQLite restart E2E race",
+      "command": "go test -race ./internal/assembly/web -run '^TestConversationCapacityThroughIdentityHTTPAndSQLiteRestart$' -count=1",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/agent-web-capacity-race.log"
+    },
+    {
+      "name": "Agent capacity architecture race",
+      "command": "go test -race ./internal/architecture -run '^TestExecutionCapacityStaysInsideAgentSDKAndPersistenceBoundary$' -count=1 -v",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/agent-architecture-race.log"
+    },
+    {
+      "name": "Scheduler backlog and dispatch timeout race",
+      "command": "go test -race ./internal/infrastructure/persistence/database ./internal/application/scheduler -run 'TestTriggerBacklogLimitIsDurableAcrossWorkersAndRuntimeScoped|TestDispatchUsesSchedulerOwnerTimeoutWhenDefinitionHasNone' -count=1",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/scheduler-capacity-race.log"
+    },
+    {
+      "name": "Tools owner definition timeout race",
+      "command": "go test -race ./internal/application/tool -run '^TestSelectionAppliesOwnerDefinitionTimeout$' -count=1",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/owner-timeouts-race.log"
+    },
+    {
+      "name": "Integration exact Public Web path timeout race",
+      "command": "go test -race ./internal/infrastructure/connectortransport -run '^TestPublicWebHostTimeoutBoundsBothProxyTools$' -count=1",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/integration-public-web-race.log"
+    },
+    {
+      "name": "six repository vet",
+      "command": "go vet ./... in Agent, Agent SDK, Scheduler, Scheduler SDK, Tools, Integration",
+      "pass": true,
+      "logs": [
+        "2026-09-13-h03-capacity/agent-vet.log",
+        "2026-09-13-h03-capacity/agent-sdk-vet.log",
+        "2026-09-13-h03-capacity/scheduler-vet.log",
+        "2026-09-13-h03-capacity/scheduler-sdk-vet.log",
+        "2026-09-13-h03-capacity/tools-vet.log",
+        "2026-09-13-h03-capacity/integration-vet.log"
+      ]
+    },
+    {
+      "name": "six repository diff check",
+      "command": "git diff --check in Agent, Agent SDK, Scheduler, Scheduler SDK, Tools, Integration",
+      "pass": true,
+      "log": "2026-09-13-h03-capacity/diff-check.log"
+    }
+  ],
+  "expected_h04_input": {
+    "command": "go test ./... in Agent SDK under old broad workspace containing current Identity SDK worktree",
+    "pass": false,
+    "scope": "browsergateway only",
+    "error": "PrincipalResolutionRequest.Application no longer exists in the current unpublished Identity SDK worktree",
+    "log": "2026-09-13-h03-capacity/agent-sdk-workspace-dependency-drift.log",
+    "h03_verdict_affected": false,
+    "reason": "H03 isolated workspace and GOWORK=off use the published Identity SDK; dependency publication and public contract compatibility are H04"
+  },
+  "architecture": "2026-09-13-h03-capacity/architecture-audit.json",
+  "repositories": {
+    "domainry-agent": {
+      "head": "9bcef26f3f5033d5d3296cfb95e29b61b54818d0",
+      "status": [
+        " M cmd/domainry-agent/main.go",
+        " M cmd/domainry-agent/main_test.go",
+        " M docs/agent-capabilities-todo.md",
+        " M docs/conversations.md",
+        " M docs/remaining-capability-boundaries.md",
+        " M internal/application/conversation_artifact_sources.go",
+        " M internal/application/conversation_attachment_tools.go",
+        " M internal/application/conversation_authorization.go",
+        " M internal/application/conversation_context.go",
+        " M internal/application/conversation_execution.go",
+        " M internal/application/conversation_execution_read.go",
+        " M internal/application/conversation_execution_stream.go",
+        " M internal/application/conversation_interaction.go",
+        " M internal/application/conversation_knowledge.go",
+        " M internal/application/conversation_knowledge_tools.go",
+        " M internal/application/conversation_operation_scope.go",
+        " M internal/application/conversation_service.go",
+        " M internal/application/conversation_sources.go",
+        " M internal/application/conversation_stream.go",
+        " M internal/application/conversation_tasks.go",
+        " M internal/application/conversation_todo.go",
+        " M internal/application/conversation_tool_catalog_test.go",
+        " M internal/architecture/layout_test.go",
+        " M internal/assembly/saas/conversation_identity.go",
+        " M internal/assembly/web/conversation_tools.go",
+        " M internal/assembly/web/conversation_tools_test.go",
+        " M internal/assembly/web/knowledge_libraries.go",
+        " M internal/assembly/web/knowledge_permissions.go",
+        " M internal/infrastructure/persistence/database/agent/conversation_attachment_store.go",
+        " M internal/infrastructure/persistence/database/agent/conversation_attachment_store_test.go",
+        " M internal/infrastructure/persistence/database/agent/conversation_interaction_store.go",
+        " M internal/infrastructure/persistence/database/agent/conversation_run_store.go",
+        " M internal/infrastructure/persistence/database/agent/conversation_store.go",
+        " M internal/infrastructure/persistence/database/agent/conversation_task_store.go",
+        " M internal/infrastructure/persistence/database/agent/knowledge_bridge.go",
+        " M internal/infrastructure/persistence/database/agent/lifecycle_store.go",
+        " M internal/infrastructure/persistence/database/agent/schema.go",
+        " M internal/infrastructure/persistence/database/agent/schema_test.go",
+        " M internal/transport/http/product/setup.go",
+        " M module/factory.go",
+        " M module/factory_test.go",
+        "?? docs/evidence/2026-09-12-h02-lifecycle.json",
+        "?? docs/evidence/2026-09-12-h02-lifecycle/",
+        "?? docs/evidence/2026-09-13-h03-capacity.json",
+        "?? docs/evidence/2026-09-13-h03-capacity/",
+        "?? docs/testing-2026-09-12-h02-lifecycle.md",
+        "?? docs/testing-2026-09-13-h03-capacity.md",
+        "?? integration/conversation_capacity_integration_test.go",
+        "?? internal/assembly/web/conversation_capacity_test.go",
+        "?? internal/infrastructure/persistence/database/agent/conversation_capacity_schema.go",
+        "?? internal/infrastructure/persistence/database/agent/conversation_capacity_store.go",
+        "?? internal/infrastructure/persistence/database/agent/conversation_capacity_store_test.go",
+        "?? internal/infrastructure/persistence/database/agent/lifecycle_conversation_store_test.go",
+        "?? module/capacity_options_test.go"
+      ],
+      "diff_check": true
+    },
+    "domainry-agent-sdk": {
+      "head": "89148db3bd8bbd0aabd6eda23c19cdcda43380f9",
+      "status": [
+        " M browsergateway/modules.go",
+        " M conversation.go",
+        " M persistence/conversation_repository.go"
+      ],
+      "diff_check": true
+    },
+    "domainry-scheduler": {
+      "head": "7abbc6613569ba38040a58dad1bd118979c7023a",
+      "status": [
+        " M README.md",
+        " M cmd/scheduler-server/main.go",
+        " M cmd/scheduler-server/main_test.go",
+        " M internal/application/scheduler/service.go",
+        " M internal/application/scheduler/service_test.go",
+        " M internal/infrastructure/persistence/database/scheduler/run_store.go",
+        " M internal/infrastructure/persistence/database/schema/migrations.go",
+        " M internal/infrastructure/persistence/database/store_test.go",
+        " M internal/infrastructure/persistence/schema_test.go",
+        " M internal/transport/http/module/adapter.go",
+        " M internal/transport/http/saas/server.go"
+      ],
+      "diff_check": true
+    },
+    "domainry-scheduler-sdk": {
+      "head": "1007e926cad92eaa9745262d95e789dd5f0f3f43",
+      "status": [
+        " M modulehost/host.go",
+        " M sdk.go",
+        " M sdk_test.go"
+      ],
+      "diff_check": true
+    },
+    "domainry-tools": {
+      "head": "766cb6c5685ed6a6d5cf3f40a7615655378287c9",
+      "status": [
+        " M internal/application/tool/registry_test.go"
+      ],
+      "diff_check": true
+    },
+    "domainry-integration": {
+      "head": "a2f0f849e14263a2c86a63e88f543ce7d3783a6e",
+      "status": [
+        " M internal/infrastructure/connectortransport/public_web_test.go"
+      ],
+      "diff_check": true
+    }
+  },
+  "source_files": [
+    {
+      "repository": "domainry-agent-sdk",
+      "path": "conversation.go",
+      "sha256": "78db50a0781aabdb0fa99d4d53980ec5c62c6bfb1c0e3ff5438a20927cea2aae"
+    },
+    {
+      "repository": "domainry-agent-sdk",
+      "path": "persistence/conversation_repository.go",
+      "sha256": "194052c5bf78e9766fcc9fb775e7de4110f912f38b8957b62c570e1d460033c2"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/application/conversation_service.go",
+      "sha256": "607c92f51f33b65bededc7bfae29192b64c266d1ebeaa996b6054d8758356bbc"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/application/conversation_execution.go",
+      "sha256": "877563fc528270ac2b7497cb0f46f4c66cf6448856cfef72353cb074be5f751f"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/infrastructure/persistence/database/agent/conversation_capacity_schema.go",
+      "sha256": "37d0dc93a330964c56739f4184b9f8b64f17fc75e28cf8cefa98b82fe051e138"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/infrastructure/persistence/database/agent/conversation_capacity_store.go",
+      "sha256": "e8ef90b28cd4bf694e264345354c72146bc63ff19bb033adfda60e0b5eb765ce"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/infrastructure/persistence/database/agent/conversation_run_store.go",
+      "sha256": "8f2374eae5ba574bf25d20bde4e28da3c8dcb3a1cec5e902a5dcbbd7843cbe57"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/infrastructure/persistence/database/agent/conversation_task_store.go",
+      "sha256": "df56de443c3f68786a94d7e5e0071c17e524c11a6955ccd92ec710145054a19c"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "integration/conversation_capacity_integration_test.go",
+      "sha256": "2c576950eac5f665551aa90914250e024454036453539b370275f024fc41861d"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/assembly/web/conversation_capacity_test.go",
+      "sha256": "35596c32f52dc1582c1e7112c863c2b50a4cf6d6bba288fc787cf89e8ddf176f"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/architecture/layout_test.go",
+      "sha256": "2e5759414f1e87b991103ef65f15610f1eca36b59f6c3d80a0ccf1b4e8f50fe6"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "cmd/domainry-agent/main.go",
+      "sha256": "360264b97ff407c54de6e14f1ca45eb6a8f48032035311b02ee7ee378c63b48a"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "module/factory.go",
+      "sha256": "e971287f304ce01eef56c0ca43501c7b0b1b9a6f4f690100ac9a8c229a1dd64f"
+    },
+    {
+      "repository": "domainry-scheduler-sdk",
+      "path": "sdk.go",
+      "sha256": "ff101be466ce49404d8d36a5192c4a09b0bc718c435777a20c9ef9a202bcabe7"
+    },
+    {
+      "repository": "domainry-scheduler-sdk",
+      "path": "modulehost/host.go",
+      "sha256": "26454debb79d42966dd744293746c3aa0532c9b4743b4367adabcd4952f90668"
+    },
+    {
+      "repository": "domainry-scheduler",
+      "path": "internal/infrastructure/persistence/database/scheduler/run_store.go",
+      "sha256": "baca32e023a51935cfe7a7c0303c948148dd156db35d00651712a7da9da744a4"
+    },
+    {
+      "repository": "domainry-scheduler",
+      "path": "internal/infrastructure/persistence/database/schema/migrations.go",
+      "sha256": "15407b16fe391db38db41222d6ee28afb62c01239ae5e353c982ce20e79fabaa"
+    },
+    {
+      "repository": "domainry-scheduler",
+      "path": "internal/application/scheduler/service.go",
+      "sha256": "a34ec650a6e57b0f9632fd4d1eda05c8cf490fee944003b54f318b5798249a49"
+    },
+    {
+      "repository": "domainry-tools",
+      "path": "internal/application/tool/registry_test.go",
+      "sha256": "e5271de01d51c15859d803c60d2b2ef2c3f7993daec5a3c2b06cd8a62ca78435"
+    },
+    {
+      "repository": "domainry-integration",
+      "path": "internal/infrastructure/connectortransport/public_web_test.go",
+      "sha256": "9281a087b1914eb9262cf512af64806a6cb36ad8d793706ae03f5a7f9fac6ad6"
+    }
+  ],
+  "limitations": [
+    "SQLite transaction, restart, and race behavior is covered; PostgreSQL/MySQL and actual multi-instance deployment acceptance remain H08",
+    "No vendor OAuth configuration exists; H03 verifies bounded host calls and connector protocol behavior without claiming a real vendor account acceptance",
+    "Dependency publication, release locks, and current Identity SDK compatibility remain H04"
+  ],
+  "llm_proxy": {
+    "role": "consume only existing POST /tool/web_search and POST /tool/web_fetch_jina tool endpoints; never use llm-proxy as an Agent model proxy",
+    "modified": false,
+    "workspaces": [
+      {
+        "path": "/Users/tiger/Projects/devops/llm-proxy",
+        "status": []
+      },
+      {
+        "path": "/Users/tiger/Projects/anti/llm-proxy",
+        "status": []
+      }
+    ]
+  }
+}

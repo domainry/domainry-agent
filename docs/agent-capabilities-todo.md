@@ -1,14 +1,14 @@
 # Agent 日常工作能力 TODO
 
-更新日期：2026-09-12。目标：在现有网页持久会话上，逐步实现能查询资料、维护个人事项、调用业务能力并持续处理工作的 Agent。
+更新日期：2026-09-13。目标：在现有网页持久会话上，逐步实现能查询资料、维护个人事项、调用业务能力并持续处理工作的 Agent。
 
-**当前执行位置：H02。H01 已完成运行详情、安全审计投影、统一关联 ID 和跨 owner 审计传递，见[H01 完成验收](testing-2026-09-12-h01-observability.md)。F04 范围仅为消费 llm-proxy 的 web_search／web_fetch 接口，不把它接成模型服务且不修改该服务。当前已完成 69 / 81。**
+**当前执行位置：H04。H03 已完成 Agent 用户／工作区执行容量、Scheduler 持久触发积压和各 owner 外部调用超时，见[H03 完成验收](testing-2026-09-13-h03-capacity.md)。F04 范围仅为消费 llm-proxy 已有的 `POST /tool/web_search` 与 `POST /tool/web_fetch_jina`，不把它接成模型服务且不修改该服务。当前已完成 71 / 81。**
 
 **架构约束**：服务之间通过公开 SDK / 宿主端口组合，应用层不直接导入具体存储、HTTP 装配或其他服务实现；每批核对依赖方向和授权边界，不能只凭接口测试通过判定完成。 拆库后按[剩余能力边界表](remaining-capability-boundaries.md)执行：Tools 管工具，Todo 管个人事项，Knowledge 管资料与成果，Integration 管外部账号，Work／PM 管产品规则；Agent 管执行。
 
 **进度总览 — 先看这里**
 
-**清单勾选已校正：已完成 68 项，未完成 13 项（含 5 项可选能力）。这是条目数，不是工期完成比例。** 已完成项覆盖工具执行主体、持久化、个人记忆 / 待办、主要网页交互、成果创建 / 编辑 / 导出、会话后台任务启动／查询／控制、计划记录、持久调度、当前身份重验、提醒投递、计划管理与有界后台跟进，以及 Runtime 业务目录、记录、关联查询、业务动作、流程启动 / 查询和完整数据分析。逐项代码与测试依据见 [进度核对记录](progress-audit-2026-09-10.md)，手机导航及待办删除补验见 [网页补验](testing-2026-09-10-mobile-and-todo-completion.md)。
+**清单勾选已校正：已完成 71 项，未完成 10 项（含 5 项可选能力）。这是条目数，不是工期完成比例。** 已完成项覆盖工具执行主体、持久化、个人记忆 / 待办、主要网页交互、成果创建 / 编辑 / 导出、会话后台任务启动／查询／控制、计划记录、持久调度、当前身份重验、提醒投递、计划管理与有界后台跟进，以及 Runtime 业务目录、记录、关联查询、业务动作、流程启动 / 查询、完整数据分析、运行审计、会话／用户数据生命周期和执行容量治理。逐项代码与测试依据见 [进度核对记录](progress-audit-2026-09-10.md)，手机导航及待办删除补验见 [网页补验](testing-2026-09-10-mobile-and-todo-completion.md)。
 
 **此前完成 J05**：流程启动 / 查询已通过实际 HTTP、真实 Verdent 模型和网页整段验收。两笔获准流程均完成实际审批，第三笔拒绝后没有生成实例；确认前刷新 / 重启、进度查询、撤权隐藏及恢复均通过。J05 已勾选，见[流程验收记录](testing-2026-09-10-business-workflows.md)。**未勾选不等于没有代码**：其余条目中仍有部分实现但尚未满足完整要求的功能。
 
@@ -61,7 +61,7 @@
 - [x] 接网页预览、修改、版本选择与下载入口。
 - [x] 完成上述整段流程的网页验收，包括刷新恢复、版本一致性和权限撤销；真实 Identity / HTTP / SQLite，模型为本地协议夹具。
 
-**接下来按顺序交付**：B06、C03、C04、E05、K01、K04、K05、K07、F01、F02、F03、F04、F05、F06、N01、N02、N03、R03、L01、L02、L03、G01、G02、G03、G04、G05、G06、H01 已完成并附对应证据，当前 H02。较后条目的既有实现保留，不再穿插推进。
+**接下来按顺序交付**：B06、C03、C04、E05、K01、K04、K05、K07、F01、F02、F03、F04、F05、F06、N01、N02、N03、R03、L01、L02、L03、G01、G02、G03、G04、G05、G06、H01、H02、H03 已完成并附对应证据，当前 H04。较后条目的既有实现保留，不再穿插推进。
 
 **运行实例说明（2026-09-10）**：本轮 B06 使用临时 8092、真实 Identity／HTTP／SQLite、官方知识 Connector 和本地模型／知识协议夹具。4 个网页场景及宿主 race 均通过，77.59 秒；同一运行经历取消、刷新、完整宿主重启和明确恢复，已核对未执行步骤、保留结果、终态及正式回复，确实关闭 1 个在途知识 HTTP 请求。测试结束后无头 Chrome、宿主进程和 8092 监听器已关闭。本轮没有启动 8091，也没有新的真实 Verdent 调用。此前其他批次实例及失败记录保留在对应验收文档。
 
@@ -422,8 +422,10 @@ J05 当前状态：**已完成对应验收**。[Agent 工具执行](../internal/
 
 - [x] H01：提供运行详情和必要审计，记录步骤、调用次数、用量、耗时、错误、授权与确认结果；复用统一关联 ID。独立 tracing 平台按需接入。
   - 完成证据（2026-09-12）：Agent 从自己持有的会话事件生成最多 4096 条安全审计投影，汇总步骤、模型／工具调用与实际尝试、token 用量、排队／执行耗时、稳定错误、授权版本和确认人／时间；不复制模型正文、工具参数／结果、凭证或授权证据。服务端 run ID 经 Tools／Agent SDK 传给 owner；Runtime 校验并映射到自己的 Principal／Audit SDK Actor。Audit owner 修正 `auth*` 契约与 SQL 筛选不一致，同时证明 `oauth_connection_*` 不误归运行类。编译产品以真实 Identity HTTP／Agent SQLite 完成确认、一次外部写、结果不明核查、完整宿主重启和 390px 验收：1 个逻辑工具、2 次尝试、2 次模型、3 次授权、1 次确认、20 tokens，外部仅 1 次写和 1 次核查，JavaScript 错误／警告为 0。Agent、两个 SDK、Audit 全量和专项 race／vet 通过；Runtime H01 跨服务专项 race 通过，Runtime 全量只剩 H04 发布锁漂移。见[H01 验收与架构边界](testing-2026-09-12-h01-observability.md)、[机器清单](evidence/2026-09-12-h01-observability.json)、[架构审计](evidence/2026-09-12-h01-observability/architecture-audit.json)及[浏览器报告](evidence/2026-09-12-h01-observability/browser/report.json)。H01 完成，总进度 69 / 81；下一项为 H02。`llm-proxy` 保持未修改。
-- [ ] H02：配置会话、步骤结果、外部响应与事件的保留和清理策略；删除用户数据时处理关联引用和已保存副本。
-- [ ] H03：补充用户 / 工作区执行配额、队列积压检查和外部服务超时处理，避免单个长任务耗尽资源。
+- [x] H02：配置会话、步骤结果、外部响应与事件的保留和清理策略；删除用户数据时处理关联引用和已保存副本。
+  - 完成验收（2026-09-12）：已归档且没有活动 run 的会话进入 `agent.dialog.v1`，workspace／owner／revision 共同限定候选和最终清理；归档成功后才 purge，完整 payload 包含消息、run、摘要、事件、冻结输入、步骤、工具外部响应、交互和来源任务。Runtime 真实组合通过公开 Lifecycle 契约完成策略版本 2 发布、预览、job 创建、系统 worker 处理和归档查询，验证旧归档会话归档／清理、活动会话保留及归档正文含用户输入和外部响应。用户删除依次完成验证、预览、独立审批、Agent／Todo／Knowledge 三 owner 执行和删除注册重放；Alice 数据清除，Bob 保留，legal hold 与 owner 隔离通过。Agent 删除事务只处理自己的执行图，再调用 Knowledge 公开端口；Knowledge 独占附件、成果、个人库／文档、共享成员／创建者匿名化、物理内容和远端删除恢复，远端未确认前不丢原件或写完成回执。四仓全量、四组专项 race、五仓 vet、Runtime bootstrap／boundary 通过。见[H02 验收与架构边界](testing-2026-09-12-h02-lifecycle.md)、[机器清单](evidence/2026-09-12-h02-lifecycle.json)及[架构审计](evidence/2026-09-12-h02-lifecycle/architecture-audit.json)。H02 完成，总进度 70 / 81；下一项为 H03。`llm-proxy` 两个工作区保持干净，只消费已有 `POST /tool/web_search` 与 `POST /tool/web_fetch_jina`，没有模型代理接入。
+- [x] H03：补充用户 / 工作区执行配额、队列积压检查和外部服务超时处理，避免单个长任务耗尽资源。
+  - 完成验收（2026-09-13）：Agent SDK 以可选端口公开容量配置／投影，Agent migration 19 为 run／后台及计划 task 增加 workspace 索引并建立持久 capacity guard；入队、恢复、交互继续和 task 转 run 都在数据库事务内检查用户／工作区排队容量，worker 按用户／工作区运行容量分页跳过饱和范围，稳定返回四类 queue／execution quota 错误。Scheduler SDK／owner 以 Runtime 级持久 guard 限制 `leased` + `retrying` 触发积压，Module／SaaS 积压满返回 429；Agent 模型／工具／授权／知识调用、Tools 定义执行、Scheduler 派发和 Integration 外发 HTTP 各有 owner 上限，外部写超时继续进入结果不明流程而不盲目重放。实际 Identity 登录 → Agent HTTP → SQLite → worker E2E 验证慢模型占用、排队、第三次精确 429、`provider_timeout` 释放 worker、后续任务完成及完整宿主重启后重新提交；并发容量、计划任务共享队列、跨工作区公平领取、Scheduler 双 worker、模型／工具／两个 Public Web 接口超时均通过专项 race。六仓全量、六仓 vet、差异检查和 Agent 架构 race 通过。见[H03 验收与边界](testing-2026-09-13-h03-capacity.md)、[机器清单](evidence/2026-09-13-h03-capacity.json)及[架构审计](evidence/2026-09-13-h03-capacity/architecture-audit.json)。旧大工作区暴露的当前 Identity SDK 未发布契约漂移已保留原始日志并按顺序进入 H04，本项没有修改 Identity 或发布锁。H03 完成，总进度 71 / 81；下一项为 H04。两个 `llm-proxy` 工作区保持干净，只消费已有 `POST /tool/web_search` 与 `POST /tool/web_fetch_jina`，没有模型代理接入。
 - [ ] H04：完成 SDK、Connectors、Identity 修复版本与 Agent 的依赖发布和版本更新，验证脱离本地 go.work 的构建及公共契约兼容。
 - [x] H05：验收多步执行、跨会话历史查询、用户指代纠正、记忆修改和待办持续处理。
 - [ ] H06：验收工具执行前后崩溃、超时结果不明、重复确认、取消、SSE 重连和服务重启，确认外部写操作不被盲目重放。

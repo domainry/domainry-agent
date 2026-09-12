@@ -46,7 +46,7 @@ SaaS 的一个 API key 对应配置的一个 `AGENT_SAAS_RUNTIME_ID`；请求中
 
 执行授权检查最多占用 5 秒，失败或拒绝停止后续工作，分别保存 `execution_authorization_unavailable`／`execution_access_denied`，不持久化宿主原始错误或凭证。新授权不会豁免冻结历史、资料和工具结果的来源复核，也不回滚已完成的外部动作。独立 SaaS 经公开 Identity SDK 完成服务发现、契约摘要校验及逐次主体解析；缺少绑定配置时在启动 worker 前失败。Module 的立即装配与延迟装配均要求模型配有执行授权端口。实现与验证见 [C03 验收](testing-2026-09-11-execution-authorization.md)。内部服务构造器仍保留测试／旧内部调用的兼容入口，不能作为生产组合入口；无 Identity 的 playground 只允许监听字面量回环 IP，不提供生产用户权限。后续计划触发仍按 G 项开发、接同一执行边界并验收。
 
-删除会话使用修订号，并在事务内删除其消息、run、输入快照、摘要、事件、步骤、调用及交互记录。个人记忆独立删除。归档可恢复，不清除消息；此版不做会话历史自动清理，也不会把原有 `agent.dialog.v1` 清理策略套到新会话上。交互有效期只关闭待处理事项，不删除历史。
+删除会话使用修订号。Agent 先在自己的事务内删除会话、消息、run、输入快照、摘要、事件、步骤、调用及交互记录并保存幂等回执，再通过 Knowledge 的公开生命周期端口清理附件引用；失败可按同一请求回执恢复，不跨 owner 共用事务。个人记忆独立删除。归档可恢复且不清除消息；已归档、没有活动 run 的会话进入 `agent.dialog.v1` 保留策略，清理前将完整执行图（包括步骤结果、工具外部响应和事件）归档，修订或工作区变化会阻止过期清理。Knowledge 持有的附件和另存副本不随 Agent 保留任务直接删除，由 Knowledge 的用户删除流程按来源、共享成员和远端清理回执处理。交互有效期只关闭待处理事项，不删除历史。
 
 ## 执行、幂等和恢复
 
@@ -68,7 +68,9 @@ SaaS 的一个 API key 对应配置的一个 `AGENT_SAAS_RUNTIME_ID`；请求中
 
 回复调用之前冻结输入快照。进程重启、租约恢复和手动 resume 都复用该输入及幂等键，即使个人偏好已经修改。冻结之前中断则重新组装；已提交摘要可继续使用。模型服务是否支持幂等由模型服务决定：异常恢复可能重复产生模型费用，但 fence 防止重复提交回复。纯文本路径恢复时使用当前模型配置；工具路径还会核对步骤保存的模型配置指纹，变化时拒绝直接续接。
 
-默认每个服务实例 2 个工作线程、30 秒租约、每 10 秒续租、1 秒检查队列、每轮最多 5 分钟。关闭服务会取消本地请求，保留未完成 run 供租约到期后恢复。
+默认每个服务实例 2 个工作线程、30 秒租约、每 10 秒续租、1 秒检查队列、每轮最多 5 分钟。Agent 在自己的数据库事务内限制每用户 8 条、每工作区 128 条 queued，并限制每用户 2 条、每工作区 2 条 running；后台任务与计划触发任务使用同一 queued 容量，等待用户／确认的 run 已释放 worker，不计 running。工作区 guard 将计数与入队／领取串行化，`owner_key`／`workspace_key` 索引用于当前记录，升级前没有 workspace key 的活动记录只在排空前兼容读取。达到入口上限返回稳定的 429 `user_queue_full`／`workspace_queue_full`；worker 跳过已占满执行槽的用户或工作区，继续领取其他工作区，并通过可选 SDK `ConversationCapacityProvider` 返回当前用户／工作区的 queued、running 数。关闭服务会取消本地请求，保留未完成 run 供租约到期后恢复。
+
+Module 可用 `ConversationOptions` 覆盖四项配额；环境装配对应 `AGENT_CONVERSATION_MAX_QUEUED_PER_USER`、`AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE`、`AGENT_CONVERSATION_MAX_RUNNING_PER_USER`、`AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE` 和 `AGENT_CONVERSATION_WORKERS`。非零配额必须由实现 SDK `ConversationCapacityRepository` 的 Agent 存储承接，不能退回进程内计数。独立 SaaS 使用同名环境配置。
 
 取消表示停止后续处理，不是撤销已经提交的业务效果：
 
@@ -113,7 +115,7 @@ SaaS 的一个 API key 对应配置的一个 `AGENT_SAAS_RUNTIME_ID`；请求中
 
 宿主可通过 `ConversationOptions.ToolAvailability` 绑定 SDK 的 `ConversationToolAvailability`。直接工具宿主、普通 Module 宿主或延迟装配的 `ConversationApplicationHost` 实现该可选接口时也会自动接入；显式选项优先。回调接受服务端的 runtime／workspace／user 身份及已注册工具键，工具未启用、连接断开／过期或状态未知时返回 `false`；不需要连接的本地工具返回 `true`。回调仅检查状态，凭证刷新与账号管理属于后续 F01。
 
-检查覆盖新步骤目录、冻结步骤恢复、实际调用前以及业务／知识历史来源复核。目录中的连接检查共享 5 秒上限，实际调用前的状态检查也有 5 秒上限；原有 Identity／目录解析保留调用者的执行时限，宿主须响应 Context。连接检查发生故障时返回统一 `tool_availability_failed`，内部错误文本不进入模型、历史或网页。目录变化不会替换冻结输入；连接恢复后可继续原步骤，已完成工具结果按原幂等记录复用。没有该可选策略的旧宿主继续自行通过目录和具体动作授权负责可用性；这不代表系统自动探测任意远端服务健康状况。
+检查覆盖新步骤目录、冻结步骤恢复、实际调用前以及业务／知识历史来源复核。目录及知识检索最多 30 秒，Identity／工具授权和连接检查最多 5 秒，具体工具继续采用定义自己的 timeout；这些期限还受 Agent 外部调用总上限约束。连接检查发生故障时返回统一 `tool_availability_failed`，内部错误文本不进入模型、历史或网页。目录变化不会替换冻结输入；连接恢复后可继续原步骤，已完成工具结果按原幂等记录复用。没有该可选策略的旧宿主继续自行通过目录和具体动作授权负责可用性；这不代表系统自动探测任意远端服务健康状况。
 
 实现与实际 Identity／HTTP／浏览器证据见 [A03 工具目录验收](testing-2026-09-10-tool-catalog.md)。
 
@@ -205,7 +207,7 @@ go run ./cmd/domainry-agent
 
 回复请求使用 stream=true；压缩摘要使用 stream=false。聊天流要求正常 stop 和 `[DONE]`，Messages 要求 end_turn 和 message_stop，Responses 要求 response.completed、completed 状态及最终文本匹配。遇到工具调用、截断、异常 EOF、格式错误、空回复或超限会失败，不自动发第二次请求重试。SSE 事件参考 [OpenAI Responses](https://developers.openai.com/api/reference/resources/responses/streaming-events) 和 [Anthropic Messages](https://platform.claude.com/docs/en/build-with-claude/streaming)。
 
-Provider 默认输出 4096 tokens、HTTP 总超时 120 秒；应用层回复最多 8 KiB、摘要最多 4 KiB、单条用户消息最多 16 KiB。模型窗口需容纳输入预算、输出及协议开销，字节预算与 token 上限独立。取消本地 run 会关闭模型 HTTP 请求；其他 Agent 实例收到取消后最迟在续租失败时关闭请求。不能保证上游停止计费，已接入服务的文档未承诺请求幂等或独立取消端点。
+Provider 默认输出 4096 tokens、HTTP 总超时 120 秒；Agent 外部调用安全上限默认 2 分钟且不超过 run 的 5 分钟总期限，较小的工具、授权、知识或 Connector owner 超时继续优先。可通过 `ConversationOptions.ExternalCallTimeout` 或 `AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT` 缩短，最大 5 分钟；run 总期限对应 `RunTimeout`／`AGENT_CONVERSATION_RUN_TIMEOUT`。应用层回复最多 8 KiB、摘要最多 4 KiB、单条用户消息最多 16 KiB。模型窗口需容纳输入预算、输出及协议开销，字节预算与 token 上限独立。取消本地 run 会关闭模型 HTTP 请求；其他 Agent 实例收到取消后最迟在续租失败时关闭请求。读取工具超时保存 `tool_timeout`；写工具已经发出后超时保存 `external_result_unknown` 并要求核查，不作为确定失败重放。不能保证上游停止计费，已接入服务的文档未承诺请求幂等或独立取消端点。
 
 Module 通过 `module.Options.ConversationProviderName`、`ConversationProtocol` 选择协议，或通过 `ConversationProvider` 注入无状态模型；`module.ConversationOptions` 调整预算和 worker 参数。环境配置由 `module.OptionsFromEnvironment()` 统一加载。
 

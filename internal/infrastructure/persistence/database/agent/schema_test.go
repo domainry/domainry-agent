@@ -12,7 +12,7 @@ func TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects(t *testing.
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 18 || migrations[0].Version != SchemaVersion || migrations[1].Version != 2 || migrations[2].Version != 3 || migrations[3].Version != 4 || migrations[4].Version != 5 || migrations[5].Version != 6 || migrations[6].Version != 7 || migrations[7].Version != 8 || migrations[8].Version != 9 || migrations[9].Version != 10 || migrations[10].Version != 11 || migrations[11].Version != 12 || migrations[12].Version != 13 || migrations[13].Version != 14 || migrations[14].Version != 15 || migrations[15].Version != 16 || migrations[16].Version != 17 || migrations[17].Version != 18 {
+			if len(migrations) != 19 || migrations[0].Version != SchemaVersion || migrations[1].Version != 2 || migrations[2].Version != 3 || migrations[3].Version != 4 || migrations[4].Version != 5 || migrations[5].Version != 6 || migrations[6].Version != 7 || migrations[7].Version != 8 || migrations[8].Version != 9 || migrations[9].Version != 10 || migrations[10].Version != 11 || migrations[11].Version != 12 || migrations[12].Version != 13 || migrations[13].Version != 14 || migrations[14].Version != 15 || migrations[15].Version != 16 || migrations[16].Version != 17 || migrations[17].Version != 18 || migrations[18].Version != 19 {
 				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
 			joined := strings.Join(migrations[0].Statements, "\n")

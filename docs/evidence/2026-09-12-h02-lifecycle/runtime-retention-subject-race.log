@@ -1,0 +1,4 @@
+=== RUN   TestRuntimeAgentRetentionAndSubjectErasureEndToEnd
+--- PASS: TestRuntimeAgentRetentionAndSubjectErasureEndToEnd (12.95s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/runtime	14.844s

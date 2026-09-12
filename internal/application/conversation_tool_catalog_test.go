@@ -30,13 +30,12 @@ func (h catalogOnlyHost) ConversationTools(ctx context.Context, _ agentsdk.Conve
 	return h.definitions, nil
 }
 
-func TestConversationCatalogKeepsHostAuthorizationDeadline(t *testing.T) {
+func TestConversationCatalogBoundsHostAuthorizationDeadline(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), time.Minute)
 	defer cancel()
-	expected, _ := ctx.Deadline()
 	host := catalogOnlyHost{definitions: []agentsdk.ConversationToolDefinition{agentsdk.PersonalConversationTools()[1]}, inspectContext: func(actual context.Context) {
-		if got, _ := actual.Deadline(); !got.Equal(expected) {
-			t.Error("connection check shortened Identity/catalog authorization deadline")
+		if deadline, ok := actual.Deadline(); !ok || time.Until(deadline) > 30*time.Second || time.Until(deadline) < 29*time.Second {
+			t.Error("catalog owner call did not receive its bounded deadline")
 		}
 	}}
 	s := &ConversationService{options: ConversationOptions{ToolHost: host}}

@@ -20,7 +20,7 @@ func (s *ConversationService) authorizeConversationExecution(ctx context.Context
 		// Identity-backed module assembly requires this port before workers start.
 		return nil
 	}
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := s.externalCallContext(ctx, 5*time.Second)
 	defer cancel()
 	allowed, err := s.options.ExecutionAuthorizer.AuthorizeConversationExecution(ctx, agentsdk.ConversationExecutionAuthorizationRequest{Authority: a, ConversationID: id, RunID: run, Stage: stage})
 	if err != nil || ctx.Err() != nil {

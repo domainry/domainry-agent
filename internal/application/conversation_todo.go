@@ -27,7 +27,7 @@ func (s *ConversationService) todoAccess(ctx context.Context, a agentsdk.Convers
 	if err != nil {
 		return nil, err
 	}
-	auth, err := policy.AuthorizeConversationTool(ctx, agentsdk.ConversationToolRequest{Authority: a, Definition: definition, Call: agentsdk.ConversationToolCall{Name: key, Arguments: string(raw)}})
+	auth, err := s.authorizeConversationTool(ctx, policy, agentsdk.ConversationToolRequest{Authority: a, Definition: definition, Call: agentsdk.ConversationToolCall{Name: key, Arguments: string(raw)}})
 	if err != nil {
 		return nil, err
 	}

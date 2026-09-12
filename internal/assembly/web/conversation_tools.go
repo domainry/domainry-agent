@@ -8,6 +8,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/requestcontext"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	"github.com/domainry/domainry-identity-sdk/authorization/evaluator"
 )
@@ -150,7 +151,7 @@ func (h *Host) resolveConversationPrincipal(ctx context.Context, a agentsdk.Conv
 	}
 	// Resolve the current subject for trusted background work. Never reuse the
 	// cookie, token or policy bundle captured when the message was submitted.
-	resolution, err := h.Identity.Principals().Resolve(ctx, identitysdk.PrincipalResolutionRequest{Application: identitysdk.ApplicationScope{WorkspaceID: identitysdk.WorkspaceID(a.WorkspaceID), ApplicationKey: h.application.ApplicationKey}, SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
+	resolution, err := h.Identity.Principals().Resolve(requestcontext.WithWorkspaceID(ctx, a.WorkspaceID), identitysdk.PrincipalResolutionRequest{SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
 	if err != nil {
 		var denied *identitysdk.Error
 		if errors.As(err, &denied) && (denied.StatusCode == 401 || denied.StatusCode == 403 || denied.StatusCode == 404 || denied.Code == "identity.subject_not_found") {

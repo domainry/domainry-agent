@@ -30,7 +30,7 @@ func (s *ConversationService) conversationKnowledgeContext(ctx context.Context, 
 	if len(messages) != 1 || messages[0].Seq != claim.Run.UserSeq || messages[0].Role != "user" {
 		return nil, conversationFailure("unavailable", "knowledge_request_invalid")
 	}
-	data, err := s.options.Knowledge.Search(ctx, messages[0].Content, claim.Authority)
+	data, err := s.searchConversationKnowledge(ctx, messages[0].Content, claim.Authority)
 	if err != nil {
 		return nil, conversationFailure("unavailable", conversationModelFailureCode(err, "knowledge_failed"))
 	}

@@ -1,0 +1,10 @@
+=== RUN   TestAttachmentIndexRestartTakeoverAndReadyDeleteNeverReuseLease
+--- PASS: TestAttachmentIndexRestartTakeoverAndReadyDeleteNeverReuseLease (0.19s)
+=== RUN   TestAttachmentIndexDeleteBeforePutNeedsNoRemoteWrite
+--- PASS: TestAttachmentIndexDeleteBeforePutNeedsNoRemoteWrite (0.16s)
+=== RUN   TestConversationLifecycleArchivesCompleteGraphAndFencesPurge
+--- PASS: TestConversationLifecycleArchivesCompleteGraphAndFencesPurge (0.13s)
+=== RUN   TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly
+--- PASS: TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly (0.13s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	2.021s

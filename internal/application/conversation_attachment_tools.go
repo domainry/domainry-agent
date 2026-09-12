@@ -69,7 +69,7 @@ func (s *ConversationService) authorizeAttachmentKnowledgeTool(ctx context.Conte
 			return denied, nil
 		}
 	}
-	return s.options.PersonalAuthorizer.AuthorizeConversationTool(ctx, in)
+	return s.authorizeConversationTool(ctx, s.options.PersonalAuthorizer, in)
 }
 func (h *attachmentKnowledgeHost) ConversationTools(ctx context.Context, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, error) {
 	tools, err := h.base.ConversationTools(ctx, a)

@@ -1,0 +1,4 @@
+=== RUN   TestRuntimeSubjectErasureReachesAgentTodoAndKnowledgeOwners
+--- PASS: TestRuntimeSubjectErasureReachesAgentTodoAndKnowledgeOwners (12.42s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/runtime	14.322s

@@ -26,7 +26,7 @@ func deleteConversationAcrossOwners(t *testing.T, repo *ConversationStore, conve
 	if err != nil {
 		t.Fatal(err)
 	}
-	knowledgeReceipt, err := repo.knowledgeStore().DeleteConversationReferencesForRequest(t.Context(), requestID, conversation.ID, a)
+	knowledgeReceipt, err := repo.DeleteConversationReferencesForRequest(t.Context(), requestID, conversation.ID, a)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +34,7 @@ func deleteConversationAcrossOwners(t *testing.T, repo *ConversationStore, conve
 	if err != nil || string(replayedAgent) != string(agentReceipt) {
 		t.Fatal("Agent deletion receipt did not replay", err)
 	}
-	replayedKnowledge, err := repo.knowledgeStore().DeleteConversationReferencesForRequest(t.Context(), requestID, conversation.ID, a)
+	replayedKnowledge, err := repo.DeleteConversationReferencesForRequest(t.Context(), requestID, conversation.ID, a)
 	if err != nil || string(replayedKnowledge) != string(knowledgeReceipt) {
 		t.Fatal("Knowledge deletion receipt did not replay", err)
 	}

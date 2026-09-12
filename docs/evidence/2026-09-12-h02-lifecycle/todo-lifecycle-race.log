@@ -1,0 +1,4 @@
+=== RUN   TestSubjectLifecycleErasesOneOwnerAndReplaysReceipt
+--- PASS: TestSubjectLifecycleErasesOneOwnerAndReplaysReceipt (0.03s)
+PASS
+ok  	github.com/domainry/domainry-todo/internal/infrastructure/persistence/database/todo	1.439s

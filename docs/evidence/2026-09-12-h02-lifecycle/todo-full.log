@@ -1,0 +1,5 @@
+?   	github.com/domainry/domainry-todo/contract	[no test files]
+ok  	github.com/domainry/domainry-todo/internal/architecture	0.668s
+?   	github.com/domainry/domainry-todo/internal/domain/todo/service	[no test files]
+ok  	github.com/domainry/domainry-todo/internal/infrastructure/persistence/database/todo	(cached)
+?   	github.com/domainry/domainry-todo/module	[no test files]

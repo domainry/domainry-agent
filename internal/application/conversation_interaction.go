@@ -84,7 +84,13 @@ func (s *ConversationService) Respond(ctx context.Context, id, runID string, res
 	}
 	// The repository resolves the exact response ID, including duplicate
 	// responses to an earlier step. Policy never comes from the response body.
-	auth, err := authorizer.AuthorizeConversationInteraction(ctx, a, *run.Interaction)
+	authCtx, cancel := s.externalCallContext(ctx, 5*time.Second)
+	auth, err := authorizer.AuthorizeConversationInteraction(authCtx, a, *run.Interaction)
+	authCtxErr := authCtx.Err()
+	cancel()
+	if authCtxErr != nil && ctx.Err() == nil {
+		return agentsdk.ConversationRun{}, conversationFailure("unavailable", "interaction_authorization_timeout")
+	}
 	if err != nil {
 		return agentsdk.ConversationRun{}, err
 	}
@@ -109,7 +115,7 @@ func (s *ConversationService) Respond(ctx context.Context, id, runID string, res
 		if conversationDigest(tool.definition) != i.DefinitionHash || conversationDigest(i.Arguments) != i.ArgumentsHash {
 			return agentsdk.ConversationRun{}, conversationFailure("conflict", "tool_changed")
 		}
-		auth, err := s.options.ToolHost.AuthorizeConversationTool(ctx, agentsdk.ConversationToolRequest{Authority: a, ConversationID: id, RunID: runID, CorrelationID: runID, Step: i.Step, Call: agentsdk.ConversationToolCall{ID: i.CallID, Name: i.Tool, Arguments: i.Arguments}, Definition: tool.definition})
+		auth, err := s.authorizeConversationTool(ctx, s.options.ToolHost, agentsdk.ConversationToolRequest{Authority: a, ConversationID: id, RunID: runID, CorrelationID: runID, Step: i.Step, Call: agentsdk.ConversationToolCall{ID: i.CallID, Name: i.Tool, Arguments: i.Arguments}, Definition: tool.definition})
 		if err != nil {
 			return agentsdk.ConversationRun{}, err
 		}

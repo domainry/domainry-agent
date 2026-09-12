@@ -96,14 +96,17 @@ func (s *ConversationStore) ApplyConversationTaskTool(ctx context.Context, in ag
 		if children >= agentsdk.ConversationTaskMaxChildrenPerRun {
 			return agentsdk.ConversationToolResult{}, conversationError("conflict", "task_child_limit")
 		}
+		if err := s.checkConversationQueueCapacity(ctx, tx, claim.Authority); err != nil {
+			return agentsdk.ConversationToolResult{}, err
+		}
 		now := time.Now().UTC().Truncate(time.Millisecond)
 		prepared.ID = "task_" + conversationHash(call.IdempotencyKey)[:32]
 		prepared.Status = agentsdk.ConversationTaskStatusQueued
 		prepared.CreatedAt, prepared.UpdatedAt = now, now
 		q, args, buildErr := query.NewInsertBuilder(s.store.Renderer(), conversationTaskTable).Columns(
-			"owner_key", "task_id", "runtime_id", "source_conversation_id", "source_run_id", "status", "authority_json", "request_hash", "created_at", "updated_at", "payload_json",
+			"owner_key", "workspace_key", "task_id", "runtime_id", "source_conversation_id", "source_run_id", "status", "authority_json", "request_hash", "created_at", "updated_at", "payload_json",
 		).Values(
-			conversationOwner(claim.Authority), prepared.ID, claim.Authority.RuntimeID, prepared.SourceConversationID, prepared.SourceRunID,
+			conversationOwner(claim.Authority), conversationHash([]string{claim.Authority.RuntimeID, claim.Authority.WorkspaceID}), prepared.ID, claim.Authority.RuntimeID, prepared.SourceConversationID, prepared.SourceRunID,
 			prepared.Status, conversationJSON(claim.Authority), conversationHash([]any{call.Definition, call.Call}), now.UnixMilli(), now.UnixMilli(), conversationJSON(prepared),
 		).Build()
 		if err := conversationExec(ctx, tx, q, args, buildErr); err != nil {
@@ -139,12 +142,34 @@ func (s *ConversationStore) AcceptScheduledConversationTask(ctx context.Context,
 		requestHash := conversationHash(in)
 		prepared.ID = "task_" + conversationHash([]any{conversationOwner(in.Authority), in.IdempotencyKey})[:32]
 		prepared.Status = agentsdk.ConversationTaskStatusQueued
+		readExisting := func() (conversationTaskRow, error) {
+			statement, args, buildErr := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(in.Authority)), query.Equal("task_id", prepared.ID))).Build()
+			if buildErr != nil {
+				return conversationTaskRow{}, buildErr
+			}
+			return scanConversationTask(tx.QueryRowContext(ctx, statement, args...))
+		}
+		if existing, existingErr := readExisting(); existingErr == nil {
+			if existing.requestHash != requestHash || conversationOwner(existing.authority) != conversationOwner(in.Authority) || existing.schedule == nil || existing.schedule.PlanID != in.PlanID || existing.schedule.SchedulerRunID != in.SchedulerRunID || !existing.schedule.ScheduledFor.Equal(in.ScheduledFor) {
+				return conversationError("conflict", "scheduled_task_idempotency_conflict")
+			}
+			out.Task, out.Replay = existing.task, true
+			return nil
+		} else {
+			var coded *agentsdk.Error
+			if !errors.As(existingErr, &coded) || coded.Code != "agent.conversation.task_not_found" {
+				return existingErr
+			}
+		}
+		if err := s.checkConversationQueueCapacity(ctx, tx, in.Authority); err != nil {
+			return err
+		}
 		now := time.Now().UTC().Truncate(time.Millisecond)
 		prepared.CreatedAt, prepared.UpdatedAt = now, now
 		statement, args, buildErr := query.NewInsertBuilder(s.store.Renderer(), conversationTaskTable).Columns(
-			"owner_key", "task_id", "runtime_id", "source_conversation_id", "source_run_id", "status", "authority_json", "request_hash", "created_at", "updated_at", "payload_json", "scheduled_plan_id", "scheduler_run_id", "scheduled_for",
+			"owner_key", "workspace_key", "task_id", "runtime_id", "source_conversation_id", "source_run_id", "status", "authority_json", "request_hash", "created_at", "updated_at", "payload_json", "scheduled_plan_id", "scheduler_run_id", "scheduled_for",
 		).Values(
-			conversationOwner(in.Authority), prepared.ID, in.Authority.RuntimeID, prepared.SourceConversationID, prepared.SourceRunID,
+			conversationOwner(in.Authority), conversationHash([]string{in.Authority.RuntimeID, in.Authority.WorkspaceID}), prepared.ID, in.Authority.RuntimeID, prepared.SourceConversationID, prepared.SourceRunID,
 			prepared.Status, conversationJSON(in.Authority), requestHash, now.UnixMilli(), now.UnixMilli(), conversationJSON(prepared), in.PlanID, in.SchedulerRunID, in.ScheduledFor.UnixMilli(),
 		).OnConflictDoNothing("owner_key", "task_id").Build()
 		if buildErr != nil {
@@ -165,11 +190,7 @@ func (s *ConversationStore) AcceptScheduledConversationTask(ctx context.Context,
 		if inserted != 0 {
 			return conversationError("conflict", "scheduled_task_idempotency_conflict")
 		}
-		statement, args, buildErr = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(in.Authority)), query.Equal("task_id", prepared.ID))).Build()
-		if buildErr != nil {
-			return buildErr
-		}
-		existing, err := scanConversationTask(tx.QueryRowContext(ctx, statement, args...))
+		existing, err := readExisting()
 		if err != nil {
 			return err
 		}
@@ -309,6 +330,9 @@ func (s *ConversationStore) transitionQueuedConversationTask(ctx context.Context
 			if from != agentsdk.ConversationTaskStatusCancelled || out.ExecutionRunID != "" {
 				return conversationError("conflict", "task_resume_invalid")
 			}
+			if err = s.checkConversationQueueCapacity(ctx, tx, a); err != nil {
+				return err
+			}
 			out.Status, out.ErrorCode, out.CompletedAt = agentsdk.ConversationTaskStatusQueued, "", nil
 			out.CompletionEventID, out.CompletionEventSeq = "", 0
 		} else {
@@ -424,7 +448,7 @@ func (s *ConversationStore) LaunchConversationTask(ctx context.Context, runtimeI
 			if err = s.event(ctx, tx, &run, "run.queued", map[string]any{"message_id": message.ID, "message_seq": message.Seq, "background_task_id": task.ID}); err != nil {
 				return err
 			}
-			q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("owner_key", "conversation_id", "run_id", "client_message_id", "runtime_id", "authority_json", "request_hash", "status", "lease_owner", "fence", "lease_expires_at", "event_seq", "created_at", "payload_json").Values(conversationOwner(authority), conversation.ID, run.Run.ID, run.Run.ClientMessageID, authority.RuntimeID, conversationJSON(authority), run.Run.RequestHash, run.Run.Status, "", 0, 0, run.EventSeq, now.UnixMilli(), conversationJSON(run.Run)).Build()
+			q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("owner_key", "workspace_key", "conversation_id", "run_id", "client_message_id", "runtime_id", "authority_json", "request_hash", "status", "lease_owner", "fence", "lease_expires_at", "event_seq", "created_at", "payload_json").Values(conversationOwner(authority), conversationHash([]string{authority.RuntimeID, authority.WorkspaceID}), conversation.ID, run.Run.ID, run.Run.ClientMessageID, authority.RuntimeID, conversationJSON(authority), run.Run.RequestHash, run.Run.Status, "", 0, 0, run.EventSeq, now.UnixMilli(), conversationJSON(run.Run)).Build()
 			if err = conversationExec(ctx, tx, q, args, err); err != nil {
 				return err
 			}

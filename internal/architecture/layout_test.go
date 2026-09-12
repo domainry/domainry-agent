@@ -109,3 +109,50 @@ func TestExecutionDoesNotDependOnAccountBusinessProtocols(t *testing.T) {
 		}
 	}
 }
+
+func TestLifecycleOwnershipDoesNotCrossDomainTables(t *testing.T) {
+	subject, err := os.ReadFile(filepath.Join("..", "infrastructure", "persistence", "database", "agent", "subject_lifecycle.go"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, foreign := range []string{"_agent_user_todos", "_agent_todo_mutations", "_agent_artifacts", "_agent_attachments", "_agent_knowledge_"} {
+		if strings.Contains(string(subject), foreign) {
+			t.Errorf("Agent subject lifecycle reaches another owner's table %q", foreign)
+		}
+	}
+	conversation, err := os.ReadFile(filepath.Join("..", "infrastructure", "persistence", "database", "agent", "conversation_store.go"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(conversation)
+	start := strings.Index(text, "func (s *ConversationStore) DeleteForRequest")
+	if start < 0 {
+		t.Fatal("conversation deletion implementation was not found")
+	}
+	end := strings.Index(text[start:], "func (s *ConversationStore) Messages")
+	if end < 0 {
+		t.Fatal("conversation deletion implementation end was not found")
+	}
+	if strings.Contains(text[start:start+end], "deleteConversationAttachments") {
+		t.Fatal("Agent conversation deletion crossed into Knowledge persistence")
+	}
+}
+
+func TestExecutionCapacityStaysInsideAgentSDKAndPersistenceBoundary(t *testing.T) {
+	application, err := os.ReadFile(filepath.Join("..", "application", "conversation_service.go"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(application), "persistence.ConversationCapacityRepository") || strings.Contains(string(application), "domainry-runtime") {
+		t.Fatal("conversation capacity must use the SDK persistence port without a Runtime dependency")
+	}
+	store, err := os.ReadFile(filepath.Join("..", "infrastructure", "persistence", "database", "agent", "conversation_capacity_store.go"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, foreign := range []string{"domainry-runtime", "domainry-identity", "_runtime_", "_identity_"} {
+		if strings.Contains(string(store), foreign) {
+			t.Fatalf("Agent capacity persistence crossed owner boundary %q", foreign)
+		}
+	}
+}

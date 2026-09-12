@@ -5,6 +5,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/requestcontext"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	"github.com/domainry/domainry-identity-sdk/authorization/evaluator"
 )
@@ -18,7 +19,7 @@ func (h *Host) AuthorizeKnowledgeLibrary(ctx context.Context, op string, library
 	if p == nil || !a.Known || a.RuntimeID != h.runtimeID || a.UserID == "" || a.WorkspaceID == "" || !h.external && a.WorkspaceID != string(h.application.WorkspaceID) {
 		return denied
 	}
-	resolution, err := h.Identity.Principals().Resolve(ctx, identitysdk.PrincipalResolutionRequest{Application: identitysdk.ApplicationScope{WorkspaceID: identitysdk.WorkspaceID(a.WorkspaceID), ApplicationKey: h.application.ApplicationKey}, SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
+	resolution, err := h.Identity.Principals().Resolve(requestcontext.WithWorkspaceID(ctx, a.WorkspaceID), identitysdk.PrincipalResolutionRequest{SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
 	if err != nil {
 		return err
 	}
@@ -41,7 +42,7 @@ func (h *Host) ValidateKnowledgeLibraryMember(ctx context.Context, user string, 
 	if user == "" || len(user) > 255 {
 		return denied
 	}
-	resolution, err := h.Identity.Principals().Resolve(ctx, identitysdk.PrincipalResolutionRequest{Application: identitysdk.ApplicationScope{WorkspaceID: identitysdk.WorkspaceID(a.WorkspaceID), ApplicationKey: h.application.ApplicationKey}, SubjectID: identitysdk.SubjectID(user)})
+	resolution, err := h.Identity.Principals().Resolve(requestcontext.WithWorkspaceID(ctx, a.WorkspaceID), identitysdk.PrincipalResolutionRequest{SubjectID: identitysdk.SubjectID(user)})
 	// Do not leak whether the subject belongs to another workspace, is inactive
 	// or does not exist. No account is created by a membership mutation.
 	if err != nil || !resolution.Principal.Known || resolution.Principal.UserID != user || resolution.Principal.WorkspaceID != a.WorkspaceID {

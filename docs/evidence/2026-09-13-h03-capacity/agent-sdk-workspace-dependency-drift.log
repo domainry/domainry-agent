@@ -1,0 +1,12 @@
+# github.com/domainry/domainry-agent-sdk/browsergateway
+browsergateway/modules.go:64:4: unknown field Application in struct literal of type "github.com/domainry/domainry-identity-sdk".PrincipalResolutionRequest
+ok  	github.com/domainry/domainry-agent-sdk	0.414s
+FAIL	github.com/domainry/domainry-agent-sdk/browsergateway [build failed]
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	6.111s
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	6.393s
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+FAIL

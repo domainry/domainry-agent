@@ -58,7 +58,37 @@ type Options struct {
 func OptionsFromEnvironment() Options {
 	id, _ := strconv.Atoi(strings.TrimSpace(os.Getenv("AGENT_HTTP_AGENT_ID")))
 	model := provider.ConversationModelConfigFromEnvironment()
-	return Options{AttachmentKnowledgeBindingsJSON: os.Getenv("AGENT_ATTACHMENT_KNOWLEDGE_BINDINGS"), KnowledgeDatasourcesJSON: os.Getenv("AGENT_KNOWLEDGE_DATASOURCES"), KnowledgeLibraryBindingsJSON: os.Getenv("AGENT_KNOWLEDGE_LIBRARY_BINDINGS"), ConversationEnabled: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_ENABLED")), "true"), BaseURL: os.Getenv("AGENT_HTTP_BASE_URL"), APIKey: os.Getenv("AGENT_HTTP_API_KEY"), AgentID: id, Timeout: 120 * time.Second, ConversationTimezone: os.Getenv("AGENT_CONVERSATION_TIMEZONE"), ConversationBaseURL: model.BaseURL, ConversationURL: model.URL, ConversationAPIKey: model.APIKey, ConversationModel: model.Model, ConversationProviderName: model.Provider, ConversationProtocol: model.Protocol, Knowledge: provider.KnowledgeConfigFromEnvironment()}
+	conversation := ConversationOptions{
+		Workers:          positiveEnvironmentInteger("AGENT_CONVERSATION_WORKERS"),
+		MaxQueuedPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_USER"), MaxQueuedPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE"),
+		MaxRunningPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_RUNNING_PER_USER"), MaxRunningPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE"),
+		RunTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_RUN_TIMEOUT"), ExternalCallTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT"),
+	}
+	return Options{AttachmentKnowledgeBindingsJSON: os.Getenv("AGENT_ATTACHMENT_KNOWLEDGE_BINDINGS"), KnowledgeDatasourcesJSON: os.Getenv("AGENT_KNOWLEDGE_DATASOURCES"), KnowledgeLibraryBindingsJSON: os.Getenv("AGENT_KNOWLEDGE_LIBRARY_BINDINGS"), ConversationEnabled: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_ENABLED")), "true"), BaseURL: os.Getenv("AGENT_HTTP_BASE_URL"), APIKey: os.Getenv("AGENT_HTTP_API_KEY"), AgentID: id, Timeout: 120 * time.Second, ConversationTimezone: os.Getenv("AGENT_CONVERSATION_TIMEZONE"), ConversationBaseURL: model.BaseURL, ConversationURL: model.URL, ConversationAPIKey: model.APIKey, ConversationModel: model.Model, ConversationProviderName: model.Provider, ConversationProtocol: model.Protocol, ConversationOptions: conversation, Knowledge: provider.KnowledgeConfigFromEnvironment()}
+}
+
+func positiveEnvironmentInteger(name string) int {
+	raw := strings.TrimSpace(os.Getenv(name))
+	if raw == "" {
+		return 0
+	}
+	value, err := strconv.Atoi(raw)
+	if err != nil || value <= 0 {
+		return -1
+	}
+	return value
+}
+
+func positiveEnvironmentDuration(name string) time.Duration {
+	raw := strings.TrimSpace(os.Getenv(name))
+	if raw == "" {
+		return 0
+	}
+	value, err := time.ParseDuration(raw)
+	if err != nil || value <= 0 {
+		return -1
+	}
+	return value
 }
 
 type Factory struct{ options Options }

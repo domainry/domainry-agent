@@ -45,7 +45,7 @@ func (audit *conversationSourceAudit) artifactToolRecord(ctx context.Context, ow
 		return nil, conversationFailure("unavailable", "artifacts_unavailable")
 	}
 	request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: execution.Step, Call: execution.Call, Definition: definition}
-	decision, err := policy.AuthorizeConversationTool(ctx, request)
+	decision, err := audit.s.authorizeConversationTool(ctx, policy, request)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (audit *conversationSourceAudit) artifactToolRecord(ctx context.Context, ow
 	}
 	if definition.Key == "artifact_edit" || definition.Key == "artifact_export" {
 		request = artifactReadAuthorizationRequest(request)
-		decision, err = policy.AuthorizeConversationTool(ctx, request)
+		decision, err = audit.s.authorizeConversationTool(ctx, policy, request)
 		if err != nil {
 			return nil, err
 		}
@@ -92,7 +92,7 @@ func (audit *conversationSourceAudit) artifactToolRecord(ctx context.Context, ow
 			read, _ := artifactTool("artifact_read")
 			request.Definition = read
 			request.Call = agentsdk.ConversationToolCall{ID: execution.Call.ID, Name: read.Key, Arguments: conversationJSONText(map[string]any{"id": result.Artifact.ID, "version": result.Artifact.Version})}
-			decision, err = policy.AuthorizeConversationTool(ctx, request)
+			decision, err = audit.s.authorizeConversationTool(ctx, policy, request)
 			if err != nil {
 				return nil, err
 			}

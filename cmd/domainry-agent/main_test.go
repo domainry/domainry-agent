@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
@@ -19,8 +20,30 @@ func clearAgentEnvironment(t *testing.T) {
 	for _, name := range []string{"AGENT_HTTP_BASE_URL", "AGENT_HTTP_API_KEY", "AGENT_HTTP_AGENT_ID", "AGENT_SAAS_API_KEY", "AGENT_SAAS_RUNTIME_ID", "AGENT_CONVERSATION_PROVIDER", "AGENT_CONVERSATION_PROTOCOL", "AGENT_CONVERSATION_BASE_URL", "AGENT_CONVERSATION_MODEL_URL", "AGENT_CONVERSATION_MODEL_API_KEY", "AGENT_CONVERSATION_MODEL", "AGENT_PROVIDER_API_KEY"} {
 		t.Setenv(name, "")
 	}
+	for _, name := range []string{"AGENT_CONVERSATION_WORKERS", "AGENT_CONVERSATION_MAX_QUEUED_PER_USER", "AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE", "AGENT_CONVERSATION_MAX_RUNNING_PER_USER", "AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE", "AGENT_CONVERSATION_RUN_TIMEOUT", "AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT"} {
+		t.Setenv(name, "")
+	}
 	for _, name := range []string{"IDENTITY_ENDPOINT", "IDENTITY_TENANT_ID", "IDENTITY_WORKSPACE_ID", "IDENTITY_ISSUER", "IDENTITY_AUDIENCE", "IDENTITY_SERVICE_ACCESS_TOKEN", "IDENTITY_CAPABILITY_CONTRACT_SHA256"} {
 		t.Setenv(name, "")
+	}
+}
+
+func TestConversationOptionsFromEnvironment(t *testing.T) {
+	clearAgentEnvironment(t)
+	t.Setenv("AGENT_CONVERSATION_WORKERS", "3")
+	t.Setenv("AGENT_CONVERSATION_MAX_QUEUED_PER_USER", "7")
+	t.Setenv("AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE", "70")
+	t.Setenv("AGENT_CONVERSATION_MAX_RUNNING_PER_USER", "2")
+	t.Setenv("AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE", "3")
+	t.Setenv("AGENT_CONVERSATION_RUN_TIMEOUT", "4m")
+	t.Setenv("AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT", "45s")
+	options, err := conversationOptionsFromEnvironment()
+	if err != nil || options.Workers != 3 || options.MaxQueuedPerUser != 7 || options.MaxQueuedPerWorkspace != 70 || options.MaxRunningPerUser != 2 || options.MaxRunningPerWorkspace != 3 || options.RunTimeout != 4*time.Minute || options.ExternalCallTimeout != 45*time.Second {
+		t.Fatalf("options=%+v err=%v", options, err)
+	}
+	t.Setenv("AGENT_CONVERSATION_MAX_RUNNING_PER_USER", "zero")
+	if _, err = conversationOptionsFromEnvironment(); err == nil {
+		t.Fatal("invalid execution quota accepted")
 	}
 }
 func TestConversationExecutableStartsWithoutLegacyProvider(t *testing.T) {

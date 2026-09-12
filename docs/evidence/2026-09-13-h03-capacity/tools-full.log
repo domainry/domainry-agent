@@ -1,0 +1,17 @@
+?   	github.com/domainry/domainry-tools/calculation	[no test files]
+?   	github.com/domainry/domainry-tools/internal/adapter/accounttools	[no test files]
+ok  	github.com/domainry/domainry-tools/internal/adapter/analysistools	3.906s
+?   	github.com/domainry/domainry-tools/internal/adapter/calendartools	[no test files]
+?   	github.com/domainry/domainry-tools/internal/adapter/mailtools	[no test files]
+?   	github.com/domainry/domainry-tools/internal/adapter/recordtools	[no test files]
+ok  	github.com/domainry/domainry-tools/internal/adapter/reporttools	4.896s
+ok  	github.com/domainry/domainry-tools/internal/adapter/scheduletools	4.174s
+?   	github.com/domainry/domainry-tools/internal/adapter/webtools	[no test files]
+ok  	github.com/domainry/domainry-tools/internal/application/preferences	5.225s
+ok  	github.com/domainry/domainry-tools/internal/application/tool	5.657s
+ok  	github.com/domainry/domainry-tools/internal/architecture	4.502s
+ok  	github.com/domainry/domainry-tools/internal/assembly/preferences	6.770s
+?   	github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences	[no test files]
+?   	github.com/domainry/domainry-tools/internal/transport/http/preferences	[no test files]
+ok  	github.com/domainry/domainry-tools/module	7.369s
+?   	github.com/domainry/domainry-tools/timeutil	[no test files]
