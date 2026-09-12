@@ -1,0 +1,54 @@
+=== RUN   TestAnalysisToolPreservesOwnerEvidenceAndRechecksWithoutReexecution
+--- PASS: TestAnalysisToolPreservesOwnerEvidenceAndRechecksWithoutReexecution (0.04s)
+=== RUN   TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly
+=== RUN   TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/missing
+=== RUN   TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/typed_nil
+=== RUN   TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/identity
+=== RUN   TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/permission
+=== RUN   TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/owner
+=== RUN   TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/partial
+=== RUN   TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/validation
+=== RUN   TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/large
+=== RUN   TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/cancelled
+--- PASS: TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly (0.12s)
+    --- PASS: TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/missing (0.01s)
+    --- PASS: TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/typed_nil (0.01s)
+    --- PASS: TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/identity (0.01s)
+    --- PASS: TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/permission (0.01s)
+    --- PASS: TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/owner (0.02s)
+    --- PASS: TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/partial (0.02s)
+    --- PASS: TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/validation (0.02s)
+    --- PASS: TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/large (0.03s)
+    --- PASS: TestAnalysisToolRejectsMissingPermissionPartialAndValidationOnly/cancelled (0.02s)
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/request
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/host
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/user
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/version
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/status
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/completion
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/rows
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/method
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/unit
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/proof
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/source
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/catalog
+=== RUN   TestAnalysisToolRejectsUntrustedInputAndSavedContent/extra
+--- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent (0.38s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/request (0.02s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/host (0.02s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/user (0.02s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/version (0.02s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/status (0.02s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/completion (0.02s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/rows (0.02s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/method (0.02s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/unit (0.02s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/proof (0.02s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/source (0.02s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/catalog (0.02s)
+    --- PASS: TestAnalysisToolRejectsUntrustedInputAndSavedContent/extra (0.02s)
+=== RUN   TestAnalysisToolCatalogAndRecursiveProtocolShapes
+--- PASS: TestAnalysisToolCatalogAndRecursiveProtocolShapes (0.03s)
+PASS
+ok  	github.com/domainry/domainry-tools/internal/adapter/analysistools	2.524s
