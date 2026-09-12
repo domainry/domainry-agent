@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -226,6 +227,22 @@ func (s LifecycleStore) deleteConversationLifecycleCandidate(ctx context.Context
 	}
 	var deleted bool
 	err = (&ConversationStore{store: s.store}).transaction(ctx, func(tx *sql.Tx) error {
+		lookup, lookupArgs, buildErr := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversations").Columns("payload_json").Where(query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("conversation_id", candidate.ResourceID), query.Equal("revision", candidate.Revision))).Build()
+		if buildErr != nil {
+			return buildErr
+		}
+		var raw []byte
+		if scanErr := tx.QueryRowContext(ctx, lookup, lookupArgs...).Scan(&raw); errors.Is(scanErr, sql.ErrNoRows) {
+			return nil
+		} else if scanErr != nil {
+			return scanErr
+		}
+		var conversation struct {
+			WorkspaceID string `json:"workspace_id"`
+		}
+		if json.Unmarshal(raw, &conversation) != nil || conversation.WorkspaceID != workspaceID {
+			return nil
+		}
 		statement, args, buildErr := query.NewDeleteBuilder(s.store.Renderer(), "_agent_conversations").Where(query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("conversation_id", candidate.ResourceID), query.Equal("revision", candidate.Revision))).Build()
 		if buildErr != nil {
 			return buildErr
