@@ -1,0 +1,255 @@
+{
+  "command": "GOWORK=off GOMODCACHE=<fresh> GOPROXY=direct GOSUMDB=off go mod download -json <19 exact module versions>",
+  "fresh_module_cache": true,
+  "count": 19,
+  "errors": 0,
+  "modules": [
+    {
+      "path": "github.com/domainry/domainry-agent-sdk",
+      "version": "v0.1.12",
+      "sum": "h1:Cuato8e9Gl3kxWVu8IjEjHcs4jQNwI81SWRgDRz8bmQ=",
+      "go_mod_sum": "h1:Piz1o3vJ6DD5y2TzHMNz9YLHr0u6zYw4hZMF8r7DuVI=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-agent-sdk",
+        "hash": "9720dfcf52a873487d7bf71597045c8394cd196e",
+        "ref": "refs/tags/v0.1.12"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-identity-sdk",
+      "version": "v0.1.10",
+      "sum": "h1:Lspi1KO+/XWiN6KiQzPNloy7hp1zPhvRna9Uu25h7zU=",
+      "go_mod_sum": "h1:prM16qfIe2erOmS/t6h2sNPzVhUGy1T82cSR0+7Nvdg=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-identity-sdk",
+        "hash": "c2e6b2a3d390d1101e680a18cb828fa2f6df64fc",
+        "ref": "refs/tags/v0.1.10"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-identity-bridge",
+      "version": "v0.1.2",
+      "sum": "h1:EP1f7ByK6ReYMPw2MCpb5PwDCWix31oZ5e2R8fUjqj0=",
+      "go_mod_sum": "h1:WCWwlNjk6TKXdsPYL51gu91iB4oPvNQqEzMokIB9suY=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-identity-bridge",
+        "hash": "5950e6991e765b256b2f42bc054a7c48a8508af4",
+        "ref": "refs/tags/v0.1.2"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-lifecycle-sdk",
+      "version": "v0.1.10",
+      "sum": "h1:6ZBT/BT8cCD3N6VNcxNv2AB7SeWeYRm0uXIIqVUWHBY=",
+      "go_mod_sum": "h1:fRFRPcyQWD8hm0u9CH3vpn40EblOKuAodk2XCWCM8G4=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-lifecycle-sdk",
+        "hash": "ccd73307bbcc126ea83f1fabd5aeba3cbbd4e29f",
+        "ref": "refs/tags/v0.1.10"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-scheduler-sdk",
+      "version": "v0.1.7",
+      "sum": "h1:xNQvWh9Q9Rb2G3pE2GJTRwHAz8H0k1Zv8YhOBym+qdM=",
+      "go_mod_sum": "h1:H6QIU+jNZ92trSbu8wbF+gDg1iJRbI3w6nhK/o7HafQ=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-scheduler-sdk",
+        "hash": "f357fad25eb6c24e7640ad04e1945ef560ed4d68",
+        "ref": "refs/tags/v0.1.7"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-connectors",
+      "version": "v0.1.3",
+      "sum": "h1:cnuliqXRFFFoEUBptjcX8e9skz3TKYPz6XUiCVnXDJ0=",
+      "go_mod_sum": "h1:jMJsN5gFLvFd5BsBX45IvvC+txhVG55NDjq+I4OdHsk=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-connectors",
+        "hash": "02bd73b53d754b83403222be545be829cd09ac05",
+        "ref": "refs/tags/v0.1.3"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-identity",
+      "version": "v0.2.11",
+      "sum": "h1:v1eJnWnSbQWrxm18pUECe6pF1T8yCaKbF+X4dQUFztQ=",
+      "go_mod_sum": "h1:6mY4z4dQ8ZZoR1kW/9L8bEoQGxqulzklUwNGNrkA+JE=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-identity",
+        "hash": "acf7df487a00a0e3a8761ca4b38b1d1cc4dc7e32",
+        "ref": "refs/tags/v0.2.11"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-lifecycle",
+      "version": "v0.1.11",
+      "sum": "h1:cYgl+C23jqmRfcSvRlFaz4iS5o7KAsenn6H4bt/HMCI=",
+      "go_mod_sum": "h1:yzksqTpBdSReCPWEH9qXdlBVkM8WIt4rhWJaIKxivag=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-lifecycle",
+        "hash": "6101a092e051425c149204d56be663bbca0d3352",
+        "ref": "refs/tags/v0.1.11"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-scheduler",
+      "version": "v0.1.10",
+      "sum": "h1:hNecCiVEs6wiEPRw7rNAUlJWD4t7Mt3WLgQNwuPSEiQ=",
+      "go_mod_sum": "h1:jg949QReXXMhdVz1aDeaI7I0njz/+f+vAFQBV2H1URI=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-scheduler",
+        "hash": "57adf90e8a408824692a914d99875b15b3132ba9",
+        "ref": "refs/tags/v0.1.10"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-notification",
+      "version": "v0.1.3",
+      "sum": "h1:g4v7MhyXvANTUollxlLo4V5koUWiXOBuqJTj5w6Ctjc=",
+      "go_mod_sum": "h1:m0v+ct4XfURfnrDsHIQEGoWXkD6eKs1Qn+9qNKbmeK8=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-notification",
+        "hash": "353202232707f6e3665eac5183bb88e4eca889cf",
+        "ref": "refs/tags/v0.1.3"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-audit",
+      "version": "v0.1.10",
+      "sum": "h1:sMXyE4jtyDiuj2bUMfHAgP2pny7twvVUT+toW9htzqg=",
+      "go_mod_sum": "h1:h/MSBb+m7dDeOQGdN6xdO/k9Quh5OnPScTUDQv01z8M=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-audit",
+        "hash": "4b5bd89247e5425f2729f6e0852f8e5aa57c3d43",
+        "ref": "refs/tags/v0.1.10"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-integration",
+      "version": "v0.1.13",
+      "sum": "h1:fHVINewf+f/RY9szmCBPHTiUkkOk4WwO+u39ggmcyl8=",
+      "go_mod_sum": "h1:hzXeijeIxYWaj03NqGIHO5shGJlNNFzdUZN1cn+PE+M=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-integration",
+        "hash": "a2f0f849e14263a2c86a63e88f543ce7d3783a6e",
+        "ref": "refs/tags/v0.1.13"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-todo",
+      "version": "v0.1.1",
+      "sum": "h1:si2hIzSLLq6oYrAMRwOKFTtf+cWqWZt5K/rSl7/D5U8=",
+      "go_mod_sum": "h1:qDLKYw9HJvNOZmkzc8vn46P8Zkayyw9A3DcV/17gXcc=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-todo",
+        "hash": "3316eaf7caa9e61bec0bdffc9faa4beadec3e716",
+        "ref": "refs/tags/v0.1.1"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-knowledge",
+      "version": "v0.1.2",
+      "sum": "h1:esgotRYBeV2O8TC5lineBDiARtdR2f1SV5n/T9zW6nY=",
+      "go_mod_sum": "h1:b5c8JG0a7dY4KTi2hCTI71J+BZ9CO59hAS8HxkcRfKs=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-knowledge",
+        "hash": "0ec7f6e4feae300d22c2be536411be1da75a12b5",
+        "ref": "refs/tags/v0.1.2"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-tools",
+      "version": "v0.1.1",
+      "sum": "h1:hkIbrDSTp0H5cVx6QgB4bK891ba2EZbZOZEMwKi5IUA=",
+      "go_mod_sum": "h1:Yl+CpLrgq3SkHpS4D5TeDb/wp2SlJosznGr9v9JDVyY=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-tools",
+        "hash": "766cb6c5685ed6a6d5cf3f40a7615655378287c9",
+        "ref": "refs/tags/v0.1.1"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-agent",
+      "version": "v0.1.20",
+      "sum": "h1:HWPTY0fg/lMn5Y3M5vbfj9uJVM6MhPh33Yz88ZDBBEU=",
+      "go_mod_sum": "h1:euZ844DP9IKabi7d4hvzC51z6TVgrFTJa7+R5T5ErL4=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-agent",
+        "hash": "b84669419f97a0d75034f329aa83af3185a2a13e",
+        "ref": "refs/tags/v0.1.20"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-runtime",
+      "version": "v0.1.43",
+      "sum": "h1:Q+IAjD30BMVI2JAugJHOjWC4+uDZirBlTnHyQA9cdmI=",
+      "go_mod_sum": "h1:Hq2xrG1IAtoNMFCCUkF3G8uPGCCqE6dtM4v8+jDeRj0=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-runtime",
+        "hash": "aad6f8b856be70fc90842170a95419821a111325",
+        "ref": "refs/tags/v0.1.43"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-pm",
+      "version": "v0.1.3",
+      "sum": "h1:y9qXsrZSJx2kgyPDeq43b4IVWG1oQRAv9k1t7dFar7w=",
+      "go_mod_sum": "h1:wm78q1K2KGfYbkZbIIkSY/JvTTI91aJb/huxkSdSMCk=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-pm",
+        "hash": "d60111e6e1bdff82c20840ae6b05e9824fb92bdd",
+        "ref": "refs/tags/v0.1.3"
+      },
+      "error": null
+    },
+    {
+      "path": "github.com/domainry/domainry-work",
+      "version": "v0.1.3",
+      "sum": "h1:JebvWGw3KBkx5MR0wbSUX0mck5I3oo4q4WyMa3kd+cE=",
+      "go_mod_sum": "h1:8zPH1nWHUw/UT34ssnM2Eeof/lf3eN4QHGUbllSJV04=",
+      "origin": {
+        "vcs": "git",
+        "url": "https://github.com/domainry/domainry-work",
+        "hash": "722107b650942af5f838778f8035927cb5f5f4f3",
+        "ref": "refs/tags/v0.1.3"
+      },
+      "error": null
+    }
+  ]
+}

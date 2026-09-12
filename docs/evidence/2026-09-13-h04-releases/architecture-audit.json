@@ -1,0 +1,65 @@
+{
+  "todo": "H04",
+  "pass": true,
+  "checks": {
+    "remote_tags_downloadable": {
+      "pass": true,
+      "count": 19
+    },
+    "remote_tags_match_expected_commits": {
+      "pass": true
+    },
+    "formal_go_mod_has_no_local_replace": {
+      "pass": true,
+      "files_checked": 19,
+      "matches": []
+    },
+    "runtime_exact_module_lock": {
+      "pass": true,
+      "set_sha256": "0c224caafa2cd50ceae499ba6e546e346fd21448beff365bc37cc3bdc9b12578",
+      "bindings": 11
+    },
+    "public_contract_external_compile": {
+      "pass": true,
+      "evidence": "Runtime composition gate compiled an external runtimehost; Identity SDK external consumer test compiles every public Go package against the v0.1.10 request contract",
+      "migration_note": "Identity SDK v0.1.10 intentionally removes deprecated request-body Application fields; all released consumers were migrated, and legacy struct literals using those fields require source changes."
+    },
+    "application_does_not_import_owner_implementations": {
+      "pass": true,
+      "evidence": "Agent and Runtime architecture suites passed with GOWORK=off; composition remains in module/bootstrap adapters"
+    },
+    "web_tools_use_only_llm_proxy_tool_endpoints": {
+      "pass": true,
+      "paths": [
+        "POST /tool/web_search",
+        "POST /tool/web_fetch_jina"
+      ],
+      "model_proxy": false
+    }
+  },
+  "boundary": {
+    "sdk": "public contracts and optional ports",
+    "owners": "domain rules, persistence and external protocol execution",
+    "runtime": "versioned owner composition and Binding lock",
+    "agent": "execution orchestration through SDK/host ports",
+    "products": "select released Agent and owner capabilities",
+    "llm_proxy": "existing Web Search/Web Fetch tool service only"
+  },
+  "llm_proxy_workspaces": [
+    {
+      "path": "/Users/tiger/Projects/devops/llm-proxy",
+      "present": false
+    },
+    {
+      "path": "/Users/tiger/Projects/anti/llm-proxy",
+      "present": true,
+      "status": [],
+      "clean": true
+    }
+  ],
+  "next_todo_not_implemented": {
+    "todo": "H06",
+    "pass": true,
+    "evidence": "H04 changes and evidence are limited to release/public-contract/composition validation"
+  }
+}

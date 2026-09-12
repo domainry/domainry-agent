@@ -1,0 +1,309 @@
+{
+  "todo": "H04",
+  "status": "complete",
+  "captured_at": "2026-09-13T02:42:38.531964+08:00",
+  "scope": "publish SDK, connector/owner modules, Agent, Runtime and product dependency chain; validate public contracts and builds without local go.work",
+  "release_downloads": {
+    "count": 19,
+    "errors": 0,
+    "file": "evidence/2026-09-13-h04-releases/release-downloads.json"
+  },
+  "runtime_module_set": {
+    "version": "v0.1.43",
+    "set_sha256": "0c224caafa2cd50ceae499ba6e546e346fd21448beff365bc37cc3bdc9b12578",
+    "binding_count": 11,
+    "capability_digests_changed": false
+  },
+  "repositories": {
+    "agent-sdk": {
+      "tag": "v0.1.12",
+      "tag_commit": "9720dfcf52a873487d7bf71597045c8394cd196e",
+      "expected_commit_prefix": "9720dfcf52a873487d7bf71597045c8394cd196e",
+      "remote_origin_hash": "9720dfcf52a873487d7bf71597045c8394cd196e",
+      "remote_origin_ref": "refs/tags/v0.1.12",
+      "remote_sum": "h1:Cuato8e9Gl3kxWVu8IjEjHcs4jQNwI81SWRgDRz8bmQ=",
+      "tag_matches_remote": true
+    },
+    "identity-sdk": {
+      "tag": "v0.1.10",
+      "tag_commit": "c2e6b2a3d390d1101e680a18cb828fa2f6df64fc",
+      "expected_commit_prefix": "c2e6b2a3d390d1101e680a18cb828fa2f6df64fc",
+      "remote_origin_hash": "c2e6b2a3d390d1101e680a18cb828fa2f6df64fc",
+      "remote_origin_ref": "refs/tags/v0.1.10",
+      "remote_sum": "h1:Lspi1KO+/XWiN6KiQzPNloy7hp1zPhvRna9Uu25h7zU=",
+      "tag_matches_remote": true
+    },
+    "identity-bridge": {
+      "tag": "v0.1.2",
+      "tag_commit": "5950e6991e765b256b2f42bc054a7c48a8508af4",
+      "expected_commit_prefix": "5950e6991e765b256b2f42bc054a7c48a8508af4",
+      "remote_origin_hash": "5950e6991e765b256b2f42bc054a7c48a8508af4",
+      "remote_origin_ref": "refs/tags/v0.1.2",
+      "remote_sum": "h1:EP1f7ByK6ReYMPw2MCpb5PwDCWix31oZ5e2R8fUjqj0=",
+      "tag_matches_remote": true
+    },
+    "lifecycle-sdk": {
+      "tag": "v0.1.10",
+      "tag_commit": "ccd73307bbcc126ea83f1fabd5aeba3cbbd4e29f",
+      "expected_commit_prefix": "ccd73307bbcc126ea83f1fabd5aeba3cbbd4e29f",
+      "remote_origin_hash": "ccd73307bbcc126ea83f1fabd5aeba3cbbd4e29f",
+      "remote_origin_ref": "refs/tags/v0.1.10",
+      "remote_sum": "h1:6ZBT/BT8cCD3N6VNcxNv2AB7SeWeYRm0uXIIqVUWHBY=",
+      "tag_matches_remote": true
+    },
+    "scheduler-sdk": {
+      "tag": "v0.1.7",
+      "tag_commit": "f357fad25eb6c24e7640ad04e1945ef560ed4d68",
+      "expected_commit_prefix": "f357fad25eb6c24e7640ad04e1945ef560ed4d68",
+      "remote_origin_hash": "f357fad25eb6c24e7640ad04e1945ef560ed4d68",
+      "remote_origin_ref": "refs/tags/v0.1.7",
+      "remote_sum": "h1:xNQvWh9Q9Rb2G3pE2GJTRwHAz8H0k1Zv8YhOBym+qdM=",
+      "tag_matches_remote": true
+    },
+    "connectors": {
+      "tag": "v0.1.3",
+      "tag_commit": "02bd73b53d754b83403222be545be829cd09ac05",
+      "expected_commit_prefix": "02bd73b",
+      "remote_origin_hash": "02bd73b53d754b83403222be545be829cd09ac05",
+      "remote_origin_ref": "refs/tags/v0.1.3",
+      "remote_sum": "h1:cnuliqXRFFFoEUBptjcX8e9skz3TKYPz6XUiCVnXDJ0=",
+      "tag_matches_remote": true
+    },
+    "identity": {
+      "tag": "v0.2.11",
+      "tag_commit": "acf7df487a00a0e3a8761ca4b38b1d1cc4dc7e32",
+      "expected_commit_prefix": "acf7df4",
+      "remote_origin_hash": "acf7df487a00a0e3a8761ca4b38b1d1cc4dc7e32",
+      "remote_origin_ref": "refs/tags/v0.2.11",
+      "remote_sum": "h1:v1eJnWnSbQWrxm18pUECe6pF1T8yCaKbF+X4dQUFztQ=",
+      "tag_matches_remote": true
+    },
+    "lifecycle": {
+      "tag": "v0.1.11",
+      "tag_commit": "6101a092e051425c149204d56be663bbca0d3352",
+      "expected_commit_prefix": "6101a09",
+      "remote_origin_hash": "6101a092e051425c149204d56be663bbca0d3352",
+      "remote_origin_ref": "refs/tags/v0.1.11",
+      "remote_sum": "h1:cYgl+C23jqmRfcSvRlFaz4iS5o7KAsenn6H4bt/HMCI=",
+      "tag_matches_remote": true
+    },
+    "scheduler": {
+      "tag": "v0.1.10",
+      "tag_commit": "57adf90e8a408824692a914d99875b15b3132ba9",
+      "expected_commit_prefix": "57adf90",
+      "remote_origin_hash": "57adf90e8a408824692a914d99875b15b3132ba9",
+      "remote_origin_ref": "refs/tags/v0.1.10",
+      "remote_sum": "h1:hNecCiVEs6wiEPRw7rNAUlJWD4t7Mt3WLgQNwuPSEiQ=",
+      "tag_matches_remote": true
+    },
+    "notification": {
+      "tag": "v0.1.3",
+      "tag_commit": "353202232707f6e3665eac5183bb88e4eca889cf",
+      "expected_commit_prefix": "3532022",
+      "remote_origin_hash": "353202232707f6e3665eac5183bb88e4eca889cf",
+      "remote_origin_ref": "refs/tags/v0.1.3",
+      "remote_sum": "h1:g4v7MhyXvANTUollxlLo4V5koUWiXOBuqJTj5w6Ctjc=",
+      "tag_matches_remote": true
+    },
+    "audit": {
+      "tag": "v0.1.10",
+      "tag_commit": "4b5bd89247e5425f2729f6e0852f8e5aa57c3d43",
+      "expected_commit_prefix": "4b5bd89",
+      "remote_origin_hash": "4b5bd89247e5425f2729f6e0852f8e5aa57c3d43",
+      "remote_origin_ref": "refs/tags/v0.1.10",
+      "remote_sum": "h1:sMXyE4jtyDiuj2bUMfHAgP2pny7twvVUT+toW9htzqg=",
+      "tag_matches_remote": true
+    },
+    "integration": {
+      "tag": "v0.1.13",
+      "tag_commit": "a2f0f849e14263a2c86a63e88f543ce7d3783a6e",
+      "expected_commit_prefix": "a2f0f84",
+      "remote_origin_hash": "a2f0f849e14263a2c86a63e88f543ce7d3783a6e",
+      "remote_origin_ref": "refs/tags/v0.1.13",
+      "remote_sum": "h1:fHVINewf+f/RY9szmCBPHTiUkkOk4WwO+u39ggmcyl8=",
+      "tag_matches_remote": true
+    },
+    "todo": {
+      "tag": "v0.1.1",
+      "tag_commit": "3316eaf7caa9e61bec0bdffc9faa4beadec3e716",
+      "expected_commit_prefix": "3316eaf",
+      "remote_origin_hash": "3316eaf7caa9e61bec0bdffc9faa4beadec3e716",
+      "remote_origin_ref": "refs/tags/v0.1.1",
+      "remote_sum": "h1:si2hIzSLLq6oYrAMRwOKFTtf+cWqWZt5K/rSl7/D5U8=",
+      "tag_matches_remote": true
+    },
+    "knowledge": {
+      "tag": "v0.1.2",
+      "tag_commit": "0ec7f6e4feae300d22c2be536411be1da75a12b5",
+      "expected_commit_prefix": "0ec7f6e",
+      "remote_origin_hash": "0ec7f6e4feae300d22c2be536411be1da75a12b5",
+      "remote_origin_ref": "refs/tags/v0.1.2",
+      "remote_sum": "h1:esgotRYBeV2O8TC5lineBDiARtdR2f1SV5n/T9zW6nY=",
+      "tag_matches_remote": true
+    },
+    "tools": {
+      "tag": "v0.1.1",
+      "tag_commit": "766cb6c5685ed6a6d5cf3f40a7615655378287c9",
+      "expected_commit_prefix": "766cb6c",
+      "remote_origin_hash": "766cb6c5685ed6a6d5cf3f40a7615655378287c9",
+      "remote_origin_ref": "refs/tags/v0.1.1",
+      "remote_sum": "h1:hkIbrDSTp0H5cVx6QgB4bK891ba2EZbZOZEMwKi5IUA=",
+      "tag_matches_remote": true
+    },
+    "agent": {
+      "tag": "v0.1.20",
+      "tag_commit": "b84669419f97a0d75034f329aa83af3185a2a13e",
+      "expected_commit_prefix": "b846694",
+      "remote_origin_hash": "b84669419f97a0d75034f329aa83af3185a2a13e",
+      "remote_origin_ref": "refs/tags/v0.1.20",
+      "remote_sum": "h1:HWPTY0fg/lMn5Y3M5vbfj9uJVM6MhPh33Yz88ZDBBEU=",
+      "tag_matches_remote": true
+    },
+    "runtime": {
+      "tag": "v0.1.43",
+      "tag_commit": "aad6f8b856be70fc90842170a95419821a111325",
+      "expected_commit_prefix": "aad6f8b",
+      "remote_origin_hash": "aad6f8b856be70fc90842170a95419821a111325",
+      "remote_origin_ref": "refs/tags/v0.1.43",
+      "remote_sum": "h1:Q+IAjD30BMVI2JAugJHOjWC4+uDZirBlTnHyQA9cdmI=",
+      "tag_matches_remote": true
+    },
+    "pm": {
+      "tag": "v0.1.3",
+      "tag_commit": "d60111e6e1bdff82c20840ae6b05e9824fb92bdd",
+      "expected_commit_prefix": "d60111e",
+      "remote_origin_hash": "d60111e6e1bdff82c20840ae6b05e9824fb92bdd",
+      "remote_origin_ref": "refs/tags/v0.1.3",
+      "remote_sum": "h1:y9qXsrZSJx2kgyPDeq43b4IVWG1oQRAv9k1t7dFar7w=",
+      "tag_matches_remote": true
+    },
+    "work": {
+      "tag": "v0.1.3",
+      "tag_commit": "722107b650942af5f838778f8035927cb5f5f4f3",
+      "expected_commit_prefix": "722107b",
+      "remote_origin_hash": "722107b650942af5f838778f8035927cb5f5f4f3",
+      "remote_origin_ref": "refs/tags/v0.1.3",
+      "remote_sum": "h1:JebvWGw3KBkx5MR0wbSUX0mck5I3oo4q4WyMa3kd+cE=",
+      "tag_matches_remote": true
+    }
+  },
+  "tests": [
+    {
+      "name": "runtime composition gate",
+      "command": "GOWORK=off ./scripts/ci/verify_runtime_composition.sh pr",
+      "result": "pass",
+      "coverage": "module verify; exact 11-Binding versions; external runtimehost compile; cross-module golden chains; action, notification, transaction and workflow persistence/restart"
+    },
+    {
+      "name": "runtime full",
+      "command": "GOWORK=off go test ./...",
+      "result": "pass",
+      "duration": "integrationtest 383.080s"
+    },
+    {
+      "name": "runtime critical race",
+      "command": "GOWORK=off go test -race <critical packages>",
+      "result": "pass",
+      "packages": {
+        "pkg/runtimeext": "1.894s",
+        "pkg/runtimehost": "42.650s",
+        "runtime/application/action": "3.119s",
+        "runtime/application/upload": "1.435s",
+        "runtime/bootstrap/runtime": "335.392s",
+        "runtime/infrastructure/persistence/database/workflow": "102.359s",
+        "runtime/transport/http/uploads": "2.458s",
+        "runtime/boundary": "5.304s"
+      }
+    },
+    {
+      "name": "runtime scheduled follow-up retry semantics",
+      "command": "GOWORK=off go test ./integrationtest -run '^TestScheduledAgentFollowUpUsesSilentBaselineSurvivesRestartAndNotifiesOnlyMeaningfulOutcomes$'",
+      "result": "pass",
+      "repetitions": {
+        "normal_count_25": "40.157s",
+        "race_count_5": "97.809s"
+      }
+    },
+    {
+      "name": "agent module verification and full test",
+      "command": "GOWORK=off go mod verify && GOWORK=off go test ./...",
+      "result": "pass",
+      "packages": {
+        "cmd/domainry-agent": "1.765s",
+        "integration": "81.980s",
+        "internal/architecture": "1.904s",
+        "internal/assembly/web": "174.267s"
+      }
+    },
+    {
+      "name": "agent identity HTTP restart E2E race",
+      "command": "GOWORK=off go test -race ./internal/assembly/web -run '^TestAccountWritesThroughIdentityProviderHTTPAndRestart$' -count=1 -timeout=20m -v",
+      "result": "pass",
+      "duration": "702.537s",
+      "scenarios": {
+        "approved_restart": "195.42s",
+        "single_then_reject": "157.81s",
+        "revoke_before_approval": "79.58s",
+        "unknown_original_receipt": "267.81s"
+      }
+    },
+    {
+      "name": "agent critical race",
+      "command": "GOWORK=off go test -race <critical packages and exact external timeout test>",
+      "result": "pass",
+      "packages": {
+        "cmd/domainry-agent": "7.258s",
+        "internal/architecture": "1.641s",
+        "internal/infrastructure/persistence/database/agent": "16.261s",
+        "external_tool_timeout_count_3": "2.833s"
+      }
+    },
+    {
+      "name": "agent static build",
+      "command": "GOWORK=off go vet ./... && GOWORK=off go build ./...",
+      "result": "pass"
+    },
+    {
+      "name": "product hosts",
+      "command": "GOWORK=off go mod verify && go test ./... && go vet ./... && go build ./...",
+      "result": "pass",
+      "repositories": [
+        "domainry-pm@v0.1.3",
+        "domainry-work@v0.1.3"
+      ]
+    },
+    {
+      "name": "split owner tags",
+      "command": "GOWORK=off go mod verify && go test ./... && go vet ./... && go build ./...",
+      "result": "pass",
+      "repositories": [
+        "domainry-connectors@v0.1.3",
+        "domainry-todo@v0.1.1",
+        "domainry-knowledge@v0.1.2",
+        "domainry-tools@v0.1.1"
+      ]
+    },
+    {
+      "name": "remote cold-cache download",
+      "command": "GOWORK=off GOMODCACHE=<fresh> GOPROXY=direct GOSUMDB=off go mod download -json <19 exact versions>",
+      "result": "pass",
+      "downloaded": 19,
+      "errors": 0
+    }
+  ],
+  "architecture": "evidence/2026-09-13-h04-releases/architecture-audit.json",
+  "limitations": [
+    "No Google Workspace or Microsoft 365 OAuth application/account is configured; real vendor OAuth remains H08.",
+    "PostgreSQL, MySQL and multi-instance deployment remain H08.",
+    "H06 crash, unknown-result, duplicate confirmation, cancellation and SSE recovery matrix is not claimed by H04."
+  ],
+  "llm_proxy": {
+    "role": "existing tool service only",
+    "allowed_paths": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ],
+    "model_proxy": false,
+    "modified": false
+  }
+}

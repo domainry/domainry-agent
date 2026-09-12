@@ -1,6 +1,6 @@
 # 剩余能力的拆库边界（2026-09-11）
 
-本表依据当前拆库后的源码，约束后续按 TODO 顺序开发。只核对归属，不提前实施后续条目。清单已依次完成至 H03，当前 H04；旧验收日志是当时源码的证据，不能代替拆库后的组合验收。
+本表依据当前拆库后的源码，约束后续按 TODO 顺序开发。只核对归属，不提前实施后续条目。清单已依次完成至 H04，当前 H06；旧验收日志是当时源码的证据，不能代替拆库后的组合验收。
 
 ## 当前已经存在的边界
 
@@ -52,3 +52,5 @@ F01 当前工具设置已按上述边界接入三个产品：Tools 拥有持久�
 F01 的固定账号测试范围继续留在 Provider：Connector SDK 声明可选范围契约并冻结注册快照，Integration 领域层按实际 grant 计算独立测试条件；Tools 的业务范围检查不依赖探测是否可用，Agent 页面只消费安全状态。[范围隔离验收](testing-2026-09-11-f01-probe-scopes.md)记录实际 Identity、浏览器、重启及依赖检查证据。
 
 H03 已按表中边界完成：Agent 使用自身 SDK 可选持久化端口，在自己的 run／task 表及 workspace guard 上执行用户／工作区排队和运行限额；Scheduler 使用自身 SDK 可选投影、run 表及 Runtime guard 限制触发积压；Tools 保留工具定义 timeout，Integration／Connector 宿主保留外发 HTTP timeout。各 owner 的限制分别配置并在调用边界取更短截止时间，没有新增跨 owner 实现依赖或进程内多实例计数。完成证据见[H03 验收](testing-2026-09-13-h03-capacity.md)和[架构审计](evidence/2026-09-13-h03-capacity/architecture-audit.json)。
+
+H04 已按依赖方向完成发布：公共 SDK 先稳定契约，owner 模块随后固定依赖，Runtime 通过 11-Binding 锁组合，Agent 与 PM／Work 最后固定最终版本。19 个标签均从远端全新模块缓存下载成功；正式 `go.mod` 没有本地 `replace`，Runtime 外部宿主编译及各产品 `GOWORK=off` 验证通过。Identity Module 范围从可信 context 解析；Web Search／Web Fetch 仍由 Integration／Connectors 消费 llm-proxy 两个工具接口，模型 Provider 不经过 llm-proxy。完成证据见[H04 验收](testing-2026-09-13-h04-releases.md)和[架构审计](evidence/2026-09-13-h04-releases/architecture-audit.json)。
