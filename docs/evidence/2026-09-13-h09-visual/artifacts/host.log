@@ -1,0 +1,5 @@
+=== RUN   TestArtifactToolsThroughIdentityHTTP
+    conversation_tools_browser_test.go:20: Temporary browser acceptance ready at http://127.0.0.1:8092
+--- PASS: TestArtifactToolsThroughIdentityHTTP (37.25s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	37.752s

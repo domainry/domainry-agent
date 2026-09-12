@@ -303,7 +303,7 @@ func (s *conversationAdapter) stream(w http.ResponseWriter, r *http.Request, in 
 		writeError(w, err)
 		return
 	}
-	flusher, ok := w.(http.Flusher)
+	flusher, ok := unwrapResponseFlusher(w)
 	if !ok {
 		writeCode(w, 503, "agent.conversation.stream_unavailable")
 		return
@@ -346,6 +346,28 @@ func (s *conversationAdapter) stream(w http.ResponseWriter, r *http.Request, in 
 			return
 		}
 	}
+}
+
+// HTTP hosts commonly wrap ResponseWriter for metrics or tracing. Those
+// wrappers expose optional capabilities through Unwrap, so streaming must
+// follow the standard wrapper chain instead of requiring the outermost writer
+// itself to implement Flusher.
+func unwrapResponseFlusher(w http.ResponseWriter) (http.Flusher, bool) {
+	for w != nil {
+		if flusher, ok := w.(http.Flusher); ok {
+			return flusher, true
+		}
+		unwrapper, ok := w.(interface{ Unwrap() http.ResponseWriter })
+		if !ok {
+			return nil, false
+		}
+		next := unwrapper.Unwrap()
+		if next == w {
+			return nil, false
+		}
+		w = next
+	}
+	return nil, false
 }
 
 var _ modulehttp.Adapter = (*conversationAdapter)(nil)

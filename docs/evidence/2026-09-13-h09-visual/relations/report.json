@@ -1,0 +1,34 @@
+{
+  "scenario": "relations",
+  "steps": [
+    "business catalog publishes real relation keys and the authorized traversal shows two orders, project and customer without the other owner's row",
+    "revoking the relation field hides the saved answer and tool evidence after a full page reload",
+    "restoring the role and reopening Runtime, Identity and Agent restores the same authorized relation result"
+  ],
+  "javascriptErrors": [],
+  "preLoginConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "expectedTransitionConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "consoleErrors": [],
+  "snapshots": [
+    {
+      "conversation_id": "conv_e4e94b3cf12458ba869a15aafd21daa1",
+      "run_id": "crun_b870c32e854bb23b88f770965694b1e1",
+      "relation_calls": 4
+    }
+  ],
+  "complete": true
+}

@@ -1,0 +1,8 @@
+=== RUN   TestPrivateAttachmentIndexBrowserRecovery
+PASS browser upload saves private original with one request; no automatic remote index
+PASS remaining-case setup: one indexed private original, unknown PUT resolved by observation
+PASS Identity check revocation changes visible capability and rejects direct POST; restoration enables the same task
+PASS indexed original previews and downloads exact bytes; one delete request starts private cleanup
+--- PASS: TestPrivateAttachmentIndexBrowserRecovery (15.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	15.547s

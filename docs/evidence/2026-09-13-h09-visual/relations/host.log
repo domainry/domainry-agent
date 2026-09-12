@@ -1,0 +1,7 @@
+Synthetic business evidence: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-business-agent-5pun5bsl
+=== RUN   TestConversationBusinessRelationsThroughIdentityWebAndRestart
+    conversation_business_relations_web_test.go:143: Relation HTTP passed: conversation=conv_fdeeab75abe5d5ba0cc7580a5fd461e0 related=4 catalogs=3; customer/order/project, full restart, relation-field and source-read revocation
+    conversation_business_relations_web_test.go:145: Browser acceptance ready: http://127.0.0.1:8093/#conv_fdeeab75abe5d5ba0cc7580a5fd461e0; synthetic login admin@example.com, password Business-Browser-Changed!2026
+--- PASS: TestConversationBusinessRelationsThroughIdentityWebAndRestart (44.30s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	45.026s

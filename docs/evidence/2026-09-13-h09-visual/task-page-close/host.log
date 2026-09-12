@@ -1,0 +1,7 @@
+=== RUN   TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite
+    conversation_task_start_test.go:682: task_start returned task_4666187a48d25c687711af1e9d989e7e; child run crun_4d540fe65f5944e18182de592f16efca recovered at attempt 2 with exact catalog [time_now]
+    conversation_task_start_test.go:694: Temporary browser acceptance ready at http://127.0.0.1:8092
+    conversation_task_start_test.go:708: browser closed before release; background task task_797e4d39b7aeb8c49f2706a3dbeccee9 completed and persisted for a new browser session
+--- PASS: TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite (140.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	140.528s

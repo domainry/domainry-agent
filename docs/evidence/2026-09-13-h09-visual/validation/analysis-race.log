@@ -1,0 +1,5 @@
+=== RUN   TestAnalysisLongRunStructuredChartArtifactExportAndCurrentPermission
+    conversation_analysis_result_test.go:328: PASS accepted=queued background=running rows=80 chart=bar export=aa79065ff814fe3b3e2ecb614dea099de9c1cca722e4fefe0cfc3a0e49dafbbb source rechecks deny revoked result/download/export
+--- PASS: TestAnalysisLongRunStructuredChartArtifactExportAndCurrentPermission (46.95s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	48.774s

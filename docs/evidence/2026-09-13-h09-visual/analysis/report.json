@@ -1,0 +1,53 @@
+{
+  "steps": [
+    "the persisted analysis call exposes only a bounded preview and a stable full-result reference",
+    "the browser reassembles all 80 rows and shows complete coverage, no source truncation, chart, precision and missing-value declarations",
+    "the complete result is reauthorized on every read and current source revocation blocks both the UI and direct HTTP read"
+  ],
+  "javascriptErrors": [],
+  "preLoginConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "expectedPermissionConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  "consoleErrors": [],
+  "httpErrors": [
+    {
+      "status": 401,
+      "path": "/app/session"
+    },
+    {
+      "status": 401,
+      "path": "/auth/refresh"
+    },
+    {
+      "status": 403,
+      "path": "/agent/conversations/conv_c508df5397a59ca1aceaa248121ab0ea/runs/crun_c262097e8e58249efb04869431ed562a/result"
+    },
+    {
+      "status": 403,
+      "path": "/agent/conversations/conv_c508df5397a59ca1aceaa248121ab0ea/runs/crun_c262097e8e58249efb04869431ed562a/result"
+    }
+  ],
+  "snapshots": [
+    {
+      "conversation_id": "conv_c508df5397a59ca1aceaa248121ab0ea",
+      "run_id": "crun_c262097e8e58249efb04869431ed562a",
+      "call_id": "analysis-e2e",
+      "reference": {
+        "conversation_id": "conv_c508df5397a59ca1aceaa248121ab0ea",
+        "run_id": "crun_c262097e8e58249efb04869431ed562a",
+        "step": 0,
+        "call_id": "analysis-e2e",
+        "sha256": "884130924f8b6dfc2dc21183d1f1d4bd89667c4a4dee613387c73783f163647c"
+      },
+      "returned_rows": 80,
+      "requested_max_rows": 100
+    }
+  ],
+  "complete": true
+}

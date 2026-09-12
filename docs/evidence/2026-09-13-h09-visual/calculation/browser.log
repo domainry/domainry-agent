@@ -1,0 +1,7 @@
+PASS model receives only mounted and Identity-authorized tools
+PASS disconnected knowledge is omitted while a local tool still executes
+PASS tool switch and live Identity denial each filter the current catalog
+PASS disable after model selection prevents execution; restart and restore resume the original call
+PASS connection lookup errors are sanitized and recover through the existing UI
+PASS restored connection executes the HTTP knowledge Connector and remains readable after host restart
+PASS disconnect also prevents historical source revalidation and hides its reply until restored

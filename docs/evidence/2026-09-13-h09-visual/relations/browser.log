@@ -1,0 +1,3 @@
+PASS business catalog publishes real relation keys and the authorized traversal shows two orders, project and customer without the other owner's row
+PASS revoking the relation field hides the saved answer and tool evidence after a full page reload
+PASS restoring the role and reopening Runtime, Identity and Agent restores the same authorized relation result

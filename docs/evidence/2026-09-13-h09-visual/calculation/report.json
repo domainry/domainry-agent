@@ -1,0 +1,352 @@
+{
+  "steps": [
+    "model receives only mounted and Identity-authorized tools",
+    "disconnected knowledge is omitted while a local tool still executes",
+    "tool switch and live Identity denial each filter the current catalog",
+    "disable after model selection prevents execution; restart and restore resume the original call",
+    "connection lookup errors are sanitized and recover through the existing UI",
+    "restored connection executes the HTTP knowledge Connector and remains readable after host restart",
+    "disconnect also prevents historical source revalidation and hides its reply until restored"
+  ],
+  "javascriptErrors": [],
+  "runs": [
+    {
+      "id": "crun_fc80ac61c0a366b2276c1fe1447fa532",
+      "status": "running",
+      "seq": 2,
+      "at": "2026-09-12T19:46:33.456Z"
+    },
+    {
+      "id": "crun_fc80ac61c0a366b2276c1fe1447fa532",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:34.511Z"
+    },
+    {
+      "id": "crun_fc80ac61c0a366b2276c1fe1447fa532",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:34.511Z"
+    },
+    {
+      "id": "crun_fc80ac61c0a366b2276c1fe1447fa532",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:34.537Z"
+    },
+    {
+      "id": "crun_fc80ac61c0a366b2276c1fe1447fa532",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:34.710Z"
+    },
+    {
+      "id": "crun_1f312279ba8dccff8bfd3824435d5f4f",
+      "status": "running",
+      "seq": 2,
+      "at": "2026-09-12T19:46:35.388Z"
+    },
+    {
+      "id": "crun_1f312279ba8dccff8bfd3824435d5f4f",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:36.397Z"
+    },
+    {
+      "id": "crun_1f312279ba8dccff8bfd3824435d5f4f",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:36.406Z"
+    },
+    {
+      "id": "crun_1f312279ba8dccff8bfd3824435d5f4f",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:36.452Z"
+    },
+    {
+      "id": "crun_386364aaf5a2200cc1832c66a03c7b00",
+      "status": "running",
+      "seq": 2,
+      "at": "2026-09-12T19:46:37.123Z"
+    },
+    {
+      "id": "crun_386364aaf5a2200cc1832c66a03c7b00",
+      "status": "completed",
+      "seq": 16,
+      "at": "2026-09-12T19:46:38.388Z"
+    },
+    {
+      "id": "crun_386364aaf5a2200cc1832c66a03c7b00",
+      "status": "completed",
+      "seq": 16,
+      "at": "2026-09-12T19:46:38.396Z"
+    },
+    {
+      "id": "crun_386364aaf5a2200cc1832c66a03c7b00",
+      "status": "completed",
+      "seq": 16,
+      "at": "2026-09-12T19:46:38.438Z"
+    },
+    {
+      "id": "crun_b4ce1d41c465c9677fd9a74c404984a8",
+      "status": "running",
+      "seq": 2,
+      "at": "2026-09-12T19:46:39.168Z"
+    },
+    {
+      "id": "crun_b4ce1d41c465c9677fd9a74c404984a8",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:40.417Z"
+    },
+    {
+      "id": "crun_b4ce1d41c465c9677fd9a74c404984a8",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:40.432Z"
+    },
+    {
+      "id": "crun_b4ce1d41c465c9677fd9a74c404984a8",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:40.743Z"
+    },
+    {
+      "id": "crun_be31f3de49c4dcddd1ef40ab17ba1fc1",
+      "status": "running",
+      "seq": 2,
+      "at": "2026-09-12T19:46:41.479Z"
+    },
+    {
+      "id": "crun_be31f3de49c4dcddd1ef40ab17ba1fc1",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:42.718Z"
+    },
+    {
+      "id": "crun_be31f3de49c4dcddd1ef40ab17ba1fc1",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:42.728Z"
+    },
+    {
+      "id": "crun_be31f3de49c4dcddd1ef40ab17ba1fc1",
+      "status": "completed",
+      "seq": 8,
+      "at": "2026-09-12T19:46:43.024Z"
+    },
+    {
+      "id": "crun_0c728e2be30e2f8765b8dc9989b922e3",
+      "status": "running",
+      "seq": 2,
+      "at": "2026-09-12T19:46:43.754Z"
+    },
+    {
+      "id": "crun_0c728e2be30e2f8765b8dc9989b922e3",
+      "status": "failed",
+      "error": "tool_access_denied",
+      "seq": 8,
+      "at": "2026-09-12T19:46:44.775Z"
+    },
+    {
+      "id": "crun_0c728e2be30e2f8765b8dc9989b922e3",
+      "status": "failed",
+      "error": "tool_access_denied",
+      "seq": 8,
+      "at": "2026-09-12T19:46:44.799Z"
+    },
+    {
+      "id": "crun_0c728e2be30e2f8765b8dc9989b922e3",
+      "status": "failed",
+      "error": "tool_access_denied",
+      "seq": 8,
+      "at": "2026-09-12T19:46:45.061Z"
+    },
+    {
+      "id": "crun_0c728e2be30e2f8765b8dc9989b922e3",
+      "status": "failed",
+      "error": "tool_access_denied",
+      "seq": 8,
+      "at": "2026-09-12T19:46:45.339Z"
+    },
+    {
+      "id": "crun_0c728e2be30e2f8765b8dc9989b922e3",
+      "status": "running",
+      "seq": 10,
+      "at": "2026-09-12T19:46:45.465Z"
+    },
+    {
+      "id": "crun_0c728e2be30e2f8765b8dc9989b922e3",
+      "status": "completed",
+      "seq": 19,
+      "at": "2026-09-12T19:46:46.479Z"
+    },
+    {
+      "id": "crun_0c728e2be30e2f8765b8dc9989b922e3",
+      "status": "completed",
+      "seq": 19,
+      "at": "2026-09-12T19:46:46.493Z"
+    },
+    {
+      "id": "crun_0c728e2be30e2f8765b8dc9989b922e3",
+      "status": "completed",
+      "seq": 19,
+      "at": "2026-09-12T19:46:46.761Z"
+    },
+    {
+      "id": "crun_b4d163e196978c37d02ad185d1808043",
+      "status": "running",
+      "seq": 2,
+      "at": "2026-09-12T19:46:47.533Z"
+    },
+    {
+      "id": "crun_b4d163e196978c37d02ad185d1808043",
+      "status": "failed",
+      "error": "tool_availability_failed",
+      "seq": 3,
+      "at": "2026-09-12T19:46:48.530Z"
+    },
+    {
+      "id": "crun_b4d163e196978c37d02ad185d1808043",
+      "status": "failed",
+      "error": "tool_availability_failed",
+      "seq": 3,
+      "at": "2026-09-12T19:46:48.538Z"
+    },
+    {
+      "id": "crun_b4d163e196978c37d02ad185d1808043",
+      "status": "running",
+      "seq": 5,
+      "at": "2026-09-12T19:46:48.903Z"
+    },
+    {
+      "id": "crun_b4d163e196978c37d02ad185d1808043",
+      "status": "completed",
+      "seq": 11,
+      "at": "2026-09-12T19:46:49.912Z"
+    },
+    {
+      "id": "crun_b4d163e196978c37d02ad185d1808043",
+      "status": "completed",
+      "seq": 11,
+      "at": "2026-09-12T19:46:49.927Z"
+    },
+    {
+      "id": "crun_b4d163e196978c37d02ad185d1808043",
+      "status": "completed",
+      "seq": 11,
+      "at": "2026-09-12T19:46:49.979Z"
+    },
+    {
+      "id": "crun_ce27d237c90635ccc4637ca40a83337c",
+      "status": "running",
+      "seq": 2,
+      "at": "2026-09-12T19:46:50.637Z"
+    },
+    {
+      "id": "crun_ce27d237c90635ccc4637ca40a83337c",
+      "status": "completed",
+      "seq": 16,
+      "at": "2026-09-12T19:46:51.651Z"
+    },
+    {
+      "id": "crun_ce27d237c90635ccc4637ca40a83337c",
+      "status": "completed",
+      "seq": 16,
+      "at": "2026-09-12T19:46:51.665Z"
+    },
+    {
+      "id": "crun_ce27d237c90635ccc4637ca40a83337c",
+      "status": "completed",
+      "seq": 16,
+      "at": "2026-09-12T19:46:51.915Z"
+    },
+    {
+      "id": "crun_ce27d237c90635ccc4637ca40a83337c",
+      "status": "completed",
+      "seq": 16,
+      "at": "2026-09-12T19:46:52.182Z"
+    },
+    {
+      "id": "crun_ce27d237c90635ccc4637ca40a83337c",
+      "status": "completed",
+      "seq": 16,
+      "at": "2026-09-12T19:46:52.470Z"
+    },
+    {
+      "id": "crun_ce27d237c90635ccc4637ca40a83337c",
+      "status": "completed",
+      "seq": 16,
+      "at": "2026-09-12T19:46:52.651Z"
+    }
+  ],
+  "completedRuns": [
+    {
+      "id": "crun_fc80ac61c0a366b2276c1fe1447fa532",
+      "attempt": 1,
+      "assistantMessageID": "msg_80ae462060543c9337f7603c72823c94",
+      "calls": []
+    },
+    {
+      "id": "crun_1f312279ba8dccff8bfd3824435d5f4f",
+      "attempt": 1,
+      "assistantMessageID": "msg_a6e0fde2d1219c92d66e44911714d3bb",
+      "calls": []
+    },
+    {
+      "id": "crun_386364aaf5a2200cc1832c66a03c7b00",
+      "attempt": 1,
+      "assistantMessageID": "msg_72012dca84d7beebf1413fa7a855b2eb",
+      "calls": [
+        {
+          "id": "catalog-call",
+          "name": "calculate",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "id": "crun_b4ce1d41c465c9677fd9a74c404984a8",
+      "attempt": 1,
+      "assistantMessageID": "msg_068c541e2e584e2316c2f4c0a57e6712",
+      "calls": []
+    },
+    {
+      "id": "crun_be31f3de49c4dcddd1ef40ab17ba1fc1",
+      "attempt": 1,
+      "assistantMessageID": "msg_fdf50b804055f6f513371ca426437135",
+      "calls": []
+    },
+    {
+      "id": "crun_0c728e2be30e2f8765b8dc9989b922e3",
+      "attempt": 2,
+      "assistantMessageID": "msg_14e5ef3ae7938621ad22dde6b241b3ef",
+      "calls": [
+        {
+          "id": "catalog-call",
+          "name": "calculate",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "id": "crun_b4d163e196978c37d02ad185d1808043",
+      "attempt": 2,
+      "assistantMessageID": "msg_3eb31d52dd548b5425f5c3ba70983ed5",
+      "calls": []
+    },
+    {
+      "id": "crun_ce27d237c90635ccc4637ca40a83337c",
+      "attempt": 1,
+      "assistantMessageID": "msg_aa6e44f41923f6e4ee245c82e22cee36",
+      "calls": [
+        {
+          "id": "catalog-call",
+          "name": "knowledge_search",
+          "status": "completed"
+        }
+      ]
+    }
+  ]
+}

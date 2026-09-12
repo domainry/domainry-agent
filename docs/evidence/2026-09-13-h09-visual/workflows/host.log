@@ -1,0 +1,8 @@
+Synthetic business evidence: /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/domainry-business-agent-uvfsequm
+=== RUN   TestConversationBusinessWorkflowThroughIdentityWebAndRestart
+    conversation_business_workflows_web_test.go:245: Actual workflow acceptance, approval, progress, duplicate confirmation, restart and revocation verified
+    conversation_business_workflows_web_test.go:248: Browser acceptance ready: http://127.0.0.1:8093/#conv_09fae9e0b60418991bab8c5759afa579; synthetic login admin@example.com, password Business-Browser-Changed!2026
+    conversation_business_workflows_web_test.go:319: Browser confirmed start, actual approval, progress and rejected additional start verified against Runtime and persisted Agent runs
+--- PASS: TestConversationBusinessWorkflowThroughIdentityWebAndRestart (53.69s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	54.456s

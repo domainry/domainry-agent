@@ -20,13 +20,17 @@ import (
 )
 
 type taskStartWebModel struct {
-	mu            sync.Mutex
-	childAttempts int
-	failAttempts  int
-	childCatalogs [][]string
-	taskID        string
-	childEntered  chan struct{}
-	enteredOnce   sync.Once
+	mu                     sync.Mutex
+	childAttempts          int
+	failAttempts           int
+	childCatalogs          [][]string
+	taskID                 string
+	childEntered           chan struct{}
+	enteredOnce            sync.Once
+	browserTaskStarted     chan struct{}
+	browserTaskRelease     chan struct{}
+	browserTaskStartedOnce sync.Once
+	browserTaskReleaseOnce sync.Once
 }
 
 func (m *taskStartWebModel) GenerateConversation(context.Context, agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
@@ -77,6 +81,13 @@ func (m *taskStartWebModel) StreamConversationStep(ctx context.Context, in agent
 				Budget: agentsdk.ConversationTaskBudget{MaxSteps: 3, MaxToolCalls: 1, MaxOutputBytes: 1024, TimeoutSeconds: 30},
 			})
 			return agentsdk.ConversationStepResult{FinishReason: "tool_calls", Model: "task-fixture", Message: agentsdk.ConversationStepMessage{Role: "assistant", ToolCalls: []agentsdk.ConversationToolCall{{ID: "start-waiting-background", Name: "task_start", Arguments: string(arguments)}}}}, nil
+		}
+		if last.Role == "user" && strings.Contains(last.Content, "关闭网页") {
+			arguments, _ := json.Marshal(agentsdk.ConversationTaskStart{
+				Goal: "关闭网页继续任务", Input: "关闭网页后继续完成并保存结果", AllowedTools: []string{"time_now"},
+				Budget: agentsdk.ConversationTaskBudget{MaxSteps: 3, MaxToolCalls: 1, MaxOutputBytes: 1024, TimeoutSeconds: 30},
+			})
+			return agentsdk.ConversationStepResult{FinishReason: "tool_calls", Model: "task-fixture", Message: agentsdk.ConversationStepMessage{Role: "assistant", ToolCalls: []agentsdk.ConversationToolCall{{ID: "start-browser-close-background", Name: "task_start", Arguments: string(arguments)}}}}, nil
 		}
 		if last.Role == "user" && strings.Contains(last.Content, "后台等待补充") {
 			goal := "等待用户补充发布渠道"
@@ -133,6 +144,29 @@ func (m *taskStartWebModel) StreamConversationStep(ctx context.Context, in agent
 	}
 	m.mu.Lock()
 	m.childCatalogs = append(m.childCatalogs, append([]string(nil), keys...))
+	browserClose := false
+	for index := len(in.Messages) - 1; index >= 0; index-- {
+		if in.Messages[index].Role == "user" {
+			browserClose = strings.Contains(in.Messages[index].Content, "关闭网页后继续完成并保存结果")
+			break
+		}
+	}
+	if browserClose {
+		m.mu.Unlock()
+		if last.Role != "tool" {
+			m.browserTaskStartedOnce.Do(func() { close(m.browserTaskStarted) })
+			select {
+			case <-m.browserTaskRelease:
+			case <-ctx.Done():
+				return agentsdk.ConversationStepResult{}, ctx.Err()
+			}
+			return agentsdk.ConversationStepResult{FinishReason: "tool_calls", Model: "task-fixture", Message: agentsdk.ConversationStepMessage{Role: "assistant", ToolCalls: []agentsdk.ConversationToolCall{{ID: "browser-close-background-time", Name: "time_now", Arguments: `{}`}}}}, nil
+		}
+		if !strings.Contains(last.Content, `"status":"completed"`) {
+			return agentsdk.ConversationStepResult{}, errors.New("browser-close task time result missing")
+		}
+		return agentsdk.ConversationStepResult{FinishReason: "stop", Model: "task-fixture", Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "网页关闭期间任务已继续并完成。"}}, nil
+	}
 	failing := false
 	for index := len(in.Messages) - 1; index >= 0; index-- {
 		if in.Messages[index].Role == "user" {
@@ -295,7 +329,7 @@ func TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite(t *testing.T) {
 	t.Setenv("AUTH_JWT_SECRET", "task-start-test-signing-key-long-enough")
 	t.Setenv("IDENTITY_DATA_SECRET_KEY", "task-start-test-data-key-long-enough")
 	t.Setenv("APP_ENV", "development")
-	model := &taskStartWebModel{childEntered: make(chan struct{})}
+	model := &taskStartWebModel{childEntered: make(chan struct{}), browserTaskStarted: make(chan struct{}), browserTaskRelease: make(chan struct{})}
 	options := Options{
 		DatabasePath: filepath.Join(t.TempDir(), "tasks.db"), RuntimeID: "task-runtime", WorkspaceID: "task-workspace", ApplicationKey: "task-app",
 		Agent: agentmodule.Options{ConversationProvider: model, ConversationOptions: agentmodule.ConversationOptions{Poll: 5 * time.Millisecond, Lease: 300 * time.Millisecond}},
@@ -609,7 +643,7 @@ func TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite(t *testing.T) {
 	if resumedDetail.Status != agentsdk.ConversationTaskStatusCompleted || resumedDetail.Progress.Attempt < 3 || resumedDetail.Progress.ToolCalls != 1 || resumedDetail.Result == nil || resumedDetail.Result.Preview != "失败任务已恢复完成。" || resumedDetail.CompletionEventID == "" {
 		t.Fatalf("completed resumed task=%+v", resumedDetail)
 	}
-	if os.Getenv("AGENT_TOOL_UI_ACCEPTANCE") == "1" {
+	if os.Getenv("AGENT_TOOL_UI_ACCEPTANCE") == "1" && os.Getenv("AGENT_H09_TASK_CLOSE_BROWSER") != "1" {
 		var browserWaitingParent agentsdk.ConversationRun
 		_ = json.Unmarshal(b.call("POST", base+"/messages", `{"client_message_id":"browser-task-waiting","message":"请创建浏览器后台等待补充任务","write_scope":{"background_tasks":true}}`, 202).Body.Bytes(), &browserWaitingParent)
 		browserWaitingParent = waitRun(browserWaitingParent.ID)
@@ -646,5 +680,31 @@ func TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite(t *testing.T) {
 		t.Logf("browser task controls seeded waiting=%s failed=%s", browserWaitingID, browserFailedID)
 	}
 	t.Logf("task_start returned %s; child run %s recovered at attempt %d with exact catalog [time_now]", taskID, child.ID, child.Attempt)
-	servePersonalToolAcceptanceWithHost(t, func() *Host { return host }, options, map[string]func(){"restart_task_host": reopen})
+	controls := map[string]func(){"restart_task_host": reopen}
+	if os.Getenv("AGENT_H09_TASK_CLOSE_BROWSER") == "1" {
+		controls["release-browser-task"] = func() {
+			select {
+			case <-model.browserTaskStarted:
+			case <-time.After(5 * time.Second):
+				t.Fatal("browser page closed before the background worker started")
+			}
+			model.browserTaskReleaseOnce.Do(func() { close(model.browserTaskRelease) })
+		}
+	}
+	servePersonalToolAcceptanceWithHost(t, func() *Host { return host }, options, controls)
+	if os.Getenv("AGENT_H09_TASK_CLOSE_BROWSER") == "1" {
+		browserTaskID, _, _ := model.snapshot()
+		authority := agentsdk.ConversationAuthority{Known: true, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, UserID: "admin"}
+		detail, err := host.Agent.(agentsdk.ConversationBinding).Conversations().(agentsdk.ConversationTaskService).ConversationTask(t.Context(), browserTaskID, authority)
+		if err != nil || detail.Status != agentsdk.ConversationTaskStatusCompleted || detail.Progress.ToolCalls != 1 || detail.Result == nil || detail.Result.Preview != "网页关闭期间任务已继续并完成。" || detail.CompletionEventID == "" {
+			t.Fatalf("browser-close task did not persist through page close: detail=%+v err=%v", detail, err)
+		}
+		if output := os.Getenv("AGENT_UI_TEST_OUTPUT"); output != "" {
+			raw, _ := json.MarshalIndent(map[string]any{"complete": true, "task_id": browserTaskID, "status": detail.Status, "run_status": detail.Progress.RunStatus, "tool_calls": detail.Progress.ToolCalls, "result": detail.Result.Preview, "completion_event_id": detail.CompletionEventID}, "", "  ")
+			if err = os.WriteFile(filepath.Join(output, "host-audit.json"), raw, 0600); err != nil {
+				t.Fatal(err)
+			}
+		}
+		t.Logf("browser closed before release; background task %s completed and persisted for a new browser session", browserTaskID)
+	}
 }

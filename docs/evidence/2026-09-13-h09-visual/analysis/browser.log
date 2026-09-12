@@ -1,0 +1,3 @@
+PASS the persisted analysis call exposes only a bounded preview and a stable full-result reference
+PASS the browser reassembles all 80 rows and shows complete coverage, no source truncation, chart, precision and missing-value declarations
+PASS the complete result is reauthorized on every read and current source revocation blocks both the UI and direct HTTP read

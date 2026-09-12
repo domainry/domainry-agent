@@ -1,0 +1,1179 @@
+{
+  "complete": true,
+  "scope": "permissions_preview_cleanup",
+  "steps": [
+    "browser upload saves private original with one request; no automatic remote index",
+    "remaining-case setup: one indexed private original, unknown PUT resolved by observation",
+    "Identity check revocation changes visible capability and rejects direct POST; restoration enables the same task",
+    "indexed original previews and downloads exact bytes; one delete request starts private cleanup"
+  ],
+  "baselines": [
+    {
+      "label": "desktop-private-index",
+      "pageOverflow": false,
+      "interactiveInventory": [
+        {
+          "tag": "span",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "新建会话",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 0,
+          "control_locator": {
+            "kind": "index",
+            "value": 0
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "搜索会话名称",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "搜索会话",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 1,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"搜索会话\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "显示归档会话",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 2,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"显示归档会话\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "附件索引验收9月13日",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 3,
+          "control_locator": {
+            "kind": "index",
+            "value": 3
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "上一页会话",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 4,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"上一页会话\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下一页会话",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 5,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"下一页会话\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "个人待办事项与截止日期",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 6,
+          "control_locator": {
+            "kind": "index",
+            "value": 6
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "后台任务进度、等待与成果",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 7,
+          "control_locator": {
+            "kind": "index",
+            "value": 7
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "计划与提醒查看、修改与暂停",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 8,
+          "control_locator": {
+            "kind": "index",
+            "value": 8
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "资料库个人资料、共享成员",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 9,
+          "control_locator": {
+            "kind": "index",
+            "value": 9
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "我的成果文档、表格与下载",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 10,
+          "control_locator": {
+            "kind": "index",
+            "value": 10
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "个人记忆偏好与约定",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 11,
+          "control_locator": {
+            "kind": "index",
+            "value": 11
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "工具设置管理个人工具开关",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 12,
+          "control_locator": {
+            "kind": "index",
+            "value": 12
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "外部账号授权与连接管理",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 13,
+          "control_locator": {
+            "kind": "index",
+            "value": 13
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "退出登录",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 14,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"退出登录\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "附件",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 15,
+          "control_locator": {
+            "kind": "index",
+            "value": 15
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "会话操作",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 16,
+          "control_locator": {
+            "kind": "css",
+            "value": "#radix-_r_8_"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "使用个人记忆",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 17,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"使用个人记忆\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "安排今天的工作理清优先级，找到下一步",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 18,
+          "control_locator": {
+            "kind": "index",
+            "value": 18
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "从文档中找答案检索相关资料，核对信息来源",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 19,
+          "control_locator": {
+            "kind": "index",
+            "value": 19
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "梳理一个项目把目标拆成清晰的行动计划",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 20,
+          "control_locator": {
+            "kind": "index",
+            "value": 20
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "打磨一份内容从初步想法，到成型的表达",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 21,
+          "control_locator": {
+            "kind": "index",
+            "value": 21
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "Upload files",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "file"
+        },
+        {
+          "tag": "textarea",
+          "role": "",
+          "name": "消息",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "发送消息",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 22,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"发送消息\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        },
+        {
+          "tag": "div",
+          "role": "dialog",
+          "name": "会话附件文件仅属于当前用户的这段会话。关闭窗口不删除附件；上传成功不代表已经可以检索。选择附件PDF、Word、Excel、TXT、Markdown、CSV、TSV、JSON · 每个文件最多 16 MiB上传并私有保存文件已私有保存，可预览、下载或另存到资料库。已保存的附件刷新列表browser-private.pd",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "file"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "上传并私有保存",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 23,
+          "control_locator": {
+            "kind": "index",
+            "value": 23
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "刷新列表",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 24,
+          "control_locator": {
+            "kind": "index",
+            "value": 24
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "browser-private.pdf可检索 · 1.5 KiB",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 25,
+          "control_locator": {
+            "kind": "index",
+            "value": 25
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "核对索引状态",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 26,
+          "control_locator": {
+            "kind": "index",
+            "value": 26
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "预览原文件",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 27,
+          "control_locator": {
+            "kind": "index",
+            "value": 27
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下载原文件",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 28,
+          "control_locator": {
+            "kind": "index",
+            "value": 28
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "删除附件",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 29,
+          "control_locator": {
+            "kind": "index",
+            "value": 29
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "另存到资料库",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 30,
+          "control_locator": {
+            "kind": "index",
+            "value": 30
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "关闭",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 31,
+          "control_locator": {
+            "kind": "index",
+            "value": 31
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "span",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        }
+      ],
+      "qualityFailures": []
+    },
+    {
+      "label": "mobile-private-index",
+      "pageOverflow": false,
+      "interactiveInventory": [
+        {
+          "tag": "span",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "打开工作导航",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 0,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"打开工作导航\"]"
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "附件",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 1,
+          "control_locator": {
+            "kind": "index",
+            "value": 1
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "会话操作",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 2,
+          "control_locator": {
+            "kind": "css",
+            "value": "#radix-_r_8_"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "switch",
+          "name": "使用个人记忆",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 3,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"使用个人记忆\"]"
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "安排今天的工作理清优先级，找到下一步",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 4,
+          "control_locator": {
+            "kind": "index",
+            "value": 4
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "从文档中找答案检索相关资料，核对信息来源",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 5,
+          "control_locator": {
+            "kind": "index",
+            "value": 5
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "梳理一个项目把目标拆成清晰的行动计划",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 6,
+          "control_locator": {
+            "kind": "index",
+            "value": 6
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "打磨一份内容从初步想法，到成型的表达",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 7,
+          "control_locator": {
+            "kind": "index",
+            "value": 7
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "checkbox"
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "Upload files",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "file"
+        },
+        {
+          "tag": "textarea",
+          "role": "",
+          "name": "消息",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "发送消息",
+          "disabled": true,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 8,
+          "control_locator": {
+            "kind": "css",
+            "value": "button[aria-label=\"发送消息\"]"
+          },
+          "test_id": "",
+          "type": "submit"
+        },
+        {
+          "tag": "div",
+          "role": "dialog",
+          "name": "会话附件文件仅属于当前用户的这段会话。关闭窗口不删除附件；上传成功不代表已经可以检索。选择附件PDF、Word、Excel、TXT、Markdown、CSV、TSV、JSON · 每个文件最多 16 MiB上传并私有保存文件已私有保存，可预览、下载或另存到资料库。已保存的附件刷新列表browser-private.pd",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "input",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": "file"
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "上传并私有保存",
+          "disabled": true,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 9,
+          "control_locator": {
+            "kind": "index",
+            "value": 9
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "刷新列表",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 10,
+          "control_locator": {
+            "kind": "index",
+            "value": 10
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "browser-private.pdf可检索 · 1.5 KiB",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 11,
+          "control_locator": {
+            "kind": "index",
+            "value": 11
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "核对索引状态",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 12,
+          "control_locator": {
+            "kind": "index",
+            "value": 12
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "预览原文件",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 13,
+          "control_locator": {
+            "kind": "index",
+            "value": 13
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "下载原文件",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 14,
+          "control_locator": {
+            "kind": "index",
+            "value": 14
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "删除附件",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 15,
+          "control_locator": {
+            "kind": "index",
+            "value": 15
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "另存到资料库",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 16,
+          "control_locator": {
+            "kind": "index",
+            "value": 16
+          },
+          "test_id": "",
+          "type": ""
+        },
+        {
+          "tag": "button",
+          "role": "",
+          "name": "关闭",
+          "disabled": false,
+          "visible": true,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": 17,
+          "control_locator": {
+            "kind": "index",
+            "value": 17
+          },
+          "test_id": "",
+          "type": "button"
+        },
+        {
+          "tag": "span",
+          "role": "",
+          "name": "",
+          "disabled": false,
+          "visible": false,
+          "declared_probe_control": false,
+          "pagination_control": false,
+          "control_index": null,
+          "control_locator": null,
+          "test_id": "",
+          "type": ""
+        }
+      ],
+      "qualityFailures": []
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/agent/conversations",
+      "query": "?limit=15&search=&include_archived=false&before_id="
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations",
+      "query": "?limit=15&search=&include_archived=false&before_id="
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c/messages",
+      "query": "?limit=30&before_seq=0"
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c/attachments",
+      "query": "?after=&limit=20"
+    },
+    {
+      "method": "POST",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c/attachments",
+      "query": "?client_id=fd5b956d-f5ad-47f5-93dd-383d6309a85b&filename=browser-private.pdf"
+    },
+    {
+      "method": "POST",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c/attachments/att_5a85c2983fbf276bc3227dbd02319e48/index",
+      "query": "?expected_revision=2"
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c/attachments/att_5a85c2983fbf276bc3227dbd02319e48",
+      "query": ""
+    },
+    {
+      "method": "POST",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c/attachments/att_5a85c2983fbf276bc3227dbd02319e48/index/check",
+      "query": "?expected_revision=5"
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c/attachments/att_5a85c2983fbf276bc3227dbd02319e48",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c/attachments/att_5a85c2983fbf276bc3227dbd02319e48",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c/attachments/att_5a85c2983fbf276bc3227dbd02319e48",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c/attachments/att_5a85c2983fbf276bc3227dbd02319e48/content",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c/attachments/att_5a85c2983fbf276bc3227dbd02319e48/content",
+      "query": ""
+    },
+    {
+      "method": "DELETE",
+      "path": "/agent/conversations/conv_010a3bb7178967c71d8a5fe74a147c0c/attachments/att_5a85c2983fbf276bc3227dbd02319e48",
+      "query": "?expected_revision=7"
+    }
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "lostResponses": []
+}

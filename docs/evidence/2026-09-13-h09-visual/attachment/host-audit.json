@@ -1,0 +1,13 @@
+{
+  "check_revision": 5,
+  "complete": true,
+  "hidden_fetches": 0,
+  "original_bytes_preserved": true,
+  "original_cleaned": true,
+  "positive_index_observed": true,
+  "remote_deletes": 1,
+  "remote_puts": 1,
+  "source_parser": false,
+  "unconfirmed_upload_scenario": false,
+  "upstream_put_acknowledged": false
+}

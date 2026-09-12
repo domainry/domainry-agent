@@ -1,0 +1,9 @@
+{
+  "complete": true,
+  "completion_event_id": "task_event_c6ee24c234311c18e4dcd0f8bf59ed25",
+  "result": "网页关闭期间任务已继续并完成。",
+  "run_status": "completed",
+  "status": "completed",
+  "task_id": "task_797e4d39b7aeb8c49f2706a3dbeccee9",
+  "tool_calls": 1
+}

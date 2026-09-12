@@ -246,7 +246,7 @@ func TestAnalysisLongRunStructuredChartArtifactExportAndCurrentPermission(t *tes
 	}
 	select {
 	case <-source.started:
-	case <-time.After(5 * time.Second):
+	case <-time.After(30 * time.Second):
 		t.Fatal("background worker did not start analysis")
 	}
 	current := accountDecode[agentsdk.ConversationRun](t, b.call("GET", base+"/runs/"+run.ID, "", 200))
@@ -254,7 +254,7 @@ func TestAnalysisLongRunStructuredChartArtifactExportAndCurrentPermission(t *tes
 		t.Fatalf("durable background state=%s", current.Status)
 	}
 	close(source.release)
-	deadline := time.Now().Add(30 * time.Second)
+	deadline := time.Now().Add(90 * time.Second)
 	for !run.Terminal() && time.Now().Before(deadline) {
 		time.Sleep(10 * time.Millisecond)
 		run = accountDecode[agentsdk.ConversationRun](t, b.call("GET", base+"/runs/"+run.ID, "", 200))

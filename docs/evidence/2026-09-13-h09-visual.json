@@ -1,0 +1,343 @@
+{
+  "todo": "H09",
+  "status": "complete",
+  "captured_at": "2026-09-13T04:35:48.160360+08:00",
+  "scope": "seven screenshot-driven end-to-end scenarios executed in the exact H09 order against compiled product UI and owning service boundaries",
+  "progress": {
+    "completed": 76,
+    "total": 81,
+    "remaining": 5,
+    "remaining_items": [
+      "X01",
+      "X02",
+      "X03",
+      "X04",
+      "X05"
+    ],
+    "remaining_are_optional": true
+  },
+  "change": {
+    "production_files": [
+      "internal/transport/http/module/conversation_adapter.go"
+    ],
+    "test_files": [
+      "internal/transport/http/module/adapter_test.go",
+      "internal/assembly/web/conversation_analysis_result_test.go",
+      "internal/assembly/web/conversation_artifact_tools_test.go",
+      "internal/assembly/web/conversation_task_start_test.go",
+      "frontend/tests/h09-business.browser.mjs",
+      "frontend/tests/h09-analysis.browser.mjs",
+      "frontend/tests/h09-artifacts.browser.mjs",
+      "frontend/tests/h09-task-page-close.browser.mjs"
+    ],
+    "documentation_files": [
+      "docs/agent-capabilities-todo.md",
+      "docs/testing-2026-09-13-h09-visual-acceptance.md"
+    ]
+  },
+  "production_fix": {
+    "problem": "a host metrics ResponseWriter exposed http.Flusher through Unwrap, but the SSE adapter checked only the outer writer and returned stream_unavailable",
+    "resolution": "follow the standard ResponseWriter Unwrap chain to locate http.Flusher",
+    "runtime_implementation_dependency": false
+  },
+  "ordered_scenarios": [
+    {
+      "order": 1,
+      "name": "calculation precision",
+      "status": "pass",
+      "browser_steps": 7,
+      "javascript_errors": 0,
+      "completed_runs": 8,
+      "assertions": [
+        "calculate receives decimal expression 0.1+0.2 and unit CNY",
+        "tool result contains exact decimal string 0.30",
+        "reopened host UI shows 0.1+0.2 = 0.30 CNY and rounding rule"
+      ],
+      "report": "docs/evidence/2026-09-13-h09-visual/calculation/report.json",
+      "screenshot": "docs/evidence/2026-09-13-h09-visual/calculation/restart-and-resume.png"
+    },
+    {
+      "order": 2,
+      "name": "business catalog and related-record authorization",
+      "status": "pass",
+      "browser_steps": 3,
+      "relation_calls": 4,
+      "javascript_errors": 0,
+      "final_console_errors": 0,
+      "assertions": [
+        "authorized two-page order/project/customer traversal excludes PRIVATE-ORDER",
+        "relation-field revocation hides saved answer and tool evidence",
+        "role restore plus Runtime/Identity/Agent reopen restores the result"
+      ],
+      "report": "docs/evidence/2026-09-13-h09-visual/relations/report.json"
+    },
+    {
+      "order": 3,
+      "name": "workflow acceptance and completion",
+      "status": "pass",
+      "browser_steps": 3,
+      "javascript_errors": 0,
+      "final_console_errors": 0,
+      "process_id": "process_1789243720360339000_12",
+      "assertions": [
+        "confirmed start is accepted and waiting",
+        "actual Runtime approval reaches terminal approved state on the same process",
+        "rejected later start creates no additional process"
+      ],
+      "report": "docs/evidence/2026-09-13-h09-visual/workflows/report.json"
+    },
+    {
+      "order": 4,
+      "name": "full analysis and truncation indication",
+      "status": "pass",
+      "browser_steps": 3,
+      "javascript_errors": 0,
+      "final_console_errors": 0,
+      "returned_rows": 80,
+      "requested_max_rows": 100,
+      "stable_result_reference": true,
+      "source_revocation_status": 403,
+      "assertions": [
+        "persisted call preview is bounded and full-result reference is stable",
+        "browser reassembles all 80 rows and explicitly renders complete yes and truncated no",
+        "current source revocation blocks UI and direct full-result read"
+      ],
+      "report": "docs/evidence/2026-09-13-h09-visual/analysis/report.json"
+    },
+    {
+      "order": 5,
+      "name": "private attachment scope",
+      "status": "pass",
+      "browser_steps": 4,
+      "remote_puts": 1,
+      "remote_deletes": 1,
+      "original_bytes_preserved": true,
+      "original_cleaned": true,
+      "source_parser": false,
+      "original_sha256": "04b53692ecd93bab02e31b43499d98937d39d8c906726dce34b9de0fd1c36268",
+      "download_sha256": "04b53692ecd93bab02e31b43499d98937d39d8c906726dce34b9de0fd1c36268",
+      "assertions": [
+        "upload stays conversation-private and does not auto-index",
+        "explicit indexing writes one immutable remote original",
+        "current Identity revocation blocks direct request",
+        "desktop and mobile show only current conversation"
+      ],
+      "report": "docs/evidence/2026-09-13-h09-visual/attachment/report.json"
+    },
+    {
+      "order": 6,
+      "name": "artifact versions and download authorization",
+      "status": "pass",
+      "browser_steps": 4,
+      "javascript_errors": 0,
+      "final_console_errors": 0,
+      "version_1_sha256": "2848c5eee95ba95df133bd86bbf00da332db65007b21c7b3a08f5cc09650429c",
+      "version_2_sha256": "f3a81579c81e3ece871605df94d950246ec4982ee783a9f091f33b6b7cf9da11",
+      "export_revocation_status": 403,
+      "assertions": [
+        "selected version 1 downloads exact version 1 bytes",
+        "export revocation preserves read but returns 403 for export",
+        "restored export downloads unchanged version 2",
+        "read revocation removes content and returns 403"
+      ],
+      "report": "docs/evidence/2026-09-13-h09-visual/artifacts/report.json"
+    },
+    {
+      "order": 7,
+      "name": "task progress after page close",
+      "status": "pass",
+      "browser_steps": 2,
+      "javascript_errors": 0,
+      "final_console_errors": 0,
+      "task_id": "task_797e4d39b7aeb8c49f2706a3dbeccee9",
+      "task_status": "completed",
+      "run_status": "completed",
+      "tool_calls": 1,
+      "completion_event_id": "task_event_c6ee24c234311c18e4dcd0f8bf59ed25",
+      "lifecycle": [
+        {
+          "event": "browser_context_closed",
+          "task_id": "task_797e4d39b7aeb8c49f2706a3dbeccee9",
+          "at": "2026-09-12T20:29:41.488Z"
+        },
+        {
+          "event": "server_worker_released_without_page",
+          "task_id": "task_797e4d39b7aeb8c49f2706a3dbeccee9",
+          "at": "2026-09-12T20:29:41.507Z"
+        },
+        {
+          "event": "new_browser_context_read_completed_task",
+          "task_id": "task_797e4d39b7aeb8c49f2706a3dbeccee9",
+          "at": "2026-09-12T20:29:42.809Z"
+        }
+      ],
+      "assertions": [
+        "entire original browser context closes while task is running",
+        "worker is released when no page exists",
+        "new browser context reads same completed task ID, two steps, one tool call and final result"
+      ],
+      "report": "docs/evidence/2026-09-13-h09-visual/task-page-close/report.json"
+    }
+  ],
+  "tests": [
+    {
+      "name": "ordered Chrome end-to-end scenarios",
+      "result": "pass",
+      "scenarios": 7
+    },
+    {
+      "name": "agent full",
+      "command": "GOWORK=off go test ./...",
+      "result": "pass",
+      "log": "docs/evidence/2026-09-13-h09-visual/validation/go-full.log",
+      "web_duration": "174.312s"
+    },
+    {
+      "name": "H09 critical race",
+      "command": "GOWORK=off go test -race ./internal/transport/http/module ./internal/assembly/web -run '^(TestConversationStreamPreservesFlusherThroughHostWriterWrappers|TestAnalysisLongRunStructuredChartArtifactExportAndCurrentPermission|TestArtifactToolsThroughIdentityHTTP|TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite)$' -count=1 -v",
+      "result": "pass",
+      "module_duration": "1.681s",
+      "web_duration": "188.847s",
+      "log": "docs/evidence/2026-09-13-h09-visual/validation/h09-race.log"
+    },
+    {
+      "name": "analysis race after bounded wait correction",
+      "command": "GOWORK=off go test -race ./internal/assembly/web -run '^TestAnalysisLongRunStructuredChartArtifactExportAndCurrentPermission$' -count=1 -v",
+      "result": "pass",
+      "test_duration": "46.95s",
+      "package_duration": "48.774s",
+      "log": "docs/evidence/2026-09-13-h09-visual/validation/analysis-race.log"
+    },
+    {
+      "name": "frontend",
+      "command": "npm test && npm run build",
+      "result": "pass",
+      "tests": 61,
+      "test_duration_ms": 814.775375,
+      "build_duration": "20.58s"
+    },
+    {
+      "name": "architecture race",
+      "command": "GOWORK=off go test -race ./internal/architecture -count=3 -v",
+      "result": "pass",
+      "tests_per_round": 6,
+      "rounds": 3,
+      "duration": "7.197s"
+    },
+    {
+      "name": "static",
+      "command": "GOWORK=off go vet ./... && GOWORK=off go build ./...",
+      "result": "pass"
+    }
+  ],
+  "boundaries": {
+    "agent_application_other_service_implementation_imports": [],
+    "sse_fix_depends_only_on_standard_net_http_contract": true,
+    "llm_proxy_model_endpoint": false,
+    "llm_proxy_repositories_clean": [
+      "/Users/tiger/Projects/devops/llm-proxy",
+      "/Users/tiger/Projects/anti/llm-proxy"
+    ],
+    "llm_proxy_web_tool_paths": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ],
+    "credential_material_absent_from_repository_evidence": true
+  },
+  "source_files": [
+    {
+      "path": "internal/transport/http/module/conversation_adapter.go",
+      "sha256": "c4b72b1a2792e5ddcf17050137d9f0917b2b88c01f8b9d1429a8bb9517078969"
+    },
+    {
+      "path": "internal/transport/http/module/adapter_test.go",
+      "sha256": "ab62634d8f21d59c7cc9b12c66960ee892e94e5c0d16b7024eb2a0fccf908043"
+    },
+    {
+      "path": "internal/assembly/web/conversation_analysis_result_test.go",
+      "sha256": "79b7f20d601bf8cb655bff6ad5b692df55d8b4a3f74d4ea49bedf6caf602c882"
+    },
+    {
+      "path": "internal/assembly/web/conversation_artifact_tools_test.go",
+      "sha256": "79fa85ba436568f530b6e1c0e5da3872bba80b314e1495977b496ba214e7b60d"
+    },
+    {
+      "path": "internal/assembly/web/conversation_task_start_test.go",
+      "sha256": "44bce35590c99472e53f80e4adc0af90ed18b2d8b3637a0f001834c6d8ee210a"
+    },
+    {
+      "path": "frontend/tests/h09-business.browser.mjs",
+      "sha256": "9fdc946546922402af7c57343daae4f9293096283167817815d8c087e087925b"
+    },
+    {
+      "path": "frontend/tests/h09-analysis.browser.mjs",
+      "sha256": "aedf2d64e86b9975e04ce87f66a64d31b1b0ecb8105c60dc03f10f14d06c55bd"
+    },
+    {
+      "path": "frontend/tests/h09-artifacts.browser.mjs",
+      "sha256": "af29c059835e2c586dd1bde0a787e462e513dd293e84e7e7e099cbfbdb4f2a6c"
+    },
+    {
+      "path": "frontend/tests/h09-task-page-close.browser.mjs",
+      "sha256": "68850da37d22cfd21bf402057ac50fb9c8ee0dbf0b2235cb2c138a6cc440878d"
+    },
+    {
+      "path": "frontend/tests/tool-catalog.browser.mjs",
+      "sha256": "92b68bc5d0247d9a9f015f7c512bbc65a437073c343392891d0cf04b0edb9965"
+    },
+    {
+      "path": "scripts/test-agent-business.py",
+      "sha256": "e730a0a3e0c15217fbad2264b81757feabab646079439eed029338a380299d63"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "docs/evidence/2026-09-13-h09-visual/calculation/report.json",
+      "sha256": "dcdd419cc5c19a30442359f396bc263a03ae21dfde40cb19a0744418346cede4"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h09-visual/calculation/restart-and-resume.png",
+      "sha256": "686a8e48c27e217936847596c462b7e476d8bc25fd57ae33bcfca68d5a921204"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h09-visual/relations/report.json",
+      "sha256": "6ce143b0a9a8a873d5a90ef391cad87194f31fd7822ef6f069758d411c0b722c"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h09-visual/workflows/report.json",
+      "sha256": "1241975fc793bd9b6d1d086fdbd095479683e3b8d3f8ce17ee6635b363a9b8c7"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h09-visual/analysis/report.json",
+      "sha256": "f11b437bc1df379f15a5d7acfa86a43e3a435c72192ee657c82afab6905e99f5"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h09-visual/attachment/report.json",
+      "sha256": "8f14364ca68c27256c5aa2a36d7a5c3dd13d66221114e148c0979b24ed8c5c22"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h09-visual/attachment/host-audit.json",
+      "sha256": "112b802944b9c405315c330de4354dcc0f26e3a81ad1a75ffe9fec66ec827f4f"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h09-visual/artifacts/report.json",
+      "sha256": "597d02895cc2b699f80775de101e395ec855cf818b2b38c98ecd01f9361f8157"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h09-visual/task-page-close/report.json",
+      "sha256": "88f21b05564be7c181d7a1f42c906372c66224bc9ac596a6deffb67dca3d2c6b"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h09-visual/task-page-close/host-audit.json",
+      "sha256": "50736bb8f68739c48ff0a65f149c8cf4df5fedc4ff031eabf929abc80e1c22a3"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h09-visual/architecture-audit.json",
+      "sha256": "02c3d8aeb4e3bdde33c110164e9bd1b8d7538cda4f6af100a6ab65daf5a932eb"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h09-visual/credential-leak-audit.json",
+      "sha256": "2018f7a9192065867ca6de29853cad65c5d2a43dae3ca27d9c2a05caca9cd415"
+    }
+  ]
+}

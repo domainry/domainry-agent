@@ -1,0 +1,2 @@
+PASS the accepted background task is running with a durable task ID before the page closes
+PASS after the original browser context is closed, the server worker completes and a new login reads the same task ID, progress and result

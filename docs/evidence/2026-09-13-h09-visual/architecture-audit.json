@@ -1,0 +1,51 @@
+{
+  "todo": "H09",
+  "pass": true,
+  "checks": {
+    "application_dependency_guard": {
+      "pass": true,
+      "command": "GOWORK=off go test -race ./internal/architecture -count=3 -v",
+      "tests_per_round": 6,
+      "rounds": 3,
+      "duration": "7.197s"
+    },
+    "application_has_no_other_service_implementation_imports": {
+      "pass": true,
+      "scope": "production Go files under internal/application",
+      "forbidden_roots": [
+        "domainry-identity/internal|module|saas",
+        "domainry-integration/internal|module|saas",
+        "domainry-runtime/internal|module|saas",
+        "domainry-tools/internal|module|saas",
+        "domainry-knowledge/internal|module|saas"
+      ],
+      "violations": []
+    },
+    "sse_wrapper_boundary": {
+      "pass": true,
+      "evidence": "Agent HTTP follows the standard ResponseWriter Unwrap chain to discover http.Flusher and has no dependency on the Runtime metrics writer implementation."
+    },
+    "owner_boundaries": {
+      "pass": true,
+      "evidence": "Identity owns actor/workspace authorization; Runtime owns business catalogs, relations and workflows; Knowledge/Connector owns remote attachment indexing and cleanup; Agent owns its run, result-reference, artifact and task projections."
+    },
+    "llm_proxy_untouched": {
+      "pass": true,
+      "repositories": [
+        {
+          "path": "/Users/tiger/Projects/devops/llm-proxy",
+          "clean": true
+        },
+        {
+          "path": "/Users/tiger/Projects/anti/llm-proxy",
+          "clean": true
+        }
+      ],
+      "model_proxy": false,
+      "tool_paths": [
+        "POST /tool/web_search",
+        "POST /tool/web_fetch_jina"
+      ]
+    }
+  }
+}

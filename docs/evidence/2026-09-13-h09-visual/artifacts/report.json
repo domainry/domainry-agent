@@ -1,0 +1,59 @@
+{
+  "steps": [
+    "the version selector renders version 1 exactly and its controlled download preserves the selected version bytes",
+    "current Identity export revocation blocks both the download button action and direct export HTTP while read access remains",
+    "restoring export permission downloads version 2 without changing either saved version",
+    "current Identity read revocation removes the selected content and rejects direct artifact reads"
+  ],
+  "javascriptErrors": [],
+  "preLoginConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "expectedPermissionConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  "consoleErrors": [],
+  "httpErrors": [
+    {
+      "status": 401,
+      "path": "/app/session"
+    },
+    {
+      "status": 401,
+      "path": "/auth/refresh"
+    },
+    {
+      "status": 403,
+      "path": "/agent/artifacts/art_868f2dd7aa7c77cde22250ac92511d87/exports"
+    },
+    {
+      "status": 403,
+      "path": "/agent/artifacts/art_868f2dd7aa7c77cde22250ac92511d87/exports"
+    },
+    {
+      "status": 403,
+      "path": "/agent/artifacts/art_868f2dd7aa7c77cde22250ac92511d87"
+    },
+    {
+      "status": 403,
+      "path": "/agent/artifacts/art_868f2dd7aa7c77cde22250ac92511d87"
+    }
+  ],
+  "snapshots": [
+    {
+      "artifact_id": "art_868f2dd7aa7c77cde22250ac92511d87",
+      "current_version": 2,
+      "downloaded_versions": [
+        1,
+        2
+      ],
+      "export_denied_status": 403
+    }
+  ],
+  "complete": true
+}

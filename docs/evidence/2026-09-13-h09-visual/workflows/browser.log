@@ -1,0 +1,3 @@
+PASS the confirmed start is displayed as accepted and a separate progress read shows the actual workflow is still waiting
+PASS after the Runtime approval, a progress-only request shows the same process as terminal and approved without starting another workflow
+PASS rejecting a later confirmation persists a stopped run and creates no additional process

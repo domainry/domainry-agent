@@ -315,3 +315,29 @@ func actionRequestIdentity(actionKey string) identitysdk.RequestIdentity {
 
 // The projection check needs metadata only; invocation is covered separately.
 type conversationSurfaceStub struct{ agentsdk.ConversationService }
+
+type conversationEventSurfaceStub struct{ agentsdk.ConversationService }
+
+func (conversationEventSurfaceStub) Events(context.Context, string, string, int64, int, agentsdk.ConversationAuthority) (agentsdk.ConversationEventPage, error) {
+	return agentsdk.ConversationEventPage{Terminal: true}, nil
+}
+
+type unwrappingResponseWriter struct{ http.ResponseWriter }
+
+func (w *unwrappingResponseWriter) Unwrap() http.ResponseWriter { return w.ResponseWriter }
+
+func TestConversationStreamPreservesFlusherThroughHostWriterWrappers(t *testing.T) {
+	adapter, err := NewConversationAdapter(conversationEventSurfaceStub{}, "runtime")
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := httptest.NewRequest(http.MethodGet, "/agent/conversations/conversation-1/runs/run-1/events/stream", nil)
+	request = request.WithContext(identitysdk.WithRequestIdentity(request.Context(), identitysdk.RequestIdentity{Principal: identitysdk.Principal{
+		Known: true, WorkspaceID: "workspace-1", UserID: "operator", RoleKey: "admin",
+	}}))
+	response := httptest.NewRecorder()
+	adapter.Handler().ServeHTTP(&unwrappingResponseWriter{ResponseWriter: response}, request)
+	if response.Code != http.StatusOK || response.Header().Get("Content-Type") != "text/event-stream" || response.Body.String() != ": keepalive\n\n" {
+		t.Fatalf("status=%d content-type=%q body=%q", response.Code, response.Header().Get("Content-Type"), response.Body.String())
+	}
+}

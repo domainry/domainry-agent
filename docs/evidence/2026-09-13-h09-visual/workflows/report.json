@@ -1,0 +1,35 @@
+{
+  "scenario": "workflows",
+  "steps": [
+    "the confirmed start is displayed as accepted and a separate progress read shows the actual workflow is still waiting",
+    "after the Runtime approval, a progress-only request shows the same process as terminal and approved without starting another workflow",
+    "rejecting a later confirmation persists a stopped run and creates no additional process"
+  ],
+  "javascriptErrors": [],
+  "preLoginConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "expectedTransitionConsoleErrors": [],
+  "consoleErrors": [],
+  "httpErrors": [
+    {
+      "status": 401,
+      "path": "/app/session"
+    },
+    {
+      "status": 401,
+      "path": "/auth/refresh"
+    }
+  ],
+  "snapshots": [
+    {
+      "conversation_id": "conv_09fae9e0b60418991bab8c5759afa579",
+      "accepted_run_id": "crun_7bb2dbe27566f727f16d37e03b4d1e8c",
+      "completed_run_id": "crun_354d8ec70c9e54cec6e564ddf36fcf2d",
+      "process_id": "process_1789243720360339000_12"
+    }
+  ],
+  "complete": true
+}
