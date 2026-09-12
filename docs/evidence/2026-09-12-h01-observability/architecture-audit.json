@@ -1,0 +1,28 @@
+{
+  "agent_no_runtime_or_audit_implementation_imports": {
+    "pass": true,
+    "matches": [],
+    "error": ""
+  },
+  "agent_run_audit_reads_no_foreign_tables": {
+    "pass": true,
+    "matches": [],
+    "error": ""
+  },
+  "audit_store_imports_no_agent_or_runtime": {
+    "pass": true,
+    "matches": [],
+    "error": ""
+  },
+  "llm_proxy_untouched": {
+    "pass": true,
+    "matches": [],
+    "error": ""
+  },
+  "boundary": {
+    "agent": "aggregates only Agent-owned conversation events and forwards a server-owned run correlation ID through SDK requests",
+    "audit": "classifies and queries its own auth events using the public Audit contract rules",
+    "runtime": "maps the SDK correlation ID into its principal and Audit SDK actor without reading Agent storage",
+    "product": "renders bounded Agent SDK projections without querying owner databases"
+  }
+}

@@ -1,0 +1,17 @@
+?   	github.com/domainry/domainry-audit/capability	[no test files]
+?   	github.com/domainry/domainry-audit/internal/adapter/auditsdk	[no test files]
+ok  	github.com/domainry/domainry-audit/internal/application/audit	(cached)
+ok  	github.com/domainry/domainry-audit/internal/architecture	(cached)
+?   	github.com/domainry/domainry-audit/internal/assembly/module	[no test files]
+?   	github.com/domainry/domainry-audit/internal/domain/audit/repository	[no test files]
+ok  	github.com/domainry/domainry-audit/internal/domain/audit/service	(cached)
+?   	github.com/domainry/domainry-audit/internal/infrastructure/persistence	[no test files]
+ok  	github.com/domainry/domainry-audit/internal/infrastructure/persistence/database/audit	(cached)
+ok  	github.com/domainry/domainry-audit/internal/infrastructure/persistence/database/export	(cached)
+ok  	github.com/domainry/domainry-audit/internal/infrastructure/persistence/database/migration	(cached)
+?   	github.com/domainry/domainry-audit/internal/infrastructure/persistence/database/schema	[no test files]
+?   	github.com/domainry/domainry-audit/internal/infrastructure/persistence/mysql/schema	[no test files]
+?   	github.com/domainry/domainry-audit/internal/infrastructure/persistence/postgres/schema	[no test files]
+?   	github.com/domainry/domainry-audit/internal/infrastructure/persistence/sqlite/schema	[no test files]
+ok  	github.com/domainry/domainry-audit/internal/transport/http/module	(cached)
+ok  	github.com/domainry/domainry-audit/module	(cached)

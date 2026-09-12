@@ -264,7 +264,7 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 		if audit.conversationID != "" && audit.conversationID != owner.ConversationID {
 			return nil, conversationFailure("forbidden", "attachment_conversation_mismatch")
 		}
-		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
+		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
 		if err := audit.s.authorizeStoredToolResult(ctx, request, *record.Result); err != nil {
 			return nil, err
 		}
@@ -277,7 +277,7 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 		if audit.s.options.Business == nil || audit.s.options.ToolHost == nil {
 			return nil, conversationFailure("forbidden", "business_access_denied")
 		}
-		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
+		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
 		auth, err := audit.s.options.ToolHost.AuthorizeConversationTool(ctx, request)
 		if err != nil {
 			return nil, err
@@ -305,7 +305,7 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 		if policy == nil || !ok {
 			return nil, conversationFailure("forbidden", "knowledge_access_denied")
 		}
-		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
+		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
 		auth, err := policy.AuthorizeConversationTool(ctx, request)
 		if err != nil {
 			return nil, err
@@ -332,7 +332,7 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 		if audit.s.options.ToolHost == nil {
 			return nil, conversationFailure("forbidden", "tool_access_denied")
 		}
-		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
+		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
 		auth, err := audit.s.options.ToolHost.AuthorizeConversationTool(ctx, request)
 		if err != nil {
 			return nil, err
@@ -472,6 +472,11 @@ func (s *ConversationService) projectConversationRun(ctx context.Context, run ag
 		run.DraftBytes = 0
 		run.Steps = nil
 		run.Interaction = nil
+		run.Audit = nil
+		run.AuditComplete = false
+		run.Usage = nil
+		run.Model = ""
+		run.Metrics = agentsdk.ConversationRunMetrics{}
 	}
 	return run
 }

@@ -8,6 +8,7 @@ import type { ToolView } from "./execution-state.ts";
 import { executionOutcome } from "./execution-outcome.ts";
 import { KnowledgeResponse } from "./KnowledgeSources";
 import { runCitations } from "./knowledge-state";
+import { auditEventLabel, durationLabel, usageItems } from "./run-detail-state";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -48,16 +49,22 @@ export function RunDialog({ conversationID, runID, onClose, onResume, onRepair, 
       {error && <p role="alert" className="text-destructive text-sm">{error}</p>}
       {run && <>
         <dl className="run-metadata">
-          {run.created_at && <><dt>开始时间</dt><dd>{new Date(run.created_at).toLocaleString()}</dd></>}
-          {run.updated_at && <><dt>更新时间</dt><dd>{new Date(run.updated_at).toLocaleString()}</dd></>}
+          {run.correlation_id && <><dt>关联 ID</dt><dd><code>{run.correlation_id}</code></dd></>}
+          {run.started_at && <><dt>开始时间</dt><dd>{new Date(run.started_at).toLocaleString()}</dd></>}
+          {run.completed_at && <><dt>结束时间</dt><dd>{new Date(run.completed_at).toLocaleString()}</dd></>}
+          <dt>排队耗时</dt><dd>{durationLabel(run.queue_duration_ms)}</dd>
+          <dt>执行耗时</dt><dd>{durationLabel(run.duration_ms)}</dd>
           {run.model && <><dt>模型</dt><dd>{run.model}</dd></>}
           <dt>处理次数</dt><dd>{run.attempt}</dd>
+          {run.metrics && <><dt>执行统计</dt><dd>{run.metrics.steps} 个步骤 · {run.metrics.model_calls} 次模型调用 · {run.metrics.tool_calls} 个工具调用（实际尝试 {run.metrics.tool_attempts} 次）</dd><dt>安全检查</dt><dd>{run.metrics.authorization_checks} 次授权检查 · {run.metrics.confirmation_decisions} 次确认决定</dd></>}
+          <dt>模型用量</dt><dd>{usageItems(run.usage).length ? usageItems(run.usage).map(item => `${item.label} ${item.value}`).join(" · ") : "未报告"}</dd>
         </dl>
         {run.error_code && <p role="alert" className="text-destructive text-sm">{errorMessage(run.error_code)}</p>}
         {run.access_error && <p role="alert" className="text-destructive text-sm">{errorMessage(run.access_error)}</p>}
         {!run.access_error && (run.steps?.length || ["failed", "cancelled"].includes(run.status) ? <ExecutionActivity run={run} onResume={onResume ? () => { onResume(run); onClose(); } : undefined} onRepair={onRepair ? (step, call, label) => onRepair(run, step, call, label) : undefined} recoveryDisabled={recoveryDisabled} repairDisabled={repairDisabled} /> : <p className="subtle">这次处理没有已保存的工具调用记录。</p>)}
         {!run.access_error && run.interaction?.status === "pending" && <div className="run-waiting"><strong>{statuses[run.status]}</strong><p>{run.interaction.question || "请回到对话中的操作卡片继续处理。"}</p><Button variant="outline" onClick={onClose}>回到对话</Button></div>}
         {liveStepText(run) && <section aria-label={run.status === "completed" ? "已保存的回复" : "未完成的回复"}><p className="subtle">{run.status === "completed" ? "已保存的回复" : "未完成的回复"}</p><KnowledgeResponse text={liveStepText(run)} citations={runCitations(run)} /></section>}
+        {!run.access_error && run.audit?.length ? <section className="run-audit" aria-label="运行审计"><h3>运行审计</h3><ol>{run.audit.map(event => <li key={event.seq}><div><strong>{auditEventLabel(event)}</strong><time dateTime={event.occurred_at}>{new Date(event.occurred_at).toLocaleString()}</time></div><small className="subtle">序号 {event.seq}{event.attempt ? ` · 尝试 ${event.attempt}` : ""}{event.authorization_revision ? ` · 授权版本 ${event.authorization_revision}` : ""}{event.actor_id ? ` · 操作人 ${event.actor_id}` : ""}{event.duration_ms !== undefined ? ` · ${durationLabel(event.duration_ms)}` : ""}{event.error_code ? ` · ${event.error_code}` : ""}</small></li>)}</ol>{run.audit_complete === false && <p className="subtle">这里只显示本次运行的部分审计记录；完整原始事件仍可按序读取。</p>}</section> : null}
       </>}
     </DialogContent>
   </Dialog>;

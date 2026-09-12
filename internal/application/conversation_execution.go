@@ -168,6 +168,22 @@ func executionUsageAdd(total map[string]any, usage map[string]any) {
 	}
 }
 
+func (s *ConversationService) recordConversationAuthorization(ctx context.Context, claim persistence.ConversationClaim, step int, call agentsdk.ConversationToolCall, definition agentsdk.ConversationToolDefinition, authorization agentsdk.ConversationToolAuthorization, confirmationID string, cause error) error {
+	status, code := "denied", ""
+	if cause != nil {
+		status, code = "failed", conversationModelFailureCode(cause, "authorization_failed")
+	} else if authorization.Granted && authorization.ConfirmationRequired {
+		status = "confirmation_required"
+	} else if authorization.Granted {
+		status = "granted"
+	}
+	return s.repo.AppendEvent(ctx, claim, "authorization.checked", map[string]any{
+		"step": step, "attempt": claim.Run.Attempt, "call_id": call.ID, "tool": call.Name,
+		"action_key": definition.ActionKey, "status": status, "revision": strings.TrimSpace(authorization.Revision),
+		"confirmation_id": strings.TrimSpace(confirmationID), "error_code": code,
+	})
+}
+
 func (s *ConversationService) generateConversationExecution(ctx context.Context, claim persistence.ConversationClaim, base agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
 	model := s.model.(agentsdk.ConversationAgentModel)
 	repo := s.repo.(persistence.ConversationExecutionRepository)
@@ -362,7 +378,7 @@ func (s *ConversationService) executeConversationTool(ctx context.Context, claim
 	if conversationDigest(compiled.definition) != conversationDigest(frozen) {
 		return agentsdk.ConversationToolResult{}, conversationFailure("conflict", "tool_changed")
 	}
-	request := agentsdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, Step: step.Number, Call: call, Definition: frozen, LeaseOwner: claim.Owner, Fence: claim.Fence}
+	request := agentsdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, CorrelationID: claim.Run.ID, Step: step.Number, Call: call, Definition: frozen, LeaseOwner: claim.Owner, Fence: claim.Fence}
 	interaction, hasInteraction, err := s.toolInteraction(ctx, claim, step.Number, call, frozen)
 	if err != nil {
 		return agentsdk.ConversationToolResult{}, err
@@ -371,6 +387,9 @@ func (s *ConversationService) executeConversationTool(ctx context.Context, claim
 		request.Confirmation, request.ConfirmationID = receipt, receipt.ID
 	}
 	authorization, err := s.options.ToolHost.AuthorizeConversationTool(ctx, request)
+	if auditErr := s.recordConversationAuthorization(ctx, claim, step.Number, call, frozen, authorization, request.ConfirmationID, err); auditErr != nil {
+		return agentsdk.ConversationToolResult{}, auditErr
+	}
 	if err != nil {
 		return agentsdk.ConversationToolResult{}, err
 	}

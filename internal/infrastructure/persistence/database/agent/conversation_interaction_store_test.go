@@ -115,6 +115,13 @@ func TestConversationInteractionWaitFencesWorkerAndResponseIsDurableAndIdempoten
 	if err != nil || snapshot.Interaction.Status != "resolved" {
 		t.Fatal("reconciliation not resolved", err)
 	}
+	if snapshot.Metrics.ConfirmationDecisions != 1 {
+		t.Fatalf("confirmation decisions=%d", snapshot.Metrics.ConfirmationDecisions)
+	}
+	confirmation := snapshot.Steps[0].Calls[0].Confirmation
+	if confirmation == nil || confirmation.ID != i.ID || confirmation.Status != "approved" || confirmation.RespondedBy != a.UserID || confirmation.RespondedAt == nil {
+		t.Fatalf("confirmation audit=%+v", confirmation)
+	}
 }
 
 func TestConversationInteractionCancellationExpiryAndDeletion(t *testing.T) {

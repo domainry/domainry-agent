@@ -54,6 +54,10 @@ func (s *ConversationStore) Run(ctx context.Context, id, runID string, a agentsd
 		return agentsdk.ConversationRun{}, err
 	}
 	v, err := s.runRow(ctx, s.store.Database(), id, runID, a)
+	if err != nil {
+		return v.Run, err
+	}
+	err = s.projectConversationRunAudit(ctx, &v.Run, a)
 	return v.Run, err
 }
 func (s *ConversationStore) saveRun(ctx context.Context, tx *sql.Tx, v, old conversationRunRow) error {

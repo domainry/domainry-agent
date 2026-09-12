@@ -38,10 +38,35 @@ export type Run = {
   steps?: StepView[];
   interaction?: Interaction;
   model?: string;
+  usage?: Record<string, unknown>;
+  correlation_id?: string;
+  metrics?: { steps: number; model_calls: number; tool_calls: number; tool_attempts: number; authorization_checks: number; confirmation_decisions: number };
+  audit?: RunAuditEvent[];
+  audit_complete?: boolean;
+  started_at?: string;
+  completed_at?: string;
+  duration_ms?: number;
+  queue_duration_ms?: number;
   created_at?: string;
   updated_at?: string;
   write_scope?: { personal_memory: boolean; personal_todos?: boolean; personal_artifacts?: boolean; background_tasks?: boolean };
   background_task?: { task_id: string; tool_scope: { key: string; version: string; action_key: string; definition_hash: string; authorization_revision?: string }[]; budget: { max_steps: number; max_tool_calls: number; max_output_bytes: number; timeout_seconds: number } };
+};
+export type RunAuditEvent = {
+  seq: number;
+  type: "run" | "step" | "model" | "tool" | "authorization" | "confirmation" | "interaction";
+  status: string;
+  step: number;
+  attempt?: number;
+  call_id?: string;
+  tool?: string;
+  action_key?: string;
+  authorization_revision?: string;
+  interaction_id?: string;
+  actor_id?: string;
+  error_code?: string;
+  duration_ms?: number;
+  occurred_at: string;
 };
 export type Memory = {
   id: string;

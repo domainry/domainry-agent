@@ -145,7 +145,7 @@ func (h *businessConversationHost) invokeBusinessActionTool(ctx context.Context,
 	if !check.Granted || check.ConfirmationRequired || in.Confirmation == nil || in.IdempotencyKey == "" || in.RunID == "" || in.ConversationID == "" || in.Call.ID == "" {
 		return personalToolFailure("tool_access_denied"), nil
 	}
-	request := agentsdk.ConversationBusinessActionRequest{Authority: in.Authority, Action: action, Arguments: in.Call.Arguments, ConversationID: in.ConversationID, RunID: in.RunID, Step: in.Step, CallID: in.Call.ID, IdempotencyKey: in.IdempotencyKey, Confirmation: in.Confirmation}
+	request := agentsdk.ConversationBusinessActionRequest{Authority: in.Authority, Action: action, Arguments: in.Call.Arguments, ConversationID: in.ConversationID, RunID: in.RunID, CorrelationID: in.CorrelationID, Step: in.Step, CallID: in.Call.ID, IdempotencyKey: in.IdempotencyKey, Confirmation: in.Confirmation}
 	identity := h.source.BusinessSourceIdentity()
 	var result agentsdk.ConversationBusinessActionResult
 	if reconcile {

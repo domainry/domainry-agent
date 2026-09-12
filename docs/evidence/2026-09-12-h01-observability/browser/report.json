@@ -1,0 +1,385 @@
+{
+  "steps": [
+    "real model protocol, authorization, confirmation, uncertain result and reconciliation produce one safe correlated audit",
+    "full host restart preserves usage, timing, authorization and confirmation details in the compiled product UI",
+    "390px run details remain readable without horizontal page overflow"
+  ],
+  "javascriptErrors": [],
+  "consoleWarnings": [],
+  "resourceFailures": [
+    {
+      "status": 401,
+      "url": "/app/session"
+    },
+    {
+      "status": 401,
+      "url": "/auth/refresh"
+    }
+  ],
+  "snapshots": [
+    {
+      "label": "completed",
+      "run": {
+        "id": "crun_c711baa86364ebc3512dfdb11989c1b4",
+        "conversation_id": "conv_0b958f84cba211522a1c23738172c476",
+        "client_message_id": "9cac24e6-ff22-4a50-ada3-201d9d7e3289",
+        "status": "completed",
+        "user_seq": 1,
+        "assistant_message_id": "msg_02ca381c95eb9d35a617c3b2c4b37e6e",
+        "attempt": 3,
+        "draft_bytes": 0,
+        "last_event_seq": 30,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "write",
+                "id": "fixture-write",
+                "name": "create_fixture_record",
+                "arguments": "{\"title\":\"周报验收事项\"}",
+                "status": "completed",
+                "resource_id": "fixture-record",
+                "result_preview": "{\"id\":\"fixture-record\"}",
+                "result_reference": {
+                  "conversation_id": "conv_0b958f84cba211522a1c23738172c476",
+                  "run_id": "crun_c711baa86364ebc3512dfdb11989c1b4",
+                  "step": 0,
+                  "call_id": "fixture-write",
+                  "sha256": "1f4af8b6489bc34cde474803374166673d0906773980af84075d17191c85ce02"
+                },
+                "authorization": {
+                  "status": "granted",
+                  "revision": "addb90963f16e6805a75563186f9ea6a07775a8f27fbd28c3b35052e5b49323c",
+                  "checks": 3
+                },
+                "confirmation": {
+                  "id": "cint_505deae7835b4fbe1097360e145f9970",
+                  "status": "approved",
+                  "responded_by": "admin",
+                  "responded_at": "2026-09-12T14:15:23.429634Z"
+                },
+                "started_at": "2026-09-12T14:15:25.248113Z",
+                "completed_at": "2026-09-12T14:15:25.249393Z",
+                "duration_ms": 1
+              }
+            ],
+            "usage": {
+              "completion_tokens": 3,
+              "prompt_tokens": 7,
+              "total_tokens": 10
+            },
+            "started_at": "2026-09-12T14:15:21.58193Z",
+            "completed_at": "2026-09-12T14:15:21.586357Z",
+            "duration_ms": 4
+          },
+          {
+            "number": 1,
+            "attempt": 3,
+            "status": "completed",
+            "text": "已核查：验收事项已创建。",
+            "calls": [],
+            "usage": {
+              "completion_tokens": 3,
+              "prompt_tokens": 7,
+              "total_tokens": 10
+            },
+            "started_at": "2026-09-12T14:15:25.25998Z",
+            "completed_at": "2026-09-12T14:15:25.26321Z",
+            "duration_ms": 3
+          }
+        ],
+        "interaction": {
+          "id": "cint_d6c21b9aed452f773cea11efc9df12e9",
+          "conversation_id": "conv_0b958f84cba211522a1c23738172c476",
+          "run_id": "crun_c711baa86364ebc3512dfdb11989c1b4",
+          "step": 0,
+          "call_id": "fixture-write",
+          "kind": "reconciliation",
+          "status": "resolved",
+          "question": "外部操作的结果尚未确认。继续时将查询实际结果，已完成的操作不会重新执行。",
+          "tool": "create_fixture_record",
+          "tool_version": "1",
+          "action_key": "agent.fixture_records.create",
+          "arguments": "{\"title\":\"周报验收事项\"}",
+          "arguments_hash": "73d02abb8b9fa5af6a7db0f6bdff53b98ed12c36f8fdffd7d57c30800786a271",
+          "definition_hash": "dbac9f67a864262573dd00b44c3acc63cd8ee2ae1b2d277d849cbaace7e5888d",
+          "revision": 2,
+          "created_at": "2026-09-12T14:15:23.453996Z",
+          "expires_at": "0001-01-01T00:00:00Z"
+        },
+        "last_input_seq": 2,
+        "usage": {
+          "completion_tokens": 6,
+          "prompt_tokens": 14,
+          "total_tokens": 20
+        },
+        "correlation_id": "crun_c711baa86364ebc3512dfdb11989c1b4",
+        "metrics": {
+          "steps": 2,
+          "model_calls": 2,
+          "tool_calls": 1,
+          "tool_attempts": 2,
+          "authorization_checks": 3,
+          "confirmation_decisions": 1
+        },
+        "audit": [
+          {
+            "seq": 1,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "occurred_at": "2026-09-12T14:15:21.569016Z"
+          },
+          {
+            "seq": 2,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T14:15:21.56964Z"
+          },
+          {
+            "seq": 3,
+            "type": "step",
+            "status": "prepared",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T14:15:21.579238Z"
+          },
+          {
+            "seq": 4,
+            "type": "model",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T14:15:21.58193Z"
+          },
+          {
+            "seq": 7,
+            "type": "model",
+            "status": "completed",
+            "step": 0,
+            "attempt": 1,
+            "duration_ms": 4,
+            "occurred_at": "2026-09-12T14:15:21.586357Z"
+          },
+          {
+            "seq": 8,
+            "type": "authorization",
+            "status": "confirmation_required",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "fixture-write",
+            "tool": "create_fixture_record",
+            "action_key": "agent.fixture_records.create",
+            "authorization_revision": "addb90963f16e6805a75563186f9ea6a07775a8f27fbd28c3b35052e5b49323c",
+            "occurred_at": "2026-09-12T14:15:21.601492Z"
+          },
+          {
+            "seq": 9,
+            "type": "tool",
+            "status": "waiting_confirmation",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "fixture-write",
+            "tool": "create_fixture_record",
+            "occurred_at": "2026-09-12T14:15:21.605695Z"
+          },
+          {
+            "seq": 10,
+            "type": "run",
+            "status": "waiting_confirmation",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T14:15:21.605711Z"
+          },
+          {
+            "seq": 11,
+            "type": "confirmation",
+            "status": "approved",
+            "step": 0,
+            "call_id": "fixture-write",
+            "tool": "create_fixture_record",
+            "action_key": "agent.fixture_records.create",
+            "interaction_id": "cint_505deae7835b4fbe1097360e145f9970",
+            "actor_id": "admin",
+            "occurred_at": "2026-09-12T14:15:23.42976Z"
+          },
+          {
+            "seq": 12,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T14:15:23.42979Z"
+          },
+          {
+            "seq": 13,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 2,
+            "occurred_at": "2026-09-12T14:15:23.430786Z"
+          },
+          {
+            "seq": 14,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 2,
+            "call_id": "fixture-write",
+            "tool": "create_fixture_record",
+            "action_key": "agent.fixture_records.create",
+            "authorization_revision": "addb90963f16e6805a75563186f9ea6a07775a8f27fbd28c3b35052e5b49323c",
+            "interaction_id": "cint_505deae7835b4fbe1097360e145f9970",
+            "occurred_at": "2026-09-12T14:15:23.451973Z"
+          },
+          {
+            "seq": 15,
+            "type": "tool",
+            "status": "started",
+            "step": 0,
+            "attempt": 2,
+            "call_id": "fixture-write",
+            "tool": "create_fixture_record",
+            "occurred_at": "2026-09-12T14:15:23.453473Z"
+          },
+          {
+            "seq": 16,
+            "type": "tool",
+            "status": "uncertain",
+            "step": 0,
+            "attempt": 2,
+            "call_id": "fixture-write",
+            "tool": "create_fixture_record",
+            "error_code": "external_result_unknown",
+            "occurred_at": "2026-09-12T14:15:23.453756Z"
+          },
+          {
+            "seq": 17,
+            "type": "tool",
+            "status": "needs_reconciliation",
+            "step": 0,
+            "attempt": 2,
+            "call_id": "fixture-write",
+            "tool": "create_fixture_record",
+            "occurred_at": "2026-09-12T14:15:23.454034Z"
+          },
+          {
+            "seq": 18,
+            "type": "run",
+            "status": "needs_reconciliation",
+            "step": 0,
+            "attempt": 2,
+            "occurred_at": "2026-09-12T14:15:23.454046Z"
+          },
+          {
+            "seq": 19,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "attempt": 2,
+            "occurred_at": "2026-09-12T14:15:25.2299Z"
+          },
+          {
+            "seq": 20,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 3,
+            "occurred_at": "2026-09-12T14:15:25.230587Z"
+          },
+          {
+            "seq": 21,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 3,
+            "call_id": "fixture-write",
+            "tool": "create_fixture_record",
+            "action_key": "agent.fixture_records.create",
+            "authorization_revision": "addb90963f16e6805a75563186f9ea6a07775a8f27fbd28c3b35052e5b49323c",
+            "interaction_id": "cint_505deae7835b4fbe1097360e145f9970",
+            "occurred_at": "2026-09-12T14:15:25.243913Z"
+          },
+          {
+            "seq": 22,
+            "type": "tool",
+            "status": "started",
+            "step": 0,
+            "attempt": 3,
+            "call_id": "fixture-write",
+            "tool": "create_fixture_record",
+            "occurred_at": "2026-09-12T14:15:25.248113Z"
+          },
+          {
+            "seq": 23,
+            "type": "interaction",
+            "status": "resolved",
+            "step": 0,
+            "call_id": "fixture-write",
+            "tool": "create_fixture_record",
+            "action_key": "agent.fixture_records.create",
+            "interaction_id": "cint_d6c21b9aed452f773cea11efc9df12e9",
+            "occurred_at": "2026-09-12T14:15:25.249178Z"
+          },
+          {
+            "seq": 24,
+            "type": "tool",
+            "status": "completed",
+            "step": 0,
+            "attempt": 3,
+            "call_id": "fixture-write",
+            "tool": "create_fixture_record",
+            "duration_ms": 1,
+            "occurred_at": "2026-09-12T14:15:25.249393Z"
+          },
+          {
+            "seq": 25,
+            "type": "step",
+            "status": "prepared",
+            "step": 1,
+            "attempt": 3,
+            "occurred_at": "2026-09-12T14:15:25.253726Z"
+          },
+          {
+            "seq": 26,
+            "type": "model",
+            "status": "started",
+            "step": 1,
+            "attempt": 3,
+            "occurred_at": "2026-09-12T14:15:25.25998Z"
+          },
+          {
+            "seq": 28,
+            "type": "model",
+            "status": "completed",
+            "step": 1,
+            "attempt": 3,
+            "duration_ms": 3,
+            "occurred_at": "2026-09-12T14:15:25.26321Z"
+          },
+          {
+            "seq": 30,
+            "type": "run",
+            "status": "completed",
+            "step": 0,
+            "attempt": 3,
+            "occurred_at": "2026-09-12T14:15:25.26625Z"
+          }
+        ],
+        "audit_complete": true,
+        "started_at": "2026-09-12T14:15:21.56964Z",
+        "completed_at": "2026-09-12T14:15:25.26625Z",
+        "duration_ms": 3696,
+        "queue_duration_ms": 0,
+        "created_at": "2026-09-12T14:15:21.568925Z",
+        "updated_at": "2026-09-12T14:15:25.266266Z"
+      }
+    }
+  ]
+}

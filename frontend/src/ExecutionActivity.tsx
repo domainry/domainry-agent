@@ -12,6 +12,7 @@ import { ExecutionOutcome, RecoveryButton } from "./ExecutionOutcome.tsx";
 import { errorMessage } from "./errors.ts";
 import { Button } from "./components/ui/button";
 import { StoredResult } from "./StoredResult.tsx";
+import { durationLabel, usageItems } from "./run-detail-state.ts";
 
 const names: Record<string, string> = {
   calendar_write_accounts: "发现日历写入账号", calendar_event_inspect: "核对日程修改目标", calendar_event_create: "创建日程", calendar_event_update: "修改日程",
@@ -75,7 +76,7 @@ export function ExecutionActivity({run, onResume, onRepair, recoveryDisabled, re
     {recovery && recovery.step === undefined && onResume && <RecoveryButton target={recovery} disabled={recoveryDisabled} onResume={onResume} />}
     {run.status === "cancelled" && <p role="status" className="subtle">已停止后续处理。已完成或已受理的业务操作会保留；结果待核查的操作不能视为已撤销。可在处理记录中刷新查看回执。</p>}
     {steps.map(step => <div key={step.number} className="execution-step">
-      <small className="subtle">第 {step.number + 1} 步</small>
+      <small className="subtle">第 {step.number + 1} 步 · {step.started_at ? durationLabel(step.duration_ms) : "未报告"}{usageItems(step.usage).length ? ` · ${usageItems(step.usage).map(item => `${item.label} ${item.value}`).join(" · ")}` : ""}</small>
       {!step.calls.length && <p className="subtle">{step.status === "generating" && ["running", "queued"].includes(run.status) ? "正在生成回复…" : "这一步的回复尚未完成。"}</p>}
       {recovery?.step === step.number && !recovery.callID && onResume && <RecoveryButton target={recovery} disabled={recoveryDisabled} onResume={onResume} />}
       {step.calls.map(call => {
@@ -89,6 +90,11 @@ export function ExecutionActivity({run, onResume, onRepair, recoveryDisabled, re
             {call.result_preview && <><small className="subtle">执行结果{call.result_truncated ? "（节选）" : ""}</small><pre>{readable(call.result_preview)}</pre></>}
           </>}
           {call.error_code && <p role="alert" className="subtle">{errorMessage(call.error_code)} <small>（{call.error_code}）</small></p>}
+          <dl className="tool-audit">
+            <dt>调用耗时</dt><dd>{call.started_at ? durationLabel(call.duration_ms) : "未报告"}</dd>
+            {call.authorization && <><dt>授权结果</dt><dd>{({granted:"已授权", confirmation_required:"需要确认", denied:"已拒绝", failed:"检查失败"} as Record<string,string>)[call.authorization.status] || call.authorization.status} · 检查 {call.authorization.checks} 次{call.authorization.revision ? ` · 版本 ${call.authorization.revision}` : ""}</dd></>}
+            {call.confirmation && <><dt>确认结果</dt><dd>{({approved:"已批准", rejected:"已拒绝", pending:"等待确认", resolved:"已解决"} as Record<string,string>)[call.confirmation.status] || call.confirmation.status}{call.confirmation.responded_by ? ` · ${call.confirmation.responded_by}` : ""}{call.confirmation.responded_at ? ` · ${new Date(call.confirmation.responded_at).toLocaleString()}` : ""}</dd></>}
+          </dl>
           {call.resource_id && <small className="subtle">结果引用：{call.resource_id}</small>}
           {call.result_truncated && call.result_reference && <StoredResult key={JSON.stringify(call.result_reference)} reference={call.result_reference} />}
           {recovery?.step === step.number && recovery.callID === call.id && onResume && <RecoveryButton target={recovery} disabled={recoveryDisabled} onResume={onResume} />}

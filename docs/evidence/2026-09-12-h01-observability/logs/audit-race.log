@@ -1,0 +1,4 @@
+=== RUN   TestListSystemClassMatchesContractAuthenticationRules
+--- PASS: TestListSystemClassMatchesContractAuthenticationRules (0.09s)
+PASS
+ok  	github.com/domainry/domainry-audit/internal/infrastructure/persistence/database/audit	1.786s

@@ -66,7 +66,22 @@ func TestExecutionOutcomePersistsAcceptedAndFailedReceiptsAcrossFailureAndReplay
 			t.Fatal(err)
 		}
 	}
-	if !reflect.DeepEqual(projection.Steps, saved.Steps) {
+	publicSteps := append([]agentsdk.ConversationStepView(nil), saved.Steps...)
+	for index := range publicSteps {
+		publicSteps[index].Usage = nil
+		publicSteps[index].StartedAt = nil
+		publicSteps[index].CompletedAt = nil
+		publicSteps[index].DurationMilliseconds = 0
+		publicSteps[index].Calls = append([]agentsdk.ConversationToolView(nil), publicSteps[index].Calls...)
+		for call := range publicSteps[index].Calls {
+			publicSteps[index].Calls[call].Authorization = nil
+			publicSteps[index].Calls[call].Confirmation = nil
+			publicSteps[index].Calls[call].StartedAt = nil
+			publicSteps[index].Calls[call].CompletedAt = nil
+			publicSteps[index].Calls[call].DurationMilliseconds = 0
+		}
+	}
+	if !reflect.DeepEqual(projection.Steps, publicSteps) {
 		t.Fatalf("SSE differs from persisted snapshot: %+v vs %+v", projection.Steps, saved.Steps)
 	}
 	if _, err = repo.Resume(t.Context(), c.ID, run.ID, a); err != nil {

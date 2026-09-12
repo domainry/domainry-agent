@@ -39,7 +39,7 @@ func (s *ConversationService) confirmationOperations(ctx context.Context, claim 
 		if conversationDigest(frozen) != conversationDigest(tool.definition) || validateToolJSON(tool.input, []byte(call.Arguments)) != nil {
 			return nil
 		}
-		request := agentsdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, Step: step.Number, Call: call, Definition: frozen, LeaseOwner: claim.Owner, Fence: claim.Fence}
+		request := agentsdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, CorrelationID: claim.Run.ID, Step: step.Number, Call: call, Definition: frozen, LeaseOwner: claim.Owner, Fence: claim.Fence}
 		auth, err := s.options.ToolHost.AuthorizeConversationTool(ctx, request)
 		if err != nil || !auth.Granted {
 			return nil
@@ -74,7 +74,7 @@ func (s *ConversationService) authorizeListedOperations(ctx context.Context, i a
 		if tool.definition.Effect != "write" || conversationDigest(tool.definition) != operation.DefinitionHash || conversationDigest(operation.Arguments) != operation.ArgumentsHash || validateToolJSON(tool.input, []byte(operation.Arguments)) != nil {
 			return conversationFailure("conflict", "tool_changed")
 		}
-		request := agentsdk.ConversationToolRequest{Authority: a, ConversationID: i.ConversationID, RunID: i.RunID, Step: i.Step, Call: agentsdk.ConversationToolCall{ID: operation.CallID, Name: operation.Tool, Arguments: operation.Arguments}, Definition: tool.definition}
+		request := agentsdk.ConversationToolRequest{Authority: a, ConversationID: i.ConversationID, RunID: i.RunID, CorrelationID: i.RunID, Step: i.Step, Call: agentsdk.ConversationToolCall{ID: operation.CallID, Name: operation.Tool, Arguments: operation.Arguments}, Definition: tool.definition}
 		auth, err := s.options.ToolHost.AuthorizeConversationTool(ctx, request)
 		if err != nil {
 			return err

@@ -9,9 +9,13 @@ export type ToolView = {
   id: string; name: string; arguments: string; status: string;
   error_code?: string; resource_id?: string;
   result_preview?: string; result_truncated?: boolean; result_reference?: ResultReference | null;
+  authorization?: { status: string; revision?: string; checks: number };
+  confirmation?: { id: string; status: string; responded_by?: string; responded_at?: string };
+  started_at?: string; completed_at?: string; duration_ms?: number;
 };
 export type StepView = {
   number: number; attempt: number; status: string; text: string; calls: ToolView[];
+  usage?: Record<string, unknown>; started_at?: string; completed_at?: string; duration_ms?: number;
 };
 export type ExecutionEvent = {
   seq: number; type: string;

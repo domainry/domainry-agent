@@ -1,0 +1,7 @@
+=== RUN   TestRunAuditBuiltBrowser
+PASS real model protocol, authorization, confirmation, uncertain result and reconciliation produce one safe correlated audit
+PASS full host restart preserves usage, timing, authorization and confirmation details in the compiled product UI
+PASS 390px run details remain readable without horizontal page overflow
+--- PASS: TestRunAuditBuiltBrowser (9.43s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	10.208s

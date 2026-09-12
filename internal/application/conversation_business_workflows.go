@@ -44,7 +44,7 @@ func (h *businessConversationHost) invokeBusinessWorkflowTool(ctx context.Contex
 		if !check.Granted || check.ConfirmationRequired || in.Confirmation == nil || in.IdempotencyKey == "" || in.RunID == "" || in.ConversationID == "" || in.Call.ID == "" {
 			return personalToolFailure("tool_access_denied"), nil
 		}
-		request := agentsdk.ConversationWorkflowStartRequest{Authority: in.Authority, Start: start, ConversationID: in.ConversationID, RunID: in.RunID, Step: in.Step, CallID: in.Call.ID, IdempotencyKey: in.IdempotencyKey, Confirmation: in.Confirmation, Arguments: in.Call.Arguments}
+		request := agentsdk.ConversationWorkflowStartRequest{Authority: in.Authority, Start: start, ConversationID: in.ConversationID, RunID: in.RunID, CorrelationID: in.CorrelationID, Step: in.Step, CallID: in.Call.ID, IdempotencyKey: in.IdempotencyKey, Confirmation: in.Confirmation, Arguments: in.Call.Arguments}
 		var receipt agentsdk.ConversationWorkflowReceipt
 		if reconcile {
 			receipt, err = source.ReconcileBusinessWorkflow(ctx, request)

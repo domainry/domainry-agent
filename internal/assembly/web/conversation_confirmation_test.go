@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -22,10 +24,20 @@ import (
 // Only this acceptance fixture mounts the write tool. Effects are confined to
 // a temporary in-memory ledger. Production personal tools are unchanged.
 type confirmationWebFixture struct {
-	host               *Host
-	mu                 sync.Mutex
-	writes, reconciles int
-	keys               map[string]bool
+	host                *Host
+	mu                  sync.Mutex
+	writes, reconciles  int
+	correlationMismatch bool
+	keys                map[string]bool
+}
+
+func (f *confirmationWebFixture) observeCorrelation(in agentsdk.ConversationToolRequest) {
+	if in.RunID == "" {
+		return
+	}
+	f.mu.Lock()
+	f.correlationMismatch = f.correlationMismatch || in.CorrelationID != in.RunID
+	f.mu.Unlock()
 }
 
 func confirmationFixtureDefinition() agentsdk.ConversationToolDefinition {
@@ -43,6 +55,7 @@ func (f *confirmationWebFixture) ConversationTools(ctx context.Context, a agents
 	return []agentsdk.ConversationToolDefinition{d}, nil
 }
 func (f *confirmationWebFixture) AuthorizeConversationTool(ctx context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolAuthorization, error) {
+	f.observeCorrelation(in)
 	auth, err := f.host.authorizeConversationAction(ctx, in.Authority, in.Definition.ActionKey)
 	if in.ConversationID != "" {
 		auth.ConfirmationRequired = in.Confirmation == nil
@@ -53,6 +66,7 @@ func (f *confirmationWebFixture) AuthorizeConversationInteraction(ctx context.Co
 	return f.host.AuthorizeConversationInteraction(ctx, a, i)
 }
 func (f *confirmationWebFixture) InvokeConversationTool(_ context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {
+	f.observeCorrelation(in)
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if in.Confirmation == nil {
@@ -65,6 +79,7 @@ func (f *confirmationWebFixture) InvokeConversationTool(_ context.Context, in ag
 	return agentsdk.ConversationToolResult{Status: "uncertain", ErrorCode: "external_result_unknown"}, nil
 }
 func (f *confirmationWebFixture) ReconcileConversationTool(_ context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {
+	f.observeCorrelation(in)
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	f.reconciles++
@@ -74,14 +89,9 @@ func (f *confirmationWebFixture) ReconcileConversationTool(_ context.Context, in
 	return agentsdk.ConversationToolResult{Status: "completed", Content: json.RawMessage(`{"id":"fixture-record"}`), ResourceID: "fixture-record"}, nil
 }
 
-func TestConversationConfirmationThroughIdentityHTTPAndReconciliation(t *testing.T) {
-	const initial, changed = "Initial-Agent-Tool-Test!2", "Changed-Agent-Tool-Test!3"
-	t.Setenv("AUTH_DEFAULT_PASSWORD", initial)
-	t.Setenv("AUTH_JWT_SECRET", "test-agent-identity-signing-key-32bytes")
-	t.Setenv("IDENTITY_DATA_SECRET_KEY", "test-agent-identity-encryption-key-32bytes")
-	t.Setenv("APP_ENV", "development")
-	fixture := &confirmationWebFixture{keys: map[string]bool{}}
-	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func confirmationModelService(t *testing.T) *httptest.Server {
+	t.Helper()
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var payload struct {
 			Messages []struct {
 				Role    string `json:"role"`
@@ -109,8 +119,19 @@ func TestConversationConfirmationThroughIdentityHTTPAndReconciliation(t *testing
 			write(map[string]any{"content": "已核查：验收事项已创建。"}, "")
 			write(map[string]any{}, "stop")
 		}
-		_, _ = fmt.Fprint(w, "data: [DONE]\n\n")
+		usage, _ := json.Marshal(map[string]any{"choices": []any{}, "usage": map[string]any{"prompt_tokens": 7, "completion_tokens": 3, "total_tokens": 10}})
+		_, _ = fmt.Fprintf(w, "data: %s\n\ndata: [DONE]\n\n", usage)
 	}))
+}
+
+func TestConversationConfirmationThroughIdentityHTTPAndReconciliation(t *testing.T) {
+	const initial, changed = "Initial-Agent-Tool-Test!2", "Changed-Agent-Tool-Test!3"
+	t.Setenv("AUTH_DEFAULT_PASSWORD", initial)
+	t.Setenv("AUTH_JWT_SECRET", "test-agent-identity-signing-key-32bytes")
+	t.Setenv("IDENTITY_DATA_SECRET_KEY", "test-agent-identity-encryption-key-32bytes")
+	t.Setenv("APP_ENV", "development")
+	fixture := &confirmationWebFixture{keys: map[string]bool{}}
+	upstream := confirmationModelService(t)
 	defer upstream.Close()
 	options := Options{DatabasePath: filepath.Join(t.TempDir(), "confirmation.db"), RuntimeID: "confirmation-runtime", WorkspaceID: "confirmation-workspace", ApplicationKey: "confirmation-app", Agent: agentmodule.Options{ConversationURL: upstream.URL, ConversationModel: "confirmation-fixture", ConversationOptions: agentmodule.ConversationOptions{ToolHost: fixture, Poll: 5 * time.Millisecond}}}
 	host, err := Open(t.Context(), options)
@@ -180,6 +201,17 @@ func TestConversationConfirmationThroughIdentityHTTPAndReconciliation(t *testing
 	if run.Interaction.Status != "resolved" {
 		t.Fatal("not resolved")
 	}
+	if run.CorrelationID != run.ID || run.StartedAt == nil || run.CompletedAt == nil || run.Metrics.ModelCalls != 2 || run.Metrics.ToolCalls != 1 || run.Metrics.AuthorizationChecks < 2 || run.Metrics.ConfirmationDecisions != 1 || run.DurationMilliseconds <= 0 || run.Usage["total_tokens"] != float64(20) {
+		t.Fatalf("missing run audit detail %+v", run)
+	}
+	confirmation := run.Steps[0].Calls[0].Confirmation
+	if confirmation == nil || confirmation.Status != "approved" || confirmation.RespondedBy == "" || confirmation.RespondedAt == nil {
+		t.Fatalf("missing confirmation audit %+v", confirmation)
+	}
+	auditJSON, _ := json.Marshal(run.Audit)
+	if strings.Contains(string(auditJSON), "周报验收事项") || strings.Contains(string(auditJSON), "fixture-record") {
+		t.Fatalf("audit leaked execution payload %s", auditJSON)
+	}
 	sse := b.call("GET", path+"/events/stream?scope="+b.scope, "", 200).Body.String()
 	for _, event := range []string{"run.waiting_confirmation", "run.needs_reconciliation", "interaction.resolved", "run.completed"} {
 		if !strings.Contains(sse, event) {
@@ -187,4 +219,87 @@ func TestConversationConfirmationThroughIdentityHTTPAndReconciliation(t *testing
 		}
 	}
 	servePersonalToolAcceptance(t, host, options)
+}
+
+func TestRunAuditBuiltBrowser(t *testing.T) {
+	if os.Getenv("AGENT_RUN_AUDIT_BROWSER") != "1" {
+		t.Skip("opt-in built run audit acceptance")
+	}
+	project, _ := filepath.Abs("../../..")
+	output := os.Getenv("AGENT_UI_TEST_OUTPUT")
+	if output == "" {
+		t.Fatal("AGENT_UI_TEST_OUTPUT required")
+	}
+	if err := os.MkdirAll(output, 0700); err != nil {
+		t.Fatal(err)
+	}
+	modelService := confirmationModelService(t)
+	defer modelService.Close()
+	tool := &confirmationWebFixture{keys: map[string]bool{}}
+	f := newAccountFixture(t)
+	f.close()
+	f.options.Agent = agentmodule.Options{ConversationURL: modelService.URL, ConversationModel: "run-audit-fixture", ConversationOptions: agentmodule.ConversationOptions{ToolHost: tool, Poll: 5 * time.Millisecond}}
+	f.open()
+	tool.host = f.host
+	permission := identitysdk.PermissionDefinition{PermissionKey: "agent.fixture_records.create", ResourceKey: "agent.fixture_records", OperationKey: "create", Label: "Create an isolated acceptance record", Category: "Acceptance test", SourceKind: "agent_tool"}
+	registration, err := identitysdk.NewPermissionReconcileRequest(f.host.application, "agent:run_audit_fixture", "", []identitysdk.PermissionDefinition{permission})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = f.host.Identity.Permissions().Reconcile(t.Context(), registration); err != nil {
+		t.Fatal(err)
+	}
+	files := os.DirFS(filepath.Join(project, "frontend/dist"))
+	admin := &browser{t: t, handler: f.boundary("http://127.0.0.1:8091", files), cookies: map[string]*http.Cookie{}}
+	admin.login("admin@example.com", accountInitial)
+	admin.changePassword(accountInitial, accountChanged)
+	grantPersonalTools(t, f.host, admin, true)
+	mutateTestRolePermissions(t, f.host, admin, func(previous []identitysdk.ProjectRolePermission) []identitysdk.ProjectRolePermission {
+		return append(previous, identitysdk.ProjectRolePermission{PermissionKey: permission.PermissionKey, DataScope: identitysdk.DataScopeOwner})
+	})
+
+	server := httptest.NewUnstartedServer(nil)
+	origin := "http://" + server.Listener.Addr().String()
+	handler := f.boundary(origin, files)
+	var gate sync.RWMutex
+	server.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/__acceptance/restart" {
+			gate.Lock()
+			defer gate.Unlock()
+			if r.Method != http.MethodPost {
+				w.WriteHeader(http.StatusMethodNotAllowed)
+				return
+			}
+			f.close()
+			f.open()
+			tool.host = f.host
+			handler = f.boundary(origin, files)
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		gate.RLock()
+		defer gate.RUnlock()
+		handler.ServeHTTP(w, r)
+	})
+	server.Start()
+	defer server.Close()
+
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Minute)
+	defer cancel()
+	command := exec.CommandContext(ctx, os.Getenv("AGENT_NODE_BINARY"), filepath.Join(project, "frontend/tests/run-audit.browser.mjs"))
+	command.Dir = project
+	command.Env = append(os.Environ(), "AGENT_UI_ORIGIN="+origin)
+	command.Stdout, command.Stderr = os.Stdout, os.Stderr
+	if err := command.Run(); err != nil {
+		t.Fatal("run audit browser", err)
+	}
+	tool.mu.Lock()
+	defer tool.mu.Unlock()
+	if tool.writes != 1 || tool.reconciles != 1 || tool.correlationMismatch {
+		t.Fatalf("effects writes=%d reconciles=%d correlation_mismatch=%t", tool.writes, tool.reconciles, tool.correlationMismatch)
+	}
+	raw, _ := json.MarshalIndent(map[string]any{"complete": true, "compiled_frontend": true, "real_identity_http": true, "agent_sqlite_restart": true, "model_protocol_usage": true, "external_effects": tool.writes, "reconciliations": tool.reconciles}, "", "  ")
+	if err := os.WriteFile(filepath.Join(output, "host-audit.json"), raw, 0600); err != nil {
+		t.Fatal(err)
+	}
 }

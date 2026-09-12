@@ -1,0 +1,9 @@
+{
+  "agent_sqlite_restart": true,
+  "compiled_frontend": true,
+  "complete": true,
+  "external_effects": 1,
+  "model_protocol_usage": true,
+  "real_identity_http": true,
+  "reconciliations": 1
+}

@@ -340,6 +340,16 @@ button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visib
 .run-metadata dd { margin: 0; overflow-wrap: anywhere; }
 .run-waiting { border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
 .run-dialog .execution-tool pre { max-height: 260px; overflow: auto; }
+.tool-audit { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; margin: 8px 0; font-size: 12px; }
+.tool-audit dt { color: var(--muted-foreground); }
+.tool-audit dd { margin: 0; overflow-wrap: anywhere; }
+.run-audit { display: grid; gap: 10px; }
+.run-audit h3 { margin: 0; font-size: 14px; }
+.run-audit ol { display: grid; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.run-audit li { border-left: 2px solid var(--color-border); min-width: 0; padding-left: 12px; }
+.run-audit li > div { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; }
+.run-audit li > small { display: block; min-width: 0; overflow-wrap: anywhere; }
+.run-audit time { color: var(--muted-foreground); flex-shrink: 0; }
 
 /* Native controls and compact content share the same visual system. */
 .todo-toolbar select { font-size: 13px; min-height: 36px; border-radius: 8px; color: var(--foreground); }
@@ -418,6 +428,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visib
   .input-hint { max-width: 62%; line-height: 1.5; font-size: 12px; }
   .footnote { font-size: 12px; margin-top: 10px; }
   .run-status { font-size: 12px; }
+  .run-audit li > div { display: grid; gap: 2px; }
+  .run-audit li strong, .run-audit time { min-width: 0; overflow-wrap: anywhere; }
   .scope-settings > summary { min-height: 36px; font-size: 12px; }
   .scope-options { width: 100%; }
   .scope-options .memory-write-scope { padding: 10px 0; }

@@ -1,0 +1,321 @@
+{
+  "todo": "H01",
+  "status": "complete",
+  "captured_at": "2026-09-12T14:18:00Z",
+  "scope": "bounded Agent-owned run detail and audit; server-owned correlation ID propagated through public SDK boundaries; Audit-owned authentication event classification",
+  "browser": {
+    "complete": true,
+    "compiled_frontend": true,
+    "real_identity_http": true,
+    "agent_sqlite_restart": true,
+    "model_protocol_usage": true,
+    "external_effects": 1,
+    "reconciliations": 1,
+    "javascript_errors": 0,
+    "console_warnings": 0,
+    "expected_bootstrap_401s": [
+      {
+        "status": 401,
+        "url": "/app/session"
+      },
+      {
+        "status": 401,
+        "url": "/auth/refresh"
+      }
+    ],
+    "metrics": {
+      "steps": 2,
+      "model_calls": 2,
+      "tool_calls": 1,
+      "tool_attempts": 2,
+      "authorization_checks": 3,
+      "confirmation_decisions": 1
+    },
+    "usage": {
+      "completion_tokens": 6,
+      "prompt_tokens": 14,
+      "total_tokens": 20
+    },
+    "correlation_id": "crun_c711baa86364ebc3512dfdb11989c1b4",
+    "audit_complete": true,
+    "report": "2026-09-12-h01-observability/browser/report.json"
+  },
+  "architecture": {
+    "agent_no_runtime_or_audit_implementation_imports": {
+      "pass": true,
+      "matches": [],
+      "error": ""
+    },
+    "agent_run_audit_reads_no_foreign_tables": {
+      "pass": true,
+      "matches": [],
+      "error": ""
+    },
+    "audit_store_imports_no_agent_or_runtime": {
+      "pass": true,
+      "matches": [],
+      "error": ""
+    },
+    "llm_proxy_untouched": {
+      "pass": true,
+      "matches": [],
+      "error": ""
+    },
+    "boundary": {
+      "agent": "aggregates only Agent-owned conversation events and forwards a server-owned run correlation ID through SDK requests",
+      "audit": "classifies and queries its own auth events using the public Audit contract rules",
+      "runtime": "maps the SDK correlation ID into its principal and Audit SDK actor without reading Agent storage",
+      "product": "renders bounded Agent SDK projections without querying owner databases"
+    }
+  },
+  "tests": [
+    {
+      "name": "agent full",
+      "command": "GOWORK=<temporary> GOCACHE=<temporary> go test ./...",
+      "pass": true,
+      "log": "2026-09-12-h01-observability/logs/agent-full.log"
+    },
+    {
+      "name": "agent H01 race",
+      "command": "go test -race ./internal/infrastructure/persistence/database/agent ./internal/application ./internal/assembly/web -run <H01 tests> -count=1 -v",
+      "pass": true,
+      "log": "2026-09-12-h01-observability/logs/agent-race.log"
+    },
+    {
+      "name": "agent vet",
+      "command": "go vet ./internal/application ./internal/infrastructure/persistence/database/agent ./internal/assembly/web",
+      "pass": true,
+      "log": "2026-09-12-h01-observability/logs/agent-vet.log"
+    },
+    {
+      "name": "agent sdk full/vet",
+      "command": "GOWORK=<temporary> go test ./... && go vet ./...",
+      "pass": true,
+      "logs": [
+        "2026-09-12-h01-observability/logs/agent-sdk-full.log",
+        "2026-09-12-h01-observability/logs/agent-sdk-vet.log"
+      ]
+    },
+    {
+      "name": "tools sdk full/vet",
+      "command": "GOWORK=<temporary> go test ./... && go vet ./...",
+      "pass": true,
+      "logs": [
+        "2026-09-12-h01-observability/logs/tools-sdk-full.log",
+        "2026-09-12-h01-observability/logs/tools-sdk-vet.log"
+      ]
+    },
+    {
+      "name": "audit full/vet/race",
+      "command": "go test ./... && go vet ./... && go test -race ./internal/infrastructure/persistence/database/audit -run TestListSystemClassMatchesContractAuthenticationRules",
+      "pass": true,
+      "logs": [
+        "2026-09-12-h01-observability/logs/audit-full.log",
+        "2026-09-12-h01-observability/logs/audit-vet.log",
+        "2026-09-12-h01-observability/logs/audit-race.log"
+      ]
+    },
+    {
+      "name": "runtime H01 race",
+      "command": "GOWORK=<temporary with local Audit> go test -race ./runtime/application/agenthost ./runtime/infrastructure/persistence/auditmodule ./runtime/bootstrap/integrationtest -run <H01 tests> -count=1 -v",
+      "pass": true,
+      "log": "2026-09-12-h01-observability/logs/runtime-race.log"
+    },
+    {
+      "name": "runtime vet",
+      "command": "GOWORK=<temporary with local Audit> go vet ./runtime/application/agenthost ./runtime/infrastructure/persistence/auditmodule ./runtime/bootstrap/integrationtest",
+      "pass": true,
+      "log": "2026-09-12-h01-observability/logs/runtime-vet.log"
+    },
+    {
+      "name": "runtime full",
+      "command": "GOWORK=<temporary with local Audit> go test ./...",
+      "pass": false,
+      "expected_next_todo": "H04",
+      "failure": "published module version and capability digest locks are behind current multi-repository development versions; all integration tests including H01 cross-workspace denial audit passed",
+      "log": "2026-09-12-h01-observability/logs/runtime-full.log"
+    },
+    {
+      "name": "frontend state",
+      "command": "npm --prefix frontend test",
+      "pass": true,
+      "count": 61,
+      "log": "2026-09-12-h01-observability/logs/frontend-test.log"
+    },
+    {
+      "name": "frontend build",
+      "command": "npm --prefix frontend run build",
+      "pass": true,
+      "note": "existing chunk-size warning only",
+      "log": "2026-09-12-h01-observability/logs/frontend-build.log"
+    },
+    {
+      "name": "compiled browser E2E",
+      "command": "AGENT_RUN_AUDIT_BROWSER=1 ... go test ./internal/assembly/web -run TestRunAuditBuiltBrowser -count=1 -v",
+      "pass": true,
+      "log": "2026-09-12-h01-observability/logs/browser-e2e.log"
+    }
+  ],
+  "source_files": [
+    {
+      "repository": "domainry-agent-sdk",
+      "path": "conversation.go",
+      "sha256": "236cb3d55f072c7c63d4d044cf72d777413d6754291a5c899ad8898e9afc5e8d"
+    },
+    {
+      "repository": "domainry-agent-sdk",
+      "path": "conversation_execution.go",
+      "sha256": "5b0c6f296bcc7c41ff6771ec0068b300adf701be9813018b25317704e3f3ec06"
+    },
+    {
+      "repository": "domainry-agent-sdk",
+      "path": "conversation_business_actions.go",
+      "sha256": "ac81c9dfe139128c5348b3c33822436fe275e6acae87ed171f8e27d4d8b58ca8"
+    },
+    {
+      "repository": "domainry-agent-sdk",
+      "path": "conversation_business_workflows.go",
+      "sha256": "e0dbfc53ffbce505ba3ed90bf8d83f39ad98051a009388cb5ac2c0fd80caa63b"
+    },
+    {
+      "repository": "domainry-agent-sdk",
+      "path": "businessrpc/businessrpc_test.go",
+      "sha256": "49d2c79afc3f4937a89ae67f931afaf68911ab6973453bf5158d1ea7064cf7cf"
+    },
+    {
+      "repository": "domainry-tools-sdk",
+      "path": "tools.go",
+      "sha256": "292bf759330e5d122e6eb16b4323f6a413674c9039e74d884d8e53fda88ba2f4"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/application/conversation_execution.go",
+      "sha256": "4ba1d13c3d14747cea8f6a7870f501db58b7d37716792243cef321b74d4db1e7"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/application/conversation_execution_read.go",
+      "sha256": "a1d3c7d30270bbd930d91b0902228a6384164bb98150c1d5b9d99d18e145af15"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/application/conversation_operation_scope.go",
+      "sha256": "7cd2c9dffe0d543a210792ff96432b0a2e61914e3f40ffbab923897911fa13cf"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/application/conversation_interaction.go",
+      "sha256": "1e8aac29a30541a6dd713b4ed5de4da8e4d33ba7ea9e1a05fab1e057d7c63199"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/application/conversation_sources.go",
+      "sha256": "b364ecbc122f0dc9bec047d1dcc215d01ff767dd3cf61e71e498b5fc564f7d04"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/application/conversation_artifact_sources.go",
+      "sha256": "0e35a6c49c16f5cc267bfb4dd9a14f2e1e48b06c393e53c00e1a4d5c02bed713"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/application/conversation_tasks.go",
+      "sha256": "9761185a203adaa676a2664de11fbb26c5473dd10b098eaf4880739078b47e22"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/application/conversation_business_actions.go",
+      "sha256": "cad0b03cb5383d925514fdd388cd435f0e6b4dcd013c1b10bfe9fc0b3effd239"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/application/conversation_business_workflows.go",
+      "sha256": "beec2e7e6f2bd6bb8bbfab0f097879755301b6f28810c5a6436083b67a2104d4"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/infrastructure/persistence/database/agent/conversation_run_store.go",
+      "sha256": "2006e65cea2fc127d9d038b66f15ba21935cd77f29a36054ed60c4a4d12973b5"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/infrastructure/persistence/database/agent/conversation_run_audit.go",
+      "sha256": "58cb289458e7826b216aba52e403b577363b345ea2f3978b1962270a14f03907"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/infrastructure/persistence/database/agent/conversation_run_audit_test.go",
+      "sha256": "0084821754628dfbe8cd559836e15f19f174aaa166b638f7c096033347713623"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "internal/assembly/web/conversation_confirmation_test.go",
+      "sha256": "86e98aeeea4c9c6db55db3b6aec0d82ac5bc9c443534f7eb51ed9df0a9fd6f68"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "frontend/src/RunDialog.tsx",
+      "sha256": "26ca60e8039337df0f46b42fdf1f29c7d4594f94e3525336ac7d733b76d22e8f"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "frontend/src/ExecutionActivity.tsx",
+      "sha256": "1fdd90dd0e9a21eb7b4e7838ffcf3e870656168402fbe4e474cdaf8d2f04c843"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "frontend/src/run-detail-state.ts",
+      "sha256": "1d587b29dae495f5a168236716ff55554c06b6af1fbe40158ff76bdf163f5685"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "frontend/src/run-detail-state.test.ts",
+      "sha256": "d6e4a2266ce8a886a9e3b94143ede6d29b9501b36ba07b7986519ca6f157e337"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "frontend/src/index.css",
+      "sha256": "2b126f6341337f2e66487ce45264e29ef26a2f04c99049886240be655d0a8388"
+    },
+    {
+      "repository": "domainry-agent",
+      "path": "frontend/tests/run-audit.browser.mjs",
+      "sha256": "f870713b2bcb881b9f614004742f4d80ae6b93e75b97bad9840a71bd31c47117"
+    },
+    {
+      "repository": "domainry-runtime",
+      "path": "runtime/application/agenthost/conversation_business_actions.go",
+      "sha256": "2b9ca18b20257d77df9ef873361051c34f89dc2b14234e1f23c5cd702cd239bb"
+    },
+    {
+      "repository": "domainry-runtime",
+      "path": "runtime/application/agenthost/conversation_business_workflows.go",
+      "sha256": "e6a5e00dfe5c5822ab8444354349d407963a668583cb0ec54794f3aba41a0181"
+    },
+    {
+      "repository": "domainry-runtime",
+      "path": "runtime/infrastructure/persistence/auditmodule/adapter.go",
+      "sha256": "a140e2c6c5ded470a3a71a72d29ddcc2ff847daf328ed12d4bafdc817a4d6762"
+    },
+    {
+      "repository": "domainry-runtime",
+      "path": "runtime/infrastructure/persistence/auditmodule/adapter_test.go",
+      "sha256": "8afd5ec1c67d38dc60041547610ea780065293ed7ebf10457598e1346d3b6c1d"
+    },
+    {
+      "repository": "domainry-runtime",
+      "path": "runtime/bootstrap/integrationtest/identity_sdk_fixture_test.go",
+      "sha256": "3df56b7e3ee8bc53959e13a6edc3275f4b22d106c2395318d607e780ee2b93aa"
+    },
+    {
+      "repository": "domainry-audit",
+      "path": "internal/infrastructure/persistence/database/audit/store.go",
+      "sha256": "01de351cebafd094984e31015b6a905c0225407b6a1c1f702632ba39400c41d4"
+    },
+    {
+      "repository": "domainry-audit",
+      "path": "internal/infrastructure/persistence/database/audit/store_scope_test.go",
+      "sha256": "82009417502c22e5ee65c261c9e72bb838885c4bfa9263c4f1864d4bf818e207"
+    }
+  ]
+}
