@@ -1,6 +1,6 @@
 # 剩余能力的拆库边界（2026-09-11）
 
-本表依据当前拆库后的源码，约束后续按 TODO 顺序开发。只核对归属，不提前实施后续条目。清单已依次完成至 H06，当前 H07；旧验收日志是当时源码的证据，不能代替拆库后的组合验收。
+本表依据当前拆库后的源码约束能力归属。必做项已按顺序完成至 H09；当前剩余 X01–X05 均为有具体使用场景后再实施的可选扩展。旧验收日志是当时源码的证据，最终状态以 TODO 最后一条完成证据和当前架构门禁为准。
 
 ## 当前已经存在的边界
 
@@ -38,7 +38,10 @@
 | H02 | 每个 owner 删除自己的数据与副本，跨 owner 清理通过公开请求、回执及恢复流程。 | Agent 删除会话不能直接删除 Knowledge／Integration 表；不得跳过来源权限。 |
 | H03 | Agent／Tools 管执行预算与入口限额；Scheduler 管触发积压；Integration／Connector 宿主管外发限额与超时。 | 不用一个全局超时假装覆盖各个 owner 的配额；不依赖进程内计数完成多实例限流。 |
 | H04 | 按依赖方向发布 SDK／各模块／产品，脱离 go.work 构建并验证外部消费；新拆出的 Tools／Todo／Knowledge／PM／Work 一并纳入。 | 不把本地工作区通过当作已发布版本可用；不把本地 replace 写入正式 go.mod。 |
-| H06–H09 | 以最终实际产品和服务拓扑逐项验收，复用当前 owner 回执核实副作用、权限、恢复与完整性。 | 不拿旧拆库前日志、单包测试或协议夹具证明所有部署模式／真实外部账号。 |
+| H06 | Agent 持有执行状态、租约、fence 和恢复编排；实际效果及核查由原工具 owner 负责。 | 不重放结果不明的外部写，不把关闭本地请求冒充撤销外部效果。 |
+| H07 | Identity 持有当前主体、角色和 workspace；Integration 持有连接归属、状态与凭证；Agent 每次执行和后台恢复只消费公开授权／可用性端口。 | 不复制 Identity／Integration 表，不缓存授权绕过撤权，不把协议夹具冒充真实厂商账号。 |
+| H08 | 模型 HTTP 协议和凭证归 Agent Provider；实际部署在 composition root 绑定 Identity、Agent、前端和数据库。 | 模型不经过 llm-proxy；未启用的 PostgreSQL／MySQL／多实例模式不能用 SQLite 单进程结果代替。 |
+| H09 | 页面只消费公开 HTTP／SDK 投影；Identity、Runtime、Knowledge／Connector、Agent 各自证明授权、业务结果、附件生命周期和任务持久状态。SSE adapter 只用标准 `net/http` 能力发现。 | 不让前端直连 owner 存储或业务写入口，不让 Agent adapter 依赖 Runtime 指标 writer 实现，不用轮询回退掩盖 SSE 组合错误。 |
 | X01 | Connectors／Integration 管 MCP 连接与生命周期，Tools SDK 管工具声明与调用，Agent 继续用同一执行账本。 | 不让远端工具描述获得系统权限或自动扩大已选工具。 |
 | X02 | 产品拥有具体 Agent／Skill 配置；Agent 定义层校验版本、输入输出、工具子集并执行。当前已有静态 Agent／Skills 配置，只补剩余可复用流程要求。 | 不把角色／业务步骤写死在通用 Agent，不允许 Skill 提升产品选装范围。 |
 | X03 | Knowledge 拥有成果格式生成／转换、版本、文件与下载权限；可复用确定性格式库。 | 不在 Work／PM 或 Agent 重建成果存储，不用预览截图代替可下载的文档产物。 |
@@ -56,3 +59,9 @@ H03 已按表中边界完成：Agent 使用自身 SDK 可选持久化端口，�
 H04 已按依赖方向完成发布：公共 SDK 先稳定契约，owner 模块随后固定依赖，Runtime 通过 11-Binding 锁组合，Agent 与 PM／Work 最后固定最终版本。19 个标签均从远端全新模块缓存下载成功；正式 `go.mod` 没有本地 `replace`，Runtime 外部宿主编译及各产品 `GOWORK=off` 验证通过。Identity Module 范围从可信 context 解析；Web Search／Web Fetch 仍由 Integration／Connectors 消费 llm-proxy 两个工具接口，模型 Provider 不经过 llm-proxy。完成证据见[H04 验收](testing-2026-09-13-h04-releases.md)和[架构审计](evidence/2026-09-13-h04-releases/architecture-audit.json)。
 
 H06 已按既有 owner 边界完成故障恢复验收：Agent application 只编排持久执行状态，Agent persistence 独占 run 租约／fence、工具账本、interaction revision 和 SSE 游标；工具 owner 分别实现 Invoke 与 Reconcile，并持有实际外部副作用。超时、丢响应、取消和重启后的未知写只走原键核查，已完成回执直接复用，前端不直接调用 owner 写入口。本项只增加缺失的写超时恢复测试，没有修改生产依赖方向。完成证据见[H06 验收](testing-2026-09-13-h06-recovery.md)和[架构审计](evidence/2026-09-13-h06-recovery/architecture-audit.json)。
+
+H07 已按身份与连接 owner 边界完成隔离验收：Agent 不保存 Identity／Integration 表或凭证，通过公开 SDK 取得当前主体、工作区、连接状态和动作授权；停用用户、撤销连接、撤销工具、后台恢复和完整重启都重新检查当前事实。实际厂商账号与 OAuth 应用由具体服务的部署配置负责，本项不以本地协议夹具冒充真实账号。完成证据见[H07 验收](testing-2026-09-13-h07-isolation.md)和[架构审计](evidence/2026-09-13-h07-isolation/architecture-audit.json)。
+
+H08 已按 Provider 与 composition root 边界完成实际启用模式验收：模型协议转换和凭据留在 Agent Provider；Web 组合根绑定编译页面、Identity Module、Agent Module 和 SQLite。当前启用的 Verdent Responses 与单进程部署完成真实模型、浏览器和完整进程重启验收；未启用的数据库／多实例模式仍由“启用前验收”条件约束。llm-proxy 只提供 Web Search／Web Fetch 两个现有工具接口。完成证据见[H08 验收](testing-2026-09-13-h08-deployment.md)和[架构审计](evidence/2026-09-13-h08-deployment/architecture-audit.json)。
+
+H09 已按最终页面与各 owner 的公开边界完成七组端到端验收：业务目录、关系和流程由 Runtime 给出事实；附件索引与清理由 Knowledge／Connector 给出回执；Agent 持有分析结果引用、成果版本和后台任务状态；Identity 逐次授权；页面只读取公开投影。SSE 修复沿标准 `ResponseWriter.Unwrap` 查找 `http.Flusher`，没有导入 Runtime 指标实现。完成证据见[H09 验收](testing-2026-09-13-h09-visual-acceptance.md)和[架构审计](evidence/2026-09-13-h09-visual/architecture-audit.json)。

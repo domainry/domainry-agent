@@ -8,7 +8,7 @@
 
 **进度总览 — 先看这里**
 
-**清单勾选已校正：已完成 76 项，未勾选 5 项，未勾选项全部是按具体需求排期的 X 类可选能力。这是条目数，不是工期完成比例。** 已完成项覆盖工具执行主体、持久化、个人记忆 / 待办、主要网页交互、成果创建 / 编辑 / 导出、会话后台任务启动／查询／控制、计划记录、持久调度、当前身份重验、提醒投递、计划管理与有界后台跟进，以及 Runtime 业务目录、记录、关联查询、业务动作、流程启动 / 查询、完整数据分析、运行审计、会话／用户数据生命周期、执行容量治理、正式依赖发布、执行故障恢复、租户隔离、实际模型部署和七组整体验收场景。逐项代码与测试依据见 [进度核对记录](progress-audit-2026-09-10.md)，手机导航及待办删除补验见 [网页补验](testing-2026-09-10-mobile-and-todo-completion.md)。
+**清单勾选已校正：已完成 76 项，未勾选 5 项，未勾选项全部是按具体需求排期的 X 类可选能力。这是条目数，不是工期完成比例。** 已完成项覆盖工具执行主体、持久化、个人记忆 / 待办、主要网页交互、成果创建 / 编辑 / 导出、会话后台任务启动／查询／控制、计划记录、持久调度、当前身份重验、提醒投递、计划管理与有界后台跟进，以及 Runtime 业务目录、记录、关联查询、业务动作、流程启动 / 查询、完整数据分析、运行审计、会话／用户数据生命周期、执行容量治理、正式依赖发布、执行故障恢复、租户隔离、实际模型部署和七组整体验收场景。逐项代码与测试依据见 [进度核对记录](progress-audit-2026-09-10.md)，手机导航及待办删除补验见 [网页补验](testing-2026-09-10-mobile-and-todo-completion.md)，76 项直接证据和剩余边界的机器核对见[完成审计](evidence/2026-09-13-capability-completion-audit.json)。
 
 **此前完成 J05**：流程启动 / 查询已通过实际 HTTP、真实 Verdent 模型和网页整段验收。两笔获准流程均完成实际审批，第三笔拒绝后没有生成实例；确认前刷新 / 重启、进度查询、撤权隐藏及恢复均通过。J05 已勾选，见[流程验收记录](testing-2026-09-10-business-workflows.md)。当前未勾选项仅为 X01–X05 可选扩展。
 
@@ -154,7 +154,9 @@
 **1. P0 — 会话工具执行循环**
 
 - [x] A01：在 Agent SDK 增加可选的工具执行契约，定义工具名称、版本、参数与结果 Schema、调用 ID、结束原因和流式事件；保留现有纯文本模型兼容路径。
+  - 单项完成证据：[单项完成核对](progress-audit-2026-09-10.md)记录 SDK 工具／流式契约和纯文本兼容路径；三协议与执行链见[工具执行验收](testing-2026-09-10-tools.md)。
 - [x] A02：模型适配层支持工具定义、调用参数流、工具结果回传和多次模型调用。按 Provider 实际支持情况公布能力；摘要调用继续使用无工具路径。
+  - 单项完成证据：[单项完成核对](progress-audit-2026-09-10.md)记录三种模型协议的工具往返、截断和配对测试；实际启用 Responses 另见[H08 验收](testing-2026-09-13-h08-deployment.md)。
 - [x] A03：增加工具目录，根据当前用户、宿主已挂载能力和连接状态生成本轮可用工具；声明读写影响、授权动作、超时、结果上限和幂等能力。
 
   - 实现：SDK 可选连接状态／工具开关契约；按当前权限与挂载能力筛选、冻结目录；调用前和业务／知识历史复核时重查连接。已有元数据契约继续限制读写、动作、超时、结果上限和幂等。
@@ -163,9 +165,13 @@
   - 范围：A03 消费宿主的当前连接状态；外部账号授权、刷新和管理页仍在 F01。无可选状态策略的旧宿主保留原目录与授权契约。
 
 - [x] A04：实现“模型判断 → 参数校验 → 授权 → 工具执行 → 保存结果 → 模型继续”的循环；普通问题允许直接回答。
+  - 单项完成证据：[单项完成核对](progress-audit-2026-09-10.md)逐项核对模型、Schema、授权、工具、持久结果和继续生成；完整链路测试见[工具执行验收](testing-2026-09-10-tools.md)。
 - [x] A05：第一版按顺序执行工具，限制最大步数、工具次数、总耗时和输出预算；处理重复调用循环、无效参数及模型提前截断。
+  - 单项完成证据：步数、调用、耗时、参数／输出预算及重复调用限制已由[单项完成核对](progress-audit-2026-09-10.md)和[工具执行验收](testing-2026-09-10-tools.md)中的反向用例证明。
 - [x] A06：支持缺少参数时向用户提问，保存问题和待执行步骤；用户补充后准确继续对应步骤。
+  - 单项完成证据：`ask_user` 的持久提问、重启续接、HTTP／SSE 与浏览器答复证据见[单项完成核对](progress-audit-2026-09-10.md)和[工具执行验收](testing-2026-09-10-tools.md)。
 - [x] A07：扩展上下文压缩，保持工具调用与结果配对，保留未完成事项和资源引用；大结果保存完整记录，只向模型传受限片段。
+  - 单项完成证据：大结果分页、冻结输入、截断标记和来源重授权见[单项完成核对](progress-audit-2026-09-10.md)；80 行完整结果读取另由[H09 分析场景](testing-2026-09-13-h09-visual-acceptance.md)复验。
 - [x] A08：从旧 Task 提取适用的执行、预算和授权机制；新增会话执行宿主接口，避免要求每次聊天具备旧 Task 的 ProcessID / TaskDefinition。
 
   - 实现：核对共用预算／成本／完整 JSON Schema 校验与实时授权边界；新增 SDK `ConversationApplicationHostBinder`，Module 可单独绑定会话宿主，网页已接入。延迟装配从后绑定宿主获取默认授权和工具状态，显式配置优先，无需旧 Task 等五组接口。
@@ -176,10 +182,15 @@
 **2. P0 — 执行持久化与恢复**
 
 - [x] B01：补充步骤与工具调用持久化，保存所属用户、conversation / run / step / call ID、协议版本、模型、工具版本、参数摘要、状态、结果和时间。
+  - 单项完成证据：执行表、步骤／调用身份、参数摘要、状态与时间的持久化测试见[单项完成核对](progress-audit-2026-09-10.md)和[工具执行验收](testing-2026-09-10-tools.md)。
 - [x] B02：把现有单次输入快照扩展为逐步骤快照；记录实际使用的模型和配置版本，恢复时处理版本变化，避免无提示地换协议继续。
+  - 单项完成证据：逐步冻结输入、模型配置指纹和版本变化拒绝由[单项完成核对](progress-audit-2026-09-10.md)及[工具执行验收](testing-2026-09-10-tools.md)覆盖。
 - [x] B03：为每个逻辑工具调用生成稳定幂等键；同键参数变化拒绝执行，已完成调用直接读取结果。
+  - 单项完成证据：稳定幂等键、同键参数冲突和完成写不重放由[单项完成核对](progress-audit-2026-09-10.md)及[工具执行验收](testing-2026-09-10-tools.md)覆盖。
 - [x] B04：处理“外部操作已成功、本地尚未落库”的中断窗口；按 Connector 的幂等或结果查询能力恢复，无法确认时进入待核查状态。
+  - 单项完成证据：未知写结果进入核查且不盲目重放的单项测试见[单项完成核对](progress-audit-2026-09-10.md)，外部效果超时与崩溃恢复见[H06 验收](testing-2026-09-13-h06-recovery.md)。
 - [x] B05：增加等待用户、等待确认及外部执行待核查状态；等待时释放 worker，并定义补充消息、确认、取消和过期的状态转换。
+  - 单项完成证据：等待用户、确认、核查、过期与重启恢复的存储、HTTP 和浏览器证据见[单项完成核对](progress-audit-2026-09-10.md)与[工具执行验收](testing-2026-09-10-tools.md)。
 - [x] B06：明确取消边界：停止尚未执行步骤，保留已经完成的外部动作及其结果；按连接器能力请求停止在途操作。
 
   - 实现：取消事务保留已有回执，无结果的在途写调用标为待核查；原执行者仅可在取消后的严格 fence 范围内补存实际回执，不能推进步骤或覆盖完成结果。恢复先核查未知写效果，旧取消响应不能误停新的 attempt。网页区分未执行、请求停止与实际结果，取消信号沿现有宿主／Connector Context 传递。
@@ -187,11 +198,14 @@
   - 证据：[B06 完整验收与架构边界](testing-2026-09-10-cancellation.md)、[执行竞态测试](../integration/conversation_cancellation_integration_test.go)、[网页脚本](../frontend/tests/cancellation.browser.mjs)。日志 `/tmp/domainry-B06-race-final.log`、`/tmp/domainry-B06-agent-full.log`、`/tmp/domainry-B06-architecture.log`、`/tmp/domainry-B06-browser-host.log`；报告和截图 `/tmp/domainry-B06-browser/`。
   - 范围：当前 Connector 使用 Context 请求停止 I/O，不保证远端业务回滚，也不自动执行业务补偿或取消已受理流程。本次上游为协议夹具；其他 Provider 的真实停止 API、外部故障和部署验收仍按后续条目执行。
 - [x] B07：步骤结果、Run 状态和对外事件原子提交；迁移继续通过 ORM 和宿主唯一迁移账本管理，新增记录沿用会话身份隔离。
+  - 单项完成证据：步骤结果、Run 状态、公开事件和成果效果的同事务提交测试见[单项完成核对](progress-audit-2026-09-10.md)及[工具执行验收](testing-2026-09-10-tools.md)。
 
 **3. P0 — 权限、用户授权与工具接入边界**
 
 - [x] C01：为工具动作和确认入口声明 ActionDefinition 与对应 Permission，复用 Identity 的注册和授权机制。
+  - 单项完成证据：工具动作注册、Identity 授权和跨用户拒绝见[单项完成核对](progress-audit-2026-09-10.md)与[来源权限验收](testing-2026-09-10-sources-and-browser.md)。
 - [x] C02：每次实际执行根据当前身份、动作和服务端加载的资源事实授权；工具列表可见性与执行授权分别检查。
+  - 单项完成证据：实时目录过滤、调用前复核和连接状态变化见[A03 工具目录验收](testing-2026-09-10-tool-catalog.md)及[单项完成核对](progress-audit-2026-09-10.md)。
 - [x] C03：恢复运行、用户确认后继续、后台触发时重新检查权限；已冻结的检索内容再次进入模型前也检查当前访问权限。
 
   - 本批实现：SDK 增加独立 `ConversationExecutionAuthorizer` 宿主端口，覆盖发送、恢复、确认后继续、worker 领取、摘要／模型调用、工具执行和正式回复提交。网页与 Runtime 解析当前 Identity 主体，继续沿用已声明的登录主体／工具／资料动作权限；没有凭空新增发送权限。显式恢复和确认事务更新当前角色选择，不能改变用户、工作区或冻结操作；资料与工具结果继续按现有来源凭据复核。
@@ -205,26 +219,39 @@
   - 证据：[C04 操作范围验收](testing-2026-09-11-operation-scope.md)、[应用与 SaaS 专项](../integration/conversation_operation_scope_integration_test.go)、[真实 Identity HTTP 夹具](../internal/assembly/web/conversation_operation_scope_test.go)、[网页脚本](../frontend/tests/operation-scope.browser.mjs)。8 个范围场景及 SaaS 通过；实际 Runtime 一次授权创建两个不同客户，重复提交／重启不重复，日志 `/tmp/domainry-C04-runtime-http.log`。网页 4 场景、JavaScript 错误 0，验证响应丢失、重启、单项批准、范围外新增调用及撤权／恢复，报告 `/tmp/domainry-C04-browser-final/`。全量、SDK、静态、前端构建与专项 race 均通过。
   - 范围：授权用于列出的本次具体操作，保留原个人资源分类授权；不授予 Identity 权限，也不自动批准模型将来提出的新操作。外部服务不确定效果继续按原核查机制处理。依赖发布和调度仍在 H／G 项。
 - [x] C05：确认记录绑定操作者、目标资源、工具版本及参数摘要；参数变化使原确认失效，重复确认只产生一次效果。
+  - 单项完成证据：确认对调用、定义版本和参数摘要的绑定，以及重放／撤权／变更拒绝，见[单项完成核对](progress-audit-2026-09-10.md)和[C04 操作范围验收](testing-2026-09-11-operation-scope.md)。
 - [x] C06：凭证只在宿主与 Connector 边界使用；日志和模型上下文使用必要的脱敏信息。工具结果、文档及历史内容始终作为数据处理。
+  - 单项完成证据：凭证只留宿主／Transport、公开错误脱敏及来源内容隔离的证据见[单项完成核对](progress-audit-2026-09-10.md)和[来源权限验收](testing-2026-09-10-sources-and-browser.md)。
 
 **4. P0 — 第一批日常工作工具**
 
 - [x] D01：`history_search` 历史消息内容搜索。支持关键词、时间和会话范围，返回可定位的原始消息引用；沿用当前用户的数据范围。
+  - 单项完成证据：历史搜索的关键词、时间范围、分页和 owner 隔离见[单项完成核对](progress-audit-2026-09-10.md)，真实模型跨会话检索见[日常工作验收](testing-2026-09-10-live-daily-work.md)。
 - [x] D02：`history_read` 按引用读取原始会话片段，用于核对摘要中省略的细节；限制读取数量和上下文大小。
+  - 单项完成证据：原始消息定位、UTF-8 分页及当前来源复核见[单项完成核对](progress-audit-2026-09-10.md)和[来源权限验收](testing-2026-09-10-sources-and-browser.md)。
 - [x] D03：`memory_search` / `memory_save` / `memory_forget` 通过对话查询、新增、修改、停用和删除个人记忆。用户明确要求记住或忘记时执行；模型自行发现的偏好先作为建议。
+  - 单项完成证据：记忆创建／修改／启停／删除、确认拒绝、撤权与重启证据见[单项完成核对](progress-audit-2026-09-10.md)、[来源权限验收](testing-2026-09-10-sources-and-browser.md)和[日常工作验收](testing-2026-09-10-live-daily-work.md)。
 - [x] D04：个人待办存储和工具：`todo_create` / `todo_list` / `todo_get` / `todo_update` / `todo_delete`；完成与重新打开通过更新状态实现。记录截止时间、时区、状态、来源会话、批次原始序号和修订号。
+  - 单项完成证据：五个待办工具、批次原序号、真实模型创建三项及网页删除刷新见[单项完成核对](progress-audit-2026-09-10.md)和[手机与待办补验](testing-2026-09-10-mobile-and-todo-completion.md)。
 - [x] D05：将一段讨论转为多个待办，展示具体内容；支持“把第二项改到周五”等指代，歧义时询问。
+  - 单项完成证据：按原批次修改第二项、歧义澄清、修订冲突与重启后完成原项见[单项完成核对](progress-audit-2026-09-10.md)和[真实日常工作验收](testing-2026-09-10-live-daily-work.md)。
 - [x] D06：`time_now` 提供宿主可信的当前时间与用户时区，正确解析今天、明天、下周等日期，并在跨日或歧义时给出明确日期。
+  - 单项完成证据：宿主时间、用户时区、跨日／夏令时与明确相对日期测试见[单项完成核对](progress-audit-2026-09-10.md)，真实改期见[日常工作验收](testing-2026-09-10-live-daily-work.md)。
 - [x] D07：`calculate` 支持四则运算、金额、比例、日期间隔和简单统计；返回单位、精度及计算依据。金额使用明确的十进制精度和舍入规则，限定表达式语法与规模；不执行用户或模型提供的任意脚本。实时汇率等外部数据通过单独来源获取。
+  - 单项完成证据：受限表达式、十进制舍入、统计、日期间隔及金额／大整数测试见[单项完成核对](progress-audit-2026-09-10.md)；`0.1+0.2 = 0.30 CNY` 的编译页面证据见[H09 验收](testing-2026-09-13-h09-visual-acceptance.md)。
 
 第一阶段验收场景：“找出上周讨论的发布事项 → 建成三个待办 → 修改第二项截止日期 → 记住周报格式 → 刷新或重启后继续处理”。
 
 **5. P0 — 对话与工作结果界面**
 
 - [x] E01：复用现有 AI Elements 页面，展示正在处理、工具调用、执行结果、失败和等待状态。
+  - 单项完成证据：工具参数、执行状态、结果节选和最终回复的页面证据见[工具执行验收](testing-2026-09-10-tools.md)及[单项完成核对](progress-audit-2026-09-10.md)。
 - [x] E02：增加持久化的补充信息和确认卡片；刷新、跨标签页及重复点击后保持一致。
+  - 单项完成证据：问题、确认、核查卡片的刷新恢复、跨标签同步和拒绝路径见[来源权限与网页验收](testing-2026-09-10-sources-and-browser.md)及[单项完成核对](progress-audit-2026-09-10.md)。
 - [x] E03：增加待办列表和会话内结果卡片，支持查看来源、修改日期及完成事项；前端操作与 Agent 调用使用同一后端能力。
+  - 单项完成证据：待办窗口与聊天共用后端规则，新增、修改、完成、来源、删除刷新和 390px 导航见[手机与待办补验](testing-2026-09-10-mobile-and-todo-completion.md)。
 - [x] E04：扩展 SSE 协议和客户端归并逻辑，处理步骤事件、工具参数增量、结果及多次模型输出；未完成参数不提前执行。
+  - 单项完成证据：流式参数、步骤结果、多次模型输出、断流重放及未完成参数不执行见[工具执行验收](testing-2026-09-10-tools.md)，SSE 重连见[H06 验收](testing-2026-09-13-h06-recovery.md)。
 - [x] E05：展示完成、部分完成、失败和待确认的实际结果；给出具体失败步骤的恢复入口，外部操作重试遵守幂等及核查规则。
   - 实现：`ExecutionOutcome` 按持久回执统计，回复成功不盖过失败；流程受理单独标记。原运行按具体步骤继续，确定失败生成引用原结果的新修复草稿并清除整类写授权，未知写结果沿用原幂等键核查；历史窗口不覆盖当前运行或已有草稿。
   - 证据（2026-09-11）：真实 Identity / SQLite 验证一项成功、一项失败后的独立修复，以及模型在写入后失败、完整宿主重启后不重复效果；实际 Runtime 流程验证 write / accepted 与最终审批结果。4 个网页场景通过，含手机显示、旧记录、草稿保护及外部 HTTP 提交后丢响应，JavaScript 错误为 0；外部夹具 4 个持久效果只有 4 次不同键 POST、2 次原键核查。全量、相关 race、静态、SDK、30 项前端状态及构建通过，日志、运行 ID、截图与边界见 [E05 验收](testing-2026-09-11-execution-outcome.md)。真实第三方 Connector 故障验收仍在 H06。
@@ -241,7 +268,9 @@
   - 完成证据（2026-09-11）：真实私有矩阵 7 个场景、26 次请求通过（17.15 秒）。正确／混合含正确 ID 可读；省略、空数组、错误及相似 ID 均不得取得私有文档，fetch 返回 1004 且无 Data / Citations；同权限公开对照始终可读。保存来源在当前请求权限变化后被真实拒绝。公开／私有合成资料均取得成功删除回执，随后 fetch 1004，搜索不再包含文档或唯一标识。[机器证据](evidence/2026-09-11-k01-private-permissions.json)、代码、日志和清单见 [K01 验收](testing-2026-09-11-knowledge-permissions-probe.md)。
   - 复用证据：真实 `data.hits: []`、不存在文档及业务错误传播见 [空结果验收](testing-2026-09-10-knowledge-business-errors.md)；实际文档命中、片段结构、模型引用与网页见 [真实知识库验收](testing-2026-09-10-live-knowledge.md)。本批仅扩展验收脚本；产品成员撤销、真实 Identity 与私有库链路由下方 K04 单独验收。
 - [x] K02：将已有 search / fetch 映射为 `knowledge_search` / `knowledge_read`，支持按需搜索、补充查询和阅读选中文档；避免与回复前固定检索重复调用。参数使用已授权文档 ID、范围与分页信息，不接受用户电脑或服务器任意文件路径。
+  - 单项完成证据：自主 `knowledge_search`／`knowledge_read`、固定范围和恢复撤权见[单项完成核对](progress-audit-2026-09-10.md)，真实服务调用见[知识库验收](testing-2026-09-10-live-knowledge.md)。
 - [x] K03：建立来源与引用的结构化契约，展示标题、链接、文档 ID 和相关片段；模型只能引用本次实际获得的来源。
+  - 单项完成证据：结构化引用、实际片段绑定、SSE／历史、网页展示和删除后隐藏见[引用验收](testing-2026-09-10-knowledge-citations.md)与[真实知识库验收](testing-2026-09-10-live-knowledge.md)。
 - [x] K04：按已确认的“个人资料＋共享资料库”将宿主用户权限落实到库检索范围及所需 permission_ids；资料库维护成员及阅读 / 编辑 / 管理角色，文档默认继承库权限，不做组织树继承。验证私有访问、成员移除与权限撤销，文档 ID 和权限范围不能由模型任意扩大。
   - 增量（2026-09-11）：`KnowledgeLibraryConfig.PermissionIDs` / 启动 JSON `permission_ids` 可配置单库私有阅读标识，仍由实时成员及 Identity 授权，拒绝与动态回调重复配置或未经接入的私有上传混用。保留独立远端 KB 边界，模型不能设置实际 team / kb / permission_ids。
   - 完成证据（2026-09-11）：真实三库最终 17 个场景、95 次请求通过（55.13 秒）：个人 A / B 互访拒绝、共享成员加入 / 移除、Identity 撤权 / 恢复、完整重启、三种角色、跨库文档 ID、伪造权限参数及在途读取撤权；在途撤权后模型调用计数 24 → 24。全部四份合成对照已取得删除回执、fetch 1004 及原权限下不可检索的证据。全量 Go、相关 race、静态及 8 项脚本测试通过，详见 [K04 验收](testing-2026-09-11-library-permissions.md)与[机器证据](evidence/2026-09-11-k04-private-libraries.json)。模型为确定性权限攻击夹具；本项只完成检索授权，生产私有上传与数据源入口仍在 K05，跨库移动仍在 K07。
@@ -356,9 +385,13 @@
 当前增量：三个只读工具已接 SDK、会话装配和 Runtime 业务宿主；宿主绑定前不启动会话 worker。已验证会话 / SaaS 夹具流程，并通过真实 RecordApplicationService / SQLite 的行级权限、字段脱敏、大整数精度与游标翻页。目录已补动作 / 流程参数说明、独立分页、全局流程发现和当前操作权限；已验证创建权限与读取权限分离、撤权隐藏及 Schema 与实际输入规范化的一致性。真实 Identity / Runtime / Agent HTTP 已验证业务角色分配、行 / 字段过滤和角色切换后的旧回复隐藏；网页与真实模型的三轮查询、字段 / 读取撤权、权限恢复和完整模块重启验收通过。J01 / J02 已完成，见 [业务查询接入记录](business-tools.md) 和 [业务网页验收](testing-2026-09-10-business-web.md)。 J03 已补正反向关联目录、每次一层的受限查询和关系来源复核，并通过 [关联查询端到端验收](testing-2026-09-10-business-relations.md)。
 
 - [x] J01：`business_catalog` 返回当前用户可见的对象、字段、关联、过滤与排序能力、动作和流程输入契约；控制返回规模，按需展开。模型使用宿主声明的键，不猜表名、字段或权限。
+  - 单项完成证据：Runtime 目录、动作／流程输入契约、当前权限及真实模型网页发现见[业务网页验收](testing-2026-09-10-business-web.md)与[目录契约验收](testing-2026-09-10-business-catalog.md)。
 - [x] J02：将既有 `query_records` / `get_record` 接到会话执行接口，定义类型化过滤、分页、排序和字段选择；宿主执行行级、字段级权限与脱敏，避免将无权数据先传给模型再过滤。
+  - 单项完成证据：实际 Record 服务的类型化过滤、行／字段权限、脱敏、精度、游标、重启与网页三页查询见[业务网页验收](testing-2026-09-10-business-web.md)。
 - [x] J03：支持关联记录查询，按宿主公开的关系标识加载目标记录并重新授权；限制关联深度和数量，能定位客户、订单、项目之间的关系。
+  - 单项完成证据：正反向关系目录、分页、起点／字段／目标权限及客户→订单→项目→客户链路见[关联查询验收](testing-2026-09-10-business-relations.md)。
 - [x] J04：通过 `invoke_action` 调用已声明业务动作完成创建、更新和状态转换，复用宿主校验、幂等与确认机制；不新增绕过业务规则的通用数据库写入口。
+  - 单项完成证据：具体动作确认、创建／更新／状态转换、幂等核查、版本冲突、撤权与真实模型网页流程见[业务动作验收](testing-2026-09-10-business-actions.md)。
 - [x] J05：`workflow_start` / `workflow_get` 支持启动获准流程、查询流程实例进度与结果；保存流程引用，区分“已受理”和“已完成”，由 Workflow 所属宿主维护其状态。
 
 J05 当前状态：**已完成对应验收**。[Agent 工具执行](../internal/application/conversation_business_workflows.go)、SDK 流程契约、Runtime 实际 Workflow 适配、[网页确认](../frontend/src/WorkflowOperationPreview.tsx)与[流程结果展示](../frontend/src/WorkflowResult.tsx)已接通。真实模型及网页整段测试通过，604.86 秒；7 次处理包含 18 次完成的工具调用和 1 次被拒绝的启动。最终实际数据库仅有两笔获准实例，均已审批通过。具体范围、首次失败原因与证据见[流程验收记录](testing-2026-09-10-business-workflows.md)。
@@ -383,10 +416,13 @@ J05 当前状态：**已完成对应验收**。[Agent 工具执行](../internal/
 当前进展：六个成果工具、私有存储、公共接口、Identity 授权和网页入口已接通；多步周报创建 / 修改 / 旧版下载完成实际浏览器验证，表格编辑、图表、版本冲突和权限撤销 / 恢复也已验证。本轮还补齐来源会话和来源消息／处理记录回跳，并在实际编译页面验证 Markdown、表格、声明式图表和恶意内容隔离；来源绑定持久会话 Run，包含后台 worker 的处理记录。真实 Verdent / Responses 的周报事实核对、编辑和指定版本下载见 [真实模型日常工作验收](testing-2026-09-10-live-daily-work.md)。设计见 [成果实现记录](artifacts.md)，本轮证据见 [R03 完成验收](testing-2026-09-12-r03-artifact-web.md)。R01–R04 已按单项功能与验证勾选；通用后台任务工具 L01–L03 也已按顺序完成。
 
 - [x] R01：`artifact_create` 创建周报、会议纪要、分析表和图表等成果。先支持 Markdown 与结构化表格 / 图表，返回稳定 artifact ID；元数据与正文版本持久化，大文件通过宿主存储服务保存。
+  - 单项完成证据：Markdown／表格／图表结构、正文边界、持久存储与来源权限见[成果设计与验收](artifacts.md)及[成果网页验收](testing-2026-09-10-artifacts-web.md)。
 - [x] R02：`artifact_edit` 按 artifact ID 和期望版本修改指定部分，保存修订及来源引用；同时编辑时检测冲突，支持“把刚才周报的第二节改一下”。
+  - 单项完成证据：创建、读取、局部编辑、版本冲突和真实模型修改第二节见[成果设计与验收](artifacts.md)及[真实日常工作验收](testing-2026-09-10-live-daily-work.md)。
 - [x] R03：网页增加成果预览、编辑和下载入口，与消息、任务及来源关联；按内容类型安全渲染，生成内容不能在产品页面取得任意脚本执行权限。
   - 完成验收（2026-09-12）：成果详情新增来源会话与来源消息／处理记录入口，直接复用公开 artifact 的 conversation／run ID 回到原会话和持久 Run；后台 worker 产物因此可查看原消息、工具步骤与保存回复，通用 `task_start` 仍留在 L01。实际 Identity／HTTP／SQLite／编译后网页完成 Markdown 编辑并保存版本 3、切回并下载版本 1、表格精确大数和声明式柱状图预览；恶意 Markdown 的 `<script>`、远程图片与 `javascript:` 链接均未进入可执行 DOM，只有 HTTPS 链接保留。撤销 `artifact_read` 后来源绑定成果立即隐藏，恢复后重新出现。宿主浏览器验收 240.86 秒、HTTP race 45.564 秒、应用来源／重启 race、前端 53 项、生产构建和相关 vet／diff 检查通过。见[完成验收与命令修正](testing-2026-09-12-r03-artifact-web.md)、[机器清单](evidence/2026-09-12-r03-artifact-web.json)及[架构审计](evidence/2026-09-12-r03-artifact-web/architecture-audit.json)。R03 完成，总进度 59 / 81；下一项为 L01。`llm-proxy` 未修改，只消费既有 `/tool/web_search` 与 `/tool/web_fetch_jina`。
 - [x] R04：`artifact_export` 根据产品开放格式导出指定版本，先覆盖 Markdown / CSV 等基础格式；检查原始数据与当前用户的导出权限，保留字段限制、过期策略和审计，交付可受控下载的文件。后续 Office / PDF 格式见 X03。
+  - 单项完成证据：指定版本 Markdown／CSV 导出、下载权限、字节一致性和旧版本不可变见[成果网页验收](testing-2026-09-10-artifacts-web.md)及[H09 成果权限场景](testing-2026-09-13-h09-visual-acceptance.md)。
 
 阶段验收场景：“用获准数据生成周报和分析表 → 在后续对话修改指定段落 → 刷新后查看版本 → 下载正确版本”。
 
@@ -429,6 +465,7 @@ J05 当前状态：**已完成对应验收**。[Agent 工具执行](../internal/
 - [x] H04：完成 SDK、Connectors、Identity 修复版本与 Agent 的依赖发布和版本更新，验证脱离本地 go.work 的构建及公共契约兼容。
   - 完成验收（2026-09-13）：按公共契约 → owner → Runtime／Agent → PM／Work 的依赖方向发布最终 19 个模块；使用全新模块缓存和 `GOPROXY=direct` 从远端标签下载 19 / 19 成功，标签提交与校验和一致。Runtime `v0.1.43` 的 11-Binding 锁固定 Agent `v0.1.20`、Agent SDK `v0.1.12`、Identity `v0.2.11`／SDK `v0.1.10`、Lifecycle `v0.1.11`／SDK `v0.1.10`、Scheduler `v0.1.10`／SDK `v0.1.7` 等最终版本，模块集合哈希为 `0c224caafa2cd50ceae499ba6e546e346fd21448beff365bc37cc3bdc9b12578`。正式 `go.mod` 无本地 `replace`；Runtime 组合门禁、外部 runtimehost 编译、整库及关键 race，Agent 整库、真实 Identity HTTP／SQLite／重启专项 race，PM／Work 及拆分模块的 `GOWORK=off` verify／test／vet／build 均通过。Identity 的 Module 应用范围改从可信 context 解析，组合仍只经 SDK／Binding；Web Search／Web Fetch 只调用 llm-proxy 的两个现有工具接口，没有模型代理接入或 llm-proxy 修改。见[H04 完成验收](testing-2026-09-13-h04-releases.md)、[机器清单](evidence/2026-09-13-h04-releases.json)、[远端下载清单](evidence/2026-09-13-h04-releases/release-downloads.json)和[架构审计](evidence/2026-09-13-h04-releases/architecture-audit.json)。H04 完成，总进度 72 / 81；下一项为 H06。
 - [x] H05：验收多步执行、跨会话历史查询、用户指代纠正、记忆修改和待办持续处理。
+  - 单项完成证据：真实 Responses 模型以 8 阶段覆盖多步执行、跨会话历史、指代原项、记忆修改、待办续办、重启和成果下载，见[真实日常工作验收](testing-2026-09-10-live-daily-work.md)及[H08 部署复验](testing-2026-09-13-h08-deployment.md)。
 - [x] H06：验收工具执行前后崩溃、超时结果不明、重复确认、取消、SSE 重连和服务重启，确认外部写操作不被盲目重放。
   - 完成验收（2026-09-13）：新增写工具在外部效果提交后达到 Agent 50 ms 上限的专项，公开状态与审计保存 `external_result_unknown`，完整服务重开后只经 `ReconcileConversationTool` 使用原幂等键核查；普通 10 轮及 race 3 轮均为一次 Invoke、一次 Reconcile。现有执行前 worker 中断、完成写后模型失败、实际 loopback HTTP 落盘后丢响应、8 路并发重复确认、取消与迟到回执、Module／SaaS SSE `Last-Event-ID` 重连和 SQLite 重启组成 H06 race 矩阵，三轮通过；真实 Identity HTTP／外部落盘／宿主重启专项三轮通过，每个外部键只有一次 POST。编译产品浏览器验证 `completed/running/queued` 状态下取消，刷新和重复取消不变，重启后同一 Run 明确继续只完成第三项；官方 Knowledge Connector 在途请求关闭一次，JavaScript 错误为 0。Agent 全量、61 项前端状态测试、生产构建、vet、build 和架构 race 通过；生产实现没有修改。见[H06 完成验收](testing-2026-09-13-h06-recovery.md)、[机器清单](evidence/2026-09-13-h06-recovery.json)、[架构审计](evidence/2026-09-13-h06-recovery/architecture-audit.json)和[浏览器快照](evidence/2026-09-13-h06-recovery/browser/report.json)。H06 完成，总进度 73 / 81；下一项为 H07。
 - [x] H07：验收两用户隔离、跨工作区拒绝、权限撤销、失效连接和后台重新授权。
@@ -439,6 +476,8 @@ J05 当前状态：**已完成对应验收**。[Agent 工具执行](../internal/
   - 完成验收（2026-09-13）：按条目原顺序完成七组编译产品 Chrome 场景。计算以实际 `calculate` 保存 `0.30 CNY` 并在宿主重开后显示舍入规则；实际 Runtime 的关系目录／四次关联查询验证 owner 行隔离、关系字段撤权和三服务重开；流程确认后实际受理、审批完成、只查原 process，拒绝新增流程不产生实例；分析后台运行并通过稳定引用重组全部 80 行，页面明确显示完整／未截断、图表、精度与缺失值，来源撤权后完整结果 403；附件保持“仅当前会话可见”，显式索引、撤权、原件字节下载和一次删除通过；成果版本 1／2 下载哈希不同且准确，导出与读取撤权分别阻断；浏览器 context 关闭后服务端继续运行，新登录读取同一 task ID、2 步、1 次工具和完成结果。各报告记录的 JavaScript、最终控制台或附件质量错误均为 0。组合 Runtime 时发现 SSE 外层指标 writer 隐藏 `http.Flusher`，已在 Agent HTTP adapter 通过标准 `Unwrap` 能力链修复，不依赖 Runtime 实现；专项测试覆盖宿主包装。全量 Go、H09 专项 race、架构 race 三轮、61 项前端测试、生产构建、vet 和 build 通过。见[H09 完成验收与架构边界](testing-2026-09-13-h09-visual-acceptance.md)、[机器清单](evidence/2026-09-13-h09-visual.json)、[架构审计](evidence/2026-09-13-h09-visual/architecture-audit.json)、[关系场景](evidence/2026-09-13-h09-visual/relations/report.json)、[流程场景](evidence/2026-09-13-h09-visual/workflows/report.json)、[分析场景](evidence/2026-09-13-h09-visual/analysis/report.json)、[附件场景](evidence/2026-09-13-h09-visual/attachment/report.json)、[成果场景](evidence/2026-09-13-h09-visual/artifacts/report.json)和[关闭网页任务场景](evidence/2026-09-13-h09-visual/task-page-close/report.json)。H09 完成，总进度 76 / 81；剩余五项均为按具体需求排期的可选 X 类。`llm-proxy` 两个工作区保持干净，Agent 只消费已有 `POST /tool/web_search` 与 `POST /tool/web_fetch_jina`，模型调用不经过 llm-proxy。
 
 **14. 后续可选能力，按具体需求排期**
+
+这五项的拆库归属和禁止依赖见[剩余能力边界表](remaining-capability-boundaries.md)：MCP 连接归 Integration／Connectors、工具契约归 Tools；可复用流程配置归具体产品、执行约束归 Agent；文档成果归 Knowledge；代码沙箱和桌面访问各自使用独立受限宿主。它们均不得把实现回填到 Agent application，也不得相互直连私有存储。
 
 - [ ] X01：通过 MCP 接入更多外部工具，统一纳入现有连接、权限、执行记录及生命周期管理。
 - [ ] X02：可复用工作流程 / Skills：保存步骤模板、所需工具、版本和输入输出约定，执行仍走相同授权机制。

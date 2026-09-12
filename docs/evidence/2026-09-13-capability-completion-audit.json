@@ -1,0 +1,183 @@
+{
+  "audit": "agent capability TODO completion",
+  "captured_at": "2026-09-13T04:47:18.891441+08:00",
+  "pass": true,
+  "checklist": {
+    "total": 81,
+    "completed": 76,
+    "remaining": 5,
+    "remaining_items": [
+      "X01",
+      "X02",
+      "X03",
+      "X04",
+      "X05"
+    ],
+    "remaining_are_optional": true,
+    "checked_items_missing_direct_evidence": [],
+    "completed_items": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "B01",
+      "B02",
+      "B03",
+      "B04",
+      "B05",
+      "B06",
+      "B07",
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C05",
+      "C06",
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "D05",
+      "D06",
+      "D07",
+      "E01",
+      "E02",
+      "E03",
+      "E04",
+      "E05",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05",
+      "K06",
+      "K07",
+      "F01",
+      "F02",
+      "F03",
+      "F04",
+      "F05",
+      "F06",
+      "J01",
+      "J02",
+      "J03",
+      "J04",
+      "J05",
+      "N01",
+      "N02",
+      "N03",
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "L01",
+      "L02",
+      "L03",
+      "G01",
+      "G02",
+      "G03",
+      "G04",
+      "G05",
+      "G06",
+      "H01",
+      "H02",
+      "H03",
+      "H04",
+      "H05",
+      "H06",
+      "H07",
+      "H08",
+      "H09"
+    ]
+  },
+  "direct_evidence": {
+    "definition": "each checked TODO block contains an evidence/test/acceptance statement and at least one resolvable local documentation link",
+    "checked_items_with_evidence": 76,
+    "checked_items_without_evidence": 0,
+    "documentation_links_checked": 398,
+    "broken_links": []
+  },
+  "remaining_boundaries": {
+    "document": "docs/remaining-capability-boundaries.md",
+    "items_with_explicit_owner_and_forbidden_dependency_rows": [
+      "X01",
+      "X02",
+      "X03",
+      "X04",
+      "X05"
+    ],
+    "all_remaining_items_covered": true
+  },
+  "architecture": {
+    "command": "GOWORK=off go test -race ./internal/architecture -count=1 -v",
+    "pass": true,
+    "tests": 6,
+    "duration": "1.691s",
+    "application_other_service_implementation_imports": []
+  },
+  "h09_ordered_end_to_end": {
+    "pass": true,
+    "scenarios": {
+      "calculation": {
+        "pass": true,
+        "report": "docs/evidence/2026-09-13-h09-visual/calculation/report.json"
+      },
+      "relations": {
+        "pass": true,
+        "report": "docs/evidence/2026-09-13-h09-visual/relations/report.json"
+      },
+      "workflows": {
+        "pass": true,
+        "report": "docs/evidence/2026-09-13-h09-visual/workflows/report.json"
+      },
+      "analysis": {
+        "pass": true,
+        "report": "docs/evidence/2026-09-13-h09-visual/analysis/report.json"
+      },
+      "attachment": {
+        "pass": true,
+        "report": "docs/evidence/2026-09-13-h09-visual/attachment/report.json"
+      },
+      "artifacts": {
+        "pass": true,
+        "report": "docs/evidence/2026-09-13-h09-visual/artifacts/report.json"
+      },
+      "task-page-close": {
+        "pass": true,
+        "report": "docs/evidence/2026-09-13-h09-visual/task-page-close/report.json"
+      }
+    }
+  },
+  "llm_proxy": {
+    "repositories": [
+      {
+        "path": "/Users/tiger/Projects/devops/llm-proxy",
+        "clean": true
+      },
+      {
+        "path": "/Users/tiger/Projects/anti/llm-proxy",
+        "clean": true
+      }
+    ],
+    "model_endpoint": false,
+    "web_tool_paths": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ]
+  },
+  "external_oauth": {
+    "agent_todo_blocked": false,
+    "ownership": "OAuth applications, provider credentials and real tenant accounts are deployment configuration owned by Integration and concrete services; protocol fixtures are not claimed as real vendor accounts."
+  },
+  "credential_scan": {
+    "files": 3,
+    "owner_credential_value_matches": [],
+    "authorization_bearer_literal_matches": [],
+    "private_key_markers": [],
+    "pass": true
+  }
+}
