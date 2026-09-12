@@ -1,0 +1,2 @@
+PASS the built domainry-agent-web executable serves the compiled UI, managed Identity and enabled real model
+PASS a browser request reaches the real Responses model and persists one user/assistant turn in SQLite

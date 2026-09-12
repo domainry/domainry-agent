@@ -1,0 +1,103 @@
+{
+  "id": "crun_0ebe9bb73c8a8b3f85a02a526776beee",
+  "conversation_id": "conv_f7c05b363562e2e38cd2927577aab7db",
+  "client_message_id": "discussion",
+  "status": "completed",
+  "user_seq": 1,
+  "assistant_message_id": "msg_cb935bf99f1779de70be715264de7f8e",
+  "attempt": 1,
+  "draft_bytes": 0,
+  "last_event_seq": 9,
+  "steps": [
+    {
+      "number": 0,
+      "attempt": 1,
+      "status": "completed",
+      "text": "收到。",
+      "calls": [],
+      "usage": {
+        "completion_tokens": 4,
+        "prompt_tokens": 6501,
+        "prompt_tokens_details": {
+          "cached_tokens": 6464
+        },
+        "total_tokens": 6505
+      },
+      "started_at": "2026-09-12T19:15:06.13537Z",
+      "completed_at": "2026-09-12T19:15:11.379635Z",
+      "duration_ms": 5244
+    }
+  ],
+  "model": "glm-5.3-flash-free",
+  "usage": {
+    "completion_tokens": 4,
+    "prompt_tokens": 6501,
+    "total_tokens": 6505
+  },
+  "correlation_id": "crun_0ebe9bb73c8a8b3f85a02a526776beee",
+  "metrics": {
+    "steps": 1,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "tool_attempts": 0,
+    "authorization_checks": 0,
+    "confirmation_decisions": 0
+  },
+  "audit": [
+    {
+      "seq": 1,
+      "type": "run",
+      "status": "queued",
+      "step": 0,
+      "occurred_at": "2026-09-12T19:15:06.034564Z"
+    },
+    {
+      "seq": 2,
+      "type": "run",
+      "status": "running",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:15:06.034968Z"
+    },
+    {
+      "seq": 3,
+      "type": "step",
+      "status": "prepared",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:15:06.103274Z"
+    },
+    {
+      "seq": 4,
+      "type": "model",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:15:06.13537Z"
+    },
+    {
+      "seq": 7,
+      "type": "model",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "duration_ms": 5244,
+      "occurred_at": "2026-09-12T19:15:11.379635Z"
+    },
+    {
+      "seq": 9,
+      "type": "run",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:15:11.383251Z"
+    }
+  ],
+  "audit_complete": true,
+  "started_at": "2026-09-12T19:15:06.034968Z",
+  "completed_at": "2026-09-12T19:15:11.383251Z",
+  "duration_ms": 5348,
+  "queue_duration_ms": 0,
+  "created_at": "2026-09-12T19:15:06.034495Z",
+  "updated_at": "2026-09-12T19:15:11.383286Z"
+}

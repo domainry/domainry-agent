@@ -1,0 +1,107 @@
+{
+  "id": "crun_c0a33f0dbe9023d18bb40bc0b70c8a73",
+  "conversation_id": "conv_1b9dc18c6d7442f1667b3ef53b02c61c",
+  "client_message_id": "discussion",
+  "status": "completed",
+  "user_seq": 1,
+  "assistant_message_id": "msg_d29ecf8a9985d05c4a662a556f32b31d",
+  "attempt": 1,
+  "draft_bytes": 0,
+  "last_event_seq": 9,
+  "steps": [
+    {
+      "number": 0,
+      "attempt": 1,
+      "status": "completed",
+      "text": "收到。",
+      "calls": [],
+      "usage": {
+        "input_tokens": 4665,
+        "input_tokens_details": {
+          "cache_write_tokens": 4662,
+          "cached_tokens": 0
+        },
+        "output_tokens": 6,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4671
+      },
+      "started_at": "2026-09-12T19:18:30.00878Z",
+      "completed_at": "2026-09-12T19:18:32.122413Z",
+      "duration_ms": 2113
+    }
+  ],
+  "model": "gpt-5.6-sol",
+  "usage": {
+    "input_tokens": 4665,
+    "output_tokens": 6,
+    "total_tokens": 4671
+  },
+  "correlation_id": "crun_c0a33f0dbe9023d18bb40bc0b70c8a73",
+  "metrics": {
+    "steps": 1,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "tool_attempts": 0,
+    "authorization_checks": 0,
+    "confirmation_decisions": 0
+  },
+  "audit": [
+    {
+      "seq": 1,
+      "type": "run",
+      "status": "queued",
+      "step": 0,
+      "occurred_at": "2026-09-12T19:18:29.906879Z"
+    },
+    {
+      "seq": 2,
+      "type": "run",
+      "status": "running",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:18:29.90733Z"
+    },
+    {
+      "seq": 3,
+      "type": "step",
+      "status": "prepared",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:18:29.976532Z"
+    },
+    {
+      "seq": 4,
+      "type": "model",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:18:30.00878Z"
+    },
+    {
+      "seq": 7,
+      "type": "model",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "duration_ms": 2113,
+      "occurred_at": "2026-09-12T19:18:32.122413Z"
+    },
+    {
+      "seq": 9,
+      "type": "run",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:18:32.126376Z"
+    }
+  ],
+  "audit_complete": true,
+  "started_at": "2026-09-12T19:18:29.90733Z",
+  "completed_at": "2026-09-12T19:18:32.126376Z",
+  "duration_ms": 2219,
+  "queue_duration_ms": 0,
+  "created_at": "2026-09-12T19:18:29.906807Z",
+  "updated_at": "2026-09-12T19:18:32.126402Z"
+}

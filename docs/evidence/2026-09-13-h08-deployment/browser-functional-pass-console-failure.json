@@ -1,0 +1,33 @@
+{
+  "deployment": {
+    "model": "gpt-5.6-sol",
+    "workspace_id": "live-work-workspace"
+  },
+  "steps": [
+    "compiled product is logged into the real Identity host and shows the enabled gpt-5.6-sol model",
+    "three ordered todos survive the full host reopen; only the second is completed and its exact due date remains stored",
+    "the weekly-report preference is rendered from persisted personal memory after restart",
+    "the UI opens version 2, switches to immutable version 1 and downloads Markdown containing the stored original facts",
+    "a browser-submitted request reaches the enabled real model through Responses and its single reply survives reload"
+  ],
+  "javascriptErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "snapshots": [
+    {
+      "conversation_id": "conv_983176b43d59ab19ddb48e181fd79cb3",
+      "message_ids": [
+        "msg_9debce1e4a773a18d76024073fc9b8b7",
+        "msg_b22d9a3a9fb80b7b2ad04e87d5a2c35e"
+      ],
+      "roles": [
+        "user",
+        "assistant"
+      ]
+    }
+  ],
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   'Failed to load resource: the server responded with a status of 404 (Not Found)',\n+   'Failed to load resource: the server responded with a status of 401 (Unauthorized)',\n+   'Failed to load resource: the server responded with a status of 401 (Unauthorized)'\n+ ]\n- []\n"
+}

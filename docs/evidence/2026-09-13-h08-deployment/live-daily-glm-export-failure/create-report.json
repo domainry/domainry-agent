@@ -1,0 +1,628 @@
+{
+  "id": "crun_1ea419e113486ba5e587266ebb7b94d0",
+  "conversation_id": "conv_89a35a2e2b307413db33d63554794328",
+  "client_message_id": "create-report",
+  "status": "completed",
+  "user_seq": 7,
+  "assistant_message_id": "msg_9fd865164a206e8d5cf8434c500141b4",
+  "attempt": 1,
+  "draft_bytes": 0,
+  "last_event_seq": 514,
+  "steps": [
+    {
+      "number": 0,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "call_582f7491b26c443fa7ee18f0",
+          "name": "todo_get",
+          "arguments": "{\"id\":\"todo_9c50a74e9117f631931d51ed02e4d342\"}",
+          "status": "failed",
+          "error_code": "tool_failed",
+          "result_preview": "{\"error\":\"tool_failed\"}",
+          "result_reference": {
+            "conversation_id": "conv_89a35a2e2b307413db33d63554794328",
+            "run_id": "crun_1ea419e113486ba5e587266ebb7b94d0",
+            "step": 0,
+            "call_id": "call_582f7491b26c443fa7ee18f0",
+            "sha256": "eb1e9dda0338c3fbad21d3925c1b15c2e51778e2cb1b76897a6d4d398f63ad51"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:16:24.807021Z",
+          "completed_at": "2026-09-12T19:16:24.808661Z",
+          "duration_ms": 1
+        },
+        {
+          "effect": "read",
+          "id": "call_4fc2c06aa6a44dfab4fa329b",
+          "name": "todo_get",
+          "arguments": "{\"id\":\"todo_1b253f6ba22c499419356c3b8f7fc9f4\"}",
+          "status": "failed",
+          "error_code": "tool_failed",
+          "result_preview": "{\"error\":\"tool_failed\"}",
+          "result_reference": {
+            "conversation_id": "conv_89a35a2e2b307413db33d63554794328",
+            "run_id": "crun_1ea419e113486ba5e587266ebb7b94d0",
+            "step": 0,
+            "call_id": "call_4fc2c06aa6a44dfab4fa329b",
+            "sha256": "eb1e9dda0338c3fbad21d3925c1b15c2e51778e2cb1b76897a6d4d398f63ad51"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:16:24.847168Z",
+          "completed_at": "2026-09-12T19:16:24.848527Z",
+          "duration_ms": 1
+        },
+        {
+          "effect": "read",
+          "id": "call_56667c34cc914269ae26154d",
+          "name": "todo_get",
+          "arguments": "{\"id\":\"todo_2a302394193258b551af2f6a723601996\"}",
+          "status": "failed",
+          "error_code": "tool_failed",
+          "result_preview": "{\"error\":\"tool_failed\"}",
+          "result_reference": {
+            "conversation_id": "conv_89a35a2e2b307413db33d63554794328",
+            "run_id": "crun_1ea419e113486ba5e587266ebb7b94d0",
+            "step": 0,
+            "call_id": "call_56667c34cc914269ae26154d",
+            "sha256": "eb1e9dda0338c3fbad21d3925c1b15c2e51778e2cb1b76897a6d4d398f63ad51"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:16:24.889036Z",
+          "completed_at": "2026-09-12T19:16:24.890551Z",
+          "duration_ms": 1
+        }
+      ],
+      "usage": {
+        "completion_tokens": 133,
+        "prompt_tokens": 7207,
+        "prompt_tokens_details": {
+          "cached_tokens": 6400
+        },
+        "total_tokens": 7340
+      },
+      "started_at": "2026-09-12T19:16:14.78457Z",
+      "completed_at": "2026-09-12T19:16:24.758795Z",
+      "duration_ms": 9974
+    },
+    {
+      "number": 1,
+      "attempt": 1,
+      "status": "tools",
+      "text": "三次读取都失败了，我重试一次：",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "call_29fd98c8c0614c048ee4cc3c",
+          "name": "todo_get",
+          "arguments": "{\"id\":\"todo_9c50a74e9117f631931d51ed02e4d342\"}",
+          "status": "failed",
+          "error_code": "tool_failed",
+          "result_preview": "{\"error\":\"tool_failed\"}",
+          "result_reference": {
+            "conversation_id": "conv_89a35a2e2b307413db33d63554794328",
+            "run_id": "crun_1ea419e113486ba5e587266ebb7b94d0",
+            "step": 1,
+            "call_id": "call_29fd98c8c0614c048ee4cc3c",
+            "sha256": "eb1e9dda0338c3fbad21d3925c1b15c2e51778e2cb1b76897a6d4d398f63ad51"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:16:30.824278Z",
+          "completed_at": "2026-09-12T19:16:30.825979Z",
+          "duration_ms": 1
+        }
+      ],
+      "usage": {
+        "completion_tokens": 48,
+        "prompt_tokens": 7415,
+        "prompt_tokens_details": {
+          "cached_tokens": 7168
+        },
+        "total_tokens": 7463
+      },
+      "started_at": "2026-09-12T19:16:24.966094Z",
+      "completed_at": "2026-09-12T19:16:30.785591Z",
+      "duration_ms": 5819
+    },
+    {
+      "number": 2,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "call_59b0ed50b61a4a73b0599131",
+          "name": "todo_list",
+          "arguments": "{\"batch_id\":\"tb_d0a44b3785f034790f1fef9634386eb2\"}",
+          "status": "completed",
+          "result_preview": "{\"items\":[{\"id\":\"todo_bcc58e3ac502d9b391da59333ce1bd26\",\"title\":\"整理访谈记录\",\"status\":\"open\",\"timezone\":\"Asia/Shanghai\",\"revision\":1,\"batch_id\":\"tb_d0a44b3785f034790f1fef9634386eb2\",\"position\":1,\"source_conversation_id\":\"conv_89a35a2e2b307413db33d63554794328\",\"source_run_id\":\"crun_617d1a9985e4015a8cf3da1644ab312b\",\"created_at\":\"2026-09-12T19:15:28.863Z\",\"updated_at\":\"2026-09-12T19:15:28.863Z\"},{\"id\":\"todo_c8f33cf5aab7926d60538a58f14aef41\",\"title\":\"核对部门费用\",\"status\":\"open\",\"due_date\":\"2026-09-18\",\"timezone\":\"Asia/Shanghai\",\"revision\":2,\"batch_id\":\"tb_d0a44b3785f034790f1fef9634386eb2\",\"position\":2,\"source_conversation_id\":\"conv_89a35a2e2b307413db33d63554794328\",\"source_run_id\":\"crun_617d1a9985e4015a8cf3da1644ab312b\",\"created_at\":\"2026-09-12T19:15:28.863Z\",\"updated_at\":\"2026-09-12T19:15:53.025402Z\"},{\"id\":\"todo_59580465fd378d53d2237ca46918ec18\",\"title\":\"提交发布周报\",\"status\":\"open\",\"timezone\":\"Asia/Shanghai\",\"revision\":1,\"batch_id\":\"tb_d0a44b3785f034790f1fef9634386eb2\",\"position\":3,\"source_conversation_id\":\"conv_89a35a2e2b307413db33d63554794328\",\"source_run_id\":\"crun_617d1a9985e4015a8cf3da1644ab312b\",\"created_at\":\"2026-09-12T19:15:28.863Z\",\"updated_at\":\"2026-09-12T19:15:28.863Z\"}],\"complete\":true}",
+          "result_reference": {
+            "conversation_id": "conv_89a35a2e2b307413db33d63554794328",
+            "run_id": "crun_1ea419e113486ba5e587266ebb7b94d0",
+            "step": 2,
+            "call_id": "call_59b0ed50b61a4a73b0599131",
+            "sha256": "cf394cc7c8a8502d27d0092ca6353cf7f4a71b6930ed6b5f580eaf18bddaf4e3"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:16:36.468222Z",
+          "completed_at": "2026-09-12T19:16:36.469918Z",
+          "duration_ms": 1
+        }
+      ],
+      "usage": {
+        "completion_tokens": 36,
+        "prompt_tokens": 7496,
+        "prompt_tokens_details": {
+          "cached_tokens": 7360
+        },
+        "total_tokens": 7532
+      },
+      "started_at": "2026-09-12T19:16:30.900399Z",
+      "completed_at": "2026-09-12T19:16:36.420108Z",
+      "duration_ms": 5519
+    },
+    {
+      "number": 3,
+      "attempt": 1,
+      "status": "tools",
+      "text": "三项的实际状态均为“未完成”，因此我将三项全部标记为“未完成”：",
+      "calls": [
+        {
+          "effect": "write",
+          "id": "call_9aef72f435e7480db81c31c4",
+          "name": "artifact_create",
+          "arguments": "{\"content\":{\"kind\": \"markdown\", \"markdown\": \"# 青禾验收周报\\n\\n## 本周进展\\n\\n- 整理访谈记录：未完成\\n- 核对部门费用：未完成（截止 2026-09-18）\\n- 提交发布周报：未完成\\n\\n## 风险\\n\\n- 待核对\\n\\n## 下周计划\\n\\n- 待核对\\n\"},\"title\":\"青禾验收周报\"}",
+          "status": "completed",
+          "resource_id": "art_62f1790e5a0b658872f4b8e34498e419",
+          "result_preview": "{\"artifact\":{\"id\":\"art_62f1790e5a0b658872f4b8e34498e419\",\"version\":1,\"title\":\"青禾验收周报\",\"kind\":\"markdown\",\"sha256\":\"bb0c8d9e3fdb6dd4c7cd5126b7e9dee65723803692264763e6506dd128148687\",\"bytes\":263,\"source_conversation_id\":\"conv_89a35a2e2b307413db33d63554794328\",\"source_run_id\":\"crun_1ea419e113486ba5e587266ebb7b94d0\",\"created_at\":\"2026-09-12T19:16:43.786Z\",\"updated_at\":\"2026-09-12T19:16:43.786Z\"}}",
+          "result_reference": {
+            "conversation_id": "conv_89a35a2e2b307413db33d63554794328",
+            "run_id": "crun_1ea419e113486ba5e587266ebb7b94d0",
+            "step": 3,
+            "call_id": "call_9aef72f435e7480db81c31c4",
+            "sha256": "c154c559e1e0a9486b54b5c3793f8c7e3fa8c01d90ca97e2c5bd579f8a242a4c"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:16:43.779036Z",
+          "completed_at": "2026-09-12T19:16:43.787271Z",
+          "duration_ms": 8
+        }
+      ],
+      "usage": {
+        "completion_tokens": 157,
+        "prompt_tokens": 8114,
+        "prompt_tokens_details": {
+          "cached_tokens": 7488
+        },
+        "total_tokens": 8271
+      },
+      "started_at": "2026-09-12T19:16:36.554849Z",
+      "completed_at": "2026-09-12T19:16:43.731651Z",
+      "duration_ms": 7176
+    },
+    {
+      "number": 4,
+      "attempt": 1,
+      "status": "completed",
+      "text": "已完成并保存：\n\n- 先用 todo_list 读取了该批次的实际最新状态（三次 todo_get 失败后改用列表接口，返回 complete）\n- 实际状态：三项均为 **open（未完成）**，因此第一节如实写“未完成”\n- 已按你保存的周报格式偏好生成 Markdown 成果“青禾验收周报”并保存（art_62f1790e5a0b658872f4b8e34498e419，v1）：\n  - **## 本周进展**：逐项列出三个原始待办标题，均标注“未完成”（核对部门费用附截止 2026-09-18）\n  - **## 风险**：待核对（未知风险按约定不臆测）\n  - **## 下周计划**：待核对（无既定计划，未编造）",
+      "calls": [],
+      "usage": {
+        "completion_tokens": 195,
+        "prompt_tokens": 8494,
+        "prompt_tokens_details": {
+          "cached_tokens": 8064
+        },
+        "total_tokens": 8689
+      },
+      "started_at": "2026-09-12T19:16:43.873639Z",
+      "completed_at": "2026-09-12T19:16:53.0351Z",
+      "duration_ms": 9161
+    }
+  ],
+  "write_scope": {
+    "personal_memory": false,
+    "personal_artifacts": true
+  },
+  "model": "glm-5.3-flash-free",
+  "usage": {
+    "completion_tokens": 569,
+    "prompt_tokens": 38726,
+    "total_tokens": 39295
+  },
+  "correlation_id": "crun_1ea419e113486ba5e587266ebb7b94d0",
+  "metrics": {
+    "steps": 5,
+    "model_calls": 5,
+    "tool_calls": 6,
+    "tool_attempts": 6,
+    "authorization_checks": 6,
+    "confirmation_decisions": 0
+  },
+  "audit": [
+    {
+      "seq": 1,
+      "type": "run",
+      "status": "queued",
+      "step": 0,
+      "occurred_at": "2026-09-12T19:16:14.660078Z"
+    },
+    {
+      "seq": 2,
+      "type": "run",
+      "status": "running",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:14.660976Z"
+    },
+    {
+      "seq": 3,
+      "type": "step",
+      "status": "prepared",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:14.749262Z"
+    },
+    {
+      "seq": 4,
+      "type": "model",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:14.78457Z"
+    },
+    {
+      "seq": 101,
+      "type": "model",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "duration_ms": 9974,
+      "occurred_at": "2026-09-12T19:16:24.758795Z"
+    },
+    {
+      "seq": 102,
+      "type": "authorization",
+      "status": "granted",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_582f7491b26c443fa7ee18f0",
+      "tool": "todo_get",
+      "action_key": "agent.conversation_tools.todo_get",
+      "authorization_revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+      "occurred_at": "2026-09-12T19:16:24.806356Z"
+    },
+    {
+      "seq": 103,
+      "type": "tool",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_582f7491b26c443fa7ee18f0",
+      "tool": "todo_get",
+      "occurred_at": "2026-09-12T19:16:24.807021Z"
+    },
+    {
+      "seq": 104,
+      "type": "tool",
+      "status": "failed",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_582f7491b26c443fa7ee18f0",
+      "tool": "todo_get",
+      "error_code": "tool_failed",
+      "duration_ms": 1,
+      "occurred_at": "2026-09-12T19:16:24.808661Z"
+    },
+    {
+      "seq": 105,
+      "type": "authorization",
+      "status": "granted",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_4fc2c06aa6a44dfab4fa329b",
+      "tool": "todo_get",
+      "action_key": "agent.conversation_tools.todo_get",
+      "authorization_revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+      "occurred_at": "2026-09-12T19:16:24.846622Z"
+    },
+    {
+      "seq": 106,
+      "type": "tool",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_4fc2c06aa6a44dfab4fa329b",
+      "tool": "todo_get",
+      "occurred_at": "2026-09-12T19:16:24.847168Z"
+    },
+    {
+      "seq": 107,
+      "type": "tool",
+      "status": "failed",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_4fc2c06aa6a44dfab4fa329b",
+      "tool": "todo_get",
+      "error_code": "tool_failed",
+      "duration_ms": 1,
+      "occurred_at": "2026-09-12T19:16:24.848527Z"
+    },
+    {
+      "seq": 108,
+      "type": "authorization",
+      "status": "granted",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_56667c34cc914269ae26154d",
+      "tool": "todo_get",
+      "action_key": "agent.conversation_tools.todo_get",
+      "authorization_revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+      "occurred_at": "2026-09-12T19:16:24.888466Z"
+    },
+    {
+      "seq": 109,
+      "type": "tool",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_56667c34cc914269ae26154d",
+      "tool": "todo_get",
+      "occurred_at": "2026-09-12T19:16:24.889036Z"
+    },
+    {
+      "seq": 110,
+      "type": "tool",
+      "status": "failed",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_56667c34cc914269ae26154d",
+      "tool": "todo_get",
+      "error_code": "tool_failed",
+      "duration_ms": 1,
+      "occurred_at": "2026-09-12T19:16:24.890551Z"
+    },
+    {
+      "seq": 111,
+      "type": "step",
+      "status": "prepared",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:24.928102Z"
+    },
+    {
+      "seq": 112,
+      "type": "model",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:24.966094Z"
+    },
+    {
+      "seq": 152,
+      "type": "model",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "duration_ms": 5819,
+      "occurred_at": "2026-09-12T19:16:30.785591Z"
+    },
+    {
+      "seq": 153,
+      "type": "authorization",
+      "status": "granted",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_29fd98c8c0614c048ee4cc3c",
+      "tool": "todo_get",
+      "action_key": "agent.conversation_tools.todo_get",
+      "authorization_revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+      "occurred_at": "2026-09-12T19:16:30.823619Z"
+    },
+    {
+      "seq": 154,
+      "type": "tool",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_29fd98c8c0614c048ee4cc3c",
+      "tool": "todo_get",
+      "occurred_at": "2026-09-12T19:16:30.824278Z"
+    },
+    {
+      "seq": 155,
+      "type": "tool",
+      "status": "failed",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_29fd98c8c0614c048ee4cc3c",
+      "tool": "todo_get",
+      "error_code": "tool_failed",
+      "duration_ms": 1,
+      "occurred_at": "2026-09-12T19:16:30.825979Z"
+    },
+    {
+      "seq": 156,
+      "type": "step",
+      "status": "prepared",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:30.861734Z"
+    },
+    {
+      "seq": 157,
+      "type": "model",
+      "status": "started",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:30.900399Z"
+    },
+    {
+      "seq": 189,
+      "type": "model",
+      "status": "completed",
+      "step": 2,
+      "attempt": 1,
+      "duration_ms": 5519,
+      "occurred_at": "2026-09-12T19:16:36.420108Z"
+    },
+    {
+      "seq": 190,
+      "type": "authorization",
+      "status": "granted",
+      "step": 2,
+      "attempt": 1,
+      "call_id": "call_59b0ed50b61a4a73b0599131",
+      "tool": "todo_list",
+      "action_key": "agent.conversation_tools.todo_list",
+      "authorization_revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+      "occurred_at": "2026-09-12T19:16:36.467564Z"
+    },
+    {
+      "seq": 191,
+      "type": "tool",
+      "status": "started",
+      "step": 2,
+      "attempt": 1,
+      "call_id": "call_59b0ed50b61a4a73b0599131",
+      "tool": "todo_list",
+      "occurred_at": "2026-09-12T19:16:36.468222Z"
+    },
+    {
+      "seq": 192,
+      "type": "tool",
+      "status": "completed",
+      "step": 2,
+      "attempt": 1,
+      "call_id": "call_59b0ed50b61a4a73b0599131",
+      "tool": "todo_list",
+      "duration_ms": 1,
+      "occurred_at": "2026-09-12T19:16:36.469918Z"
+    },
+    {
+      "seq": 193,
+      "type": "step",
+      "status": "prepared",
+      "step": 3,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:36.508583Z"
+    },
+    {
+      "seq": 194,
+      "type": "model",
+      "status": "started",
+      "step": 3,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:36.554849Z"
+    },
+    {
+      "seq": 316,
+      "type": "model",
+      "status": "completed",
+      "step": 3,
+      "attempt": 1,
+      "duration_ms": 7176,
+      "occurred_at": "2026-09-12T19:16:43.731651Z"
+    },
+    {
+      "seq": 317,
+      "type": "authorization",
+      "status": "granted",
+      "step": 3,
+      "attempt": 1,
+      "call_id": "call_9aef72f435e7480db81c31c4",
+      "tool": "artifact_create",
+      "action_key": "agent.conversation_tools.artifact_create",
+      "authorization_revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+      "occurred_at": "2026-09-12T19:16:43.778435Z"
+    },
+    {
+      "seq": 318,
+      "type": "tool",
+      "status": "started",
+      "step": 3,
+      "attempt": 1,
+      "call_id": "call_9aef72f435e7480db81c31c4",
+      "tool": "artifact_create",
+      "occurred_at": "2026-09-12T19:16:43.779036Z"
+    },
+    {
+      "seq": 319,
+      "type": "tool",
+      "status": "completed",
+      "step": 3,
+      "attempt": 1,
+      "call_id": "call_9aef72f435e7480db81c31c4",
+      "tool": "artifact_create",
+      "duration_ms": 8,
+      "occurred_at": "2026-09-12T19:16:43.787271Z"
+    },
+    {
+      "seq": 320,
+      "type": "step",
+      "status": "prepared",
+      "step": 4,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:43.824669Z"
+    },
+    {
+      "seq": 321,
+      "type": "model",
+      "status": "started",
+      "step": 4,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:43.873639Z"
+    },
+    {
+      "seq": 512,
+      "type": "model",
+      "status": "completed",
+      "step": 4,
+      "attempt": 1,
+      "duration_ms": 9161,
+      "occurred_at": "2026-09-12T19:16:53.0351Z"
+    },
+    {
+      "seq": 514,
+      "type": "run",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:53.044879Z"
+    }
+  ],
+  "audit_complete": true,
+  "started_at": "2026-09-12T19:16:14.660976Z",
+  "completed_at": "2026-09-12T19:16:53.044879Z",
+  "duration_ms": 38383,
+  "queue_duration_ms": 0,
+  "created_at": "2026-09-12T19:16:14.659981Z",
+  "updated_at": "2026-09-12T19:16:53.044907Z"
+}

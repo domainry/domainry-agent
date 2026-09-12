@@ -1,0 +1,5 @@
+PASS compiled product is logged into the real Identity host and shows the enabled gpt-5.6-sol model
+PASS three ordered todos survive the full host reopen; only the second is completed and its exact due date remains stored
+PASS the weekly-report preference is rendered from persisted personal memory after restart
+PASS the UI opens version 2, switches to immutable version 1 and downloads Markdown containing the stored original facts
+PASS a browser-submitted request reaches the enabled real model through Responses and its single reply survives reload

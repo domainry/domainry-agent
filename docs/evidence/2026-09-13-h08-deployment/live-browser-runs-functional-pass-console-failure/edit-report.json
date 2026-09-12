@@ -1,0 +1,424 @@
+{
+  "id": "crun_2cb4826cac0e4f1419fe798d52b0802b",
+  "conversation_id": "conv_acbc04457bc6412e61adb305c40a9e48",
+  "client_message_id": "edit-report",
+  "status": "completed",
+  "user_seq": 3,
+  "assistant_message_id": "msg_5074a69f49c468bffa3624d8ebf655a6",
+  "attempt": 1,
+  "draft_bytes": 0,
+  "last_event_seq": 218,
+  "steps": [
+    {
+      "number": 0,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "call_7cDvKJRyezqYSL2HHKxPeDkg",
+          "name": "artifact_list",
+          "arguments": "{\"query\":\"青禾验收周报\",\"limit\":50}",
+          "status": "completed",
+          "result_preview": "{\"items\":[{\"id\":\"art_594d60ad7fb1ef1db5b8b6190fca5b77\",\"version\":1,\"title\":\"青禾验收周报\",\"kind\":\"markdown\",\"sha256\":\"2ce26119a24c7ac5f5934dd62f652ed2c584019b437a496bb331fe96499ab6e6\",\"bytes\":326,\"source_conversation_id\":\"conv_ef7dea30bbd77f85334540505b0a0e55\",\"source_run_id\":\"crun_818e2c11f65e0f2225e73c9edbfb7812\",\"created_at\":\"2026-09-12T19:22:51.862Z\",\"updated_at\":\"2026-09-12T19:22:51.862Z\"}],\"complete\":true}",
+          "result_reference": {
+            "conversation_id": "conv_acbc04457bc6412e61adb305c40a9e48",
+            "run_id": "crun_2cb4826cac0e4f1419fe798d52b0802b",
+            "step": 0,
+            "call_id": "call_7cDvKJRyezqYSL2HHKxPeDkg",
+            "sha256": "cbd23b62ae5964caf5f669eb85002369bd1d5f163d499786b2586ad17172b615"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "eb28dabaeeb7caa4f88bccf98c2f027eb7d51ab8f97929682d921c5f607124aa",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:23:14.749771Z",
+          "completed_at": "2026-09-12T19:23:14.76624Z",
+          "duration_ms": 16
+        }
+      ],
+      "usage": {
+        "input_tokens": 4930,
+        "input_tokens_details": {
+          "cache_write_tokens": 4927,
+          "cached_tokens": 0
+        },
+        "output_tokens": 52,
+        "output_tokens_details": {
+          "reasoning_tokens": 22
+        },
+        "total_tokens": 4982
+      },
+      "started_at": "2026-09-12T19:23:11.569478Z",
+      "completed_at": "2026-09-12T19:23:14.669949Z",
+      "duration_ms": 3100
+    },
+    {
+      "number": 1,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "call_jcRhbtlCquSRXhKNn3EJ0OkS",
+          "name": "artifact_read",
+          "arguments": "{\"id\":\"art_594d60ad7fb1ef1db5b8b6190fca5b77\",\"version\":1,\"offset\":0,\"max_bytes\":16384}",
+          "status": "completed",
+          "result_preview": "{\"artifact\":{\"id\":\"art_594d60ad7fb1ef1db5b8b6190fca5b77\",\"version\":1,\"title\":\"青禾验收周报\",\"kind\":\"markdown\",\"sha256\":\"2ce26119a24c7ac5f5934dd62f652ed2c584019b437a496bb331fe96499ab6e6\",\"bytes\":326,\"source_conversation_id\":\"conv_ef7dea30bbd77f85334540505b0a0e55\",\"source_run_id\":\"crun_818e2c11f65e0f2225e73c9edbfb7812\",\"created_at\":\"2026-09-12T19:22:51.862Z\",\"updated_at\":\"2026-09-12T19:22:51.862Z\"},\"markdown\":\"# 青禾验收周报\\n\\n## 本周进展\\n\\n- 整理访谈记录：未完成\\n- 核对部门费用：未完成\\n- 提交发布周报：未完成\\n\\n## 风险\\n\\n- 待核对\\n\\n## 下周计划\\n\\n- 完成整理访谈记录\\n- 于 2026-09-18 完成核对部门费用\\n- 完成提交发布周报\\n\",\"offset\":0,\"next_offset\":276,\"complete\":true}",
+          "result_reference": {
+            "conversation_id": "conv_acbc04457bc6412e61adb305c40a9e48",
+            "run_id": "crun_2cb4826cac0e4f1419fe798d52b0802b",
+            "step": 1,
+            "call_id": "call_jcRhbtlCquSRXhKNn3EJ0OkS",
+            "sha256": "021e966bf44931186413b2593943e31a96e3877c46694e1ca2901fcdb86c37f0"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "eb28dabaeeb7caa4f88bccf98c2f027eb7d51ab8f97929682d921c5f607124aa",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:23:17.057238Z",
+          "completed_at": "2026-09-12T19:23:17.062524Z",
+          "duration_ms": 5
+        }
+      ],
+      "usage": {
+        "input_tokens": 5188,
+        "input_tokens_details": {
+          "cache_write_tokens": 258,
+          "cached_tokens": 4927
+        },
+        "output_tokens": 63,
+        "output_tokens_details": {
+          "reasoning_tokens": 6
+        },
+        "total_tokens": 5251
+      },
+      "started_at": "2026-09-12T19:23:14.862287Z",
+      "completed_at": "2026-09-12T19:23:16.987388Z",
+      "duration_ms": 2125
+    },
+    {
+      "number": 2,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "write",
+          "id": "call_jytzhstvQXcJATxqRwy7xNEP",
+          "name": "artifact_edit",
+          "arguments": "{\"id\":\"art_594d60ad7fb1ef1db5b8b6190fca5b77\",\"expected_version\":1,\"patch\":{\"text\":[{\"find\":\"## 风险\\n\\n- 待核对\\n\\n## 下周计划\",\"replace\":\"## 风险\\n\\n费用已核对，暂无新增风险。\\n\\n## 下周计划\"}]}}",
+          "status": "completed",
+          "resource_id": "art_594d60ad7fb1ef1db5b8b6190fca5b77",
+          "result_preview": "{\"artifact\":{\"id\":\"art_594d60ad7fb1ef1db5b8b6190fca5b77\",\"version\":2,\"title\":\"青禾验收周报\",\"kind\":\"markdown\",\"sha256\":\"77f4740c15bffb04e4706bced9eb21f17b97841f271697a12510f0869e82db9a\",\"bytes\":354,\"source_conversation_id\":\"conv_ef7dea30bbd77f85334540505b0a0e55\",\"source_run_id\":\"crun_818e2c11f65e0f2225e73c9edbfb7812\",\"created_at\":\"2026-09-12T19:22:51.862Z\",\"updated_at\":\"2026-09-12T19:23:21.164Z\"}}",
+          "result_reference": {
+            "conversation_id": "conv_acbc04457bc6412e61adb305c40a9e48",
+            "run_id": "crun_2cb4826cac0e4f1419fe798d52b0802b",
+            "step": 2,
+            "call_id": "call_jytzhstvQXcJATxqRwy7xNEP",
+            "sha256": "1f473b308106c730fc627c62d4854adab770fb68656b3dc6e00c41328541f565"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "eb28dabaeeb7caa4f88bccf98c2f027eb7d51ab8f97929682d921c5f607124aa",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:23:21.147717Z",
+          "completed_at": "2026-09-12T19:23:21.165072Z",
+          "duration_ms": 17
+        }
+      ],
+      "usage": {
+        "input_tokens": 5566,
+        "input_tokens_details": {
+          "cache_write_tokens": 378,
+          "cached_tokens": 5185
+        },
+        "output_tokens": 155,
+        "output_tokens_details": {
+          "reasoning_tokens": 58
+        },
+        "total_tokens": 5721
+      },
+      "started_at": "2026-09-12T19:23:17.152609Z",
+      "completed_at": "2026-09-12T19:23:21.083457Z",
+      "duration_ms": 3930
+    },
+    {
+      "number": 3,
+      "attempt": 1,
+      "status": "completed",
+      "text": "已修改同一份 **《青禾验收周报》**，未另建文件。\n\n“风险”正文现为：**费用已核对，暂无新增风险。**\n\n该节标题及第一节、第三节原文均已保留。",
+      "calls": [],
+      "usage": {
+        "input_tokens": 5951,
+        "input_tokens_details": {
+          "cache_write_tokens": 385,
+          "cached_tokens": 5563
+        },
+        "output_tokens": 59,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 6010
+      },
+      "started_at": "2026-09-12T19:23:21.25872Z",
+      "completed_at": "2026-09-12T19:23:23.642499Z",
+      "duration_ms": 2383
+    }
+  ],
+  "write_scope": {
+    "personal_memory": false,
+    "personal_artifacts": true
+  },
+  "model": "gpt-5.6-sol",
+  "usage": {
+    "input_tokens": 21635,
+    "output_tokens": 329,
+    "total_tokens": 21964
+  },
+  "correlation_id": "crun_2cb4826cac0e4f1419fe798d52b0802b",
+  "metrics": {
+    "steps": 4,
+    "model_calls": 4,
+    "tool_calls": 3,
+    "tool_attempts": 3,
+    "authorization_checks": 3,
+    "confirmation_decisions": 0
+  },
+  "audit": [
+    {
+      "seq": 1,
+      "type": "run",
+      "status": "queued",
+      "step": 0,
+      "occurred_at": "2026-09-12T19:23:11.450214Z"
+    },
+    {
+      "seq": 2,
+      "type": "run",
+      "status": "running",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:23:11.450883Z"
+    },
+    {
+      "seq": 3,
+      "type": "step",
+      "status": "prepared",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:23:11.533998Z"
+    },
+    {
+      "seq": 4,
+      "type": "model",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:23:11.569478Z"
+    },
+    {
+      "seq": 20,
+      "type": "model",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "duration_ms": 3100,
+      "occurred_at": "2026-09-12T19:23:14.669949Z"
+    },
+    {
+      "seq": 21,
+      "type": "authorization",
+      "status": "granted",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_7cDvKJRyezqYSL2HHKxPeDkg",
+      "tool": "artifact_list",
+      "action_key": "agent.conversation_tools.artifact_list",
+      "authorization_revision": "eb28dabaeeb7caa4f88bccf98c2f027eb7d51ab8f97929682d921c5f607124aa",
+      "occurred_at": "2026-09-12T19:23:14.748713Z"
+    },
+    {
+      "seq": 22,
+      "type": "tool",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_7cDvKJRyezqYSL2HHKxPeDkg",
+      "tool": "artifact_list",
+      "occurred_at": "2026-09-12T19:23:14.749771Z"
+    },
+    {
+      "seq": 23,
+      "type": "tool",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_7cDvKJRyezqYSL2HHKxPeDkg",
+      "tool": "artifact_list",
+      "duration_ms": 16,
+      "occurred_at": "2026-09-12T19:23:14.76624Z"
+    },
+    {
+      "seq": 24,
+      "type": "step",
+      "status": "prepared",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:23:14.825599Z"
+    },
+    {
+      "seq": 25,
+      "type": "model",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:23:14.862287Z"
+    },
+    {
+      "seq": 68,
+      "type": "model",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "duration_ms": 2125,
+      "occurred_at": "2026-09-12T19:23:16.987388Z"
+    },
+    {
+      "seq": 69,
+      "type": "authorization",
+      "status": "granted",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_jcRhbtlCquSRXhKNn3EJ0OkS",
+      "tool": "artifact_read",
+      "action_key": "agent.conversation_tools.artifact_read",
+      "authorization_revision": "eb28dabaeeb7caa4f88bccf98c2f027eb7d51ab8f97929682d921c5f607124aa",
+      "occurred_at": "2026-09-12T19:23:17.056256Z"
+    },
+    {
+      "seq": 70,
+      "type": "tool",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_jcRhbtlCquSRXhKNn3EJ0OkS",
+      "tool": "artifact_read",
+      "occurred_at": "2026-09-12T19:23:17.057238Z"
+    },
+    {
+      "seq": 71,
+      "type": "tool",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_jcRhbtlCquSRXhKNn3EJ0OkS",
+      "tool": "artifact_read",
+      "duration_ms": 5,
+      "occurred_at": "2026-09-12T19:23:17.062524Z"
+    },
+    {
+      "seq": 72,
+      "type": "step",
+      "status": "prepared",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:23:17.102989Z"
+    },
+    {
+      "seq": 73,
+      "type": "model",
+      "status": "started",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:23:17.152609Z"
+    },
+    {
+      "seq": 155,
+      "type": "model",
+      "status": "completed",
+      "step": 2,
+      "attempt": 1,
+      "duration_ms": 3930,
+      "occurred_at": "2026-09-12T19:23:21.083457Z"
+    },
+    {
+      "seq": 156,
+      "type": "authorization",
+      "status": "granted",
+      "step": 2,
+      "attempt": 1,
+      "call_id": "call_jytzhstvQXcJATxqRwy7xNEP",
+      "tool": "artifact_edit",
+      "action_key": "agent.conversation_tools.artifact_edit",
+      "authorization_revision": "eb28dabaeeb7caa4f88bccf98c2f027eb7d51ab8f97929682d921c5f607124aa",
+      "occurred_at": "2026-09-12T19:23:21.146946Z"
+    },
+    {
+      "seq": 157,
+      "type": "tool",
+      "status": "started",
+      "step": 2,
+      "attempt": 1,
+      "call_id": "call_jytzhstvQXcJATxqRwy7xNEP",
+      "tool": "artifact_edit",
+      "occurred_at": "2026-09-12T19:23:21.147717Z"
+    },
+    {
+      "seq": 158,
+      "type": "tool",
+      "status": "completed",
+      "step": 2,
+      "attempt": 1,
+      "call_id": "call_jytzhstvQXcJATxqRwy7xNEP",
+      "tool": "artifact_edit",
+      "duration_ms": 17,
+      "occurred_at": "2026-09-12T19:23:21.165072Z"
+    },
+    {
+      "seq": 159,
+      "type": "step",
+      "status": "prepared",
+      "step": 3,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:23:21.201366Z"
+    },
+    {
+      "seq": 160,
+      "type": "model",
+      "status": "started",
+      "step": 3,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:23:21.25872Z"
+    },
+    {
+      "seq": 216,
+      "type": "model",
+      "status": "completed",
+      "step": 3,
+      "attempt": 1,
+      "duration_ms": 2383,
+      "occurred_at": "2026-09-12T19:23:23.642499Z"
+    },
+    {
+      "seq": 218,
+      "type": "run",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:23:23.663877Z"
+    }
+  ],
+  "audit_complete": true,
+  "started_at": "2026-09-12T19:23:11.450883Z",
+  "completed_at": "2026-09-12T19:23:23.663877Z",
+  "duration_ms": 12212,
+  "queue_duration_ms": 0,
+  "created_at": "2026-09-12T19:23:11.450138Z",
+  "updated_at": "2026-09-12T19:23:23.663955Z"
+}

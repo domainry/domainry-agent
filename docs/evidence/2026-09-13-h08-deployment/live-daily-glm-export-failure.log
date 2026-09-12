@@ -1,0 +1,54 @@
+Synthetic work execution evidence: /Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-13-h08-deployment/live-daily
+=== RUN   TestLiveDailyWorkThroughIdentityHTTP
+    conversation_live_tools_test.go:164: phase=discussion started model=glm-5.3-flash-free
+    conversation_live_tools_test.go:164: phase=discussion elapsed=0s state=running
+    conversation_live_tools_test.go:164: phase=discussion elapsed=6s state=completed
+    conversation_live_tools_test.go:166: phase=create-todos started model=glm-5.3-flash-free
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=0s state=running
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=6s state=running history_search:completed
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=12s state=running history_search:completed,history_read:completed
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=18s state=running history_search:completed,history_read:completed,todo_create:completed
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=24s state=completed history_search:completed,history_read:completed,todo_create:completed
+    conversation_live_tools_test.go:189: phase=reschedule-second started model=glm-5.3-flash-free
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=0s state=running
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=6s state=running time_now:completed
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=12s state=running time_now:completed,todo_list:completed
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=18s state=running time_now:completed,todo_list:completed,todo_update:completed
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=24s state=completed time_now:completed,todo_list:completed,todo_update:completed
+    conversation_live_tools_test.go:198: phase=remember-format started model=glm-5.3-flash-free
+    conversation_live_tools_test.go:198: phase=remember-format elapsed=0s state=running
+    conversation_live_tools_test.go:198: phase=remember-format elapsed=8s state=running memory_save:completed
+    conversation_live_tools_test.go:198: phase=remember-format elapsed=15s state=completed memory_save:completed
+    conversation_live_tools_test.go:207: phase=create-report started model=glm-5.3-flash-free
+    conversation_live_tools_test.go:207: phase=create-report elapsed=0s state=running
+    conversation_live_tools_test.go:207: phase=create-report elapsed=8s state=running todo_get:receiving,todo_get:receiving
+    conversation_live_tools_test.go:207: phase=create-report elapsed=11s state=running todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:failed(tool_failed)
+    conversation_live_tools_test.go:207: phase=create-report elapsed=16s state=running todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:queued
+    conversation_live_tools_test.go:207: phase=create-report elapsed=17s state=running todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:failed(tool_failed)
+    conversation_live_tools_test.go:207: phase=create-report elapsed=22s state=running todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_list:completed
+    conversation_live_tools_test.go:207: phase=create-report elapsed=29s state=running todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_list:completed,artifact_create:receiving
+    conversation_live_tools_test.go:207: phase=create-report elapsed=29s state=running todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_list:completed,artifact_create:completed
+    conversation_live_tools_test.go:207: phase=create-report elapsed=39s state=completed todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_get:failed(tool_failed),todo_list:completed,artifact_create:completed
+    conversation_live_tools_test.go:242: host fully closed and reopened with the same SQLite database and Identity
+    conversation_live_tools_test.go:249: phase=continue-work started model=glm-5.3-flash-free
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=0s state=running
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=3s state=running todo_list:completed
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=9s state=running todo_list:completed,history_search:completed,todo_list:completed
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=14s state=running todo_list:completed,history_search:completed,todo_list:completed,todo_list:completed
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=20s state=running todo_list:completed,history_search:completed,todo_list:completed,todo_list:completed,todo_update:completed
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=27s state=completed todo_list:completed,history_search:completed,todo_list:completed,todo_list:completed,todo_update:completed
+    conversation_live_tools_test.go:258: phase=edit-report started model=glm-5.3-flash-free
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=0s state=running
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=6s state=running artifact_list:completed
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=11s state=running artifact_list:completed,artifact_read:receiving
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=12s state=running artifact_list:completed,artifact_read:completed
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=18s state=running artifact_list:completed,artifact_read:completed,artifact_edit:completed
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=27s state=completed artifact_list:completed,artifact_read:completed,artifact_edit:completed
+    conversation_live_tools_test.go:267: phase=export-original started model=glm-5.3-flash-free
+    conversation_live_tools_test.go:267: phase=export-original elapsed=0s state=running
+    conversation_live_tools_test.go:267: phase=export-original elapsed=8s state=completed
+    conversation_live_tools_test.go:281: model did not export original version
+--- FAIL: TestLiveDailyWorkThroughIdentityHTTP (170.35s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	171.083s
+FAIL

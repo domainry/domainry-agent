@@ -1,0 +1,319 @@
+{
+  "id": "crun_029059a64a9dbe10ead9e80c7eeb0082",
+  "conversation_id": "conv_6cf41684caf531592ab54743c7b954c9",
+  "client_message_id": "remember-format",
+  "status": "completed",
+  "user_seq": 5,
+  "assistant_message_id": "msg_9fc72503833e1634e6ee1e6e25f0a8af",
+  "attempt": 1,
+  "draft_bytes": 0,
+  "last_event_seq": 118,
+  "steps": [
+    {
+      "number": 0,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "call_t5QhWEkSRcELATcD0Nu7EkSz",
+          "name": "memory_search",
+          "arguments": "{\"query\":\"周报格式偏好\"}",
+          "status": "completed",
+          "result_preview": "{\"complete\":true,\"items\":[],\"next_cursor\":\"\"}",
+          "result_reference": {
+            "conversation_id": "conv_6cf41684caf531592ab54743c7b954c9",
+            "run_id": "crun_029059a64a9dbe10ead9e80c7eeb0082",
+            "step": 0,
+            "call_id": "call_t5QhWEkSRcELATcD0Nu7EkSz",
+            "sha256": "95c9ef5a0953e946cb9d328eecbf379fa88e69db32f93174cc6b887365d2a048"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "ef333a8cc8ff38e77e7895027c991829ff3ca5e68a6d85892b11e99bfede612b",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:19:03.603475Z",
+          "completed_at": "2026-09-12T19:19:03.605108Z",
+          "duration_ms": 1
+        }
+      ],
+      "usage": {
+        "input_tokens": 5049,
+        "input_tokens_details": {
+          "cache_write_tokens": 5046,
+          "cached_tokens": 0
+        },
+        "output_tokens": 40,
+        "output_tokens_details": {
+          "reasoning_tokens": 16
+        },
+        "total_tokens": 5089
+      },
+      "started_at": "2026-09-12T19:19:01.576972Z",
+      "completed_at": "2026-09-12T19:19:03.564268Z",
+      "duration_ms": 1987
+    },
+    {
+      "number": 1,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "write",
+          "id": "call_NJG9ljXUPmTYpw6aqWRnglz1",
+          "name": "memory_save",
+          "arguments": "{\"title\":\"周报格式偏好\",\"content\":\"周报固定按“本周进展、风险、下周计划”三节组织，每节使用简短要点。\",\"enabled\":true,\"expected_revision\":0}",
+          "status": "completed",
+          "resource_id": "mem_f1d4879ff21b576c13529f5522b8fc94",
+          "result_preview": "{\"memory\":{\"id\":\"mem_f1d4879ff21b576c13529f5522b8fc94\",\"title\":\"周报格式偏好\",\"content\":\"周报固定按“本周进展、风险、下周计划”三节组织，每节使用简短要点。\",\"enabled\":true,\"revision\":1,\"created_at\":\"2026-09-12T19:19:06.849933Z\",\"updated_at\":\"2026-09-12T19:19:06.849933Z\"}}",
+          "result_reference": {
+            "conversation_id": "conv_6cf41684caf531592ab54743c7b954c9",
+            "run_id": "crun_029059a64a9dbe10ead9e80c7eeb0082",
+            "step": 1,
+            "call_id": "call_NJG9ljXUPmTYpw6aqWRnglz1",
+            "sha256": "d1ffa07ce44910e9169452133ed666e001e39f44f5f30b0056c000767bb42430"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "ef333a8cc8ff38e77e7895027c991829ff3ca5e68a6d85892b11e99bfede612b",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:19:06.847704Z",
+          "completed_at": "2026-09-12T19:19:06.850071Z",
+          "duration_ms": 2
+        }
+      ],
+      "usage": {
+        "input_tokens": 5119,
+        "input_tokens_details": {
+          "cache_write_tokens": 70,
+          "cached_tokens": 5046
+        },
+        "output_tokens": 70,
+        "output_tokens_details": {
+          "reasoning_tokens": 7
+        },
+        "total_tokens": 5189
+      },
+      "started_at": "2026-09-12T19:19:03.67665Z",
+      "completed_at": "2026-09-12T19:19:06.808161Z",
+      "duration_ms": 3131
+    },
+    {
+      "number": 2,
+      "attempt": 1,
+      "status": "completed",
+      "text": "已保存为个人记忆：\n\n**周报格式偏好**：固定按“本周进展、风险、下周计划”三节组织，每节使用简短要点。",
+      "calls": [],
+      "usage": {
+        "input_tokens": 5343,
+        "input_tokens_details": {
+          "cache_write_tokens": 224,
+          "cached_tokens": 5116
+        },
+        "output_tokens": 44,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 5387
+      },
+      "started_at": "2026-09-12T19:19:06.925465Z",
+      "completed_at": "2026-09-12T19:19:09.51976Z",
+      "duration_ms": 2594
+    }
+  ],
+  "write_scope": {
+    "personal_memory": true
+  },
+  "model": "gpt-5.6-sol",
+  "usage": {
+    "input_tokens": 15511,
+    "output_tokens": 154,
+    "total_tokens": 15665
+  },
+  "correlation_id": "crun_029059a64a9dbe10ead9e80c7eeb0082",
+  "metrics": {
+    "steps": 3,
+    "model_calls": 3,
+    "tool_calls": 2,
+    "tool_attempts": 2,
+    "authorization_checks": 2,
+    "confirmation_decisions": 0
+  },
+  "audit": [
+    {
+      "seq": 1,
+      "type": "run",
+      "status": "queued",
+      "step": 0,
+      "occurred_at": "2026-09-12T19:19:01.334663Z"
+    },
+    {
+      "seq": 2,
+      "type": "run",
+      "status": "running",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:01.336608Z"
+    },
+    {
+      "seq": 3,
+      "type": "step",
+      "status": "prepared",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:01.502113Z"
+    },
+    {
+      "seq": 4,
+      "type": "model",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:01.576972Z"
+    },
+    {
+      "seq": 15,
+      "type": "model",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "duration_ms": 1987,
+      "occurred_at": "2026-09-12T19:19:03.564268Z"
+    },
+    {
+      "seq": 16,
+      "type": "authorization",
+      "status": "granted",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_t5QhWEkSRcELATcD0Nu7EkSz",
+      "tool": "memory_search",
+      "action_key": "agent.conversation_tools.memory_search",
+      "authorization_revision": "ef333a8cc8ff38e77e7895027c991829ff3ca5e68a6d85892b11e99bfede612b",
+      "occurred_at": "2026-09-12T19:19:03.602975Z"
+    },
+    {
+      "seq": 17,
+      "type": "tool",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_t5QhWEkSRcELATcD0Nu7EkSz",
+      "tool": "memory_search",
+      "occurred_at": "2026-09-12T19:19:03.603475Z"
+    },
+    {
+      "seq": 18,
+      "type": "tool",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_t5QhWEkSRcELATcD0Nu7EkSz",
+      "tool": "memory_search",
+      "duration_ms": 1,
+      "occurred_at": "2026-09-12T19:19:03.605108Z"
+    },
+    {
+      "seq": 19,
+      "type": "step",
+      "status": "prepared",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:03.64101Z"
+    },
+    {
+      "seq": 20,
+      "type": "model",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:03.67665Z"
+    },
+    {
+      "seq": 70,
+      "type": "model",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "duration_ms": 3131,
+      "occurred_at": "2026-09-12T19:19:06.808161Z"
+    },
+    {
+      "seq": 71,
+      "type": "authorization",
+      "status": "granted",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_NJG9ljXUPmTYpw6aqWRnglz1",
+      "tool": "memory_save",
+      "action_key": "agent.conversation_tools.memory_save",
+      "authorization_revision": "ef333a8cc8ff38e77e7895027c991829ff3ca5e68a6d85892b11e99bfede612b",
+      "occurred_at": "2026-09-12T19:19:06.846985Z"
+    },
+    {
+      "seq": 72,
+      "type": "tool",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_NJG9ljXUPmTYpw6aqWRnglz1",
+      "tool": "memory_save",
+      "occurred_at": "2026-09-12T19:19:06.847704Z"
+    },
+    {
+      "seq": 73,
+      "type": "tool",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_NJG9ljXUPmTYpw6aqWRnglz1",
+      "tool": "memory_save",
+      "duration_ms": 2,
+      "occurred_at": "2026-09-12T19:19:06.850071Z"
+    },
+    {
+      "seq": 74,
+      "type": "step",
+      "status": "prepared",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:06.886263Z"
+    },
+    {
+      "seq": 75,
+      "type": "model",
+      "status": "started",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:06.925465Z"
+    },
+    {
+      "seq": 116,
+      "type": "model",
+      "status": "completed",
+      "step": 2,
+      "attempt": 1,
+      "duration_ms": 2594,
+      "occurred_at": "2026-09-12T19:19:09.51976Z"
+    },
+    {
+      "seq": 118,
+      "type": "run",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:09.525777Z"
+    }
+  ],
+  "audit_complete": true,
+  "started_at": "2026-09-12T19:19:01.336608Z",
+  "completed_at": "2026-09-12T19:19:09.525777Z",
+  "duration_ms": 8189,
+  "queue_duration_ms": 2,
+  "created_at": "2026-09-12T19:19:01.33456Z",
+  "updated_at": "2026-09-12T19:19:09.525804Z"
+}

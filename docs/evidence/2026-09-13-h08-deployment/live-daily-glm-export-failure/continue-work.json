@@ -1,0 +1,565 @@
+{
+  "id": "crun_7c177be5551c2107a09a7ee853cfeb7d",
+  "conversation_id": "conv_6bd80dc9ced7a453440650da0c09a7a6",
+  "client_message_id": "continue-work",
+  "status": "completed",
+  "user_seq": 1,
+  "assistant_message_id": "msg_d9bf57ebeabddb9f564c1c5cf973e1cd",
+  "attempt": 1,
+  "draft_bytes": 0,
+  "last_event_seq": 237,
+  "steps": [
+    {
+      "number": 0,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "call_bc8f0e755d6a43119db5ca98",
+          "name": "todo_list",
+          "arguments": "{\"query\":\"青禾\"}",
+          "status": "completed",
+          "result_preview": "{\"items\":[],\"complete\":true,\"lookup\":{\"batch_id\":\"\",\"match_fields\":[\"title\",\"description\"],\"match_mode\":\"literal_substring\",\"note\":\"These results apply only to the supplied filters. Project and conversation names are not searched. A filtered empty page does not mean no todos exist; original titles or batch IDs may be found in available history, or by listing without the query. A current_conversation scope excludes work created in other conversations.\",\"query\":\"青禾\",\"scope\":\"all\",\"status\":\"\"}}",
+          "result_reference": {
+            "conversation_id": "conv_6bd80dc9ced7a453440650da0c09a7a6",
+            "run_id": "crun_7c177be5551c2107a09a7ee853cfeb7d",
+            "step": 0,
+            "call_id": "call_bc8f0e755d6a43119db5ca98",
+            "sha256": "6551a464f6f8ace196f7c827ca5883dfa734741a1acf6a67f85783a54fbd3fb2"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:16:55.887803Z",
+          "completed_at": "2026-09-12T19:16:55.890308Z",
+          "duration_ms": 2
+        }
+      ],
+      "usage": {
+        "completion_tokens": 23,
+        "prompt_tokens": 6534,
+        "prompt_tokens_details": {
+          "cached_tokens": 6336
+        },
+        "total_tokens": 6557
+      },
+      "started_at": "2026-09-12T19:16:53.399551Z",
+      "completed_at": "2026-09-12T19:16:55.84614Z",
+      "duration_ms": 2446
+    },
+    {
+      "number": 1,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "call_27ae7e105f10437489fa4546",
+          "name": "history_search",
+          "arguments": "{\"query\":\"青禾\"}",
+          "status": "completed",
+          "result_preview": "{\"items\":[{\"conversation_id\":\"conv_89a35a2e2b307413db33d63554794328\",\"message_id\":\"msg_f50081341118f974418960b0f8ed14a5\",\"run_id\":\"crun_617d1a9985e4015a8cf3da1644ab312b\",\"seq\":1,\"role\":\"user\",\"excerpt\":\"找出我们另一段会话里讨论的“青禾发布事项”，读取原始讨论，把其中三项按原顺序建成一批个人待办，标题保留原文，时区是 Asia/Shanghai。暂不设置截止日期。\",\"created_at\":\"2026-09-12T19:15:11.57759Z\"},{\"conversation_id\":\"conv_89a35a2e2b307413db33d63554794328\",\"message_id\":\"msg_e33c36dc9c334bc968001ffcd28d1021\",\"run_id\":\"crun_617d1a9985e4015a8cf3da1644ab312b\",\"seq\":2,\"role\":\"assistant\",\"excerpt\":\"已完成。我从另一段会话的原始讨论中找到了“青禾发布事项”的三项内容，按原顺序建成了同一批待办（批次 tb_d0a44b3785f034790f1fef9634386eb2），时区均为 Asia/Shanghai，未设截止日期：\\n\\n1. 整理访谈\",\"created_at\":\"2026-09-12T19:15:35.417936Z\"},{\"conversation_id\":\"conv_f7c05b363562e2e38cd2927577aab7db\",\"message_id\":\"msg_c204f9c0c5cb2689711583ec5ba6b662\",\"run_id\":\"crun_0ebe9bb73c8a8b3f85a02a526776beee\",\"seq\":1,\"role\":\"user\",\"excerpt\":\"青禾发布事项：1. 整理访谈记录；2. 核对部门费用；3. 提交发布周报。三个事项目前都没完成，也没有截止日期。这里只讨论，不创建待办、不保存偏好；回复一句收到即可。\",\"created_at\":\"2026-09-12T19:15:06.034495Z\"},{\"conversation_id\":\"conv_89a35a2e2b307413db33d63554794328\",\"message_id\":\"msg_b5d8b5e848a892a5dc7d3347751747b0\",\"run_id\":\"crun_1ea419e113486ba5e587266ebb7b94d0\",\"seq\":7,\"role\":\"user\",\"excerpt\":\"先读取这批待办的最新状态，再根据实际状态和我保存的格式偏好生成一份 Markdown 成果，标题为“青禾验收周报”。三节依次使用二级标题“本周进展”“风险”“下周计划”。第一节逐项列出\",\"created_at\":\"2026-09-12T19:16:14.659981Z\"},{\"conversation_id\":\"conv_89a35a2e2b307413db33d63554794328\",\"message_id\":\"msg_9fd865164a206e8d5cf8434c500141b4\",\"run_id",
+          "result_truncated": true,
+          "result_reference": {
+            "conversation_id": "conv_6bd80dc9ced7a453440650da0c09a7a6",
+            "run_id": "crun_7c177be5551c2107a09a7ee853cfeb7d",
+            "step": 1,
+            "call_id": "call_27ae7e105f10437489fa4546",
+            "sha256": "c0106cd27e9584bbc4af981c683bbc4ff4e56f2abd46a28d9ccea969b30de937"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:17:01.713153Z",
+          "completed_at": "2026-09-12T19:17:01.721619Z",
+          "duration_ms": 8
+        },
+        {
+          "effect": "read",
+          "id": "call_359f6f41ded64fec8b03d187",
+          "name": "todo_list",
+          "arguments": "{\"scope\":\"current_conversation\"}",
+          "status": "completed",
+          "result_preview": "{\"items\":[],\"complete\":true,\"lookup\":{\"batch_id\":\"\",\"match_fields\":[\"title\",\"description\"],\"match_mode\":\"literal_substring\",\"note\":\"These results apply only to the supplied filters. Project and conversation names are not searched. A filtered empty page does not mean no todos exist; original titles or batch IDs may be found in available history, or by listing without the query. A current_conversation scope excludes work created in other conversations.\",\"query\":\"\",\"scope\":\"current_conversation\",\"status\":\"\"}}",
+          "result_reference": {
+            "conversation_id": "conv_6bd80dc9ced7a453440650da0c09a7a6",
+            "run_id": "crun_7c177be5551c2107a09a7ee853cfeb7d",
+            "step": 1,
+            "call_id": "call_359f6f41ded64fec8b03d187",
+            "sha256": "397a771b019ef078cf871d606a4ddf8ac73fb3afdd25c93677c59a2de6aaf703"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:17:01.76256Z",
+          "completed_at": "2026-09-12T19:17:01.764074Z",
+          "duration_ms": 1
+        }
+      ],
+      "usage": {
+        "completion_tokens": 34,
+        "prompt_tokens": 6677,
+        "prompt_tokens_details": {
+          "cached_tokens": 6400
+        },
+        "total_tokens": 6711
+      },
+      "started_at": "2026-09-12T19:16:55.966516Z",
+      "completed_at": "2026-09-12T19:17:01.666973Z",
+      "duration_ms": 5700
+    },
+    {
+      "number": 2,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "call_b24557f8cdec40b69c91a2fa",
+          "name": "todo_list",
+          "arguments": "{\"batch_id\":\"tb_d0a44b3785f034790f1fef9634386eb2\"}",
+          "status": "completed",
+          "result_preview": "{\"items\":[{\"id\":\"todo_bcc58e3ac502d9b391da59333ce1bd26\",\"title\":\"整理访谈记录\",\"status\":\"open\",\"timezone\":\"Asia/Shanghai\",\"revision\":1,\"batch_id\":\"tb_d0a44b3785f034790f1fef9634386eb2\",\"position\":1,\"source_conversation_id\":\"conv_89a35a2e2b307413db33d63554794328\",\"source_run_id\":\"crun_617d1a9985e4015a8cf3da1644ab312b\",\"created_at\":\"2026-09-12T19:15:28.863Z\",\"updated_at\":\"2026-09-12T19:15:28.863Z\"},{\"id\":\"todo_c8f33cf5aab7926d60538a58f14aef41\",\"title\":\"核对部门费用\",\"status\":\"open\",\"due_date\":\"2026-09-18\",\"timezone\":\"Asia/Shanghai\",\"revision\":2,\"batch_id\":\"tb_d0a44b3785f034790f1fef9634386eb2\",\"position\":2,\"source_conversation_id\":\"conv_89a35a2e2b307413db33d63554794328\",\"source_run_id\":\"crun_617d1a9985e4015a8cf3da1644ab312b\",\"created_at\":\"2026-09-12T19:15:28.863Z\",\"updated_at\":\"2026-09-12T19:15:53.025402Z\"},{\"id\":\"todo_59580465fd378d53d2237ca46918ec18\",\"title\":\"提交发布周报\",\"status\":\"open\",\"timezone\":\"Asia/Shanghai\",\"revision\":1,\"batch_id\":\"tb_d0a44b3785f034790f1fef9634386eb2\",\"position\":3,\"source_conversation_id\":\"conv_89a35a2e2b307413db33d63554794328\",\"source_run_id\":\"crun_617d1a9985e4015a8cf3da1644ab312b\",\"created_at\":\"2026-09-12T19:15:28.863Z\",\"updated_at\":\"2026-09-12T19:15:28.863Z\"}],\"complete\":true}",
+          "result_reference": {
+            "conversation_id": "conv_6bd80dc9ced7a453440650da0c09a7a6",
+            "run_id": "crun_7c177be5551c2107a09a7ee853cfeb7d",
+            "step": 2,
+            "call_id": "call_b24557f8cdec40b69c91a2fa",
+            "sha256": "cf394cc7c8a8502d27d0092ca6353cf7f4a71b6930ed6b5f580eaf18bddaf4e3"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:17:07.401245Z",
+          "completed_at": "2026-09-12T19:17:07.403765Z",
+          "duration_ms": 2
+        }
+      ],
+      "usage": {
+        "completion_tokens": 36,
+        "prompt_tokens": 7924,
+        "prompt_tokens_details": {
+          "cached_tokens": 6656
+        },
+        "total_tokens": 7960
+      },
+      "started_at": "2026-09-12T19:17:01.84443Z",
+      "completed_at": "2026-09-12T19:17:07.350238Z",
+      "duration_ms": 5505
+    },
+    {
+      "number": 3,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "write",
+          "id": "call_07198e4648344edfa0dd0dd3",
+          "name": "todo_update",
+          "arguments": "{\"expected_revision\":2,\"id\":\"todo_c8f33cf5aab7926d60538a58f14aef41\",\"patch\":{\"status\": \"completed\"}}",
+          "status": "completed",
+          "resource_id": "todo_c8f33cf5aab7926d60538a58f14aef41",
+          "result_preview": "{\"id\":\"todo_c8f33cf5aab7926d60538a58f14aef41\",\"title\":\"核对部门费用\",\"status\":\"completed\",\"due_date\":\"2026-09-18\",\"timezone\":\"Asia/Shanghai\",\"revision\":3,\"batch_id\":\"tb_d0a44b3785f034790f1fef9634386eb2\",\"position\":2,\"source_conversation_id\":\"conv_89a35a2e2b307413db33d63554794328\",\"source_run_id\":\"crun_617d1a9985e4015a8cf3da1644ab312b\",\"created_at\":\"2026-09-12T19:15:28.863Z\",\"updated_at\":\"2026-09-12T19:17:13.277785Z\",\"completed_at\":\"2026-09-12T19:17:13.277785Z\"}",
+          "result_reference": {
+            "conversation_id": "conv_6bd80dc9ced7a453440650da0c09a7a6",
+            "run_id": "crun_7c177be5551c2107a09a7ee853cfeb7d",
+            "step": 3,
+            "call_id": "call_07198e4648344edfa0dd0dd3",
+            "sha256": "1e077754106245eb9facfb26eb5b254770c356f8dc9e5f7b9699b1cf35285781"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:17:13.274418Z",
+          "completed_at": "2026-09-12T19:17:13.277934Z",
+          "duration_ms": 3
+        }
+      ],
+      "usage": {
+        "completion_tokens": 51,
+        "prompt_tokens": 8542,
+        "prompt_tokens_details": {
+          "cached_tokens": 7872
+        },
+        "total_tokens": 8593
+      },
+      "started_at": "2026-09-12T19:17:07.492892Z",
+      "completed_at": "2026-09-12T19:17:13.227182Z",
+      "duration_ms": 5734
+    },
+    {
+      "number": 4,
+      "attempt": 1,
+      "status": "completed",
+      "text": "已将该批待办（tb_d0a44b3785f034790f1fef9634386eb2）的第二项标记完成，未新建待办。\n\n- **名称**：核对部门费用（批次第 2 项）\n- **截止日期**：2026-09-18（Asia/Shanghai）\n- **你保存的周报格式偏好**：固定按“本周进展、风险、下周计划”三节组织，每节使用简短要点。",
+      "calls": [],
+      "usage": {
+        "completion_tokens": 109,
+        "prompt_tokens": 8855,
+        "prompt_tokens_details": {
+          "cached_tokens": 8512
+        },
+        "total_tokens": 8964
+      },
+      "started_at": "2026-09-12T19:17:13.369116Z",
+      "completed_at": "2026-09-12T19:17:20.020911Z",
+      "duration_ms": 6651
+    }
+  ],
+  "write_scope": {
+    "personal_memory": false,
+    "personal_todos": true
+  },
+  "model": "glm-5.3-flash-free",
+  "usage": {
+    "completion_tokens": 253,
+    "prompt_tokens": 38532,
+    "total_tokens": 38785
+  },
+  "correlation_id": "crun_7c177be5551c2107a09a7ee853cfeb7d",
+  "metrics": {
+    "steps": 5,
+    "model_calls": 5,
+    "tool_calls": 5,
+    "tool_attempts": 5,
+    "authorization_checks": 5,
+    "confirmation_decisions": 0
+  },
+  "audit": [
+    {
+      "seq": 1,
+      "type": "run",
+      "status": "queued",
+      "step": 0,
+      "occurred_at": "2026-09-12T19:16:53.294776Z"
+    },
+    {
+      "seq": 2,
+      "type": "run",
+      "status": "running",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:53.295296Z"
+    },
+    {
+      "seq": 3,
+      "type": "step",
+      "status": "prepared",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:53.367141Z"
+    },
+    {
+      "seq": 4,
+      "type": "model",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:53.399551Z"
+    },
+    {
+      "seq": 13,
+      "type": "model",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "duration_ms": 2446,
+      "occurred_at": "2026-09-12T19:16:55.84614Z"
+    },
+    {
+      "seq": 14,
+      "type": "authorization",
+      "status": "granted",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_bc8f0e755d6a43119db5ca98",
+      "tool": "todo_list",
+      "action_key": "agent.conversation_tools.todo_list",
+      "authorization_revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+      "occurred_at": "2026-09-12T19:16:55.887208Z"
+    },
+    {
+      "seq": 15,
+      "type": "tool",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_bc8f0e755d6a43119db5ca98",
+      "tool": "todo_list",
+      "occurred_at": "2026-09-12T19:16:55.887803Z"
+    },
+    {
+      "seq": 16,
+      "type": "tool",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_bc8f0e755d6a43119db5ca98",
+      "tool": "todo_list",
+      "duration_ms": 2,
+      "occurred_at": "2026-09-12T19:16:55.890308Z"
+    },
+    {
+      "seq": 17,
+      "type": "step",
+      "status": "prepared",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:55.928446Z"
+    },
+    {
+      "seq": 18,
+      "type": "model",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:55.966516Z"
+    },
+    {
+      "seq": 36,
+      "type": "model",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "duration_ms": 5700,
+      "occurred_at": "2026-09-12T19:17:01.666973Z"
+    },
+    {
+      "seq": 37,
+      "type": "authorization",
+      "status": "granted",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_27ae7e105f10437489fa4546",
+      "tool": "history_search",
+      "action_key": "agent.conversation_tools.history_search",
+      "authorization_revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+      "occurred_at": "2026-09-12T19:17:01.712525Z"
+    },
+    {
+      "seq": 38,
+      "type": "tool",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_27ae7e105f10437489fa4546",
+      "tool": "history_search",
+      "occurred_at": "2026-09-12T19:17:01.713153Z"
+    },
+    {
+      "seq": 39,
+      "type": "tool",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_27ae7e105f10437489fa4546",
+      "tool": "history_search",
+      "duration_ms": 8,
+      "occurred_at": "2026-09-12T19:17:01.721619Z"
+    },
+    {
+      "seq": 40,
+      "type": "authorization",
+      "status": "granted",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_359f6f41ded64fec8b03d187",
+      "tool": "todo_list",
+      "action_key": "agent.conversation_tools.todo_list",
+      "authorization_revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+      "occurred_at": "2026-09-12T19:17:01.761925Z"
+    },
+    {
+      "seq": 41,
+      "type": "tool",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_359f6f41ded64fec8b03d187",
+      "tool": "todo_list",
+      "occurred_at": "2026-09-12T19:17:01.76256Z"
+    },
+    {
+      "seq": 42,
+      "type": "tool",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_359f6f41ded64fec8b03d187",
+      "tool": "todo_list",
+      "duration_ms": 1,
+      "occurred_at": "2026-09-12T19:17:01.764074Z"
+    },
+    {
+      "seq": 43,
+      "type": "step",
+      "status": "prepared",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:17:01.800469Z"
+    },
+    {
+      "seq": 44,
+      "type": "model",
+      "status": "started",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:17:01.84443Z"
+    },
+    {
+      "seq": 74,
+      "type": "model",
+      "status": "completed",
+      "step": 2,
+      "attempt": 1,
+      "duration_ms": 5505,
+      "occurred_at": "2026-09-12T19:17:07.350238Z"
+    },
+    {
+      "seq": 75,
+      "type": "authorization",
+      "status": "granted",
+      "step": 2,
+      "attempt": 1,
+      "call_id": "call_b24557f8cdec40b69c91a2fa",
+      "tool": "todo_list",
+      "action_key": "agent.conversation_tools.todo_list",
+      "authorization_revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+      "occurred_at": "2026-09-12T19:17:07.400595Z"
+    },
+    {
+      "seq": 76,
+      "type": "tool",
+      "status": "started",
+      "step": 2,
+      "attempt": 1,
+      "call_id": "call_b24557f8cdec40b69c91a2fa",
+      "tool": "todo_list",
+      "occurred_at": "2026-09-12T19:17:07.401245Z"
+    },
+    {
+      "seq": 77,
+      "type": "tool",
+      "status": "completed",
+      "step": 2,
+      "attempt": 1,
+      "call_id": "call_b24557f8cdec40b69c91a2fa",
+      "tool": "todo_list",
+      "duration_ms": 2,
+      "occurred_at": "2026-09-12T19:17:07.403765Z"
+    },
+    {
+      "seq": 78,
+      "type": "step",
+      "status": "prepared",
+      "step": 3,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:17:07.442439Z"
+    },
+    {
+      "seq": 79,
+      "type": "model",
+      "status": "started",
+      "step": 3,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:17:07.492892Z"
+    },
+    {
+      "seq": 122,
+      "type": "model",
+      "status": "completed",
+      "step": 3,
+      "attempt": 1,
+      "duration_ms": 5734,
+      "occurred_at": "2026-09-12T19:17:13.227182Z"
+    },
+    {
+      "seq": 123,
+      "type": "authorization",
+      "status": "granted",
+      "step": 3,
+      "attempt": 1,
+      "call_id": "call_07198e4648344edfa0dd0dd3",
+      "tool": "todo_update",
+      "action_key": "agent.conversation_tools.todo_update",
+      "authorization_revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+      "occurred_at": "2026-09-12T19:17:13.273378Z"
+    },
+    {
+      "seq": 124,
+      "type": "tool",
+      "status": "started",
+      "step": 3,
+      "attempt": 1,
+      "call_id": "call_07198e4648344edfa0dd0dd3",
+      "tool": "todo_update",
+      "occurred_at": "2026-09-12T19:17:13.274418Z"
+    },
+    {
+      "seq": 125,
+      "type": "tool",
+      "status": "completed",
+      "step": 3,
+      "attempt": 1,
+      "call_id": "call_07198e4648344edfa0dd0dd3",
+      "tool": "todo_update",
+      "duration_ms": 3,
+      "occurred_at": "2026-09-12T19:17:13.277934Z"
+    },
+    {
+      "seq": 126,
+      "type": "step",
+      "status": "prepared",
+      "step": 4,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:17:13.317896Z"
+    },
+    {
+      "seq": 127,
+      "type": "model",
+      "status": "started",
+      "step": 4,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:17:13.369116Z"
+    },
+    {
+      "seq": 235,
+      "type": "model",
+      "status": "completed",
+      "step": 4,
+      "attempt": 1,
+      "duration_ms": 6651,
+      "occurred_at": "2026-09-12T19:17:20.020911Z"
+    },
+    {
+      "seq": 237,
+      "type": "run",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:17:20.026404Z"
+    }
+  ],
+  "audit_complete": true,
+  "started_at": "2026-09-12T19:16:53.295296Z",
+  "completed_at": "2026-09-12T19:17:20.026404Z",
+  "duration_ms": 26731,
+  "queue_duration_ms": 0,
+  "created_at": "2026-09-12T19:16:53.294733Z",
+  "updated_at": "2026-09-12T19:17:20.026416Z"
+}

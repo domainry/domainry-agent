@@ -1,0 +1,43 @@
+{
+  "todo": "H08",
+  "pass": true,
+  "observed_configuration": {
+    "AGENT_CONVERSATION_PROVIDER": "gateway",
+    "AGENT_CONVERSATION_PROTOCOL": "responses",
+    "AGENT_CONVERSATION_BASE_URL": "https://api.verdent.ai",
+    "AGENT_CONVERSATION_MODEL": "gpt-5.6-sol"
+  },
+  "configuration_file": {
+    "path": "~/Library/Application Support/domainry-agent/web-services.json",
+    "mode": "0o600"
+  },
+  "enabled_deployment": {
+    "executable": "cmd/domainry-agent-web",
+    "identity": "in-process module",
+    "agent": "in-process module",
+    "persistence": "SQLite",
+    "instances": 1,
+    "compiled_frontend": true
+  },
+  "conditional_modes": {
+    "postgresql_enabled": false,
+    "mysql_enabled": false,
+    "multi_instance_enabled": false,
+    "standalone_saas_enabled": false,
+    "evidence": {
+      "database_environment_keys_present": [],
+      "docker_ps_exit_code": 1,
+      "docker_daemon_available": false,
+      "docker_probe": "docker ps failed because the local daemon is not running"
+    },
+    "acceptance_required_now": false,
+    "reason": "The accepted command is explicitly one cmd/domainry-agent-web process using one SQLite path. No PostgreSQL/MySQL/multi-instance/SaaS configuration is present; the local Docker daemon is inactive."
+  },
+  "llm_proxy": {
+    "model_endpoint": false,
+    "web_tool_paths": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ]
+  }
+}

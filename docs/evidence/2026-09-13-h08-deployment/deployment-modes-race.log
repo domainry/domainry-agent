@@ -1,0 +1,44 @@
+=== RUN   TestConversationModuleSaaSAndBrowserSurface
+=== RUN   TestConversationModuleSaaSAndBrowserSurface/module
+=== RUN   TestConversationModuleSaaSAndBrowserSurface/saas
+--- PASS: TestConversationModuleSaaSAndBrowserSurface (1.59s)
+    --- PASS: TestConversationModuleSaaSAndBrowserSurface/module (0.51s)
+    --- PASS: TestConversationModuleSaaSAndBrowserSurface/saas (1.09s)
+=== RUN   TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions
+=== RUN   TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/none
+=== RUN   TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/authorizer
+=== RUN   TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/availability
+--- PASS: TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions (1.62s)
+    --- PASS: TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/none (0.58s)
+    --- PASS: TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/authorizer (0.50s)
+    --- PASS: TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/availability (0.53s)
+=== RUN   TestConversationModuleSaaSAndBrowserSurface
+=== RUN   TestConversationModuleSaaSAndBrowserSurface/module
+=== RUN   TestConversationModuleSaaSAndBrowserSurface/saas
+--- PASS: TestConversationModuleSaaSAndBrowserSurface (1.57s)
+    --- PASS: TestConversationModuleSaaSAndBrowserSurface/module (0.49s)
+    --- PASS: TestConversationModuleSaaSAndBrowserSurface/saas (1.09s)
+=== RUN   TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions
+=== RUN   TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/none
+=== RUN   TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/authorizer
+=== RUN   TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/availability
+--- PASS: TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions (1.57s)
+    --- PASS: TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/none (0.58s)
+    --- PASS: TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/authorizer (0.48s)
+    --- PASS: TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/availability (0.51s)
+=== RUN   TestConversationModuleSaaSAndBrowserSurface
+=== RUN   TestConversationModuleSaaSAndBrowserSurface/module
+=== RUN   TestConversationModuleSaaSAndBrowserSurface/saas
+--- PASS: TestConversationModuleSaaSAndBrowserSurface (1.59s)
+    --- PASS: TestConversationModuleSaaSAndBrowserSurface/module (0.50s)
+    --- PASS: TestConversationModuleSaaSAndBrowserSurface/saas (1.09s)
+=== RUN   TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions
+=== RUN   TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/none
+=== RUN   TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/authorizer
+=== RUN   TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/availability
+--- PASS: TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions (1.57s)
+    --- PASS: TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/none (0.59s)
+    --- PASS: TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/authorizer (0.48s)
+    --- PASS: TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions/availability (0.51s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	11.376s

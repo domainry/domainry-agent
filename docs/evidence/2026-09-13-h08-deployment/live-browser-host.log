@@ -1,0 +1,70 @@
+Synthetic work execution evidence: /Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-13-h08-deployment/live-browser-runs
+=== RUN   TestLiveDailyWorkThroughIdentityHTTP
+    conversation_live_tools_test.go:164: phase=discussion started model=gpt-5.6-sol
+    conversation_live_tools_test.go:164: phase=discussion elapsed=0s state=running
+    conversation_live_tools_test.go:164: phase=discussion elapsed=3s state=completed
+    conversation_live_tools_test.go:166: phase=create-todos started model=gpt-5.6-sol
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=0s state=running
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=4s state=running history_search:receiving
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=4s state=running history_search:completed
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=7s state=running history_search:completed,history_read:receiving
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=8s state=running history_search:completed,history_read:completed
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=10s state=running history_search:completed,history_read:completed,todo_create:receiving
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=11s state=running history_search:completed,history_read:completed,todo_create:completed
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=13s state=completed history_search:completed,history_read:completed,todo_create:completed
+    conversation_live_tools_test.go:189: phase=reschedule-second started model=gpt-5.6-sol
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=0s state=running
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=3s state=running time_now:receiving
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=4s state=running time_now:completed,execution_read:completed
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=7s state=running time_now:completed,execution_read:completed,todo_list:receiving
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=8s state=running time_now:completed,execution_read:completed,todo_list:completed
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=9s state=running time_now:completed,execution_read:completed,todo_list:completed,todo_update:receiving
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=10s state=running time_now:completed,execution_read:completed,todo_list:completed,todo_update:completed
+    conversation_live_tools_test.go:189: phase=reschedule-second elapsed=13s state=completed time_now:completed,execution_read:completed,todo_list:completed,todo_update:completed
+    conversation_live_tools_test.go:198: phase=remember-format started model=gpt-5.6-sol
+    conversation_live_tools_test.go:198: phase=remember-format elapsed=0s state=running
+    conversation_live_tools_test.go:198: phase=remember-format elapsed=2s state=running memory_search:queued
+    conversation_live_tools_test.go:198: phase=remember-format elapsed=3s state=running memory_search:completed
+    conversation_live_tools_test.go:198: phase=remember-format elapsed=5s state=running memory_search:completed,memory_save:receiving
+    conversation_live_tools_test.go:198: phase=remember-format elapsed=6s state=running memory_search:completed,memory_save:completed
+    conversation_live_tools_test.go:198: phase=remember-format elapsed=10s state=completed memory_search:completed,memory_save:completed
+    conversation_live_tools_test.go:207: phase=create-report started model=gpt-5.6-sol
+    conversation_live_tools_test.go:207: phase=create-report elapsed=0s state=running
+    conversation_live_tools_test.go:207: phase=create-report elapsed=4s state=running execution_read:receiving,execution_read:receiving,execution_read:receiving
+    conversation_live_tools_test.go:207: phase=create-report elapsed=5s state=running execution_read:completed,execution_read:completed,execution_read:completed,memory_search:completed
+    conversation_live_tools_test.go:207: phase=create-report elapsed=7s state=running execution_read:completed,execution_read:completed,execution_read:completed,memory_search:completed,todo_list:receiving
+    conversation_live_tools_test.go:207: phase=create-report elapsed=7s state=running execution_read:completed,execution_read:completed,execution_read:completed,memory_search:completed,todo_list:completed
+    conversation_live_tools_test.go:207: phase=create-report elapsed=12s state=running execution_read:completed,execution_read:completed,execution_read:completed,memory_search:completed,todo_list:completed,artifact_create:receiving
+    conversation_live_tools_test.go:207: phase=create-report elapsed=14s state=running execution_read:completed,execution_read:completed,execution_read:completed,memory_search:completed,todo_list:completed,artifact_create:completed
+    conversation_live_tools_test.go:207: phase=create-report elapsed=17s state=completed execution_read:completed,execution_read:completed,execution_read:completed,memory_search:completed,todo_list:completed,artifact_create:completed
+    conversation_live_tools_test.go:242: host fully closed and reopened with the same SQLite database and Identity
+    conversation_live_tools_test.go:249: phase=continue-work started model=gpt-5.6-sol
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=0s state=running
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=3s state=running todo_list:completed,memory_search:completed
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=7s state=running todo_list:completed,memory_search:completed,todo_list:queued,history_search:queued
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=7s state=running todo_list:completed,memory_search:completed,todo_list:completed,history_search:completed
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=9s state=running todo_list:completed,memory_search:completed,todo_list:completed,history_search:completed,todo_update:receiving
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=9s state=running todo_list:completed,memory_search:completed,todo_list:completed,history_search:completed,todo_update:completed
+    conversation_live_tools_test.go:249: phase=continue-work elapsed=12s state=completed todo_list:completed,memory_search:completed,todo_list:completed,history_search:completed,todo_update:completed
+    conversation_live_tools_test.go:258: phase=edit-report started model=gpt-5.6-sol
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=0s state=running
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=3s state=running artifact_list:receiving
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=4s state=running artifact_list:completed
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=8s state=running artifact_list:completed,artifact_read:receiving
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=9s state=running artifact_list:completed,artifact_read:completed
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=12s state=running artifact_list:completed,artifact_read:completed,artifact_edit:receiving
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=13s state=running artifact_list:completed,artifact_read:completed,artifact_edit:completed
+    conversation_live_tools_test.go:258: phase=edit-report elapsed=15s state=completed artifact_list:completed,artifact_read:completed,artifact_edit:completed
+    conversation_live_tools_test.go:267: phase=export-original started model=gpt-5.6-sol
+    conversation_live_tools_test.go:267: phase=export-original elapsed=0s state=running
+    conversation_live_tools_test.go:267: phase=export-original elapsed=3s state=running execution_read:receiving
+    conversation_live_tools_test.go:267: phase=export-original elapsed=4s state=running execution_read:completed
+    conversation_live_tools_test.go:267: phase=export-original elapsed=6s state=running execution_read:completed,artifact_export:receiving
+    conversation_live_tools_test.go:267: phase=export-original elapsed=6s state=running execution_read:completed,artifact_export:queued
+    conversation_live_tools_test.go:267: phase=export-original elapsed=7s state=running execution_read:completed,artifact_export:completed
+    conversation_live_tools_test.go:267: phase=export-original elapsed=9s state=completed execution_read:completed,artifact_export:completed
+    conversation_live_tools_test.go:306: verified real-model history retrieval, ordered todos, deadline, memory, full host restart, same-item continuation, report versions and original download bytes
+    conversation_tools_browser_test.go:20: Temporary browser acceptance ready at http://127.0.0.1:8092
+--- PASS: TestLiveDailyWorkThroughIdentityHTTP (111.63s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	112.114s

@@ -1,0 +1,17 @@
+{
+  "phase": "seed",
+  "steps": [
+    "the built domainry-agent-web executable serves the compiled UI, managed Identity and enabled real model",
+    "a browser request reaches the real Responses model and persists one user/assistant turn in SQLite"
+  ],
+  "javascriptErrors": [],
+  "consoleErrors": [],
+  "state": {
+    "conversation_id": "conv_cc1f131f097b8d5e7a9926aa4ad328b5",
+    "message_ids": [
+      "msg_348c55bc422a80a2d5e3ecd14d21ddef",
+      "msg_25cfef711cfde42a251b84c54d2e0691"
+    ]
+  },
+  "complete": true
+}

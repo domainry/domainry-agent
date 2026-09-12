@@ -1,0 +1,377 @@
+{
+  "id": "crun_906fb06d780d10313f7f3153bb7730dc",
+  "conversation_id": "conv_f53c3c463d7289ad722aed07412421a5",
+  "client_message_id": "export-original",
+  "status": "completed",
+  "user_seq": 5,
+  "assistant_message_id": "msg_43ac594b940ceba4cac4d510565dcc7f",
+  "attempt": 1,
+  "draft_bytes": 0,
+  "last_event_seq": 120,
+  "steps": [
+    {
+      "number": 0,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "call_UCC0NA50yI0j1oxOX4kocoyK",
+          "name": "execution_read",
+          "arguments": "{\"conversation_id\":\"conv_f53c3c463d7289ad722aed07412421a5\",\"run_id\":\"crun_085b20ed6cd736c0286567f869656a29\",\"limit\":5}",
+          "status": "completed",
+          "result_preview": "{\"conversation_id\":\"conv_f53c3c463d7289ad722aed07412421a5\",\"run_id\":\"crun_085b20ed6cd736c0286567f869656a29\",\"run_status\":\"completed\",\"items\":[{\"step\":0,\"call_id\":\"call_5Faw17UTlY1tbGhrRTOF78GS\",\"tool\":\"artifact_list\",\"record_hash\":\"a94457b40bb689ee624bc41320ff1a24a9b0035d8d37e95a927e3b98a73f67f3\",\"state\":\"completed\",\"status\":\"completed\",\"reference\":{\"conversation_id\":\"conv_f53c3c463d7289ad722aed07412421a5\",\"run_id\":\"crun_085b20ed6cd736c0286567f869656a29\",\"step\":0,\"call_id\":\"call_5Faw17UTlY1tbGhrRTOF78GS\",\"sha256\":\"bedda06893d17deb6a3b4d19cdb0ca51d118648eb8a8646c2d4e24f1e38b769e\"}},{\"step\":1,\"call_id\":\"call_hS3GZQ2cP0mQZGubOhP1VRNH\",\"tool\":\"artifact_read\",\"record_hash\":\"2beef78567d74b7c18349b842f41d366cb2ec9acf892c5ce95dba5d00aef9234\",\"state\":\"completed\",\"status\":\"completed\",\"reference\":{\"conversation_id\":\"conv_f53c3c463d7289ad722aed07412421a5\",\"run_id\":\"crun_085b20ed6cd736c0286567f869656a29\",\"step\":1,\"call_id\":\"call_hS3GZQ2cP0mQZGubOhP1VRNH\",\"sha256\":\"48d99024bbb45e32ee45a5d5b65387d1087f28be3cbbb3970de6f4e94c154bb1\"}},{\"step\":2,\"call_id\":\"call_EuNZ9QdcaWNSysfFDLVVCSEo\",\"tool\":\"artifact_edit\",\"record_hash\":\"2f747e61b1ed649f848a08dad35be9096fb1adb0c5269953ec798b414979acc8\",\"state\":\"completed\",\"status\":\"completed\",\"resource_id\":\"art_3fae34e96b78f6d3c5550fa1d2481ecf\",\"reference\":{\"conversation_id\":\"conv_f53c3c463d7289ad722aed07412421a5\",\"run_id\":\"crun_085b20ed6cd736c0286567f869656a29\",\"step\":2,\"call_id\":\"call_EuNZ9QdcaWNSysfFDLVVCSEo\",\"sha256\":\"140c042fa5456c9f15b92e61537a7b4b4f0676b136df9eae8a6ec3897f552c16\"}}],\"complete\":true,\"omitted\":false}",
+          "result_reference": {
+            "conversation_id": "conv_f53c3c463d7289ad722aed07412421a5",
+            "run_id": "crun_906fb06d780d10313f7f3153bb7730dc",
+            "step": 0,
+            "call_id": "call_UCC0NA50yI0j1oxOX4kocoyK",
+            "sha256": "0f4503e003f2de44ce4ca8a5dceaa5eaf98f10a022f1bb6a2d9ee67f935cb605"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "ef333a8cc8ff38e77e7895027c991829ff3ca5e68a6d85892b11e99bfede612b",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:19:54.800826Z",
+          "completed_at": "2026-09-12T19:19:54.859173Z",
+          "duration_ms": 58
+        },
+        {
+          "effect": "read",
+          "id": "call_O9F95OAru98nVYwpYqRePaDt",
+          "name": "execution_read",
+          "arguments": "{\"conversation_id\":\"conv_f53c3c463d7289ad722aed07412421a5\",\"run_id\":\"crun_b70f6144d4abdec8ef43faf49ac705ed\",\"limit\":5}",
+          "status": "completed",
+          "result_preview": "{\"conversation_id\":\"conv_f53c3c463d7289ad722aed07412421a5\",\"run_id\":\"crun_b70f6144d4abdec8ef43faf49ac705ed\",\"run_status\":\"completed\",\"items\":[{\"step\":0,\"call_id\":\"call_dnRxKflqfC74KvqfXIfv8Wm5\",\"tool\":\"todo_list\",\"record_hash\":\"155dd512a2b818a472bd83305a20e24e3aa04cc58eafd95baa3bd4f0231dd196\",\"state\":\"completed\",\"status\":\"completed\",\"reference\":{\"conversation_id\":\"conv_f53c3c463d7289ad722aed07412421a5\",\"run_id\":\"crun_b70f6144d4abdec8ef43faf49ac705ed\",\"step\":0,\"call_id\":\"call_dnRxKflqfC74KvqfXIfv8Wm5\",\"sha256\":\"8abb66072bec7eac8c3c3c698b627266d4d26624550c330c23deb9e63c24b67a\"}},{\"step\":1,\"call_id\":\"call_mSb04PGQVbokSsOfrwgpJ9Eb\",\"tool\":\"history_search\",\"record_hash\":\"5cba3852766bc3b3a7ddadb0b49082bd2b75d64dadf351130b6a97d3d480ee26\",\"state\":\"completed\",\"status\":\"completed\",\"reference\":{\"conversation_id\":\"conv_f53c3c463d7289ad722aed07412421a5\",\"run_id\":\"crun_b70f6144d4abdec8ef43faf49ac705ed\",\"step\":1,\"call_id\":\"call_mSb04PGQVbokSsOfrwgpJ9Eb\",\"sha256\":\"07320f1172ba6c06f8b6ddc1b133f8b9f8bf3a21a0e8f9c1ef70c80af02d2c2d\"}},{\"step\":2,\"call_id\":\"call_49m5A241J1aCx1fDU1LwlSIR\",\"tool\":\"execution_read\",\"record_hash\":\"987304174e6b68af40735530f8c119cde73441d9109c76981bc4ce492eec0010\",\"state\":\"completed\",\"status\":\"completed\",\"reference\":{\"conversation_id\":\"conv_f53c3c463d7289ad722aed07412421a5\",\"run_id\":\"crun_b70f6144d4abdec8ef43faf49ac705ed\",\"step\":2,\"call_id\":\"call_49m5A241J1aCx1fDU1LwlSIR\",\"sha256\":\"143dbd5830d90ff58ac51ff4881aa0610e530202e83ab9c32614a542409f451e\"}},{\"step\":3,\"call_id\":\"call_jLYnUsUl3Bf0qNpWyED2jdQ8\",\"tool\":\"todo_list\",\"record_hash\":\"f86893c788ea5f90091e1e646f6ef293a3cce3685b95a69f497862dbbedb196c\",\"state\":\"completed\",\"status\":\"completed\",\"reference\":{\"conversation_id\":\"conv_f53c3c463d7289ad722aed07412421a5\",\"run_id\":\"crun_b70f6144d4abdec8ef43faf49ac705ed\",\"step\":3,\"call_id\":\"call_jLYnUsUl3Bf0qNpWyED2jdQ8\",\"sha256\":\"92bfb8bc3072eb99548eeddfca5f72b5e85c645be59442f12e25fc40bc43a203\"}},{\"step\":4,\"call_id\":\"call_W4PcVntvaefXz6y3GhxZGjRp\",\"tool\":\"memory_search\",\"record_hash\":\"caf6d33c0436cd38719f555a817f15a22c9107",
+          "result_truncated": true,
+          "result_reference": {
+            "conversation_id": "conv_f53c3c463d7289ad722aed07412421a5",
+            "run_id": "crun_906fb06d780d10313f7f3153bb7730dc",
+            "step": 0,
+            "call_id": "call_O9F95OAru98nVYwpYqRePaDt",
+            "sha256": "8a0f0ffd6f036eb6c4f4298d305c95a03effedf31d27f3c19d80a1cd08743872"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "ef333a8cc8ff38e77e7895027c991829ff3ca5e68a6d85892b11e99bfede612b",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:19:54.915434Z",
+          "completed_at": "2026-09-12T19:19:54.966547Z",
+          "duration_ms": 51
+        }
+      ],
+      "usage": {
+        "input_tokens": 5102,
+        "input_tokens_details": {
+          "cache_write_tokens": 5099,
+          "cached_tokens": 0
+        },
+        "output_tokens": 161,
+        "output_tokens_details": {
+          "reasoning_tokens": 21
+        },
+        "total_tokens": 5263
+      },
+      "started_at": "2026-09-12T19:19:50.829889Z",
+      "completed_at": "2026-09-12T19:19:54.751071Z",
+      "duration_ms": 3921
+    },
+    {
+      "number": 1,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "write",
+          "id": "call_nfBoUojxj7ZprhmQgYNuqBUc",
+          "name": "artifact_export",
+          "arguments": "{\"format\":\"markdown\",\"id\":\"art_3fae34e96b78f6d3c5550fa1d2481ecf\",\"version\":1}",
+          "status": "completed",
+          "resource_id": "art_3fae34e96b78f6d3c5550fa1d2481ecf",
+          "result_preview": "{\"export\":{\"id\":\"exp_2c2eb3b52afd11066e4b9171f168b8ea\",\"artifact_id\":\"art_3fae34e96b78f6d3c5550fa1d2481ecf\",\"version\":1,\"format\":\"markdown\",\"filename\":\"art_3fae34e96b78f6d3c5550fa1d2481ecf-v1.md\",\"content_type\":\"text/markdown; charset=utf-8\",\"sha256\":\"3ae3494eb48c2a88f061ec13425d61965db898ecfa0cda0ac80e12c506ce7c77\",\"bytes\":276,\"created_at\":\"2026-09-12T19:19:58.169Z\",\"expires_at\":\"2026-09-12T20:19:58.169Z\",\"downloads\":0}}",
+          "result_reference": {
+            "conversation_id": "conv_f53c3c463d7289ad722aed07412421a5",
+            "run_id": "crun_906fb06d780d10313f7f3153bb7730dc",
+            "step": 1,
+            "call_id": "call_nfBoUojxj7ZprhmQgYNuqBUc",
+            "sha256": "a6f22e58d0d58adfc27d49e3feee54d86888f140d8eac5f22edbb992f7bbc7ce"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "ef333a8cc8ff38e77e7895027c991829ff3ca5e68a6d85892b11e99bfede612b",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:19:58.152084Z",
+          "completed_at": "2026-09-12T19:19:58.169605Z",
+          "duration_ms": 17
+        }
+      ],
+      "usage": {
+        "input_tokens": 7238,
+        "input_tokens_details": {
+          "cache_write_tokens": 2136,
+          "cached_tokens": 5099
+        },
+        "output_tokens": 96,
+        "output_tokens_details": {
+          "reasoning_tokens": 44
+        },
+        "total_tokens": 7334
+      },
+      "started_at": "2026-09-12T19:19:55.089501Z",
+      "completed_at": "2026-09-12T19:19:58.045786Z",
+      "duration_ms": 2956
+    },
+    {
+      "number": 2,
+      "attempt": 1,
+      "status": "completed",
+      "text": "已导出《青禾验收周报》**版本 1**（Markdown），不是修改后的版本。\n\n[下载 Markdown 文件](sandbox:/artifact-export/exp_2c2eb3b52afd11066e4b9171f168b8ea)",
+      "calls": [],
+      "usage": {
+        "input_tokens": 7573,
+        "input_tokens_details": {
+          "cache_write_tokens": 335,
+          "cached_tokens": 7235
+        },
+        "output_tokens": 61,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 7634
+      },
+      "started_at": "2026-09-12T19:19:58.354598Z",
+      "completed_at": "2026-09-12T19:20:03.278197Z",
+      "duration_ms": 4923
+    }
+  ],
+  "write_scope": {
+    "personal_memory": false,
+    "personal_artifacts": true
+  },
+  "model": "gpt-5.6-sol",
+  "usage": {
+    "input_tokens": 19913,
+    "output_tokens": 318,
+    "total_tokens": 20231
+  },
+  "correlation_id": "crun_906fb06d780d10313f7f3153bb7730dc",
+  "metrics": {
+    "steps": 3,
+    "model_calls": 3,
+    "tool_calls": 3,
+    "tool_attempts": 3,
+    "authorization_checks": 3,
+    "confirmation_decisions": 0
+  },
+  "audit": [
+    {
+      "seq": 1,
+      "type": "run",
+      "status": "queued",
+      "step": 0,
+      "occurred_at": "2026-09-12T19:19:50.680183Z"
+    },
+    {
+      "seq": 2,
+      "type": "run",
+      "status": "running",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:50.681265Z"
+    },
+    {
+      "seq": 3,
+      "type": "step",
+      "status": "prepared",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:50.780786Z"
+    },
+    {
+      "seq": 4,
+      "type": "model",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:50.829889Z"
+    },
+    {
+      "seq": 9,
+      "type": "model",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "duration_ms": 3921,
+      "occurred_at": "2026-09-12T19:19:54.751071Z"
+    },
+    {
+      "seq": 10,
+      "type": "authorization",
+      "status": "granted",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_UCC0NA50yI0j1oxOX4kocoyK",
+      "tool": "execution_read",
+      "action_key": "agent.conversation_tools.execution_read",
+      "authorization_revision": "ef333a8cc8ff38e77e7895027c991829ff3ca5e68a6d85892b11e99bfede612b",
+      "occurred_at": "2026-09-12T19:19:54.800326Z"
+    },
+    {
+      "seq": 11,
+      "type": "tool",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_UCC0NA50yI0j1oxOX4kocoyK",
+      "tool": "execution_read",
+      "occurred_at": "2026-09-12T19:19:54.800826Z"
+    },
+    {
+      "seq": 12,
+      "type": "tool",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_UCC0NA50yI0j1oxOX4kocoyK",
+      "tool": "execution_read",
+      "duration_ms": 58,
+      "occurred_at": "2026-09-12T19:19:54.859173Z"
+    },
+    {
+      "seq": 13,
+      "type": "authorization",
+      "status": "granted",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_O9F95OAru98nVYwpYqRePaDt",
+      "tool": "execution_read",
+      "action_key": "agent.conversation_tools.execution_read",
+      "authorization_revision": "ef333a8cc8ff38e77e7895027c991829ff3ca5e68a6d85892b11e99bfede612b",
+      "occurred_at": "2026-09-12T19:19:54.914886Z"
+    },
+    {
+      "seq": 14,
+      "type": "tool",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_O9F95OAru98nVYwpYqRePaDt",
+      "tool": "execution_read",
+      "occurred_at": "2026-09-12T19:19:54.915434Z"
+    },
+    {
+      "seq": 15,
+      "type": "tool",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_O9F95OAru98nVYwpYqRePaDt",
+      "tool": "execution_read",
+      "duration_ms": 51,
+      "occurred_at": "2026-09-12T19:19:54.966547Z"
+    },
+    {
+      "seq": 16,
+      "type": "step",
+      "status": "prepared",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:55.003361Z"
+    },
+    {
+      "seq": 17,
+      "type": "model",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:55.089501Z"
+    },
+    {
+      "seq": 55,
+      "type": "model",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "duration_ms": 2956,
+      "occurred_at": "2026-09-12T19:19:58.045786Z"
+    },
+    {
+      "seq": 56,
+      "type": "authorization",
+      "status": "granted",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_nfBoUojxj7ZprhmQgYNuqBUc",
+      "tool": "artifact_export",
+      "action_key": "agent.conversation_tools.artifact_export",
+      "authorization_revision": "ef333a8cc8ff38e77e7895027c991829ff3ca5e68a6d85892b11e99bfede612b",
+      "occurred_at": "2026-09-12T19:19:58.150989Z"
+    },
+    {
+      "seq": 57,
+      "type": "tool",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_nfBoUojxj7ZprhmQgYNuqBUc",
+      "tool": "artifact_export",
+      "occurred_at": "2026-09-12T19:19:58.152084Z"
+    },
+    {
+      "seq": 58,
+      "type": "tool",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_nfBoUojxj7ZprhmQgYNuqBUc",
+      "tool": "artifact_export",
+      "duration_ms": 17,
+      "occurred_at": "2026-09-12T19:19:58.169605Z"
+    },
+    {
+      "seq": 59,
+      "type": "step",
+      "status": "prepared",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:58.227779Z"
+    },
+    {
+      "seq": 60,
+      "type": "model",
+      "status": "started",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:19:58.354598Z"
+    },
+    {
+      "seq": 118,
+      "type": "model",
+      "status": "completed",
+      "step": 2,
+      "attempt": 1,
+      "duration_ms": 4923,
+      "occurred_at": "2026-09-12T19:20:03.278197Z"
+    },
+    {
+      "seq": 120,
+      "type": "run",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:20:03.299089Z"
+    }
+  ],
+  "audit_complete": true,
+  "started_at": "2026-09-12T19:19:50.681265Z",
+  "completed_at": "2026-09-12T19:20:03.299089Z",
+  "duration_ms": 12617,
+  "queue_duration_ms": 1,
+  "created_at": "2026-09-12T19:19:50.680131Z",
+  "updated_at": "2026-09-12T19:20:03.299112Z"
+}

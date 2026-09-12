@@ -1,0 +1,16 @@
+{
+  "phase": "verify",
+  "steps": [
+    "after terminating and restarting the executable, the same Identity account and exact message IDs remain visible"
+  ],
+  "javascriptErrors": [],
+  "consoleErrors": [],
+  "state": {
+    "conversation_id": "conv_cc1f131f097b8d5e7a9926aa4ad328b5",
+    "message_ids": [
+      "msg_348c55bc422a80a2d5e3ecd14d21ddef",
+      "msg_25cfef711cfde42a251b84c54d2e0691"
+    ]
+  },
+  "complete": true
+}

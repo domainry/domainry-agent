@@ -1,0 +1,455 @@
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/401
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/403
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/402
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/429
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/400
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/404
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/500
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/504
+--- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent (0.01s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/401 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/403 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/402 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/429 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/400 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/404 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/500 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/504 (0.00s)
+=== RUN   TestConversationNetworkFailureCategories
+--- PASS: TestConversationNetworkFailureCategories (0.00s)
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/chat_completions
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/messages
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/responses
+--- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession (0.01s)
+    --- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/chat_completions (0.00s)
+    --- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/messages (0.00s)
+    --- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/responses (0.00s)
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/eof
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/unknown-tool
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/bad-arguments
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/truncated
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/wrong-stop
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/eof
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/unknown-tool
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/bad-arguments
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/truncated
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/wrong-stop
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/eof
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/unknown-tool
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/bad-arguments
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/truncated
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/different-final
+--- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams (0.01s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/eof (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/unknown-tool (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/bad-arguments (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/truncated (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/wrong-stop (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/eof (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/unknown-tool (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/bad-arguments (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/truncated (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/wrong-stop (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/eof (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/unknown-tool (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/bad-arguments (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/truncated (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/different-final (0.00s)
+=== RUN   TestConversationExecutionFencesModelChangesAndHonorsCallbackFailure
+--- PASS: TestConversationExecutionFencesModelChangesAndHonorsCallbackFailure (0.00s)
+=== RUN   TestConversationExecutionValidatesToolResultPairingAndContinuation
+--- PASS: TestConversationExecutionValidatesToolResultPairingAndContinuation (0.00s)
+=== RUN   TestGatewayLiveConversation
+    conversation_live_test.go:18: set AGENT_CONVERSATION_LIVE=1 and configure AGENT_PROVIDER_API_KEY for real model acceptance
+--- SKIP: TestGatewayLiveConversation (0.00s)
+=== RUN   TestConversationModelUsesStatelessRolesWithoutBusinessTools
+--- PASS: TestConversationModelUsesStatelessRolesWithoutBusinessTools (0.00s)
+=== RUN   TestConversationModelRejectsPartialAndToolResponses
+=== RUN   TestConversationModelRejectsPartialAndToolResponses/case-0
+=== RUN   TestConversationModelRejectsPartialAndToolResponses/case-1
+=== RUN   TestConversationModelRejectsPartialAndToolResponses/case-2
+=== RUN   TestConversationModelRejectsPartialAndToolResponses/case-3
+--- PASS: TestConversationModelRejectsPartialAndToolResponses (0.00s)
+    --- PASS: TestConversationModelRejectsPartialAndToolResponses/case-0 (0.00s)
+    --- PASS: TestConversationModelRejectsPartialAndToolResponses/case-1 (0.00s)
+    --- PASS: TestConversationModelRejectsPartialAndToolResponses/case-2 (0.00s)
+    --- PASS: TestConversationModelRejectsPartialAndToolResponses/case-3 (0.00s)
+=== RUN   TestGatewayProtocolsStreamBeforeCompletionAndSummarize
+=== RUN   TestGatewayProtocolsStreamBeforeCompletionAndSummarize/chat_completions
+=== RUN   TestGatewayProtocolsStreamBeforeCompletionAndSummarize/messages
+=== RUN   TestGatewayProtocolsStreamBeforeCompletionAndSummarize/responses
+--- PASS: TestGatewayProtocolsStreamBeforeCompletionAndSummarize (0.00s)
+    --- PASS: TestGatewayProtocolsStreamBeforeCompletionAndSummarize/chat_completions (0.00s)
+    --- PASS: TestGatewayProtocolsStreamBeforeCompletionAndSummarize/messages (0.00s)
+    --- PASS: TestGatewayProtocolsStreamBeforeCompletionAndSummarize/responses (0.00s)
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/disconnect
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/error
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/length
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/tool
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/no-stop
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/disconnect
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/error
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/length
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/tool
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/disconnect
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/error
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/mismatch
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/incomplete
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/tool
+--- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal (0.01s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/disconnect (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/error (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/length (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/tool (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/no-stop (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/disconnect (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/error (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/length (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/tool (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/disconnect (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/error (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/mismatch (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/incomplete (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/tool (0.00s)
+=== RUN   TestConversationStreamCancelsUpstreamOnContextOrCallback
+=== RUN   TestConversationStreamCancelsUpstreamOnContextOrCallback/context
+=== RUN   TestConversationStreamCancelsUpstreamOnContextOrCallback/callback
+=== RUN   TestConversationStreamCancelsUpstreamOnContextOrCallback/limit
+--- PASS: TestConversationStreamCancelsUpstreamOnContextOrCallback (0.00s)
+    --- PASS: TestConversationStreamCancelsUpstreamOnContextOrCallback/context (0.00s)
+    --- PASS: TestConversationStreamCancelsUpstreamOnContextOrCallback/callback (0.00s)
+    --- PASS: TestConversationStreamCancelsUpstreamOnContextOrCallback/limit (0.00s)
+=== RUN   TestConversationProviderConfiguration
+--- PASS: TestConversationProviderConfiguration (0.00s)
+=== RUN   TestTaskRunnerMapsDomainryRequestAndIdempotency
+--- PASS: TestTaskRunnerMapsDomainryRequestAndIdempotency (0.00s)
+=== RUN   TestTaskRunnerClassifiesProviderFailures
+--- PASS: TestTaskRunnerClassifiesProviderFailures (0.00s)
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/401
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/403
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/402
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/429
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/400
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/404
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/500
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/504
+--- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent (0.01s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/401 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/403 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/402 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/429 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/400 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/404 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/500 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/504 (0.00s)
+=== RUN   TestConversationNetworkFailureCategories
+--- PASS: TestConversationNetworkFailureCategories (0.00s)
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/chat_completions
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/messages
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/responses
+--- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession (0.00s)
+    --- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/chat_completions (0.00s)
+    --- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/messages (0.00s)
+    --- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/responses (0.00s)
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/eof
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/unknown-tool
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/bad-arguments
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/truncated
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/wrong-stop
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/eof
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/unknown-tool
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/bad-arguments
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/truncated
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/wrong-stop
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/eof
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/unknown-tool
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/bad-arguments
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/truncated
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/different-final
+--- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams (0.01s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/eof (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/unknown-tool (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/bad-arguments (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/truncated (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/wrong-stop (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/eof (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/unknown-tool (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/bad-arguments (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/truncated (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/wrong-stop (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/eof (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/unknown-tool (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/bad-arguments (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/truncated (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/different-final (0.00s)
+=== RUN   TestConversationExecutionFencesModelChangesAndHonorsCallbackFailure
+--- PASS: TestConversationExecutionFencesModelChangesAndHonorsCallbackFailure (0.00s)
+=== RUN   TestConversationExecutionValidatesToolResultPairingAndContinuation
+--- PASS: TestConversationExecutionValidatesToolResultPairingAndContinuation (0.00s)
+=== RUN   TestGatewayLiveConversation
+    conversation_live_test.go:18: set AGENT_CONVERSATION_LIVE=1 and configure AGENT_PROVIDER_API_KEY for real model acceptance
+--- SKIP: TestGatewayLiveConversation (0.00s)
+=== RUN   TestConversationModelUsesStatelessRolesWithoutBusinessTools
+--- PASS: TestConversationModelUsesStatelessRolesWithoutBusinessTools (0.00s)
+=== RUN   TestConversationModelRejectsPartialAndToolResponses
+=== RUN   TestConversationModelRejectsPartialAndToolResponses/case-0
+=== RUN   TestConversationModelRejectsPartialAndToolResponses/case-1
+=== RUN   TestConversationModelRejectsPartialAndToolResponses/case-2
+=== RUN   TestConversationModelRejectsPartialAndToolResponses/case-3
+--- PASS: TestConversationModelRejectsPartialAndToolResponses (0.00s)
+    --- PASS: TestConversationModelRejectsPartialAndToolResponses/case-0 (0.00s)
+    --- PASS: TestConversationModelRejectsPartialAndToolResponses/case-1 (0.00s)
+    --- PASS: TestConversationModelRejectsPartialAndToolResponses/case-2 (0.00s)
+    --- PASS: TestConversationModelRejectsPartialAndToolResponses/case-3 (0.00s)
+=== RUN   TestGatewayProtocolsStreamBeforeCompletionAndSummarize
+=== RUN   TestGatewayProtocolsStreamBeforeCompletionAndSummarize/chat_completions
+=== RUN   TestGatewayProtocolsStreamBeforeCompletionAndSummarize/messages
+=== RUN   TestGatewayProtocolsStreamBeforeCompletionAndSummarize/responses
+--- PASS: TestGatewayProtocolsStreamBeforeCompletionAndSummarize (0.00s)
+    --- PASS: TestGatewayProtocolsStreamBeforeCompletionAndSummarize/chat_completions (0.00s)
+    --- PASS: TestGatewayProtocolsStreamBeforeCompletionAndSummarize/messages (0.00s)
+    --- PASS: TestGatewayProtocolsStreamBeforeCompletionAndSummarize/responses (0.00s)
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/disconnect
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/error
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/length
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/tool
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/no-stop
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/disconnect
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/error
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/length
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/tool
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/disconnect
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/error
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/mismatch
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/incomplete
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/tool
+--- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal (0.01s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/disconnect (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/error (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/length (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/tool (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/no-stop (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/disconnect (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/error (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/length (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/tool (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/disconnect (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/error (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/mismatch (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/incomplete (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/tool (0.00s)
+=== RUN   TestConversationStreamCancelsUpstreamOnContextOrCallback
+=== RUN   TestConversationStreamCancelsUpstreamOnContextOrCallback/context
+=== RUN   TestConversationStreamCancelsUpstreamOnContextOrCallback/callback
+=== RUN   TestConversationStreamCancelsUpstreamOnContextOrCallback/limit
+--- PASS: TestConversationStreamCancelsUpstreamOnContextOrCallback (0.00s)
+    --- PASS: TestConversationStreamCancelsUpstreamOnContextOrCallback/context (0.00s)
+    --- PASS: TestConversationStreamCancelsUpstreamOnContextOrCallback/callback (0.00s)
+    --- PASS: TestConversationStreamCancelsUpstreamOnContextOrCallback/limit (0.00s)
+=== RUN   TestConversationProviderConfiguration
+--- PASS: TestConversationProviderConfiguration (0.00s)
+=== RUN   TestTaskRunnerMapsDomainryRequestAndIdempotency
+--- PASS: TestTaskRunnerMapsDomainryRequestAndIdempotency (0.00s)
+=== RUN   TestTaskRunnerClassifiesProviderFailures
+--- PASS: TestTaskRunnerClassifiesProviderFailures (0.00s)
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/401
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/403
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/402
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/429
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/400
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/404
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/500
+=== RUN   TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/504
+--- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/401 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/403 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/402 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/429 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/400 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/404 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/500 (0.00s)
+    --- PASS: TestConversationHTTPFailuresAreClassifiedWithoutProviderContent/504 (0.00s)
+=== RUN   TestConversationNetworkFailureCategories
+--- PASS: TestConversationNetworkFailureCategories (0.00s)
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/chat_completions
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/messages
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/responses
+--- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession (0.01s)
+    --- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/chat_completions (0.00s)
+    --- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/messages (0.00s)
+    --- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/responses (0.00s)
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/eof
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/unknown-tool
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/bad-arguments
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/truncated
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/wrong-stop
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/eof
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/unknown-tool
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/bad-arguments
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/truncated
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/wrong-stop
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/eof
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/unknown-tool
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/bad-arguments
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/truncated
+=== RUN   TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/different-final
+--- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams (0.01s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/eof (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/unknown-tool (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/bad-arguments (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/truncated (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/chat_completions/wrong-stop (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/eof (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/unknown-tool (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/bad-arguments (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/truncated (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/messages/wrong-stop (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/eof (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/unknown-tool (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/bad-arguments (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/truncated (0.00s)
+    --- PASS: TestConversationExecutionRejectsIncompleteAndInconsistentStreams/responses/different-final (0.00s)
+=== RUN   TestConversationExecutionFencesModelChangesAndHonorsCallbackFailure
+--- PASS: TestConversationExecutionFencesModelChangesAndHonorsCallbackFailure (0.00s)
+=== RUN   TestConversationExecutionValidatesToolResultPairingAndContinuation
+--- PASS: TestConversationExecutionValidatesToolResultPairingAndContinuation (0.00s)
+=== RUN   TestGatewayLiveConversation
+    conversation_live_test.go:18: set AGENT_CONVERSATION_LIVE=1 and configure AGENT_PROVIDER_API_KEY for real model acceptance
+--- SKIP: TestGatewayLiveConversation (0.00s)
+=== RUN   TestConversationModelUsesStatelessRolesWithoutBusinessTools
+--- PASS: TestConversationModelUsesStatelessRolesWithoutBusinessTools (0.00s)
+=== RUN   TestConversationModelRejectsPartialAndToolResponses
+=== RUN   TestConversationModelRejectsPartialAndToolResponses/case-0
+=== RUN   TestConversationModelRejectsPartialAndToolResponses/case-1
+=== RUN   TestConversationModelRejectsPartialAndToolResponses/case-2
+=== RUN   TestConversationModelRejectsPartialAndToolResponses/case-3
+--- PASS: TestConversationModelRejectsPartialAndToolResponses (0.00s)
+    --- PASS: TestConversationModelRejectsPartialAndToolResponses/case-0 (0.00s)
+    --- PASS: TestConversationModelRejectsPartialAndToolResponses/case-1 (0.00s)
+    --- PASS: TestConversationModelRejectsPartialAndToolResponses/case-2 (0.00s)
+    --- PASS: TestConversationModelRejectsPartialAndToolResponses/case-3 (0.00s)
+=== RUN   TestGatewayProtocolsStreamBeforeCompletionAndSummarize
+=== RUN   TestGatewayProtocolsStreamBeforeCompletionAndSummarize/chat_completions
+=== RUN   TestGatewayProtocolsStreamBeforeCompletionAndSummarize/messages
+=== RUN   TestGatewayProtocolsStreamBeforeCompletionAndSummarize/responses
+--- PASS: TestGatewayProtocolsStreamBeforeCompletionAndSummarize (0.00s)
+    --- PASS: TestGatewayProtocolsStreamBeforeCompletionAndSummarize/chat_completions (0.00s)
+    --- PASS: TestGatewayProtocolsStreamBeforeCompletionAndSummarize/messages (0.00s)
+    --- PASS: TestGatewayProtocolsStreamBeforeCompletionAndSummarize/responses (0.00s)
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/tool
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/no-stop
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/disconnect
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/error
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/length
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/disconnect
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/error
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/length
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/tool
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/mismatch
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/incomplete
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/tool
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/disconnect
+=== RUN   TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/error
+--- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal (0.01s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/tool (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/no-stop (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/disconnect (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/error (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/chat_completions/length (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/disconnect (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/error (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/length (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/messages/tool (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/mismatch (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/incomplete (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/tool (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/disconnect (0.00s)
+    --- PASS: TestConversationStreamRejectsTruncationToolsAndMismatchedFinal/responses/error (0.00s)
+=== RUN   TestConversationStreamCancelsUpstreamOnContextOrCallback
+=== RUN   TestConversationStreamCancelsUpstreamOnContextOrCallback/context
+=== RUN   TestConversationStreamCancelsUpstreamOnContextOrCallback/callback
+=== RUN   TestConversationStreamCancelsUpstreamOnContextOrCallback/limit
+--- PASS: TestConversationStreamCancelsUpstreamOnContextOrCallback (0.00s)
+    --- PASS: TestConversationStreamCancelsUpstreamOnContextOrCallback/context (0.00s)
+    --- PASS: TestConversationStreamCancelsUpstreamOnContextOrCallback/callback (0.00s)
+    --- PASS: TestConversationStreamCancelsUpstreamOnContextOrCallback/limit (0.00s)
+=== RUN   TestConversationProviderConfiguration
+--- PASS: TestConversationProviderConfiguration (0.00s)
+=== RUN   TestTaskRunnerMapsDomainryRequestAndIdempotency
+--- PASS: TestTaskRunnerMapsDomainryRequestAndIdempotency (0.00s)
+=== RUN   TestTaskRunnerClassifiesProviderFailures
+--- PASS: TestTaskRunnerClassifiesProviderFailures (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	1.788s
+=== RUN   TestSaaSConversationExecutableRejectsMissingIdentityBeforeRecovery
+--- PASS: TestSaaSConversationExecutableRejectsMissingIdentityBeforeRecovery (0.16s)
+=== RUN   TestSaaSConversationExecutableRevalidatesCurrentIdentity
+=== RUN   TestSaaSConversationExecutableRevalidatesCurrentIdentity/revoked
+=== RUN   TestSaaSConversationExecutableRevalidatesCurrentIdentity/credential
+=== RUN   TestSaaSConversationExecutableRevalidatesCurrentIdentity/forged
+--- PASS: TestSaaSConversationExecutableRevalidatesCurrentIdentity (3.88s)
+    --- PASS: TestSaaSConversationExecutableRevalidatesCurrentIdentity/revoked (1.29s)
+    --- PASS: TestSaaSConversationExecutableRevalidatesCurrentIdentity/credential (1.31s)
+    --- PASS: TestSaaSConversationExecutableRevalidatesCurrentIdentity/forged (1.28s)
+=== RUN   TestSaaSConversationAgainstRealIdentityProcess
+    identity_process_test.go:33: set AGENT_IDENTITY_PROCESS_ACCEPTANCE=1 to run the isolated Identity process
+--- SKIP: TestSaaSConversationAgainstRealIdentityProcess (0.00s)
+=== RUN   TestConversationOptionsFromEnvironment
+--- PASS: TestConversationOptionsFromEnvironment (0.00s)
+=== RUN   TestConversationExecutableStartsWithoutLegacyProvider
+--- PASS: TestConversationExecutableStartsWithoutLegacyProvider (1.32s)
+=== RUN   TestExecutableRejectsPartialOrMissingProviderConfiguration
+--- PASS: TestExecutableRejectsPartialOrMissingProviderConfiguration (0.00s)
+=== RUN   TestSaaSConversationExecutableRejectsMissingIdentityBeforeRecovery
+--- PASS: TestSaaSConversationExecutableRejectsMissingIdentityBeforeRecovery (0.16s)
+=== RUN   TestSaaSConversationExecutableRevalidatesCurrentIdentity
+=== RUN   TestSaaSConversationExecutableRevalidatesCurrentIdentity/revoked
+=== RUN   TestSaaSConversationExecutableRevalidatesCurrentIdentity/credential
+=== RUN   TestSaaSConversationExecutableRevalidatesCurrentIdentity/forged
+--- PASS: TestSaaSConversationExecutableRevalidatesCurrentIdentity (3.83s)
+    --- PASS: TestSaaSConversationExecutableRevalidatesCurrentIdentity/revoked (1.29s)
+    --- PASS: TestSaaSConversationExecutableRevalidatesCurrentIdentity/credential (1.27s)
+    --- PASS: TestSaaSConversationExecutableRevalidatesCurrentIdentity/forged (1.27s)
+=== RUN   TestSaaSConversationAgainstRealIdentityProcess
+    identity_process_test.go:33: set AGENT_IDENTITY_PROCESS_ACCEPTANCE=1 to run the isolated Identity process
+--- SKIP: TestSaaSConversationAgainstRealIdentityProcess (0.00s)
+=== RUN   TestConversationOptionsFromEnvironment
+--- PASS: TestConversationOptionsFromEnvironment (0.00s)
+=== RUN   TestConversationExecutableStartsWithoutLegacyProvider
+--- PASS: TestConversationExecutableStartsWithoutLegacyProvider (1.29s)
+=== RUN   TestExecutableRejectsPartialOrMissingProviderConfiguration
+--- PASS: TestExecutableRejectsPartialOrMissingProviderConfiguration (0.00s)
+=== RUN   TestSaaSConversationExecutableRejectsMissingIdentityBeforeRecovery
+--- PASS: TestSaaSConversationExecutableRejectsMissingIdentityBeforeRecovery (0.16s)
+=== RUN   TestSaaSConversationExecutableRevalidatesCurrentIdentity
+=== RUN   TestSaaSConversationExecutableRevalidatesCurrentIdentity/revoked
+=== RUN   TestSaaSConversationExecutableRevalidatesCurrentIdentity/credential
+=== RUN   TestSaaSConversationExecutableRevalidatesCurrentIdentity/forged
+--- PASS: TestSaaSConversationExecutableRevalidatesCurrentIdentity (3.79s)
+    --- PASS: TestSaaSConversationExecutableRevalidatesCurrentIdentity/revoked (1.23s)
+    --- PASS: TestSaaSConversationExecutableRevalidatesCurrentIdentity/credential (1.27s)
+    --- PASS: TestSaaSConversationExecutableRevalidatesCurrentIdentity/forged (1.29s)
+=== RUN   TestSaaSConversationAgainstRealIdentityProcess
+    identity_process_test.go:33: set AGENT_IDENTITY_PROCESS_ACCEPTANCE=1 to run the isolated Identity process
+--- SKIP: TestSaaSConversationAgainstRealIdentityProcess (0.00s)
+=== RUN   TestConversationOptionsFromEnvironment
+--- PASS: TestConversationOptionsFromEnvironment (0.00s)
+=== RUN   TestConversationExecutableStartsWithoutLegacyProvider
+--- PASS: TestConversationExecutableStartsWithoutLegacyProvider (1.31s)
+=== RUN   TestExecutableRejectsPartialOrMissingProviderConfiguration
+--- PASS: TestExecutableRejectsPartialOrMissingProviderConfiguration (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	18.200s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]

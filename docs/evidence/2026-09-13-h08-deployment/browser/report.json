@@ -1,0 +1,34 @@
+{
+  "deployment": {
+    "model": "gpt-5.6-sol",
+    "workspace_id": "live-work-workspace"
+  },
+  "steps": [
+    "compiled product is logged into the real Identity host and shows the enabled gpt-5.6-sol model",
+    "three ordered todos survive the full host reopen; only the second is completed and its exact due date remains stored",
+    "the weekly-report preference is rendered from persisted personal memory after restart",
+    "the UI opens version 2, switches to immutable version 1 and downloads Markdown containing the stored original facts",
+    "a browser-submitted request reaches the enabled real model through Responses and its single reply survives reload"
+  ],
+  "javascriptErrors": [],
+  "preLoginConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "consoleErrors": [],
+  "snapshots": [
+    {
+      "conversation_id": "conv_3644872493a17e49a2e798a6f73fef88",
+      "message_ids": [
+        "msg_a9089a07ad292f24d55c60941915bd9e",
+        "msg_6863971bd4932277bc0d73234644508d"
+      ],
+      "roles": [
+        "user",
+        "assistant"
+      ]
+    }
+  ],
+  "complete": true
+}

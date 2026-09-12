@@ -1,0 +1,207 @@
+{
+  "id": "crun_3082484d813983e3b63cc389321cb83e",
+  "conversation_id": "conv_89a35a2e2b307413db33d63554794328",
+  "client_message_id": "remember-format",
+  "status": "completed",
+  "user_seq": 5,
+  "assistant_message_id": "msg_6765616cdf67ff07ca1c40044a0f05f0",
+  "attempt": 1,
+  "draft_bytes": 0,
+  "last_event_seq": 145,
+  "steps": [
+    {
+      "number": 0,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "write",
+          "id": "call_3e40e3417f7a44e491bad9d6",
+          "name": "memory_save",
+          "arguments": "{\"content\":\"周报格式偏好：固定按“本周进展、风险、下周计划”三节组织，每节使用简短要点。\",\"enabled\":true,\"expected_revision\":0,\"title\":\"周报格式偏好\"}",
+          "status": "completed",
+          "resource_id": "mem_3d8eb54798da8713b9a164f1a09db82a",
+          "result_preview": "{\"memory\":{\"id\":\"mem_3d8eb54798da8713b9a164f1a09db82a\",\"title\":\"周报格式偏好\",\"content\":\"周报格式偏好：固定按“本周进展、风险、下周计划”三节组织，每节使用简短要点。\",\"enabled\":true,\"revision\":1,\"created_at\":\"2026-09-12T19:16:07.693793Z\",\"updated_at\":\"2026-09-12T19:16:07.693793Z\"}}",
+          "result_reference": {
+            "conversation_id": "conv_89a35a2e2b307413db33d63554794328",
+            "run_id": "crun_3082484d813983e3b63cc389321cb83e",
+            "step": 0,
+            "call_id": "call_3e40e3417f7a44e491bad9d6",
+            "sha256": "004c2eaf44307ca34e47fbc4d906ac896d6f8ef3684d342ced3d5f0a6cd649ad"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:16:07.691836Z",
+          "completed_at": "2026-09-12T19:16:07.69391Z",
+          "duration_ms": 2
+        }
+      ],
+      "usage": {
+        "completion_tokens": 60,
+        "prompt_tokens": 6906,
+        "prompt_tokens_details": {
+          "cached_tokens": 6336
+        },
+        "total_tokens": 6966
+      },
+      "started_at": "2026-09-12T19:16:00.206008Z",
+      "completed_at": "2026-09-12T19:16:07.65524Z",
+      "duration_ms": 7449
+    },
+    {
+      "number": 1,
+      "attempt": 1,
+      "status": "completed",
+      "text": "已保存为个人记忆「周报格式偏好」：\n\n- 内容：固定按“本周进展、风险、下周计划”三节组织，每节使用简短要点\n- ID：mem_3d8eb54798da8713b9a164f1a09db82a（当前版本 1，已启用）\n\n之后帮你写周报时会默认采用这个格式。",
+      "calls": [],
+      "usage": {
+        "completion_tokens": 112,
+        "prompt_tokens": 7136,
+        "prompt_tokens_details": {
+          "cached_tokens": 6400
+        },
+        "total_tokens": 7248
+      },
+      "started_at": "2026-09-12T19:16:07.770357Z",
+      "completed_at": "2026-09-12T19:16:14.410535Z",
+      "duration_ms": 6640
+    }
+  ],
+  "write_scope": {
+    "personal_memory": true
+  },
+  "model": "glm-5.3-flash-free",
+  "usage": {
+    "completion_tokens": 172,
+    "prompt_tokens": 14042,
+    "total_tokens": 14214
+  },
+  "correlation_id": "crun_3082484d813983e3b63cc389321cb83e",
+  "metrics": {
+    "steps": 2,
+    "model_calls": 2,
+    "tool_calls": 1,
+    "tool_attempts": 1,
+    "authorization_checks": 1,
+    "confirmation_decisions": 0
+  },
+  "audit": [
+    {
+      "seq": 1,
+      "type": "run",
+      "status": "queued",
+      "step": 0,
+      "occurred_at": "2026-09-12T19:16:00.025913Z"
+    },
+    {
+      "seq": 2,
+      "type": "run",
+      "status": "running",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:00.026481Z"
+    },
+    {
+      "seq": 3,
+      "type": "step",
+      "status": "prepared",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:00.1588Z"
+    },
+    {
+      "seq": 4,
+      "type": "model",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:00.206008Z"
+    },
+    {
+      "seq": 55,
+      "type": "model",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "duration_ms": 7449,
+      "occurred_at": "2026-09-12T19:16:07.65524Z"
+    },
+    {
+      "seq": 56,
+      "type": "authorization",
+      "status": "granted",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_3e40e3417f7a44e491bad9d6",
+      "tool": "memory_save",
+      "action_key": "agent.conversation_tools.memory_save",
+      "authorization_revision": "98f0b1941f30bc6364f1d63259057eeef5a7e671e974ccab949f803aac006f6c",
+      "occurred_at": "2026-09-12T19:16:07.691267Z"
+    },
+    {
+      "seq": 57,
+      "type": "tool",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_3e40e3417f7a44e491bad9d6",
+      "tool": "memory_save",
+      "occurred_at": "2026-09-12T19:16:07.691836Z"
+    },
+    {
+      "seq": 58,
+      "type": "tool",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_3e40e3417f7a44e491bad9d6",
+      "tool": "memory_save",
+      "duration_ms": 2,
+      "occurred_at": "2026-09-12T19:16:07.69391Z"
+    },
+    {
+      "seq": 59,
+      "type": "step",
+      "status": "prepared",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:07.734487Z"
+    },
+    {
+      "seq": 60,
+      "type": "model",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:07.770357Z"
+    },
+    {
+      "seq": 143,
+      "type": "model",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "duration_ms": 6640,
+      "occurred_at": "2026-09-12T19:16:14.410535Z"
+    },
+    {
+      "seq": 145,
+      "type": "run",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:16:14.413022Z"
+    }
+  ],
+  "audit_complete": true,
+  "started_at": "2026-09-12T19:16:00.026481Z",
+  "completed_at": "2026-09-12T19:16:14.413022Z",
+  "duration_ms": 14386,
+  "queue_duration_ms": 0,
+  "created_at": "2026-09-12T19:16:00.025843Z",
+  "updated_at": "2026-09-12T19:16:14.413045Z"
+}

@@ -1,0 +1,647 @@
+{
+  "todo": "H08",
+  "status": "complete",
+  "captured_at": "2026-09-13T03:40:29.329113+08:00",
+  "scope": "actual enabled model protocol and actual single-process Web/SQLite deployment, including browser and full process restart",
+  "change": {
+    "production_files": [],
+    "test_files": [
+      "internal/assembly/web/conversation_live_tools_test.go",
+      "frontend/tests/live-deployment.browser.mjs",
+      "frontend/tests/live-web-command.browser.mjs"
+    ],
+    "documentation_files": [
+      "docs/agent-capabilities-todo.md",
+      "docs/testing-2026-09-13-h08-deployment.md"
+    ],
+    "external_non_secret_configuration": "~/Library/Application Support/domainry-agent/web-services.json changed to the accepted responses/gpt-5.6-sol deployment; credentials remained in the separate owner-only file"
+  },
+  "enabled_model": {
+    "provider": "gateway",
+    "protocol": "responses",
+    "base_url": "https://api.verdent.ai",
+    "model": "gpt-5.6-sol",
+    "credential_in_repository": false,
+    "llm_proxy_model_endpoint": false
+  },
+  "enabled_deployment": {
+    "command": "cmd/domainry-agent-web",
+    "processes": 1,
+    "frontend": "compiled frontend/dist",
+    "identity": "in-process Identity Module",
+    "agent": "in-process Agent Module",
+    "database": "SQLite"
+  },
+  "invariants": {
+    "real_model_protocol_executed": true,
+    "browser_request_reached_real_model": true,
+    "compiled_product_executed": true,
+    "identity_and_messages_survive_full_process_restart": true,
+    "exact_message_ids_survive_restart": true,
+    "postgresql_enabled": false,
+    "mysql_enabled": false,
+    "multi_instance_enabled": false,
+    "standalone_saas_enabled": false,
+    "llm_proxy_untouched_and_web_tools_only": true,
+    "credential_material_absent_from_repository_evidence": true
+  },
+  "observations": {
+    "daily_work": {
+      "runs": 8,
+      "model_calls": 29,
+      "tool_calls": 27,
+      "steps": 29,
+      "input_tokens": 169680,
+      "output_tokens": 2576,
+      "total_tokens": 172256,
+      "duration_ms": 90692,
+      "statuses": [
+        "completed"
+      ],
+      "models": [
+        "gpt-5.6-sol"
+      ]
+    },
+    "browser_host_daily_work": {
+      "runs": 8,
+      "model_calls": 27,
+      "tool_calls": 25,
+      "steps": 27,
+      "input_tokens": 156186,
+      "output_tokens": 2357,
+      "total_tokens": 158543,
+      "duration_ms": 90054,
+      "statuses": [
+        "completed"
+      ],
+      "models": [
+        "gpt-5.6-sol"
+      ]
+    },
+    "browser": {
+      "steps": 5,
+      "javascript_errors": 0,
+      "authenticated_console_errors": 0,
+      "pre_login_expected_console_responses": 3,
+      "conversation_id": "conv_3644872493a17e49a2e798a6f73fef88",
+      "message_ids": [
+        "msg_a9089a07ad292f24d55c60941915bd9e",
+        "msg_6863971bd4932277bc0d73234644508d"
+      ]
+    },
+    "actual_command_restart": {
+      "binary_sha256": "7ea755ab28c2f4fe3d9d77145b10835a07f85c1ccac0546b29c14167f1e5e46b",
+      "database_sha256": "f03e44d77cf30595369e79cc20df0461ba7933c9df1c060300189d07a59f76f4",
+      "conversation_id": "conv_cc1f131f097b8d5e7a9926aa4ad328b5",
+      "message_ids": [
+        "msg_348c55bc422a80a2d5e3ecd14d21ddef",
+        "msg_25cfef711cfde42a251b84c54d2e0691"
+      ],
+      "seed_steps": 2,
+      "verify_steps": 1,
+      "javascript_errors": 0,
+      "console_errors": 0
+    }
+  },
+  "failed_acceptance_attempts_retained": [
+    {
+      "stage": "ambiguous weekend date expectation",
+      "model": "glm-5.3-flash-free",
+      "result": "test expected past Friday while the model selected the following Friday",
+      "resolution": "make the synthetic acceptance request name the next Friday and exact ISO date while retaining time_now verification",
+      "evidence": "docs/evidence/2026-09-13-h08-deployment/live-daily-initial-failure.log"
+    },
+    {
+      "stage": "final artifact export",
+      "model": "glm-5.3-flash-free",
+      "result": "model returned text without calling artifact_export",
+      "resolution": "model was not accepted; actual enabled deployment changed to responses/gpt-5.6-sol",
+      "evidence": "docs/evidence/2026-09-13-h08-deployment/live-daily-glm-export-failure.log"
+    },
+    {
+      "stage": "browser deployment identity",
+      "result": "initial script expected model in public /app/config although the UI exposes it after login",
+      "resolution": "validate workspace from public config and model from authenticated UI",
+      "evidence": "docs/evidence/2026-09-13-h08-deployment/browser-initial-failure.log"
+    },
+    {
+      "stage": "browser console accounting",
+      "result": "all functional steps passed, then expected pre-login 401/favicon 404 responses were counted as authenticated console errors",
+      "resolution": "record pre-login responses separately and require zero authenticated errors",
+      "evidence": "docs/evidence/2026-09-13-h08-deployment/browser-functional-pass-console-failure.log"
+    }
+  ],
+  "conditional_modes": {
+    "acceptance_required_now": false,
+    "reason": "The accepted deployment explicitly runs one Web process against one SQLite path; PostgreSQL, MySQL, multi-instance and standalone SaaS are not enabled. Enabling any of them remains gated on its own real database and concurrency acceptance.",
+    "audit": "docs/evidence/2026-09-13-h08-deployment/deployment-audit.json"
+  },
+  "llm_proxy": {
+    "repositories_clean": [
+      "/Users/tiger/Projects/devops/llm-proxy",
+      "/Users/tiger/Projects/anti/llm-proxy"
+    ],
+    "model_endpoint": false,
+    "web_tool_paths": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ]
+  },
+  "tests": [
+    {
+      "name": "real daily work through Identity HTTP",
+      "command": "GOWORK=off AGENT_LIVE_EVIDENCE_DIR=<evidence>/live-daily python3 scripts/test-agent-live.py",
+      "result": "pass",
+      "duration": "94.46s",
+      "package_duration": "94.895s"
+    },
+    {
+      "name": "compiled browser with real daily work",
+      "command": "GOWORK=off AGENT_LIVE_EVIDENCE_DIR=<evidence>/live-browser-runs AGENT_UI_TEST_OUTPUT=<evidence>/browser AGENT_UI_TEST_SCRIPT=frontend/tests/live-deployment.browser.mjs python3 scripts/test-agent-live.py --browser",
+      "result": "pass",
+      "duration": "111.63s",
+      "package_duration": "112.114s",
+      "browser_steps": 5,
+      "javascript_errors": 0,
+      "authenticated_console_errors": 0
+    },
+    {
+      "name": "live provider protocol",
+      "command": "AGENT_CONVERSATION_LIVE=1 GOWORK=off go test ./internal/infrastructure/provider -run ^TestGatewayLiveConversation$ -count=1 -v",
+      "result": "pass",
+      "duration": "4.81s",
+      "package_duration": "5.448s"
+    },
+    {
+      "name": "actual built command restart",
+      "command": "go build cmd/domainry-agent-web; start, browser seed, terminate, restart same binary/database, browser verify",
+      "result": "pass",
+      "browser_steps": 3,
+      "javascript_errors": 0,
+      "console_errors": 0
+    },
+    {
+      "name": "agent full",
+      "command": "GOWORK=off go test ./...",
+      "result": "pass",
+      "web_duration": "159.777s"
+    },
+    {
+      "name": "provider and executable race",
+      "command": "GOWORK=off go test -race ./internal/infrastructure/provider ./cmd/domainry-agent ./cmd/domainry-agent-web -count=3 -v",
+      "result": "pass",
+      "provider_duration": "1.788s",
+      "command_duration": "18.200s"
+    },
+    {
+      "name": "deployment composition race",
+      "command": "GOWORK=off go test -race ./integration -run '^(TestConversationModuleSaaSAndBrowserSurface|TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions)$' -count=3 -v",
+      "result": "pass",
+      "duration": "11.376s"
+    },
+    {
+      "name": "frontend",
+      "command": "npm test && npm run build",
+      "result": "pass",
+      "tests": 61,
+      "build_duration": "7.62s"
+    },
+    {
+      "name": "architecture race",
+      "command": "GOWORK=off go test -race ./internal/architecture -count=3 -v",
+      "result": "pass",
+      "duration": "1.688s"
+    },
+    {
+      "name": "static",
+      "command": "GOWORK=off go vet ./... && GOWORK=off go build ./...",
+      "result": "pass"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "internal/assembly/web/conversation_live_tools_test.go",
+      "sha256": "8c554f2e0bf8f247ff9e81146806cb437b80a750b7bfcb2676a5488c78933c97"
+    },
+    {
+      "path": "frontend/tests/live-deployment.browser.mjs",
+      "sha256": "987d6e1119943c7d90ef0b6f30ef57bead3ac6887fe465672b0151d613a1e9bd"
+    },
+    {
+      "path": "frontend/tests/live-web-command.browser.mjs",
+      "sha256": "6afc9b9eaa28f97c31df21820fb8522c32344b1e5ede804b4653db07081e5a01"
+    },
+    {
+      "path": "scripts/test-agent-live.py",
+      "sha256": "3b70bb331478390c2259d9a2c52f40f34ab77245dcb545075bb057a7f0219d6b"
+    },
+    {
+      "path": "cmd/domainry-agent-web/main.go",
+      "sha256": "27cd623f13f718429c56aa6bf651980cff1d8b4f74b27123e686c327b0568ea1"
+    },
+    {
+      "path": "internal/infrastructure/provider/conversation_model.go",
+      "sha256": "79d15bcb3ae02f5f09072844bf6ac300a2753c0e61c442e26b3b85d491cef604"
+    },
+    {
+      "path": "internal/infrastructure/provider/conversation_execution.go",
+      "sha256": "593d0a3ff8555e566046df9e858099cae6c0eabc8604f6b76c2c39f0d9786103"
+    },
+    {
+      "path": "internal/application/conversation_execution.go",
+      "sha256": "877563fc528270ac2b7497cb0f46f4c66cf6448856cfef72353cb074be5f751f"
+    },
+    {
+      "path": "module/factory.go",
+      "sha256": "e971287f304ce01eef56c0ca43501c7b0b1b9a6f4f690100ac9a8c229a1dd64f"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/agent-full.log",
+      "bytes": 2769,
+      "sha256": "d6dc1bd65045205c2dd739c81601f3ed396e2b9d82e4916ba9ee8caf53180a4f"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/architecture-audit.json",
+      "bytes": 1746,
+      "sha256": "a4b805dcf46686d14daeee8c4ce5035bc7e67afb52cd9b40d8d7f759fcb925b8"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/architecture-race.log",
+      "bytes": 2408,
+      "sha256": "e0f2f511f0287037d96d65ad47c25062d601cfe808d0da54cbc679ee8bb5983d"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser-functional-pass-console-failure.json",
+      "bytes": 1674,
+      "sha256": "89bea23becd9aca3f1d8ef093a3a89161d4e1106175a5eb49b933874a9ccbde3"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser-functional-pass-console-failure.log",
+      "bytes": 1516,
+      "sha256": "ab1d0259b7227b437a59912bd4b50c80e5fae031bf8c16354feec23455f3529e"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser-functional-pass-console-failure/artifact-version-1.png",
+      "bytes": 176468,
+      "sha256": "d32d0272737b44761caea2c3134d796f7d2b283a00b59f70355e5949e67d39d4"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser-functional-pass-console-failure/failure.png",
+      "bytes": 127941,
+      "sha256": "f2a288ffc9055241c0a8f2b82666fec2aa0a3032a5251d49cb92f362ed6d92bd"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser-functional-pass-console-failure/live-model-reloaded.png",
+      "bytes": 127941,
+      "sha256": "f2a288ffc9055241c0a8f2b82666fec2aa0a3032a5251d49cb92f362ed6d92bd"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser-functional-pass-console-failure/persisted-todos.png",
+      "bytes": 222032,
+      "sha256": "b8caed6980b66ccc49332a5b19c291f0a921aa480721dbdc557d1d754657e871"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser-functional-pass-console-failure/qinghe-report-v1.md",
+      "bytes": 276,
+      "sha256": "ca89ebc2fafa7791cad14020f1a89815f1af6732eeb15732cf1cadd493c5c838"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser-functional-pass-console-failure/report.json",
+      "bytes": 1674,
+      "sha256": "89bea23becd9aca3f1d8ef093a3a89161d4e1106175a5eb49b933874a9ccbde3"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser-initial-failure.log",
+      "bytes": 538,
+      "sha256": "596d975581ee3e9df37f67fdfe71534668e6985d5329911ca35264a56276f287"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser.log",
+      "bytes": 553,
+      "sha256": "102fc861b7c9f01a5305755cc7ad427ee672161bb086b99a2f0411a14728e390"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser/artifact-version-1.png",
+      "bytes": 175740,
+      "sha256": "5dc13c8a9faba9a1250b1eb54a02f400686f3b82dc75bf834a5826b86ed15702"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser/live-model-reloaded.png",
+      "bytes": 127941,
+      "sha256": "f2a288ffc9055241c0a8f2b82666fec2aa0a3032a5251d49cb92f362ed6d92bd"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser/persisted-todos.png",
+      "bytes": 259606,
+      "sha256": "1d7536e1e71b7a655744a07f233bffab5f6f2d604b8f5120c8a9ac0bf354c80b"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser/qinghe-report-v1.md",
+      "bytes": 274,
+      "sha256": "c1b06e4d5a0bd9d3457acfc4f4af7b00caea0d634acf0c0663e926d51b7f331d"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/browser/report.json",
+      "bytes": 1329,
+      "sha256": "1f72717acfa9e37676febe89ec7579bf955bae9eaead630001ffe0e120a759fa"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/credential-leak-audit.json",
+      "bytes": 623,
+      "sha256": "aa13ee953ca9b9de655fd7ecd55c8d41eee3d6c462a401659a2dd16c959b22d6"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/deployment-audit.json",
+      "bytes": 1413,
+      "sha256": "e9dda8e756e27dc2159e947975241db57da33d83910be237420819e4347b2918"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/deployment-modes-race.log",
+      "bytes": 3551,
+      "sha256": "88d10a1df7876c7e2f18ed9be7ff5d35c587e73f350eee19f3b4372cc1b685d5"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/frontend-build.log",
+      "bytes": 32521,
+      "sha256": "bee254ad41c584b6040b3d9aa69c03e868fda9d559d6234d8269fd32aa719f26"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/frontend-test.log",
+      "bytes": 8738,
+      "sha256": "33f9a12bcb31e95a7e38311faa1ece7b5bed8859d01771559f8582ab56e29f59"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-host.log",
+      "bytes": 9122,
+      "sha256": "f459171fcf98a7a69f6d4b0954cb6046eee93544fc2b30382a65a29d73e1a454"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs-functional-pass-console-failure/continue-work.json",
+      "bytes": 19977,
+      "sha256": "eabfbf09dac51563ee66374a3a8fe7e3ee56756e7637361b64141c38bee54105"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs-functional-pass-console-failure/create-report.json",
+      "bytes": 25622,
+      "sha256": "58662bad3eb3a544bcecfd4b48637626733a460983a222202aa5790d813d6beb"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs-functional-pass-console-failure/create-todos.json",
+      "bytes": 14981,
+      "sha256": "620104f28a5c2da072f88166c8a79b25f20b54e0313c2339261069051b90c1ed"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs-functional-pass-console-failure/discussion.json",
+      "bytes": 2528,
+      "sha256": "e35a7b6215250e93b086316ebb5de70350080798f24d686964faf42dee8ccdc1"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs-functional-pass-console-failure/edit-report.json",
+      "bytes": 13815,
+      "sha256": "b29bc492d096a405051e5633a046554b57cb415ddee8a831dc0bd7f067ddeb74"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs-functional-pass-console-failure/export-original.json",
+      "bytes": 11127,
+      "sha256": "7932eb2f1ddc28ae823ad4e99e6aaa90fa4f22389be573b3bad67bd99566077b"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs-functional-pass-console-failure/remember-format.json",
+      "bytes": 9256,
+      "sha256": "a6cdff5d63235bc09ff7be0c21cc90e3ae68733dcc0e93e91271ab11d9050453"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs-functional-pass-console-failure/reschedule-second.json",
+      "bytes": 23107,
+      "sha256": "ff2d523c7de41bd3beef4f3e54d09867e748a0eeb71728d527989e82ecfcfb56"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs/continue-work.json",
+      "bytes": 20002,
+      "sha256": "a4f5ade05801e458f2b7ff1ba3423444c4fbbc1b615be3dd3ce2150756281e10"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs/create-report.json",
+      "bytes": 25525,
+      "sha256": "a02b7e65cb9fce3b4640eeb8774800580f8d8707e6e207fe81c540db1b5bb2f5"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs/create-todos.json",
+      "bytes": 14985,
+      "sha256": "880755220efc0feef79d80ddf6f3aa0c22b43f9abf82a6abc839e5b8c2cd4cbc"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs/discussion.json",
+      "bytes": 2528,
+      "sha256": "96bc715f2a181128104c110a9e993100e3a5dd236d8c2365b4ff9a8c7c3880b7"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs/edit-report.json",
+      "bytes": 13772,
+      "sha256": "bd82968f0bf1e2c1809248ae5e8335adedb24cba1f68d5eb85d8e1c196ec0fef"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs/export-original.json",
+      "bytes": 11154,
+      "sha256": "1a046ce745b9d09ca5856ac0c01e5dde842c27af5e03163781b933d3a72870dc"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs/remember-format.json",
+      "bytes": 9270,
+      "sha256": "d465704f71cb6e5c4afebd5cdef73085bd4b869728a23b07cac30c563721840e"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-browser-runs/reschedule-second.json",
+      "bytes": 17642,
+      "sha256": "9697b1e0f93a7bebf45b4f33b795b267d10b6fd17f88e827df119690337a2a37"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-glm-export-failure.log",
+      "bytes": 6619,
+      "sha256": "15bd81ba8849b64ef415695727eb7c7690d27ac2c037d3574416e850583817e7"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-glm-export-failure/continue-work.json",
+      "bytes": 21427,
+      "sha256": "ac32b4bb520aa88eed1ddd789bbd537ffe0806c7f90971700793a6f2489b9343"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-glm-export-failure/create-report.json",
+      "bytes": 21078,
+      "sha256": "17e0506efdd3ead56e3c8103a8a9dec3c2a6fc7a374ca58cc24d213a3c9cff1d"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-glm-export-failure/create-todos.json",
+      "bytes": 14573,
+      "sha256": "76297f123ee8413f8198f7c67ac62b82dec4167c94aae1c9779a0426ba29fe3d"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-glm-export-failure/discussion.json",
+      "bytes": 2431,
+      "sha256": "7fd96c4ee8ea6a825887caf38267bed17e1523aaaed8f47345d669979469db86"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-glm-export-failure/edit-report.json",
+      "bytes": 13347,
+      "sha256": "229847cbc146eb9372d1be0baef21638bfd7ba994cc8d80ade7d734034414389"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-glm-export-failure/export-original.json",
+      "bytes": 2776,
+      "sha256": "47f9396aaf5cb7fb44c2ec7633857df17f5e7890015ab6bc781b4ddb05b31020"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-glm-export-failure/remember-format.json",
+      "bytes": 6217,
+      "sha256": "72d821c85693acc95a4b371a741c6f563288c55842148dd98174ae4a169b7b6e"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-glm-export-failure/reschedule-second.json",
+      "bytes": 13427,
+      "sha256": "93d5afaaaeca01a40d4e948ffaffb45e854ba1f4aa143ef8ae1fe683d190413c"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-initial-failure.log",
+      "bytes": 2629,
+      "sha256": "79508fbc15859ddff97d0e1ef5fc1ca545e5c164990b905debb351fa5ea807af"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-initial-failure/create-todos.json",
+      "bytes": 14602,
+      "sha256": "549e8db8a9de6a2756432ceccfca8a16ed0a622b2c741931b9a5ed77de9f5e2c"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-initial-failure/discussion.json",
+      "bytes": 2354,
+      "sha256": "38e1c36a51459a0d100baf0f8892ba2647b34177a36f30fd041ed1304770fd83"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily-initial-failure/reschedule-second.json",
+      "bytes": 16325,
+      "sha256": "1daec9d26586f2b8d6be0ca9c200e3d61dd57da77990a58aa3c471b5494288d8"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily.log",
+      "bytes": 10053,
+      "sha256": "0e9ff8833e2b8ae71a8b71b4dd804fde4d0eb4e2a569754eab8d92544afe2e67"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily/continue-work.json",
+      "bytes": 25926,
+      "sha256": "e743ba743756651e55e2a28984270e19c485328b2163b40afb7ec8fec01426a5"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily/create-report.json",
+      "bytes": 24474,
+      "sha256": "b2e40d945ed47c87751cd4c450d563c5a6ef1d1d0a099d85b432f06526c8d564"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily/create-todos.json",
+      "bytes": 15006,
+      "sha256": "123fffd70fa029995e139de9454c90cfea4bba79e402e75f98f9bf0822d5cadb"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily/discussion.json",
+      "bytes": 2524,
+      "sha256": "fe587952ce9903bd8fec917bbdac2396d57ea2fe13a6164616431a17448da7e8"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily/edit-report.json",
+      "bytes": 13788,
+      "sha256": "157b0c1c84f7eca24608ffa0bfdc7673c567be2306db07019008c28eb716396e"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily/export-original.json",
+      "bytes": 15407,
+      "sha256": "6b3939357af3177674b692ab481b1f92a552cebce5db11a0eb8714e50dbdfa89"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily/remember-format.json",
+      "bytes": 9267,
+      "sha256": "4ce565bebf37390817eb0fc0343fd8e76f6dde6fb8f47c21753f07be9a5ad8a9"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/live-daily/reschedule-second.json",
+      "bytes": 18745,
+      "sha256": "f5dc4fa56279be09771aed81bcf4f216210d76638d6ea44a1b892194d2797760"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/model-deployment-config.json",
+      "bytes": 301,
+      "sha256": "74ded6ce13968c2be53d4dee86f751784d3a14195df8e66c4d618f566952edf1"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/provider-command-race.log",
+      "bytes": 39209,
+      "sha256": "5f188548116c0e4acd2ff568722ac0b38c4dd7b1e75501d3f233de2b35e3515d"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/provider-live.log",
+      "bytes": 325,
+      "sha256": "fa31ab889e99d4d7f02b972feac6b5fb77a27fe435773037e4bac390de52bdad"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/web-command-binary.sha256",
+      "bytes": 94,
+      "sha256": "3257b1d5fc4cee2ffd663c2d7c579548bfb499de8037ad46a664255f742e1684"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/web-command-browser/after-process-restart.png",
+      "bytes": 114560,
+      "sha256": "7006a398efb137566309fff842670051272b9159a9c43882108a15a5549c23e4"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/web-command-browser/before-process-restart.png",
+      "bytes": 114557,
+      "sha256": "a0a2a00091896b225323df75ab50ff7b506c36eb77443866d9922f1c74d1021b"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/web-command-browser/seed-report.json",
+      "bytes": 523,
+      "sha256": "23d2e8f58aeddfb8e519493fb5cd86fb8c344b5b3a09ad8460d2d56cffcf58c1"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/web-command-browser/state.json",
+      "bytes": 175,
+      "sha256": "c645e462ad3df45977e78f0721db9cafc5f5539a8f0c26c1bc636920a7e2ca9b"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/web-command-browser/verify-report.json",
+      "bytes": 428,
+      "sha256": "2d617e6c5ec886ab58ebc2b473f9ae82f96511572b81a7a8e6eaddb33cbf0b35"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/web-command-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/web-command-database.sha256",
+      "bytes": 110,
+      "sha256": "640710f18e7dbf638b89066f114670d6a9809775e00bb29530f9b122d53f214c"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/web-command-seed.log",
+      "bytes": 212,
+      "sha256": "49201c8eaf5ae1a5e736755569c9502b764790b3f3239a7f5c2779f393d6cede"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h08-deployment/web-command-verify.log",
+      "bytes": 117,
+      "sha256": "979ae19f8b0c362b66c3985ee3b0d9f5dbf432f0d3f126d39d71bd7e1145a122"
+    }
+  ],
+  "credential_leak_audit": "docs/evidence/2026-09-13-h08-deployment/credential-leak-audit.json"
+}

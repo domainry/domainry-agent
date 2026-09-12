@@ -1,0 +1,33 @@
+PASS compiled product is logged into the real Identity host and shows the enabled gpt-5.6-sol model
+PASS three ordered todos survive the full host reopen; only the second is completed and its exact due date remains stored
+PASS the weekly-report preference is rendered from persisted personal memory after restart
+PASS the UI opens version 2, switches to immutable version 1 and downloads Markdown containing the stored original facts
+PASS a browser-submitted request reaches the enabled real model through Responses and its single reply survives reload
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'Failed to load resource: the server responded with a status of 404 (Not Found)',
++   'Failed to load resource: the server responded with a status of 401 (Unauthorized)',
++   'Failed to load resource: the server responded with a status of 401 (Unauthorized)'
++ ]
+- []
+
+    at file:///Users/tiger/Projects/domainry-agent/frontend/tests/live-deployment.browser.mjs:110:10 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: [
+    'Failed to load resource: the server responded with a status of 404 (Not Found)',
+    'Failed to load resource: the server responded with a status of 401 (Unauthorized)',
+    'Failed to load resource: the server responded with a status of 401 (Unauthorized)'
+  ],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.22.0

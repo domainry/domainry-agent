@@ -181,8 +181,12 @@ func TestLiveDailyWorkThroughIdentityHTTP(t *testing.T) {
 	}
 	zone, _ := time.LoadLocation("Asia/Shanghai")
 	now := time.Now().In(zone)
-	friday := now.AddDate(0, 0, 5-(int(now.Weekday())+6)%7-1).Format("2006-01-02")
-	updated := send(work, "reschedule-second", "把刚才第二项改到周五。按上海时区，指本周五，只改这一项的截止日期。", &agentsdk.ConversationWriteScope{PersonalTodos: true})
+	daysUntilFriday := (int(time.Friday) - int(now.Weekday()) + 7) % 7
+	if daysUntilFriday == 0 {
+		daysUntilFriday = 7
+	}
+	friday := now.AddDate(0, 0, daysUntilFriday).Format("2006-01-02")
+	updated := send(work, "reschedule-second", "把刚才第二项改到接下来的周五，即上海日期 "+friday+"。仍先调用可信时间核对今天的上海日期，只改这一项的截止日期。", &agentsdk.ConversationWriteScope{PersonalTodos: true})
 	if !hasCall(updated, "time_now") || !hasCall(updated, "todo_update") {
 		t.Fatal("model did not resolve the date and update the todo")
 	}

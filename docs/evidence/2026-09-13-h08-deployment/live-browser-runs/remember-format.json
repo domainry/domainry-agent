@@ -1,0 +1,319 @@
+{
+  "id": "crun_7fdcb330bc9c6720560b9da01881542a",
+  "conversation_id": "conv_bb52a8d6cddafd38d72dd95bcfd89196",
+  "client_message_id": "remember-format",
+  "status": "completed",
+  "user_seq": 5,
+  "assistant_message_id": "msg_9860488caa0cb0c855665b143592d1c7",
+  "attempt": 1,
+  "draft_bytes": 0,
+  "last_event_seq": 120,
+  "steps": [
+    {
+      "number": 0,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "call_C8C5d3bBCGEwJ8vdCNbcQSQt",
+          "name": "memory_search",
+          "arguments": "{\"query\":\"周报格式偏好\"}",
+          "status": "completed",
+          "result_preview": "{\"complete\":true,\"items\":[],\"next_cursor\":\"\"}",
+          "result_reference": {
+            "conversation_id": "conv_bb52a8d6cddafd38d72dd95bcfd89196",
+            "run_id": "crun_7fdcb330bc9c6720560b9da01881542a",
+            "step": 0,
+            "call_id": "call_C8C5d3bBCGEwJ8vdCNbcQSQt",
+            "sha256": "95c9ef5a0953e946cb9d328eecbf379fa88e69db32f93174cc6b887365d2a048"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "dc111ed8ab3ba763f09f32f7a831cc477e9fbac369765ad24c0a8ac3acc5d8bc",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:26:07.87315Z",
+          "completed_at": "2026-09-12T19:26:07.876683Z",
+          "duration_ms": 3
+        }
+      ],
+      "usage": {
+        "input_tokens": 5050,
+        "input_tokens_details": {
+          "cache_write_tokens": 5047,
+          "cached_tokens": 0
+        },
+        "output_tokens": 38,
+        "output_tokens_details": {
+          "reasoning_tokens": 14
+        },
+        "total_tokens": 5088
+      },
+      "started_at": "2026-09-12T19:26:05.943863Z",
+      "completed_at": "2026-09-12T19:26:07.824819Z",
+      "duration_ms": 1880
+    },
+    {
+      "number": 1,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "write",
+          "id": "call_ZLtRVyE1n6jDvAhBpF6bXcn3",
+          "name": "memory_save",
+          "arguments": "{\"content\":\"周报固定按“本周进展、风险、下周计划”三节组织，每节使用简短要点。\",\"enabled\":true,\"expected_revision\":0,\"title\":\"周报格式偏好\"}",
+          "status": "completed",
+          "resource_id": "mem_3ea9400b6f8cfc00ba0409fe934e4530",
+          "result_preview": "{\"memory\":{\"id\":\"mem_3ea9400b6f8cfc00ba0409fe934e4530\",\"title\":\"周报格式偏好\",\"content\":\"周报固定按“本周进展、风险、下周计划”三节组织，每节使用简短要点。\",\"enabled\":true,\"revision\":1,\"created_at\":\"2026-09-12T19:26:11.133238Z\",\"updated_at\":\"2026-09-12T19:26:11.133238Z\"}}",
+          "result_reference": {
+            "conversation_id": "conv_bb52a8d6cddafd38d72dd95bcfd89196",
+            "run_id": "crun_7fdcb330bc9c6720560b9da01881542a",
+            "step": 1,
+            "call_id": "call_ZLtRVyE1n6jDvAhBpF6bXcn3",
+            "sha256": "6ce0f262dd39b9f096eb07366fba08d71d1326a988ceb1e4df78511769fffda2"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "dc111ed8ab3ba763f09f32f7a831cc477e9fbac369765ad24c0a8ac3acc5d8bc",
+            "checks": 1
+          },
+          "started_at": "2026-09-12T19:26:11.131175Z",
+          "completed_at": "2026-09-12T19:26:11.133361Z",
+          "duration_ms": 2
+        }
+      ],
+      "usage": {
+        "input_tokens": 5118,
+        "input_tokens_details": {
+          "cache_write_tokens": 68,
+          "cached_tokens": 5047
+        },
+        "output_tokens": 61,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 5179
+      },
+      "started_at": "2026-09-12T19:26:07.960732Z",
+      "completed_at": "2026-09-12T19:26:11.076794Z",
+      "duration_ms": 3116
+    },
+    {
+      "number": 2,
+      "attempt": 1,
+      "status": "completed",
+      "text": "已保存为个人记忆：\n\n**周报格式偏好**\n- 固定按“本周进展、风险、下周计划”三节组织\n- 每节使用简短要点",
+      "calls": [],
+      "usage": {
+        "input_tokens": 5335,
+        "input_tokens_details": {
+          "cache_write_tokens": 217,
+          "cached_tokens": 5115
+        },
+        "output_tokens": 46,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 5381
+      },
+      "started_at": "2026-09-12T19:26:11.211501Z",
+      "completed_at": "2026-09-12T19:26:15.190711Z",
+      "duration_ms": 3979
+    }
+  ],
+  "write_scope": {
+    "personal_memory": true
+  },
+  "model": "gpt-5.6-sol",
+  "usage": {
+    "input_tokens": 15503,
+    "output_tokens": 145,
+    "total_tokens": 15648
+  },
+  "correlation_id": "crun_7fdcb330bc9c6720560b9da01881542a",
+  "metrics": {
+    "steps": 3,
+    "model_calls": 3,
+    "tool_calls": 2,
+    "tool_attempts": 2,
+    "authorization_checks": 2,
+    "confirmation_decisions": 0
+  },
+  "audit": [
+    {
+      "seq": 1,
+      "type": "run",
+      "status": "queued",
+      "step": 0,
+      "occurred_at": "2026-09-12T19:26:05.841506Z"
+    },
+    {
+      "seq": 2,
+      "type": "run",
+      "status": "running",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:26:05.841871Z"
+    },
+    {
+      "seq": 3,
+      "type": "step",
+      "status": "prepared",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:26:05.911311Z"
+    },
+    {
+      "seq": 4,
+      "type": "model",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:26:05.943863Z"
+    },
+    {
+      "seq": 15,
+      "type": "model",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "duration_ms": 1880,
+      "occurred_at": "2026-09-12T19:26:07.824819Z"
+    },
+    {
+      "seq": 16,
+      "type": "authorization",
+      "status": "granted",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_C8C5d3bBCGEwJ8vdCNbcQSQt",
+      "tool": "memory_search",
+      "action_key": "agent.conversation_tools.memory_search",
+      "authorization_revision": "dc111ed8ab3ba763f09f32f7a831cc477e9fbac369765ad24c0a8ac3acc5d8bc",
+      "occurred_at": "2026-09-12T19:26:07.871769Z"
+    },
+    {
+      "seq": 17,
+      "type": "tool",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_C8C5d3bBCGEwJ8vdCNbcQSQt",
+      "tool": "memory_search",
+      "occurred_at": "2026-09-12T19:26:07.87315Z"
+    },
+    {
+      "seq": 18,
+      "type": "tool",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "call_C8C5d3bBCGEwJ8vdCNbcQSQt",
+      "tool": "memory_search",
+      "duration_ms": 3,
+      "occurred_at": "2026-09-12T19:26:07.876683Z"
+    },
+    {
+      "seq": 19,
+      "type": "step",
+      "status": "prepared",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:26:07.921154Z"
+    },
+    {
+      "seq": 20,
+      "type": "model",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:26:07.960732Z"
+    },
+    {
+      "seq": 70,
+      "type": "model",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "duration_ms": 3116,
+      "occurred_at": "2026-09-12T19:26:11.076794Z"
+    },
+    {
+      "seq": 71,
+      "type": "authorization",
+      "status": "granted",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_ZLtRVyE1n6jDvAhBpF6bXcn3",
+      "tool": "memory_save",
+      "action_key": "agent.conversation_tools.memory_save",
+      "authorization_revision": "dc111ed8ab3ba763f09f32f7a831cc477e9fbac369765ad24c0a8ac3acc5d8bc",
+      "occurred_at": "2026-09-12T19:26:11.130281Z"
+    },
+    {
+      "seq": 72,
+      "type": "tool",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_ZLtRVyE1n6jDvAhBpF6bXcn3",
+      "tool": "memory_save",
+      "occurred_at": "2026-09-12T19:26:11.131175Z"
+    },
+    {
+      "seq": 73,
+      "type": "tool",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "call_ZLtRVyE1n6jDvAhBpF6bXcn3",
+      "tool": "memory_save",
+      "duration_ms": 2,
+      "occurred_at": "2026-09-12T19:26:11.133361Z"
+    },
+    {
+      "seq": 74,
+      "type": "step",
+      "status": "prepared",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:26:11.170138Z"
+    },
+    {
+      "seq": 75,
+      "type": "model",
+      "status": "started",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:26:11.211501Z"
+    },
+    {
+      "seq": 118,
+      "type": "model",
+      "status": "completed",
+      "step": 2,
+      "attempt": 1,
+      "duration_ms": 3979,
+      "occurred_at": "2026-09-12T19:26:15.190711Z"
+    },
+    {
+      "seq": 120,
+      "type": "run",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:26:15.194941Z"
+    }
+  ],
+  "audit_complete": true,
+  "started_at": "2026-09-12T19:26:05.841871Z",
+  "completed_at": "2026-09-12T19:26:15.194941Z",
+  "duration_ms": 9353,
+  "queue_duration_ms": 0,
+  "created_at": "2026-09-12T19:26:05.841461Z",
+  "updated_at": "2026-09-12T19:26:15.194968Z"
+}

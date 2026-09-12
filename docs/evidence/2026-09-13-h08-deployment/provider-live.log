@@ -1,0 +1,5 @@
+=== RUN   TestGatewayLiveConversation
+    conversation_live_test.go:67: Gateway live acceptance passed: protocol=responses, model=gpt-5.6-sol; streaming, supplied history and structured summary
+--- PASS: TestGatewayLiveConversation (4.81s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	5.448s

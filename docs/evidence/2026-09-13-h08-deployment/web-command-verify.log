@@ -1,0 +1,1 @@
+PASS after terminating and restarting the executable, the same Identity account and exact message IDs remain visible

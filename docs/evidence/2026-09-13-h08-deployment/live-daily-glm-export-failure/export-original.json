@@ -1,0 +1,107 @@
+{
+  "id": "crun_57bfe29c52df0094bfb9f398ea4b727e",
+  "conversation_id": "conv_6bd80dc9ced7a453440650da0c09a7a6",
+  "client_message_id": "export-original",
+  "status": "completed",
+  "user_seq": 5,
+  "assistant_message_id": "msg_fd4bc0838e8593a783315dd4d8095bf5",
+  "attempt": 1,
+  "draft_bytes": 0,
+  "last_event_seq": 86,
+  "steps": [
+    {
+      "number": 0,
+      "attempt": 1,
+      "status": "completed",
+      "text": "已按你的要求导出**版本 1**（修改前的原始版本）的 Markdown，下载文件为 `qinghe_acceptance_report_v1.md`（校验和 `bd14b7c76930f37cc529f668d1f9a3a5`，格式 markdown）。下载链接已生成，可通过该导出直接获取。",
+      "calls": [],
+      "usage": {
+        "completion_tokens": 81,
+        "prompt_tokens": 6974,
+        "prompt_tokens_details": {
+          "cached_tokens": 6336
+        },
+        "total_tokens": 7055
+      },
+      "started_at": "2026-09-12T19:17:47.763213Z",
+      "completed_at": "2026-09-12T19:17:55.735918Z",
+      "duration_ms": 7972
+    }
+  ],
+  "write_scope": {
+    "personal_memory": false,
+    "personal_artifacts": true
+  },
+  "model": "glm-5.3-flash-free",
+  "usage": {
+    "completion_tokens": 81,
+    "prompt_tokens": 6974,
+    "total_tokens": 7055
+  },
+  "correlation_id": "crun_57bfe29c52df0094bfb9f398ea4b727e",
+  "metrics": {
+    "steps": 1,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "tool_attempts": 0,
+    "authorization_checks": 0,
+    "confirmation_decisions": 0
+  },
+  "audit": [
+    {
+      "seq": 1,
+      "type": "run",
+      "status": "queued",
+      "step": 0,
+      "occurred_at": "2026-09-12T19:17:47.617169Z"
+    },
+    {
+      "seq": 2,
+      "type": "run",
+      "status": "running",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:17:47.617634Z"
+    },
+    {
+      "seq": 3,
+      "type": "step",
+      "status": "prepared",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:17:47.718529Z"
+    },
+    {
+      "seq": 4,
+      "type": "model",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:17:47.763213Z"
+    },
+    {
+      "seq": 84,
+      "type": "model",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "duration_ms": 7972,
+      "occurred_at": "2026-09-12T19:17:55.735918Z"
+    },
+    {
+      "seq": 86,
+      "type": "run",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-12T19:17:55.754117Z"
+    }
+  ],
+  "audit_complete": true,
+  "started_at": "2026-09-12T19:17:47.617634Z",
+  "completed_at": "2026-09-12T19:17:55.754117Z",
+  "duration_ms": 8136,
+  "queue_duration_ms": 0,
+  "created_at": "2026-09-12T19:17:47.617113Z",
+  "updated_at": "2026-09-12T19:17:55.754132Z"
+}

@@ -1,0 +1,21 @@
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Refuse a different model deployment
++ actual - expected
+
++ undefined
+- 'gpt-5.6-sol'
+
+    at file:///Users/tiger/Projects/domainry-agent/frontend/tests/live-deployment.browser.mjs:14:8
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: 'gpt-5.6-sol',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.22.0

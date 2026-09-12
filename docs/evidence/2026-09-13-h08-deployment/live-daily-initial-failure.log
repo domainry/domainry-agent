@@ -1,0 +1,25 @@
+Synthetic work execution evidence: /Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-13-h08-deployment/live-daily
+=== RUN   TestLiveDailyWorkThroughIdentityHTTP
+    conversation_live_tools_test.go:164: phase=discussion started model=glm-5.3-flash-free
+    conversation_live_tools_test.go:164: phase=discussion elapsed=0s state=running
+    conversation_live_tools_test.go:164: phase=discussion elapsed=7s state=completed
+    conversation_live_tools_test.go:166: phase=create-todos started model=glm-5.3-flash-free
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=0s state=running
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=10s state=running history_search:completed
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=16s state=running history_search:completed,history_read:receiving
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=16s state=running history_search:completed,history_read:completed
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=23s state=running history_search:completed,history_read:completed,todo_create:completed
+    conversation_live_tools_test.go:166: phase=create-todos elapsed=30s state=completed history_search:completed,history_read:completed,todo_create:completed
+    conversation_live_tools_test.go:185: phase=reschedule-second started model=glm-5.3-flash-free
+    conversation_live_tools_test.go:185: phase=reschedule-second elapsed=0s state=running
+    conversation_live_tools_test.go:185: phase=reschedule-second elapsed=6s state=running time_now:queued
+    conversation_live_tools_test.go:185: phase=reschedule-second elapsed=6s state=running time_now:completed
+    conversation_live_tools_test.go:185: phase=reschedule-second elapsed=15s state=running time_now:completed,todo_update:failed(todo_not_found)
+    conversation_live_tools_test.go:185: phase=reschedule-second elapsed=21s state=running time_now:completed,todo_update:failed(todo_not_found),todo_list:completed
+    conversation_live_tools_test.go:185: phase=reschedule-second elapsed=27s state=running time_now:completed,todo_update:failed(todo_not_found),todo_list:completed,todo_update:completed
+    conversation_live_tools_test.go:185: phase=reschedule-second elapsed=32s state=completed time_now:completed,todo_update:failed(todo_not_found),todo_list:completed,todo_update:completed
+    conversation_live_tools_test.go:192: second todo deadline=2026-09-18 expected=2026-09-11 revision=2
+--- FAIL: TestLiveDailyWorkThroughIdentityHTTP (70.08s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	71.345s
+FAIL
