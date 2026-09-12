@@ -1,0 +1,190 @@
+{
+  "date": "2026-09-12",
+  "item": "G05",
+  "verdict": "pass",
+  "summary": "Owner-scoped plan management, natural-language creation, revision CAS, pause/resume, durable delete tombstones and compiled product UI are complete through SDK-only service boundaries.",
+  "repositories": {
+    "agent": "f54dbc5090064f7ad1d261a4358e0cfb38ad91a2",
+    "scheduler": "be62fb18be1ca4597da9cb103bae304b1a1968fb",
+    "scheduler_sdk": "802b5b3752eb4e336097a3ab1860265a7b144f36",
+    "tools": "2d2f4ad96a22fadeb340acb9d761e5317867e89f",
+    "tools_sdk": "a6eb834a08996dbac6d1b00d44550a038a1297f2"
+  },
+  "llm_proxy": {
+    "worktrees": "clean",
+    "modified": false,
+    "model_routing_added": false,
+    "scope": "existing F04 consumes POST /tool/web_search and POST /tool/web_fetch_jina only"
+  },
+  "acceptance_observations": {
+    "natural_language_phrases": [
+      "每周一整理待办",
+      "周五提醒我提交周报"
+    ],
+    "management_operations": [
+      "list",
+      "get",
+      "update",
+      "pause",
+      "resume",
+      "delete"
+    ],
+    "stale_revision_http_status": 409,
+    "cross_user_visible_plans": 0,
+    "deleted_plan_visible_after_restart": false,
+    "browser_steps": 7,
+    "unexpected_javascript_errors": 0,
+    "unexpected_console_errors": 0,
+    "browser_width": 390
+  },
+  "checks": [
+    {
+      "name": "Agent full repository",
+      "command": "GOWORK=/tmp/domainry-g04-20260912/go.work go test ./... -count=1",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g05-plan-management/agent-test.log"
+    },
+    {
+      "name": "Scheduler full repository",
+      "command": "go test ./... -count=1",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g05-plan-management/scheduler-test.log"
+    },
+    {
+      "name": "Scheduler SDK full repository",
+      "command": "go test ./... -count=1",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g05-plan-management/scheduler-sdk-test.log"
+    },
+    {
+      "name": "Tools full repository",
+      "command": "go test ./... -count=1",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g05-plan-management/tools-test.log"
+    },
+    {
+      "name": "Tools SDK full repository",
+      "command": "go test ./... -count=1",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g05-plan-management/tools-sdk-test.log"
+    },
+    {
+      "name": "G05 cross-layer race",
+      "command": "go test -race Scheduler plan application/SaaS, Tools schedule adapter, Agent schedule E2E/routes",
+      "result": "pass",
+      "evidence": [
+        "docs/evidence/2026-09-12-g05-plan-management/scheduler-race.log",
+        "docs/evidence/2026-09-12-g05-plan-management/tools-race.log",
+        "docs/evidence/2026-09-12-g05-plan-management/agent-race.log"
+      ]
+    },
+    {
+      "name": "Compiled Chrome acceptance",
+      "command": "AGENT_SCHEDULE_BROWSER=1 go test ./internal/assembly/web -run ^TestScheduleManagementBuiltBrowser$ -count=1 -v",
+      "result": "pass",
+      "evidence": [
+        "docs/evidence/2026-09-12-g05-plan-management/browser-test.log",
+        "docs/evidence/2026-09-12-g05-plan-management/browser/report.json"
+      ]
+    },
+    {
+      "name": "Frontend state and production build",
+      "command": "npm test; npm run build",
+      "result": "pass",
+      "evidence": [
+        "docs/evidence/2026-09-12-g05-plan-management/frontend-test.log",
+        "docs/evidence/2026-09-12-g05-plan-management/frontend-build.log"
+      ]
+    },
+    {
+      "name": "Static and architecture checks",
+      "command": "go vet; git diff --check; forbidden implementation import scans",
+      "result": "pass",
+      "evidence": [
+        "docs/evidence/2026-09-12-g05-plan-management/boundary-scan.log",
+        "docs/evidence/2026-09-12-g05-plan-management/architecture-audit.json"
+      ]
+    }
+  ],
+  "test_scope": {
+    "agent_natural_language_model": "deterministic protocol fixture",
+    "browser_plan_service": "Scheduler SDK service fixture to preserve Agent-to-Scheduler implementation boundary",
+    "actual_scheduler_persistence": "separate Scheduler SDK to private HTTP to SaaS application to SQLite E2E",
+    "real_vendor_account_required": false
+  },
+  "files": {
+    "/Users/tiger/Projects/domainry-agent/go.mod": "7db09dded9c7957e31adfe351004ab9f936e7781d675c5a854419771fa4db000",
+    "/Users/tiger/Projects/domainry-agent/go.sum": "62285ee2d5f977275475f0a747aca203e4b6919d080ee7b0ca944559dc59a8f7",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/product/product.go": "52205f8292f548b14eafd7c457c4626cde09b99acacd81e0371aa6d5653aa7af",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/product/record_product.go": "a0dc0d7dc4a146e31ffab32d028cfe9df511cb7e1a5ba072d3fe247ed5662a79",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/product/scheduler.go": "89cd5de7c1013e396a1b8809fa95e1582164f6c697ee43f87d5ab7c8bbd1fa10",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/product/scheduler_test.go": "8321eb9279d9ed9e5bd89fe0dc204c59a84915eb9990b12cbbafc65a079f593a",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go": "a168ae7d7f27efb891f27dad7abef5400c125037cfc8ca1b89f5a536b28acc54",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/web/host_test.go": "e979eba4193b9f9dab02dea61ef19deb6ccc05175b94988dc5197842949adea8",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/web/integration_accounts_test.go": "373389657d9fb8ee7b52f8490e8caf3583e2abacb79b1fd194cffc316598eb72",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/web/schedule_tools.go": "e9b72ae48b9c18942049f95754a5cc250b80329ec269883608ecde9511f3fdd2",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/web/schedule_routes.go": "dcb32340dd9eb417f06694b5aa2ffb86e8f1797ec4364c21386ba5d3877e2338",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/web/schedule_routes_test.go": "f5e29263ed701b470c91e5c6c8a834cef01a247cbdc073d098eaf5840c9e56f1",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/web/schedule_tools_e2e_test.go": "a3eb5facf6759188e6c1a5406d2154f6d72b99ccecfdbb9f9d01cb9391843b8b",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/web/schedule_tools_browser_test.go": "950ad2e17129a814a6936d0aabbf7c4614582fd1db604df355afe5e72d861b81",
+    "/Users/tiger/Projects/domainry-agent/frontend/package.json": "2b063c98a2d52468aff67eabf9bca59403ee4dc6791f20eb9a7ca29554f77978",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/App.tsx": "52b3a71b54c469693c082f360d664bd5bb277cbce1e8fa65c6db965d1e88e1de",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/ProductWorkspace.tsx": "a30ba78e1f8160a64335e4a11f2cc0ea110d5d4faa892468ff67072a73d540c6",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/InteractionCard.tsx": "df453ff81877cd4d6465e248266222fc6f4636dd2fbc49f3fe7846a606719288",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/OperationScopePreview.tsx": "6987430b7aad9249b212d9b47a4c57d7dd5ae3bb3bd75a7b2ec92886b38dcbbe",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/ToolSettingsDialog.tsx": "0ae34d827bb051ca059c4e8a9d3c636143a2df9af3e0c2ecd747f9955057efe9",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/ScheduleDialog.tsx": "3dc7c67ab33a1a6a6aa306d101344151128bd8e67bdcc79d3a27338defadd397",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/ScheduleOperationPreview.tsx": "b97445ff64eb6d3bc0afe37ebce6750196f6d2c59d030d872651db4bbcd81b56",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/schedule-state.ts": "49c2ad04f2cb2f627d6d14d3bb68285852e9f57118d9639355c92d2a2c2f22af",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/schedule-state.test.ts": "27f2c6e88b23680cabdd9d36de275483ef07b80756c03dff40d1534bdaeadb28",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/index.css": "3b2f5e354fb945d4befe05b2ededa09e9898147f0d6cac7bb483664b01aa03a5",
+    "/Users/tiger/Projects/domainry-agent/frontend/tests/schedule-management.browser.mjs": "287142904b8b45581fc8b2d0c5f34f4fc21d10fbb6231cbb809e131d5b092398",
+    "/Users/tiger/Projects/domainry-agent/docs/agent-capabilities-todo.md": "c9eaf0ca2fa36c720681d1c99a8c3a5de6c0b8b49a7cdfda9885660cb30d0a82",
+    "/Users/tiger/Projects/domainry-agent/docs/remaining-capability-boundaries.md": "f9fe2e4c8194b6c249594fc3632fbe4ef1c5d6d76edf144097cd3c07c2938932",
+    "/Users/tiger/Projects/domainry-agent/docs/testing-2026-09-12-g05-plan-management.md": "7fca5268b56b45ed9a70f1dc5b836dc6b182b6ce9a1e660819375f6657978d34",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/architecture-audit.json": "3e8425546218f9ba86ffeec9dc3b53a5242b84ee04b221e5a29b36f293f71eb5",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/boundary-scan.log": "46cf734557362dceb98172abb8c5a11c6c87a871d88fe2ec30964c4875ccd974",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/agent-test.log": "452b95b894ba100acaa67657fa3648c8aef123665b40e03647713106846c1b67",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/agent-race.log": "98c3ef07cc58bf25464ebf775a94db9fb0b485b164396ea412ccf4cb7144fa42",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/agent-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/frontend-test.log": "48869b54848b319c5c2a4c15fb50237465eb005f49c9a5fea53fff4432a9e4f8",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/frontend-build.log": "2a42364d7ee753bc2bccde095b9267cbbfc721e20ae24dcf7b8f214c0f7c7914",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/browser-test.log": "e4b4b71156f64e657043e46005164e8c3c809506fad48c1d5f51d8e9455a84c0",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/browser/report.json": "f77f93578746abfbe4f1eb370e6270d5c5d5fbe552829b36572992a5ac10a80d",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/browser/host-audit.json": "df34d8daa1a7b26890c03343e153f3ecb1df6d4a3508f86fa9ddc9599f9192eb",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/browser/plans-initial.png": "0e9eae271a9ff3f6691d482d62d57055a4a02b51034fa3518cc90a45b8d47842",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/browser/plans-mobile.png": "f054b74241ed136aa836f394674bd8cf4681570ab66f5fe8f3b1df0b59b2eb5a",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/scheduler-test.log": "52859d46c93b837509ded29b2010f554bc9331f2fd5e24b61084a991e8a29290",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/scheduler-race.log": "2f0b4e9714d540edc9e80fbf8ab1534d106640e24254d495447656901ee8d717",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/scheduler-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/scheduler-sdk-test.log": "f93eeecd527195db1b112b6968daa19823217face41d2b7ae5f8c9a33b6bd496",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/scheduler-sdk-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/tools-test.log": "e03aeb231a6ddcc348758b57e3d6ffcaa3d9262d043098e3cd5caeadad82fdc3",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/tools-race.log": "e737cdd266ffbfb25598913b34e74a94a6f9f3874f5242dc270aaa03a734d655",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/tools-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/tools-sdk-test.log": "75715d93bfe879bbacea23e6b5faf21919c3f3f0eaecb04ca2cbb45d2b75f98c",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g05-plan-management/tools-sdk-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/tiger/Projects/domainry-scheduler/internal/application/scheduler/scheduled_plans.go": "aef03526cb1fe0c16e028286a1eaf8562c44cbd96b86c4d1a4479046ab362774",
+    "/Users/tiger/Projects/domainry-scheduler/internal/application/scheduler/scheduled_plans_test.go": "0d50431f150f4bc41dc71bf5d04e28c2e804c99b48981dd29436252065256372",
+    "/Users/tiger/Projects/domainry-scheduler/internal/assembly/saas/database_service.go": "a5e0a8750ec9ab302185dda2253d20528ad175b6d333bf3bb965535ef8b8f910",
+    "/Users/tiger/Projects/domainry-scheduler/internal/assembly/saas/database_service_test.go": "37ebf829199bb126e2082039e632663a3f6e69d9a18732165dc4508e86f4253a",
+    "/Users/tiger/Projects/domainry-scheduler/internal/infrastructure/persistence/database/scheduler/scheduled_plan_store.go": "12f95480326d592a75b216be4057c3ae800933a8c53e760b5ff6656a92f09684",
+    "/Users/tiger/Projects/domainry-scheduler/internal/infrastructure/persistence/database/scheduled_plan_store_test.go": "2e9c24e4f9f4a6ca62c8e772df16ab58dc9bd446cdd7ad5e987970d876777db9",
+    "/Users/tiger/Projects/domainry-scheduler/internal/transport/http/saas/server.go": "2d7976f2614045f102c6d06ffbfd266f3b92c78c3b6e26b566e9891d0e141473",
+    "/Users/tiger/Projects/domainry-scheduler/internal/transport/http/saas/server_test.go": "611f6ef767200613924906563667a0b6283d242f6dd58e1ee6cd42f96277e93e",
+    "/Users/tiger/Projects/domainry-scheduler/remote/factory.go": "11f850f83256c483d703fe9697a116d804969e7c66100047530a55542946c2fc",
+    "/Users/tiger/Projects/domainry-scheduler/remote/factory_test.go": "eb62fb4e8b805805b65366c6950668446ec601d14c243399f8917579a77b18cf",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/scheduled_plan.go": "ab5b2d74bee6eae280b79f00cd65321367f8026d64be9948cf74482b9e77ea4d",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/persistence/scheduled_plans.go": "137ffe462b892f9e98dd7b9b740c82cb953af530090cc8ff8acb058841115e73",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/saashost/factory.go": "534d877db41381adea7fab359f2990c43635ccd35cf5272eb0a029eabd639789",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/saashost/httptransport/transport.go": "fdc7ff67656ff3052c8fb984327868b7e47cff6b5b0bea4631ac7b41cb451ac9",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/saashost/httptransport/transport_test.go": "c4d15922ef1ffc16e22ccf588092f6053ad980b3a1434a3ecc889b146663efc5",
+    "/Users/tiger/Projects/domainry-tools/go.mod": "ab214f08b18b3828f61c2835b50051efc604e906a401d965caa3107b677531e7",
+    "/Users/tiger/Projects/domainry-tools/go.sum": "4bdb0101628ca404f23435a2fbff6360cec4759808bff79af789d060bf997b47",
+    "/Users/tiger/Projects/domainry-tools/module/module.go": "40483184fdf5431147c67fb58e2f17fbadef1cd12804e2b62e4f4080e99232ee",
+    "/Users/tiger/Projects/domainry-tools/internal/adapter/scheduletools/adapter.go": "45e38698f019d53db3d66629d9c67c3fc90c0958a3be50e5889f3349bdb3121d",
+    "/Users/tiger/Projects/domainry-tools/internal/adapter/scheduletools/adapter_test.go": "ed139dd77cc3cf2110cda56e6c5f242abcb242edf3b8b0e526f69d010347fefe",
+    "/Users/tiger/Projects/domainry-tools-sdk/schedule.go": "9a36c4ec6e80b5cfb165f74cae6470b7c7e59759cb0e14653375da11acc08c3d",
+    "/Users/tiger/Projects/domainry-tools-sdk/schedule_test.go": "4dc8a503d4046ab4f23e6172330290b5ebe9734cea98f01d7a6dc0f1e495bd33"
+  }
+}

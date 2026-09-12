@@ -15,7 +15,7 @@ import (
 // ConfigureRecords is reusable assembly, not a domain model. Each product
 // supplies its validation, vocabulary, prompts, Skills and allowed tool subset.
 func ConfigureRecords(key string, ui any, agentJSON, skillsJSON []byte, specs ...toolsmodule.RecordSpec) (Product, error) {
-	p := Product{Key: key, UI: ui, CalendarTools: true, MailTools: true, WebTools: true, CalendarWriteTools: true, MailWriteTools: true, ReportTools: true, AnalysisTools: true}
+	p := Product{Key: key, UI: ui, CalendarTools: true, MailTools: true, WebTools: true, CalendarWriteTools: true, MailWriteTools: true, ReportTools: true, AnalysisTools: true, ScheduleTools: true}
 	if path := os.Getenv("SAAS_AGENT_CONFIG"); path != "" {
 		var err error
 		agentJSON, err = os.ReadFile(path)

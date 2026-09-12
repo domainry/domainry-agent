@@ -1,0 +1,9 @@
+ok  	github.com/domainry/domainry-agent-sdk	1.328s
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	2.730s
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	1.514s
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]

@@ -336,8 +336,67 @@ func TestCalendarProductIdentityConversationAndRestart(t *testing.T) {
 		t.Fatal("another user can read personal calendar")
 	}
 	other.call("GET", "/agent/conversations/"+conversation+"/messages", "", 404)
+	conversationService := f.host.Agent.(sdk.ConversationBinding).Conversations()
+	scheduledTasks, ok := conversationService.(sdk.ScheduledConversationTaskService)
+	if !ok {
+		t.Fatal("Agent binding did not expose scheduled task acceptance")
+	}
+	authority := sdk.ConversationAuthority{Known: true, RuntimeID: f.options.RuntimeID, WorkspaceID: f.options.WorkspaceID, UserID: "admin"}
+	scheduled := sdk.ScheduledConversationTaskRequest{
+		ContractVersion: sdk.ScheduledConversationTaskContractVersion,
+		PlanID:          "calendar-plan", SchedulerRunID: "calendar-scheduler-run-1", IdempotencyKey: "calendar-window-1", ScheduledFor: time.Now().UTC(),
+		Authority: authority, ConversationID: conversation,
+		Input:          sdk.ConversationTaskStart{Goal: "后台读取日历", Input: `{"window":"today"}`, AllowedTools: []string{calendar.EventsOperationKey}},
+		AllowedActions: []string{"calendar.events"},
+	}
+	if _, err := scheduledTasks.StartScheduledConversationTask(t.Context(), scheduled); err == nil {
+		t.Fatal("scheduled task accepted without the exact Runtime service Action")
+	}
+	serviceContext := sdk.WithAuthorizedServiceAction(t.Context(), sdk.ActionAgentScheduledConversationTaskStart, sdk.AgentRuntimeServiceAudience)
+	receipt, err := scheduledTasks.StartScheduledConversationTask(serviceContext, scheduled)
+	if err != nil || receipt.Task.ID == "" || receipt.Replay {
+		t.Fatalf("connected scheduled task receipt=%+v err=%v", receipt, err)
+	}
+	reader := conversationService.(sdk.ConversationTaskService)
+	completed := false
+	for deadline := time.Now().Add(10 * time.Second); time.Now().Before(deadline); {
+		detail, readErr := reader.ConversationTask(t.Context(), receipt.Task.ID, authority)
+		if readErr != nil {
+			t.Fatal(readErr)
+		}
+		if detail.Status == sdk.ConversationTaskStatusCompleted {
+			completed = true
+			break
+		}
+		if detail.Status == sdk.ConversationTaskStatusFailed || detail.Status == sdk.ConversationTaskStatusCancelled {
+			t.Fatalf("connected scheduled task status=%s error=%s", detail.Status, detail.ErrorCode)
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	if !completed {
+		t.Fatal("connected scheduled task did not complete before the deadline")
+	}
+	replay, err := scheduledTasks.StartScheduledConversationTask(serviceContext, scheduled)
+	if err != nil || !replay.Replay || replay.Task.ID != receipt.Task.ID {
+		t.Fatalf("scheduled task replay=%+v err=%v", replay, err)
+	}
 	current := accountDecode[integration.ConnectionAccount](t, b.call("GET", "/integration/connection-accounts/"+account.Key, "", 200))
 	b.call("POST", "/integration/connection-accounts/"+account.Key+"/revoke", accountJSON(map[string]string{"expected_updated_at": current.UpdatedAt}), 200)
+	beforeRejectedModelCalls := f.modelCalls.Load()
+	beforeRejectedTasks, err := reader.ConversationTasks(t.Context(), sdk.ConversationTaskQuery{Limit: 20}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rejected := scheduled
+	rejected.SchedulerRunID, rejected.IdempotencyKey = "calendar-scheduler-run-2", "calendar-window-2"
+	rejected.ScheduledFor = rejected.ScheduledFor.Add(time.Hour)
+	if _, err = scheduledTasks.StartScheduledConversationTask(serviceContext, rejected); err == nil {
+		t.Fatal("scheduled task accepted after its external account was revoked")
+	}
+	afterRejectedTasks, readErr := reader.ConversationTasks(t.Context(), sdk.ConversationTaskQuery{Limit: 20}, authority)
+	if readErr != nil || len(afterRejectedTasks.Items) != len(beforeRejectedTasks.Items) || f.modelCalls.Load() != beforeRejectedModelCalls {
+		t.Fatalf("revoked scheduled task crossed acceptance: before=%d after=%d model=%d/%d err=%v", len(beforeRejectedTasks.Items), len(afterRejectedTasks.Items), beforeRejectedModelCalls, f.modelCalls.Load(), readErr)
+	}
 	assertCalendarHidden(t, b, conversation)
 	before := f.vendorCalls.Load()
 	if got := calendarRun(t, b, "读取日历"); strings.Contains(got, "CALENDAR-BODY") {

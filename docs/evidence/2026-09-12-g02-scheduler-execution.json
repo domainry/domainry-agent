@@ -1,0 +1,113 @@
+{
+  "date": "2026-09-12",
+  "item": "G02",
+  "verdict": "pass",
+  "summary": "Scheduled plans use Scheduler's single durable execution kernel with cursor CAS, unique windows, leases, bounded retries, restart recovery and explicit misfire decisions",
+  "repositories": {
+    "agent": "f54dbc5090064f7ad1d261a4358e0cfb38ad91a2",
+    "scheduler": "be62fb18be1ca4597da9cb103bae304b1a1968fb",
+    "scheduler_sdk": "802b5b3752eb4e336097a3ab1860265a7b144f36",
+    "runtime": "12116f18223bca52345e01f815bcc65b917d629f",
+    "llm_proxy": "a32407a678ea7f96d70b7557765e2a01262184d4"
+  },
+  "llm_proxy_worktree": "clean",
+  "llm_proxy_scope": "consume existing POST /tool/web_search and POST /tool/web_fetch_jina only; no model routing and no service change",
+  "checks": [
+    {
+      "name": "scheduler full race",
+      "command": "GOWORK=/tmp/domainry-g01/go.work go test -race ./... -count=1 -timeout 8m",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g02-scheduler-execution/logs/scheduler-race.log"
+    },
+    {
+      "name": "scheduler sdk full race",
+      "command": "go test -race ./... -count=1 -timeout 6m",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g02-scheduler-execution/logs/sdk-race.log"
+    },
+    {
+      "name": "G02 cross-layer race",
+      "command": "focused Scheduler application, SQLite, Module and SaaS tests matching ScheduledPlan|Expired|Misfire",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g02-scheduler-execution/logs/g02-e2e-race.log"
+    },
+    {
+      "name": "misfire policy race",
+      "command": "go test -race ./schedule -run 'ScheduledPlan|Misfire' -count=1 -v",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g02-scheduler-execution/logs/misfire-race.log"
+    },
+    {
+      "name": "scheduler and sdk vet",
+      "command": "go vet ./... in both repositories",
+      "result": "pass",
+      "evidence": [
+        "docs/evidence/2026-09-12-g02-scheduler-execution/logs/scheduler-vet.log",
+        "docs/evidence/2026-09-12-g02-scheduler-execution/logs/sdk-vet.log"
+      ]
+    },
+    {
+      "name": "runtime public composition and locked startup",
+      "command": "Runtime public host composition and pinned eleven-module startup tests",
+      "result": "pass",
+      "evidence": [
+        "docs/evidence/2026-09-12-g02-scheduler-execution/logs/runtime-composition.log",
+        "docs/evidence/2026-09-12-g02-scheduler-execution/logs/runtime-startup.log"
+      ]
+    },
+    {
+      "name": "architecture and boundary",
+      "command": "source ownership, forbidden imports, go.mod/go.sum diff, and llm-proxy cleanliness checks",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g02-scheduler-execution/architecture-audit.json"
+    }
+  ],
+  "files": {
+    "/Users/tiger/Projects/domainry-agent/docs/agent-capabilities-todo.md": "1948bc76d41852d979a6d2b4cc921a35218193e283d7e4d652cda95f48fbce6b",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g02-scheduler-execution/architecture-audit.json": "1b0ba656ff5629d0f99de4080190c7bbdc7758029f6633d8136870be0ba5fe9e",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g02-scheduler-execution/logs/g02-e2e-race.log": "1b41be3f1793453c51d377c806d671833a5b3d8f0ee718ca6239d9141de24601",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g02-scheduler-execution/logs/misfire-race.log": "fbfa9bfe631e82f45a2f5375b5872b3535fb64acb89b31337abeaaecc1e3ae66",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g02-scheduler-execution/logs/runtime-composition.log": "c964dfbf7daf278e5e1f4330e50ced615c87c53fc2d18e4c8fa286675027b25f",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g02-scheduler-execution/logs/runtime-startup.log": "d65c766b7d250705f7ba55e4288f03d96fa0bd0920b5eee17130ccdb0646ecfb",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g02-scheduler-execution/logs/scheduler-race.log": "34e413dd164d14dabf269f25b70493d2044ec918239026ba9df153a0476546e5",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g02-scheduler-execution/logs/scheduler-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g02-scheduler-execution/logs/sdk-race.log": "5c8ab50ed803ec6ca088e157cf15fe0c68600a649c26ea2fe43cc69c1e8c3613",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g02-scheduler-execution/logs/sdk-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/tiger/Projects/domainry-agent/docs/remaining-capability-boundaries.md": "e327a56c97e62a3e54722571263cf0d5ba397e0c5beb1605d0a16c84e933af8e",
+    "/Users/tiger/Projects/domainry-agent/docs/testing-2026-09-12-g02-scheduler-execution.md": "bb30253e1103ec36c64735325173468b86fc205c9e4a76baea4c73edb0971934",
+    "/Users/tiger/Projects/domainry-scheduler/README.md": "d89fb9f1a93bc57067fe92fc723b68da80accd95a57cc740d28529a87c2f1469",
+    "/Users/tiger/Projects/domainry-scheduler/internal/application/scheduler/scheduled_plans.go": "5dffdd8b42ae4157dac1aa7636bf9df5643d4b989c672ce4f32ac2ffc14f59c9",
+    "/Users/tiger/Projects/domainry-scheduler/internal/application/scheduler/scheduled_plans_test.go": "7b0a6f820b6ad2cbcb0e2629da8f027bed7d1daf09fee3553febe62c91b4fc7d",
+    "/Users/tiger/Projects/domainry-scheduler/internal/application/scheduler/service.go": "906641e6f8ad59698377e2234b836ed6ff1ac352c9b1f44ab0bcc6fa782c13e3",
+    "/Users/tiger/Projects/domainry-scheduler/internal/application/scheduler/service_test.go": "9bc8f8bbc6aefec602b34780433cdc3e43d98bb8e77d38576ac53c301c502e3b",
+    "/Users/tiger/Projects/domainry-scheduler/internal/assembly/module/open.go": "ac750c01f05279881a44f1f2e91654e7ee82e4654dfe96b53b56601896ecd6e0",
+    "/Users/tiger/Projects/domainry-scheduler/internal/assembly/module/open_test.go": "163f64ecd36ad1eb1a85d3903a8b85bf3f4e5a9d4573656f41ff0371cb750846",
+    "/Users/tiger/Projects/domainry-scheduler/internal/assembly/saas/database_service.go": "cc1cc03e5a7f9a83c0418f7a602ff4b4bec92174ba1e813a44de803eafb48092",
+    "/Users/tiger/Projects/domainry-scheduler/internal/assembly/saas/database_service_test.go": "2a0876fa0905eaf257beb70c4a6526bb19f6847c6b0f54f3d7e515299347827c",
+    "/Users/tiger/Projects/domainry-scheduler/internal/infrastructure/persistence/database/scheduled_plan_execution_test.go": "97b0ce2c948d9a5b8ecda53bddb788150d655cb8842f75aba28fdba74e950e8f",
+    "/Users/tiger/Projects/domainry-scheduler/internal/infrastructure/persistence/database/scheduled_plan_store_test.go": "2e9c24e4f9f4a6ca62c8e772df16ab58dc9bd446cdd7ad5e987970d876777db9",
+    "/Users/tiger/Projects/domainry-scheduler/internal/infrastructure/persistence/database/scheduler/run_store.go": "3db544b6af8278228d053be03fda6f449de86d22c0601f8772e5be092c14fabc",
+    "/Users/tiger/Projects/domainry-scheduler/internal/infrastructure/persistence/database/scheduler/scheduled_plan_store.go": "f37a7928e208e11b406df02a00d59cc61d5de5331c117bd45cb39207d9aa24ae",
+    "/Users/tiger/Projects/domainry-scheduler/internal/infrastructure/persistence/database/schema/migrations.go": "46c38342d64a437ae7d267785f96a74ae6d28e55259f6f689bebea1612f69bbb",
+    "/Users/tiger/Projects/domainry-scheduler/internal/infrastructure/persistence/database/store.go": "a91a1d04d0340afbd96fc38306ed288baa1bdfe498155e35561b04dce7d9254f",
+    "/Users/tiger/Projects/domainry-scheduler/internal/infrastructure/persistence/database/store_test.go": "ae75786556f0e9ef163a7d8f6fb1304b2a81e3dc699aec208ceab61ea1a99f85",
+    "/Users/tiger/Projects/domainry-scheduler/internal/infrastructure/persistence/schema_test.go": "5a31db10cc2c85f86ddf5ec707d622e1c101e5e01b45ac5e2b5efebb6ea6d366",
+    "/Users/tiger/Projects/domainry-scheduler/internal/transport/http/saas/server.go": "a7cade8fd0a4673613bc5003e4a2f7aa6c6d27b977e0d8f7a152d8ba24f88f3c",
+    "/Users/tiger/Projects/domainry-scheduler/internal/transport/http/saas/server_test.go": "609326b59c58883bf5d83a9575e9311ad5467b1367d93f4c4ff9f9fdf54ebe74",
+    "/Users/tiger/Projects/domainry-scheduler/remote/factory.go": "18f473fb01e9646458f3cbdcf0a345ef6631a319226404f9fa5c25d323faa510",
+    "/Users/tiger/Projects/domainry-scheduler/remote/factory_test.go": "b3585b7f4b01e23abadc23e96affbff0ea3df1e60f7732426fdbe9c5cd10875e",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/README.md": "a4c9ba1a5632e84495335d8573fbd3282065b26777322a868f44f5e7dfa5cb0c",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/modulehost/host.go": "c3877735f1efc1acaae261bc7d6ea02df57900b4081e4622c9ebdf11bdfc5f6e",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/persistence/scheduled_plans.go": "23496967084150b431d6ea1993d12f12eccd690bcd0d9c37661cf2268dff78a8",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/saashost/factory.go": "f75db753669143f20a58e419f438c3b600cdb292f0302bf5469ecdb3ffa0a2e6",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/saashost/httptransport/transport.go": "95d3f4afc90d397204327f8665dd51d2bedb7f89392c4e474e6f7d26647d6af2",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/saashost/httptransport/transport_test.go": "c4d15922ef1ffc16e22ccf588092f6053ad980b3a1434a3ecc889b146663efc5",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/schedule/misfire.go": "243604b55691576ea831b676ad28bf21c47c871dd131109881b9a67a0e860976",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/schedule/misfire_test.go": "01a87b50968617e31a3844f7a0f71c68b8570ba21ea895dabc11fd37fdf7ee9a",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/schedule/schedule.go": "e128d39a860b509edb04d1db7d372e12acdc2547a7034ad63cf8e08f710ed549",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/schedule/scheduled_plan.go": "33b8422ca58c50df29d205424901835a104659a5a5d520ec382a9073d29c6da4",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/schedule/scheduled_plan_test.go": "9dd83a6f726e834ffc53b6215835f7b27c0b9324ec2b574a441ba8f7266224c6",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/scheduled_plan.go": "32147e5ba25f9fa827282359e290b795964f55e63054e13e415ac2b56413887f",
+    "/Users/tiger/Projects/domainry-scheduler-sdk/sdk.go": "bb9878c65db1b727bcbe29dfa50b49977892dcbb8e5e831aac2eb5bdde7b8887"
+  }
+}

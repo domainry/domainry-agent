@@ -4,6 +4,7 @@ import { repairRequest } from "./execution-outcome.ts";
 import type { ToolView } from "./execution-state.ts";
 import { TodoDialog } from "./TodoDialog";
 import { TaskDialog } from "./TaskDialog";
+import { ScheduleDialog } from "./ScheduleDialog";
 import { ArtifactDialog } from "./ArtifactDialog";
 import { ToolSettingsDialog } from "./ToolSettingsDialog";
 import { ExternalAccountsDialog } from "./ExternalAccountsDialog";
@@ -40,6 +41,7 @@ import {
   PenLine,
   MoreHorizontal,
   SlidersHorizontal,
+  CalendarClock,
 } from "lucide-react";
 import {
   Conversation,
@@ -126,6 +128,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
   );
   const [todoDialog, setTodoDialog] = useState(false);
   const [taskDialog, setTaskDialog] = useState(false);
+  const [scheduleDialog, setScheduleDialog] = useState(false);
   const [artifactDialog, setArtifactDialog] = useState<false | true | { id: string; version: number }>(false);
   const [libraryDialog, setLibraryDialog] = useState(false);
   const [attachmentDialog, setAttachmentDialog] = useState(false);
@@ -133,7 +136,6 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
   const [artifactWrite, setArtifactWrite] = useState(() => !!drafts.read(location.hash.slice(1)).artifactWrite);
   const [backgroundTaskWrite, setBackgroundTaskWrite] = useState(() => !!drafts.read(location.hash.slice(1)).backgroundTaskWrite);
   const [inspectedRun, setInspectedRun] = useState<{ conversationID: string; runID: string } | null>(null);
-  useEffect(() => setInspectedRun(null), [selectedId]);
   const [todoWrite, setTodoWrite] = useState(() => !!drafts.read(location.hash.slice(1)).todoWrite);
   const [memoryWrite, setMemoryWrite] = useState(() => !!drafts.read(location.hash.slice(1)).memoryWrite);
   const [draftUnavailable, setDraftUnavailable] = useState(!drafts.available);
@@ -200,7 +202,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
     setInspectedRun(null);
     setNotice("修复请求已放入草稿，请核对后发送。原运行与已完成结果会保留。");
   }
-  function activate(id: string) {
+  function activate(id: string, inspectRunID = "") {
     setMobileNavigation(false);
     selectedRef.current = id;
     location.hash = id;
@@ -219,6 +221,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
     setError("");
     setConnectionError("");
     setNotice("");
+    setInspectedRun(inspectRunID ? { conversationID: id, runID: inspectRunID } : null);
   }
   async function mutate(action: () => Promise<void>) {
     if (mutationLock.current) return;
@@ -517,6 +520,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
           <div className="library-caption">我的工作空间</div>
           <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setTodoDialog(true); }}><Check size={17} />个人待办<span className="subtle">事项与截止日期</span></Button>
           <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setTaskDialog(true); }}><ListChecks size={17} />后台任务<span className="subtle">进度、等待与成果</span></Button>
+          {session.mode === "identity" && <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setScheduleDialog(true); }}><CalendarClock size={17} />计划与提醒<span className="subtle">查看、修改与暂停</span></Button>}
           <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setLibraryDialog(true); }}><FileText size={17} />资料库<span className="subtle">个人资料、共享成员</span></Button>
           <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setArtifactDialog(true); }}><FileText size={17} />我的成果<span className="subtle">文档、表格与下载</span></Button>
           <Button
@@ -973,11 +977,12 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
       </Dialog>
       {inspectedRun && inspectedRun.conversationID === selectedId && <RunDialog key={`${inspectedRun.conversationID}:${inspectedRun.runID}`} {...inspectedRun} onClose={() => setInspectedRun(null)} onResume={inspectedRun.runID === run?.id ? resumeExecution : undefined} onRepair={prepareRepair} recoveryDisabled={recoveryDisabled} repairDisabled={repairDisabled} />}
       {todoDialog && <TodoDialog conversationID={selectedId} onClose={() => setTodoDialog(false)} onSource={id => { setTodoDialog(false); activate(id); }} />}
-      {taskDialog && <TaskDialog conversationID={selectedId} onClose={() => setTaskDialog(false)} onSource={id => { setTaskDialog(false); activate(id); }} onRun={(conversationID, runID) => { setTaskDialog(false); activate(conversationID); setInspectedRun({ conversationID, runID }); }} onArtifact={(id, version) => { setTaskDialog(false); setArtifactDialog({ id, version }); }} />}
+      {taskDialog && <TaskDialog conversationID={selectedId} onClose={() => setTaskDialog(false)} onSource={id => { setTaskDialog(false); activate(id); }} onRun={(conversationID, runID) => { setTaskDialog(false); activate(conversationID, runID); }} onArtifact={(id, version) => { setTaskDialog(false); setArtifactDialog({ id, version }); }} />}
+      {scheduleDialog && <ScheduleDialog onClose={() => setScheduleDialog(false)} onAsk={prompt => { setScheduleDialog(false); setInputState(prompt); }} />}
       {toolSettings && <ToolSettingsDialog key={session.scope} session={session} onClose={() => { setToolSettings(false); refreshResultAccess(); }} />}
       {externalAccounts && <ExternalAccountsDialog session={session} onClose={() => { setExternalAccounts(false); refreshResultAccess(); }} />}
       {libraryDialog && <KnowledgeLibraryDialog onClose={() => setLibraryDialog(false)} />}
-      {artifactDialog && <ArtifactDialog conversationID={selectedId} initial={typeof artifactDialog === "object" ? artifactDialog : undefined} onClose={() => setArtifactDialog(false)} onSource={conversationID => { setArtifactDialog(false); activate(conversationID); }} onRun={(conversationID, runID) => { setArtifactDialog(false); activate(conversationID); setInspectedRun({ conversationID, runID }); }} />}
+      {artifactDialog && <ArtifactDialog conversationID={selectedId} initial={typeof artifactDialog === "object" ? artifactDialog : undefined} onClose={() => setArtifactDialog(false)} onSource={conversationID => { setArtifactDialog(false); activate(conversationID); }} onRun={(conversationID, runID) => { setArtifactDialog(false); activate(conversationID, runID); }} />}
       {attachmentDialog && record && <AttachmentDialog key={record.id} conversationID={record.id} archived={record.archived} onClose={() => setAttachmentDialog(false)} onOpenLibrary={() => { setAttachmentDialog(false); setLibraryDialog(true); }} />}
       {memoryDialog && (
         <MemoryDialog

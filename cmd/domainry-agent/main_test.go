@@ -69,7 +69,7 @@ func TestConversationExecutableStartsWithoutLegacyProvider(t *testing.T) {
 	if json.Unmarshal(got.Body.Bytes(), &descriptor) != nil || descriptor.Validate() != nil {
 		t.Fatal("invalid descriptor")
 	}
-	if len(descriptor.Capabilities) != 2 || !descriptor.HasCapability(agentsdk.CapabilityConversationStreamV1) || descriptor.HasCapability(agentsdk.CapabilityTaskStart) {
+	if len(descriptor.Capabilities) != 2 || !descriptor.HasCapability(agentsdk.CapabilityConversationStreamV1) || descriptor.HasCapability(agentsdk.CapabilityScheduledConversationTask) || descriptor.HasCapability(agentsdk.CapabilityTaskStart) {
 		t.Fatalf("incorrect capabilities %+v", descriptor.Capabilities)
 	}
 	closeService()

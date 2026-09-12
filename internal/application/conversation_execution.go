@@ -73,6 +73,9 @@ func (s *ConversationService) executionCatalog(ctx context.Context, a agentsdk.C
 }
 
 func (s *ConversationService) registeredExecutionCatalog(ctx context.Context, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, map[string]conversationCompiledTool, error) {
+	if s == nil || s.options.ToolHost == nil {
+		return nil, nil, conversationFailure("unavailable", "tool_host_unavailable")
+	}
 	definitions, err := s.options.ToolHost.ConversationTools(ctx, a)
 	if err != nil {
 		return nil, nil, err

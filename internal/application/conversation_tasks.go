@@ -14,29 +14,66 @@ import (
 
 func (s *ConversationService) prepareConversationTask(ctx context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationTask, error) {
 	var start agentsdk.ConversationTaskStart
-	if in.Call.Name != "task_start" || json.Unmarshal([]byte(in.Call.Arguments), &start) != nil ||
-		!conversationText(start.Goal, 2048, true) || !conversationText(start.Input, 8192, false) ||
+	if in.Call.Name != "task_start" || json.Unmarshal([]byte(in.Call.Arguments), &start) != nil {
+		return agentsdk.ConversationTask{}, conversationFailure("bad_request", "task_start_invalid")
+	}
+	return s.prepareConversationTaskStart(ctx, start, in.Authority, in.ConversationID, in.RunID, nil)
+}
+
+func (s *ConversationService) prepareConversationTaskStart(ctx context.Context, start agentsdk.ConversationTaskStart, authority agentsdk.ConversationAuthority, conversationID, sourceRunID string, allowedActions map[string]struct{}) (agentsdk.ConversationTask, error) {
+	if !conversationText(start.Goal, 2048, true) || !conversationText(start.Input, 8192, false) ||
 		len(start.AllowedTools) > 16 || start.Budget.MaxSteps < 1 || start.Budget.MaxSteps > min(32, s.options.MaxSteps) ||
 		start.Budget.MaxToolCalls < 1 || start.Budget.MaxToolCalls > min(32, s.options.MaxToolCalls) ||
 		start.Budget.MaxOutputBytes < 256 || start.Budget.MaxOutputBytes > min(65536, s.options.MaxOutputBytes) ||
 		start.Budget.TimeoutSeconds < 1 || time.Duration(start.Budget.TimeoutSeconds)*time.Second > min(30*time.Minute, s.options.RunTimeout) {
 		return agentsdk.ConversationTask{}, conversationFailure("bad_request", "task_start_invalid")
 	}
+	if start.FollowUp != nil {
+		if allowedActions == nil || !conversationText(start.FollowUp.CompletionCondition, 2048, true) {
+			return agentsdk.ConversationTask{}, conversationFailure("bad_request", "follow_up_scope_invalid")
+		}
+		start.FollowUp.CompletionCondition = strings.TrimSpace(start.FollowUp.CompletionCondition)
+	}
 	task := agentsdk.ConversationTask{
-		Goal: start.Goal, Input: start.Input, Budget: start.Budget,
-		SourceConversationID: in.ConversationID, SourceRunID: in.RunID,
+		Goal: start.Goal, Input: start.Input, Budget: start.Budget, FollowUp: start.FollowUp,
+		SourceConversationID: conversationID, SourceRunID: sourceRunID,
 		ToolScope: make([]agentsdk.ConversationTaskToolScope, 0, len(start.AllowedTools)),
 	}
 	if !conversationText(agentsdk.ConversationTaskPrompt(task), s.options.MaxInputBytes, true) {
 		return agentsdk.ConversationTask{}, conversationFailure("bad_request", "task_input_exceeded")
 	}
-	_, catalog, err := s.executionCatalog(ctx, in.Authority)
+	var definitions []agentsdk.ConversationToolDefinition
+	var catalog map[string]conversationCompiledTool
+	var err error
+	if allowedActions == nil {
+		definitions, catalog, err = s.executionCatalog(ctx, authority)
+	} else {
+		// A scheduled plan is already bounded by exact Action keys. Load the
+		// registered catalog first, then inspect availability only for that
+		// selected scope so an unrelated disconnected account cannot block it.
+		definitions, catalog, err = s.registeredExecutionCatalog(ctx, authority)
+	}
 	if err != nil {
 		return agentsdk.ConversationTask{}, err
 	}
+	if allowedActions != nil && len(start.AllowedTools) == 0 {
+		matchedActions := make(map[string]struct{}, len(allowedActions))
+		for _, definition := range definitions {
+			if _, allowed := allowedActions[definition.ActionKey]; allowed && !strings.HasPrefix(definition.Key, "task_") {
+				start.AllowedTools = append(start.AllowedTools, definition.Key)
+				matchedActions[definition.ActionKey] = struct{}{}
+			}
+		}
+		if len(matchedActions) != len(allowedActions) {
+			return agentsdk.ConversationTask{}, conversationFailure("forbidden", "scheduled_action_denied")
+		}
+		if len(start.AllowedTools) > 16 {
+			return agentsdk.ConversationTask{}, conversationFailure("bad_request", "task_scope_invalid")
+		}
+	}
 	seen := map[string]bool{}
 	for _, key := range start.AllowedTools {
-		if key == "task_start" || seen[key] {
+		if strings.HasPrefix(key, "task_") || seen[key] {
 			return agentsdk.ConversationTask{}, conversationFailure("bad_request", "task_scope_invalid")
 		}
 		seen[key] = true
@@ -44,8 +81,20 @@ func (s *ConversationService) prepareConversationTask(ctx context.Context, in ag
 		if !exists {
 			return agentsdk.ConversationTask{}, conversationFailure("forbidden", "tool_access_denied")
 		}
+		if allowedActions != nil {
+			if _, allowed := allowedActions[tool.definition.ActionKey]; !allowed {
+				return agentsdk.ConversationTask{}, conversationFailure("forbidden", "scheduled_action_denied")
+			}
+			ready, availabilityErr := s.conversationToolAvailable(ctx, authority, key)
+			if availabilityErr != nil {
+				return agentsdk.ConversationTask{}, availabilityErr
+			}
+			if !ready {
+				return agentsdk.ConversationTask{}, conversationFailure("forbidden", "tool_access_denied")
+			}
+		}
 		auth, authErr := s.options.ToolHost.AuthorizeConversationTool(ctx, agentsdk.ConversationToolRequest{
-			Authority: in.Authority, ConversationID: in.ConversationID, RunID: in.RunID,
+			Authority: authority, ConversationID: conversationID, RunID: sourceRunID,
 			Call: agentsdk.ConversationToolCall{Name: key}, Definition: tool.definition,
 		})
 		if authErr != nil {
@@ -61,6 +110,74 @@ func (s *ConversationService) prepareConversationTask(ctx context.Context, in ag
 	}
 	return task, nil
 }
+
+func (s *ConversationService) StartScheduledConversationTask(ctx context.Context, in agentsdk.ScheduledConversationTaskRequest) (agentsdk.ScheduledConversationTaskReceipt, error) {
+	if !agentsdk.HasAuthorizedServiceAction(ctx, agentsdk.ActionAgentScheduledConversationTaskStart, agentsdk.AgentRuntimeServiceAudience) {
+		return agentsdk.ScheduledConversationTaskReceipt{}, conversationFailure("forbidden", "scheduled_task_service_action_required")
+	}
+	if in.ContractVersion != agentsdk.ScheduledConversationTaskContractVersion || !scheduledConversationKey(in.PlanID) ||
+		!scheduledConversationKey(in.SchedulerRunID) || !scheduledConversationKey(in.IdempotencyKey) || in.ScheduledFor.IsZero() ||
+		!conversationKey(in.ConversationID) || in.SourceRunID != "" && !conversationKey(in.SourceRunID) ||
+		in.Authority.RuntimeID != "" && in.Authority.RuntimeID != s.runtimeID || len(in.AllowedActions) > 64 {
+		return agentsdk.ScheduledConversationTaskReceipt{}, conversationFailure("bad_request", "scheduled_task_invalid")
+	}
+	in.Authority.RuntimeID = s.runtimeID
+	if err := s.authorize(in.Authority); err != nil {
+		return agentsdk.ScheduledConversationTaskReceipt{}, err
+	}
+	actions := make(map[string]struct{}, len(in.AllowedActions))
+	for _, action := range in.AllowedActions {
+		if !scheduledConversationKey(action) {
+			return agentsdk.ScheduledConversationTaskReceipt{}, conversationFailure("bad_request", "scheduled_task_invalid")
+		}
+		if _, duplicate := actions[action]; duplicate {
+			return agentsdk.ScheduledConversationTaskReceipt{}, conversationFailure("bad_request", "scheduled_task_invalid")
+		}
+		actions[action] = struct{}{}
+	}
+	if in.Input.Budget == (agentsdk.ConversationTaskBudget{}) {
+		in.Input.Budget = agentsdk.ConversationTaskBudget{
+			MaxSteps: min(12, s.options.MaxSteps), MaxToolCalls: min(12, s.options.MaxToolCalls),
+			MaxOutputBytes: min(8192, s.options.MaxOutputBytes),
+			TimeoutSeconds: int(min(5*time.Minute, s.options.RunTimeout) / time.Second),
+		}
+	}
+	if in.Input.FollowUp != nil && s.options.FollowUpPublisher == nil {
+		return agentsdk.ScheduledConversationTaskReceipt{}, conversationFailure("unavailable", "follow_up_notifications_unavailable")
+	}
+	if err := s.authorizeConversationExecution(ctx, in.ConversationID, "", "schedule", in.Authority); err != nil {
+		return agentsdk.ScheduledConversationTaskReceipt{}, err
+	}
+	task, err := s.prepareConversationTaskStart(ctx, in.Input, in.Authority, in.ConversationID, in.SourceRunID, actions)
+	if err != nil {
+		return agentsdk.ScheduledConversationTaskReceipt{}, err
+	}
+	in.ScheduledFor = in.ScheduledFor.UTC().Truncate(time.Millisecond)
+	in.Input = agentsdk.ConversationTaskStart{Goal: task.Goal, Input: task.Input, AllowedTools: conversationTaskAllowedTools(task), Budget: task.Budget, FollowUp: task.FollowUp}
+	repo, ok := s.repo.(persistence.ScheduledConversationTaskMutationRepository)
+	if !ok {
+		return agentsdk.ScheduledConversationTaskReceipt{}, conversationFailure("unavailable", "scheduled_tasks_unavailable")
+	}
+	receipt, err := repo.AcceptScheduledConversationTask(ctx, in, task)
+	if err == nil {
+		s.signalConversationTasks()
+	}
+	return receipt, err
+}
+
+func scheduledConversationKey(value string) bool {
+	if value == "" || len(value) > 191 || strings.TrimSpace(value) != value {
+		return false
+	}
+	for _, character := range value {
+		if character < 0x21 || character == 0x7f {
+			return false
+		}
+	}
+	return true
+}
+
+var _ agentsdk.ScheduledConversationTaskService = (*ConversationService)(nil)
 
 func conversationTaskFailureCode(err error) string {
 	var coded *agentsdk.Error
@@ -91,6 +208,36 @@ func conversationTaskWaiting(interaction *agentsdk.ConversationInteraction) *age
 		return nil
 	}
 	return &agentsdk.ConversationTaskWaiting{ID: interaction.ID, Kind: interaction.Kind, Question: interaction.Question, Tool: interaction.Tool, Revision: interaction.Revision, ExpiresAt: interaction.ExpiresAt}
+}
+
+func conversationTaskControlState(task agentsdk.ConversationTask, run *agentsdk.ConversationRun) agentsdk.ConversationTaskControlState {
+	if run == nil {
+		return agentsdk.ConversationTaskControlState{
+			CanCancel: task.Status == agentsdk.ConversationTaskStatusQueued,
+			CanResume: task.Status == agentsdk.ConversationTaskStatusCancelled,
+		}
+	}
+	if run.AccessError != "" {
+		return agentsdk.ConversationTaskControlState{ResumeBlocker: run.AccessError}
+	}
+	control := agentsdk.ConversationTaskControlState{}
+	switch run.Status {
+	case "queued", "running":
+		control.CanCancel = !task.Terminal()
+	case "waiting_user", "waiting_confirmation":
+		control.CanCancel = !task.Terminal()
+		control.ResumeBlocker = "interaction_response_required"
+	case "needs_reconciliation":
+		control.CanCancel = !task.Terminal()
+		control.CanResume = true
+	case "failed", "cancelled":
+		if interaction := run.Interaction; interaction != nil && interaction.Kind != "reconciliation" && (interaction.Status == "cancelled" || interaction.Status == "expired" || interaction.Status == "rejected") {
+			control.ResumeBlocker = "interaction_closed"
+		} else {
+			control.CanResume = true
+		}
+	}
+	return control
 }
 
 func (s *ConversationService) conversationTaskArtifacts(ctx context.Context, task agentsdk.ConversationTask, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationArtifact, bool, bool, error) {
@@ -134,6 +281,7 @@ func (s *ConversationService) projectConversationTask(ctx context.Context, task 
 		Artifacts: []agentsdk.ConversationArtifact{}, ArtifactsComplete: true, CompletionEventID: task.CompletionEventID,
 		CompletionEventSeq: task.CompletionEventSeq, ErrorCode: task.ErrorCode, CreatedAt: task.CreatedAt, UpdatedAt: task.UpdatedAt, CompletedAt: task.CompletedAt,
 	}
+	summary.Control = conversationTaskControlState(task, nil)
 	out := agentsdk.ConversationTaskDetail{ConversationTaskSummary: summary, Input: task.Input, Steps: []agentsdk.ConversationStepView{}}
 	if task.ExecutionRunID == "" {
 		return out, nil
@@ -151,6 +299,7 @@ func (s *ConversationService) projectConversationTask(ctx context.Context, task 
 		return out, conversationFailure("conflict", "task_run_invalid")
 	}
 	out.Progress = conversationTaskProgress(run)
+	out.Control = conversationTaskControlState(task, &run)
 	if run.AccessError != "" {
 		out.AccessError = run.AccessError
 		return out, nil
@@ -225,6 +374,129 @@ func (s *ConversationService) ConversationTasks(ctx context.Context, in agentsdk
 	return out, nil
 }
 
+func (s *ConversationService) conversationTaskRecord(ctx context.Context, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationTask, error) {
+	if err := s.authorize(a); err != nil {
+		return agentsdk.ConversationTask{}, err
+	}
+	if !conversationKey(id) {
+		return agentsdk.ConversationTask{}, conversationFailure("bad_request", "task_id_invalid")
+	}
+	repo, ok := s.repo.(persistence.ConversationTaskReadRepository)
+	if !ok {
+		return agentsdk.ConversationTask{}, conversationFailure("unavailable", "tasks_unavailable")
+	}
+	return repo.ConversationTask(ctx, id, a)
+}
+
+func (s *ConversationService) authorizeConversationTaskControl(ctx context.Context, id, key string, a agentsdk.ConversationAuthority) error {
+	if s.options.PersonalAuthorizer == nil {
+		return conversationFailure("unavailable", "task_control_unavailable")
+	}
+	var definition agentsdk.ConversationToolDefinition
+	for _, tool := range agentsdk.BackgroundTaskControlConversationTools() {
+		if tool.Key == key {
+			definition = tool
+		}
+	}
+	raw, _ := json.Marshal(map[string]string{"id": id})
+	auth, err := s.options.PersonalAuthorizer.AuthorizeConversationTool(ctx, agentsdk.ConversationToolRequest{Authority: a, Definition: definition, Call: agentsdk.ConversationToolCall{Name: key, Arguments: string(raw)}})
+	if err != nil {
+		return err
+	}
+	if !auth.Granted || auth.ConfirmationRequired {
+		return conversationFailure("forbidden", "tool_access_denied")
+	}
+	return nil
+}
+
+func (s *ConversationService) CancelConversationTask(ctx context.Context, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationTaskDetail, error) {
+	return s.cancelConversationTask(ctx, id, a, true)
+}
+
+func (s *ConversationService) cancelConversationTask(ctx context.Context, id string, a agentsdk.ConversationAuthority, authorize bool) (agentsdk.ConversationTaskDetail, error) {
+	if authorize {
+		if err := s.authorizeConversationTaskControl(ctx, id, "task_cancel", a); err != nil {
+			return agentsdk.ConversationTaskDetail{}, err
+		}
+	}
+	task, err := s.conversationTaskRecord(ctx, id, a)
+	if err != nil {
+		return agentsdk.ConversationTaskDetail{}, err
+	}
+	if task.Terminal() {
+		return s.projectConversationTask(ctx, task, a, true)
+	}
+	if task.ExecutionRunID == "" {
+		controls, ok := s.repo.(persistence.ConversationTaskControlRepository)
+		if !ok {
+			return agentsdk.ConversationTaskDetail{}, conversationFailure("unavailable", "task_control_unavailable")
+		}
+		task, err = controls.CancelQueuedConversationTask(ctx, id, a)
+	} else {
+		_, err = s.Cancel(ctx, task.SourceConversationID, task.ExecutionRunID, a)
+		if err == nil {
+			task, err = s.conversationTaskRecord(ctx, id, a)
+		}
+	}
+	if err != nil {
+		return agentsdk.ConversationTaskDetail{}, err
+	}
+	return s.projectConversationTask(ctx, task, a, true)
+}
+
+func (s *ConversationService) ResumeConversationTask(ctx context.Context, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationTaskDetail, error) {
+	return s.resumeConversationTask(ctx, id, a, true)
+}
+
+func (s *ConversationService) resumeConversationTask(ctx context.Context, id string, a agentsdk.ConversationAuthority, authorize bool) (agentsdk.ConversationTaskDetail, error) {
+	if authorize {
+		if err := s.authorizeConversationTaskControl(ctx, id, "task_resume", a); err != nil {
+			return agentsdk.ConversationTaskDetail{}, err
+		}
+	}
+	task, err := s.conversationTaskRecord(ctx, id, a)
+	if err != nil {
+		return agentsdk.ConversationTaskDetail{}, err
+	}
+	if task.Status == agentsdk.ConversationTaskStatusCompleted {
+		return agentsdk.ConversationTaskDetail{}, conversationFailure("conflict", "task_completed")
+	}
+	if task.ExecutionRunID == "" {
+		if err = s.authorizeConversationExecution(ctx, task.SourceConversationID, "", "resume", a); err != nil {
+			return agentsdk.ConversationTaskDetail{}, err
+		}
+		controls, ok := s.repo.(persistence.ConversationTaskControlRepository)
+		if !ok {
+			return agentsdk.ConversationTaskDetail{}, conversationFailure("unavailable", "task_control_unavailable")
+		}
+		task, err = controls.ResumeQueuedConversationTask(ctx, id, a)
+		if err == nil {
+			s.signalConversationTasks()
+		}
+	} else {
+		run, runErr := s.Run(ctx, task.SourceConversationID, task.ExecutionRunID, a)
+		if runErr != nil {
+			return agentsdk.ConversationTaskDetail{}, runErr
+		}
+		if run.Status == "waiting_user" || run.Status == "waiting_confirmation" {
+			return agentsdk.ConversationTaskDetail{}, conversationFailure("conflict", "interaction_response_required")
+		}
+		if task.Status == agentsdk.ConversationTaskStatusRunning && run.Status != "needs_reconciliation" {
+			return s.projectConversationTask(ctx, task, a, true)
+		}
+		_, err = s.Resume(ctx, task.SourceConversationID, task.ExecutionRunID, a)
+		if err == nil {
+			task, err = s.conversationTaskRecord(ctx, id, a)
+		}
+	}
+	if err != nil {
+		return agentsdk.ConversationTaskDetail{}, err
+	}
+	return s.projectConversationTask(ctx, task, a, true)
+}
+
+var _ agentsdk.ConversationTaskControlService = (*ConversationService)(nil)
+
 func (s *ConversationService) executionCatalogForRun(ctx context.Context, claim persistence.ConversationClaim) ([]agentsdk.ConversationToolDefinition, map[string]conversationCompiledTool, error) {
 	if claim.Run.BackgroundTask == nil {
 		return s.executionCatalog(ctx, claim.Authority)
@@ -235,7 +507,7 @@ func (s *ConversationService) executionCatalogForRun(ctx context.Context, claim 
 	}
 	allowed := make(map[string]agentsdk.ConversationTaskToolScope, len(claim.Run.BackgroundTask.ToolScope))
 	for _, scope := range claim.Run.BackgroundTask.ToolScope {
-		if scope.Key == "task_start" || scope.Key == "" || scope.Version == "" || scope.ActionKey == "" || scope.DefinitionHash == "" {
+		if strings.HasPrefix(scope.Key, "task_") || scope.Key == "" || scope.Version == "" || scope.ActionKey == "" || scope.DefinitionHash == "" {
 			return nil, nil, conversationFailure("conflict", "task_scope_invalid")
 		}
 		if _, duplicate := allowed[scope.Key]; duplicate {
@@ -279,6 +551,43 @@ func (s *ConversationService) signalConversationTasks() {
 	select {
 	case s.taskWake <- struct{}{}:
 	default:
+	}
+}
+
+func (s *ConversationService) signalConversationFollowUps() {
+	select {
+	case s.followUpWake <- struct{}{}:
+	default:
+	}
+}
+
+func (s *ConversationService) conversationFollowUpWorker(ctx context.Context, repo persistence.ConversationFollowUpEventRepository) {
+	defer s.wg.Done()
+	retry := max(s.options.Poll, time.Second)
+	for ctx.Err() == nil {
+		claim, found, err := repo.ClaimConversationFollowUpEvent(ctx, s.runtimeID, s.owner, s.options.Lease)
+		if err == nil && found {
+			publishCtx, cancel := context.WithTimeout(ctx, min(30*time.Second, s.options.RunTimeout))
+			err = s.options.FollowUpPublisher.PublishConversationFollowUp(publishCtx, claim.Event)
+			cancel()
+			if err == nil {
+				err = repo.CompleteConversationFollowUpEvent(ctx, claim)
+			} else {
+				_ = repo.ReleaseConversationFollowUpEvent(context.WithoutCancel(ctx), claim)
+			}
+			if err == nil {
+				continue
+			}
+		}
+		if err != nil && !errors.Is(err, context.Canceled) && ctx.Err() == nil {
+			slog.Warn("conversation follow-up notification failed", "error", err)
+		}
+		select {
+		case <-ctx.Done():
+			return
+		case <-s.followUpWake:
+		case <-time.After(retry):
+		}
 	}
 }
 

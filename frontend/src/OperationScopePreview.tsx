@@ -7,6 +7,7 @@ import { ArtifactOperationPreview } from "./ArtifactOperationPreview.tsx";
 import { MemoryOperationPreview } from "./MemoryOperationPreview.tsx";
 import { AccountWriteOperationPreview } from "./AccountWriteOperationPreview.tsx";
 import { isAccountWrite } from "./account-write-state.ts";
+import { ScheduleOperationPreview } from "./ScheduleOperationPreview.tsx";
 
 function GenericOperation({ item, onReady }: { item: InteractionOperation; onReady: (ready: boolean) => void }) {
   let text = item.arguments, valid = false;
@@ -22,6 +23,7 @@ function ScopeEntry({ item, onReady }: { item: InteractionOperation; onReady: (i
   if (item.tool === "workflow_start") return <WorkflowOperationPreview argumentsText={item.arguments} onReady={update} />;
   if (item.tool.startsWith("todo_")) return <TodoOperationPreview tool={item.tool} argumentsText={item.arguments} onReady={update} />;
   if (item.tool.startsWith("artifact_")) return <ArtifactOperationPreview tool={item.tool} argumentsText={item.arguments} onReady={update} />;
+  if (item.tool.startsWith("schedule_")) return <ScheduleOperationPreview tool={item.tool} argumentsText={item.arguments} onReady={update} />;
   if (item.tool.startsWith("memory_")) return <MemoryOperationPreview tool={item.tool} argumentsText={item.arguments} onReady={update} />;
   return <GenericOperation item={item} onReady={update} />;
 }

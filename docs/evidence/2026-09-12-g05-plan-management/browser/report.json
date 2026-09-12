@@ -1,0 +1,72 @@
+{
+  "steps": [
+    "compiled product page lists the task and reminder returned by the current-owner plan API",
+    "edit sends the exact revision and stale browser writes are rejected by Scheduler CAS",
+    "pause persists across full page reload",
+    "Agent host restart reuses the external Scheduler SDK state and resume advances the version",
+    "destructive delete requires an explicit second click and removes the reminder from the public list",
+    "management entry hands an exact plan id and revision to the natural-language conversation path",
+    "the surviving plan remains usable without horizontal overflow at 390px"
+  ],
+  "javascriptErrors": [],
+  "consoleErrors": [],
+  "expectedConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "consoleWarnings": [],
+  "scheduleRequests": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:58977/app/product/plans?limit=50",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "url": "http://127.0.0.1:58977/app/product/plans/plan-1",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "url": "http://127.0.0.1:58977/app/product/plans/plan-1",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:58977/app/product/plans/plan-1/pause",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:58977/app/product/plans?limit=50",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:58977/app/product/plans?limit=50",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:58977/app/product/plans/plan-1/resume",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "url": "http://127.0.0.1:58977/app/product/plans/plan-2",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:58977/app/product/plans?limit=50",
+      "status": 200
+    }
+  ],
+  "snapshots": [
+    {
+      "state": "enabled",
+      "revision": 4,
+      "text": "计划与提醒\n\n查看并管理当前账号的定时计划。也可以直接对 Agent 说“每周一整理待办”或“周五提醒我”。\n\n全部状态\n运行中\n已暂停\n已停用\n刷新计划\n交给 Agent\n每周二整理待办\n每周二 10:30 · Asia/Shanghai\n运行中\n后台任务 · 版本 4\n每周二整理待办\nplan-1\n名称\n时区\n执行时间\n星期\n周一\n周二\n周三\n周四\n周五\n周六\n周日\n任务目标\n补充输入\n允许工具（逗号分隔）\n最近更新\n9/12/2026, 8:15:56 PM\n保存修改\n暂停\n删除\n交给 Agent 修改\n关闭"
+    }
+  ],
+  "complete": true
+}

@@ -1,0 +1,50 @@
+ok  	github.com/domainry/domainry-notification	1.800s
+ok  	github.com/domainry/domainry-notification/capability	0.818s
+ok  	github.com/domainry/domainry-notification/cmd/notification-server	0.305s
+?   	github.com/domainry/domainry-notification/internal/adapter/identitysdk	[no test files]
+?   	github.com/domainry/domainry-notification/internal/adapter/notificationsdk	[no test files]
+ok  	github.com/domainry/domainry-notification/internal/application	1.169s
+?   	github.com/domainry/domainry-notification/internal/application/authentication	[no test files]
+ok  	github.com/domainry/domainry-notification/internal/application/delivery	1.305s
+?   	github.com/domainry/domainry-notification/internal/application/inbox	[no test files]
+?   	github.com/domainry/domainry-notification/internal/application/template	[no test files]
+ok  	github.com/domainry/domainry-notification/internal/assembly/module	1.867s
+ok  	github.com/domainry/domainry-notification/internal/assembly/saas	2.533s
+?   	github.com/domainry/domainry-notification/internal/capability	[no test files]
+?   	github.com/domainry/domainry-notification/internal/domain/delivery/model	[no test files]
+?   	github.com/domainry/domainry-notification/internal/domain/delivery/policy	[no test files]
+?   	github.com/domainry/domainry-notification/internal/domain/delivery/repository	[no test files]
+ok  	github.com/domainry/domainry-notification/internal/domain/delivery/service	0.442s
+?   	github.com/domainry/domainry-notification/internal/domain/inbox/model	[no test files]
+?   	github.com/domainry/domainry-notification/internal/domain/inbox/repository	[no test files]
+ok  	github.com/domainry/domainry-notification/internal/domain/inbox/service	1.031s
+?   	github.com/domainry/domainry-notification/internal/domain/inbox/validation	[no test files]
+ok  	github.com/domainry/domainry-notification/internal/domain/notification/model	0.578s
+?   	github.com/domainry/domainry-notification/internal/domain/template/model	[no test files]
+?   	github.com/domainry/domainry-notification/internal/domain/template/repository	[no test files]
+ok  	github.com/domainry/domainry-notification/internal/domain/template/service	0.710s
+?   	github.com/domainry/domainry-notification/internal/domain/template/validation	[no test files]
+?   	github.com/domainry/domainry-notification/internal/infrastructure/persistence	[no test files]
+ok  	github.com/domainry/domainry-notification/internal/infrastructure/persistence/architecture	2.030s
+ok  	github.com/domainry/domainry-notification/internal/infrastructure/persistence/base	2.018s
+ok  	github.com/domainry/domainry-notification/internal/infrastructure/persistence/database/delivery	2.180s
+ok  	github.com/domainry/domainry-notification/internal/infrastructure/persistence/database/event	2.179s
+ok  	github.com/domainry/domainry-notification/internal/infrastructure/persistence/database/inbox	2.212s
+ok  	github.com/domainry/domainry-notification/internal/infrastructure/persistence/database/lifecycle	2.412s
+?   	github.com/domainry/domainry-notification/internal/infrastructure/persistence/database/migration	[no test files]
+ok  	github.com/domainry/domainry-notification/internal/infrastructure/persistence/database/portability	2.474s
+ok  	github.com/domainry/domainry-notification/internal/infrastructure/persistence/database/schema	2.456s
+ok  	github.com/domainry/domainry-notification/internal/infrastructure/persistence/database/template	1.817s
+?   	github.com/domainry/domainry-notification/internal/infrastructure/persistence/database/testkit	[no test files]
+?   	github.com/domainry/domainry-notification/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-notification/internal/infrastructure/persistence/mysql/migration	[no test files]
+?   	github.com/domainry/domainry-notification/internal/infrastructure/persistence/mysql/schema	[no test files]
+?   	github.com/domainry/domainry-notification/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-notification/internal/infrastructure/persistence/postgres/migration	[no test files]
+?   	github.com/domainry/domainry-notification/internal/infrastructure/persistence/postgres/schema	[no test files]
+?   	github.com/domainry/domainry-notification/internal/infrastructure/persistence/sqlite	[no test files]
+?   	github.com/domainry/domainry-notification/internal/infrastructure/persistence/sqlite/migration	[no test files]
+?   	github.com/domainry/domainry-notification/internal/infrastructure/persistence/sqlite/schema	[no test files]
+ok  	github.com/domainry/domainry-notification/internal/transport/http/module	1.682s
+ok  	github.com/domainry/domainry-notification/internal/transport/http/saas	1.853s
+?   	github.com/domainry/domainry-notification/module	[no test files]

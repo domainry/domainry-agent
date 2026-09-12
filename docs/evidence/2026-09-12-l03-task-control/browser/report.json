@@ -1,0 +1,39 @@
+{
+  "steps": [
+    "failed task resumes through its exact POST endpoint, re-enters the durable Run and completes at attempt 2",
+    "full page reload reads the completed resumed task from the server",
+    "waiting-user task requires explicit inline confirmation, cancels the exact Run and exposes the closed-interaction blocker",
+    "cancelled state and blocker survive reload and remain usable at 390px"
+  ],
+  "javascriptErrors": [],
+  "preLoginConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "snapshots": [
+    {
+      "goal": "浏览器失败恢复任务",
+      "state": "completed",
+      "text": "已完成\n浏览器失败恢复任务\ntask_662cc0be3a726217bd520a302168a52a\n\n首次失败后由用户明确继续\n\n进度\n2 个步骤 · 1 次工具调用 · 第 2 次处理\n可用工具\ntime_now\n预算\n3 步 · 1 次工具 · 30 秒\n更新时间\n9/12/2026, 3:20:51 PM\n任务结果\n\n失败任务已恢复完成。\n\n返回来源会话\n查看处理记录"
+    },
+    {
+      "goal": "浏览器等待取消任务",
+      "state": "cancelled",
+      "text": "已停止\n浏览器等待取消任务\ntask_155e2ad3e4fd11ef8c0a3c11f9266dfd\n\n向用户询问发布渠道\n\n进度\n1 个步骤 · 1 次工具调用 · 第 1 次处理\n可用工具\nask_user\n预算\n3 步 · 1 次工具 · 30 秒\n更新时间\n9/12/2026, 3:20:52 PM\n返回来源会话\n查看处理记录\n原等待事项已关闭，无法直接继续；请重新创建任务。"
+    }
+  ],
+  "controlRequests": [
+    {
+      "path": "/agent/conversation-tasks/task_662cc0be3a726217bd520a302168a52a/resume",
+      "status": 200
+    },
+    {
+      "path": "/agent/conversation-tasks/task_155e2ad3e4fd11ef8c0a3c11f9266dfd/cancel",
+      "status": 200
+    }
+  ],
+  "complete": true
+}

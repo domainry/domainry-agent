@@ -51,6 +51,11 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 		if options.ExecutionAuthorizer == nil {
 			options.ExecutionAuthorizer, _ = options.PersonalAuthorizer.(agentsdk.ConversationExecutionAuthorizer)
 		}
+		if options.FollowUpPublisher == nil {
+			if followUps, ok := host.(modulehost.ConversationFollowUpHost); ok {
+				options.FollowUpPublisher = followUps.ConversationFollowUpPublisher()
+			}
+		}
 		if options.ExecutionAuthorizer == nil {
 			options.ExecutionAuthorizer, _ = host.ConversationAuthorizer().(agentsdk.ConversationExecutionAuthorizer)
 		}

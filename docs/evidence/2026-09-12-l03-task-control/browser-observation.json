@@ -1,0 +1,27 @@
+{
+  "date": "2026-09-12",
+  "item": "L03",
+  "url": "http://127.0.0.1:8092",
+  "compiled_frontend": true,
+  "automated_browser": "Playwright using installed Chrome",
+  "session": "admin@example.com",
+  "observations": [
+    "failed task task_662cc0be3a726217bd520a302168a52a exposed Continue Task and POSTed only /agent/conversation-tasks/task_662cc0be3a726217bd520a302168a52a/resume",
+    "the same task completed at attempt 2 with one time_now call and result 失败任务已恢复完成。",
+    "a full page reload read the completed resumed task from the server and did not offer another resume",
+    "waiting-user task task_155e2ad3e4fd11ef8c0a3c11f9266dfd showed the exact question 请选择发布渠道 and no resume action",
+    "cancel required the inline confirmation and POSTed only /agent/conversation-tasks/task_155e2ad3e4fd11ef8c0a3c11f9266dfd/cancel",
+    "after cancellation and reload the task stayed stopped and showed 原等待事项已关闭，无法直接继续；请重新创建任务。",
+    "the cancelled task dialog remained within a 390 by 844 viewport"
+  ],
+  "authenticated_flow_javascript_errors": 0,
+  "authenticated_flow_console_errors": 0,
+  "authenticated_flow_console_warnings": 0,
+  "pre_login_probe_console_errors": 3,
+  "pre_login_probe_note": "The compiled login bootstrap produced one missing-resource 404 and two expected unauthenticated 401 probes before login; they are recorded separately and no console error remained after authentication.",
+  "screenshots": [
+    "browser/failed-task.png",
+    "browser/cancelled-task-mobile.png"
+  ],
+  "report": "browser/report.json"
+}

@@ -1,0 +1,41 @@
+{
+  "steps": [
+    "compiled page exposes the bounded follow-up scope and sparse notification rule",
+    "stop follow-up maps to the public pause operation and advances the exact revision",
+    "the stopped state remains durable across a full Agent host restart",
+    "follow-up management remains usable without horizontal overflow at 390px"
+  ],
+  "javascriptErrors": [],
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "scheduleRequests": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:63876/app/product/plans?limit=50",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:63876/app/product/plans/plan-1/pause",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:63876/app/product/plans?limit=50",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:63876/app/product/plans?limit=50",
+      "status": 200
+    }
+  ],
+  "snapshots": [
+    {
+      "state": "paused",
+      "revision": 2,
+      "text": "计划与提醒\n\n查看并管理当前账号的定时计划和后台跟进。跟进只在变化、完成、失败或需要你处理时通知。\n\n全部状态\n运行中\n已暂停\n已停用\n刷新计划\n交给 Agent\n跟进发布阻塞项\n每天 09:00 · Asia/Shanghai\n已暂停\n后台跟进 · 版本 2\n跟进发布阻塞项\nplan-1\n名称\n时区\n执行时间\n任务目标\n补充输入\n允许工具（逗号分隔）\n完成条件\n首次运行建立基线；之后只有状态变化、完成、失败或需要操作时才通知。\n最近更新\n9/12/2026, 9:08:21 PM\n保存修改\n恢复\n删除\n交给 Agent 修改\n关闭"
+    }
+  ],
+  "complete": true
+}

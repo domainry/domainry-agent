@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/composition	1.532s
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/transport	1.946s
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	27.996s

@@ -4,7 +4,7 @@ import { Input } from "./components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./components/ui/dialog";
 import { request } from "./api.ts";
 import { describeError, errorMessage } from "./errors.ts";
-import { taskListPath, taskNeedsRefresh, taskPath, taskStatusLabel, type ConversationTaskDetail, type ConversationTaskPage } from "./task-state.ts";
+import { taskCanCancel, taskCanResume, taskControlPath, taskListPath, taskNeedsRefresh, taskPath, taskStatusLabel, type ConversationTaskDetail, type ConversationTaskPage } from "./task-state.ts";
 
 export function TaskDialog({ conversationID, onClose, onSource, onRun, onArtifact }: {
   conversationID: string; onClose: () => void; onSource: (conversationID: string) => void;
@@ -16,16 +16,18 @@ export function TaskDialog({ conversationID, onClose, onSource, onRun, onArtifac
   const [query, setQuery] = useState(""), [search, setSearch] = useState("");
   const [status, setStatus] = useState(""), [currentOnly, setCurrentOnly] = useState(false), [cursors, setCursors] = useState([""]);
   const [refresh, setRefresh] = useState(0), [loading, setLoading] = useState(true), [error, setError] = useState("");
+  const [confirmCancel, setConfirmCancel] = useState(false), [acting, setActing] = useState(false);
   const cursor = cursors[cursors.length - 1];
   useEffect(() => {
     const controller = new AbortController(); setLoading(true); setError("");
     request<ConversationTaskPage>(taskListPath({ query: search, status, sourceConversationID: currentOnly ? conversationID : "", cursor }), "GET", undefined, controller.signal)
-      .then(value => { if (!controller.signal.aborted) { setPage(value); if (!selectedID && value.items.length) setSelectedID(value.items[0].id); } })
-      .catch(failure => { if (!controller.signal.aborted) { setPage({ items: [], complete: true }); setError(describeError(failure)); } })
+      .then(value => { if (!controller.signal.aborted) { setPage(value); setSelectedID(current => value.items.some(item => item.id === current) ? current : value.items[0]?.id || ""); } })
+      .catch(failure => { if (!controller.signal.aborted) { setPage({ items: [], complete: true }); setSelectedID(""); setError(describeError(failure)); } })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
   }, [search, status, currentOnly, conversationID, cursor, refresh]);
   useEffect(() => {
+    setConfirmCancel(false);
     if (!selectedID) { setDetail(null); return; }
     const controller = new AbortController();
     request<ConversationTaskDetail>(taskPath(selectedID), "GET", undefined, controller.signal)
@@ -33,6 +35,18 @@ export function TaskDialog({ conversationID, onClose, onSource, onRun, onArtifac
       .catch(failure => { if (!controller.signal.aborted) { setDetail(null); setError(describeError(failure)); } });
     return () => controller.abort();
   }, [selectedID, refresh]);
+  async function control(action: "cancel" | "resume") {
+    if (!detail || acting) return;
+    setActing(true); setError("");
+    try {
+      const value = await request<ConversationTaskDetail>(taskControlPath(detail.id, action), "POST");
+      setDetail(value); setConfirmCancel(false); setRefresh(current => current + 1);
+    } catch (failure) {
+      setError(describeError(failure));
+    } finally {
+      setActing(false);
+    }
+  }
   useEffect(() => {
     if (!page.items.some(taskNeedsRefresh) && (!detail || !taskNeedsRefresh(detail))) return;
     const timer = window.setTimeout(() => setRefresh(value => value + 1), 1000);
@@ -59,7 +73,9 @@ export function TaskDialog({ conversationID, onClose, onSource, onRun, onArtifac
       {detail.result && <div className="task-result"><strong>任务结果</strong><p>{detail.result.preview}</p>{!detail.result.complete && <small className="subtle">这里只显示结果预览；返回来源会话可查看完整回复。</small>}</div>}
       {!!detail.artifacts.length && <div className="task-artifacts"><strong>任务成果</strong><div className="artifact-list">{detail.artifacts.map(artifact => <Button key={artifact.id} variant="outline" onClick={() => onArtifact(artifact.id, artifact.version)}><span>{artifact.title}</span><small>版本 {artifact.version}</small></Button>)}</div></div>}
       {detail.artifacts_omitted && <p className="subtle">部分成果当前无权查看，已隐藏。</p>}
+      {confirmCancel && <div className="task-waiting"><strong>停止这个后台任务？</strong><p>已完成的操作会保留；正在写入外部系统的结果可能需要后续核查。</p><div className="todo-toolbar"><Button variant="destructive" disabled={acting} onClick={() => void control("cancel")}>确认停止任务</Button><Button variant="ghost" disabled={acting} onClick={() => setConfirmCancel(false)}>继续执行</Button></div></div>}
       <div className="todo-toolbar"><Button variant="outline" onClick={() => onSource(detail.source_conversation_id)}>返回来源会话</Button>{detail.execution_run_id && <Button variant="ghost" onClick={() => onRun(detail.source_conversation_id, detail.execution_run_id!)}>查看处理记录</Button>}</div>
+      <div className="todo-toolbar">{taskCanCancel(detail) && !confirmCancel && <Button variant="destructive" disabled={acting} onClick={() => setConfirmCancel(true)}>停止任务</Button>}{taskCanResume(detail) && <Button disabled={acting} onClick={() => void control("resume")}>继续任务</Button>}{detail.control.resume_blocker === "interaction_response_required" && <small className="subtle">请在来源会话完成当前等待事项。</small>}{detail.control.resume_blocker === "interaction_closed" && <small className="subtle">原等待事项已关闭，无法直接继续；请重新创建任务。</small>}</div>
     </section>}
   </DialogContent></Dialog>;
 }

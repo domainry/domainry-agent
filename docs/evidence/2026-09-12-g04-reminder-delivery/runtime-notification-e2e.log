@@ -1,0 +1,6 @@
+=== RUN   TestProjectActionNotificationDispatchRealRuntimeReplayConcurrencyLifecycleAndRestart
+--- PASS: TestProjectActionNotificationDispatchRealRuntimeReplayConcurrencyLifecycleAndRestart (2.24s)
+=== RUN   TestScheduledReminderSignedCallbackMaterializesInboxDeliversConnectedChannelAndDeduplicates
+--- PASS: TestScheduledReminderSignedCallbackMaterializesInboxDeliversConnectedChannelAndDeduplicates (0.76s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	5.713s

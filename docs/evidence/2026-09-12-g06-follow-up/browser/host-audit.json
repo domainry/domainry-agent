@@ -1,0 +1,10 @@
+{
+  "agent_restarted": true,
+  "compiled_frontend": true,
+  "complete": true,
+  "follow_up_status": "paused",
+  "real_identity_http": true,
+  "revision": 2,
+  "same_tool_adapter": true,
+  "scheduler_sdk_service": true
+}

@@ -215,6 +215,7 @@ func (b *binding) Descriptor() agentsdk.Descriptor {
 	}
 	if b.conversations != nil && b.conversations.ConversationExecutionEnabled() {
 		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationExecutionV1)
+		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityScheduledConversationTask)
 	}
 	return descriptor
 }

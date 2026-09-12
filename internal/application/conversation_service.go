@@ -51,6 +51,7 @@ type ConversationOptions struct {
 	PersonalAuthorizer                                        agentsdk.ConversationToolAuthorizer
 	ToolHost                                                  agentsdk.ConversationToolHost
 	ToolAvailability                                          agentsdk.ConversationToolAvailability
+	FollowUpPublisher                                         agentsdk.ConversationFollowUpPublisher
 	MaxSteps, MaxToolCalls, MaxArgumentBytes                  int
 	Knowledge                                                 ConversationKnowledge
 	KnowledgeBytes                                            int
@@ -75,6 +76,7 @@ type ConversationService struct {
 	options             ConversationOptions
 	wake                chan struct{}
 	taskWake            chan struct{}
+	followUpWake        chan struct{}
 	attachmentWake      chan struct{}
 	attachmentIndexWake chan struct{}
 	documentWake        chan struct{}
@@ -219,6 +221,14 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	if options.ContextBytes < 4096 || options.MaxInputBytes < 1 || options.MaxOutputBytes < 1 || options.SummaryBytes < 256 || options.MaxInputBytes+options.SummaryBytes+1024 >= options.ContextBytes || options.Workers < 1 || options.Workers > 32 || options.Lease < 300*time.Millisecond || options.Poll <= 0 || options.RunTimeout <= 0 {
 		return nil, fmt.Errorf("invalid conversation limits")
 	}
+	var followUps agentpersistence.ConversationFollowUpEventRepository
+	if options.FollowUpPublisher != nil {
+		var ok bool
+		followUps, ok = repo.(agentpersistence.ConversationFollowUpEventRepository)
+		if !ok {
+			return nil, fmt.Errorf("conversation follow-up publisher requires durable event persistence")
+		}
+	}
 	var b [16]byte
 	if _, err := rand.Read(b[:]); err != nil {
 		return nil, err
@@ -226,7 +236,7 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	if err := activateDocumentSources(repo, runtimeID, options); err != nil {
 		return nil, err
 	}
-	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, wake: make(chan struct{}, options.Workers), taskWake: make(chan struct{}, 1), attachmentWake: make(chan struct{}, 1), active: map[string]conversationActive{}}
+	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, wake: make(chan struct{}, options.Workers), taskWake: make(chan struct{}, 1), followUpWake: make(chan struct{}, 1), attachmentWake: make(chan struct{}, 1), active: map[string]conversationActive{}}
 	s.documentWake = make(chan struct{}, 1)
 	s.attachmentIndexWake = make(chan struct{}, 1)
 	if personalHost != nil {
@@ -272,6 +282,10 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 			s.wg.Add(1)
 			go s.conversationTaskWorker(ctx, repo.(agentpersistence.ConversationTaskWorkerRepository))
 		}
+	}
+	if options.FollowUpPublisher != nil {
+		s.wg.Add(1)
+		go s.conversationFollowUpWorker(ctx, followUps)
 	}
 	return s, nil
 }
@@ -642,6 +656,7 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 		slog.Debug("conversation finish fenced or unavailable", "run_id", claim.Run.ID, "error", err)
 	} else {
 		s.signalConversationTasks()
+		s.signalConversationFollowUps()
 	}
 }
 

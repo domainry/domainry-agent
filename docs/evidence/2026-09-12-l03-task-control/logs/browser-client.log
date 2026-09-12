@@ -1,0 +1,4 @@
+PASS failed task resumes through its exact POST endpoint, re-enters the durable Run and completes at attempt 2
+PASS full page reload reads the completed resumed task from the server
+PASS waiting-user task requires explicit inline confirmation, cancels the exact Run and exposes the closed-interaction blocker
+PASS cancelled state and blocker survive reload and remain usable at 390px

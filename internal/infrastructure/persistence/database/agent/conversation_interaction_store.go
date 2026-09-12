@@ -159,6 +159,9 @@ func (s *ConversationStore) WaitExecution(ctx context.Context, claim persistence
 		if err = s.event(ctx, tx, &v, "run."+v.Run.Status, map[string]any{"interaction": record.Interaction, "attempt": v.Run.Attempt}); err != nil {
 			return err
 		}
+		if err = s.recordConversationFollowUpWaiting(ctx, tx, v.Run, claim.Authority, record.Interaction, now); err != nil {
+			return err
+		}
 		out = record.Interaction
 		return s.saveRun(ctx, tx, v, old)
 	})

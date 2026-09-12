@@ -1,0 +1,27 @@
+=== RUN   TestCreateScheduledPlanNormalizesAndReplaysExactOwnerCommand
+--- PASS: TestCreateScheduledPlanNormalizesAndReplaysExactOwnerCommand (0.00s)
+PASS
+ok  	github.com/domainry/domainry-scheduler/internal/application/scheduler	1.389s
+=== RUN   TestScheduledPlanStorePersistsOwnerScopeAndIdempotencyAcrossReopen
+--- PASS: TestScheduledPlanStorePersistsOwnerScopeAndIdempotencyAcrossReopen (0.02s)
+=== RUN   TestScheduledPlanStoreConcurrentExactCreateWritesOneRecord
+--- PASS: TestScheduledPlanStoreConcurrentExactCreateWritesOneRecord (0.04s)
+PASS
+ok  	github.com/domainry/domainry-scheduler/internal/infrastructure/persistence/database	1.636s
+=== RUN   TestModuleScheduledPlansPersistOneTimeAndRecurringRecordsAcrossRestart
+--- PASS: TestModuleScheduledPlansPersistOneTimeAndRecurringRecordsAcrossRestart (0.08s)
+PASS
+ok  	github.com/domainry/domainry-scheduler/internal/assembly/module	2.005s
+=== RUN   TestDatabaseServicePersistsScheduledPlansAcrossOwnerRestart
+--- PASS: TestDatabaseServicePersistsScheduledPlansAcrossOwnerRestart (0.08s)
+=== RUN   TestScheduledPlanSaaSHTTPPersistsExactCommandAndOwnerScope
+--- PASS: TestScheduledPlanSaaSHTTPPersistsExactCommandAndOwnerScope (0.23s)
+PASS
+ok  	github.com/domainry/domainry-scheduler/internal/assembly/saas	2.564s
+=== RUN   TestServerAndSDKTransportPreserveScheduledPlanOwnerScope
+--- PASS: TestServerAndSDKTransportPreserveScheduledPlanOwnerScope (0.09s)
+PASS
+ok  	github.com/domainry/domainry-scheduler/internal/transport/http/saas	2.706s
+testing: warning: no tests to run
+PASS
+ok  	github.com/domainry/domainry-scheduler/remote	2.775s [no tests to run]

@@ -1,0 +1,10 @@
+runtime git diff --check: exit=0
+/Users/tiger/Projects/domainry-notification: clean=true
+/Users/tiger/Projects/domainry-notification-sdk: clean=true
+/Users/tiger/Projects/domainry-integration: clean=true
+/Users/tiger/Projects/domainry-integration-sdk: clean=true
+/Users/tiger/Projects/anti/llm-proxy: clean=true
+/Users/tiger/Projects/devops/llm-proxy: clean=true
+dispatch application owner SDK/implementation imports: []
+composition adapter owner implementation imports: []
+runtime formal module files changed: none

@@ -1,0 +1,20 @@
+=== RUN   TestConversationTaskRunCatalogAndBudgetsStayFrozen
+--- PASS: TestConversationTaskRunCatalogAndBudgetsStayFrozen (0.01s)
+=== RUN   TestConversationTaskWorkerWaitsForStateTransitionWhenQueueIsEmpty
+--- PASS: TestConversationTaskWorkerWaitsForStateTransitionWhenQueueIsEmpty (0.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.497s
+=== RUN   TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable
+--- PASS: TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable (0.12s)
+=== RUN   TestConversationTasksOwnerScopedFiltersAndStableCursor
+--- PASS: TestConversationTasksOwnerScopedFiltersAndStableCursor (0.07s)
+=== RUN   TestConversationTaskFailureTracksTerminalRun
+--- PASS: TestConversationTaskFailureTracksTerminalRun (0.09s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	1.860s
+=== RUN   TestAgentOwnsOpenAPIForEveryHTTPRoute
+--- PASS: TestAgentOwnsOpenAPIForEveryHTTPRoute (0.02s)
+=== RUN   TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest
+--- PASS: TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest (0.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	1.766s

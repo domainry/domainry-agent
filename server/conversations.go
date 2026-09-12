@@ -35,6 +35,10 @@ func (s *Server) conversationHandler(op string) http.HandlerFunc {
 			writeError(w, 403, "agent.conversation.workspace_denied", "")
 			return
 		}
+		if op == "scheduled_task_start" && in.ScheduledTask.Authority != in.Authority {
+			writeError(w, 403, "agent.conversation.scheduled_authority_denied", "")
+			return
+		}
 		result, err := agentapplication.InvokeConversation(r.Context(), s.config.Conversations, op, in)
 		if err != nil {
 			status, code := 500, "agent.conversation.internal"

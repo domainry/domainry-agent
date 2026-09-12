@@ -95,6 +95,9 @@ func (p *selectedToolConnections) ToolConnectionAvailable(ctx context.Context, a
 			return false, err
 		}
 	}
+	if available, selected, err := p.host.scheduleToolAvailable(ctx, a, key); selected && (err != nil || !available) {
+		return false, err
+	}
 	return p.host.toolAccountAvailable(ctx, a, key)
 }
 func (h *Host) registerToolSettingsPermissions(ctx context.Context) error {

@@ -1,0 +1,118 @@
+{
+  "date": "2026-09-12",
+  "item": "L03",
+  "verdict": "pass",
+  "summary": "task_cancel/task_resume, state-specific controls, layered reauthorization, exact-Run retry and reconciliation, bounded child depth/count, and compiled-browser controls are complete",
+  "repositories": {
+    "agent": "f54dbc5090064f7ad1d261a4358e0cfb38ad91a2",
+    "agent_sdk": "878e932616f33cc8ed08be0e64d7050d67dfd156",
+    "llm_proxy": "a32407a678ea7f96d70b7557765e2a01262184d4"
+  },
+  "llm_proxy_worktree": "clean",
+  "checks": [
+    {
+      "name": "agent full",
+      "command": "go test ./... -count=1 -timeout 12m",
+      "result": "pass",
+      "web_seconds": 158.417,
+      "evidence": "docs/evidence/2026-09-12-l03-task-control/logs/agent-full.log"
+    },
+    {
+      "name": "L03 application persistence and cross-layer race",
+      "command": "go test -race ./internal/application ./internal/infrastructure/persistence/database/agent ./internal/assembly/web -run '^(TestConversationTask.*|TestPrepareConversationTask.*|TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite)$' -count=1 -timeout 6m -v",
+      "result": "pass",
+      "web_seconds": 86.75,
+      "evidence": "docs/evidence/2026-09-12-l03-task-control/logs/l03-race.log"
+    },
+    {
+      "name": "compiled browser acceptance",
+      "command": "AGENT_TOOL_UI_ACCEPTANCE=1 go test ./internal/assembly/web -run TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite plus frontend/tests/task-control.browser.mjs",
+      "result": "pass",
+      "host_seconds": 28.51,
+      "evidence": [
+        "docs/evidence/2026-09-12-l03-task-control/logs/browser-host.log",
+        "docs/evidence/2026-09-12-l03-task-control/browser/report.json"
+      ]
+    },
+    {
+      "name": "agent sdk full race",
+      "command": "go test -race ./... -count=1",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-l03-task-control/logs/sdk-race.log"
+    },
+    {
+      "name": "agent and sdk vet",
+      "command": "go vet ./... in both repositories",
+      "result": "pass"
+    },
+    {
+      "name": "frontend tests",
+      "command": "npm test",
+      "result": "pass",
+      "tests": 56,
+      "evidence": "docs/evidence/2026-09-12-l03-task-control/logs/frontend-test.log"
+    },
+    {
+      "name": "frontend build",
+      "command": "npm run build",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-l03-task-control/logs/frontend-build.log"
+    },
+    {
+      "name": "architecture and boundary",
+      "command": "architecture tests + forbidden import scans + two-repository git diff --check + llm-proxy status",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-l03-task-control/architecture-audit.json"
+    }
+  ],
+  "non_acceptance_attempts": [
+    {
+      "name": "agent full race with default package timeout",
+      "result": "timeout",
+      "accepted_as_pass": false,
+      "reason": "existing account-write unknown_original_receipt subtest was active when the Web package reached its default 10 minute total timeout",
+      "evidence": "docs/evidence/2026-09-12-l03-task-control/logs/agent-race-timeout.log"
+    }
+  ],
+  "files": {
+    "/Users/tiger/Projects/domainry-agent-sdk/conversation.go": "dbec13b7d517fd4643180a973d2ff35233f940f435fc3d7fb32f2902e772305b",
+    "/Users/tiger/Projects/domainry-agent-sdk/conversation_http.go": "18cf4ab5deb80d170d1eb43d8cefca2f98b5e3729066d432e9d2958e99140032",
+    "/Users/tiger/Projects/domainry-agent-sdk/conversation_personal_tools.go": "458b47e63fd0b1e69123df74a1796876ad9dae84f6b00e3278867c0125c22198",
+    "/Users/tiger/Projects/domainry-agent-sdk/conversation_task.go": "05664f8fe7ce2e530cd7964fba93768505e123a61ca0ff538f1cceae03f00638",
+    "/Users/tiger/Projects/domainry-agent-sdk/conversation_task_test.go": "22ede699f0d82ff4dee643cc9eba0ae8bf9c991046b96a777068e36859ca71d3",
+    "/Users/tiger/Projects/domainry-agent-sdk/http_adapter_test.go": "521e1c72f70d825807d034afa7f96f7f9eb41518ab487104c199421efb660979",
+    "/Users/tiger/Projects/domainry-agent-sdk/persistence/conversation_task.go": "2e91785668c15e7b25110731f154d4b2273e23e790542366107a68dd522014b2",
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_dispatch.go": "3da954b42cecd4507fec34daef411b0facdef3e5c4dfc46cac342a153d4c0405",
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_personal_tools.go": "247e5f21554b271799420c668d17b636142bdc7eff02bbda59ae8658d778c3d4",
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_tasks.go": "31cfc450ab4f4fb6c13e19ca5093db25b0ed4aaa7a7495a567035dd1fbe663d2",
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_tasks_test.go": "36c35a77755c9ecd74f3604cefe5dd3d660d421b03219ff5cdc66c12cd0deeba",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_task_start_test.go": "1286f2ec4fee524df21aacb59358c7774c17a9fe1739c029607b21d87391d5c7",
+    "/Users/tiger/Projects/domainry-agent/internal/capability/binding.go": "991a711b077b53d7486547f8710cfac75c902e0cd8920c58dd028172447a2c7f",
+    "/Users/tiger/Projects/domainry-agent/internal/capability/binding_test.go": "e7d3b6cf92cefe3c9440b36aaf12ded679d968962ceb7b5e4d7b51f710006e2c",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_run_store.go": "5633ad2cd0eb0567ee854141643362321487fa2f8a0b5fb2ca1a3f876a7f7bf4",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go": "b4937489591a445d6a60d58f8776bb7453d546176159a61524584bb169c1f726",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_task_store_test.go": "d7f414084c8591488b9ffb4daf839b381d35eedd907baf4bc51c4de78637ea49",
+    "/Users/tiger/Projects/domainry-agent/internal/transport/http/module/adapter_test.go": "f948866c049a5ea2a479efe3c5d4426bb4d10301beea0475091a13baea81b676",
+    "/Users/tiger/Projects/domainry-agent/server/server_test.go": "c71644acf2e39b4bb261b077c9da932c924b874d52657d6b89218475ef795ab8",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/TaskDialog.tsx": "bb40a88cfeda6f5848862452c685ab32d3a5d88fe067580bded477ad56dbbf3f",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/task-state.ts": "a06d15b0e01c9f902db9292b9b8542bf6a444e299235718b3fd616e096973edd",
+    "/Users/tiger/Projects/domainry-agent/frontend/src/task-state.test.ts": "6c9bd6a2616e0ce5c6f1180d717313b1e3f748b46dd34afd61939bbfb1538511",
+    "/Users/tiger/Projects/domainry-agent/frontend/tests/task-control.browser.mjs": "e1479893ccfea6bdc71e1fc6e00d97888208ee7c4bb961036fda4650f26afe6e",
+    "/Users/tiger/Projects/domainry-agent/docs/testing-2026-09-12-l03-task-control.md": "e477e6992ff7cffb34a5c5cb6938e35a460c29b12063344f3fd729006339b730",
+    "/Users/tiger/Projects/domainry-agent/docs/agent-capabilities-todo.md": "901ca7648821ce06246892123ba6d2e04dfc42c7659f8e4091e73b93855a638f",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/architecture-audit.json": "86b8d9eaff4f9a54a835f80b3192faa039cebbab8ba38db589affd8872a2de88",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/browser-observation.json": "c0a517f607607800223b91643e27e02694c4b75e33fcf0dbc0aa30a5d8e60f74",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/browser/report.json": "36a639b8a12ec55d3fd0833c8038099e58cd07fd8695909a58f63e32e5a7cde5",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/browser/failed-task.png": "fd6776133c8bc91af3a0b68708b5af95c3423f7ffd4a1c555226f3fbd8e244fb",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/browser/cancelled-task-mobile.png": "cdbb949251c413685b6c3466c9b80ca7bcdc93833a7d7c26f73d9187530a3b70",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/logs/agent-full.log": "81c6e23e882422cbcdcea2ee001faac5c8da1d7b3bce06285f42418d030bd044",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/logs/l03-race.log": "f5bce16ecace7283a23361b51035c6f61457d9d559d647e43746a2a62a30216d",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/logs/sdk-race.log": "eb87fd198c77c70f22c390cb8b4b9ccec6939071e18e374dea1d96cfd273d60e",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/logs/frontend-test.log": "5ab8ab7f1de91145d631cad6fb64a060d97abb6a1859822ac609f6a42943cb55",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/logs/frontend-build.log": "29119d5b6403ce1dfbb29d8b3b99420294aa9e88965a278284c8ac74be46166b",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/logs/browser-host.log": "714fcaac46a0fe396689543ed62424ab9df67c0f2ccfbf14a4d84476319ac324",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/logs/browser-client.log": "3479058739d61f0329fac134a26e247a1bf150c6b229f73d7a27abbfa885e576",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/logs/agent-race-timeout.log": "26dde314c9ec5cf5103e8b6e35ff090bf39cb9d32a061f7d0090351ebc591468",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-l03-task-control/logs/browser-host-failed-fixture.log": "a7716347c8c7712014660f173413458659cf22812a0bc0364026eef16184238a"
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "date": "2026-09-12",
+  "item": "G04",
+  "verdict": "pass",
+  "ownership": {
+    "scheduler": "Owns the durable plan, time window, target owner/operation, exact allowed actions, signed dispatch fact, and delivery retry.",
+    "runtime_application": "Owns only the source-neutral NotificationTargetRuntime port and target dispatch. It imports neither Scheduler nor Notification owner SDKs or implementations.",
+    "runtime_composition": "Is the single Scheduler-to-Notification mapping boundary. It re-resolves current Identity, validates the narrow reminder contract, and calls public Notification SDK contracts.",
+    "notification": "Owns notification event types, immutable inbox snapshots, preferences, channel plans, delivery reservations, retry state, and deduplication.",
+    "integration_connector": "Integration owns external connection and provider invocation records; a project Connector executes the concrete channel request through the public Connector SDK.",
+    "storage": "Runtime does not read or write Notification or Integration private tables and does not claim a cross-database atomic transaction."
+  },
+  "reminder_contract": {
+    "target_owner": "notification",
+    "target_operation": "publish_reminder",
+    "exact_allowed_action": "notification.reminder.publish",
+    "event_type": "scheduler.reminder.due",
+    "input_fields": [
+      "title",
+      "message"
+    ],
+    "reject_unknown_input_fields": true,
+    "title_max_runes": 240,
+    "message_max_runes": 4000,
+    "identity_source": "current Identity SDK result at execution time",
+    "recipient_source": "current Identity user",
+    "locale_source": "current Identity user",
+    "stable_identity": "SHA-256(workspace + plan + Scheduler idempotency key)",
+    "plan_cannot_select": [
+      "event type",
+      "recipient",
+      "workspace",
+      "connection",
+      "provider",
+      "URL",
+      "rendered payload"
+    ]
+  },
+  "delivery_semantics": {
+    "in_app": "mandatory built-in channel",
+    "external_channels": "opt in through the product Notification rule and a declared Integration connection",
+    "runtime_publication_status": "accepted means Integration accepted the handoff",
+    "integration_invocation_status": "succeeded records the concrete Connector result",
+    "callback_replay": "the same signed callback returns replay=true and creates no second inbox item or provider call"
+  },
+  "dependency_scan": {
+    "runtime_dispatch_owner_sdk_or_implementation_imports": [],
+    "runtime_composition_owner_implementation_imports": [],
+    "runtime_private_notification_table_access": false,
+    "runtime_private_integration_table_access": false,
+    "runtime_formal_module_files_changed": [],
+    "evidence": "docs/evidence/2026-09-12-g04-reminder-delivery/boundary-scan.log"
+  },
+  "repository_heads": {
+    "agent": "f54dbc5090064f7ad1d261a4358e0cfb38ad91a2",
+    "agent_sdk": "878e932616f33cc8ed08be0e64d7050d67dfd156",
+    "identity_sdk": "f22b55032417ad434a5baade244cbe960d347776",
+    "runtime": "c0f185038654725104f1737e5ddfc0a9d25185ce",
+    "scheduler": "be62fb18be1ca4597da9cb103bae304b1a1968fb",
+    "scheduler_sdk": "802b5b3752eb4e336097a3ab1860265a7b144f36",
+    "notification": "1f723e12fb8ec5de80e069e0f869e4a12e011481",
+    "notification_sdk": "483a1ce774140d6da8eff80ae5eccbf40ca0ab47",
+    "integration": "a2f0f849e14263a2c86a63e88f543ce7d3783a6e",
+    "integration_sdk": "92aa39374fd8f2f7502ff82b8d1d312920f49eec",
+    "tools_sdk": "a6eb834a08996dbac6d1b00d44550a038a1297f2",
+    "llm_proxy_anti": "a32407a678ea7f96d70b7557765e2a01262184d4",
+    "llm_proxy_devops": "12677bb7e224304cec3faf8b8040bb011c639d6c"
+  },
+  "implementation_repository_state": {
+    "notification": "clean",
+    "notification_sdk": "clean",
+    "integration": "clean",
+    "integration_sdk": "clean",
+    "llm_proxy_anti": "clean",
+    "llm_proxy_devops": "clean"
+  },
+  "llm_proxy_boundary": {
+    "modified": false,
+    "model_routing_added": false,
+    "future_F04_scope": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ]
+  },
+  "known_gap": {
+    "owner": "H04",
+    "accepted_as_pass": false,
+    "description": "The pinned 11-module composition test still reports only the previously recorded unpublished Agent capability digest mismatch. Notification digest 6265c202058ccddec84829c8ae60bdd2561b5689d0c5b7439225d2be24cf2794 matches the current lock.",
+    "evidence": "docs/evidence/2026-09-12-g04-reminder-delivery/runtime-local-lock-known-gap.log"
+  }
+}

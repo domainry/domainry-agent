@@ -1,0 +1,55 @@
+=== RUN   TestPrepareConversationTaskFreezesGoalScopeAuthorizationAndBudget
+--- PASS: TestPrepareConversationTaskFreezesGoalScopeAuthorizationAndBudget (0.00s)
+=== RUN   TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope
+=== RUN   TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/recursive
+=== RUN   TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/self_control
+=== RUN   TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/denied
+=== RUN   TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/step_budget
+--- PASS: TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope (0.01s)
+    --- PASS: TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/recursive (0.00s)
+    --- PASS: TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/self_control (0.00s)
+    --- PASS: TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/denied (0.00s)
+    --- PASS: TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/step_budget (0.00s)
+=== RUN   TestConversationTaskRunCatalogAndBudgetsStayFrozen
+--- PASS: TestConversationTaskRunCatalogAndBudgetsStayFrozen (0.01s)
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/queued_before_launch
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/cancelled_before_launch
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/waiting_for_user
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/failed_model_call
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/closed_input
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/cancelled_reconciliation
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/pending_reconciliation
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/revoked_source_projection
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/completed
+--- PASS: TestConversationTaskControlStateFollowsDurableRunState (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/queued_before_launch (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/cancelled_before_launch (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/waiting_for_user (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/failed_model_call (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/closed_input (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/cancelled_reconciliation (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/pending_reconciliation (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/revoked_source_projection (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/completed (0.00s)
+=== RUN   TestConversationTaskWorkerWaitsForStateTransitionWhenQueueIsEmpty
+--- PASS: TestConversationTaskWorkerWaitsForStateTransitionWhenQueueIsEmpty (0.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.784s
+=== RUN   TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable
+--- PASS: TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable (0.15s)
+=== RUN   TestConversationTasksOwnerScopedFiltersAndStableCursor
+--- PASS: TestConversationTasksOwnerScopedFiltersAndStableCursor (0.07s)
+=== RUN   TestConversationTaskChildCountIsBoundedPerSourceRun
+--- PASS: TestConversationTaskChildCountIsBoundedPerSourceRun (0.09s)
+=== RUN   TestConversationTaskFailureTracksTerminalRun
+--- PASS: TestConversationTaskFailureTracksTerminalRun (0.10s)
+=== RUN   TestConversationTaskReconciliationResumeKeepsTaskRunning
+--- PASS: TestConversationTaskReconciliationResumeKeepsTaskRunning (0.14s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	2.574s
+=== RUN   TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite
+    conversation_task_start_test.go:558: task_start returned task_90877fc4b709e68d51302f8b924e8d66; child run crun_948622fd0dfd928f6cf9730703e5db7c recovered at attempt 2 with exact catalog [time_now]
+--- PASS: TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite (86.75s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	88.346s

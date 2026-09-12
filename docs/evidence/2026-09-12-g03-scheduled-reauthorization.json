@@ -1,0 +1,108 @@
+{
+  "date": "2026-09-12",
+  "item": "G03",
+  "verdict": "pass",
+  "summary": "Signed scheduled Agent work re-resolves current Identity, reauthorizes conversation/actions/tools/connections, uses the existing durable task worker, and preserves user confirmation",
+  "repositories": {
+    "agent": "f54dbc5090064f7ad1d261a4358e0cfb38ad91a2",
+    "agent_sdk": "878e932616f33cc8ed08be0e64d7050d67dfd156",
+    "runtime": "12116f18223bca52345e01f815bcc65b917d629f",
+    "scheduler": "be62fb18be1ca4597da9cb103bae304b1a1968fb",
+    "scheduler_sdk": "802b5b3752eb4e336097a3ab1860265a7b144f36",
+    "llm_proxy_anti": "a32407a678ea7f96d70b7557765e2a01262184d4",
+    "llm_proxy_devops": "12677bb7e224304cec3faf8b8040bb011c639d6c"
+  },
+  "llm_proxy_worktrees": "clean",
+  "llm_proxy_scope": "consume existing POST /tool/web_search and POST /tool/web_fetch_jina only; no model routing and no service change",
+  "checks": [
+    {
+      "name": "Agent full",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g03-scheduled-reauthorization/agent-full.log"
+    },
+    {
+      "name": "Agent G03 race",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g03-scheduled-reauthorization/agent-g03-race.log"
+    },
+    {
+      "name": "Agent SDK full race",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g03-scheduled-reauthorization/agent-sdk-race.log"
+    },
+    {
+      "name": "Runtime signed callback race",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g03-scheduled-reauthorization/runtime-signed-callback-race.log"
+    },
+    {
+      "name": "Runtime target packages",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g03-scheduled-reauthorization/runtime-target-full.log"
+    },
+    {
+      "name": "Agent/SDK/Runtime vet",
+      "result": "pass",
+      "evidence": [
+        "docs/evidence/2026-09-12-g03-scheduled-reauthorization/agent-vet.log",
+        "docs/evidence/2026-09-12-g03-scheduled-reauthorization/agent-sdk-vet.log",
+        "docs/evidence/2026-09-12-g03-scheduled-reauthorization/runtime-vet.log"
+      ]
+    },
+    {
+      "name": "architecture and credentials",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g03-scheduled-reauthorization/architecture-audit.json"
+    },
+    {
+      "name": "local unpublished capability lock",
+      "result": "expected_fail_deferred_to_H04",
+      "evidence": "docs/evidence/2026-09-12-g03-scheduled-reauthorization/runtime-local-lock-known-gap.log"
+    }
+  ],
+  "files": {
+    "/Users/tiger/Projects/domainry-agent-sdk/conversation_http.go": "3476ccecd937b4c23c6fbe969af7eefcce1dc1c3bdc8d3302804d293d34ab173",
+    "/Users/tiger/Projects/domainry-agent-sdk/conversation_task.go": "d99b933ff5fb87f428f22eb8f093c6afe27a4b4cd6275252716f4dffd676ce4e",
+    "/Users/tiger/Projects/domainry-agent-sdk/persistence/conversation_task.go": "4e166c0565b43a2432d3f26c3b8ab87ec667a6bfd688dfb0a4661374f7756b86",
+    "/Users/tiger/Projects/domainry-agent-sdk/sdk.go": "db7f63261ad5b601c300c696b719bd613aecbc43ccc934f34bcd234f642b4b91",
+    "/Users/tiger/Projects/domainry-agent/cmd/domainry-agent/main_test.go": "0bff79e79416e09f2576fdeaa9e2056dc739f4101cc1cd607e8b841b4c1f474e",
+    "/Users/tiger/Projects/domainry-agent/docs/agent-capabilities-todo.md": "36b1d67af9a0499ca420936e1e6c760bfbdcab9a44048b2d1c3ed7ef26c5b85d",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g03-scheduled-reauthorization/agent-full.log": "750e8cb3f31faf7ed5a232e9d8fcf57c0ddade498451ffc603000a12da1550b7",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g03-scheduled-reauthorization/agent-g03-race.log": "04bfffa603423fdd28b88398bc37b3884a3964d422be9566115f21f5b947d9bf",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g03-scheduled-reauthorization/agent-sdk-race.log": "db725f5f7c32e5a023c5162c9f450a7bba5fda8b8c62f9a69279f663662ce034",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g03-scheduled-reauthorization/agent-sdk-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g03-scheduled-reauthorization/agent-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g03-scheduled-reauthorization/architecture-audit.json": "f47c5db1a911ea05b002919a7d99fe549879c00ebe6bcb8d608759a6f6a8359a",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g03-scheduled-reauthorization/runtime-local-lock-known-gap.log": "db026cb8a6fb3b5e4b6e3fbafd7b472d2ef86881297c06177bf6e316d4bdd5c9",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g03-scheduled-reauthorization/runtime-signed-callback-race.log": "ddce268da233a254c18c12e4e8a2201600b6fad75396779e2ae7bfa660419d1f",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g03-scheduled-reauthorization/runtime-target-full.log": "7660619d68875ca1100450a84a538396c842eb7c5ac649d9c7cc9b7d9b7fb903",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g03-scheduled-reauthorization/runtime-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/tiger/Projects/domainry-agent/docs/remaining-capability-boundaries.md": "e6777eef7d889d85f854228ea1ca06e41eb3c9ed573a0e6636844fd615605ab8",
+    "/Users/tiger/Projects/domainry-agent/docs/testing-2026-09-12-g03-scheduled-reauthorization.md": "bbcb5fd642ee5646e06876583dee99086217ad063464b025130cf8e513507678",
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_dispatch.go": "6a9c7e505fa386b109cf3ed29cd059663516b7435d7dc713c8c003968f41eaeb",
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_execution.go": "7e068bf2ca25e0a1a18a1a12f9a01b50d5ac3d497d71333acde9d27b28092a5f",
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_tasks.go": "e9b6c431313bbf5b09903f53ac9275a575507e5a27881dd0019c68a5f2cc2988",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/web/calendar_tools_test.go": "63a471fcbf3b8a24d5d78affe206f923bb3a62cfa3c38e7829d2694f9b92e0d6",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_task_start_test.go": "db7122bfee2b619ae4df77f807dedd1a87b339eb0d228046ef76399c7b648eda",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_task_schema.go": "7fd07297175b67b4eeae8ee8761647f876a16482596350d64171c82203eb379a",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go": "4bbf37c7d9a635e075542e9e79fb01d82882499a6071ada10d3045aa0b6816a8",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_task_store_test.go": "8b289f99ef6ddd5725a3c088684db3a5624d1b8daba49cbf7eff5a6bde7da583",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/schema.go": "ac7d0d1cb40ff2a6ff3965884672e4c08f3f9111f641f4e9e743b43cef194843",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/schema_test.go": "51f5c00d244661ea62b57c2743ee52cb4a095f7fa6a66da6c3b1174f111990e1",
+    "/Users/tiger/Projects/domainry-agent/module/factory.go": "e3b340b20d6c32889400d9335e1421297cacaea0a54e8a04b590c9c4427d30aa",
+    "/Users/tiger/Projects/domainry-agent/remote/conversations.go": "92fecd658426163ebb6d6ca60678451ecd92a7009578bf9cdec45292d3dcc238",
+    "/Users/tiger/Projects/domainry-agent/remote/factory_test.go": "ee6c3776bdedfb163a033ba3c3ada097da64c2520082c0ed8aaf64b560b4a6d6",
+    "/Users/tiger/Projects/domainry-agent/server/authorization_actions.go": "e6305be3381046311d78daa74fd4e552cbad4e6f0352ec5a6433d09cff5f907f",
+    "/Users/tiger/Projects/domainry-agent/server/conversations.go": "02dd228e4c87120e599f6de5c2a655ead44575afb8030593630266dce1880d05",
+    "/Users/tiger/Projects/domainry-agent/server/server.go": "365ebb745b5898eb7c355e4a301f94160f21b03c4b7cf35c2ff2ba54ef31ae1b",
+    "/Users/tiger/Projects/domainry-agent/server/server_test.go": "f80e48f842624c68216d947d71edc90e1d407d4baa0e150388d343a7b1fd5378",
+    "/Users/tiger/Projects/domainry-runtime/runtime/application/dispatch/target_execution_application_service.go": "5f49d2602fbe3d00a47af29ee1c493e004acb46e0840b31a7536a76295edc831",
+    "/Users/tiger/Projects/domainry-runtime/runtime/application/dispatch/target_execution_application_service_test.go": "396cf08b4f09574709cacd269f1c7fa15146baa8c56bcc74a1aa2dec9cce1a86",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/runtime_services.go": "76824ecec90d802e933a60a42de8a41ac6129851ec0570454b9e76051f540bba",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/runtime_services_initialization.go": "556e74e2a228b3bdd0abaff75713a8401eca052e6a585baa22005a50174e2668",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/runtime_services_state.go": "51bea11052e7e99b17b87cb620a4467c9411a7ba61db293ccfaf0888f0105739",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/scheduled_agent_target_wiring.go": "ddfe9eb4755855c511048f44e5392e0037bce857d7eef930f1bcf8d54400ac32",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/scheduled_agent_target_wiring_test.go": "0d1a90fced18f73cc41df08ffea85e95d61da32beaafd1a1958fdb23db679af7",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/service_assembly.go": "e408d65d79dfce687369d10dde2c3beade61f60869ffae777883a4be2868a55a"
+  }
+}

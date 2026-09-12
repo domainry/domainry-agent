@@ -1,0 +1,21 @@
+{
+  "date": "2026-09-12",
+  "url": "http://127.0.0.1:8092",
+  "compiled_frontend": true,
+  "page_reloaded_after_build": true,
+  "session": "admin@example.com",
+  "observations": [
+    "workspace exposes 后台任务 / 进度、等待与成果",
+    "task list survived full page reload and showed three persisted tasks",
+    "waiting task task_1345266f259753cee8c0c099c2985501 showed 等待补充信息, ask_user, 1 step, 1 tool call, attempt 1, 3/1/30 budget and question 请选择发布渠道",
+    "completed filter hid the waiting task and selected 生成后台验收纪要 instead of retaining stale detail",
+    "search build 42 returned only task_fc6e1a0103e48332886a00fcdfe4c7de with completed result build 42 已在后台核对完成。",
+    "task processing-record link opened the exact time_now run with 2 attempts, 1 completed call and its saved reply",
+    "artifact task task_a5d55f38fd2825a3eb2e1a7d80e7a541 showed result 后台验收纪要已创建。 and linked artifact version 1",
+    "linked artifact opened exact version 1 with content 任务已恢复并完成。",
+    "artifact source processing-record link opened the exact artifact_create run with 2 attempts, 1 completed call and saved reply 后台验收纪要已创建。",
+    "source links selected conversation conv_2c2c6e500cb6666f635504cf0c4a54c9"
+  ],
+  "console_errors": 0,
+  "console_warnings": 0
+}

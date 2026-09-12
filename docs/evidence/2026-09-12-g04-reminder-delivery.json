@@ -1,0 +1,154 @@
+{
+  "date": "2026-09-12",
+  "item": "G04",
+  "verdict": "pass",
+  "summary": "Signed scheduled reminders re-resolve current Identity, materialize one mandatory in-app Notification, optionally dispatch through a product-bound Integration connection, record the two-stage delivery result, and deduplicate exact callback replay.",
+  "repositories": {
+    "agent": "f54dbc5090064f7ad1d261a4358e0cfb38ad91a2",
+    "agent_sdk": "878e932616f33cc8ed08be0e64d7050d67dfd156",
+    "identity_sdk": "f22b55032417ad434a5baade244cbe960d347776",
+    "runtime": "c0f185038654725104f1737e5ddfc0a9d25185ce",
+    "scheduler": "be62fb18be1ca4597da9cb103bae304b1a1968fb",
+    "scheduler_sdk": "802b5b3752eb4e336097a3ab1860265a7b144f36",
+    "notification": "1f723e12fb8ec5de80e069e0f869e4a12e011481",
+    "notification_sdk": "483a1ce774140d6da8eff80ae5eccbf40ca0ab47",
+    "integration": "a2f0f849e14263a2c86a63e88f543ce7d3783a6e",
+    "integration_sdk": "92aa39374fd8f2f7502ff82b8d1d312920f49eec",
+    "tools_sdk": "a6eb834a08996dbac6d1b00d44550a038a1297f2",
+    "llm_proxy_anti": "a32407a678ea7f96d70b7557765e2a01262184d4",
+    "llm_proxy_devops": "12677bb7e224304cec3faf8b8040bb011c639d6c"
+  },
+  "llm_proxy": {
+    "worktrees": "clean",
+    "modified": false,
+    "model_routing_added": false,
+    "scope": "F04 consumes existing POST /tool/web_search and POST /tool/web_fetch_jina only"
+  },
+  "acceptance_observations": {
+    "inbox_items": 1,
+    "connector_calls": 1,
+    "runtime_publication_status": "accepted",
+    "integration_invocation_status": "succeeded",
+    "integration_response_reference_present": true,
+    "exact_callback_replay": true,
+    "inbox_items_after_replay": 1,
+    "connector_calls_after_replay": 1
+  },
+  "checks": [
+    {
+      "name": "Runtime affected full packages",
+      "command": "GOWORK=/tmp/domainry-g04-20260912/go.work go test ./runtime/application/dispatch ./runtime/bootstrap/composition ./runtime/bootstrap/runtime -skip '^TestPinnedModuleSetComposesAllElevenBindingsOnOneHostDatabase$' -count=1",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g04-reminder-delivery/runtime-affected-full.log"
+    },
+    {
+      "name": "Runtime signed reminder and existing action notification E2E",
+      "command": "GOWORK=/tmp/domainry-g04-20260912/go.work go test ./runtime/bootstrap/integrationtest -run '^(TestProjectActionNotificationDispatchRealRuntimeReplayConcurrencyLifecycleAndRestart|TestScheduledReminderSignedCallbackMaterializesInboxDeliversConnectedChannelAndDeduplicates)$' -count=1 -v",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g04-reminder-delivery/runtime-notification-e2e.log"
+    },
+    {
+      "name": "G04 cross-layer race",
+      "command": "GOWORK=/tmp/domainry-g04-20260912/go.work go test -race Runtime dispatch/composition and G04 integration targets -count=1",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g04-reminder-delivery/runtime-g04-race.log"
+    },
+    {
+      "name": "Notification full repository",
+      "command": "GOWORK=/tmp/domainry-g04-20260912/go.work go test ./... -count=1",
+      "working_directory": "/Users/tiger/Projects/domainry-notification",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g04-reminder-delivery/notification-full.log"
+    },
+    {
+      "name": "Notification SDK full race",
+      "command": "GOWORK=/tmp/domainry-g04-20260912/go.work go test -race ./... -count=1",
+      "working_directory": "/Users/tiger/Projects/domainry-notification-sdk",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g04-reminder-delivery/notification-sdk-race.log"
+    },
+    {
+      "name": "Runtime and Notification vet",
+      "command": "GOWORK=/tmp/domainry-g04-20260912/go.work go vet affected Runtime packages; go vet ./... in Notification",
+      "result": "pass",
+      "evidence": [
+        "docs/evidence/2026-09-12-g04-reminder-delivery/runtime-vet.log",
+        "docs/evidence/2026-09-12-g04-reminder-delivery/notification-vet.log"
+      ]
+    },
+    {
+      "name": "Runtime DDD, owner, SDK, schema and workspace boundary suite",
+      "command": "GOWORK=/tmp/domainry-g04-20260912/go.work go test ./runtime/boundary -count=1 -v",
+      "result": "pass",
+      "evidence": "docs/evidence/2026-09-12-g04-reminder-delivery/runtime-boundary.log"
+    },
+    {
+      "name": "Repository and import boundary scan",
+      "command": "git diff --check; clean owner implementation repositories; forbidden import scans; formal module file check",
+      "result": "pass",
+      "evidence": [
+        "docs/evidence/2026-09-12-g04-reminder-delivery/boundary-scan.log",
+        "docs/evidence/2026-09-12-g04-reminder-delivery/architecture-audit.json"
+      ]
+    },
+    {
+      "name": "Pinned 11-module local composition lock",
+      "result": "expected_fail_deferred_to_H04",
+      "accepted_as_pass": false,
+      "reason": "Only the previously recorded unpublished Agent capability digest differs; Notification digest matches.",
+      "evidence": "docs/evidence/2026-09-12-g04-reminder-delivery/runtime-local-lock-known-gap.log"
+    }
+  ],
+  "files": {
+    "/Users/tiger/Projects/domainry-agent/docs/agent-capabilities-todo.md": "5cb65689c0bb87af1ea5b08c57e28e48cfe972005ae8546c15f6b256fd8722be",
+    "/Users/tiger/Projects/domainry-agent/docs/remaining-capability-boundaries.md": "850c76ef1e41d6136eaf7e509332080429c5eef639935404a87d8456f65ccbd0",
+    "/Users/tiger/Projects/domainry-agent/docs/testing-2026-09-12-g04-reminder-delivery.md": "ce321fe9195d527e3de6e9a9240041e86f0c0acd8f72d43ceb053f262c8c2bd0",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g04-reminder-delivery/architecture-audit.json": "3badeca8f0fc87393ac09ba2084bded3de85060ddd9b20592ee8594a352658b8",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g04-reminder-delivery/boundary-scan.log": "6f915231148d64f97d2a677d45f9986e9d3ad03a5bebc49971d2ef7c547fd8bb",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g04-reminder-delivery/notification-full.log": "e04420aa3849738f76478d35fbb240dd1923c192aedac35ce6c172398ed7de7b",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g04-reminder-delivery/notification-sdk-race.log": "bc91cba04620f4b50ebe868ae249b1b81832aefe55a96bc8cd55a8e35ca40c00",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g04-reminder-delivery/notification-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g04-reminder-delivery/runtime-affected-full.log": "0821d4b44fe539dc8896156569e3274606f31aadd0de83406b5a2166ed04f334",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g04-reminder-delivery/runtime-boundary.log": "925ff3da80233d04bc1fc50c4e67df506ea31d40916d40c4ad2733ef0770ff37",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g04-reminder-delivery/runtime-g04-race.log": "8431cb2a586849666d4cda55895c89eaec662bbbe963f2ce47fabd6d283f4c13",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g04-reminder-delivery/runtime-local-lock-known-gap.log": "8b79c8d58b2178beebff5e451a22a492d2caa25b0a24694d0fe2029e0d50a560",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g04-reminder-delivery/runtime-notification-e2e.log": "4189b27e3c03f3dbd63108f28950c7e353fd6d849567e7ef8dfaf2dc3d617b76",
+    "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-12-g04-reminder-delivery/runtime-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/tiger/Projects/domainry-runtime/runtime/application/dispatch/target_execution_application_service.go": "6de6262154d98c3f3d3f645432c872154a9f8b5ffd1a040b8da14511eb46642d",
+    "/Users/tiger/Projects/domainry-runtime/runtime/application/dispatch/target_execution_application_service_test.go": "ae56a37ef2155ea4f1ef05770facfbc5112459ad1ac79c92fd175c3b33980e68",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/automation_application_wiring.go": "b4c1e8718b5ddf04212fe90104b09557f054c6a3c41b4c78425718c4d26bb7ff",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/composition_remaining_wiring_contract_test.go": "c8d6d90712a5ac2e92750bc2646e29e69547f4fba3d4b8afc7f7c302caff517c",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/composition_wiring_contract_test.go": "842b8e4415da79696bb0bc76e7fcf5261a2c53a424bc54fcd6d9b359c2e8a4b6",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/runtime_services.go": "7d601e348931db309e98d23cbcd745eac990e0a6c25886e560c5454d8ec19657",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/runtime_services_initialization.go": "35bb0e45d481874620929d9f880613df0b09bd94fbe87bb12f34a5bac04f9102",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/runtime_services_record_dependencies.go": "6e83e1f326ef508dbc8f266d3b8aa8964e1ba1acec1cfc02a6d0d42eacbcd942",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/runtime_services_record_test.go": "6779812fba8dfaaef41ec8e769dea974d15f1bd88819a62c2469c45da90c36df",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/runtime_services_state.go": "4ed1a8318337f74cd2357f5f7e39d1216886c111be23f3094072c257b4636f65",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/scheduled_agent_target_wiring.go": "792760f7b71f6682c90952213f080be63660b6c7b482be9f9d1a68b4e455522f",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/scheduled_agent_target_wiring_test.go": "0d1a90fced18f73cc41df08ffea85e95d61da32beaafd1a1958fdb23db679af7",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/scheduled_notification_target_wiring.go": "cc21a7ee898c81ab8c8a68e228de37f106aec8f167b2df75d8af573646654e94",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/scheduled_notification_target_wiring_test.go": "3a2609bacf3d42d13967ec61415eab6a213f6664b861c7f512dd3f79f1aa7fbe",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/scheduled_plan_owner_wiring.go": "517f971196cea7ab50d6c22d7d546a415e1bcceb018e2c2e4b37dd32e12e83b7",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/workflow_dependencies_application_wiring.go": "6b5d293ebe134cacd528196a83ad506c22ee4a47b56901ba646b64680a0d7f5d",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/identity_sdk_fixture_test.go": "8cb42fd9a74dadc93cdf582636d113adbdff6d5647301114f4a53bad20703562",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/project_action_notification_runtime_e2e_test.go": "f0b79ecbc3694d675ff734997e4028041f3b9439695474acf5c7a764d565ac1e",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/scheduled_reminder_notification_e2e_test.go": "f2542d15903ea16337aa8743e51fadd8a063e53fc8aad5eed92a00f3cac6af28",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/notification_event_types.go": "5f74157c6c15fbc36b6eadf96ac6d7d0f96f6757bc0ff57e835d9d658c0ace50",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/notification_startup_bindings.go": "9c3cf5a7a8b75ebcc104c75ca27c2407289b56fdb0820523eda02d7701aaeef3",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/notification_startup_bindings_test.go": "b3ccda2d553acb404307c2657d02a72e8215c9a9e5950d4c2471dd207b7c5ef3",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/service_assembly.go": "ad19b322af0d38d007453f23d742075022b361b134fa81f0406be8fe7557c165",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/testkit/runtime_services_fixture.go": "eb92dd3408f4ede91c16a5ad95a28720aa2f5033e8747a1c19adc872fdde5407",
+    "/Users/tiger/Projects/domainry-runtime/runtime/platform/localization/locales/ar-SA.toml": "ce2f347dfcd69e3c413073a0dad6b30b187dd48684ec863c9ddf83af4225f2e3",
+    "/Users/tiger/Projects/domainry-runtime/runtime/platform/localization/locales/de-DE.toml": "8ed2b873310c087d510c7719513318e980ea97e656b92ef8a2d14f176d4ab57f",
+    "/Users/tiger/Projects/domainry-runtime/runtime/platform/localization/locales/en-US.toml": "aadf08219ef78935a82c57586f8bc5a76818a0a02fcd164d48a8f1b08390c670",
+    "/Users/tiger/Projects/domainry-runtime/runtime/platform/localization/locales/es-ES.toml": "c7b1d0687395ea9d6b83085e1c981b5acf1082be88c4898d225fa2087e16bab0",
+    "/Users/tiger/Projects/domainry-runtime/runtime/platform/localization/locales/fr-FR.toml": "67cbf8c8f161d85cb4efd1def0ac6dc60e4cd859cbe20766cd55cb92784fa882",
+    "/Users/tiger/Projects/domainry-runtime/runtime/platform/localization/locales/it-IT.toml": "4b269e4f3d9ae561d926fce3a13c8fde6e293cf9fc66f4dd296c235c3332d93d",
+    "/Users/tiger/Projects/domainry-runtime/runtime/platform/localization/locales/ja-JP.toml": "e1a7c7aaf4cc813514247ea775c55bbf57e8a121a69b53447ec240ed929a4af0",
+    "/Users/tiger/Projects/domainry-runtime/runtime/platform/localization/locales/ko-KR.toml": "49a076dc042fd7530085a6e89ddec140816f095d39dc624e2f1369aac6d98d0d",
+    "/Users/tiger/Projects/domainry-runtime/runtime/platform/localization/locales/pt-BR.toml": "eca96dcf2877270f3601162871f628c2807e444947a8534d1e122272e4cdba73",
+    "/Users/tiger/Projects/domainry-runtime/runtime/platform/localization/locales/tr-TR.toml": "b4a178b894fdf204a30d95cbefc8fb67cf360c06c79d8cce6a438f7b5f077a40",
+    "/Users/tiger/Projects/domainry-runtime/runtime/platform/localization/locales/zh-CN.toml": "322471928173dc0733f0be0b7e6f8bfe5e27b642692367f9dabd511f37b5cd72",
+    "/Users/tiger/Projects/domainry-runtime/runtime/platform/localization/locales/zh-TW.toml": "f76fcc87eb9bd8ea43739dadb8c89f6e9ecaef4b3fafd677b5ef457d4db4110c"
+  }
+}

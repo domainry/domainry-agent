@@ -55,6 +55,7 @@ func New(config Config) (*Server, error) {
 		actionAgentSaaSSessionsQuery:  http.HandlerFunc(s.listSessions), actionAgentSaaSSessionsUpsert: http.HandlerFunc(s.upsertSession), actionAgentSaaSSessionsSetArchived: http.HandlerFunc(s.setSessionArchived),
 		actionAgentSaaSProposalsQuery: http.HandlerFunc(s.listProposals), actionAgentSaaSProposalsGet: http.HandlerFunc(s.getProposal), actionAgentSaaSProposalsStore: http.HandlerFunc(s.storeProposal), actionAgentSaaSProposalsDecide: http.HandlerFunc(s.decideProposal),
 		actionAgentSaaSCapabilitySummary: capabilityHandler, actionAgentSaaSCapabilityCategory: capabilityHandler, actionAgentSaaSCapabilityValidation: capabilityHandler,
+		agentsdk.ActionAgentScheduledConversationTaskStart: http.HandlerFunc(s.conversationHandler("scheduled_task_start")),
 	}
 	actions, err := SaaSAuthorizationActions()
 	if err != nil {
@@ -153,6 +154,13 @@ func (s *Server) descriptor(w http.ResponseWriter, _ *http.Request) {
 	}
 	if s.config.Conversations != nil {
 		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationV1)
+		scheduledAvailable := true
+		if status, ok := s.config.Conversations.(agentsdk.ConversationExecutionStatusProvider); ok {
+			scheduledAvailable = status.ConversationExecutionEnabled()
+		}
+		if _, ok := s.config.Conversations.(agentsdk.ScheduledConversationTaskService); ok && scheduledAvailable {
+			descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityScheduledConversationTask)
+		}
 		if status, ok := s.config.Conversations.(agentsdk.ConversationStatusProvider); ok && status.ConversationStreaming() {
 			descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationStreamV1)
 		}

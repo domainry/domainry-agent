@@ -9,6 +9,13 @@ import (
 
 // Shared transport dispatch; identity is established by the owning transport.
 func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op string, r agentsdk.ConversationRPCRequest) (any, error) {
+	if op == "scheduled_task_start" {
+		tasks, ok := s.(agentsdk.ScheduledConversationTaskService)
+		if !ok {
+			return nil, conversationFailure("unavailable", "scheduled_tasks_unavailable")
+		}
+		return tasks.StartScheduledConversationTask(ctx, r.ScheduledTask)
+	}
 	a := r.Authority
 	if op == "result_read" {
 		reader, ok := s.(agentsdk.ConversationResultReader)
@@ -162,6 +169,15 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 			return tasks.ConversationTasks(ctx, r.TaskQuery, a)
 		case "tasks_get":
 			return tasks.ConversationTask(ctx, r.TaskID, a)
+		case "tasks_cancel", "tasks_resume":
+			controls, ok := s.(agentsdk.ConversationTaskControlService)
+			if !ok {
+				return nil, conversationFailure("unavailable", "task_control_unavailable")
+			}
+			if op == "tasks_cancel" {
+				return controls.CancelConversationTask(ctx, r.TaskID, a)
+			}
+			return controls.ResumeConversationTask(ctx, r.TaskID, a)
 		}
 	}
 	switch op {

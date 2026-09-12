@@ -256,6 +256,9 @@ func (f *accountFixture) boundary(origin string, files fs.FS) http.Handler {
 	for key, handler := range f.host.ToolSettingsSetupRoutes() {
 		routes[key] = handler
 	}
+	for key, handler := range f.host.ScheduleRoutes() {
+		routes[key] = handler
+	}
 	handler, err := gateway.NewHandler(gateway.Options{Identity: f.host.Identity, Agent: f.host.Agent, RuntimeID: f.options.RuntimeID, WorkspaceID: f.options.WorkspaceID, ApplicationKey: f.options.ApplicationKey, Origin: origin, Files: files, ModuleAdapters: adapters, ApplicationRoutes: routes, NavigationFiles: map[string]string{"/oauth/callback": "oauth-callback.html"}})
 	if err != nil {
 		f.t.Fatal(err)

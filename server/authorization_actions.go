@@ -60,6 +60,7 @@ func SaaSAuthorizationActions() ([]actioncontract.ActionDefinition, error) {
 		{actionAgentSaaSCapabilitySummary, "GET " + modulecapability.SummaryPath, "agent.saas.capability", "Agent capability protocol", "Read capability summary", read, low, "not_applicable"},
 		{actionAgentSaaSCapabilityCategory, "GET " + modulecapability.CategoriesPath + "{key}", "agent.saas.capability", "Agent capability protocol", "Read capability category", read, low, "not_applicable"},
 		{actionAgentSaaSCapabilityValidation, "POST " + modulecapability.ValidationPath, "agent.saas.capability", "Agent capability protocol", "Validate capability candidate", read, low, "not_applicable"},
+		{agentsdk.ActionAgentScheduledConversationTaskStart, "POST /agent/v1/conversations/scheduled_task_start", "agent.saas.conversations", "Agent persistent conversations", "Accept scheduled background task", write, medium, "request_contract"},
 
 		{agentSaaSRepositoryActionPrefix + "definitions.sync", "POST /agent/v1/definitions/sync", "agent.saas.repository.definitions", "Agent definition repository", "Synchronize definitions", write, high, "request_contract"},
 		{agentSaaSRepositoryActionPrefix + "definitions.snapshot", "POST /agent/v1/definitions/snapshot", "agent.saas.repository.definitions", "Agent definition repository", "Read definition snapshot", read, low, "not_applicable"},

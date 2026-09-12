@@ -1,0 +1,7 @@
+=== RUN   TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite
+    conversation_task_start_test.go:556: browser task controls seeded waiting=task_155e2ad3e4fd11ef8c0a3c11f9266dfd failed=task_662cc0be3a726217bd520a302168a52a
+    conversation_task_start_test.go:558: task_start returned task_090a73dafc5937c1fa3cd7f9ae16f162; child run crun_f6e2c0a33ed5b9b9f9b97eb3efc14d6e recovered at attempt 2 with exact catalog [time_now]
+    conversation_task_start_test.go:559: Temporary browser acceptance ready at http://127.0.0.1:8092
+--- PASS: TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite (28.51s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	28.929s

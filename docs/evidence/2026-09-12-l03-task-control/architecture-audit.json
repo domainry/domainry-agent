@@ -1,0 +1,81 @@
+{
+  "date": "2026-09-12",
+  "item": "L03",
+  "verdict": "pass",
+  "boundaries": [
+    {
+      "boundary": "public contracts",
+      "evidence": [
+        "/Users/tiger/Projects/domainry-agent-sdk/conversation_task.go owns task_cancel/task_resume definitions, the safe control-state projection and the optional ConversationTaskControlService",
+        "/Users/tiger/Projects/domainry-agent-sdk/persistence/conversation_task.go owns the queued-task control repository port",
+        "/Users/tiger/Projects/domainry-agent-sdk/conversation_http.go owns the two POST route contracts under the separate agent.background_tasks capability"
+      ]
+    },
+    {
+      "boundary": "application to persistence",
+      "evidence": [
+        "internal/application/conversation_tasks.go depends only on Agent SDK public and persistence ports",
+        "internal/infrastructure/persistence/database/agent/conversation_task_store.go implements queued control and terminal task synchronization",
+        "forbidden-import scans found no application import of Agent persistence, HTTP or assembly implementations and no SDK reverse dependency"
+      ]
+    },
+    {
+      "boundary": "execution ownership",
+      "evidence": [
+        "launched tasks cancel and resume through the existing Conversation Run service; task code does not create a second execution engine",
+        "queued tasks without a Run use a narrow control repository because there is no execution record to transition",
+        "Run terminal event and task terminal reference stay in one database transaction"
+      ]
+    },
+    {
+      "boundary": "authorization",
+      "evidence": [
+        "HTTP task control reauthorizes the exact task_cancel/task_resume action through the host PersonalAuthorizer",
+        "Conversation Resume reauthorizes the current execution, and the worker rechecks every frozen tool definition, permission and availability before model or tool execution",
+        "model tool calls use the normal tool authorization ledger once and call the internal transition without bypassing Run reauthorization"
+      ]
+    },
+    {
+      "boundary": "state machine and external effects",
+      "evidence": [
+        "server-derived control state distinguishes queued, running, waiting_user, waiting_confirmation, failed, cancelled, needs_reconciliation and completed",
+        "closed input or confirmation interactions cannot be resumed; reconciliation retains the original uncertain call and idempotency key",
+        "reconciliation completion resolves the interaction and commits the exact task completion event without issuing a replacement task"
+      ]
+    },
+    {
+      "boundary": "bounded child execution",
+      "evidence": [
+        "task_start counts children for the authoritative owner and source Run in the same local-tool transaction and rejects the fifth with task_child_limit",
+        "task preparation and every resumed background catalog reject all task_* tools",
+        "a child therefore cannot create descendants, query or control itself, or synchronously wait for its own task record"
+      ]
+    },
+    {
+      "boundary": "frontend",
+      "evidence": [
+        "TaskDialog calls only public /agent/conversation-tasks/{id}/cancel and /resume routes",
+        "the UI renders the server control projection instead of deriving transitions from status locally",
+        "cancel uses an inline confirmation and the browser never invokes a model tool directly"
+      ]
+    },
+    {
+      "boundary": "llm-proxy",
+      "evidence": [
+        "/Users/tiger/Projects/anti/llm-proxy remained clean",
+        "L03 contains no llm-proxy integration or model routing change",
+        "F04 remains limited to consuming existing POST /tool/web_search and POST /tool/web_fetch_jina endpoints"
+      ]
+    }
+  ],
+  "checks": {
+    "agent_architecture_tests": "pass",
+    "application_forbidden_import_scan": "no matches",
+    "sdk_reverse_dependency_scan": "no matches",
+    "agent_diff_check": "pass",
+    "sdk_diff_check": "pass",
+    "agent_vet": "pass",
+    "sdk_vet": "pass",
+    "llm_proxy_git_status": "clean"
+  }
+}

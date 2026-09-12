@@ -301,7 +301,7 @@ func (s *ConversationStore) Finish(ctx context.Context, claim agentpersistence.C
 		if err = s.event(ctx, tx, &v, "run."+v.Run.Status, map[string]any{"attempt": v.Run.Attempt, "assistant_message_id": v.Run.AssistantMessageID, "error_code": code}); err != nil {
 			return err
 		}
-		if err = s.finishConversationTask(ctx, tx, v.Run, v.Authority); err != nil {
+		if err = s.finishConversationTask(ctx, tx, v.Run, v.Authority, result.Content); err != nil {
 			return err
 		}
 		return s.saveRun(ctx, tx, v, old)
@@ -325,6 +325,7 @@ func (s *ConversationStore) transition(ctx context.Context, id, runID string, a 
 			return err
 		}
 		v := old
+		background := v.Run.BackgroundTask != nil
 		out = v.Run
 		if resume {
 			if v.Run.Status == "waiting_user" || v.Run.Status == "waiting_confirmation" {
@@ -342,7 +343,7 @@ func (s *ConversationStore) transition(ctx context.Context, id, runID string, a 
 			if i := v.Run.Interaction; i != nil && i.Kind != "reconciliation" && (i.Status == "cancelled" || i.Status == "expired" || i.Status == "rejected") {
 				return conversationError("conflict", "interaction_closed")
 			}
-			if c.ActiveRunID != "" && !(c.ActiveRunID == runID && v.Run.Status == "needs_reconciliation") || c.LastSeq != max(v.Run.UserSeq, v.Run.LastInputSeq) {
+			if !background && (c.ActiveRunID != "" && !(c.ActiveRunID == runID && v.Run.Status == "needs_reconciliation") || c.LastSeq != max(v.Run.UserSeq, v.Run.LastInputSeq)) {
 				return conversationError("conflict", "run_superseded")
 			}
 			v.Run.Status = "queued"
@@ -351,7 +352,9 @@ func (s *ConversationStore) transition(ctx context.Context, id, runID string, a 
 			v.Authority = a
 			v.Run.ErrorCode = ""
 			v.Run.DraftText, v.Run.DraftBytes = "", 0
-			c.ActiveRunID = runID
+			if !background {
+				c.ActiveRunID = runID
+			}
 		} else {
 			if v.Run.Terminal() {
 				return nil
@@ -370,11 +373,23 @@ func (s *ConversationStore) transition(ctx context.Context, id, runID string, a 
 		v.Fence++
 		v.Owner = ""
 		v.Expires = 0
-		if err = s.save(ctx, tx, c, c.Revision, a); err != nil {
-			return err
+		if !background {
+			if err = s.save(ctx, tx, c, c.Revision, a); err != nil {
+				return err
+			}
 		}
 		if err = s.event(ctx, tx, &v, "run."+v.Run.Status, map[string]any{"attempt": v.Run.Attempt, "draft_reset": resume}); err != nil {
 			return err
+		}
+		if v.Run.BackgroundTask != nil {
+			if resume {
+				err = s.resumeConversationTask(ctx, tx, v.Run, v.Authority)
+			} else {
+				err = s.finishConversationTask(ctx, tx, v.Run, v.Authority, "")
+			}
+			if err != nil {
+				return err
+			}
 		}
 		out = v.Run
 		return s.saveRun(ctx, tx, v, old)

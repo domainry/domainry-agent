@@ -1,0 +1,9 @@
+ok  	github.com/domainry/domainry-scheduler-sdk	1.163s
+ok  	github.com/domainry/domainry-scheduler-sdk/authoring	1.283s
+?   	github.com/domainry/domainry-scheduler-sdk/authoring/contract	[no test files]
+ok  	github.com/domainry/domainry-scheduler-sdk/dispatchgateway	1.520s
+?   	github.com/domainry/domainry-scheduler-sdk/modulehost	[no test files]
+?   	github.com/domainry/domainry-scheduler-sdk/persistence	[no test files]
+?   	github.com/domainry/domainry-scheduler-sdk/saashost	[no test files]
+ok  	github.com/domainry/domainry-scheduler-sdk/saashost/httptransport	1.738s
+ok  	github.com/domainry/domainry-scheduler-sdk/schedule	1.586s

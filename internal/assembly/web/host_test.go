@@ -230,11 +230,9 @@ func TestIdentityModulesBrowserOwnershipAndRestart(t *testing.T) {
 	}
 	options.WorkspaceID = "workspace-two"
 	host, handler = open()
-	c := &browser{t: t, handler: handler, cookies: map[string]*http.Cookie{}}
-	c.login("admin@example.com", initial)
-	c.changePassword(initial, changed)
-	c.call("GET", base, "", 404)
-	if c.scope == a.scope {
-		t.Fatal("workspace draft scope collision")
-	}
+	// Changing the host application scope does not provision or borrow an
+	// administrator in that workspace. A valid workspace-one principal is
+	// rejected before it can probe workspace-two application data.
+	a.handler = handler
+	a.call("GET", base, "", 401)
 }

@@ -26,6 +26,7 @@ func (s *ConversationService) waitConversation(ctx context.Context, claim persis
 	if _, err := repo.WaitExecution(ctx, claim, wait); err != nil {
 		return err
 	}
+	s.signalConversationFollowUps()
 	return errConversationWaiting
 }
 

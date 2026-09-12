@@ -1,0 +1,26 @@
+{
+  "complete": true,
+  "todo": "G06",
+  "boundaries": {
+    "tools": "owns follow_up plan schema and maps only product-authored scope into the public Scheduler SDK",
+    "scheduler": "owns trigger timing, plan revision and pause/resume; each occurrence is one bounded dispatch",
+    "agent": "owns strict report parsing, normalized change detection, terminal state and durable neutral event outbox",
+    "runtime": "owns the single SDK-to-SDK composition mapping and current Identity re-resolution",
+    "notification": "owns recipients, rendering, preferences, inbox, channels, delivery results and dedupe"
+  },
+  "forbidden_paths_checked": [
+    "Agent application does not import Runtime, Scheduler, Notification or Tools implementation packages",
+    "Tools adapter does not import Agent, Scheduler or Notification implementation packages",
+    "Scheduler does not read Agent or Notification persistence",
+    "Agent does not implement a timer loop or Notification inbox",
+    "follow_up input cannot select owner, target, action, recipient, channel or provider"
+  ],
+  "startup": "Runtime auth and notification ports bind before Agent advertises the scheduled-task service; Runtime then binds that public service into its dispatcher",
+  "stop": "the product Stop Follow-up action is Scheduler pause with revision CAS and remains paused after restart",
+  "llm_proxy": {
+    "path": "/Users/tiger/Projects/anti/llm-proxy",
+    "git_status_porcelain": "",
+    "modified": false,
+    "model_proxy_used": false
+  }
+}

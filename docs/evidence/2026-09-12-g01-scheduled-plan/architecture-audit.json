@@ -1,0 +1,82 @@
+{
+  "date": "2026-09-12",
+  "item": "G01",
+  "verdict": "pass",
+  "repositories": {
+    "scheduler": "/Users/tiger/Projects/domainry-scheduler",
+    "scheduler_sdk": "/Users/tiger/Projects/domainry-scheduler-sdk"
+  },
+  "boundaries": [
+    {
+      "boundary": "record ownership",
+      "evidence": [
+        "Scheduler owns _scheduler_plans, validation, normalization, owner-scoped idempotency and persistence",
+        "Agent, Runtime, Work and Todo do not define a G01 plan table or Scheduler record implementation",
+        "product callers supply a resolved workspace/user/product owner and target through the public Scheduler SDK"
+      ]
+    },
+    {
+      "boundary": "public contracts",
+      "evidence": [
+        "/Users/tiger/Projects/domainry-scheduler-sdk/scheduled_plan.go owns neutral plan DTOs and the optional ScheduledPlanService",
+        "/Users/tiger/Projects/domainry-scheduler-sdk/persistence/scheduled_plans.go owns the narrow Create/Get repository port",
+        "/Users/tiger/Projects/domainry-scheduler-sdk/schedule/scheduled_plan.go owns deterministic one-time and recurring record validation"
+      ]
+    },
+    {
+      "boundary": "application and persistence",
+      "evidence": [
+        "Scheduler application code imports only public Scheduler SDK contracts and ports",
+        "the database package implements the repository through domainry-orm builders and the host-supplied database",
+        "Module and SaaS assembly create the same ScheduledPlanStore; neither imports the other assembly"
+      ]
+    },
+    {
+      "boundary": "runtime and user identity",
+      "evidence": [
+        "Runtime identity is absent from ScheduledPlanCreate and is bound by the Module Binding or SaaS machine credential",
+        "every stored/read plan is scoped by runtime_id, workspace_id, user_id, product_key and plan_id",
+        "conversation_id/run_id are associations only and explicitly do not confer conversation access"
+      ]
+    },
+    {
+      "boundary": "record invariants",
+      "evidence": [
+        "one-time records require one at instant and forbid a recurring schedule; recurring records require one validated schedule and forbid at",
+        "an explicit IANA timezone is stored, recurring schedule timezone must match it, and server-local timezone is rejected",
+        "input is one JSON object up to 64 KiB, actions are a bounded unique set, target payload cannot duplicate plan input, and revision starts at one"
+      ]
+    },
+    {
+      "boundary": "protocol and management scope",
+      "evidence": [
+        "the private SaaS transport exposes owner-scoped Create/Get only and maps plan errors to typed SDK sentinels",
+        "G01 does not add a public human-management route or browser UI; G05 owns user authorization, CAS edits, pause/resume/delete and natural-language management",
+        "G01 stores trigger rules but does not claim clock, lease, retry or misfire behavior; those remain G02"
+      ]
+    },
+    {
+      "boundary": "llm-proxy",
+      "evidence": [
+        "/Users/tiger/Projects/anti/llm-proxy remained clean",
+        "G01 contains no llm-proxy integration and no model routing change",
+        "F04 remains limited to consuming existing POST /tool/web_search and POST /tool/web_fetch_jina endpoints"
+      ]
+    }
+  ],
+  "checks": {
+    "scheduler_full_race": "pass",
+    "scheduler_sdk_full_race": "pass",
+    "scheduler_and_sdk_vet": "pass",
+    "scheduler_architecture_tests": "pass",
+    "application_implementation_import_scan": "no production matches",
+    "sdk_reverse_dependency_scan": "no production matches; capability_boundary_test.go contains the forbidden Runtime string as its assertion input",
+    "agent_runtime_todo_plan_implementation_scan": "no matches",
+    "module_and_remote_cross_dependency": "no matches",
+    "formal_go_mod_replace": "absent",
+    "three_repository_diff_check": "pass",
+    "runtime_public_composition": "pass",
+    "runtime_locked_startup_after_compatibility_fix": "pass",
+    "llm_proxy_git_status": "clean"
+  }
+}

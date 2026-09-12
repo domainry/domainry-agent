@@ -1,0 +1,71 @@
+{
+  "date": "2026-09-12",
+  "item": "G05",
+  "verdict": "pass",
+  "ownership": {
+    "scheduler_sdk": "Public DTO, owner-scoped management service, Module/SaaS transport only.",
+    "scheduler": "Owns durable plan storage, owner filters, revision CAS, tombstones, recovery and execution projection.",
+    "tools_sdk": "Owns the seven strict model-facing schedule schemas without owner, target, Action, provider, connection or cron input.",
+    "tools": "Maps bounded inputs to Scheduler SDK. It derives allowed Actions from the currently authorized catalog and imports no owner implementation.",
+    "agent": "Composes current Identity, the Tools adapter and an injected Scheduler SDK service; conversation and product HTTP share the same adapter.",
+    "frontend": "Edits the public plan projection and submits only current revision plus bounded mutable fields."
+  },
+  "fixed_routing": {
+    "background_task_target": "agent/conversation_task_start",
+    "background_task_actions": "derived from current authorized non-task/non-schedule catalog",
+    "reminder_target": "notification/publish_reminder",
+    "reminder_action": "notification.reminder.publish",
+    "owner_source": [
+      "current runtime",
+      "current request workspace",
+      "current request user",
+      "configured product key"
+    ]
+  },
+  "management_semantics": {
+    "list_scope": "owner + optional status + stable plan-id cursor",
+    "mutation_guard": "owner + plan id + expected revision CAS",
+    "pause_projection": "disabled execution definition",
+    "resume_projection": "next recurring window anchored after mutation time",
+    "delete": "Scheduler-owned deleted tombstone hidden from public get/list and projected disabled on recovery",
+    "delete_reconcile": "always asks Scheduler; a missing record is not synthesized as a successful replay"
+  },
+  "browser": {
+    "compiled_frontend": true,
+    "real_chrome": true,
+    "real_identity_http": true,
+    "same_tool_adapter": true,
+    "expected_conflicts": 1,
+    "unexpected_javascript_errors": 0,
+    "unexpected_console_errors": 0,
+    "console_warnings": 0,
+    "agent_restart": true,
+    "viewport_width": 390
+  },
+  "dependency_scan": {
+    "agent_scheduler_implementation_imports": [],
+    "tools_owner_implementation_imports": [],
+    "scheduler_tools_or_agent_imports": [],
+    "scheduler_sdk_implementation_imports": [],
+    "five_repository_diff_check": "pass",
+    "evidence": "docs/evidence/2026-09-12-g05-plan-management/boundary-scan.log"
+  },
+  "repository_heads": {
+    "agent": "f54dbc5090064f7ad1d261a4358e0cfb38ad91a2",
+    "scheduler": "be62fb18be1ca4597da9cb103bae304b1a1968fb",
+    "scheduler_sdk": "802b5b3752eb4e336097a3ab1860265a7b144f36",
+    "tools": "2d2f4ad96a22fadeb340acb9d761e5317867e89f",
+    "tools_sdk": "a6eb834a08996dbac6d1b00d44550a038a1297f2",
+    "llm_proxy_anti": "a32407a678ea7f96d70b7557765e2a01262184d4",
+    "llm_proxy_devops": "12677bb7e224304cec3faf8b8040bb011c639d6c"
+  },
+  "llm_proxy_boundary": {
+    "worktrees_clean": true,
+    "modified": false,
+    "model_routing_added": false,
+    "consumed_tool_endpoints": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ]
+  }
+}

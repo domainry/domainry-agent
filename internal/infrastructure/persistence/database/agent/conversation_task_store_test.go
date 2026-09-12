@@ -7,7 +7,59 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	persistence "github.com/domainry/domainry-agent-sdk/persistence"
 )
+
+func TestScheduledConversationTaskAcceptanceIsIdempotentOwnerScopedAndUsesExistingWorkerQueue(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := NewConversationStore(store)
+	authority := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
+	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "scheduled-conversation", Title: "每周整理"}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	budget := agentsdk.ConversationTaskBudget{MaxSteps: 3, MaxToolCalls: 2, MaxOutputBytes: 1024, TimeoutSeconds: 30}
+	request := agentsdk.ScheduledConversationTaskRequest{
+		ContractVersion: agentsdk.ScheduledConversationTaskContractVersion,
+		PlanID:          "plan-weekly", SchedulerRunID: "scheduler-run-1", IdempotencyKey: "window-2026-w38", ScheduledFor: time.Now().UTC().Truncate(time.Millisecond),
+		Authority: authority, ConversationID: conversation.ID,
+		Input: agentsdk.ConversationTaskStart{Goal: "整理本周待办", Input: `{"status":"open"}`, AllowedTools: []string{}, Budget: budget}, AllowedActions: []string{},
+	}
+	prepared := agentsdk.ConversationTask{Goal: request.Input.Goal, Input: request.Input.Input, Budget: budget, SourceConversationID: conversation.ID, ToolScope: []agentsdk.ConversationTaskToolScope{}}
+	first, err := repo.AcceptScheduledConversationTask(t.Context(), request, prepared)
+	if err != nil || first.Replay || first.Task.ID == "" || first.Task.Status != agentsdk.ConversationTaskStatusQueued || first.Task.SourceRunID != "" {
+		t.Fatalf("first receipt=%+v err=%v", first, err)
+	}
+	replayed, err := NewConversationStore(store).AcceptScheduledConversationTask(t.Context(), request, prepared)
+	if err != nil || !replayed.Replay || replayed.Task.ID != first.Task.ID {
+		t.Fatalf("replayed receipt=%+v err=%v", replayed, err)
+	}
+	changed := request
+	changed.Input.Goal = "changed"
+	changedPrepared := prepared
+	changedPrepared.Goal = changed.Input.Goal
+	if _, err = repo.AcceptScheduledConversationTask(t.Context(), changed, changedPrepared); err == nil {
+		t.Fatal("changed scheduled replay was accepted")
+	}
+	var planID, schedulerRunID string
+	var scheduledFor int64
+	if err = store.Database().QueryRowContext(t.Context(), `SELECT scheduled_plan_id, scheduler_run_id, scheduled_for FROM _agent_conversation_tasks WHERE owner_key = ? AND task_id = ?`, conversationOwner(authority), first.Task.ID).Scan(&planID, &schedulerRunID, &scheduledFor); err != nil || planID != request.PlanID || schedulerRunID != request.SchedulerRunID || scheduledFor != request.ScheduledFor.UnixMilli() {
+		t.Fatalf("scheduled metadata=%q/%q/%d err=%v", planID, schedulerRunID, scheduledFor, err)
+	}
+	other := request
+	other.Authority.UserID = "other"
+	if _, err = repo.AcceptScheduledConversationTask(t.Context(), other, prepared); err == nil {
+		t.Fatal("cross-owner scheduled acceptance succeeded")
+	}
+	launch, launched, err := repo.LaunchConversationTask(t.Context(), authority.RuntimeID)
+	if err != nil || !launched || launch.Task.ID != first.Task.ID || launch.Run.BackgroundTask == nil || launch.Run.BackgroundTask.TaskID != first.Task.ID {
+		t.Fatalf("scheduled launch=%+v launched=%v err=%v", launch, launched, err)
+	}
+	claim, found, err := repo.Claim(t.Context(), authority.RuntimeID, "scheduled-worker", time.Minute)
+	if err != nil || !found || claim.Run.ID != launch.Run.ID {
+		t.Fatalf("scheduled claim=%+v found=%v err=%v", claim, found, err)
+	}
+}
 
 func TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable(t *testing.T) {
 	store, _ := openAgentStore(t)
@@ -60,6 +112,17 @@ func TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable(t *testing.T
 	queued, err := repo.ConversationTask(t.Context(), result.ResourceID, request.Authority)
 	if err != nil || queued.Status != agentsdk.ConversationTaskStatusQueued || queued.SourceConversationID != request.ConversationID || queued.SourceRunID != request.RunID || len(queued.ToolScope) != 1 || queued.ToolScope[0].DefinitionHash == "" || queued.Budget != budget {
 		t.Fatalf("queued task=%+v err=%v", queued, err)
+	}
+	cancelledQueued, err := repo.CancelQueuedConversationTask(t.Context(), result.ResourceID, request.Authority)
+	if err != nil || cancelledQueued.Status != agentsdk.ConversationTaskStatusCancelled || cancelledQueued.CompletedAt == nil {
+		t.Fatalf("cancelled queued task=%+v err=%v", cancelledQueued, err)
+	}
+	if again, replayErr := repo.CancelQueuedConversationTask(t.Context(), result.ResourceID, request.Authority); replayErr != nil || again.Status != agentsdk.ConversationTaskStatusCancelled {
+		t.Fatalf("queued cancellation was not idempotent: %+v %v", again, replayErr)
+	}
+	queued, err = repo.ResumeQueuedConversationTask(t.Context(), result.ResourceID, request.Authority)
+	if err != nil || queued.Status != agentsdk.ConversationTaskStatusQueued || queued.CompletedAt != nil {
+		t.Fatalf("resumed queued task=%+v err=%v", queued, err)
 	}
 	other := request.Authority
 	other.UserID = "other"
@@ -158,6 +221,31 @@ func TestConversationTasksOwnerScopedFiltersAndStableCursor(t *testing.T) {
 	}
 }
 
+func TestConversationTaskChildCountIsBoundedPerSourceRun(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := NewConversationStore(store)
+	budget := agentsdk.ConversationTaskBudget{MaxSteps: 1, MaxToolCalls: 1, MaxOutputBytes: 256, TimeoutSeconds: 1}
+	start := agentsdk.ConversationTaskStart{Goal: "第五个子任务", Input: "", AllowedTools: []string{}, Budget: budget}
+	arguments, _ := json.Marshal(start)
+	_, request := personalMutationFixture(t, repo, "task-child-limit", "task_start", string(arguments), true)
+	now := time.Now().UTC().Truncate(time.Millisecond)
+	for index := 0; index < agentsdk.ConversationTaskMaxChildrenPerRun; index++ {
+		task := agentsdk.ConversationTask{ID: fmt.Sprintf("task_child_%d", index), Status: agentsdk.ConversationTaskStatusQueued, Goal: "child", Input: "", SourceConversationID: request.ConversationID, SourceRunID: request.RunID, CreatedAt: now, UpdatedAt: now}
+		if _, err := store.Database().ExecContext(t.Context(), `INSERT INTO _agent_conversation_tasks(owner_key, task_id, runtime_id, source_conversation_id, source_run_id, status, authority_json, request_hash, created_at, updated_at, payload_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, conversationOwner(request.Authority), task.ID, request.Authority.RuntimeID, task.SourceConversationID, task.SourceRunID, task.Status, conversationJSON(request.Authority), conversationHash(task.ID), now.UnixMilli(), now.UnixMilli(), conversationJSON(task)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	prepared := agentsdk.ConversationTask{Goal: start.Goal, Input: start.Input, Budget: budget, SourceConversationID: request.ConversationID, SourceRunID: request.RunID, ToolScope: []agentsdk.ConversationTaskToolScope{}}
+	result, err := repo.ApplyConversationTaskTool(t.Context(), request, prepared)
+	if err != nil || result.Status != "failed" || result.ErrorCode != "task_child_limit" || result.ResourceID != "" {
+		t.Fatalf("child limit result=%+v err=%v", result, err)
+	}
+	var count int
+	if err := store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_tasks WHERE owner_key = ? AND source_run_id = ?`, conversationOwner(request.Authority), request.RunID).Scan(&count); err != nil || count != agentsdk.ConversationTaskMaxChildrenPerRun {
+		t.Fatalf("child count=%d err=%v", count, err)
+	}
+}
+
 func TestConversationTaskFailureTracksTerminalRun(t *testing.T) {
 	store, _ := openAgentStore(t)
 	repo := NewConversationStore(store)
@@ -190,5 +278,108 @@ func TestConversationTaskFailureTracksTerminalRun(t *testing.T) {
 	failed, err := repo.ConversationTask(t.Context(), result.ResourceID, request.Authority)
 	if err != nil || failed.Status != agentsdk.ConversationTaskStatusFailed || failed.ErrorCode != "execution_limit" || failed.CompletedAt == nil {
 		t.Fatalf("failed task=%+v err=%v", failed, err)
+	}
+	resumed, err := repo.Resume(t.Context(), request.ConversationID, launch.Run.ID, request.Authority)
+	if err != nil || resumed.Status != "queued" {
+		t.Fatalf("resumed background run=%+v err=%v", resumed, err)
+	}
+	running, err := repo.ConversationTask(t.Context(), result.ResourceID, request.Authority)
+	if err != nil || running.Status != agentsdk.ConversationTaskStatusRunning || running.CompletedAt != nil || running.ErrorCode != "" || running.CompletionEventID != "" {
+		t.Fatalf("resumed task=%+v err=%v", running, err)
+	}
+	cancelled, err := repo.Cancel(t.Context(), request.ConversationID, launch.Run.ID, request.Authority)
+	if err != nil || cancelled.Status != "cancelled" {
+		t.Fatalf("cancelled background run=%+v err=%v", cancelled, err)
+	}
+	cancelledTask, err := repo.ConversationTask(t.Context(), result.ResourceID, request.Authority)
+	if err != nil || cancelledTask.Status != agentsdk.ConversationTaskStatusCancelled || cancelledTask.CompletedAt == nil || cancelledTask.CompletionEventID == "" || cancelledTask.CompletionEventSeq != cancelled.LastEventSeq {
+		t.Fatalf("cancelled task=%+v err=%v", cancelledTask, err)
+	}
+}
+
+func TestConversationTaskReconciliationResumeKeepsTaskRunning(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := NewConversationStore(store)
+	input := executionStoreInput()
+	definition := input.Tools[0]
+	budget := agentsdk.ConversationTaskBudget{MaxSteps: 2, MaxToolCalls: 1, MaxOutputBytes: 1024, TimeoutSeconds: 30}
+	start := agentsdk.ConversationTaskStart{Goal: "核查外部结果", Input: "结果未知时先核查", AllowedTools: []string{definition.Key}, Budget: budget}
+	arguments, _ := json.Marshal(start)
+	parent, request := personalMutationFixture(t, repo, "task-reconciliation", "task_start", string(arguments), true)
+	prepared := agentsdk.ConversationTask{Goal: start.Goal, Input: start.Input, Budget: budget, SourceConversationID: request.ConversationID, SourceRunID: request.RunID, ToolScope: []agentsdk.ConversationTaskToolScope{{Key: definition.Key, Version: definition.Version, ActionKey: definition.ActionKey, DefinitionHash: conversationHash(definition)}}}
+	result, err := repo.ApplyConversationTaskTool(t.Context(), request, prepared)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = repo.FinishExecutionTool(t.Context(), parent, 0, request.Call.ID, result); err != nil {
+		t.Fatal(err)
+	}
+	if err = repo.Finish(t.Context(), parent, agentsdk.ConversationModelResult{Content: "queued"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	launch, ok, err := repo.LaunchConversationTask(t.Context(), request.Authority.RuntimeID)
+	if err != nil || !ok {
+		t.Fatal("launch", err)
+	}
+	claim, found, err := repo.Claim(t.Context(), request.Authority.RuntimeID, "worker", time.Minute)
+	if err != nil || !found || claim.Run.ID != launch.Run.ID {
+		t.Fatal("claim", err)
+	}
+	if _, _, err = repo.ExecutionStep(t.Context(), claim, 0, &input); err != nil {
+		t.Fatal(err)
+	}
+	if err = repo.CompleteExecutionStep(t.Context(), claim, 0, agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", ToolCalls: []agentsdk.ConversationToolCall{{ID: "external-write", Name: definition.Key, Arguments: `{"name":"one"}`}}}, FinishReason: "tool_calls"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err = repo.BeginExecutionTool(t.Context(), claim, 0, "external-write", agentsdk.ConversationToolAuthorization{Granted: true}); err != nil {
+		t.Fatal(err)
+	}
+	if err = repo.FinishExecutionTool(t.Context(), claim, 0, "external-write", agentsdk.ConversationToolResult{Status: "uncertain", ErrorCode: "external_result_unknown"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = repo.WaitExecution(t.Context(), claim, persistence.ConversationWait{Step: 0, CallID: "external-write", Kind: "reconciliation", Question: "核查实际外部结果"}); err != nil {
+		t.Fatal(err)
+	}
+	waiting, err := repo.ConversationTask(t.Context(), result.ResourceID, request.Authority)
+	if err != nil || waiting.Status != agentsdk.ConversationTaskStatusRunning || waiting.CompletionEventID != "" {
+		t.Fatalf("reconciliation task=%+v err=%v", waiting, err)
+	}
+	resumed, err := repo.Resume(t.Context(), request.ConversationID, launch.Run.ID, request.Authority)
+	if err != nil || resumed.Status != "queued" {
+		t.Fatalf("resumed reconciliation run=%+v err=%v", resumed, err)
+	}
+	stillRunning, err := repo.ConversationTask(t.Context(), result.ResourceID, request.Authority)
+	if err != nil || stillRunning.Status != agentsdk.ConversationTaskStatusRunning || stillRunning.ExecutionRunID != launch.Run.ID {
+		t.Fatalf("resumed reconciliation task=%+v err=%v", stillRunning, err)
+	}
+	recovered, found, err := repo.Claim(t.Context(), request.Authority.RuntimeID, "reconciliation-worker", time.Minute)
+	if err != nil || !found || recovered.Run.ID != launch.Run.ID || recovered.Fence == claim.Fence {
+		t.Fatalf("reconciliation claim=%+v found=%v err=%v", recovered, found, err)
+	}
+	step, found, err := repo.ExecutionStep(t.Context(), recovered, 0, nil)
+	if err != nil || !found || step.Result == nil {
+		t.Fatalf("frozen reconciliation step=%+v found=%v err=%v", step, found, err)
+	}
+	unknown, replayed, err := repo.BeginExecutionTool(t.Context(), recovered, 0, "external-write", agentsdk.ConversationToolAuthorization{Granted: true, Revision: "reauthorized"})
+	if err != nil || !replayed || unknown.State != "uncertain" || unknown.IdempotencyKey == "" {
+		t.Fatalf("uncertain receipt=%+v replayed=%v err=%v", unknown, replayed, err)
+	}
+	if err = repo.FinishExecutionTool(t.Context(), recovered, 0, "external-write", agentsdk.ConversationToolResult{Status: "completed", ResourceID: "external-one", Content: json.RawMessage(`{"id":"external-one"}`)}); err != nil {
+		t.Fatal(err)
+	}
+	next := input
+	next.IdempotencyKey = "reconciliation-finished"
+	if _, _, err = repo.ExecutionStep(t.Context(), recovered, 1, &next); err != nil {
+		t.Fatal(err)
+	}
+	if err = repo.CompleteExecutionStep(t.Context(), recovered, 1, agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "已核查外部结果，任务完成。"}, FinishReason: "stop"}); err != nil {
+		t.Fatal(err)
+	}
+	if err = repo.Finish(t.Context(), recovered, agentsdk.ConversationModelResult{Content: "已核查外部结果，任务完成。"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	completed, err := repo.ConversationTask(t.Context(), result.ResourceID, request.Authority)
+	if err != nil || completed.Status != agentsdk.ConversationTaskStatusCompleted || completed.CompletionEventID == "" || completed.CompletionEventSeq < 1 {
+		t.Fatalf("reconciled task=%+v err=%v", completed, err)
 	}
 }

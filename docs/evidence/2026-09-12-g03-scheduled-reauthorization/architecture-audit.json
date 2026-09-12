@@ -1,0 +1,86 @@
+{
+  "date": "2026-09-12",
+  "item": "G03",
+  "verdict": "pass",
+  "boundaries": [
+    {
+      "boundary": "trusted schedule handoff",
+      "evidence": [
+        "Scheduler emits its public ScheduledPlanDispatch facts and continues to own plan, run, retry and signed callback state",
+        "Runtime's signed callback gateway verifies method, escaped path, Runtime ID, idempotency key, timestamp and body before routing",
+        "Runtime callback receipts suppress an exact replay before Identity or Agent is called again"
+      ]
+    },
+    {
+      "boundary": "current identity",
+      "evidence": [
+        "Runtime resolves the plan SubjectID through the Identity SDK at execution time",
+        "unknown or disabled users, workspace changes and product mismatches are rejected before Agent",
+        "the authoring RoleKey, policy bundle and browser credential are not reused"
+      ]
+    },
+    {
+      "boundary": "agent authorization",
+      "evidence": [
+        "Agent accepts scheduled work only with the exact Runtime service Action agent.scheduled_conversation_task.start",
+        "Agent reauthorizes conversation execution, exact allowed Action keys, the selected tool and current tool availability before persistence",
+        "the existing worker rechecks conversation, tool definition hash, authorization revision and availability on each attempt"
+      ]
+    },
+    {
+      "boundary": "external connection",
+      "evidence": [
+        "Agent asks only the selected tool's ConversationToolAvailability port",
+        "the Web composition reaches Tools and Integration through public SDK boundaries",
+        "revoking the actual fixture ConnectionAccount rejects the next scheduled window before task persistence, model execution or vendor invocation"
+      ]
+    },
+    {
+      "boundary": "confirmation",
+      "evidence": [
+        "scheduled writes use the normal Conversation run and interaction state",
+        "waiting_confirmation releases the worker",
+        "approval reauthorizes the exact write; permission revoked while waiting leaves the artifact store unchanged"
+      ]
+    },
+    {
+      "boundary": "ownership and persistence",
+      "evidence": [
+        "Agent migration 16 adds nullable Scheduler correlation columns to the existing Agent-owned task table",
+        "Scheduler never writes Agent or Integration storage and Runtime never writes either source-owned table",
+        "owner plus Scheduler idempotency key yields one stable task; changed content conflicts and another owner cannot replay it"
+      ]
+    },
+    {
+      "boundary": "dependency direction",
+      "evidence": [
+        "Agent application and persistence production files do not import Scheduler, Runtime or Integration implementations",
+        "Runtime application dispatch is source-neutral and imports neither Agent nor Scheduler; only composition maps their public SDKs",
+        "Scheduler production files contain no Agent import or _agent_ table reference",
+        "formal go.mod and go.sum files are unchanged"
+      ]
+    },
+    {
+      "boundary": "credentials and llm-proxy",
+      "evidence": [
+        "ScheduledPlanDispatch and ScheduledConversationTaskRequest contain no access token, refresh token, cookie or browser credential field",
+        "both discovered llm-proxy worktrees remained clean",
+        "F04 remains limited to consuming existing POST /tool/web_search and POST /tool/web_fetch_jina endpoints; G03 adds no model-proxy routing"
+      ]
+    }
+  ],
+  "checks": {
+    "agent_full": "pass",
+    "agent_g03_race": "pass",
+    "agent_sdk_full_race": "pass",
+    "runtime_signed_callback_race": "pass",
+    "runtime_target_packages": "pass",
+    "agent_and_runtime_vet": "pass",
+    "forbidden_import_scan": "no production matches",
+    "scheduled_credential_field_scan": "no matches",
+    "formal_go_mod_changes": "none",
+    "repository_diff_check": "pass",
+    "llm_proxy_git_status": "clean",
+    "runtime_local_unpublished_lock": "expected fail deferred to H04"
+  }
+}

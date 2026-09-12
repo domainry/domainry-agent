@@ -1,0 +1,23 @@
+?   	github.com/domainry/domainry-scheduler/capability	[no test files]
+ok  	github.com/domainry/domainry-scheduler/cmd/scheduler-server	6.368s
+ok  	github.com/domainry/domainry-scheduler/internal/adapter/http	6.722s
+ok  	github.com/domainry/domainry-scheduler/internal/adapter/schedulersdk	5.996s
+ok  	github.com/domainry/domainry-scheduler/internal/application/scheduler	8.171s
+ok  	github.com/domainry/domainry-scheduler/internal/architecture	5.636s
+ok  	github.com/domainry/domainry-scheduler/internal/assembly/module	7.230s
+ok  	github.com/domainry/domainry-scheduler/internal/assembly/saas	9.374s
+ok  	github.com/domainry/domainry-scheduler/internal/capability	8.542s
+?   	github.com/domainry/domainry-scheduler/internal/domain/scheduler/model	[no test files]
+ok  	github.com/domainry/domainry-scheduler/internal/domain/scheduler/service	7.790s
+ok  	github.com/domainry/domainry-scheduler/internal/infrastructure/persistence	7.443s
+ok  	github.com/domainry/domainry-scheduler/internal/infrastructure/persistence/database	3.631s
+?   	github.com/domainry/domainry-scheduler/internal/infrastructure/persistence/database/migration	[no test files]
+?   	github.com/domainry/domainry-scheduler/internal/infrastructure/persistence/database/scheduler	[no test files]
+?   	github.com/domainry/domainry-scheduler/internal/infrastructure/persistence/database/schema	[no test files]
+?   	github.com/domainry/domainry-scheduler/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-scheduler/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-scheduler/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-scheduler/internal/transport/http/module	3.600s
+ok  	github.com/domainry/domainry-scheduler/internal/transport/http/saas	3.718s
+?   	github.com/domainry/domainry-scheduler/module	[no test files]
+ok  	github.com/domainry/domainry-scheduler/remote	3.627s

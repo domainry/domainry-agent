@@ -12,6 +12,20 @@ type conversationClient struct {
 	runtimeID string
 }
 
+func (c *conversationClient) StartScheduledConversationTask(ctx context.Context, in agentsdk.ScheduledConversationTaskRequest) (agentsdk.ScheduledConversationTaskReceipt, error) {
+	var out agentsdk.ScheduledConversationTaskReceipt
+	if !agentsdk.HasAuthorizedServiceAction(ctx, agentsdk.ActionAgentScheduledConversationTaskStart, agentsdk.AgentRuntimeServiceAudience) {
+		return out, &agentsdk.Error{Class: "forbidden", Code: "agent.conversation.scheduled_task_service_action_required"}
+	}
+	if in.Authority.RuntimeID == "" {
+		in.Authority.RuntimeID = c.runtimeID
+	}
+	err := c.call(ctx, "scheduled_task_start", agentsdk.ConversationRPCRequest{Authority: in.Authority, ScheduledTask: in}, &out)
+	return out, err
+}
+
+var _ agentsdk.ScheduledConversationTaskService = (*conversationClient)(nil)
+
 func (c *conversationClient) call(ctx context.Context, op string, in agentsdk.ConversationRPCRequest, out any) error {
 	if in.Authority.RuntimeID != c.runtimeID {
 		return &agentsdk.Error{Class: "forbidden", Code: "agent.conversation.runtime_denied"}

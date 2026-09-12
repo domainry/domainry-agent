@@ -1,0 +1,4 @@
+=== RUN   TestScheduledAgentTargetPreservesExplicitFollowUpScope
+--- PASS: TestScheduledAgentTargetPreservesExplicitFollowUpScope (0.00s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/composition	0.476s

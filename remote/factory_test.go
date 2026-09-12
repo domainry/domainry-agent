@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentcontracttest "github.com/domainry/domainry-agent-sdk/contracttest"
@@ -27,6 +28,20 @@ func (h *host) RuntimeID() string { return h.runtimeID }
 type runner struct {
 	started     agentsdk.TaskRequest
 	interactive agentsdk.InteractiveRequest
+}
+
+type scheduledConversationStub struct {
+	agentsdk.ConversationService
+	request    agentsdk.ScheduledConversationTaskRequest
+	authorized bool
+	calls      int
+}
+
+func (s *scheduledConversationStub) StartScheduledConversationTask(ctx context.Context, request agentsdk.ScheduledConversationTaskRequest) (agentsdk.ScheduledConversationTaskReceipt, error) {
+	s.calls++
+	s.request = request
+	s.authorized = agentsdk.HasAuthorizedServiceAction(ctx, agentsdk.ActionAgentScheduledConversationTaskStart, agentsdk.AgentRuntimeServiceAudience)
+	return agentsdk.ScheduledConversationTaskReceipt{Task: agentsdk.ConversationTask{ID: "scheduled-task", Status: agentsdk.ConversationTaskStatusQueued}}, nil
 }
 
 func (r *runner) Start(_ context.Context, request agentsdk.TaskRequest) (agentsdk.TaskResult, error) {
@@ -82,6 +97,46 @@ func TestSaaSFactoryValidatesDescriptorAndRunsProtocol(t *testing.T) {
 	interactive, err := opened.InteractiveRunner().Run(t.Context(), agentsdk.InteractiveRequest{RunID: "interactive-1", SessionID: "session-1", IdempotencyKey: "interactive-key", Message: "review", Context: agentsdk.GlobalContext{ContractVersion: agentsdk.GlobalAgentContextContractVersion, ContextRevision: "context-1", EntrypointKey: "assistant", AgentKey: "reviewer", Principal: agentsdk.PrincipalReference{WorkspaceID: "workspace", UserID: "user"}}, Candidates: []agentsdk.RouteCandidate{{RouteType: agentsdk.AgentRouteTask, TargetKey: "review"}}})
 	if err != nil || interactive.Handoff == nil || interactive.Handoff.TargetKey != "review" || provider.interactive.Context.ContextRevision != "context-1" || provider.interactive.Candidates[0].TargetKey != "review" {
 		t.Fatalf("interactive=%+v request=%+v err=%v", interactive, provider.interactive, err)
+	}
+}
+
+func TestSaaSScheduledTaskUsesServiceCredentialAndExactAction(t *testing.T) {
+	conversations := &scheduledConversationStub{}
+	agentServer, err := server.New(server.Config{APIKey: "runtime-secret", Conversations: conversations, ConversationRuntimeID: "runtime", ConversationWorkspaceID: "workspace"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	httpServer := httptest.NewServer(agentServer.Handler())
+	defer httpServer.Close()
+	opened, err := NewFactory(Options{BaseURL: httpServer.URL, APIKey: "runtime-secret", Client: httpServer.Client()}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime"}, newRemoteHost(t, "runtime"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer opened.Close(context.Background())
+	if !opened.Descriptor().HasCapability(agentsdk.CapabilityScheduledConversationTask) {
+		t.Fatalf("descriptor=%+v", opened.Descriptor())
+	}
+	tasks, ok := opened.(agentsdk.ConversationBinding).Conversations().(agentsdk.ScheduledConversationTaskService)
+	if !ok {
+		t.Fatal("remote binding omitted scheduled task service")
+	}
+	request := agentsdk.ScheduledConversationTaskRequest{
+		ContractVersion: agentsdk.ScheduledConversationTaskContractVersion,
+		PlanID:          "plan", SchedulerRunID: "scheduler-run", IdempotencyKey: "window", ScheduledFor: time.Now().UTC(),
+		Authority: agentsdk.ConversationAuthority{Known: true, WorkspaceID: "workspace", UserID: "user"}, ConversationID: "conversation",
+		Input: agentsdk.ConversationTaskStart{Goal: "run", Input: `{}`},
+	}
+	if _, err = tasks.StartScheduledConversationTask(t.Context(), request); err == nil || conversations.calls != 0 {
+		t.Fatalf("missing service Action reached SaaS: calls=%d err=%v", conversations.calls, err)
+	}
+	ctx := agentsdk.WithAuthorizedServiceAction(t.Context(), agentsdk.ActionAgentScheduledConversationTaskStart, agentsdk.AgentRuntimeServiceAudience)
+	receipt, err := tasks.StartScheduledConversationTask(ctx, request)
+	if err != nil || receipt.Task.ID != "scheduled-task" || conversations.calls != 1 || !conversations.authorized || conversations.request.Authority.RuntimeID != "runtime" {
+		t.Fatalf("receipt=%+v calls=%d authorized=%t request=%+v err=%v", receipt, conversations.calls, conversations.authorized, conversations.request, err)
+	}
+	request.Authority.WorkspaceID = "other"
+	if _, err = tasks.StartScheduledConversationTask(ctx, request); err == nil || conversations.calls != 1 {
+		t.Fatalf("cross-workspace request reached Agent: calls=%d err=%v", conversations.calls, err)
 	}
 }
 

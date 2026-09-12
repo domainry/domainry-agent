@@ -12,6 +12,7 @@ import { WorkflowOperationPreview } from "./WorkflowOperationPreview.tsx";
 import { OperationScopePreview } from "./OperationScopePreview.tsx";
 import { AccountWriteOperationPreview } from "./AccountWriteOperationPreview.tsx";
 import { isAccountWrite } from "./account-write-state.ts";
+import { ScheduleOperationPreview } from "./ScheduleOperationPreview.tsx";
 
 export function InteractionCard({ interaction, onRun, onRefresh }: { interaction: Interaction; onRun: (run: Run) => void; onRefresh: () => void }) {
   const storageKey = `agent-interaction:${sessionScope()}:${interaction.id}:${interaction.revision}`;
@@ -27,7 +28,7 @@ export function InteractionCard({ interaction, onRun, onRefresh }: { interaction
   const [storageUnavailable, setStorageUnavailable] = useState(false);
   const [scopeReady, setScopeReady] = useState(false);
   const grouped = interaction.kind === "confirmation" && (interaction.operations?.length || 0) >= 2;
-  const [previewReady, setPreviewReady] = useState(!isAccountWrite(interaction.tool) && !["invoke_action", "workflow_start"].includes(interaction.tool) && !interaction.tool.startsWith("artifact_") && (!interaction.tool.startsWith("todo_") || interaction.tool === "todo_create"));
+  const [previewReady, setPreviewReady] = useState(!isAccountWrite(interaction.tool) && !["invoke_action", "workflow_start"].includes(interaction.tool) && !interaction.tool.startsWith("artifact_") && !interaction.tool.startsWith("schedule_") && (!interaction.tool.startsWith("todo_") || interaction.tool === "todo_create"));
   const locked = useRef(false);
   if (interaction.status !== "pending") return null;
   const path = runPath(interaction.conversation_id, interaction.run_id);
@@ -75,6 +76,8 @@ export function InteractionCard({ interaction, onRun, onRefresh }: { interaction
       ? <TodoOperationPreview tool={interaction.tool} argumentsText={interaction.arguments} onReady={setPreviewReady} />
       : interaction.tool.startsWith("artifact_")
       ? <ArtifactOperationPreview tool={interaction.tool} argumentsText={interaction.arguments} onReady={setPreviewReady} />
+      : interaction.tool.startsWith("schedule_")
+      ? <ScheduleOperationPreview tool={interaction.tool} argumentsText={interaction.arguments} onReady={setPreviewReady} />
       : ["memory_save", "memory_forget"].includes(interaction.tool)
       ? <MemoryOperationPreview tool={interaction.tool} argumentsText={interaction.arguments} />
       : interaction.tool === "invoke_action"

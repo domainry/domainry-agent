@@ -1,0 +1,6 @@
+$ GOWORK=/tmp/domainry-g03-20260912/go.work go test -race ./internal/infrastructure/persistence/database/agent -run '^TestScheduledConversationTaskAcceptance' -count=1
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	2.574s
+$ GOWORK=/tmp/domainry-g03-20260912/go.work go test -race ./internal/assembly/web -run '^(TestCalendarProductIdentityConversationAndRestart|TestScheduledTaskUsesCurrentIdentityAndWaitsForUserConfirmation)$' -count=1
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	204.479s
+$ GOWORK=/tmp/domainry-g03-20260912/go.work go test -race ./remote -run '^TestSaaSScheduledTask' -count=1
+ok  	github.com/domainry/domainry-agent/remote	2.390s

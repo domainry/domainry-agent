@@ -260,6 +260,12 @@ button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visib
 .memory-operation p { white-space: pre-wrap; overflow-wrap: anywhere; }
 .todo-dialog { width: min(92vw, 780px); max-width: 780px; max-height: 90vh; overflow-y: auto; }
 .task-dialog { width: min(94vw, 860px); max-width: 860px; max-height: 90dvh; overflow-y: auto; }
+.schedule-dialog { width: min(94vw, 900px); max-width: 900px; }
+.schedule-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--muted); }
+.schedule-form label { display: grid; gap: 6px; min-width: 0; color: var(--muted-foreground); font-size: 12px; }
+.schedule-form textarea, .schedule-form select { width: 100%; min-width: 0; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--background); color: var(--foreground); font: inherit; }
+.schedule-wide { grid-column: 1 / -1; }
+@media (max-width: 650px) { .schedule-form { grid-template-columns: 1fr; } .schedule-wide { grid-column: auto; } }
 .task-list { display: grid; gap: 7px; max-height: 220px; overflow-y: auto; }
 .task-list > button { display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; padding: 12px 14px; color: var(--foreground); background: #fafbf9; border: 1px solid var(--border); border-radius: 10px; text-align: left; }
 .task-list > button.selected { border-color: #9eb9a8; background: var(--accent); }

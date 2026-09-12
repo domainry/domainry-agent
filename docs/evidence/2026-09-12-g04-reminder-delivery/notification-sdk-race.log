@@ -1,0 +1,6 @@
+ok  	github.com/domainry/domainry-notification-sdk	1.172s
+ok  	github.com/domainry/domainry-notification-sdk/contract	1.298s
+?   	github.com/domainry/domainry-notification-sdk/contracttest	[no test files]
+ok  	github.com/domainry/domainry-notification-sdk/deliverygateway	1.485s
+ok  	github.com/domainry/domainry-notification-sdk/modulehost	1.517s
+ok  	github.com/domainry/domainry-notification-sdk/remote	1.671s

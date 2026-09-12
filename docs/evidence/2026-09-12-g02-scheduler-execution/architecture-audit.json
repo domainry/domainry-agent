@@ -1,0 +1,95 @@
+{
+  "date": "2026-09-12",
+  "item": "G02",
+  "verdict": "pass",
+  "boundaries": [
+    {
+      "boundary": "single execution kernel",
+      "evidence": [
+        "scheduled plans project into Scheduler's existing _scheduler_definition_states, _scheduler_runs, _scheduler_run_events and _scheduler_dead_letters pipeline",
+        "G02 adds no plan-specific run table, clock loop or retry worker",
+        "Module and SaaS continue to assemble the same Scheduler application and run store"
+      ]
+    },
+    {
+      "boundary": "definition source isolation",
+      "evidence": [
+        "Scheduler migration 7 adds source_kind to execution definition state through domainry-orm",
+        "Runtime snapshot reconciliation only enables/disables runtime_definition rows and cannot stop scheduled_plan rows",
+        "the scheduled-plan definition namespace is reserved and rejected from Runtime-published definitions"
+      ]
+    },
+    {
+      "boundary": "durable claim and deduplication",
+      "evidence": [
+        "each window has a deterministic run ID and the database keeps a unique runtime_id + definition_key + scheduled_for constraint",
+        "Due returns its observed cursor and Claim compare-and-swaps that exact cursor in the same transaction as run insertion and lease evidence",
+        "two worker stores concurrently claiming one plan window produce one winner and one run row"
+      ]
+    },
+    {
+      "boundary": "lease and restart recovery",
+      "evidence": [
+        "Due includes both retrying runs whose retry time arrived and leased runs whose database lease expired",
+        "takeover increments attempt and fencing token and replaces the worker owner before dispatch",
+        "one-time execution state remains terminally disabled when the same plan revision is hydrated after restart"
+      ]
+    },
+    {
+      "boundary": "misfire policy",
+      "evidence": [
+        "SDK schedule.ResolveMisfire is deterministic and independent of deployment/persistence",
+        "one-time plans default to catch_up_one; recurring plans default to skip; normal poll delay is covered by a durable one-minute default grace",
+        "skip fast-forwards without a run, catch_up_one creates one run then fast-forwards, and catch_up_bounded creates at most 1-100 windows before fast-forwarding"
+      ]
+    },
+    {
+      "boundary": "dispatch handoff",
+      "evidence": [
+        "Scheduler signs and dispatches a public ScheduledPlanDispatch payload containing plan ID, resolved owner, input, allowed actions and conversation reference",
+        "the payload explicitly carries facts for the receiving product to reauthorize and does not grant access",
+        "G03 owns Identity/Agent/Integration reauthorization and is not implemented inside Scheduler G02"
+      ]
+    },
+    {
+      "boundary": "recovery query",
+      "evidence": [
+        "plan recovery reads only the runtime-bound Scheduler repository port",
+        "recovery is paginated by stable plan ID in bounded pages of 200",
+        "owner-scoped product list and management operations remain G05"
+      ]
+    },
+    {
+      "boundary": "dependency direction",
+      "evidence": [
+        "Scheduler application production files do not import assembly, transport or persistence implementations",
+        "Scheduler SDK has no reverse dependency on Scheduler, Runtime, Agent or Todo implementations",
+        "Module and remote packages do not import each other and formal go.mod/go.sum files remain unchanged"
+      ]
+    },
+    {
+      "boundary": "llm-proxy",
+      "evidence": [
+        "/Users/tiger/Projects/anti/llm-proxy remained clean",
+        "G02 contains no llm-proxy integration and no model routing change",
+        "F04 remains limited to consuming existing POST /tool/web_search and POST /tool/web_fetch_jina endpoints"
+      ]
+    }
+  ],
+  "checks": {
+    "scheduler_full_race": "pass",
+    "scheduler_sdk_full_race": "pass",
+    "g02_cross_layer_race": "pass",
+    "misfire_policy_race": "pass",
+    "scheduler_and_sdk_vet": "pass",
+    "scheduler_architecture_tests": "pass",
+    "application_implementation_import_scan": "no production matches",
+    "sdk_reverse_dependency_scan": "no production matches",
+    "module_and_remote_cross_dependency": "no matches",
+    "formal_go_mod_changes": "none",
+    "runtime_public_composition": "pass",
+    "runtime_locked_startup": "pass",
+    "scheduler_and_sdk_diff_check": "pass",
+    "llm_proxy_git_status": "clean"
+  }
+}

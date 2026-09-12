@@ -1,0 +1,26 @@
+=== RUN   TestConversationTaskRunCatalogAndBudgetsStayFrozen
+--- PASS: TestConversationTaskRunCatalogAndBudgetsStayFrozen (0.01s)
+=== RUN   TestConversationTaskWorkerWaitsForStateTransitionWhenQueueIsEmpty
+--- PASS: TestConversationTaskWorkerWaitsForStateTransitionWhenQueueIsEmpty (0.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	2.468s
+=== RUN   TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable
+--- PASS: TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable (0.12s)
+=== RUN   TestConversationTasksOwnerScopedFiltersAndStableCursor
+--- PASS: TestConversationTasksOwnerScopedFiltersAndStableCursor (0.07s)
+=== RUN   TestConversationTaskFailureTracksTerminalRun
+--- PASS: TestConversationTaskFailureTracksTerminalRun (0.09s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	1.977s
+=== RUN   TestAgentOwnsOpenAPIForEveryHTTPRoute
+--- PASS: TestAgentOwnsOpenAPIForEveryHTTPRoute (0.01s)
+=== RUN   TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest
+--- PASS: TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest (0.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	2.093s
+=== RUN   TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite
+    conversation_task_start_test.go:358: run timeout
+--- FAIL: TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite (49.58s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	50.171s
+FAIL

@@ -1,0 +1,10 @@
+{
+  "agent_restarted": true,
+  "compiled_frontend": true,
+  "complete": true,
+  "deleted_tombstones": 1,
+  "real_identity_http": true,
+  "same_tool_adapter": true,
+  "scheduler_sdk_service": true,
+  "visible_plans": 1
+}

@@ -101,6 +101,7 @@ func TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedin
 		code    string
 	}{
 		{"recursive", []string{"task_start"}, valid, "agent.conversation.task_scope_invalid"},
+		{"self control", []string{"task_cancel"}, valid, "agent.conversation.task_scope_invalid"},
 		{"denied", []string{"time_now"}, valid, "agent.conversation.tool_access_denied"},
 		{"step budget", nil, agentsdk.ConversationTaskBudget{MaxSteps: 5, MaxToolCalls: 2, MaxOutputBytes: 1024, TimeoutSeconds: 30}, "agent.conversation.task_start_invalid"},
 	} {
@@ -153,6 +154,34 @@ func TestConversationTaskRunCatalogAndBudgetsStayFrozen(t *testing.T) {
 	}
 	if _, _, err = s.executionCatalogForRun(t.Context(), claim); err == nil {
 		t.Fatal("changed tool contract was accepted by the background run")
+	}
+}
+
+func TestConversationTaskControlStateFollowsDurableRunState(t *testing.T) {
+	closedInput := &agentsdk.ConversationInteraction{Kind: "input", Status: "cancelled"}
+	cancelledReconciliation := &agentsdk.ConversationInteraction{Kind: "reconciliation", Status: "cancelled"}
+	tests := []struct {
+		name string
+		task agentsdk.ConversationTask
+		run  *agentsdk.ConversationRun
+		want agentsdk.ConversationTaskControlState
+	}{
+		{"queued before launch", agentsdk.ConversationTask{Status: agentsdk.ConversationTaskStatusQueued}, nil, agentsdk.ConversationTaskControlState{CanCancel: true}},
+		{"cancelled before launch", agentsdk.ConversationTask{Status: agentsdk.ConversationTaskStatusCancelled}, nil, agentsdk.ConversationTaskControlState{CanResume: true}},
+		{"waiting for user", agentsdk.ConversationTask{Status: agentsdk.ConversationTaskStatusRunning}, &agentsdk.ConversationRun{Status: "waiting_user"}, agentsdk.ConversationTaskControlState{CanCancel: true, ResumeBlocker: "interaction_response_required"}},
+		{"failed model call", agentsdk.ConversationTask{Status: agentsdk.ConversationTaskStatusFailed}, &agentsdk.ConversationRun{Status: "failed"}, agentsdk.ConversationTaskControlState{CanResume: true}},
+		{"closed input", agentsdk.ConversationTask{Status: agentsdk.ConversationTaskStatusCancelled}, &agentsdk.ConversationRun{Status: "cancelled", Interaction: closedInput}, agentsdk.ConversationTaskControlState{ResumeBlocker: "interaction_closed"}},
+		{"cancelled reconciliation", agentsdk.ConversationTask{Status: agentsdk.ConversationTaskStatusCancelled}, &agentsdk.ConversationRun{Status: "cancelled", Interaction: cancelledReconciliation}, agentsdk.ConversationTaskControlState{CanResume: true}},
+		{"pending reconciliation", agentsdk.ConversationTask{Status: agentsdk.ConversationTaskStatusRunning}, &agentsdk.ConversationRun{Status: "needs_reconciliation"}, agentsdk.ConversationTaskControlState{CanCancel: true, CanResume: true}},
+		{"revoked source projection", agentsdk.ConversationTask{Status: agentsdk.ConversationTaskStatusFailed}, &agentsdk.ConversationRun{Status: "failed", AccessError: "source_access_denied"}, agentsdk.ConversationTaskControlState{ResumeBlocker: "source_access_denied"}},
+		{"completed", agentsdk.ConversationTask{Status: agentsdk.ConversationTaskStatusCompleted}, &agentsdk.ConversationRun{Status: "completed"}, agentsdk.ConversationTaskControlState{}},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if got := conversationTaskControlState(test.task, test.run); got != test.want {
+				t.Fatalf("control=%+v want=%+v", got, test.want)
+			}
+		})
 	}
 }
 

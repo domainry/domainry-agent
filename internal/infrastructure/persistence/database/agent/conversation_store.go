@@ -22,7 +22,7 @@ type ConversationStore struct{ store *Store }
 func NewConversationStore(s *Store) *ConversationStore { return &ConversationStore{store: s} }
 
 func (s *ConversationStore) Ready(ctx context.Context) error {
-	for _, table := range []string{"_agent_conversations", "_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_user_memories", "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, attachmentTable, attachmentCleanupTable} {
+	for _, table := range []string{"_agent_conversations", "_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_user_memories", "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationFollowUpStateTable, conversationFollowUpEventTable, attachmentTable, attachmentCleanupTable} {
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("owner_key").Limit(1).Build()
 		if err != nil {
 			return err

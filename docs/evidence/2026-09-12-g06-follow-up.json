@@ -1,0 +1,91 @@
+{
+  "todo": "G06",
+  "date": "2026-09-12",
+  "complete": true,
+  "counts": {
+    "complete": 68,
+    "incomplete": 13,
+    "total": 81
+  },
+  "acceptance": {
+    "bounded_occurrences": true,
+    "explicit_completion_condition": true,
+    "silent_baseline": true,
+    "semantic_no_change_silent_after_restart": true,
+    "changed_notified": true,
+    "completed_notified": true,
+    "failed_notified": true,
+    "needs_action_notified": true,
+    "completed_state_terminal": true,
+    "durable_at_least_once_outbox": true,
+    "user_stop_via_scheduler_pause": true,
+    "stop_survives_restart": true,
+    "compiled_browser_390px": true
+  },
+  "tests": {
+    "agent_full": "passed",
+    "agent_vet": "passed",
+    "agent_follow_up_race": "passed",
+    "agent_sdk_full_and_vet": "passed",
+    "tools_full_and_vet": "passed",
+    "tools_sdk_full_and_vet": "passed",
+    "tools_schedule_race": "passed",
+    "runtime_follow_up_e2e": "passed",
+    "runtime_follow_up_race": "passed",
+    "runtime_follow_up_unit": "passed",
+    "frontend_state_tests": {
+      "passed": 59,
+      "failed": 0
+    },
+    "frontend_production_build": "passed",
+    "compiled_browser_e2e": {
+      "passed": true,
+      "javascript_errors": 0,
+      "console_errors": 0,
+      "console_warnings": 0
+    },
+    "runtime_full_integration": {
+      "passed": false,
+      "scope": "next TODO H01",
+      "failure": "TestRuntimeBusinessEventStreamConnectsReplaysAndRejectsCrossTenant requires top-level workspace audit evidence"
+    }
+  },
+  "model": "deterministic follow-up protocol fixture; no live model claim",
+  "service_topology": [
+    "Scheduler signed callback",
+    "Runtime current Identity resolution",
+    "Agent task execution and SQLite state/outbox",
+    "Notification SQLite event/inbox aggregation"
+  ],
+  "architecture_audit": "docs/evidence/2026-09-12-g06-follow-up/architecture-audit.json",
+  "acceptance_document": "docs/testing-2026-09-12-g06-follow-up.md",
+  "files_sha256": {
+    "docs/evidence/2026-09-12-g06-follow-up/agent-forbidden-imports.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/evidence/2026-09-12-g06-follow-up/agent-go-test.log": "704b45c3c8f1b1fde4083bba0c54bee4681d815f23c87d18f3602438420e060b",
+    "docs/evidence/2026-09-12-g06-follow-up/agent-go-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/evidence/2026-09-12-g06-follow-up/agent-race.log": "8c6942a2141f7072e04f0972fa8e4097530c6deb3db3dfb23aa3bd2c6993ac6b",
+    "docs/evidence/2026-09-12-g06-follow-up/agent-sdk-go-test.log": "99c0dc5c5e04c3bc2efa32940bc34d2c19239d80e8e86579f59eff3261f2bddc",
+    "docs/evidence/2026-09-12-g06-follow-up/agent-sdk-go-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/evidence/2026-09-12-g06-follow-up/architecture-audit.json": "ee86fd26a3aefb1b8b5029af0b8cc19e5973b72bea165e6c9322001f144dff5a",
+    "docs/evidence/2026-09-12-g06-follow-up/browser/follow-up-enabled.png": "849ec776b316959b986219430b88692ecb54e44cb9d24123f491a3e5225f7fa2",
+    "docs/evidence/2026-09-12-g06-follow-up/browser/follow-up-mobile-paused.png": "95df99c0bdcbf936c7b23d3c2fc9cebdccb899f82a2b159b9f4b5317a6a7dfad",
+    "docs/evidence/2026-09-12-g06-follow-up/browser/host-audit.json": "595cf6053f1c97ed22d0e49967ba58fabebd198cf6bb66068ecb867026f511d5",
+    "docs/evidence/2026-09-12-g06-follow-up/browser/report.json": "a4289ef45906daddf2b35deb28ff114f367e89ea84fa30dfad5ec79632b8867e",
+    "docs/evidence/2026-09-12-g06-follow-up/browser-e2e.log": "3a8f25265e858994e92762ae0e9f5879ba6122d5895aa6b4959a3c9a8b7e2b3c",
+    "docs/evidence/2026-09-12-g06-follow-up/frontend-build.log": "358f2e4ef1f114909150a49a6a3ae24b6c71351e5ac36ac40a251eee7299cdcb",
+    "docs/evidence/2026-09-12-g06-follow-up/frontend-test.log": "8f8d2e8cae95edffe759ada5ad23f9bd8b8ab1bef041bd7b3b503b81212ac885",
+    "docs/evidence/2026-09-12-g06-follow-up/llm-proxy-status.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/evidence/2026-09-12-g06-follow-up/runtime-follow-up-e2e.log": "ff0b5829fa1231ea339a6e4bca64507f65aa167dba8787a2c19da8166efaac35",
+    "docs/evidence/2026-09-12-g06-follow-up/runtime-follow-up-race.log": "e45f9facfd59cb4abd88407810de5eabd9b0fe42e01c5b7e359f7e2d4027f9c1",
+    "docs/evidence/2026-09-12-g06-follow-up/runtime-follow-up-unit.log": "8080c168a2c2027320937442b1abddfa81f12238638bb9f5f806597f7f525308",
+    "docs/evidence/2026-09-12-g06-follow-up/runtime-go-test.log": "c59661c677b5d735cfbdc24163ccb90ea601663f402de9442f8822fb325c2f9a",
+    "docs/evidence/2026-09-12-g06-follow-up/runtime-go-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/evidence/2026-09-12-g06-follow-up/runtime-unrelated-rerun.log": "f0e04c9b9f5b4f1f2f22fe9bed4e802e40b209794bae86f36db586c2c2e21cd3",
+    "docs/evidence/2026-09-12-g06-follow-up/tools-forbidden-imports.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/evidence/2026-09-12-g06-follow-up/tools-go-test.log": "2388e2751e250b9be993e63e3cca3009f0e74633a8919c150023b130bb0312fd",
+    "docs/evidence/2026-09-12-g06-follow-up/tools-go-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/evidence/2026-09-12-g06-follow-up/tools-race.log": "abe592f7b07d9d42b68fc8028ea5ded918f6969ffe95144db8fdfe8759cf59d5",
+    "docs/evidence/2026-09-12-g06-follow-up/tools-sdk-go-test.log": "b0579aded71fedfb4b1a627f89a83914e6bb90cf61cee6be16967689301cfc55",
+    "docs/evidence/2026-09-12-g06-follow-up/tools-sdk-go-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

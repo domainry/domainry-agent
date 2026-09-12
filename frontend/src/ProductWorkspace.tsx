@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowUpRight, BookOpen, CheckSquare, ChevronRight, FileText, History, Loader2, LogOut, Plus, Search, Sparkles, X } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, BookOpen, CalendarClock, CheckSquare, ChevronRight, FileText, History, Loader2, LogOut, Plus, Search, Sparkles, X } from "lucide-react";
 import App from "./App";
 import { ToolSettingsDialog } from "./ToolSettingsDialog";
 import { ExternalAccountsDialog } from "./ExternalAccountsDialog";
@@ -11,6 +11,7 @@ import type { AppSession } from "./session";
 import { TodoDialog } from "./TodoDialog";
 import { KnowledgeLibraryDialog } from "./KnowledgeLibraryDialog";
 import { ArtifactDialog } from "./ArtifactDialog";
+import { ScheduleDialog } from "./ScheduleDialog";
 import "./product.css";
 
 type Field = { key: string; label: string; type: string; options?: string[]; option_labels?:Record<string,string> };
@@ -46,7 +47,7 @@ export default function ProductWorkspace({session,onLogout}:{session:AppSession;
   const [config,setConfig]=useState<Config|null>(null);
   const [tab,setTab]=useState("");
   const [error,setError]=useState("");
-  const [dialog,setDialog]=useState<"todo"|"knowledge"|"artifact"|"accounts"|"tools"|null>(() => loadAuthorization(session.scope) ? "accounts" : null);
+  const [dialog,setDialog]=useState<"todo"|"plans"|"knowledge"|"artifact"|"accounts"|"tools"|null>(() => loadAuthorization(session.scope) ? "accounts" : null);
   const [creating,setCreating]=useState(false);
   const [agentKey,setAgentKey]=useState(0);
  const [setup,setSetup]=useState(true);const [settingUp,setSettingUp]=useState(false);
@@ -59,7 +60,7 @@ export default function ProductWorkspace({session,onLogout}:{session:AppSession;
   if(!config)return <main className="product-loading"><Sparkles size={24}/><p>{error||"正在打开工作空间…"}</p>{error&&<button onClick={()=>location.reload()}>重新连接</button>}</main>;
   return <div className="product-shell" data-product={config.key}>
     <header className="product-top"><a className="product-brand" href="#" onClick={e=>{e.preventDefault();setTab(config.resources[0].kind)}}><span>d.</span><strong>{config.name}</strong></a><div className="product-account"><span>{session.name || "我的工作空间"}</span><button aria-label="退出登录" onClick={onLogout}><LogOut size={17}/></button></div></header>
-    <nav className="product-nav" aria-label="产品导航">{config.resources.map(r=><button key={r.kind} data-active={tab===r.kind} onClick={()=>setTab(r.kind)}><FileText size={16}/>{r.name}</button>)}<button data-active={tab==="agent"} onClick={()=>setTab("agent")}><Sparkles size={16}/>{config.agent_name}</button><span/><button onClick={()=>setDialog("todo")}><CheckSquare size={16}/>待办</button><button onClick={()=>setDialog("knowledge")}><BookOpen size={16}/>知识库</button><button onClick={()=>setDialog("artifact")}><FileText size={16}/>成果文件</button><button onClick={()=>setDialog("accounts")}>外部账号</button><button onClick={()=>setDialog("tools")}>工具设置</button></nav>
+    <nav className="product-nav" aria-label="产品导航">{config.resources.map(r=><button key={r.kind} data-active={tab===r.kind} onClick={()=>setTab(r.kind)}><FileText size={16}/>{r.name}</button>)}<button data-active={tab==="agent"} onClick={()=>setTab("agent")}><Sparkles size={16}/>{config.agent_name}</button><span/><button onClick={()=>setDialog("todo")}><CheckSquare size={16}/>待办</button><button onClick={()=>setDialog("plans")}><CalendarClock size={16}/>计划</button><button onClick={()=>setDialog("knowledge")}><BookOpen size={16}/>知识库</button><button onClick={()=>setDialog("artifact")}><FileText size={16}/>成果文件</button><button onClick={()=>setDialog("accounts")}>外部账号</button><button onClick={()=>setDialog("tools")}>工具设置</button></nav>
     {!setup&&<div className="product-alert"><span>首次使用需要管理员启用产品功能。此操作为管理员角色添加当前工作空间的业务权限。</span><button disabled={settingUp} onClick={async()=>{setSettingUp(true);try{await request("/app/product/setup","POST",{});setSetup(true);setTab(config.resources[0].kind);location.reload()}catch(e){setError(message(e))}finally{setSettingUp(false)}}}>{settingUp?"正在启用…":"启用工作空间功能"}</button></div>}
     {error&&<div className="product-alert" role="alert">{error}<button onClick={()=>setError("")} aria-label="关闭提示"><X size={16}/></button></div>}
     {tab==="agent"?<div className="product-agent"><App key={agentKey} session={session}/></div>:<main className="product-main">
@@ -69,6 +70,7 @@ export default function ProductWorkspace({session,onLogout}:{session:AppSession;
       <section className="product-starters"><div><Sparkles size={17}/><h2>从这里开始</h2></div>{config.starters.map(prompt=><button key={prompt} disabled={!session.ready||creating} onClick={()=>void ask(prompt)}>{prompt}<ArrowUpRight size={16}/></button>)}</section>
     </main>}
     {dialog==="todo"&&<TodoDialog conversationID="" onClose={()=>setDialog(null)} onSource={id=>{setDialog(null);location.hash=id;setAgentKey(n=>n+1);setTab("agent")}}/>}
+    {dialog==="plans"&&<ScheduleDialog onClose={()=>setDialog(null)} onAsk={prompt=>{setDialog(null);void ask(prompt)}}/>}
     {dialog==="knowledge"&&<KnowledgeLibraryDialog onClose={()=>setDialog(null)}/>}
     {dialog==="tools"&&<ToolSettingsDialog key={session.scope} session={session} onClose={()=>setDialog(null)}/>}
     {dialog==="accounts"&&<ExternalAccountsDialog session={session} onClose={()=>setDialog(null)}/>}

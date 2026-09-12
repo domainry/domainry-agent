@@ -34,6 +34,7 @@ func NewBinding() (*modulecapability.StaticBinding, error) {
 		chains                 []string
 	}{
 		{agentsdk.AgentCapabilityConversation, "Persistent personal conversations", "Own durable messages, explicit personal memory, context compaction and resumable tool execution, independently of business routing.", []string{"identity_principal_to_persistent_conversation"}},
+		{agentsdk.AgentCapabilityBackgroundTasks, "Durable background tasks", "Inspect, cancel and resume owner-scoped background executions while preserving their source conversation and run boundaries.", []string{"identity_principal_to_persistent_conversation"}},
 		{agentsdk.AgentCapabilityPersonalTodos, "Personal todos", "Manage owner-scoped work items, ordered batches, deadlines and completion independently of Agent execution and scheduled jobs.", []string{"identity_principal_to_persistent_conversation"}},
 		{agentsdk.AgentCapabilityKnowledgeLibraries, "Knowledge libraries", "Personal and shared libraries with live Identity authorization and library membership roles.", []string{"identity_principal_to_knowledge_library_membership"}},
 		{agentsdk.AgentCapabilityAttachments, "Private conversation attachments", "Upload, inspect, download and delete owner-scoped original files without exposing host paths or treating stored files as indexed knowledge.", []string{"identity_principal_to_private_conversation_attachment"}},

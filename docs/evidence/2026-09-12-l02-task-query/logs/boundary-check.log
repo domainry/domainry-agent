@@ -1,0 +1,33 @@
+application imports:
+package application
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"log/slog"
+	"strings"
+	"time"
+
+	agentsdk "github.com/domainry/domainry-agent-sdk"
+	persistence "github.com/domainry/domainry-agent-sdk/persistence"
+)
+
+task read repository assertions:
+/Users/tiger/Projects/domainry-agent-sdk/persistence/conversation_task.go:23:// ConversationTaskReadRepository returns owner-scoped executor records. The
+/Users/tiger/Projects/domainry-agent-sdk/persistence/conversation_task.go:25:type ConversationTaskReadRepository interface {
+/Users/tiger/Projects/domainry-agent-sdk/conversation_task.go:142:// ConversationTaskService is an optional ConversationService extension.
+/Users/tiger/Projects/domainry-agent-sdk/conversation_task.go:143:type ConversationTaskService interface {
+internal/application/conversation_personal_tools.go:145:		_, reads := h.repo.(persistence.ConversationTaskReadRepository)
+internal/application/conversation_dispatch.go:156:		tasks, ok := s.(agentsdk.ConversationTaskService)
+internal/application/conversation_tasks.go:193:	repo, ok := s.repo.(persistence.ConversationTaskReadRepository)
+internal/application/conversation_tasks.go:209:	repo, ok := s.repo.(persistence.ConversationTaskReadRepository)
+internal/infrastructure/persistence/database/agent/conversation_task_store.go:310:var _ agentpersistence.ConversationTaskMutationRepository = (*ConversationStore)(nil)
+internal/infrastructure/persistence/database/agent/conversation_task_store.go:311:var _ agentpersistence.ConversationTaskWorkerRepository = (*ConversationStore)(nil)
+internal/infrastructure/persistence/database/agent/conversation_task_store.go:312:var _ agentpersistence.ConversationTaskReadRepository = (*ConversationStore)(nil)
+forbidden concrete imports in L02 application:
+none
+llm-proxy status:
+clean
+agent-sdk diff check:
+pass

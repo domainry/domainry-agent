@@ -1,0 +1,5 @@
+=== RUN   TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite
+    conversation_task_start_test.go:371: task_start returned task_af2c1b19720e0c24af08d9c968fba21e; child run crun_90e90a0c12f045356ce11898423715c7 recovered at attempt 2 with exact catalog [time_now]
+--- PASS: TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite (52.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	53.866s

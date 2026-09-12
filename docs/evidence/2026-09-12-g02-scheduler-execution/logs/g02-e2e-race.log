@@ -1,0 +1,30 @@
+=== RUN   TestCreateScheduledPlanNormalizesAndReplaysExactOwnerCommand
+--- PASS: TestCreateScheduledPlanNormalizesAndReplaysExactOwnerCommand (0.00s)
+PASS
+ok  	github.com/domainry/domainry-scheduler/internal/application/scheduler	1.220s
+=== RUN   TestScheduledPlanProjectionKeepsSourceBoundaryAndAppliesMisfirePolicies
+--- PASS: TestScheduledPlanProjectionKeepsSourceBoundaryAndAppliesMisfirePolicies (0.06s)
+=== RUN   TestScheduledPlanWindowHasOneConcurrentClaim
+--- PASS: TestScheduledPlanWindowHasOneConcurrentClaim (0.04s)
+=== RUN   TestExpiredScheduledPlanLeaseIsRecoveredAfterRestart
+--- PASS: TestExpiredScheduledPlanLeaseIsRecoveredAfterRestart (0.03s)
+=== RUN   TestScheduledPlanStorePersistsOwnerScopeAndIdempotencyAcrossReopen
+--- PASS: TestScheduledPlanStorePersistsOwnerScopeAndIdempotencyAcrossReopen (0.03s)
+=== RUN   TestScheduledPlanStoreConcurrentExactCreateWritesOneRecord
+--- PASS: TestScheduledPlanStoreConcurrentExactCreateWritesOneRecord (0.06s)
+PASS
+ok  	github.com/domainry/domainry-scheduler/internal/infrastructure/persistence/database	1.593s
+=== RUN   TestModuleScheduledPlansPersistOneTimeAndRecurringRecordsAcrossRestart
+--- PASS: TestModuleScheduledPlansPersistOneTimeAndRecurringRecordsAcrossRestart (0.10s)
+=== RUN   TestModuleScheduledPlanClockDispatchesOnceAndRestartDoesNotDuplicate
+--- PASS: TestModuleScheduledPlanClockDispatchesOnceAndRestartDoesNotDuplicate (0.20s)
+PASS
+ok  	github.com/domainry/domainry-scheduler/internal/assembly/module	1.847s
+=== RUN   TestDatabaseServicePersistsScheduledPlansAcrossOwnerRestart
+--- PASS: TestDatabaseServicePersistsScheduledPlansAcrossOwnerRestart (0.10s)
+=== RUN   TestScheduledPlanWorkerRetriesOnceAfterSaaSRestartWithoutDuplicateWindow
+--- PASS: TestScheduledPlanWorkerRetriesOnceAfterSaaSRestartWithoutDuplicateWindow (0.44s)
+=== RUN   TestScheduledPlanSaaSHTTPPersistsExactCommandAndOwnerScope
+--- PASS: TestScheduledPlanSaaSHTTPPersistsExactCommandAndOwnerScope (0.26s)
+PASS
+ok  	github.com/domainry/domainry-scheduler/internal/assembly/saas	2.561s

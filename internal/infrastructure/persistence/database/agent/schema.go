@@ -127,7 +127,15 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, attachments, attachmentCleanup, libraries, documents, datasources, parses, retired, attachmentIndex, tasks}, nil
+	scheduledTasks, err := conversationTaskScheduleMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	followUps, err := conversationFollowUpMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, attachments, attachmentCleanup, libraries, documents, datasources, parses, retired, attachmentIndex, tasks, scheduledTasks, followUps}, nil
 }
 
 func workerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {

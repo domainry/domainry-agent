@@ -1,0 +1,11 @@
+=== RUN   TestScheduleManagementBuiltBrowser
+PASS compiled product page lists the task and reminder returned by the current-owner plan API
+PASS edit sends the exact revision and stale browser writes are rejected by Scheduler CAS
+PASS pause persists across full page reload
+PASS Agent host restart reuses the external Scheduler SDK state and resume advances the version
+PASS destructive delete requires an explicit second click and removes the reminder from the public list
+PASS management entry hands an exact plan id and revision to the natural-language conversation path
+PASS the surviving plan remains usable without horizontal overflow at 390px
+--- PASS: TestScheduleManagementBuiltBrowser (5.88s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	6.935s

@@ -1,0 +1,8 @@
+=== RUN   TestScheduleFollowUpBuiltBrowser
+PASS compiled page exposes the bounded follow-up scope and sparse notification rule
+PASS stop follow-up maps to the public pause operation and advances the exact revision
+PASS the stopped state remains durable across a full Agent host restart
+PASS follow-up management remains usable without horizontal overflow at 390px
+--- PASS: TestScheduleFollowUpBuiltBrowser (9.41s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	12.558s

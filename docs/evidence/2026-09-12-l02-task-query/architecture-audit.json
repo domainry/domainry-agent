@@ -1,0 +1,69 @@
+{
+  "date": "2026-09-12",
+  "item": "L02",
+  "verdict": "pass",
+  "boundaries": [
+    {
+      "boundary": "public contracts",
+      "evidence": [
+        "/Users/tiger/Projects/domainry-agent-sdk/conversation_task.go defines query, safe public projections, task_get/task_list and optional ConversationTaskService",
+        "/Users/tiger/Projects/domainry-agent-sdk/persistence/conversation_task.go defines ConversationTaskReadRepository and record page",
+        "/Users/tiger/Projects/domainry-agent-sdk/conversation_http.go owns HTTP route contracts"
+      ]
+    },
+    {
+      "boundary": "application to persistence",
+      "evidence": [
+        "internal/application/conversation_tasks.go imports only the Agent SDK public and persistence contracts for task reads",
+        "internal/infrastructure/persistence/database/agent/conversation_task_store.go implements the read repository and owner-scoped keyset query",
+        "compile-time interface assertions cover mutation, worker and read repositories"
+      ]
+    },
+    {
+      "boundary": "task to knowledge artifacts",
+      "evidence": [
+        "the task projection calls ConversationService.Artifacts through the public artifact service and matches exact execution run ID",
+        "the task application file does not import a Knowledge package or database implementation",
+        "artifact visibility is reauthorized at read time and omissions are explicit"
+      ]
+    },
+    {
+      "boundary": "task to conversation execution",
+      "evidence": [
+        "progress, waiting state and result come from the public current-authorized Conversation Run and HistoryMessage projections",
+        "source IDs are navigation references and never authorization",
+        "frozen definition hashes and authorization revisions remain internal and are absent from task_get/task_list output"
+      ]
+    },
+    {
+      "boundary": "durable completion",
+      "evidence": [
+        "Finish inserts the existing run terminal event and updates the background task reference in the same database transaction",
+        "the task CAS moves only running to terminal and stores the exact run event sequence plus deterministic event reference",
+        "duplicate Finish is rejected by lease/fence/event/CAS state and the persistence test proves one terminal event"
+      ]
+    },
+    {
+      "boundary": "frontend",
+      "evidence": [
+        "TaskDialog uses only /agent/conversation-tasks HTTP contracts",
+        "source, run and artifact navigation use returned public IDs",
+        "frontend does not import backend persistence or service implementation"
+      ]
+    },
+    {
+      "boundary": "llm-proxy",
+      "evidence": [
+        "/Users/tiger/Projects/anti/llm-proxy remained clean",
+        "L02 contains no llm-proxy integration or model routing change",
+        "F04 remains constrained to consuming the existing /tool/web_search and /tool/web_fetch_jina endpoints"
+      ]
+    }
+  ],
+  "checks": {
+    "agent_architecture_tests": "pass",
+    "agent_vet": "pass",
+    "sdk_vet": "pass",
+    "llm_proxy_git_status": "clean"
+  }
+}

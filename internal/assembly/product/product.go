@@ -28,6 +28,7 @@ type Product struct {
 	CalendarWriteTools, MailWriteTools bool
 	ReportTools                        bool
 	AnalysisTools                      bool
+	ScheduleTools                      bool
 	Key                                string
 	UI                                 any
 	Agent                              sdk.AgentSchema
@@ -63,6 +64,7 @@ func OpenProduct(ctx context.Context, p Product, o ProductOptions) (*ProductHost
 	o.Host.MailWriteTools = o.Host.MailWriteTools || p.MailWriteTools
 	o.Host.ReportTools = o.Host.ReportTools || p.ReportTools
 	o.Host.AnalysisTools = o.Host.AnalysisTools || p.AnalysisTools
+	o.Host.ScheduleTools = o.Host.ScheduleTools || p.ScheduleTools && o.Host.ScheduledPlans != nil
 	o.Host.ToolDefinitions = p.Tools
 	if o.Host.Agent.ConversationOptions.MaxArgumentBytes == 0 && !o.Host.CalendarWriteTools && !o.Host.MailWriteTools {
 		o.Host.Agent.ConversationOptions.MaxArgumentBytes = 64 * 1024
@@ -94,6 +96,9 @@ func OpenProduct(ctx context.Context, p Product, o ProductOptions) (*ProductHost
 		routes[pattern] = handler
 	}
 	for pattern, handler := range h.AccountSetupRoutes() {
+		routes[pattern] = handler
+	}
+	for pattern, handler := range h.ScheduleRoutes() {
 		routes[pattern] = handler
 	}
 	adapters, err := h.IntegrationAdapters()
@@ -179,7 +184,12 @@ func RunProduct(p Product, defaultAddress string) error {
 	if integration != nil {
 		defer integration.Close(context.Background())
 	}
-	app, err := OpenProduct(ctx, p, ProductOptions{Host: Options{DatabaseDriver: env("SAAS_DATABASE_DRIVER", "sqlite"), DatabaseDSN: os.Getenv("SAAS_DATABASE_DSN"), DatabaseSchema: os.Getenv("SAAS_DATABASE_SCHEMA"), StoragePath: os.Getenv("SAAS_STORAGE_PATH"), DatabasePath: env("SAAS_DB", "data/"+p.Key+".db"), RuntimeID: runtimeID, WorkspaceID: workspaceID, ApplicationKey: applicationKey, Agent: opts, Identity: identity.OptionsFromEnvironment(), IdentityBinding: sharedIdentity, Integration: integration, WebConnectionKey: env("INTEGRATION_WEB_CONNECTION_KEY", "")}, Origin: origin, Files: os.DirFS(frontend), Model: opts.ConversationModel})
+	plans, closePlans, err := OpenScheduledPlansFromEnvironment(ctx, runtimeID)
+	if err != nil {
+		return err
+	}
+	defer closePlans()
+	app, err := OpenProduct(ctx, p, ProductOptions{Host: Options{DatabaseDriver: env("SAAS_DATABASE_DRIVER", "sqlite"), DatabaseDSN: os.Getenv("SAAS_DATABASE_DSN"), DatabaseSchema: os.Getenv("SAAS_DATABASE_SCHEMA"), StoragePath: os.Getenv("SAAS_STORAGE_PATH"), DatabasePath: env("SAAS_DB", "data/"+p.Key+".db"), RuntimeID: runtimeID, WorkspaceID: workspaceID, ApplicationKey: applicationKey, Agent: opts, Identity: identity.OptionsFromEnvironment(), IdentityBinding: sharedIdentity, Integration: integration, ScheduledPlans: plans, WebConnectionKey: env("INTEGRATION_WEB_CONNECTION_KEY", "")}, Origin: origin, Files: os.DirFS(frontend), Model: opts.ConversationModel})
 	if err != nil {
 		return err
 	}

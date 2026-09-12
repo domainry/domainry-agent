@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-runtime/runtime/application/dispatch	0.373s
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/composition	0.458s
+ok  	github.com/domainry/domainry-runtime/runtime/transport/http/dispatch	0.942s

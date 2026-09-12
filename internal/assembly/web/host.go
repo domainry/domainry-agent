@@ -20,6 +20,7 @@ import (
 	integrationsdk "github.com/domainry/domainry-integration-sdk"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	"github.com/domainry/domainry-orm/driver"
+	schedulersdk "github.com/domainry/domainry-scheduler-sdk"
 	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
 
@@ -28,6 +29,7 @@ type Options struct {
 	CalendarWriteTools, MailWriteTools                       bool
 	ReportTools                                              bool
 	AnalysisTools                                            bool
+	ScheduleTools                                            bool
 	WebConnectionKey                                         string
 	ToolAccountRequirements                                  map[string][]ToolAccountRequirement
 	DatabaseDriver, DatabaseDSN, DatabaseSchema, StoragePath string
@@ -42,6 +44,7 @@ type Options struct {
 	ExternalIdentity     identitysdk.ExternalDatabaseFactory
 	ExternalRoles        []identitysdk.ProjectRoleDefinition
 	Integration          integrationsdk.Binding
+	ScheduledPlans       schedulersdk.ScheduledPlanService
 	KnowledgePermissions map[string]string // local permission name -> upstream permission ID
 }
 
@@ -50,6 +53,8 @@ type Host struct {
 	accountToolAvailability  map[string]toolsdk.Availability
 	reportToolAvailability   toolsdk.Availability
 	analysisToolAvailability toolsdk.Availability
+	scheduleToolAvailability toolsdk.Availability
+	scheduleToolHost         toolsdk.Host
 	toolAccountRequirements  map[string][]ToolAccountRequirement
 	toolDefinitions          []agentsdk.ConversationToolDefinition
 	Agent                    agentsdk.Binding
@@ -88,6 +93,9 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	if err := configureAnalysisDefinitions(&options); err != nil {
 		return nil, err
 	}
+	if err := configureScheduleDefinitions(&options); err != nil {
+		return nil, err
+	}
 	connection, profile, err := persistence.OpenConnection(ctx, options.DatabaseDriver, persistence.ConnectionOptions{Path: options.DatabasePath, DSN: options.DatabaseDSN, Schema: options.DatabaseSchema})
 	if err != nil {
 		return nil, err
@@ -110,6 +118,11 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	}
 	if options.AnalysisTools {
 		if err = h.bindAnalysisTools(&options); err != nil {
+			return nil, err
+		}
+	}
+	if options.ScheduleTools {
+		if err = h.bindScheduleTools(&options); err != nil {
 			return nil, err
 		}
 	}

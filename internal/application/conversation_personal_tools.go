@@ -145,6 +145,11 @@ func (h *PersonalConversationHost) supportsPersonalTool(definition agentsdk.Conv
 		_, reads := h.repo.(persistence.ConversationTaskReadRepository)
 		return h.tasks != nil && reads
 	}
+	if definition.Key == "task_cancel" || definition.Key == "task_resume" {
+		_, reads := h.repo.(persistence.ConversationTaskReadRepository)
+		_, controls := h.repo.(persistence.ConversationTaskControlRepository)
+		return h.tasks != nil && reads && controls && h.supportsConversationInteractions()
+	}
 	if strings.HasPrefix(definition.Key, "artifact_") {
 		if h.artifacts == nil || h.artifacts.options.ArtifactStorage == nil {
 			return false
@@ -256,6 +261,22 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 			return agentsdk.ConversationToolResult{}, err
 		}
 		return personalToolResult(page)
+	case "task_cancel", "task_resume":
+		var args struct {
+			ID string `json:"id"`
+		}
+		_ = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		var task agentsdk.ConversationTaskDetail
+		var err error
+		if in.Call.Name == "task_cancel" {
+			task, err = h.tasks.cancelConversationTask(ctx, args.ID, in.Authority, false)
+		} else {
+			task, err = h.tasks.resumeConversationTask(ctx, args.ID, in.Authority, false)
+		}
+		if err != nil {
+			return agentsdk.ConversationToolResult{}, err
+		}
+		return personalToolResult(map[string]any{"task": task})
 	case "memory_save", "memory_forget", "todo_create", "todo_update", "todo_delete":
 		return h.repo.(persistence.ConversationPersonalMutationRepository).ApplyPersonalTool(ctx, in)
 	case "todo_get":

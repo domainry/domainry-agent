@@ -2,13 +2,13 @@
 
 更新日期：2026-09-12。目标：在现有网页持久会话上，逐步实现能查询资料、维护个人事项、调用业务能力并持续处理工作的 Agent。
 
-**当前执行位置：L02。L01 已完成会话后台任务受理、冻结范围与预算、前台并行、宿主重启恢复和编译后网页验收，见[L01 完成验收](testing-2026-09-12-l01-background-task.md)。R03 已完成成果预览、编辑、指定版本下载、来源会话／消息与处理记录回跳及安全渲染，见[R03 完成验收](testing-2026-09-12-r03-artifact-web.md)。F04 范围仅为消费 llm-proxy 的 web_search／web_fetch 接口，不把它接成模型服务且不修改该服务。当前已完成 60 / 81。**
+**当前执行位置：H01。G06 已完成有界后台跟进、稀疏通知、终态防重开、持久 outbox、停止与重启保持，见[G06 完成验收](testing-2026-09-12-g06-follow-up.md)。F04 范围仅为消费 llm-proxy 的 web_search／web_fetch 接口，不把它接成模型服务且不修改该服务。当前已完成 68 / 81。**
 
 **架构约束**：服务之间通过公开 SDK / 宿主端口组合，应用层不直接导入具体存储、HTTP 装配或其他服务实现；每批核对依赖方向和授权边界，不能只凭接口测试通过判定完成。 拆库后按[剩余能力边界表](remaining-capability-boundaries.md)执行：Tools 管工具，Todo 管个人事项，Knowledge 管资料与成果，Integration 管外部账号，Work／PM 管产品规则；Agent 管执行。
 
 **进度总览 — 先看这里**
 
-**清单勾选已校正：已完成 60 项，未完成 21 项（含 5 项可选能力）。这是条目数，不是工期完成比例。** 已完成项覆盖工具执行主体、持久化、个人记忆 / 待办、主要网页交互、成果创建 / 编辑 / 导出、会话后台任务启动，以及 Runtime 业务目录、记录、关联查询、业务动作、流程启动 / 查询和完整数据分析。逐项代码与测试依据见 [进度核对记录](progress-audit-2026-09-10.md)，手机导航及待办删除补验见 [网页补验](testing-2026-09-10-mobile-and-todo-completion.md)。
+**清单勾选已校正：已完成 68 项，未完成 13 项（含 5 项可选能力）。这是条目数，不是工期完成比例。** 已完成项覆盖工具执行主体、持久化、个人记忆 / 待办、主要网页交互、成果创建 / 编辑 / 导出、会话后台任务启动／查询／控制、计划记录、持久调度、当前身份重验、提醒投递、计划管理与有界后台跟进，以及 Runtime 业务目录、记录、关联查询、业务动作、流程启动 / 查询和完整数据分析。逐项代码与测试依据见 [进度核对记录](progress-audit-2026-09-10.md)，手机导航及待办删除补验见 [网页补验](testing-2026-09-10-mobile-and-todo-completion.md)。
 
 **此前完成 J05**：流程启动 / 查询已通过实际 HTTP、真实 Verdent 模型和网页整段验收。两笔获准流程均完成实际审批，第三笔拒绝后没有生成实例；确认前刷新 / 重启、进度查询、撤权隐藏及恢复均通过。J05 已勾选，见[流程验收记录](testing-2026-09-10-business-workflows.md)。**未勾选不等于没有代码**：其余条目中仍有部分实现但尚未满足完整要求的功能。
 
@@ -32,8 +32,8 @@
 | 按权限检索知识库资料并查看引用 | 自主搜索 / 读取、Identity 文档权限映射、历史回复与摘要的来源检查、结构化引用及来源窗口已实现 | **网页已验证点击引用查看标题 / 文档 ID / 片段 / 链接、刷新保留、撤权隐藏与恢复**，模型与资料为测试夹具。真实 Verdent 已取得合成文档的 4 个 search / fetch 片段，分段字段映射、真实模型引用、重启、网页引用、Identity 动作撤权 / 恢复及文档删除后的隐藏已验证；私有文档 ACL 与附件入库仍待完成 |
 | 在会话中上传和管理自己的附件 | 私有原件、七个管理接口、PDF / Word / Excel 在线预览、显式私有索引、状态与原请求核对、Connector 检索引用和删除清理已接通；上传不自动入库 | 已验证上传、断响应、源配置移除、完整重启、撤权 / 恢复、桌面 / 手机预览、字节一致的下载与物理清理。用户显式另存后可跨会话检索独立资料库副本，跨库复制 / 移动已通过真实 Verdent 验收。会话附件专用 KB 的真实链路及删除恢复已验证；始终无法观察到结果的上传恢复仍在 K07 |
 | 管理并检索个人与共享资料库 | 个人库唯一且私有；共享库按成员及三种角色管理；可由宿主连接独立远端 KB，在对话中查看可读库、搜索和读取 | **管理、按库检索 / 引用、双用户隔离、成员与 Identity 撤权 / 恢复、冻结恢复、重启及网页流程已验证**；本轮模型与知识源为夹具。文档归库、上传 / 索引 / 清理和过滤已接后端与网页；浏览器续传、下载、重启、撤权、引用及手机删除均通过。跨库共享移动、远端数据源入口和真实新链路仍未完成 |
-| 生成周报 / 表格 / 图表，修改后下载指定版本 | **六个会话工具及“我的成果”网页入口已接通，可预览、编辑、选择版本和下载** | **真实模型已读取实际待办生成周报，通过事实检查，修改第二节并导出原始版本；浏览器下载字节已核对。** 表格 / 图表、直接编辑、版本冲突和撤权已有夹具网页验证；与真实知识引用及后台任务的关联仍待完成 |
-| 连接外部账号、读取日历、查改业务数据 | 外部账号、日历／邮件读取和 llm-proxy 公开网页读取已接独立 Integration／Tools；业务目录 / 查询 / 写入及 Report 宿主已接 Runtime，独立 Web 通过公开 SDK 接入；报表会话工具与后台任务启动已接，任务查询／控制待接 | F01–F05 已通过对应协议与网页验证，F05 包含实际共享 Identity 独立进程；真实厂商账号／托管服务配置及整体验收仍待交付。J01–J05 已通过实际服务、真实模型和网页验收。创建 / 更新 / 状态转换见[业务动作验收](testing-2026-09-10-business-actions.md)，流程受理、审批进度和结果见[流程验收](testing-2026-09-10-business-workflows.md) |
+| 生成周报 / 表格 / 图表，修改后下载指定版本 | **六个会话工具及“我的成果”网页入口已接通，可预览、编辑、选择版本和下载** | **真实模型已读取实际待办生成周报，通过事实检查，修改第二节并导出原始版本；浏览器下载字节已核对。** 表格 / 图表、直接编辑、版本冲突和撤权已有夹具网页验证；后台任务成果关联已完成；与真实知识引用的关联仍待完成 |
+| 连接外部账号、读取日历、查改业务数据 | 外部账号、日历／邮件读取和 llm-proxy 公开网页读取已接独立 Integration／Tools；业务目录 / 查询 / 写入及 Report 宿主已接 Runtime，独立 Web 通过公开 SDK 接入；报表会话工具及后台任务启动、查询和控制已接 | F01–F05 已通过对应协议与网页验证，F05 包含实际共享 Identity 独立进程；真实厂商账号／托管服务配置及整体验收仍待交付。J01–J05 已通过实际服务、真实模型和网页验收。创建 / 更新 / 状态转换见[业务动作验收](testing-2026-09-10-business-actions.md)，流程受理、审批进度和结果见[流程验收](testing-2026-09-10-business-workflows.md) |
 | 到点提醒、定期执行、持续跟进 | G 待开发 | 尚未验收 |
 | 稳定部署并完成整套真实业务验收 | H 未完成，仍使用本地 go.work | 真实模型、外部服务、依赖发布与目标部署验收仍待完成 |
 
@@ -61,7 +61,7 @@
 - [x] 接网页预览、修改、版本选择与下载入口。
 - [x] 完成上述整段流程的网页验收，包括刷新恢复、版本一致性和权限撤销；真实 Identity / HTTP / SQLite，模型为本地协议夹具。
 
-**接下来按顺序交付**：B06、C03、C04、E05、K01、K04、K05、K07、F01、F02、F03、F04、F05、F06、N01、N02、N03、R03、L01 已完成并附对应证据，当前 L02。较后条目的既有实现保留，不再穿插推进。
+**接下来按顺序交付**：B06、C03、C04、E05、K01、K04、K05、K07、F01、F02、F03、F04、F05、F06、N01、N02、N03、R03、L01、L02、L03、G01、G02、G03、G04、G05、G06 已完成并附对应证据，当前 H01。较后条目的既有实现保留，不再穿插推进。
 
 **运行实例说明（2026-09-10）**：本轮 B06 使用临时 8092、真实 Identity／HTTP／SQLite、官方知识 Connector 和本地模型／知识协议夹具。4 个网页场景及宿主 race 均通过，77.59 秒；同一运行经历取消、刷新、完整宿主重启和明确恢复，已核对未执行步骤、保留结果、终态及正式回复，确实关闭 1 个在途知识 HTTP 请求。测试结束后无头 Chrome、宿主进程和 8092 监听器已关闭。本轮没有启动 8091，也没有新的真实 Verdent 调用。此前其他批次实例及失败记录保留在对应验收文档。
 
@@ -119,9 +119,9 @@
 
 截图中的十组是产品能力范围，是否向某次会话提供具体工具，由服务端根据当前用户权限、宿主能力和连接状态决定（A03、C02）。目标内置能力为时间、计算、会话与记忆、个人待办、成果生成；知识检索、网页检索、业务系统及外部账号工具在对应服务配置完成后开放。提醒还需要持久化调度与通知，后台工作需要可恢复的执行记录，不能只注册工具名称就视为支持。
 
-截图之外已增加向用户提问的 `ask_user`（A06）、历史执行查询 `execution_read` 与完整结果读取 `tool_result_read`（A07），以及独立的确认与恢复接口（B05、C04–C05、E02）。确认结果由服务端绑定当前用户和具体操作，不能由模型调用一个“批准”工具自行授权。当前代码支持装配九个只读工具、`ask_user`、两个记忆写工具和三个待办写工具；待办及结果读取要求对应存储，提问及写入要求交互持久化与答复授权能力，写入还要求本地原子执行存储。所有工具与答复入口均要求显式授予权限；读取结果还检查原工具及其资源的当前权限。请求中的个人记忆与个人待办操作范围分别保存，均不能代替 Identity 权限，也不能相互替代。代码装配能力不代表所有工具已经完成端到端验收。
+截图之外已增加向用户提问的 `ask_user`（A06）、历史执行查询 `execution_read` 与完整结果读取 `tool_result_read`（A07），以及独立的确认与恢复接口（B05、C04–C05、E02）。确认结果由服务端绑定当前用户和具体操作，不能由模型调用一个“批准”工具自行授权。当前个人工具目录按宿主端口装配 20 项，包含记忆、待办、历史、执行结果及 `task_start` / `task_get` / `task_list` / `task_cancel` / `task_resume`；提问及写入要求交互持久化与答复授权能力，写入还要求本地原子执行存储。所有工具与答复入口均要求显式授予权限；读取结果还检查原工具及其资源的当前权限。请求中的个人记忆、个人待办和后台任务操作范围分别保存，均不能代替 Identity 权限，也不能相互替代。代码装配能力不代表所有工具已经完成端到端验收。
 
-配置知识源并获得工具权限后，另可装配两个知识只读工具；配置资料库绑定时使用支持 library_id 的 v2 search / read，并增加 `knowledge_libraries` 目录工具。成员身份、资料库读取动作与工具权限分别检查。当前支持 16 个个人 / 交互工具（含 `task_start`）、6 个可选成果工具及默认 2 个、按库模式 3 个可选知识工具；成果与后台任务各自要求对应存储、权限和操作范围，不能借用记忆、待办或其他资源授权。
+配置知识源并获得工具权限后，另可装配两个知识只读工具；配置资料库绑定时使用支持 library_id 的 v2 search / read，并增加 `knowledge_libraries` 目录工具。成员身份、资料库读取动作与工具权限分别检查。当前支持 18 个个人 / 交互工具（含 `task_start`、`task_get`、`task_list`）、6 个可选成果工具及默认 2 个、按库模式 3 个可选知识工具；成果与后台任务各自要求对应存储、权限和操作范围，不能借用记忆、待办或其他资源授权。
 
 配置 `ConversationOptions.Business` 后可额外装配 `business_catalog`、`query_records`、`get_record` 三个只读工具；会话执行与 SaaS 夹具验证已通过，Runtime 宿主已装配并通过真实记录服务专项，真实角色 / 网页 / 模型和完整模块重启验收也已通过。不会仅因 Identity 注册了动作就向用户开放未连接的业务工具。 支持 `ConversationBusinessRelationSource` 的宿主额外装配 `query_related_records`，Runtime 已实现并完成 [真实模型 / 网页验收](testing-2026-09-10-business-relations.md)。
 
@@ -380,7 +380,7 @@ J05 当前状态：**已完成对应验收**。[Agent 工具执行](../internal/
 
 **10. P1 — 成果创建、编辑与导出**
 
-当前进展：六个成果工具、私有存储、公共接口、Identity 授权和网页入口已接通；多步周报创建 / 修改 / 旧版下载完成实际浏览器验证，表格编辑、图表、版本冲突和权限撤销 / 恢复也已验证。本轮还补齐来源会话和来源消息／处理记录回跳，并在实际编译页面验证 Markdown、表格、声明式图表和恶意内容隔离；来源绑定持久会话 Run，包含后台 worker 的处理记录。真实 Verdent / Responses 的周报事实核对、编辑和指定版本下载见 [真实模型日常工作验收](testing-2026-09-10-live-daily-work.md)。设计见 [成果实现记录](artifacts.md)，本轮证据见 [R03 完成验收](testing-2026-09-12-r03-artifact-web.md)。R01–R04 已按单项功能与验证勾选；通用后台任务工具仍按顺序留在 L01–L03。
+当前进展：六个成果工具、私有存储、公共接口、Identity 授权和网页入口已接通；多步周报创建 / 修改 / 旧版下载完成实际浏览器验证，表格编辑、图表、版本冲突和权限撤销 / 恢复也已验证。本轮还补齐来源会话和来源消息／处理记录回跳，并在实际编译页面验证 Markdown、表格、声明式图表和恶意内容隔离；来源绑定持久会话 Run，包含后台 worker 的处理记录。真实 Verdent / Responses 的周报事实核对、编辑和指定版本下载见 [真实模型日常工作验收](testing-2026-09-10-live-daily-work.md)。设计见 [成果实现记录](artifacts.md)，本轮证据见 [R03 完成验收](testing-2026-09-12-r03-artifact-web.md)。R01–R04 已按单项功能与验证勾选；通用后台任务工具 L01–L03 也已按顺序完成。
 
 - [x] R01：`artifact_create` 创建周报、会议纪要、分析表和图表等成果。先支持 Markdown 与结构化表格 / 图表，返回稳定 artifact ID；元数据与正文版本持久化，大文件通过宿主存储服务保存。
 - [x] R02：`artifact_edit` 按 artifact ID 和期望版本修改指定部分，保存修订及来源引用；同时编辑时检测冲突，支持“把刚才周报的第二节改一下”。
@@ -394,19 +394,27 @@ J05 当前状态：**已完成对应验收**。[Agent 工具执行](../internal/
 
 - [x] L01：`task_start` 从会话创建有明确目标、输入、授权范围和预算的后台执行记录，立即返回任务 ID；复用现有 worker / 状态基础，为独立 Web 场景提供适配，避免依赖不适用的旧业务任务字段。
   - 完成验收（2026-09-12）：Agent SDK 新增独立 ConversationTask 契约和持久化端口；Agent 应用冻结 goal、input、选中工具的版本／动作／定义哈希／授权修订及四项预算，子 Run 只取得精确目录并禁止递归 `task_start`。第 15 个 Agent 自有迁移原子保存任务和受理回执，后台执行复用现有 Conversation worker／租约／fencing／逐步账本与当前授权，不使用旧业务 Task 的 ProcessID、TaskDefinition 或 Task Host。后台 Run 不占前台 ActiveRunID；真实 Identity／HTTP／SQLite E2E 验证阻塞子运行时前台仍完成，宿主关闭重开后同一子 Run 在 attempt 2 恢复且只执行一次 `time_now`。编译后网页显示稳定任务 ID、冻结范围与预算、后台标签和完成步骤，刷新后仍保留，控制台错误为 0。Agent／SDK 全量、相关 race／vet、前端 54 项与生产构建通过；旧账号未知写 race 复验只产生一次外部发送。见[L01 完成验收与架构边界](testing-2026-09-12-l01-background-task.md)、[机器清单](evidence/2026-09-12-l01-background-task.json)、[架构审计](evidence/2026-09-12-l01-background-task/architecture-audit.json)及[浏览器观察](evidence/2026-09-12-l01-background-task/browser-observation.json)。L01 完成，总进度 60 / 81；下一项为 L02。`llm-proxy` 工作区保持干净，只消费已有两个 Web 接口。
-- [ ] L02：`task_get` / `task_list` 查询用户获准查看的任务进度、结果、等待事项和产物；通过关联 ID 回到来源会话。后台任务完成采用幂等事件回写，支持关闭网页后继续执行。
-- [ ] L03：`task_cancel` / `task_resume` 取消或继续具体任务；根据当前状态分别处理等待用户、失败重试及外部结果待核查。恢复重新授权，限制子任务数量与深度，防止任务递归自建或在同一 worker 内同步等待自己。
+- [x] L02：`task_get` / `task_list` 查询用户获准查看的任务进度、结果、等待事项和产物；通过关联 ID 回到来源会话。后台任务完成采用幂等事件回写，支持关闭网页后继续执行。
+  - 完成验收（2026-09-12）：Agent SDK 增加 `task_get` / `task_list`、安全任务投影、可选查询服务及 read repository 端口；Agent 按 runtime / workspace / user 隔离并用绑定过滤条件的稳定游标查询。进度、等待和结果从当前授权的 Conversation Run／消息读取，成果通过公开 Artifact 服务按精确 execution run 关联；内部 definition hash、授权修订和冻结 scope 不对外。Run 终态事件和任务完成引用在同一事务提交，running → terminal CAS；重复 Finish 的终态事件数保持 1。实际 Identity／HTTP／SQLite／worker／宿主重启 E2E 验证模型调用两个查询工具、等待确认后恢复并产生成果、等待用户、撤权隐藏与恢复；编译后网页验证重载后任务仍在、状态／目标筛选、进度／等待／结果／成果及来源会话／Run 回跳，浏览器错误和警告为 0。Agent 整库、SDK 全量 race、L02 核心及跨层 race、两仓 vet、前端 56 项和生产构建通过。见[L02 完成验收与架构边界](testing-2026-09-12-l02-task-query.md)、[机器清单](evidence/2026-09-12-l02-task-query.json)、[架构审计](evidence/2026-09-12-l02-task-query/architecture-audit.json)及[浏览器观察](evidence/2026-09-12-l02-task-query/browser-observation.json)。L02 完成，总进度 61 / 81；下一项为 L03。`llm-proxy` 工作区保持干净，只消费已有两个 Web 接口。
+- [x] L03：`task_cancel` / `task_resume` 取消或继续具体任务；根据当前状态分别处理等待用户、失败重试及外部结果待核查。恢复重新授权，限制子任务数量与深度，防止任务递归自建或在同一 worker 内同步等待自己。
+  - 完成验收（2026-09-12）：Agent SDK 新增独立控制服务／repository 端口、两个写工具和 POST 路由；已启动任务复用原 Conversation Cancel / Resume，未启动排队任务走窄事务 CAS。服务端控制投影区分等待答复、失败、已取消、待对账和完成；等待答复不能被 resume 跳过，关闭交互不显示错误继续动作。HTTP 控制、Conversation execution 和冻结工具逐层重新授权：撤销 `task_resume` 返回 403，恢复后撤销 `time_now` 会在模型调用前以 `tool_access_denied` 失败，再恢复权限后同一 Run attempt 3 只执行一次工具并完成。不确定外部写保留原调用及幂等键，核查完成后同事务写回任务终态。每个 source Run 最多 4 个子任务，后台目录拒绝全部 `task_*`，因此不能递归、自控或同步等待自己。编译页面实际点击继续与带确认的停止，刷新及 390px 状态保持，登录后浏览器错误／警告为 0。Agent 整库、SDK 全量 race、L03 三层 race、两仓 vet、前端 56 项和生产构建通过。见[L03 完成验收与架构边界](testing-2026-09-12-l03-task-control.md)、[机器清单](evidence/2026-09-12-l03-task-control.json)、[架构审计](evidence/2026-09-12-l03-task-control/architecture-audit.json)及[浏览器观察](evidence/2026-09-12-l03-task-control/browser-observation.json)。L03 完成，总进度 62 / 81；下一项为 G01。`llm-proxy` 工作区保持干净，只消费已有 `POST /tool/web_search` 与 `POST /tool/web_fetch_jina`，没有模型代理接入。
 
 这一阶段处理立即开始的长任务；将来的定时触发由下一阶段的计划任务调用同一执行能力。
 
 **12. P2 — 定时执行、提醒与持续处理**
 
-- [ ] G01：建立计划任务记录，保存所有者、时区、触发规则、输入、允许动作、关联会话和启停状态；支持一次性与重复执行。
-- [ ] G02：实现持久化调度、并发领取、重复触发去重、失败重试和重启恢复；明确错过触发时间时补跑或跳过的策略。
-- [ ] G03：后台执行通过可信的计划任务身份重新授权，处理用户停用、权限撤销、外部连接失效和等待确认；凭证不依赖长期保存浏览器登录令牌。
-- [ ] G04：接提醒投递渠道，至少支持站内通知；根据已连接渠道扩展邮件或消息通知，记录投递结果并去重。
-- [ ] G05：提供查看、修改、暂停、恢复和删除入口；支持“每周一整理待办”“周五提醒我”的自然语言管理。
-- [ ] G06：支持有明确范围的后台跟进；仅在有变化、完成、失败或需要用户操作时通知，并允许用户随时停止。
+- [x] G01：建立计划任务记录，保存所有者、时区、触发规则、输入、允许动作、关联会话和启停状态；支持一次性与重复执行。
+  - 完成验收（2026-09-12）：Scheduler SDK 新增 owner 中立的计划 DTO、一次性／重复触发校验、可选 `ScheduledPlanService`、窄 repository 端口及 SaaS transport；Scheduler migration 6 建立 `_scheduler_plans`，在 Runtime + workspace + user + product 范围保存时区、规则、输入、动作、目标、会话／Run 引用、状态、revision 和时间。Module 与 SaaS 装配同一 application/store，Runtime 身份由 Binding／机器凭证绑定；相同规范化命令精确重放，换内容冲突，跨 owner 不可见。实际 SDK → 私有 HTTP → SaaS → application → SQLite 和 Module → SQLite 两条 E2E 均验证一次性／每周重复记录、16 路并发单行写入、关闭重开、跨 owner／Runtime 隔离；Scheduler／SDK 整库 race、两仓 vet、Runtime 公开组合及锁定启动通过。首次 Runtime 启动捕获可选服务误改公开 capability 摘要，修复后未改锁文件并重新通过。见[G01 完成验收与架构边界](testing-2026-09-12-g01-scheduled-plan.md)、[机器清单](evidence/2026-09-12-g01-scheduled-plan.json)及[架构审计](evidence/2026-09-12-g01-scheduled-plan/architecture-audit.json)。G01 完成，总进度 63 / 81；下一项为 G02。`llm-proxy` 工作区保持干净，只消费已有 `POST /tool/web_search` 与 `POST /tool/web_fetch_jina`，没有模型代理接入。
+- [x] G02：实现持久化调度、并发领取、重复触发去重、失败重试和重启恢复；明确错过触发时间时补跑或跳过的策略。
+  - 完成验收（2026-09-12）：G01 计划投影进 Scheduler 既有 definition state／run／event／lease／retry／DLQ 内核，没有新建第二套 worker 或 run 表。migration 7 给 execution state 增加 `source_kind`，Runtime definition reconcile 不能误停 scheduled plan；保留命名空间拒绝宿主碰撞。`Due` 携带精确 cursor，`Claim` 在 run 插入事务内做 cursor CAS，数据库唯一窗口与稳定 run／幂等键保证两个 worker 只有一个赢家；过期 lease 和到期 retry 都重新入队，接管增加 attempt／fencing。一次性领取后终止 cursor，同 revision 重启不会重开。策略明确为 `skip`、`catch_up_one`、最多 100 窗口的 `catch_up_bounded`，带 durable grace；一次性默认补跑一次，重复计划默认跳过积压。实际 SDK 私有 HTTP → SaaS → application → SQLite → clock → downstream 场景验证首次失败、关闭服务、分页恢复、同一 run attempt 2 成功且只留一行；Module 场景验证实际执行后重启不重复。Scheduler／SDK 全量 race、G02 跨层 race、两仓 vet、Runtime 公开组合和锁定启动通过。见[G02 完成验收与架构边界](testing-2026-09-12-g02-scheduler-execution.md)、[机器清单](evidence/2026-09-12-g02-scheduler-execution.json)及[架构审计](evidence/2026-09-12-g02-scheduler-execution/architecture-audit.json)。G02 完成，总进度 64 / 81；下一项为 G03。`llm-proxy` 工作区保持干净，只消费已有 `POST /tool/web_search` 与 `POST /tool/web_fetch_jina`，没有模型代理接入。
+- [x] G03：后台执行通过可信的计划任务身份重新授权，处理用户停用、权限撤销、外部连接失效和等待确认；凭证不依赖长期保存浏览器登录令牌。
+  - 完成验收（2026-09-12）：Scheduler 只投递签名 `ScheduledPlanDispatch` 事实；Runtime 通过 Identity SDK 重新解析当前用户并拒绝产品不匹配、用户停用／未知和 workspace 变化，再由唯一 composition 适配器调用 Agent SDK。Agent 要求精确 Runtime service Action，重新检查会话、exact allowed Action、所选工具权限与连接可用性，随后用 owner + 调度幂等键接入 L01 的同一任务队列；变更重放冲突，跨 owner 不可见。实际 Web 组合验证日历账号连接时计划完成、精确重放不重复，Integration 撤销后下一窗口在任务／模型／vendor 前拒绝；实际 Identity／SQLite 写任务进入 `waiting_confirmation` 并释放 worker，等待期间撤权后批准失败且成果版本为 0。签名 Runtime HTTP 整链的首次执行与 callback receipt replay、Module／SaaS 服务凭证、Agent 整库、G03 race、SDK race 和三仓 vet 通过。未配置真实厂商 OAuth，按用户说明由具体服务负责，本项只据实证明产品内连接状态失效路径。Runtime 本地未发布 Agent capability 与现有 lock 的差异保留给 H04，未改锁文件。见[G03 完成验收与架构边界](testing-2026-09-12-g03-scheduled-reauthorization.md)、[机器清单](evidence/2026-09-12-g03-scheduled-reauthorization.json)及[架构审计](evidence/2026-09-12-g03-scheduled-reauthorization/architecture-audit.json)。G03 完成，总进度 65 / 81；下一项为 G04。`llm-proxy` 两个工作区保持干净，只消费已有 `POST /tool/web_search` 与 `POST /tool/web_fetch_jina`，没有模型代理接入。
+- [x] G04：接提醒投递渠道，至少支持站内通知；根据已连接渠道扩展邮件或消息通知，记录投递结果并去重。
+  - 完成验收（2026-09-12）：Runtime 增加来源中立 `NotificationTargetRuntime` 端口，唯一 composition 适配器复用 G03 当前 Identity 解析，只接受 `notification/publish_reminder`、exact `notification.reminder.publish` 和有界 `title`／`message`，不允许计划指定 event type、收件人、连接或 Provider 载荷。内建 `scheduler.reminder.due` 强制生成站内 inbox；项目 notification rule 才会把同一事件绑定到已连接的邮件／消息 Connector，Notification 继续独占偏好、event、inbox、channel plan、retry 和 dedupe，Integration 独占 provider invocation。真实 Scheduler 签名 HTTP → Runtime callback receipt → Identity → Notification Module／SQLite → Runtime outbox → Integration Module／SQLite → 公开 Connector SDK fixture E2E 验证：站内 1 条、外部调用 1 次、Runtime 交接账本 `accepted`、Integration 调用账本 `succeeded` 并保存 response ref，完全相同回调 `replay=true` 后仍各 1 条。Notification 整库、SDK race、G04 跨层 race、两仓 vet 和 Runtime DDD／owner 边界通过；既有偏好关闭、重试恢复、稳定 plan identity 与 delivery reservation 回归通过。Notification／Integration 实现仓不需修改，正式 go.mod／go.sum 未变。11-module 门禁仍只报告 G03 的未发布 Agent digest，留给 H04。见[G04 完成验收与架构边界](testing-2026-09-12-g04-reminder-delivery.md)、[机器清单](evidence/2026-09-12-g04-reminder-delivery.json)及[架构审计](evidence/2026-09-12-g04-reminder-delivery/architecture-audit.json)。G04 完成，总进度 66 / 81；下一项为 G05。`llm-proxy` 两个工作区保持干净，只消费已有 `POST /tool/web_search` 与 `POST /tool/web_fetch_jina`，没有模型代理接入。
+- [x] G05：提供查看、修改、暂停、恢复和删除入口；支持“每周一整理待办”“周五提醒我”的自然语言管理。
+  - 完成验收（2026-09-12）：Scheduler SDK 发布 owner 中立的列表／更新／状态／删除契约，Scheduler 独占 owner 过滤、revision CAS、删除墓碑和执行定义投影；Tools SDK／Tools 提供七个封闭计划工具，后台任务 Action 只从当前已授权非任务目录推导，提醒 target／Action 固定。Agent 只组合 Scheduler SDK 和 Tools 适配器，产品 API 与对话使用同一实现，浏览器／模型不能提交 owner、Runtime target、Action、连接、Provider 载荷或 cron。实际 Agent conversation engine／Identity／HTTP 处理“每周一整理待办”和“周五提醒我提交周报”，并验证确认、列表、修改、旧版本冲突、暂停／恢复、删除、跨用户隔离及宿主重启；Scheduler 另以实际 SDK → 私有 HTTP → SaaS → SQLite 验证持久管理和墓碑。编译页面 Chrome 七步通过，含二次确认删除、390px、预期 409 及零非预期控制台错误。Agent／Scheduler／Tools 与两个 SDK 整库、三组 race、五组 vet、58 项前端测试和生产构建均通过。见[G05 完成验收](testing-2026-09-12-g05-plan-management.md)、[机器清单](evidence/2026-09-12-g05-plan-management.json)、[架构审计](evidence/2026-09-12-g05-plan-management/architecture-audit.json)及[浏览器报告](evidence/2026-09-12-g05-plan-management/browser/report.json)。G05 完成，总进度 67 / 81；下一项为 G06。`llm-proxy` 两个工作区保持干净，只消费已有 `POST /tool/web_search` 与 `POST /tool/web_fetch_jina`，没有模型代理接入。
+- [x] G06：支持有明确范围的后台跟进；仅在有变化、完成、失败或需要用户操作时通知，并允许用户随时停止。
+  - 完成验收（2026-09-12）：Tools 只把目标、允许工具和必填完成条件映射为 Scheduler 公共计划；Scheduler 每个窗口触发一次有界 Agent 任务并继续独占 pause／revision。Agent 以严格最终 JSON 报告和 owner + plan 状态做规范化变化判定，首次基线与同义状态静默，只为 changed／completed／failed／needs_action 写中立持久 outbox；完成为终态，已在途的过期成功、失败或确认都不能重开。Runtime 唯一组合适配器重新解析 Identity 后映射内建 Notification 事件，Notification 独占收件人、模板、偏好、站内／渠道投递和去重。真实 Runtime／Identity／Agent／Notification／SQLite 及签名 Scheduler callback E2E 验证基线 0 通知、重启后同义状态 0、变化 1、完成 1；专项 race 通过。编译页面实际点击“停止跟进”得到 pause 200，完整宿主重启后 revision 2 仍暂停，390px 可用，浏览器错误／警告为 0。Agent／Tools／两个 SDK 整库与 vet、前端 59 项和生产构建通过。Runtime 整包另暴露下一项 H01 的业务事件顶层 workspace 审计断言失败，已保存原始日志并按顺序转入 H01。见[G06 完成验收与架构边界](testing-2026-09-12-g06-follow-up.md)、[机器清单](evidence/2026-09-12-g06-follow-up.json)、[架构审计](evidence/2026-09-12-g06-follow-up/architecture-audit.json)及[浏览器报告](evidence/2026-09-12-g06-follow-up/browser/report.json)。G06 完成，总进度 68 / 81；下一项为 H01。`llm-proxy` 工作区保持干净，只消费已有 `POST /tool/web_search` 与 `POST /tool/web_fetch_jina`，没有模型代理接入。
 
 阶段验收场景：“每周一早上整理本周待办 → 周五提醒未完成事项 → 服务重启后仍按计划执行 → 暂停后不再触发”。
 

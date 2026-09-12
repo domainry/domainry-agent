@@ -18,7 +18,10 @@ type conversationTaskRow struct {
 	task        agentsdk.ConversationTask
 	authority   agentsdk.ConversationAuthority
 	requestHash string
+	schedule    *agentsdk.ConversationTaskScheduleRef
 }
+
+var conversationTaskColumns = []string{"payload_json", "authority_json", "request_hash", "scheduled_plan_id", "scheduler_run_id", "scheduled_for"}
 
 type conversationTaskCursor struct {
 	Owner, Query, ID string
@@ -28,7 +31,9 @@ type conversationTaskCursor struct {
 func scanConversationTask(row interface{ Scan(...any) error }) (conversationTaskRow, error) {
 	var out conversationTaskRow
 	var raw, authority []byte
-	if err := row.Scan(&raw, &authority, &out.requestHash); err != nil {
+	var planID, schedulerRunID sql.NullString
+	var scheduledFor sql.NullInt64
+	if err := row.Scan(&raw, &authority, &out.requestHash, &planID, &schedulerRunID, &scheduledFor); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return out, conversationError("not_found", "task_not_found")
 		}
@@ -39,6 +44,12 @@ func scanConversationTask(row interface{ Scan(...any) error }) (conversationTask
 	}
 	if err := json.Unmarshal(authority, &out.authority); err != nil {
 		return out, err
+	}
+	if planID.Valid || schedulerRunID.Valid || scheduledFor.Valid {
+		if !planID.Valid || !schedulerRunID.Valid || !scheduledFor.Valid {
+			return out, conversationError("conflict", "scheduled_task_metadata_invalid")
+		}
+		out.schedule = &agentsdk.ConversationTaskScheduleRef{PlanID: planID.String, SchedulerRunID: schedulerRunID.String, ScheduledFor: time.UnixMilli(scheduledFor.Int64).UTC()}
 	}
 	return out, nil
 }
@@ -61,7 +72,7 @@ func (s *ConversationStore) ApplyConversationTaskTool(ctx context.Context, in ag
 		if call.Call.Name != definition.Key || json.Unmarshal([]byte(call.Call.Arguments), &start) != nil {
 			return agentsdk.ConversationToolResult{}, conversationError("bad_request", "task_start_invalid")
 		}
-		if prepared.ID != "" || prepared.Status != "" || prepared.ExecutionRunID != "" || prepared.SourceConversationID != in.ConversationID || prepared.SourceRunID != in.RunID || prepared.Goal != start.Goal || prepared.Input != start.Input || prepared.Budget != start.Budget || len(prepared.ToolScope) != len(start.AllowedTools) {
+		if prepared.ID != "" || prepared.Status != "" || prepared.ExecutionRunID != "" || prepared.FollowUp != nil || prepared.SourceConversationID != in.ConversationID || prepared.SourceRunID != in.RunID || prepared.Goal != start.Goal || prepared.Input != start.Input || prepared.Budget != start.Budget || len(prepared.ToolScope) != len(start.AllowedTools) {
 			return agentsdk.ConversationToolResult{}, conversationError("conflict", "tool_input_conflict")
 		}
 		seen := map[string]bool{}
@@ -70,6 +81,20 @@ func (s *ConversationStore) ApplyConversationTaskTool(ctx context.Context, in ag
 				return agentsdk.ConversationToolResult{}, conversationError("conflict", "tool_input_conflict")
 			}
 			seen[tool.Key] = true
+		}
+		countQuery, countArgs, countErr := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).
+			Projections(query.Project(query.CountAll())).
+			Where(query.And(query.Equal("owner_key", conversationOwner(claim.Authority)), query.Equal("source_run_id", claim.Run.ID))).
+			Build()
+		if countErr != nil {
+			return agentsdk.ConversationToolResult{}, countErr
+		}
+		children := 0
+		if err := tx.QueryRowContext(ctx, countQuery, countArgs...).Scan(&children); err != nil {
+			return agentsdk.ConversationToolResult{}, err
+		}
+		if children >= agentsdk.ConversationTaskMaxChildrenPerRun {
+			return agentsdk.ConversationToolResult{}, conversationError("conflict", "task_child_limit")
 		}
 		now := time.Now().UTC().Truncate(time.Millisecond)
 		prepared.ID = "task_" + conversationHash(call.IdempotencyKey)[:32]
@@ -92,11 +117,95 @@ func (s *ConversationStore) ApplyConversationTaskTool(ctx context.Context, in ag
 	return result, err
 }
 
+func (s *ConversationStore) AcceptScheduledConversationTask(ctx context.Context, in agentsdk.ScheduledConversationTaskRequest, prepared agentsdk.ConversationTask) (agentsdk.ScheduledConversationTaskReceipt, error) {
+	var out agentsdk.ScheduledConversationTaskReceipt
+	err := s.transaction(ctx, func(tx *sql.Tx) error {
+		if err := conversationAuthority(in.Authority); err != nil {
+			return err
+		}
+		if prepared.ID != "" || prepared.Status != "" || prepared.ExecutionRunID != "" || prepared.SourceConversationID != in.ConversationID || prepared.SourceRunID != in.SourceRunID ||
+			prepared.Goal != in.Input.Goal || prepared.Input != in.Input.Input || prepared.Budget != in.Input.Budget || !equalConversationFollowUpScope(prepared.FollowUp, in.Input.FollowUp) || !equalConversationTaskTools(prepared, in.Input.AllowedTools) {
+			return conversationError("conflict", "scheduled_task_input_conflict")
+		}
+		conversation, err := s.get(ctx, tx, in.ConversationID, in.Authority)
+		if err != nil {
+			return err
+		}
+		if in.SourceRunID != "" {
+			if _, err := s.runRow(ctx, tx, conversation.ID, in.SourceRunID, in.Authority); err != nil {
+				return err
+			}
+		}
+		requestHash := conversationHash(in)
+		prepared.ID = "task_" + conversationHash([]any{conversationOwner(in.Authority), in.IdempotencyKey})[:32]
+		prepared.Status = agentsdk.ConversationTaskStatusQueued
+		now := time.Now().UTC().Truncate(time.Millisecond)
+		prepared.CreatedAt, prepared.UpdatedAt = now, now
+		statement, args, buildErr := query.NewInsertBuilder(s.store.Renderer(), conversationTaskTable).Columns(
+			"owner_key", "task_id", "runtime_id", "source_conversation_id", "source_run_id", "status", "authority_json", "request_hash", "created_at", "updated_at", "payload_json", "scheduled_plan_id", "scheduler_run_id", "scheduled_for",
+		).Values(
+			conversationOwner(in.Authority), prepared.ID, in.Authority.RuntimeID, prepared.SourceConversationID, prepared.SourceRunID,
+			prepared.Status, conversationJSON(in.Authority), requestHash, now.UnixMilli(), now.UnixMilli(), conversationJSON(prepared), in.PlanID, in.SchedulerRunID, in.ScheduledFor.UnixMilli(),
+		).OnConflictDoNothing("owner_key", "task_id").Build()
+		if buildErr != nil {
+			return buildErr
+		}
+		result, err := tx.ExecContext(ctx, statement, args...)
+		if err != nil {
+			return err
+		}
+		inserted, err := result.RowsAffected()
+		if err != nil {
+			return err
+		}
+		if inserted == 1 {
+			out.Task = prepared
+			return nil
+		}
+		if inserted != 0 {
+			return conversationError("conflict", "scheduled_task_idempotency_conflict")
+		}
+		statement, args, buildErr = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(in.Authority)), query.Equal("task_id", prepared.ID))).Build()
+		if buildErr != nil {
+			return buildErr
+		}
+		existing, err := scanConversationTask(tx.QueryRowContext(ctx, statement, args...))
+		if err != nil {
+			return err
+		}
+		if existing.requestHash != requestHash || conversationOwner(existing.authority) != conversationOwner(in.Authority) || existing.schedule == nil || existing.schedule.PlanID != in.PlanID || existing.schedule.SchedulerRunID != in.SchedulerRunID || !existing.schedule.ScheduledFor.Equal(in.ScheduledFor) {
+			return conversationError("conflict", "scheduled_task_idempotency_conflict")
+		}
+		out.Task, out.Replay = existing.task, true
+		return nil
+	})
+	return out, err
+}
+
+func equalConversationTaskTools(task agentsdk.ConversationTask, tools []string) bool {
+	if len(task.ToolScope) != len(tools) {
+		return false
+	}
+	for index, tool := range task.ToolScope {
+		if tool.Key != tools[index] {
+			return false
+		}
+	}
+	return true
+}
+
+func equalConversationFollowUpScope(left, right *agentsdk.ConversationFollowUpScope) bool {
+	if left == nil || right == nil {
+		return left == right
+	}
+	return left.CompletionCondition == right.CompletionCondition
+}
+
 func (s *ConversationStore) ConversationTask(ctx context.Context, taskID string, a agentsdk.ConversationAuthority) (agentsdk.ConversationTask, error) {
 	if err := conversationAuthority(a); err != nil {
 		return agentsdk.ConversationTask{}, err
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns("payload_json", "authority_json", "request_hash").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", taskID))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", taskID))).Build()
 	if err != nil {
 		return agentsdk.ConversationTask{}, err
 	}
@@ -142,7 +251,7 @@ func (s *ConversationStore) ConversationTasks(ctx context.Context, in agentsdk.C
 	if in.SourceConversationID != "" {
 		filters = append(filters, query.Equal("source_conversation_id", in.SourceConversationID))
 	}
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns("payload_json", "authority_json", "request_hash").Where(query.And(filters...)).OrderBy(query.Descending("created_at"), query.Descending("task_id")).Limit(301).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(filters...)).OrderBy(query.Descending("created_at"), query.Descending("task_id")).Limit(301).Build()
 	if err != nil {
 		return out, err
 	}
@@ -177,6 +286,56 @@ func (s *ConversationStore) ConversationTasks(ctx context.Context, in agentsdk.C
 	return out, nil
 }
 
+func (s *ConversationStore) transitionQueuedConversationTask(ctx context.Context, taskID string, a agentsdk.ConversationAuthority, resume bool) (agentsdk.ConversationTask, error) {
+	var out agentsdk.ConversationTask
+	err := s.transaction(ctx, func(tx *sql.Tx) error {
+		if err := conversationAuthority(a); err != nil {
+			return err
+		}
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", taskID))).Build()
+		if err != nil {
+			return err
+		}
+		row, err := scanConversationTask(tx.QueryRowContext(ctx, q, args...))
+		if err != nil {
+			return err
+		}
+		out = row.task
+		from := out.Status
+		if resume {
+			if from == agentsdk.ConversationTaskStatusQueued {
+				return nil
+			}
+			if from != agentsdk.ConversationTaskStatusCancelled || out.ExecutionRunID != "" {
+				return conversationError("conflict", "task_resume_invalid")
+			}
+			out.Status, out.ErrorCode, out.CompletedAt = agentsdk.ConversationTaskStatusQueued, "", nil
+			out.CompletionEventID, out.CompletionEventSeq = "", 0
+		} else {
+			if out.Terminal() {
+				return nil
+			}
+			if from != agentsdk.ConversationTaskStatusQueued || out.ExecutionRunID != "" {
+				return conversationError("conflict", "task_cancel_invalid")
+			}
+			now := time.Now().UTC().Truncate(time.Millisecond)
+			out.Status, out.CompletedAt = agentsdk.ConversationTaskStatusCancelled, &now
+		}
+		out.UpdatedAt = time.Now().UTC().Truncate(time.Millisecond)
+		q, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", out.Status).Set("updated_at", out.UpdatedAt.UnixMilli()).Set("payload_json", conversationJSON(out)).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", taskID), query.Equal("status", from))).Build()
+		return conversationCAS(ctx, tx, q, args, err)
+	})
+	return out, err
+}
+
+func (s *ConversationStore) CancelQueuedConversationTask(ctx context.Context, taskID string, a agentsdk.ConversationAuthority) (agentsdk.ConversationTask, error) {
+	return s.transitionQueuedConversationTask(ctx, taskID, a, false)
+}
+
+func (s *ConversationStore) ResumeQueuedConversationTask(ctx context.Context, taskID string, a agentsdk.ConversationAuthority) (agentsdk.ConversationTask, error) {
+	return s.transitionQueuedConversationTask(ctx, taskID, a, true)
+}
+
 func (s *ConversationStore) LaunchConversationTask(ctx context.Context, runtimeID string) (agentpersistence.ConversationTaskLaunch, bool, error) {
 	var launch agentpersistence.ConversationTaskLaunch
 	// The worker spends almost all of its life with an empty queue. Avoid
@@ -195,7 +354,7 @@ func (s *ConversationStore) LaunchConversationTask(ctx context.Context, runtimeI
 		return launch, false, err
 	}
 	err = s.transaction(ctx, func(tx *sql.Tx) error {
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns("payload_json", "authority_json", "request_hash").Where(query.And(query.Equal("runtime_id", runtimeID), query.Equal("status", agentsdk.ConversationTaskStatusQueued))).OrderBy(query.Ascending("created_at"), query.Ascending("task_id")).Limit(32).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("runtime_id", runtimeID), query.Equal("status", agentsdk.ConversationTaskStatusQueued))).OrderBy(query.Ascending("created_at"), query.Ascending("task_id")).Limit(32).Build()
 		if err != nil {
 			return err
 		}
@@ -219,7 +378,10 @@ func (s *ConversationStore) LaunchConversationTask(ctx context.Context, runtimeI
 		}
 		for _, candidate := range candidates {
 			task, authority := candidate.task, candidate.authority
-			if conversationAuthority(authority) != nil || authority.RuntimeID != runtimeID || task.Status != agentsdk.ConversationTaskStatusQueued || task.SourceConversationID == "" || task.SourceRunID == "" {
+			if conversationAuthority(authority) != nil || authority.RuntimeID != runtimeID || task.Status != agentsdk.ConversationTaskStatusQueued || task.SourceConversationID == "" || candidate.schedule == nil && task.SourceRunID == "" {
+				continue
+			}
+			if candidate.schedule != nil && (!scheduledConversationStoreKey(candidate.schedule.PlanID) || !scheduledConversationStoreKey(candidate.schedule.SchedulerRunID) || candidate.schedule.ScheduledFor.IsZero()) {
 				continue
 			}
 			conversation, getErr := s.get(ctx, tx, task.SourceConversationID, authority)
@@ -233,15 +395,17 @@ func (s *ConversationStore) LaunchConversationTask(ctx context.Context, runtimeI
 			if conversation.ActiveRunID != "" {
 				continue
 			}
-			if _, sourceErr := s.runRow(ctx, tx, task.SourceConversationID, task.SourceRunID, authority); sourceErr != nil {
-				return sourceErr
+			if task.SourceRunID != "" {
+				if _, sourceErr := s.runRow(ctx, tx, task.SourceConversationID, task.SourceRunID, authority); sourceErr != nil {
+					return sourceErr
+				}
 			}
 			messageText := agentsdk.ConversationTaskPrompt(task)
 			now := time.Now().UTC().Truncate(time.Millisecond)
 			run := conversationRunRow{Authority: authority, Run: agentsdk.ConversationRun{
 				ID: conversationID("crun_"), ConversationID: conversation.ID, ClientMessageID: "background_" + task.ID,
-				RequestHash: conversationHash([]any{task.ID, task.Goal, task.Input, task.ToolScope, task.Budget}), Status: "queued", UserSeq: conversation.LastSeq + 1,
-				BackgroundTask: &agentsdk.ConversationTaskExecution{TaskID: task.ID, ToolScope: append([]agentsdk.ConversationTaskToolScope(nil), task.ToolScope...), Budget: task.Budget}, CreatedAt: now, UpdatedAt: now,
+				RequestHash: conversationHash([]any{task.ID, task.Goal, task.Input, task.ToolScope, task.Budget, task.FollowUp}), Status: "queued", UserSeq: conversation.LastSeq + 1,
+				BackgroundTask: &agentsdk.ConversationTaskExecution{TaskID: task.ID, ToolScope: append([]agentsdk.ConversationTaskToolScope(nil), task.ToolScope...), Budget: task.Budget, FollowUp: task.FollowUp}, CreatedAt: now, UpdatedAt: now,
 			}}
 			message := agentsdk.ConversationMessage{
 				ID: conversationID("msg_"), ConversationID: conversation.ID, RunID: run.Run.ID, Seq: run.Run.UserSeq,
@@ -277,11 +441,23 @@ func (s *ConversationStore) LaunchConversationTask(ctx context.Context, runtimeI
 	return launch, launch.Task.ID != "", err
 }
 
-func (s *ConversationStore) finishConversationTask(ctx context.Context, tx *sql.Tx, run agentsdk.ConversationRun, authority agentsdk.ConversationAuthority) error {
+func scheduledConversationStoreKey(value string) bool {
+	if value == "" || len(value) > 191 || strings.TrimSpace(value) != value {
+		return false
+	}
+	for _, character := range value {
+		if character < 0x21 || character == 0x7f {
+			return false
+		}
+	}
+	return true
+}
+
+func (s *ConversationStore) finishConversationTask(ctx context.Context, tx *sql.Tx, run agentsdk.ConversationRun, authority agentsdk.ConversationAuthority, resultContent string) error {
 	if run.BackgroundTask == nil || run.BackgroundTask.TaskID == "" {
 		return nil
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns("payload_json", "authority_json", "request_hash").Where(query.And(query.Equal("owner_key", conversationOwner(authority)), query.Equal("task_id", run.BackgroundTask.TaskID), query.Equal("source_conversation_id", run.ConversationID))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(authority)), query.Equal("task_id", run.BackgroundTask.TaskID), query.Equal("source_conversation_id", run.ConversationID))).Build()
 	if err != nil {
 		return err
 	}
@@ -297,16 +473,49 @@ func (s *ConversationStore) finishConversationTask(ctx context.Context, tx *sql.
 	task.Status, task.ResultMessageID, task.ErrorCode, task.UpdatedAt, task.CompletedAt = agentsdk.ConversationTaskStatusFailed, run.AssistantMessageID, run.ErrorCode, now, &now
 	if run.Status == "completed" {
 		task.Status = agentsdk.ConversationTaskStatusCompleted
+	} else if run.Status == "cancelled" {
+		task.Status = agentsdk.ConversationTaskStatusCancelled
 	}
 	// Finish has already inserted run.<terminal> in this transaction. Keep its
 	// stable owner-scoped event reference on the task in the same CAS write;
 	// retrying Finish cannot create a second event or overwrite this receipt.
 	task.CompletionEventSeq = run.LastEventSeq
 	task.CompletionEventID = "task_event_" + conversationHash([]any{task.ID, run.ID, run.LastEventSeq, run.Status})[:32]
+	row.task = task
+	if task, err = s.recordConversationFollowUpTerminal(ctx, tx, row, run, resultContent, now); err != nil {
+		return err
+	}
 	q, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", task.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(task)).Where(query.And(query.Equal("owner_key", conversationOwner(row.authority)), query.Equal("task_id", task.ID), query.Equal("status", agentsdk.ConversationTaskStatusRunning))).Build()
+	return conversationCAS(ctx, tx, q, args, err)
+}
+
+func (s *ConversationStore) resumeConversationTask(ctx context.Context, tx *sql.Tx, run agentsdk.ConversationRun, authority agentsdk.ConversationAuthority) error {
+	if run.BackgroundTask == nil || run.BackgroundTask.TaskID == "" || run.Status != "queued" {
+		return nil
+	}
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(authority)), query.Equal("task_id", run.BackgroundTask.TaskID))).Build()
+	if err != nil {
+		return err
+	}
+	row, err := scanConversationTask(tx.QueryRowContext(ctx, q, args...))
+	if err != nil {
+		return err
+	}
+	task := row.task
+	if task.Status == agentsdk.ConversationTaskStatusRunning {
+		return nil
+	}
+	if task.ExecutionRunID != run.ID || task.Status != agentsdk.ConversationTaskStatusFailed && task.Status != agentsdk.ConversationTaskStatusCancelled {
+		return conversationError("conflict", "task_resume_invalid")
+	}
+	from := task.Status
+	task.Status, task.ErrorCode, task.CompletedAt, task.ResultMessageID = agentsdk.ConversationTaskStatusRunning, "", nil, ""
+	task.CompletionEventID, task.CompletionEventSeq, task.UpdatedAt = "", 0, time.Now().UTC().Truncate(time.Millisecond)
+	q, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", task.Status).Set("updated_at", task.UpdatedAt.UnixMilli()).Set("payload_json", conversationJSON(task)).Where(query.And(query.Equal("owner_key", conversationOwner(authority)), query.Equal("task_id", task.ID), query.Equal("status", from))).Build()
 	return conversationCAS(ctx, tx, q, args, err)
 }
 
 var _ agentpersistence.ConversationTaskMutationRepository = (*ConversationStore)(nil)
 var _ agentpersistence.ConversationTaskWorkerRepository = (*ConversationStore)(nil)
 var _ agentpersistence.ConversationTaskReadRepository = (*ConversationStore)(nil)
+var _ agentpersistence.ConversationTaskControlRepository = (*ConversationStore)(nil)
