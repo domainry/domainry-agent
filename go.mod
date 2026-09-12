@@ -3,14 +3,14 @@ module github.com/domainry/domainry-agent
 go 1.26.0
 
 require (
-	github.com/domainry/domainry-agent-sdk v0.1.11
+	github.com/domainry/domainry-agent-sdk v0.1.12
 	github.com/domainry/domainry-connector-sdk v0.1.1
 	github.com/domainry/domainry-connectors v0.1.3
 	github.com/domainry/domainry-foundation v0.1.0
-	github.com/domainry/domainry-identity v0.2.10
-	github.com/domainry/domainry-identity-bridge v0.1.1
-	github.com/domainry/domainry-identity-sdk v0.1.9
-	github.com/domainry/domainry-lifecycle-sdk v0.1.9
+	github.com/domainry/domainry-identity v0.2.11
+	github.com/domainry/domainry-identity-bridge v0.1.2
+	github.com/domainry/domainry-identity-sdk v0.1.10
+	github.com/domainry/domainry-lifecycle-sdk v0.1.10
 	github.com/domainry/domainry-orm v0.1.30
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3
