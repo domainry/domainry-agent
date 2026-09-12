@@ -1,0 +1,998 @@
+{
+  "steps": [
+    "first calculation committed, official knowledge HTTP request in flight, third call unstarted",
+    "stop closes Connector HTTP, preserves calculation, leaves third call unexecuted and saves no assistant reply",
+    "refresh retains real outcomes and duplicate cancellation is idempotent",
+    "host restart retains cancellation; explicit resume completes only remaining work on the same run"
+  ],
+  "javascriptErrors": [],
+  "snapshots": [
+    {
+      "label": "before cancellation",
+      "run": {
+        "id": "crun_908b8f6e9b0f4897c067540da2486087",
+        "conversation_id": "conv_9e544c57461796650a2e0109081ad281",
+        "client_message_id": "28b5f1e4-ac94-4e9b-b4cf-61773ee9a8ea",
+        "status": "running",
+        "user_seq": 1,
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 16,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "b06-first",
+                "name": "calculate",
+                "arguments": "{\"operation\":\"expression\",\"expression\":\"0.1+0.2\",\"unit\":\"CNY\"}",
+                "status": "completed",
+                "result_preview": "{\"basis\":{\"expression\":\"0.1+0.2\",\"operation\":\"expression\"},\"exact_denominator\":\"10\",\"exact_numerator\":\"3\",\"precision\":2,\"rounded\":false,\"rounding\":\"half_even\",\"unit\":\"CNY\",\"value\":\"0.30\"}",
+                "result_reference": {
+                  "conversation_id": "conv_9e544c57461796650a2e0109081ad281",
+                  "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+                  "step": 0,
+                  "call_id": "b06-first",
+                  "sha256": "fa596fa748d0e64033cffb7bc16dd2fa3dad9efb494e5b191f2bcf53e294d1a7"
+                },
+                "authorization": {
+                  "status": "granted",
+                  "revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+                  "checks": 1
+                },
+                "started_at": "2026-09-12T18:51:16.386895Z",
+                "completed_at": "2026-09-12T18:51:16.412878Z",
+                "duration_ms": 25
+              },
+              {
+                "effect": "read",
+                "id": "b06-read",
+                "name": "knowledge_search",
+                "arguments": "{\"query\":\"B06-wait-cancel\"}",
+                "status": "running",
+                "authorization": {
+                  "status": "granted",
+                  "revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+                  "checks": 1
+                },
+                "started_at": "2026-09-12T18:51:17.166383Z",
+                "duration_ms": 0
+              },
+              {
+                "id": "b06-third",
+                "name": "calculate",
+                "arguments": "{\"operation\":\"expression\",\"expression\":\"0.1+0.2\",\"unit\":\"CNY\"}",
+                "status": "queued",
+                "duration_ms": 0
+              }
+            ],
+            "started_at": "2026-09-12T18:51:15.566361Z",
+            "completed_at": "2026-09-12T18:51:15.621828Z",
+            "duration_ms": 55
+          }
+        ],
+        "correlation_id": "crun_908b8f6e9b0f4897c067540da2486087",
+        "metrics": {
+          "steps": 1,
+          "model_calls": 1,
+          "tool_calls": 2,
+          "tool_attempts": 2,
+          "authorization_checks": 2,
+          "confirmation_decisions": 0
+        },
+        "audit": [
+          {
+            "seq": 1,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "occurred_at": "2026-09-12T18:51:13.42236Z"
+          },
+          {
+            "seq": 2,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:13.430665Z"
+          },
+          {
+            "seq": 3,
+            "type": "step",
+            "status": "prepared",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:14.880821Z"
+          },
+          {
+            "seq": 4,
+            "type": "model",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:15.566361Z"
+          },
+          {
+            "seq": 11,
+            "type": "model",
+            "status": "completed",
+            "step": 0,
+            "attempt": 1,
+            "duration_ms": 55,
+            "occurred_at": "2026-09-12T18:51:15.621828Z"
+          },
+          {
+            "seq": 12,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "action_key": "agent.conversation_tools.calculate",
+            "authorization_revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+            "occurred_at": "2026-09-12T18:51:16.380742Z"
+          },
+          {
+            "seq": 13,
+            "type": "tool",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "occurred_at": "2026-09-12T18:51:16.386895Z"
+          },
+          {
+            "seq": 14,
+            "type": "tool",
+            "status": "completed",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "duration_ms": 25,
+            "occurred_at": "2026-09-12T18:51:16.412878Z"
+          },
+          {
+            "seq": 15,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-read",
+            "tool": "knowledge_search",
+            "action_key": "agent.conversation_tools.knowledge_search",
+            "authorization_revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+            "occurred_at": "2026-09-12T18:51:17.159364Z"
+          },
+          {
+            "seq": 16,
+            "type": "tool",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-read",
+            "tool": "knowledge_search",
+            "occurred_at": "2026-09-12T18:51:17.166383Z"
+          }
+        ],
+        "audit_complete": true,
+        "started_at": "2026-09-12T18:51:13.430665Z",
+        "duration_ms": 3735,
+        "queue_duration_ms": 9,
+        "created_at": "2026-09-12T18:51:13.421413Z",
+        "updated_at": "2026-09-12T18:51:17.166635Z"
+      },
+      "messages": [
+        {
+          "id": "msg_138da32d36b8c1ef2af93a1e7938c85a",
+          "role": "user",
+          "run_id": "crun_908b8f6e9b0f4897c067540da2486087"
+        }
+      ]
+    },
+    {
+      "label": "after refresh",
+      "run": {
+        "id": "crun_908b8f6e9b0f4897c067540da2486087",
+        "conversation_id": "conv_9e544c57461796650a2e0109081ad281",
+        "client_message_id": "28b5f1e4-ac94-4e9b-b4cf-61773ee9a8ea",
+        "status": "cancelled",
+        "user_seq": 1,
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 18,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "b06-first",
+                "name": "calculate",
+                "arguments": "{\"operation\":\"expression\",\"expression\":\"0.1+0.2\",\"unit\":\"CNY\"}",
+                "status": "completed",
+                "result_preview": "{\"basis\":{\"expression\":\"0.1+0.2\",\"operation\":\"expression\"},\"exact_denominator\":\"10\",\"exact_numerator\":\"3\",\"precision\":2,\"rounded\":false,\"rounding\":\"half_even\",\"unit\":\"CNY\",\"value\":\"0.30\"}",
+                "result_reference": {
+                  "conversation_id": "conv_9e544c57461796650a2e0109081ad281",
+                  "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+                  "step": 0,
+                  "call_id": "b06-first",
+                  "sha256": "fa596fa748d0e64033cffb7bc16dd2fa3dad9efb494e5b191f2bcf53e294d1a7"
+                },
+                "authorization": {
+                  "status": "granted",
+                  "revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+                  "checks": 1
+                },
+                "started_at": "2026-09-12T18:51:16.386895Z",
+                "completed_at": "2026-09-12T18:51:16.412878Z",
+                "duration_ms": 25
+              },
+              {
+                "effect": "read",
+                "id": "b06-read",
+                "name": "knowledge_search",
+                "arguments": "{\"query\":\"B06-wait-cancel\"}",
+                "status": "failed",
+                "error_code": "knowledge_failed",
+                "result_preview": "{\"error\":\"knowledge_failed\"}",
+                "result_reference": {
+                  "conversation_id": "conv_9e544c57461796650a2e0109081ad281",
+                  "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+                  "step": 0,
+                  "call_id": "b06-read",
+                  "sha256": "c9386e2a3e55dce0702d1c0503abef5cb26fac93c40bb7d0e44f538ae58cc69c"
+                },
+                "authorization": {
+                  "status": "granted",
+                  "revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+                  "checks": 1
+                },
+                "started_at": "2026-09-12T18:51:17.166383Z",
+                "completed_at": "2026-09-12T18:51:17.848965Z",
+                "duration_ms": 682
+              },
+              {
+                "id": "b06-third",
+                "name": "calculate",
+                "arguments": "{\"operation\":\"expression\",\"expression\":\"0.1+0.2\",\"unit\":\"CNY\"}",
+                "status": "not_started",
+                "duration_ms": 0
+              }
+            ],
+            "started_at": "2026-09-12T18:51:15.566361Z",
+            "completed_at": "2026-09-12T18:51:15.621828Z",
+            "duration_ms": 55
+          }
+        ],
+        "correlation_id": "crun_908b8f6e9b0f4897c067540da2486087",
+        "metrics": {
+          "steps": 1,
+          "model_calls": 1,
+          "tool_calls": 2,
+          "tool_attempts": 2,
+          "authorization_checks": 2,
+          "confirmation_decisions": 0
+        },
+        "audit": [
+          {
+            "seq": 1,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "occurred_at": "2026-09-12T18:51:13.42236Z"
+          },
+          {
+            "seq": 2,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:13.430665Z"
+          },
+          {
+            "seq": 3,
+            "type": "step",
+            "status": "prepared",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:14.880821Z"
+          },
+          {
+            "seq": 4,
+            "type": "model",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:15.566361Z"
+          },
+          {
+            "seq": 11,
+            "type": "model",
+            "status": "completed",
+            "step": 0,
+            "attempt": 1,
+            "duration_ms": 55,
+            "occurred_at": "2026-09-12T18:51:15.621828Z"
+          },
+          {
+            "seq": 12,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "action_key": "agent.conversation_tools.calculate",
+            "authorization_revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+            "occurred_at": "2026-09-12T18:51:16.380742Z"
+          },
+          {
+            "seq": 13,
+            "type": "tool",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "occurred_at": "2026-09-12T18:51:16.386895Z"
+          },
+          {
+            "seq": 14,
+            "type": "tool",
+            "status": "completed",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "duration_ms": 25,
+            "occurred_at": "2026-09-12T18:51:16.412878Z"
+          },
+          {
+            "seq": 15,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-read",
+            "tool": "knowledge_search",
+            "action_key": "agent.conversation_tools.knowledge_search",
+            "authorization_revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+            "occurred_at": "2026-09-12T18:51:17.159364Z"
+          },
+          {
+            "seq": 16,
+            "type": "tool",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-read",
+            "tool": "knowledge_search",
+            "occurred_at": "2026-09-12T18:51:17.166383Z"
+          },
+          {
+            "seq": 17,
+            "type": "run",
+            "status": "cancelled",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:17.843107Z"
+          },
+          {
+            "seq": 18,
+            "type": "tool",
+            "status": "failed",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-read",
+            "tool": "knowledge_search",
+            "error_code": "knowledge_failed",
+            "duration_ms": 682,
+            "occurred_at": "2026-09-12T18:51:17.848965Z"
+          }
+        ],
+        "audit_complete": true,
+        "started_at": "2026-09-12T18:51:13.430665Z",
+        "completed_at": "2026-09-12T18:51:17.843107Z",
+        "duration_ms": 4412,
+        "queue_duration_ms": 9,
+        "created_at": "2026-09-12T18:51:13.421413Z",
+        "updated_at": "2026-09-12T18:51:17.849252Z"
+      },
+      "messages": [
+        {
+          "id": "msg_138da32d36b8c1ef2af93a1e7938c85a",
+          "role": "user",
+          "run_id": "crun_908b8f6e9b0f4897c067540da2486087"
+        }
+      ]
+    },
+    {
+      "label": "after host restart",
+      "run": {
+        "id": "crun_908b8f6e9b0f4897c067540da2486087",
+        "conversation_id": "conv_9e544c57461796650a2e0109081ad281",
+        "client_message_id": "28b5f1e4-ac94-4e9b-b4cf-61773ee9a8ea",
+        "status": "cancelled",
+        "user_seq": 1,
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 18,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "b06-first",
+                "name": "calculate",
+                "arguments": "{\"operation\":\"expression\",\"expression\":\"0.1+0.2\",\"unit\":\"CNY\"}",
+                "status": "completed",
+                "result_preview": "{\"basis\":{\"expression\":\"0.1+0.2\",\"operation\":\"expression\"},\"exact_denominator\":\"10\",\"exact_numerator\":\"3\",\"precision\":2,\"rounded\":false,\"rounding\":\"half_even\",\"unit\":\"CNY\",\"value\":\"0.30\"}",
+                "result_reference": {
+                  "conversation_id": "conv_9e544c57461796650a2e0109081ad281",
+                  "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+                  "step": 0,
+                  "call_id": "b06-first",
+                  "sha256": "fa596fa748d0e64033cffb7bc16dd2fa3dad9efb494e5b191f2bcf53e294d1a7"
+                },
+                "authorization": {
+                  "status": "granted",
+                  "revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+                  "checks": 1
+                },
+                "started_at": "2026-09-12T18:51:16.386895Z",
+                "completed_at": "2026-09-12T18:51:16.412878Z",
+                "duration_ms": 25
+              },
+              {
+                "effect": "read",
+                "id": "b06-read",
+                "name": "knowledge_search",
+                "arguments": "{\"query\":\"B06-wait-cancel\"}",
+                "status": "failed",
+                "error_code": "knowledge_failed",
+                "result_preview": "{\"error\":\"knowledge_failed\"}",
+                "result_reference": {
+                  "conversation_id": "conv_9e544c57461796650a2e0109081ad281",
+                  "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+                  "step": 0,
+                  "call_id": "b06-read",
+                  "sha256": "c9386e2a3e55dce0702d1c0503abef5cb26fac93c40bb7d0e44f538ae58cc69c"
+                },
+                "authorization": {
+                  "status": "granted",
+                  "revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+                  "checks": 1
+                },
+                "started_at": "2026-09-12T18:51:17.166383Z",
+                "completed_at": "2026-09-12T18:51:17.848965Z",
+                "duration_ms": 682
+              },
+              {
+                "id": "b06-third",
+                "name": "calculate",
+                "arguments": "{\"operation\":\"expression\",\"expression\":\"0.1+0.2\",\"unit\":\"CNY\"}",
+                "status": "not_started",
+                "duration_ms": 0
+              }
+            ],
+            "started_at": "2026-09-12T18:51:15.566361Z",
+            "completed_at": "2026-09-12T18:51:15.621828Z",
+            "duration_ms": 55
+          }
+        ],
+        "correlation_id": "crun_908b8f6e9b0f4897c067540da2486087",
+        "metrics": {
+          "steps": 1,
+          "model_calls": 1,
+          "tool_calls": 2,
+          "tool_attempts": 2,
+          "authorization_checks": 2,
+          "confirmation_decisions": 0
+        },
+        "audit": [
+          {
+            "seq": 1,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "occurred_at": "2026-09-12T18:51:13.42236Z"
+          },
+          {
+            "seq": 2,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:13.430665Z"
+          },
+          {
+            "seq": 3,
+            "type": "step",
+            "status": "prepared",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:14.880821Z"
+          },
+          {
+            "seq": 4,
+            "type": "model",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:15.566361Z"
+          },
+          {
+            "seq": 11,
+            "type": "model",
+            "status": "completed",
+            "step": 0,
+            "attempt": 1,
+            "duration_ms": 55,
+            "occurred_at": "2026-09-12T18:51:15.621828Z"
+          },
+          {
+            "seq": 12,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "action_key": "agent.conversation_tools.calculate",
+            "authorization_revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+            "occurred_at": "2026-09-12T18:51:16.380742Z"
+          },
+          {
+            "seq": 13,
+            "type": "tool",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "occurred_at": "2026-09-12T18:51:16.386895Z"
+          },
+          {
+            "seq": 14,
+            "type": "tool",
+            "status": "completed",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "duration_ms": 25,
+            "occurred_at": "2026-09-12T18:51:16.412878Z"
+          },
+          {
+            "seq": 15,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-read",
+            "tool": "knowledge_search",
+            "action_key": "agent.conversation_tools.knowledge_search",
+            "authorization_revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+            "occurred_at": "2026-09-12T18:51:17.159364Z"
+          },
+          {
+            "seq": 16,
+            "type": "tool",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-read",
+            "tool": "knowledge_search",
+            "occurred_at": "2026-09-12T18:51:17.166383Z"
+          },
+          {
+            "seq": 17,
+            "type": "run",
+            "status": "cancelled",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:17.843107Z"
+          },
+          {
+            "seq": 18,
+            "type": "tool",
+            "status": "failed",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-read",
+            "tool": "knowledge_search",
+            "error_code": "knowledge_failed",
+            "duration_ms": 682,
+            "occurred_at": "2026-09-12T18:51:17.848965Z"
+          }
+        ],
+        "audit_complete": true,
+        "started_at": "2026-09-12T18:51:13.430665Z",
+        "completed_at": "2026-09-12T18:51:17.843107Z",
+        "duration_ms": 4412,
+        "queue_duration_ms": 9,
+        "created_at": "2026-09-12T18:51:13.421413Z",
+        "updated_at": "2026-09-12T18:51:17.849252Z"
+      },
+      "messages": [
+        {
+          "id": "msg_138da32d36b8c1ef2af93a1e7938c85a",
+          "role": "user",
+          "run_id": "crun_908b8f6e9b0f4897c067540da2486087"
+        }
+      ]
+    },
+    {
+      "label": "after explicit resume",
+      "run": {
+        "id": "crun_908b8f6e9b0f4897c067540da2486087",
+        "conversation_id": "conv_9e544c57461796650a2e0109081ad281",
+        "client_message_id": "28b5f1e4-ac94-4e9b-b4cf-61773ee9a8ea",
+        "status": "completed",
+        "user_seq": 1,
+        "assistant_message_id": "msg_ae74cdf8ade0dc02d299817c9abee2cb",
+        "attempt": 2,
+        "draft_bytes": 0,
+        "last_event_seq": 31,
+        "steps": [
+          {
+            "number": 0,
+            "attempt": 1,
+            "status": "tools",
+            "text": "",
+            "calls": [
+              {
+                "effect": "read",
+                "id": "b06-first",
+                "name": "calculate",
+                "arguments": "{\"operation\":\"expression\",\"expression\":\"0.1+0.2\",\"unit\":\"CNY\"}",
+                "status": "completed",
+                "result_preview": "{\"basis\":{\"expression\":\"0.1+0.2\",\"operation\":\"expression\"},\"exact_denominator\":\"10\",\"exact_numerator\":\"3\",\"precision\":2,\"rounded\":false,\"rounding\":\"half_even\",\"unit\":\"CNY\",\"value\":\"0.30\"}",
+                "result_reference": {
+                  "conversation_id": "conv_9e544c57461796650a2e0109081ad281",
+                  "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+                  "step": 0,
+                  "call_id": "b06-first",
+                  "sha256": "fa596fa748d0e64033cffb7bc16dd2fa3dad9efb494e5b191f2bcf53e294d1a7"
+                },
+                "authorization": {
+                  "status": "granted",
+                  "revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+                  "checks": 2
+                },
+                "started_at": "2026-09-12T18:51:16.386895Z",
+                "completed_at": "2026-09-12T18:51:16.412878Z",
+                "duration_ms": 25
+              },
+              {
+                "effect": "read",
+                "id": "b06-read",
+                "name": "knowledge_search",
+                "arguments": "{\"query\":\"B06-wait-cancel\"}",
+                "status": "failed",
+                "error_code": "knowledge_failed",
+                "result_preview": "{\"error\":\"knowledge_failed\"}",
+                "result_reference": {
+                  "conversation_id": "conv_9e544c57461796650a2e0109081ad281",
+                  "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+                  "step": 0,
+                  "call_id": "b06-read",
+                  "sha256": "c9386e2a3e55dce0702d1c0503abef5cb26fac93c40bb7d0e44f538ae58cc69c"
+                },
+                "authorization": {
+                  "status": "granted",
+                  "revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+                  "checks": 2
+                },
+                "started_at": "2026-09-12T18:51:17.166383Z",
+                "completed_at": "2026-09-12T18:51:17.848965Z",
+                "duration_ms": 682
+              },
+              {
+                "effect": "read",
+                "id": "b06-third",
+                "name": "calculate",
+                "arguments": "{\"operation\":\"expression\",\"expression\":\"0.1+0.2\",\"unit\":\"CNY\"}",
+                "status": "completed",
+                "result_preview": "{\"basis\":{\"expression\":\"0.1+0.2\",\"operation\":\"expression\"},\"exact_denominator\":\"10\",\"exact_numerator\":\"3\",\"precision\":2,\"rounded\":false,\"rounding\":\"half_even\",\"unit\":\"CNY\",\"value\":\"0.30\"}",
+                "result_reference": {
+                  "conversation_id": "conv_9e544c57461796650a2e0109081ad281",
+                  "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+                  "step": 0,
+                  "call_id": "b06-third",
+                  "sha256": "fa596fa748d0e64033cffb7bc16dd2fa3dad9efb494e5b191f2bcf53e294d1a7"
+                },
+                "authorization": {
+                  "status": "granted",
+                  "revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+                  "checks": 1
+                },
+                "started_at": "2026-09-12T18:51:23.745701Z",
+                "completed_at": "2026-09-12T18:51:23.771603Z",
+                "duration_ms": 25
+              }
+            ],
+            "started_at": "2026-09-12T18:51:15.566361Z",
+            "completed_at": "2026-09-12T18:51:15.621828Z",
+            "duration_ms": 55
+          },
+          {
+            "number": 1,
+            "attempt": 2,
+            "status": "completed",
+            "text": "计算已完成：0.30 元。",
+            "calls": [],
+            "started_at": "2026-09-12T18:51:25.355383Z",
+            "completed_at": "2026-09-12T18:51:25.386318Z",
+            "duration_ms": 30
+          }
+        ],
+        "correlation_id": "crun_908b8f6e9b0f4897c067540da2486087",
+        "metrics": {
+          "steps": 2,
+          "model_calls": 2,
+          "tool_calls": 3,
+          "tool_attempts": 3,
+          "authorization_checks": 5,
+          "confirmation_decisions": 0
+        },
+        "audit": [
+          {
+            "seq": 1,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "occurred_at": "2026-09-12T18:51:13.42236Z"
+          },
+          {
+            "seq": 2,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:13.430665Z"
+          },
+          {
+            "seq": 3,
+            "type": "step",
+            "status": "prepared",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:14.880821Z"
+          },
+          {
+            "seq": 4,
+            "type": "model",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:15.566361Z"
+          },
+          {
+            "seq": 11,
+            "type": "model",
+            "status": "completed",
+            "step": 0,
+            "attempt": 1,
+            "duration_ms": 55,
+            "occurred_at": "2026-09-12T18:51:15.621828Z"
+          },
+          {
+            "seq": 12,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "action_key": "agent.conversation_tools.calculate",
+            "authorization_revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+            "occurred_at": "2026-09-12T18:51:16.380742Z"
+          },
+          {
+            "seq": 13,
+            "type": "tool",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "occurred_at": "2026-09-12T18:51:16.386895Z"
+          },
+          {
+            "seq": 14,
+            "type": "tool",
+            "status": "completed",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "duration_ms": 25,
+            "occurred_at": "2026-09-12T18:51:16.412878Z"
+          },
+          {
+            "seq": 15,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-read",
+            "tool": "knowledge_search",
+            "action_key": "agent.conversation_tools.knowledge_search",
+            "authorization_revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+            "occurred_at": "2026-09-12T18:51:17.159364Z"
+          },
+          {
+            "seq": 16,
+            "type": "tool",
+            "status": "started",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-read",
+            "tool": "knowledge_search",
+            "occurred_at": "2026-09-12T18:51:17.166383Z"
+          },
+          {
+            "seq": 17,
+            "type": "run",
+            "status": "cancelled",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:17.843107Z"
+          },
+          {
+            "seq": 18,
+            "type": "tool",
+            "status": "failed",
+            "step": 0,
+            "attempt": 1,
+            "call_id": "b06-read",
+            "tool": "knowledge_search",
+            "error_code": "knowledge_failed",
+            "duration_ms": 682,
+            "occurred_at": "2026-09-12T18:51:17.848965Z"
+          },
+          {
+            "seq": 19,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T18:51:20.774812Z"
+          },
+          {
+            "seq": 20,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 2,
+            "occurred_at": "2026-09-12T18:51:20.78061Z"
+          },
+          {
+            "seq": 21,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 2,
+            "call_id": "b06-first",
+            "tool": "calculate",
+            "action_key": "agent.conversation_tools.calculate",
+            "authorization_revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+            "occurred_at": "2026-09-12T18:51:22.265306Z"
+          },
+          {
+            "seq": 22,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 2,
+            "call_id": "b06-read",
+            "tool": "knowledge_search",
+            "action_key": "agent.conversation_tools.knowledge_search",
+            "authorization_revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+            "occurred_at": "2026-09-12T18:51:23.000599Z"
+          },
+          {
+            "seq": 23,
+            "type": "authorization",
+            "status": "granted",
+            "step": 0,
+            "attempt": 2,
+            "call_id": "b06-third",
+            "tool": "calculate",
+            "action_key": "agent.conversation_tools.calculate",
+            "authorization_revision": "4740e8316d5c5ebfaba01d99da6078a2aa2c61094a6666958a34e260f7cc0f4b",
+            "occurred_at": "2026-09-12T18:51:23.738707Z"
+          },
+          {
+            "seq": 24,
+            "type": "tool",
+            "status": "started",
+            "step": 0,
+            "attempt": 2,
+            "call_id": "b06-third",
+            "tool": "calculate",
+            "occurred_at": "2026-09-12T18:51:23.745701Z"
+          },
+          {
+            "seq": 25,
+            "type": "tool",
+            "status": "completed",
+            "step": 0,
+            "attempt": 2,
+            "call_id": "b06-third",
+            "tool": "calculate",
+            "duration_ms": 25,
+            "occurred_at": "2026-09-12T18:51:23.771603Z"
+          },
+          {
+            "seq": 26,
+            "type": "step",
+            "status": "prepared",
+            "step": 1,
+            "attempt": 2,
+            "occurred_at": "2026-09-12T18:51:24.524484Z"
+          },
+          {
+            "seq": 27,
+            "type": "model",
+            "status": "started",
+            "step": 1,
+            "attempt": 2,
+            "occurred_at": "2026-09-12T18:51:25.355383Z"
+          },
+          {
+            "seq": 29,
+            "type": "model",
+            "status": "completed",
+            "step": 1,
+            "attempt": 2,
+            "duration_ms": 30,
+            "occurred_at": "2026-09-12T18:51:25.386318Z"
+          },
+          {
+            "seq": 31,
+            "type": "run",
+            "status": "completed",
+            "step": 0,
+            "attempt": 2,
+            "occurred_at": "2026-09-12T18:51:25.416924Z"
+          }
+        ],
+        "audit_complete": true,
+        "started_at": "2026-09-12T18:51:13.430665Z",
+        "completed_at": "2026-09-12T18:51:25.416924Z",
+        "duration_ms": 11986,
+        "queue_duration_ms": 9,
+        "created_at": "2026-09-12T18:51:13.421413Z",
+        "updated_at": "2026-09-12T18:51:25.417247Z"
+      },
+      "messages": [
+        {
+          "id": "msg_138da32d36b8c1ef2af93a1e7938c85a",
+          "role": "user",
+          "run_id": "crun_908b8f6e9b0f4897c067540da2486087"
+        },
+        {
+          "id": "msg_ae74cdf8ade0dc02d299817c9abee2cb",
+          "role": "assistant",
+          "run_id": "crun_908b8f6e9b0f4897c067540da2486087"
+        }
+      ]
+    }
+  ]
+}

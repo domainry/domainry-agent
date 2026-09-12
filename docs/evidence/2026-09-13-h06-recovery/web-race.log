@@ -1,0 +1,17 @@
+=== RUN   TestConversationConfirmationThroughIdentityHTTPAndReconciliation
+--- PASS: TestConversationConfirmationThroughIdentityHTTPAndReconciliation (7.14s)
+=== RUN   TestExecutionOutcomeExternalHTTPRecoveryAndBrowser
+    conversation_outcome_external_test.go:241: actual loopback HTTP protocol: 2 persisted external records, one POST per key, 1 reconciled keys, response dropped after commit; no repeated POST after complete host restart
+--- PASS: TestExecutionOutcomeExternalHTTPRecoveryAndBrowser (8.28s)
+=== RUN   TestConversationConfirmationThroughIdentityHTTPAndReconciliation
+--- PASS: TestConversationConfirmationThroughIdentityHTTPAndReconciliation (6.99s)
+=== RUN   TestExecutionOutcomeExternalHTTPRecoveryAndBrowser
+    conversation_outcome_external_test.go:241: actual loopback HTTP protocol: 2 persisted external records, one POST per key, 1 reconciled keys, response dropped after commit; no repeated POST after complete host restart
+--- PASS: TestExecutionOutcomeExternalHTTPRecoveryAndBrowser (8.28s)
+=== RUN   TestConversationConfirmationThroughIdentityHTTPAndReconciliation
+--- PASS: TestConversationConfirmationThroughIdentityHTTPAndReconciliation (6.90s)
+=== RUN   TestExecutionOutcomeExternalHTTPRecoveryAndBrowser
+    conversation_outcome_external_test.go:241: actual loopback HTTP protocol: 2 persisted external records, one POST per key, 1 reconciled keys, response dropped after commit; no repeated POST after complete host restart
+--- PASS: TestExecutionOutcomeExternalHTTPRecoveryAndBrowser (8.27s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	47.461s

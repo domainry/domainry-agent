@@ -1,0 +1,15 @@
+=== RUN   TestConversationCatalogIdentityHTTPConnectionsAndBrowser
+    conversation_tool_catalog_test.go:211: catalog round=catalog-ready status=completed error= elapsed=2.655875458s model_calls=1
+    conversation_tool_catalog_test.go:211: catalog round=catalog-disconnected status=completed error= elapsed=2.701182375s model_calls=2
+    conversation_tool_catalog_test.go:211: catalog round=catalog-no-search status=completed error= elapsed=2.707196875s model_calls=3
+    conversation_tool_catalog_test.go:211: catalog round=catalog-denied status=completed error= elapsed=2.7607655s model_calls=4
+    conversation_tool_catalog_test.go:211: catalog round=catalog-failed-check status=failed error=tool_availability_failed elapsed=915.620375ms model_calls=4
+    conversation_tool_catalog_test.go:211: catalog round=catalog-search-restored status=completed error= elapsed=5.885904084s model_calls=7
+    conversation_tool_catalog_test.go:211: catalog round=catalog-execution-switch status=failed error=tool_access_denied elapsed=3.659682458s model_calls=8
+    conversation_tool_catalog_test.go:279: Temporary browser acceptance ready at http://127.0.0.1:8092
+    conversation_tool_catalog_test.go:312: conversation-only web binding: legacy Task, TaskDefinition and Interactive rows=0
+    conversation_tool_catalog_test.go:314: B06: official knowledge HTTP requests stopped=1
+    conversation_tool_catalog_test.go:316: catalog acceptance completed: model HTTP requests=11, knowledge HTTP requests=26
+--- PASS: TestConversationCatalogIdentityHTTPConnectionsAndBrowser (89.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	90.641s

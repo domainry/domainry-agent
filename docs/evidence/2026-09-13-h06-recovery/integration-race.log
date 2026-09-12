@@ -1,0 +1,83 @@
+=== RUN   TestConversationCancellationDoesNotStopAConcurrentlyResumedAttempt
+--- PASS: TestConversationCancellationDoesNotStopAConcurrentlyResumedAttempt (0.18s)
+=== RUN   TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown
+=== RUN   TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown/unknown=false
+    conversation_cancellation_integration_test.go:223: cancel/reopen/resume: late=completed effects=3 reconciles=0 model=2
+=== RUN   TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown/unknown=true
+    conversation_cancellation_integration_test.go:223: cancel/reopen/resume: late=uncertain effects=3 reconciles=1 model=2
+--- PASS: TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown (0.62s)
+    --- PASS: TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown/unknown=false (0.31s)
+    --- PASS: TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown/unknown=true (0.31s)
+=== RUN   TestConversationCancellationClosesOfficialKnowledgeConnectorRequest
+    conversation_cancellation_integration_test.go:284: official knowledge Connector: cancellation reached the real HTTP server; no next model request
+--- PASS: TestConversationCancellationClosesOfficialKnowledgeConnectorRequest (0.30s)
+=== RUN   TestConversationExecutionResumesAfterModelFailureWithoutRepeatingWrite
+--- PASS: TestConversationExecutionResumesAfterModelFailureWithoutRepeatingWrite (0.25s)
+=== RUN   TestConversationWriteTimeoutReconcilesAfterRestartWithoutRepeatingEffect
+--- PASS: TestConversationWriteTimeoutReconcilesAfterRestartWithoutRepeatingEffect (0.30s)
+=== RUN   TestConversationWorkerRestartReusesFrozenInput
+--- PASS: TestConversationWorkerRestartReusesFrozenInput (0.46s)
+=== RUN   TestConversationConfirmationDuplicatesAndUnknownResultKeepOriginalAuthorization
+--- PASS: TestConversationConfirmationDuplicatesAndUnknownResultKeepOriginalAuthorization (0.35s)
+=== RUN   TestConversationModelToPersistedBrowserStreamAndDisconnectReplay
+=== RUN   TestConversationModelToPersistedBrowserStreamAndDisconnectReplay/module
+=== RUN   TestConversationModelToPersistedBrowserStreamAndDisconnectReplay/saas
+--- PASS: TestConversationModelToPersistedBrowserStreamAndDisconnectReplay (2.21s)
+    --- PASS: TestConversationModelToPersistedBrowserStreamAndDisconnectReplay/module (0.79s)
+    --- PASS: TestConversationModelToPersistedBrowserStreamAndDisconnectReplay/saas (1.42s)
+=== RUN   TestConversationCancellationDoesNotStopAConcurrentlyResumedAttempt
+--- PASS: TestConversationCancellationDoesNotStopAConcurrentlyResumedAttempt (0.18s)
+=== RUN   TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown
+=== RUN   TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown/unknown=false
+    conversation_cancellation_integration_test.go:223: cancel/reopen/resume: late=completed effects=3 reconciles=0 model=2
+=== RUN   TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown/unknown=true
+    conversation_cancellation_integration_test.go:223: cancel/reopen/resume: late=uncertain effects=3 reconciles=1 model=2
+--- PASS: TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown (0.87s)
+    --- PASS: TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown/unknown=false (0.32s)
+    --- PASS: TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown/unknown=true (0.54s)
+=== RUN   TestConversationCancellationClosesOfficialKnowledgeConnectorRequest
+    conversation_cancellation_integration_test.go:284: official knowledge Connector: cancellation reached the real HTTP server; no next model request
+--- PASS: TestConversationCancellationClosesOfficialKnowledgeConnectorRequest (0.32s)
+=== RUN   TestConversationExecutionResumesAfterModelFailureWithoutRepeatingWrite
+--- PASS: TestConversationExecutionResumesAfterModelFailureWithoutRepeatingWrite (0.25s)
+=== RUN   TestConversationWriteTimeoutReconcilesAfterRestartWithoutRepeatingEffect
+--- PASS: TestConversationWriteTimeoutReconcilesAfterRestartWithoutRepeatingEffect (0.30s)
+=== RUN   TestConversationWorkerRestartReusesFrozenInput
+--- PASS: TestConversationWorkerRestartReusesFrozenInput (0.47s)
+=== RUN   TestConversationConfirmationDuplicatesAndUnknownResultKeepOriginalAuthorization
+--- PASS: TestConversationConfirmationDuplicatesAndUnknownResultKeepOriginalAuthorization (0.35s)
+=== RUN   TestConversationModelToPersistedBrowserStreamAndDisconnectReplay
+=== RUN   TestConversationModelToPersistedBrowserStreamAndDisconnectReplay/module
+=== RUN   TestConversationModelToPersistedBrowserStreamAndDisconnectReplay/saas
+--- PASS: TestConversationModelToPersistedBrowserStreamAndDisconnectReplay (2.29s)
+    --- PASS: TestConversationModelToPersistedBrowserStreamAndDisconnectReplay/module (0.80s)
+    --- PASS: TestConversationModelToPersistedBrowserStreamAndDisconnectReplay/saas (1.49s)
+=== RUN   TestConversationCancellationDoesNotStopAConcurrentlyResumedAttempt
+--- PASS: TestConversationCancellationDoesNotStopAConcurrentlyResumedAttempt (0.19s)
+=== RUN   TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown
+=== RUN   TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown/unknown=false
+    conversation_cancellation_integration_test.go:223: cancel/reopen/resume: late=completed effects=3 reconciles=0 model=2
+=== RUN   TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown/unknown=true
+    conversation_cancellation_integration_test.go:223: cancel/reopen/resume: late=uncertain effects=3 reconciles=1 model=2
+--- PASS: TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown (0.67s)
+    --- PASS: TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown/unknown=false (0.33s)
+    --- PASS: TestConversationCancellationPreservesLateEffectsAndReconcilesUnknown/unknown=true (0.34s)
+=== RUN   TestConversationCancellationClosesOfficialKnowledgeConnectorRequest
+    conversation_cancellation_integration_test.go:284: official knowledge Connector: cancellation reached the real HTTP server; no next model request
+--- PASS: TestConversationCancellationClosesOfficialKnowledgeConnectorRequest (0.33s)
+=== RUN   TestConversationExecutionResumesAfterModelFailureWithoutRepeatingWrite
+--- PASS: TestConversationExecutionResumesAfterModelFailureWithoutRepeatingWrite (0.27s)
+=== RUN   TestConversationWriteTimeoutReconcilesAfterRestartWithoutRepeatingEffect
+--- PASS: TestConversationWriteTimeoutReconcilesAfterRestartWithoutRepeatingEffect (0.31s)
+=== RUN   TestConversationWorkerRestartReusesFrozenInput
+--- PASS: TestConversationWorkerRestartReusesFrozenInput (0.47s)
+=== RUN   TestConversationConfirmationDuplicatesAndUnknownResultKeepOriginalAuthorization
+--- PASS: TestConversationConfirmationDuplicatesAndUnknownResultKeepOriginalAuthorization (0.37s)
+=== RUN   TestConversationModelToPersistedBrowserStreamAndDisconnectReplay
+=== RUN   TestConversationModelToPersistedBrowserStreamAndDisconnectReplay/module
+=== RUN   TestConversationModelToPersistedBrowserStreamAndDisconnectReplay/saas
+--- PASS: TestConversationModelToPersistedBrowserStreamAndDisconnectReplay (2.09s)
+    --- PASS: TestConversationModelToPersistedBrowserStreamAndDisconnectReplay/module (0.74s)
+    --- PASS: TestConversationModelToPersistedBrowserStreamAndDisconnectReplay/saas (1.35s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	15.889s

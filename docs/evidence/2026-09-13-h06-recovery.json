@@ -1,0 +1,288 @@
+{
+  "todo": "H06",
+  "status": "complete",
+  "captured_at": "2026-09-13T02:54:57.400395+08:00",
+  "scope": "crash/restart before and after tool execution, write timeout uncertainty, duplicate confirmation, cancellation, SSE reconnect and no blind external write replay",
+  "change": {
+    "production_files": [],
+    "test_files": [
+      "integration/conversation_execution_integration_test.go"
+    ],
+    "new_test": "TestConversationWriteTimeoutReconcilesAfterRestartWithoutRepeatingEffect"
+  },
+  "invariants": {
+    "completed_write_reused": true,
+    "unknown_write_reconciled_only": true,
+    "same_idempotency_key_for_reconcile": true,
+    "duplicate_confirmation_single_effect": true,
+    "cancel_preserves_receipts_and_stops_future_calls": true,
+    "sse_last_event_id_replays_only_after_cursor": true,
+    "restart_uses_persisted_sqlite_state": true
+  },
+  "browser": {
+    "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+    "javascript_errors": [],
+    "steps": [
+      "first calculation committed, official knowledge HTTP request in flight, third call unstarted",
+      "stop closes Connector HTTP, preserves calculation, leaves third call unexecuted and saves no assistant reply",
+      "refresh retains real outcomes and duplicate cancellation is idempotent",
+      "host restart retains cancellation; explicit resume completes only remaining work on the same run"
+    ],
+    "snapshots": [
+      {
+        "label": "before cancellation",
+        "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+        "status": "running",
+        "attempt": 1,
+        "last_event_seq": 16,
+        "call_statuses": [
+          "completed",
+          "running",
+          "queued"
+        ],
+        "message_roles": [
+          "user"
+        ]
+      },
+      {
+        "label": "after refresh",
+        "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+        "status": "cancelled",
+        "attempt": 1,
+        "last_event_seq": 18,
+        "call_statuses": [
+          "completed",
+          "failed",
+          "not_started"
+        ],
+        "message_roles": [
+          "user"
+        ]
+      },
+      {
+        "label": "after host restart",
+        "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+        "status": "cancelled",
+        "attempt": 1,
+        "last_event_seq": 18,
+        "call_statuses": [
+          "completed",
+          "failed",
+          "not_started"
+        ],
+        "message_roles": [
+          "user"
+        ]
+      },
+      {
+        "label": "after explicit resume",
+        "run_id": "crun_908b8f6e9b0f4897c067540da2486087",
+        "status": "completed",
+        "attempt": 2,
+        "last_event_seq": 31,
+        "call_statuses": [
+          "completed",
+          "failed",
+          "completed"
+        ],
+        "message_roles": [
+          "user",
+          "assistant"
+        ]
+      }
+    ],
+    "screenshots": [
+      "before-cancel.png",
+      "cancelled-receipts.png",
+      "restart-cancelled.png",
+      "explicit-resume.png"
+    ]
+  },
+  "tests": [
+    {
+      "name": "write timeout repeated",
+      "command": "GOWORK=off go test ./integration -run '^TestConversationWriteTimeoutReconcilesAfterRestartWithoutRepeatingEffect$' -count=10",
+      "result": "pass",
+      "duration": "1.389s"
+    },
+    {
+      "name": "H06 integration race matrix",
+      "command": "GOWORK=off go test -race ./integration -run '<8 H06 tests>' -count=3",
+      "result": "pass",
+      "duration": "15.889s",
+      "top_level_tests_per_iteration": 8
+    },
+    {
+      "name": "Identity HTTP and external write race",
+      "command": "GOWORK=off go test -race ./internal/assembly/web -run '^(TestConversationConfirmationThroughIdentityHTTPAndReconciliation|TestExecutionOutcomeExternalHTTPRecoveryAndBrowser)$' -count=3",
+      "result": "pass",
+      "duration": "47.461s"
+    },
+    {
+      "name": "built browser cancellation recovery",
+      "command": "AGENT_TOOL_UI_ACCEPTANCE=1 GOWORK=off go test -race ./internal/assembly/web -run '^TestConversationCatalogIdentityHTTPConnectionsAndBrowser$'",
+      "result": "pass",
+      "duration": "90.641s",
+      "model_http_requests": 11,
+      "knowledge_http_requests": 26,
+      "cancelled_connector_requests": 1,
+      "javascript_errors": 0
+    },
+    {
+      "name": "agent full",
+      "command": "GOWORK=off go test ./...",
+      "result": "pass",
+      "integration_duration": "80.771s"
+    },
+    {
+      "name": "frontend",
+      "command": "npm test && npm run build",
+      "result": "pass",
+      "tests": 61
+    },
+    {
+      "name": "architecture race",
+      "command": "GOWORK=off go test -race ./internal/architecture -count=3",
+      "result": "pass",
+      "duration": "1.682s"
+    },
+    {
+      "name": "static",
+      "command": "GOWORK=off go vet ./... && GOWORK=off go build ./...",
+      "result": "pass"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "integration/conversation_execution_integration_test.go",
+      "sha256": "8a75b51091e783b479447337cb350f5ad9ad20059e5aaecdf5ac36054cd26651"
+    },
+    {
+      "path": "integration/conversation_cancellation_integration_test.go",
+      "sha256": "018f318e04419de35007091a6b0027b9ca566817ae62f7be491aa4008df7eb7f"
+    },
+    {
+      "path": "integration/conversation_stream_integration_test.go",
+      "sha256": "94d125eabd220fe4eeea33e4f026b9e7471f56ddb62a54f566c6023363991544"
+    },
+    {
+      "path": "integration/conversation_interaction_integration_test.go",
+      "sha256": "809a714da049613e8aa390b52688034cfc5d6d131db27f1b5e60ff4118ead8d1"
+    },
+    {
+      "path": "integration/conversation_integration_test.go",
+      "sha256": "580a478896736416da00a085ac4701683684e3ee2e192b930d2d0c5ca1b1bb55"
+    },
+    {
+      "path": "internal/assembly/web/conversation_outcome_external_test.go",
+      "sha256": "19745f2aa6a6d7dad7b7af1399d3e00c462f73993a81183daa36b4dcdb373df8"
+    },
+    {
+      "path": "internal/assembly/web/conversation_confirmation_test.go",
+      "sha256": "86e98aeeea4c9c6db55db3b6aec0d82ac5bc9c443534f7eb51ed9df0a9fd6f68"
+    },
+    {
+      "path": "internal/application/conversation_execution.go",
+      "sha256": "877563fc528270ac2b7497cb0f46f4c66cf6448856cfef72353cb074be5f751f"
+    },
+    {
+      "path": "internal/application/conversation_service.go",
+      "sha256": "607c92f51f33b65bededc7bfae29192b64c266d1ebeaa996b6054d8758356bbc"
+    },
+    {
+      "path": "frontend/tests/cancellation.browser.mjs",
+      "sha256": "363158e7389e7f8ca05265daef0a7d4daba230b0cb855c87f8491fd36c951614"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "evidence/2026-09-13-h06-recovery/agent-full.log",
+      "bytes": 2768,
+      "sha256": "27df8a0170ecae60b05d1b49d1315bc7159ea5b8e9d4f5faa95e3e5fda7fddd5"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/architecture-race.log",
+      "bytes": 2408,
+      "sha256": "82a150ebf153c85b8bf4498cdb7db98fdba51c416f8ba68448f224b939754e53"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/browser/before-cancel.png",
+      "bytes": 137289,
+      "sha256": "76b2134f8d98ccc8fe3f0d81ec80e21145f84954556bb9e93bca644330937c63"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/browser/cancelled-receipts.png",
+      "bytes": 207242,
+      "sha256": "5a6b50d8df04960f6d2c707c7187074106eb99b8d0842ba80597adee889314d5"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/browser/explicit-resume.png",
+      "bytes": 166332,
+      "sha256": "c2401bd7a59c07996df65a2a74545070b4f2b6da32035c24cf23d5a45896a9ce"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/browser/report.json",
+      "bytes": 35094,
+      "sha256": "92fb04126028a38bcc16541d53a5a62609ee08d8aa1e98748c82032d1cab9be1"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/browser/restart-cancelled.png",
+      "bytes": 163856,
+      "sha256": "71478ca2c3508922d1b7ee891952fa004e216d9947a1d0bf6efc9b2dddbb5cdb"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/browser-host.log",
+      "bytes": 1645,
+      "sha256": "f6ecb15088467e8f07009c111c36d1c2680e87d17b9f84c32be629e56fbcb13c"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/browser.log",
+      "bytes": 390,
+      "sha256": "c0dbd834ba55ae6a0f8c90e65166bb8a5abac93ba4e9aa050e17966c33822308"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/frontend-build.log",
+      "bytes": 32521,
+      "sha256": "c48989c45d144c3c0e919c070c33bfd4485456a97690a74ac0410d4d7fb3e603"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/frontend-test.log",
+      "bytes": 14464,
+      "sha256": "a9fd61d1f258e07bca48796e7a0b55abb0dfa1e9ee304ce85f377ae97f3f4967"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/integration-race.log",
+      "bytes": 7391,
+      "sha256": "43dfda347ec3bef62ee58d6416b1a2c16acc6e5068fc825f6761f94740f35cb1"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/2026-09-13-h06-recovery/web-race.log",
+      "bytes": 1602,
+      "sha256": "9d002e905d097a981c791152ee600c7a2cbeec433f7177daf5079dce249655a0"
+    }
+  ],
+  "architecture": "evidence/2026-09-13-h06-recovery/architecture-audit.json",
+  "limitations": [
+    "External writer, model and knowledge content are controlled protocol fixtures.",
+    "No real Google Workspace or Microsoft 365 account is configured; vendor failure acceptance remains H08.",
+    "H07 isolation and background reauthorization are not claimed here."
+  ],
+  "llm_proxy": {
+    "modified": false,
+    "model_proxy": false,
+    "web_tool_paths": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ]
+  }
+}

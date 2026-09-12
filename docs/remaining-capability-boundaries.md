@@ -1,6 +1,6 @@
 # 剩余能力的拆库边界（2026-09-11）
 
-本表依据当前拆库后的源码，约束后续按 TODO 顺序开发。只核对归属，不提前实施后续条目。清单已依次完成至 H04，当前 H06；旧验收日志是当时源码的证据，不能代替拆库后的组合验收。
+本表依据当前拆库后的源码，约束后续按 TODO 顺序开发。只核对归属，不提前实施后续条目。清单已依次完成至 H06，当前 H07；旧验收日志是当时源码的证据，不能代替拆库后的组合验收。
 
 ## 当前已经存在的边界
 
@@ -54,3 +54,5 @@ F01 的固定账号测试范围继续留在 Provider：Connector SDK 声明可�
 H03 已按表中边界完成：Agent 使用自身 SDK 可选持久化端口，在自己的 run／task 表及 workspace guard 上执行用户／工作区排队和运行限额；Scheduler 使用自身 SDK 可选投影、run 表及 Runtime guard 限制触发积压；Tools 保留工具定义 timeout，Integration／Connector 宿主保留外发 HTTP timeout。各 owner 的限制分别配置并在调用边界取更短截止时间，没有新增跨 owner 实现依赖或进程内多实例计数。完成证据见[H03 验收](testing-2026-09-13-h03-capacity.md)和[架构审计](evidence/2026-09-13-h03-capacity/architecture-audit.json)。
 
 H04 已按依赖方向完成发布：公共 SDK 先稳定契约，owner 模块随后固定依赖，Runtime 通过 11-Binding 锁组合，Agent 与 PM／Work 最后固定最终版本。19 个标签均从远端全新模块缓存下载成功；正式 `go.mod` 没有本地 `replace`，Runtime 外部宿主编译及各产品 `GOWORK=off` 验证通过。Identity Module 范围从可信 context 解析；Web Search／Web Fetch 仍由 Integration／Connectors 消费 llm-proxy 两个工具接口，模型 Provider 不经过 llm-proxy。完成证据见[H04 验收](testing-2026-09-13-h04-releases.md)和[架构审计](evidence/2026-09-13-h04-releases/architecture-audit.json)。
+
+H06 已按既有 owner 边界完成故障恢复验收：Agent application 只编排持久执行状态，Agent persistence 独占 run 租约／fence、工具账本、interaction revision 和 SSE 游标；工具 owner 分别实现 Invoke 与 Reconcile，并持有实际外部副作用。超时、丢响应、取消和重启后的未知写只走原键核查，已完成回执直接复用，前端不直接调用 owner 写入口。本项只增加缺失的写超时恢复测试，没有修改生产依赖方向。完成证据见[H06 验收](testing-2026-09-13-h06-recovery.md)和[架构审计](evidence/2026-09-13-h06-recovery/architecture-audit.json)。

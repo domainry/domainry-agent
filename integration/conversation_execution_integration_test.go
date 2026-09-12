@@ -7,6 +7,7 @@ import (
 	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"sync"
 	"testing"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	application "github.com/domainry/domainry-agent/internal/application"
@@ -233,6 +234,102 @@ func TestConversationExecutionReconcilesUnknownWritesAndReauthorizesResume(t *te
 				t.Fatalf("reconciliation lost key or failed: %+v %+v", host, final)
 			}
 		})
+	}
+}
+
+type timedOutWriteHost struct {
+	mu         sync.Mutex
+	invokes    int
+	reconciles int
+	committed  bool
+	keys       []string
+}
+
+func (*timedOutWriteHost) ConversationTools(context.Context, agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, error) {
+	return []agentsdk.ConversationToolDefinition{{
+		Key: "create_item", Version: "1", Description: "Create an item through a bounded external write",
+		InputSchema:  json.RawMessage(`{"type":"object","properties":{"title":{"type":"string"}},"required":["title"],"additionalProperties":false}`),
+		OutputSchema: json.RawMessage(`{"type":"object","properties":{"id":{"type":"string"}},"required":["id"],"additionalProperties":false}`),
+		ActionKey:    "items.create", Effect: "write", Idempotency: "reconcile", TimeoutMillis: 5000, MaxOutputBytes: 1024,
+	}}, nil
+}
+
+func (*timedOutWriteHost) AuthorizeConversationTool(context.Context, agentsdk.ConversationToolRequest) (agentsdk.ConversationToolAuthorization, error) {
+	return agentsdk.ConversationToolAuthorization{Granted: true, Revision: "allowed-v1"}, nil
+}
+
+func (h *timedOutWriteHost) InvokeConversationTool(ctx context.Context, request agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {
+	h.mu.Lock()
+	h.invokes++
+	h.committed = true
+	h.keys = append(h.keys, request.IdempotencyKey)
+	h.mu.Unlock()
+	<-ctx.Done()
+	return agentsdk.ConversationToolResult{}, ctx.Err()
+}
+
+func (h *timedOutWriteHost) ReconcileConversationTool(_ context.Context, request agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.reconciles++
+	h.keys = append(h.keys, request.IdempotencyKey)
+	if !h.committed {
+		return agentsdk.ConversationToolResult{Status: "uncertain", ErrorCode: "external_result_unknown"}, nil
+	}
+	return agentsdk.ConversationToolResult{Status: "completed", Content: json.RawMessage(`{"id":"created-after-timeout"}`), ResourceID: "created-after-timeout"}, nil
+}
+
+func TestConversationWriteTimeoutReconcilesAfterRestartWithoutRepeatingEffect(t *testing.T) {
+	repo := conversationRepository(t)
+	host := &timedOutWriteHost{}
+	model := &executionModel{}
+	model.step = func(number int, _ agentsdk.ConversationStepRequest) (agentsdk.ConversationStepResult, error) {
+		if number == 1 {
+			return model.callResult(`{"title":"timeout"}`), nil
+		}
+		return model.answerResult(), nil
+	}
+	options := conversationOptions()
+	options.ToolHost = host
+	options.ExternalCallTimeout = 50 * time.Millisecond
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { service.Close() }()
+	a := conversationAuthority()
+	conversation, err := service.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "write-timeout"}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	run, err := service.Send(t.Context(), conversation.ID, agentsdk.ConversationSend{ClientMessageID: "write-timeout", Message: "create one"}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	unknown := waitConversationState(t, service, conversation.ID, run.ID, "needs_reconciliation")
+	unknownAudit := false
+	for _, event := range unknown.Audit {
+		unknownAudit = unknownAudit || event.Type == "tool" && event.Status == "uncertain" && event.ErrorCode == "external_result_unknown"
+	}
+	if len(unknown.Steps) != 1 || len(unknown.Steps[0].Calls) != 1 || unknown.Steps[0].Calls[0].Status != "needs_reconciliation" || !unknownAudit {
+		t.Fatalf("write timeout was not persisted as unknown: %+v", unknown)
+	}
+	service.Close()
+	service, err = conversationassembly.NewService(repo, model, a.RuntimeID, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = service.Resume(t.Context(), conversation.ID, run.ID, a); err != nil {
+		t.Fatal(err)
+	}
+	final := waitConversationState(t, service, conversation.ID, run.ID, "completed")
+	if final.Steps[0].Calls[0].ResourceID != "created-after-timeout" {
+		t.Fatalf("reconciled receipt missing: %+v", final.Steps)
+	}
+	host.mu.Lock()
+	defer host.mu.Unlock()
+	if host.invokes != 1 || host.reconciles != 1 || len(host.keys) != 2 || host.keys[0] == "" || host.keys[0] != host.keys[1] {
+		t.Fatalf("timed-out write replayed or changed key: invokes=%d reconciles=%d keys=%v", host.invokes, host.reconciles, host.keys)
 	}
 }
 

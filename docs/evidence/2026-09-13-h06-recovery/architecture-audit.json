@@ -1,0 +1,64 @@
+{
+  "todo": "H06",
+  "pass": true,
+  "checks": {
+    "production_implementation_unchanged": {
+      "pass": true,
+      "files": []
+    },
+    "fault_injection_uses_public_ports": {
+      "pass": true,
+      "evidence": "new timeout host implements Agent SDK ConversationToolHost; service uses existing repository port"
+    },
+    "application_dependency_guard": {
+      "pass": true,
+      "command": "GOWORK=off go test -race ./internal/architecture -count=3"
+    },
+    "persistence_owns_lease_fence_and_receipt_atomicity": {
+      "pass": true,
+      "evidence": "existing ConversationExecutionRepository and cancellation store tests plus H06 race matrix"
+    },
+    "owner_owns_external_effect_and_reconciliation": {
+      "pass": true,
+      "evidence": "Invoke and Reconcile are separate ConversationToolHost methods; Agent never writes the fixture files"
+    },
+    "no_blind_write_replay": {
+      "pass": true,
+      "observed": {
+        "timeout_invoke": 1,
+        "timeout_reconcile": 1,
+        "external_http_post_per_key": 1,
+        "duplicate_confirmation_invoke": 1,
+        "duplicate_confirmation_reconcile": 1
+      }
+    },
+    "sse_cursor_is_transport_boundary": {
+      "pass": true,
+      "modes": [
+        "module",
+        "saas"
+      ],
+      "header": "Last-Event-ID"
+    },
+    "llm_proxy_untouched": {
+      "pass": true,
+      "tool_paths": [
+        "POST /tool/web_search",
+        "POST /tool/web_fetch_jina"
+      ],
+      "model_proxy": false
+    }
+  },
+  "boundary": {
+    "agent_application": "orchestrates persisted execution state through Agent SDK ports",
+    "agent_persistence": "owns run lease/fence, execution ledger, interaction revision and event cursor",
+    "tool_owner": "owns side effect, stable receipt lookup and external cancellation when available",
+    "http_transport": "maps current identity, SSE cursor and explicit user actions",
+    "frontend": "projects server state and never invokes owner writes directly"
+  },
+  "next_todo_not_implemented": {
+    "todo": "H07",
+    "pass": true,
+    "evidence": "H06 changes only add timeout recovery coverage and evidence"
+  }
+}

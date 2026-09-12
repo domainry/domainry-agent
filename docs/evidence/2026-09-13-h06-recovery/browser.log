@@ -1,0 +1,4 @@
+PASS first calculation committed, official knowledge HTTP request in flight, third call unstarted
+PASS stop closes Connector HTTP, preserves calculation, leaves third call unexecuted and saves no assistant reply
+PASS refresh retains real outcomes and duplicate cancellation is idempotent
+PASS host restart retains cancellation; explicit resume completes only remaining work on the same run
