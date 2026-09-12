@@ -1,0 +1,38 @@
+=== RUN   TestConversationCurrentIdentityAdmissionAndBrowser
+    conversation_authorization_test.go:164: disabled live Identity principal: run=crun_1dc93dccfc0942469af288065bf2f7fc status=failed code=execution_access_denied model_calls_while_disabled=0
+--- PASS: TestConversationCurrentIdentityAdmissionAndBrowser (8.63s)
+=== RUN   TestScheduledTaskUsesCurrentIdentityAndWaitsForUserConfirmation
+--- PASS: TestScheduledTaskUsesCurrentIdentityAndWaitsForUserConfirmation (10.86s)
+=== RUN   TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite
+    conversation_task_start_test.go:648: task_start returned task_3d8386122e2f990a241899f4dbe1a752; child run crun_de397a7f1f88a3bd6e87866984b5363d recovered at attempt 2 with exact catalog [time_now]
+--- PASS: TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite (81.82s)
+=== RUN   TestExternalAccountAgentOwnershipAndRestart
+--- PASS: TestExternalAccountAgentOwnershipAndRestart (1.07s)
+=== RUN   TestExternalAccountsCurrentIdentityOwnershipAndRestart
+--- PASS: TestExternalAccountsCurrentIdentityOwnershipAndRestart (12.89s)
+=== RUN   TestConversationCurrentIdentityAdmissionAndBrowser
+    conversation_authorization_test.go:164: disabled live Identity principal: run=crun_0018a2a2650c0832292caed3aaa158c6 status=failed code=execution_access_denied model_calls_while_disabled=0
+--- PASS: TestConversationCurrentIdentityAdmissionAndBrowser (7.38s)
+=== RUN   TestScheduledTaskUsesCurrentIdentityAndWaitsForUserConfirmation
+--- PASS: TestScheduledTaskUsesCurrentIdentityAndWaitsForUserConfirmation (10.62s)
+=== RUN   TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite
+    conversation_task_start_test.go:648: task_start returned task_260302658b849906a02626aac4f588b2; child run crun_aff585a45488c38151cf5296e2104e9c recovered at attempt 2 with exact catalog [time_now]
+--- PASS: TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite (81.97s)
+=== RUN   TestExternalAccountAgentOwnershipAndRestart
+--- PASS: TestExternalAccountAgentOwnershipAndRestart (1.06s)
+=== RUN   TestExternalAccountsCurrentIdentityOwnershipAndRestart
+--- PASS: TestExternalAccountsCurrentIdentityOwnershipAndRestart (12.76s)
+=== RUN   TestConversationCurrentIdentityAdmissionAndBrowser
+    conversation_authorization_test.go:164: disabled live Identity principal: run=crun_2409c4210ab2067cc55712402c53a750 status=failed code=execution_access_denied model_calls_while_disabled=0
+--- PASS: TestConversationCurrentIdentityAdmissionAndBrowser (7.23s)
+=== RUN   TestScheduledTaskUsesCurrentIdentityAndWaitsForUserConfirmation
+--- PASS: TestScheduledTaskUsesCurrentIdentityAndWaitsForUserConfirmation (10.60s)
+=== RUN   TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite
+    conversation_task_start_test.go:648: task_start returned task_783ec72ec141bd45a2d834860974dbdd; child run crun_00fd57c0ff0475dfad1754fb1e4ff84f recovered at attempt 2 with exact catalog [time_now]
+--- PASS: TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite (81.70s)
+=== RUN   TestExternalAccountAgentOwnershipAndRestart
+--- PASS: TestExternalAccountAgentOwnershipAndRestart (1.07s)
+=== RUN   TestExternalAccountsCurrentIdentityOwnershipAndRestart
+--- PASS: TestExternalAccountsCurrentIdentityOwnershipAndRestart (13.26s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	344.521s

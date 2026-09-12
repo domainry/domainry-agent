@@ -1,0 +1,4 @@
+PASS authenticated user enqueues a real durable Run; worker waits at execution admission
+PASS Identity disable revokes the browser session and stops queued model execution
+PASS restored owner sees the stored denial; no assistant reply was produced
+PASS restart keeps the denied Run stopped; explicit resume checks current identity and saves one reply

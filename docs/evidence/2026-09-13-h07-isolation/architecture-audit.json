@@ -1,0 +1,63 @@
+{
+  "todo": "H07",
+  "pass": true,
+  "checks": {
+    "production_implementation_unchanged": {
+      "pass": true,
+      "files": []
+    },
+    "application_dependency_guard": {
+      "pass": true,
+      "command": "GOWORK=off go test -race ./internal/architecture -count=3",
+      "duration": "1.437s"
+    },
+    "no_identity_or_integration_implementation_imports_in_application": {
+      "pass": true,
+      "evidence": "source scan found no Identity/Integration internal, module or saas implementation import under internal/application"
+    },
+    "identity_tables_not_copied_into_agent": {
+      "pass": true,
+      "observed": {
+        "agent_workspace_rows": 2,
+        "agent_identity_tables": 0,
+        "external_credential_revalidated_per_request": true
+      }
+    },
+    "owner_scoped_persistence": {
+      "pass": true,
+      "evidence": "wrong-workspace HTTP and task repository reads return not found; Integration personal accounts stay owner scoped"
+    },
+    "current_authority_rechecked": {
+      "pass": true,
+      "stages": [
+        "worker admission",
+        "model boundary",
+        "tool authorization",
+        "connection availability",
+        "confirmation continuation",
+        "background callback before budget reservation",
+        "background task resume"
+      ]
+    },
+    "llm_proxy_untouched": {
+      "pass": true,
+      "tool_paths": [
+        "POST /tool/web_search",
+        "POST /tool/web_fetch_jina"
+      ],
+      "model_proxy": false
+    }
+  },
+  "boundary": {
+    "agent_application": "owns conversation/run ownership references, frozen execution input and orchestration through Agent SDK ports",
+    "identity": "owns current subject, session, role, permission and workspace facts",
+    "integration": "owns OAuth applications, authorization sessions, credentials, connection scopes, health and revocation",
+    "web_composition": "is the only layer that binds public Identity and Integration boundaries to Agent hosts",
+    "frontend": "uses public HTTP endpoints and projects current server state"
+  },
+  "next_todo_not_implemented": {
+    "todo": "H08",
+    "pass": true,
+    "evidence": "H07 adds evidence only and does not configure a real model or vendor deployment"
+  }
+}

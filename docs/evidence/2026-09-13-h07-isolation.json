@@ -1,0 +1,286 @@
+{
+  "todo": "H07",
+  "status": "complete",
+  "captured_at": "2026-09-13T03:10:42.920804+08:00",
+  "scope": "two-user isolation, cross-workspace denial, permission revocation, unavailable connections and background reauthorization",
+  "change": {
+    "production_files": [],
+    "test_files": [],
+    "documentation_files": [
+      "docs/agent-capabilities-todo.md",
+      "docs/testing-2026-09-13-h07-isolation.md"
+    ]
+  },
+  "invariants": {
+    "two_users_have_distinct_personal_workspaces": true,
+    "cross_workspace_conversation_and_memory_hidden": true,
+    "forged_scope_and_workspace_rejected": true,
+    "disabled_identity_stops_worker_before_model": true,
+    "permission_revocation_survives_restart": true,
+    "unavailable_connection_rechecked_before_invoke": true,
+    "background_callbacks_and_resume_reauthorize": true,
+    "agent_database_contains_no_identity_tables": true
+  },
+  "observations": {
+    "external_identity": {
+      "workspace_rows": 2,
+      "identity_tables_in_agent": 0,
+      "credential_revalidated_per_request": true
+    },
+    "authorization_browser": {
+      "run_id": "crun_38d5d76f9bfef15b78cc58e790d69cc9",
+      "denied_attempt": 1,
+      "denied_model_calls": 0,
+      "completed_attempt": 2,
+      "javascript_errors": 0,
+      "steps": 4
+    },
+    "accounts_browser": {
+      "steps": 9,
+      "javascript_errors": 0,
+      "sensitive_referrers": 0,
+      "provider_exchanges": 3,
+      "allowed_probes": 1,
+      "mobile_viewport_width": 390
+    }
+  },
+  "tests": [
+    {
+      "name": "H07 integration race matrix",
+      "command": "GOWORK=off go test -race ./integration -run '<8 H07 tests>' -count=3",
+      "result": "pass",
+      "duration": "31.456s",
+      "top_level_tests_per_iteration": 8
+    },
+    {
+      "name": "Identity HTTP, two-user, account and background race matrix",
+      "command": "GOWORK=off go test -race -tags=external_identity ./internal/assembly/web -run '<5 H07 tests>' -count=3",
+      "result": "pass",
+      "duration": "344.521s",
+      "top_level_tests_per_iteration": 5
+    },
+    {
+      "name": "built browser current-identity revocation",
+      "command": "AGENT_TOOL_UI_ACCEPTANCE=1 GOWORK=off go test -race ./internal/assembly/web -run '^TestConversationCurrentIdentityAdmissionAndBrowser$'",
+      "result": "pass",
+      "duration": "47.221s",
+      "steps": 4,
+      "javascript_errors": 0
+    },
+    {
+      "name": "built browser external account isolation and revocation",
+      "command": "AGENT_ACCOUNTS_BROWSER=1 GOWORK=off go test -race ./internal/assembly/web -run '^TestExternalAccountsBuiltBrowser$'",
+      "result": "pass",
+      "duration": "35.516s",
+      "steps": 9,
+      "javascript_errors": 0
+    },
+    {
+      "name": "agent full",
+      "command": "GOWORK=off go test ./...",
+      "result": "pass"
+    },
+    {
+      "name": "frontend",
+      "command": "npm test && npm run build",
+      "result": "pass",
+      "tests": 61
+    },
+    {
+      "name": "architecture race",
+      "command": "GOWORK=off go test -race ./internal/architecture -count=3",
+      "result": "pass",
+      "duration": "1.437s"
+    },
+    {
+      "name": "static",
+      "command": "GOWORK=off go vet ./... && GOWORK=off go build ./...",
+      "result": "pass"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "internal/assembly/web/external_identity_test.go",
+      "sha256": "0b81a7a1c2ad6e28601bab7f9554af945f008399c85aa2badc8c5196bd137216"
+    },
+    {
+      "path": "internal/assembly/web/conversation_authorization_test.go",
+      "sha256": "6721a2481bb63afd1bf7b42aee878c1b67a0c6e4fc01705de3446532befd20f2"
+    },
+    {
+      "path": "internal/assembly/web/integration_accounts_test.go",
+      "sha256": "373389657d9fb8ee7b52f8490e8caf3583e2abacb79b1fd194cffc316598eb72"
+    },
+    {
+      "path": "internal/assembly/web/conversation_task_start_test.go",
+      "sha256": "db7122bfee2b619ae4df77f807dedd1a87b339eb0d228046ef76399c7b648eda"
+    },
+    {
+      "path": "integration/conversation_authorization_integration_test.go",
+      "sha256": "91e12237725fc4f9c39496065861365bea7445a00d18ab02e933c43f5c086f4b"
+    },
+    {
+      "path": "integration/conversation_tool_catalog_integration_test.go",
+      "sha256": "6d969b9f09b87dda763df52c23dd55bbd2c19d42de313ba33bbbd7fe4f22f546"
+    },
+    {
+      "path": "integration/task_tool_gateway_integration_test.go",
+      "sha256": "daaae2a79877f6e7ac5941ccf7b506a294fda5b5f7775fde9e41219654cd0267"
+    },
+    {
+      "path": "integration/agent_binding_integration_test.go",
+      "sha256": "de936d0d0e692ebce26b258cbfa3e913c154a2dc43864c21fddebfdb867b9027"
+    },
+    {
+      "path": "frontend/tests/authorization.browser.mjs",
+      "sha256": "bb981ac39e62237eaaa39165c491a9fe2bffb86843602217e8f3338cda77334e"
+    },
+    {
+      "path": "frontend/tests/external-accounts.browser.mjs",
+      "sha256": "00747490395c3e6c46dc83821b05dd0feb8e143d44b0c32f823266ec13eea754"
+    },
+    {
+      "path": "internal/application/conversation_authorization.go",
+      "sha256": "e134b9c8930ac11afc84c186b0d40553699f22ec6705380bdfbcb3d874bbc733"
+    },
+    {
+      "path": "internal/application/conversation_execution.go",
+      "sha256": "877563fc528270ac2b7497cb0f46f4c66cf6448856cfef72353cb074be5f751f"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/agent-full.log",
+      "bytes": 2769,
+      "sha256": "23a8c0ad1dfc8257bc0f463236ba1fc5a15e88509d8d443fc5ab4c4c2cf10bfa"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/architecture-audit.json",
+      "bytes": 2232,
+      "sha256": "9fbcf47b1e41002452c4b8e1b4b980939755107a91da3ffce07562e66aecb28b"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/architecture-race.log",
+      "bytes": 2408,
+      "sha256": "5f2d180ffcf854794e00f4658682b34c9c17c76d1db53af7214e3f924b031b78"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-accounts/application-configured.png",
+      "bytes": 168489,
+      "sha256": "f440cb0a4c99f48b66d67a1fab8aec3430fd7ef7f63d03d49f315e4a7520bc2c"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-accounts/authorization-rejected.png",
+      "bytes": 159457,
+      "sha256": "2964d83ae4b5d20c3df423809212531943b2a5a6fb6bf92e0e486701edda558a"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-accounts/host-audit.json",
+      "bytes": 201,
+      "sha256": "beef6e4a5989bb79f8c3b05175274a7c0646df72dfac589f631adc8eabaf30d0"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-accounts/lost-response-restarted.png",
+      "bytes": 163941,
+      "sha256": "d8d87c8dc67d551f05610c40bf9de157fe25fc9439be6799b9c325e76ce0fe8b"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-accounts/mobile-revoked.png",
+      "bytes": 59918,
+      "sha256": "f1067550dc7411a9c4940bae6ee60703a9f610a6b896d3654e50042f36f3d390"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-accounts/personal-connected.png",
+      "bytes": 163516,
+      "sha256": "b43a93648fc8a6780117ff1f0b7435288b68e5bc9ba603e21ec50585c93f53fe"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-accounts/report.json",
+      "bytes": 1326,
+      "sha256": "7892192e02f2efb37ae9e890f379a3bf5421270c2adcf2af152c20c63269a859"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-accounts/scope-limited-mobile.png",
+      "bytes": 76519,
+      "sha256": "417509e1f228cf019782a09ab81c1e7b6bc4528f8d751729fa8c6642b0dd9ad0"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-accounts.log",
+      "bytes": 1274,
+      "sha256": "8238aaf4c757a920375c7ebfaa1abcf6408d93a6cdff001198692d5ac452deff"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-authorization/authorized-resume.png",
+      "bytes": 121863,
+      "sha256": "1111211d88b7308f9280ddc4c2b2f34853a23f6b0eca961360bec4bb62981145"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-authorization/denied-run.png",
+      "bytes": 156699,
+      "sha256": "d673dc7a838a198d69fafcef7e8c077baaffefe7614c4a2d3f111715e8a5b20f"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-authorization/disabled-session.png",
+      "bytes": 67458,
+      "sha256": "aea4a2c386e8d463e2f255e82089e2cf547484ae6c50921ba78058bd6100195c"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-authorization/report.json",
+      "bytes": 8590,
+      "sha256": "5cf658187d0d5d297b87f658941ae732c11e9e1613761f105af53b779e15a53f"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-authorization-host.log",
+      "bytes": 694,
+      "sha256": "7cfe8a3dd8243b2599bec462948dfd5198514acb8e6e3d8bdb34c7db91655b63"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/browser-authorization.log",
+      "bytes": 351,
+      "sha256": "376383053d2f9ccc72a578fb8c4a22070041933a41650837f50f2503a2914c5d"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/frontend-build.log",
+      "bytes": 32521,
+      "sha256": "ece1376fc6e873c31cbd64fdca6e2876a46791e52350d6d69ad01f6070f34388"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/frontend-test.log",
+      "bytes": 8738,
+      "sha256": "cedb5df358ad7c64e26bff755cf044f95e310af608bdac6bb0c32de9abc8f7d9"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/integration-race.log",
+      "bytes": 10853,
+      "sha256": "03d14510f4e7e9f4c42730a733cab7a78c7888fac04fd567143865c92f126f6c"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/vet.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-09-13-h07-isolation/web-race.log",
+      "bytes": 3304,
+      "sha256": "aa4a3d439b9baf6b1dbf00e1a69de7866fa84f29d2ad589a8647cff84614f588"
+    }
+  ],
+  "architecture": "evidence/2026-09-13-h07-isolation/architecture-audit.json",
+  "limitations": [
+    "OAuth provider and model are controlled protocol fixtures.",
+    "No Google Workspace or Microsoft 365 configuration exists; concrete services own that configuration and target-deployment acceptance remains H08."
+  ],
+  "llm_proxy": {
+    "modified": false,
+    "model_proxy": false,
+    "web_tool_paths": [
+      "POST /tool/web_search",
+      "POST /tool/web_fetch_jina"
+    ]
+  }
+}

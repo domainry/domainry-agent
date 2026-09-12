@@ -1,0 +1,134 @@
+=== RUN   TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority
+=== RUN   TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority/module
+=== RUN   TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority/saas
+--- PASS: TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority (3.47s)
+    --- PASS: TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority/module (1.21s)
+    --- PASS: TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority/saas (2.25s)
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/send
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/execute
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/model
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/summary
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/commit
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/unavailable
+--- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary (1.10s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/send (0.14s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/execute (0.16s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/model (0.16s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/summary (0.30s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/commit (0.17s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/unavailable (0.17s)
+=== RUN   TestConversationExecutionAuthorizationRechecksRecoveryAndResume
+--- PASS: TestConversationExecutionAuthorizationRechecksRecoveryAndResume (0.49s)
+=== RUN   TestConversationConfirmationPersistsCurrentRoleForWorker
+--- PASS: TestConversationConfirmationPersistsCurrentRoleForWorker (0.28s)
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation/respond
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation/execute
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation/tool
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation/model
+--- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation (0.84s)
+    --- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation/respond (0.19s)
+    --- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation/execute (0.20s)
+    --- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation/tool (0.21s)
+    --- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation/model (0.23s)
+=== RUN   TestConversationCatalogConnectionChangesAndFrozenResume
+--- PASS: TestConversationCatalogConnectionChangesAndFrozenResume (0.28s)
+=== RUN   TestConversationCatalogRechecksConnectionAfterConcreteAuthorization
+--- PASS: TestConversationCatalogRechecksConnectionAfterConcreteAuthorization (0.18s)
+=== RUN   TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation
+=== RUN   TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation/module
+=== RUN   TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation/saas
+--- PASS: TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation (1.45s)
+    --- PASS: TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation/module (0.43s)
+    --- PASS: TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation/saas (1.01s)
+=== RUN   TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority
+=== RUN   TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority/module
+=== RUN   TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority/saas
+--- PASS: TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority (3.55s)
+    --- PASS: TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority/module (1.40s)
+    --- PASS: TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority/saas (2.15s)
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/send
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/execute
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/model
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/summary
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/commit
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/unavailable
+--- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary (1.09s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/send (0.15s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/execute (0.16s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/model (0.16s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/summary (0.29s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/commit (0.16s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/unavailable (0.16s)
+=== RUN   TestConversationExecutionAuthorizationRechecksRecoveryAndResume
+--- PASS: TestConversationExecutionAuthorizationRechecksRecoveryAndResume (0.48s)
+=== RUN   TestConversationConfirmationPersistsCurrentRoleForWorker
+--- PASS: TestConversationConfirmationPersistsCurrentRoleForWorker (0.26s)
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation/respond
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation/execute
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation/tool
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation/model
+--- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation (0.83s)
+    --- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation/respond (0.18s)
+    --- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation/execute (0.20s)
+    --- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation/tool (0.21s)
+    --- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation/model (0.23s)
+=== RUN   TestConversationCatalogConnectionChangesAndFrozenResume
+--- PASS: TestConversationCatalogConnectionChangesAndFrozenResume (0.28s)
+=== RUN   TestConversationCatalogRechecksConnectionAfterConcreteAuthorization
+--- PASS: TestConversationCatalogRechecksConnectionAfterConcreteAuthorization (0.19s)
+=== RUN   TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation
+=== RUN   TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation/module
+=== RUN   TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation/saas
+--- PASS: TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation (2.38s)
+    --- PASS: TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation/module (0.90s)
+    --- PASS: TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation/saas (1.49s)
+=== RUN   TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority
+=== RUN   TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority/module
+=== RUN   TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority/saas
+--- PASS: TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority (4.42s)
+    --- PASS: TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority/module (1.53s)
+    --- PASS: TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority/saas (2.88s)
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/send
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/execute
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/model
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/summary
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/commit
+=== RUN   TestConversationExecutionAuthorizationAtEveryModelBoundary/unavailable
+--- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary (2.75s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/send (0.44s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/execute (0.39s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/model (0.25s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/summary (0.73s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/commit (0.53s)
+    --- PASS: TestConversationExecutionAuthorizationAtEveryModelBoundary/unavailable (0.40s)
+=== RUN   TestConversationExecutionAuthorizationRechecksRecoveryAndResume
+--- PASS: TestConversationExecutionAuthorizationRechecksRecoveryAndResume (0.97s)
+=== RUN   TestConversationConfirmationPersistsCurrentRoleForWorker
+--- PASS: TestConversationConfirmationPersistsCurrentRoleForWorker (0.82s)
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation/respond
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation/execute
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation/tool
+=== RUN   TestConversationExecutionAuthorizationRechecksAfterConfirmation/model
+--- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation (1.44s)
+    --- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation/respond (0.54s)
+    --- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation/execute (0.35s)
+    --- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation/tool (0.26s)
+    --- PASS: TestConversationExecutionAuthorizationRechecksAfterConfirmation/model (0.29s)
+=== RUN   TestConversationCatalogConnectionChangesAndFrozenResume
+--- PASS: TestConversationCatalogConnectionChangesAndFrozenResume (0.34s)
+=== RUN   TestConversationCatalogRechecksConnectionAfterConcreteAuthorization
+--- PASS: TestConversationCatalogRechecksConnectionAfterConcreteAuthorization (0.20s)
+=== RUN   TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation
+=== RUN   TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation/module
+=== RUN   TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation/saas
+--- PASS: TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation (1.66s)
+    --- PASS: TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation/module (0.52s)
+    --- PASS: TestTaskCallbackHTTPReauthorizesBeforeAtomicBudgetReservation/saas (1.14s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	31.456s

@@ -1,0 +1,282 @@
+{
+  "steps": [
+    "authenticated user enqueues a real durable Run; worker waits at execution admission",
+    "Identity disable revokes the browser session and stops queued model execution",
+    "restored owner sees the stored denial; no assistant reply was produced",
+    "restart keeps the denied Run stopped; explicit resume checks current identity and saves one reply"
+  ],
+  "javascriptErrors": [],
+  "snapshots": [
+    {
+      "label": "before account disable",
+      "run": {
+        "id": "crun_38d5d76f9bfef15b78cc58e790d69cc9",
+        "conversation_id": "conv_3f2638d922f13086fa466e5d5adbec87",
+        "client_message_id": "fd1921fa-afef-43ba-865c-3705f30c6dfc",
+        "status": "running",
+        "user_seq": 1,
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 2,
+        "correlation_id": "crun_38d5d76f9bfef15b78cc58e790d69cc9",
+        "metrics": {
+          "steps": 0,
+          "model_calls": 0,
+          "tool_calls": 0,
+          "tool_attempts": 0,
+          "authorization_checks": 0,
+          "confirmation_decisions": 0
+        },
+        "audit": [
+          {
+            "seq": 1,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "occurred_at": "2026-09-12T19:06:34.439786Z"
+          },
+          {
+            "seq": 2,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T19:06:34.448564Z"
+          }
+        ],
+        "audit_complete": true,
+        "started_at": "2026-09-12T19:06:34.448564Z",
+        "duration_ms": 0,
+        "queue_duration_ms": 9,
+        "created_at": "2026-09-12T19:06:34.439042Z",
+        "updated_at": "2026-09-12T19:06:34.448822Z"
+      },
+      "messages": [
+        {
+          "id": "msg_c558f132769cda1caae96ccf80037888",
+          "role": "user",
+          "run_id": "crun_38d5d76f9bfef15b78cc58e790d69cc9"
+        }
+      ]
+    },
+    {
+      "label": "after account restoration",
+      "run": {
+        "id": "crun_38d5d76f9bfef15b78cc58e790d69cc9",
+        "conversation_id": "conv_3f2638d922f13086fa466e5d5adbec87",
+        "client_message_id": "fd1921fa-afef-43ba-865c-3705f30c6dfc",
+        "status": "failed",
+        "user_seq": 1,
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 3,
+        "correlation_id": "crun_38d5d76f9bfef15b78cc58e790d69cc9",
+        "metrics": {
+          "steps": 0,
+          "model_calls": 0,
+          "tool_calls": 0,
+          "tool_attempts": 0,
+          "authorization_checks": 0,
+          "confirmation_decisions": 0
+        },
+        "audit": [
+          {
+            "seq": 1,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "occurred_at": "2026-09-12T19:06:34.439786Z"
+          },
+          {
+            "seq": 2,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T19:06:34.448564Z"
+          },
+          {
+            "seq": 3,
+            "type": "run",
+            "status": "failed",
+            "step": 0,
+            "attempt": 1,
+            "error_code": "execution_access_denied",
+            "occurred_at": "2026-09-12T19:06:34.616554Z"
+          }
+        ],
+        "audit_complete": true,
+        "started_at": "2026-09-12T19:06:34.448564Z",
+        "completed_at": "2026-09-12T19:06:34.616554Z",
+        "duration_ms": 167,
+        "queue_duration_ms": 9,
+        "error_code": "execution_access_denied",
+        "created_at": "2026-09-12T19:06:34.439042Z",
+        "updated_at": "2026-09-12T19:06:34.616788Z"
+      },
+      "messages": [
+        {
+          "id": "msg_c558f132769cda1caae96ccf80037888",
+          "role": "user",
+          "run_id": "crun_38d5d76f9bfef15b78cc58e790d69cc9"
+        }
+      ]
+    },
+    {
+      "label": "after host restart",
+      "run": {
+        "id": "crun_38d5d76f9bfef15b78cc58e790d69cc9",
+        "conversation_id": "conv_3f2638d922f13086fa466e5d5adbec87",
+        "client_message_id": "fd1921fa-afef-43ba-865c-3705f30c6dfc",
+        "status": "failed",
+        "user_seq": 1,
+        "attempt": 1,
+        "draft_bytes": 0,
+        "last_event_seq": 3,
+        "correlation_id": "crun_38d5d76f9bfef15b78cc58e790d69cc9",
+        "metrics": {
+          "steps": 0,
+          "model_calls": 0,
+          "tool_calls": 0,
+          "tool_attempts": 0,
+          "authorization_checks": 0,
+          "confirmation_decisions": 0
+        },
+        "audit": [
+          {
+            "seq": 1,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "occurred_at": "2026-09-12T19:06:34.439786Z"
+          },
+          {
+            "seq": 2,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T19:06:34.448564Z"
+          },
+          {
+            "seq": 3,
+            "type": "run",
+            "status": "failed",
+            "step": 0,
+            "attempt": 1,
+            "error_code": "execution_access_denied",
+            "occurred_at": "2026-09-12T19:06:34.616554Z"
+          }
+        ],
+        "audit_complete": true,
+        "started_at": "2026-09-12T19:06:34.448564Z",
+        "completed_at": "2026-09-12T19:06:34.616554Z",
+        "duration_ms": 167,
+        "queue_duration_ms": 9,
+        "error_code": "execution_access_denied",
+        "created_at": "2026-09-12T19:06:34.439042Z",
+        "updated_at": "2026-09-12T19:06:34.616788Z"
+      },
+      "messages": [
+        {
+          "id": "msg_c558f132769cda1caae96ccf80037888",
+          "role": "user",
+          "run_id": "crun_38d5d76f9bfef15b78cc58e790d69cc9"
+        }
+      ]
+    },
+    {
+      "label": "after explicit resume",
+      "run": {
+        "id": "crun_38d5d76f9bfef15b78cc58e790d69cc9",
+        "conversation_id": "conv_3f2638d922f13086fa466e5d5adbec87",
+        "client_message_id": "fd1921fa-afef-43ba-865c-3705f30c6dfc",
+        "status": "completed",
+        "user_seq": 1,
+        "assistant_message_id": "msg_12877f0e11fd959da014585da62b33d1",
+        "attempt": 2,
+        "draft_bytes": 0,
+        "last_event_seq": 6,
+        "model": "admission-fixture",
+        "correlation_id": "crun_38d5d76f9bfef15b78cc58e790d69cc9",
+        "metrics": {
+          "steps": 0,
+          "model_calls": 0,
+          "tool_calls": 0,
+          "tool_attempts": 0,
+          "authorization_checks": 0,
+          "confirmation_decisions": 0
+        },
+        "audit": [
+          {
+            "seq": 1,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "occurred_at": "2026-09-12T19:06:34.439786Z"
+          },
+          {
+            "seq": 2,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T19:06:34.448564Z"
+          },
+          {
+            "seq": 3,
+            "type": "run",
+            "status": "failed",
+            "step": 0,
+            "attempt": 1,
+            "error_code": "execution_access_denied",
+            "occurred_at": "2026-09-12T19:06:34.616554Z"
+          },
+          {
+            "seq": 4,
+            "type": "run",
+            "status": "queued",
+            "step": 0,
+            "attempt": 1,
+            "occurred_at": "2026-09-12T19:06:37.398442Z"
+          },
+          {
+            "seq": 5,
+            "type": "run",
+            "status": "running",
+            "step": 0,
+            "attempt": 2,
+            "occurred_at": "2026-09-12T19:06:37.404676Z"
+          },
+          {
+            "seq": 6,
+            "type": "run",
+            "status": "completed",
+            "step": 0,
+            "attempt": 2,
+            "occurred_at": "2026-09-12T19:06:37.519828Z"
+          }
+        ],
+        "audit_complete": true,
+        "started_at": "2026-09-12T19:06:34.448564Z",
+        "completed_at": "2026-09-12T19:06:37.519828Z",
+        "duration_ms": 3071,
+        "queue_duration_ms": 9,
+        "created_at": "2026-09-12T19:06:34.439042Z",
+        "updated_at": "2026-09-12T19:06:37.520107Z"
+      },
+      "messages": [
+        {
+          "id": "msg_c558f132769cda1caae96ccf80037888",
+          "role": "user",
+          "run_id": "crun_38d5d76f9bfef15b78cc58e790d69cc9"
+        },
+        {
+          "id": "msg_12877f0e11fd959da014585da62b33d1",
+          "role": "assistant",
+          "run_id": "crun_38d5d76f9bfef15b78cc58e790d69cc9"
+        }
+      ]
+    }
+  ]
+}

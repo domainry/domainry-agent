@@ -1,0 +1,7 @@
+=== RUN   TestConversationCurrentIdentityAdmissionAndBrowser
+    conversation_authorization_test.go:164: disabled live Identity principal: run=crun_50e86d39e848016483dc7000723b32d1 status=failed code=execution_access_denied model_calls_while_disabled=0
+    conversation_authorization_test.go:196: Temporary browser acceptance ready at http://127.0.0.1:8092
+    conversation_authorization_test.go:164: disabled live Identity principal: run=crun_38d5d76f9bfef15b78cc58e790d69cc9 status=failed code=execution_access_denied model_calls_while_disabled=0
+--- PASS: TestConversationCurrentIdentityAdmissionAndBrowser (45.45s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	47.221s
