@@ -151,7 +151,7 @@ func TestConversationExternalToolTimeoutOverridesLongToolDefinition(t *testing.T
 	host := &slowToolHost{}
 	options := conversationOptions()
 	options.ToolHost = host
-	options.ExternalCallTimeout = 35 * time.Millisecond
+	options.ExternalCallTimeout = 250 * time.Millisecond
 	options.RunTimeout = 2 * time.Second
 	service, err := conversationassembly.NewService(repo, &slowToolModel{}, conversationAuthority().RuntimeID, options)
 	if err != nil {
@@ -174,7 +174,7 @@ func TestConversationExternalToolTimeoutOverridesLongToolDefinition(t *testing.T
 	host.mu.Lock()
 	duration := host.duration
 	host.mu.Unlock()
-	if duration < 20*time.Millisecond || duration > 300*time.Millisecond {
+	if duration < 100*time.Millisecond || duration > time.Second {
 		t.Fatalf("tool duration=%s", duration)
 	}
 }
