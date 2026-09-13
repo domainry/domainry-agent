@@ -87,6 +87,17 @@ func (s *ConversationService) registeredExecutionCatalog(ctx context.Context, a 
 	if err != nil {
 		return nil, nil, err
 	}
+	if selected := selectedConversationAgent(ctx); selected != nil {
+		if all, _ := ctx.Value(conversationAgentCatalogKey{}).(bool); !all {
+			filtered := []agentsdk.ConversationToolDefinition{}
+			for _, d := range definitions {
+				if conversationProfileAllows(ctx, d.Key, nil) {
+					filtered = append(filtered, d)
+				}
+			}
+			definitions = filtered
+		}
+	}
 	for _, definition := range definitions {
 		if definition.Key == "execution_read" {
 			if _, ok := s.repo.(persistence.ConversationExecutionReadRepository); !ok {
@@ -192,7 +203,7 @@ func (s *ConversationService) recordConversationAuthorization(ctx context.Contex
 }
 
 func (s *ConversationService) generateConversationExecution(ctx context.Context, claim persistence.ConversationClaim, base agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
-	model := s.model.(agentsdk.ConversationAgentModel)
+	model := s.conversationModel(ctx).(agentsdk.ConversationAgentModel)
 	repo := s.repo.(persistence.ConversationExecutionRepository)
 	messages := make([]agentsdk.ConversationStepMessage, 0, len(base.Messages))
 	for _, message := range base.Messages {
@@ -222,6 +233,14 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 				return agentsdk.ConversationModelResult{}, err
 			}
 			in := agentsdk.ConversationStepRequest{Messages: messages, Tools: definitions, ModelIdentity: model.ConversationModelIdentity(), IdempotencyKey: fmt.Sprintf("conversation:%s:step:%d", claim.Run.ID, number), MaxOutputBytes: maxOutputBytes, MaxArgumentBytes: s.options.MaxArgumentBytes, MaxToolCalls: maxToolCalls}
+			in, err = s.appendConversationDisagreements(ctx, claim, in)
+			if err != nil {
+				return agentsdk.ConversationModelResult{}, err
+			}
+			in, err = s.appendConversationPeerInbox(ctx, claim, in)
+			if err != nil {
+				return agentsdk.ConversationModelResult{}, err
+			}
 			in, err = s.compactConversationExecution(ctx, claim, in)
 			if err != nil {
 				return agentsdk.ConversationModelResult{}, err
@@ -284,14 +303,17 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 			if err != nil {
 				return agentsdk.ConversationModelResult{}, err
 			}
-			raw, err := json.Marshal(output)
+			ref := &agentsdk.ConversationResultReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, Step: number, CallID: call.ID, SHA256: conversationDigest(output)}
+			// Providers serialize Content, not the internal ResultReference field.
+			// Expose the server-issued reference without changing the saved receipt.
+			raw, err := json.Marshal(struct {
+				agentsdk.ConversationToolResult
+				Reference *agentsdk.ConversationResultReference `json:"reference"`
+			}{output, ref})
 			if err != nil {
 				return agentsdk.ConversationModelResult{}, err
 			}
-			message := agentsdk.ConversationStepMessage{Role: "tool", ToolCallID: call.ID, Content: string(raw), IsError: output.Status == "failed"}
-			if resultReadAvailable(step.Input) {
-				message.ResultReference = &agentsdk.ConversationResultReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, Step: number, CallID: call.ID, SHA256: conversationDigest(output)}
-			}
+			message := agentsdk.ConversationStepMessage{Role: "tool", ToolCallID: call.ID, Content: string(raw), IsError: output.Status == "failed", ResultReference: ref}
 			messages = append(messages, message)
 			if call.Name == "ask_user" && output.Status == "completed" {
 				// This content came from the authenticated response endpoint. Keep
@@ -315,6 +337,9 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 // before every model request, including a frozen request resumed after failure.
 // Call-time checks alone do not cover revocation between model iterations.
 func (s *ConversationService) reauthorizeExecutionInputs(ctx context.Context, claim persistence.ConversationClaim, step persistence.ConversationExecutionStep) error {
+	if err := s.checkRunSources(ctx, agentsdk.ConversationRunReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID}, claim.Authority); err != nil {
+		return err
+	}
 	repo := s.repo.(persistence.ConversationExecutionRepository)
 	_, current, err := s.executionCatalogForRun(ctx, claim)
 	if err != nil {
@@ -405,6 +430,17 @@ func (s *ConversationService) executeConversationTool(ctx context.Context, claim
 	}
 	argumentError := validateToolJSON(compiled.input, []byte(call.Arguments))
 	validArguments := argumentError == nil
+	if validArguments && frozen.Effect == "write" && claim.Run.BackgroundTask != nil && claim.Run.BackgroundTask.Handoff != nil {
+		if reuse, ok := s.repo.(persistence.ConversationDelegationTransferRepository); ok {
+			result, found, e := reuse.ReuseConversationDelegationEffect(ctx, claim, step.Number, call, frozen)
+			if e != nil {
+				return agentsdk.ConversationToolResult{}, e
+			}
+			if found {
+				return result, nil
+			}
+		}
+	}
 	if validArguments && authorization.ConfirmationRequired {
 		if request.Confirmation != nil {
 			return agentsdk.ConversationToolResult{}, conversationFailure("forbidden", "interaction_access_denied")

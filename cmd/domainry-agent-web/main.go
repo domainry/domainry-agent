@@ -140,6 +140,9 @@ func run() error {
 	for pattern, handler := range host.ToolSettingsSetupRoutes() {
 		routes[pattern] = handler
 	}
+	for pattern, handler := range host.CollaborationSetupRoutes() {
+		routes[pattern] = handler
+	}
 	handler, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: runtimeID, WorkspaceID: workspaceID, ApplicationKey: applicationKey, Origin: origin, Model: agentOptions.ConversationModel, Files: os.DirFS(frontend), ModuleAdapters: adapters, NavigationFiles: navigation, ApplicationRoutes: routes})
 	if err != nil {
 		return err

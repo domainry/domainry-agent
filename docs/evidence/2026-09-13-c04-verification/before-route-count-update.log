@@ -1,0 +1,24 @@
+ok  	github.com/domainry/domainry-agent/internal/application	0.478s
+ok  	github.com/domainry/domainry-agent/internal/execution	0.497s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	3.116s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	1.309s
+--- FAIL: TestAgentOwnsOpenAPIForEveryHTTPRoute (0.01s)
+    adapter_test.go:153: Agent OpenAPI operations=89
+--- FAIL: TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest (0.01s)
+    adapter_test.go:186: actions=138 routes=22
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/transport/http/module	0.809s
+ok  	github.com/domainry/domainry-agent/module	1.699s
+--- FAIL: TestAgentHTTPAdapterContractOwnsCompleteRouteCatalog (0.00s)
+    http_adapter_test.go:17: Agent Action count=138
+FAIL
+FAIL	github.com/domainry/domainry-agent-sdk	1.854s
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	2.666s
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	2.230s
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+FAIL

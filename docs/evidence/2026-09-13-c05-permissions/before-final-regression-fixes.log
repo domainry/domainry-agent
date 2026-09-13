@@ -1,0 +1,55 @@
+?   	github.com/domainry/domainry-agent/capability	[no test files]
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	1.802s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-playground	[no test files]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/definition	0.789s
+--- FAIL: TestExecutionReferencesSurviveTurnsSummariesAndServiceRestart (0.14s)
+    conversation_execution_read_integration_test.go:174: recover failed: execution_context_exceeded
+FAIL
+FAIL	github.com/domainry/domainry-agent/integration	88.746s
+ok  	github.com/domainry/domainry-agent/internal/application	2.504s
+ok  	github.com/domainry/domainry-agent/internal/architecture	2.238s
+ok  	github.com/domainry/domainry-agent/internal/assembly/conversation	1.142s
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	0.815s
+?   	github.com/domainry/domainry-agent/internal/assembly/saas	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	206.813s
+--- FAIL: TestAgentCapabilityOwnsAllProductRoutesAndAuthoringValidation (0.10s)
+    binding_test.go:41: Agent operations=91 projections=15
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/capability	1.753s
+?   	github.com/domainry/domainry-agent/internal/composition	[no test files]
+?   	github.com/domainry/domainry-agent/internal/dataaccess	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/execution	1.887s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence	3.023s
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/base	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	5.655s
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost	3.121s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	3.170s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	3.018s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/playground	3.132s
+?   	github.com/domainry/domainry-agent/internal/transport/http/product	[no test files]
+?   	github.com/domainry/domainry-agent/internal/transport/http/web	[no test files]
+ok  	github.com/domainry/domainry-agent/module	3.566s
+ok  	github.com/domainry/domainry-agent/remote	4.203s
+--- FAIL: TestSaaSManifestOwnsEveryServiceRouteAndInjectsCurrentAction (0.00s)
+    server_test.go:90: Agent SaaS actions=114, want 111
+FAIL
+FAIL	github.com/domainry/domainry-agent/server	3.369s
+?   	github.com/domainry/domainry-agent/testsupport	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/databasetest	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/producttest	[no test files]
+?   	github.com/domainry/domainry-agent/web	[no test files]
+?   	github.com/domainry/domainry-agent/webhost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk	2.695s
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	2.847s
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	2.565s
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+FAIL

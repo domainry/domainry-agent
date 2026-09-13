@@ -62,7 +62,59 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 			}
 			out.Calls = append(out.Calls, call)
 		}
-		return rows.Err()
+		if err = rows.Err(); err != nil {
+			return err
+		}
+		rows.Close()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationAgentMessageTable).Columns("payload_json").Where(query.And(conversationScope(a, ref.ConversationID), query.Equal("consumed_run_id", ref.RunID))).Limit(129).Build()
+		if err != nil {
+			return err
+		}
+		peers, err := tx.QueryContext(ctx, q, args...)
+		if err != nil {
+			return err
+		}
+		defer peers.Close()
+		for peers.Next() {
+			if len(out.Peers) >= 128 {
+				return conversationError("unavailable", "source_limit_exceeded")
+			}
+			var m agentsdk.ConversationAgentMessage
+			if err = peers.Scan(&raw); err != nil {
+				return err
+			}
+			if err = json.Unmarshal(raw, &m); err != nil {
+				return err
+			}
+			out.Peers = append(out.Peers, m)
+		}
+		if err = peers.Err(); err != nil {
+			return err
+		}
+		peers.Close()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationStepSourceTable).Columns("step_no", "payload_json").Where(predicate).OrderBy(query.Ascending("step_no")).Limit(257).Build()
+		if err != nil {
+			return err
+		}
+		sources, err := tx.QueryContext(ctx, q, args...)
+		if err != nil {
+			return err
+		}
+		defer sources.Close()
+		for sources.Next() {
+			var value persistence.ConversationStepSources
+			if err = sources.Scan(&value.Step, &raw); err != nil {
+				return err
+			}
+			if err = json.Unmarshal(raw, &value.Sources); err != nil {
+				return err
+			}
+			if len(out.StepSources) >= 256 || len(value.Sources) > 64 {
+				return conversationError("unavailable", "source_limit_exceeded")
+			}
+			out.StepSources = append(out.StepSources, value)
+		}
+		return sources.Err()
 	})
 	return out, err
 }

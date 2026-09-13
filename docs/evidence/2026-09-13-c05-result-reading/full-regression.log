@@ -1,0 +1,65 @@
+?   	github.com/domainry/domainry-agent/capability	[no test files]
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	2.922s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-playground	[no test files]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/definition	1.406s
+ok  	github.com/domainry/domainry-agent/integration	87.871s
+ok  	github.com/domainry/domainry-agent/internal/application	1.218s
+ok  	github.com/domainry/domainry-agent/internal/architecture	1.447s
+ok  	github.com/domainry/domainry-agent/internal/assembly/conversation	0.743s
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	1.866s
+?   	github.com/domainry/domainry-agent/internal/assembly/saas	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	221.694s
+ok  	github.com/domainry/domainry-agent/internal/capability	3.089s
+?   	github.com/domainry/domainry-agent/internal/composition	[no test files]
+?   	github.com/domainry/domainry-agent/internal/dataaccess	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/execution	2.925s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence	3.221s
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/base	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	5.330s
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost	3.298s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	3.181s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	3.347s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/playground	3.580s
+?   	github.com/domainry/domainry-agent/internal/transport/http/product	[no test files]
+?   	github.com/domainry/domainry-agent/internal/transport/http/web	[no test files]
+ok  	github.com/domainry/domainry-agent/module	3.126s
+ok  	github.com/domainry/domainry-agent/remote	3.713s
+ok  	github.com/domainry/domainry-agent/server	3.511s
+?   	github.com/domainry/domainry-agent/testsupport	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/databasetest	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/producttest	[no test files]
+?   	github.com/domainry/domainry-agent/web	[no test files]
+?   	github.com/domainry/domainry-agent/webhost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk	2.848s
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	2.911s
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	2.772s
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+?   	github.com/domainry/domainry-tools/calculation	[no test files]
+?   	github.com/domainry/domainry-tools/internal/adapter/accounttools	[no test files]
+ok  	github.com/domainry/domainry-tools/internal/adapter/analysistools	3.433s
+?   	github.com/domainry/domainry-tools/internal/adapter/calendartools	[no test files]
+?   	github.com/domainry/domainry-tools/internal/adapter/mailtools	[no test files]
+?   	github.com/domainry/domainry-tools/internal/adapter/recordtools	[no test files]
+ok  	github.com/domainry/domainry-tools/internal/adapter/reporttools	3.043s
+ok  	github.com/domainry/domainry-tools/internal/adapter/scheduletools	3.378s
+?   	github.com/domainry/domainry-tools/internal/adapter/webtools	[no test files]
+ok  	github.com/domainry/domainry-tools/internal/application/preferences	2.944s
+ok  	github.com/domainry/domainry-tools/internal/application/tool	3.312s
+ok  	github.com/domainry/domainry-tools/internal/architecture	3.541s
+ok  	github.com/domainry/domainry-tools/internal/assembly/preferences	3.551s
+?   	github.com/domainry/domainry-tools/internal/infrastructure/persistence/database/preferences	[no test files]
+?   	github.com/domainry/domainry-tools/internal/transport/http/preferences	[no test files]
+ok  	github.com/domainry/domainry-tools/module	3.927s
+?   	github.com/domainry/domainry-tools/timeutil	[no test files]
+ok  	github.com/domainry/domainry-tools-sdk	2.784s
+?   	github.com/domainry/domainry-tools-sdk/modulehost	[no test files]
+?   	github.com/domainry/domainry-tools-sdk/schema	[no test files]

@@ -30,7 +30,7 @@ func (s *ConversationService) streamConversationExecutionStep(ctx context.Contex
 	maxText := min(step.Input.MaxOutputBytes, s.options.MaxOutputBytes)
 	maxArguments := min(step.Input.MaxArgumentBytes, s.options.MaxArgumentBytes)
 	maxCalls := min(step.Input.MaxToolCalls, s.options.MaxToolCalls)
-	result, err := s.model.(agentsdk.ConversationAgentModel).StreamConversationStep(streamCtx, step.Input, func(event agentsdk.ConversationModelEvent) error {
+	result, err := s.conversationModel(ctx).(agentsdk.ConversationAgentModel).StreamConversationStep(streamCtx, step.Input, func(event agentsdk.ConversationModelEvent) error {
 		if callbackErr != nil {
 			return callbackErr
 		}

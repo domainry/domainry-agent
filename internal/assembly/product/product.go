@@ -95,6 +95,9 @@ func OpenProduct(ctx context.Context, p Product, o ProductOptions) (*ProductHost
 	for pattern, handler := range h.ToolSettingsSetupRoutes() {
 		routes[pattern] = handler
 	}
+	for pattern, handler := range h.CollaborationSetupRoutes() {
+		routes[pattern] = handler
+	}
 	for pattern, handler := range h.AccountSetupRoutes() {
 		routes[pattern] = handler
 	}

@@ -1,0 +1,5 @@
+=== RUN   TestPeerOutcomeInspectionOnlyReadsOriginalHTTPReceipt
+    conversation_peer_outcome_test.go:285: 2 actual file effects, 1 POST per key, 2 GETs for original uncertain operation, 1 model call; restart, missing receipt, revocation and duplicate inspection verified
+--- PASS: TestPeerOutcomeInspectionOnlyReadsOriginalHTTPReceipt (6.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	6.746s

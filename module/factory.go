@@ -150,6 +150,9 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if !deferConversations && conversationOptions.ExecutionAuthorizer == nil {
 		conversationOptions.ExecutionAuthorizer, _ = host.(agentsdk.ConversationExecutionAuthorizer)
 	}
+	if !deferConversations && conversationOptions.CollaborationAuthorizer == nil {
+		conversationOptions.CollaborationAuthorizer, _ = host.(agentsdk.ConversationCollaborationAuthorizer)
+	}
 	conversationRepository := agentstore.NewConversationStore(store)
 	todoStore, err := todomodule.NewStore(store.Database(), store.Renderer(), store.Profile(), nil)
 	if err != nil {
@@ -260,7 +263,7 @@ func (b *binding) Descriptor() agentsdk.Descriptor {
 		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationStreamV1)
 	}
 	if b.conversations != nil && b.conversations.ConversationExecutionEnabled() {
-		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationExecutionV1)
+		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationExecutionV1, agentsdk.CapabilityConversationCollaborationV1)
 		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityScheduledConversationTask)
 	}
 	return descriptor

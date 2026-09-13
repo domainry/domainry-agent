@@ -25,10 +25,14 @@ export function usageItems(usage?: Record<string, unknown>) {
 }
 
 const eventTypes: Record<string, string> = {
+  outcome_receipt: "原操作回执",
+  outcome_inspection: "原回执核查",
   run: "运行", step: "步骤", model: "模型调用", tool: "工具调用",
   authorization: "授权检查", confirmation: "用户确认", interaction: "用户交互",
 };
 const eventStatuses: Record<string, string> = {
+  reused: "已复用",
+  reading: "查询中",
   queued: "已排队", running: "执行中", completed: "已完成", failed: "失败", cancelled: "已停止",
   prepared: "已准备", started: "已开始", granted: "已授权", denied: "已拒绝", authorization_failed: "授权检查失败",
   confirmation_required: "需要确认", pending: "等待处理", approved: "已批准", rejected: "已拒绝", resolved: "已解决",

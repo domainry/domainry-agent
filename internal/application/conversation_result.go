@@ -72,12 +72,20 @@ func (s *ConversationService) ReadResult(ctx context.Context, conversation, run 
 	if args.Reference.ConversationID != conversation || args.Reference.RunID != run {
 		return agentsdk.ConversationResultSlice{}, conversationFailure("bad_request", "result_reference_invalid")
 	}
+	if err := s.authorizeCollaborationConversation(ctx, conversation, "execution_read", a); err != nil {
+		return agentsdk.ConversationResultSlice{}, err
+	}
 	ctx, cancel := s.sourceAccessContext(ctx)
 	defer cancel()
 	return s.readResultSlice(ctx, args, a, conversation)
 }
 
 func (s *ConversationService) readResultSlice(ctx context.Context, args agentsdk.ConversationResultRead, a agentsdk.ConversationAuthority, recipient string) (agentsdk.ConversationResultSlice, error) {
+	if recipient != args.Reference.ConversationID {
+		if err := s.authorizeCollaborationConversation(ctx, args.Reference.ConversationID, "execution_read", a); err != nil {
+			return agentsdk.ConversationResultSlice{}, err
+		}
+	}
 	fail := func(code string) (agentsdk.ConversationResultSlice, error) {
 		return agentsdk.ConversationResultSlice{}, conversationFailure("bad_request", code)
 	}

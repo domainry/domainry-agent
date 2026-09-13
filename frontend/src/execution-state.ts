@@ -4,6 +4,8 @@ import type { Citation } from "./knowledge-state.ts";
 
 export type ResultReference = { conversation_id: string; run_id: string; step: number; call_id: string; sha256: string };
 export type ToolView = {
+	 reused_from?: ResultReference;
+  outcome_inspection?: { status: string; actor_id: string; checked_at: string };
   effect?: "read" | "write"; completion?: "accepted";
   citations?: Citation[];
   id: string; name: string; arguments: string; status: string;
@@ -20,6 +22,8 @@ export type StepView = {
 export type ExecutionEvent = {
   seq: number; type: string;
   data?: {
+	 reference?: ResultReference;
+    actor_id?: string; checked_at?: string;
     effect?: "read" | "write"; completion?: "accepted";
     citations?: Citation[];
     interaction?: Interaction;
@@ -34,6 +38,8 @@ export type ExecutionEvent = {
 export const executionEventNames = [
   "step.started", "step.attempt.started", "step.text.delta", "step.tool.started",
   "step.tool.arguments.delta", "step.completed", "tool.started", "tool.completed", "tool.uncertain", "tool.waiting",
+  "tool.inspection.started", "tool.inspection.completed",
+  "tool.receipt.reused",
 ];
 const bytes = (text: string) => new TextEncoder().encode(text).length;
 
@@ -56,6 +62,16 @@ export function applyExecutionEvent(run: Run, event: ExecutionEvent): Run {
     steps.push(step);
   }
   switch (event.type) {
+    case "tool.receipt.reused": {
+      const call=step.calls.find(call=>call.id===data.call_id);
+      if (!call || !data.reference) throw new Error("Invalid reused receipt");
+      call.reused_from=data.reference;break;
+    }
+    case "tool.inspection.started": case "tool.inspection.completed": {
+      const call = step.calls.find(call => call.id === data.call_id);
+      if (!call || !data.status || !data.actor_id || !data.checked_at) throw new Error("Invalid outcome inspection");
+      call.outcome_inspection = {status: data.status, actor_id: data.actor_id, checked_at: data.checked_at}; break;
+    }
     case "step.attempt.started":
       step.attempt = data.attempt!; step.text = ""; step.calls = []; step.status = "generating"; break;
     case "step.text.delta":

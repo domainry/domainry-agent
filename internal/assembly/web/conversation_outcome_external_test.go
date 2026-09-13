@@ -64,6 +64,12 @@ func (f *outcomeHTTPToolHost) ReconcileConversationTool(ctx context.Context, in 
 	req.Header.Set("Idempotency-Key", in.IdempotencyKey)
 	return f.request(req)
 }
+func (f *outcomeHTTPToolHost) InspectConversationToolOutcome(ctx context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {
+	if in.OutcomeInspectionToken == "" || in.Confirmation == nil || in.IdempotencyKey == "" || in.LeaseOwner != "" || in.Fence != 0 {
+		return agentsdk.ConversationToolResult{}, errors.New("invalid receipt inspection")
+	}
+	return f.ReconcileConversationTool(ctx, in) // This fixture's implementation only GETs the original receipt.
+}
 func (*outcomeHTTPToolHost) request(req *http.Request) (agentsdk.ConversationToolResult, error) {
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {

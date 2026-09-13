@@ -1,0 +1,13 @@
+{
+  "complete": true,
+  "errors": [],
+  "checks": [
+    "stopped original operation",
+    "single unknown write selected",
+    "mobile",
+    "receipt-only inspection",
+    "original receipt visible",
+    "no approval or resume",
+    "reload leaves explicit continuation"
+  ]
+}

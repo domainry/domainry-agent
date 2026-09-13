@@ -1,0 +1,286 @@
+[
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/cmd/domainry-agent-web/main.go",
+    "sha256": "8777e31b16084084148ce6677538811b77a01edf932c4c10742554f995b1b1a5"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/docs/agent-core-capabilities-todo.md",
+    "sha256": "2988cba66022343579597a9d8bdf0f2ea7190885880b8f99bde7be8bc8442861"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/docs/testing-2026-09-13-c05-permissions.md",
+    "sha256": "26c2008a2a403fa8817e76abdc7efe03f73b3bce1c5e42b5f53294ebc3883e7b"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/docs/testing-2026-09-13-c05-result-reading.md",
+    "sha256": "c63a31e5ca1e729991859a93c4c52fea832650a7779c67a8bcdf8ef7130bfc2c"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/frontend/src/CollaborationDialog.tsx",
+    "sha256": "6a2db7ff3309d736df70695603cd37754041aaa95a82fecff7d458170638c8d6"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/frontend/src/DeliveryVerification.tsx",
+    "sha256": "fba3db61c138275aa78d066e61709b04588b4e13409eccbcc8bdbde2ec0f83f1"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/frontend/src/Disagreements.tsx",
+    "sha256": "799cc818fbd38aa0eb11857c42425be52ebd1d0fcfe7ed2c751d727d60b3ac59"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/frontend/src/collaboration-state.test.ts",
+    "sha256": "c006a7c0e79322dcc187b004af811a00cdc8acd7e4aea705fa1366d7fcca4413"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/frontend/src/collaboration-state.ts",
+    "sha256": "fd4ba4e8cdf3c0da00d058ee780b19c619dbba500b45c95bc6b5a2cedc430732"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/frontend/src/errors.ts",
+    "sha256": "778daa8dc10dfa1c435b839f0d6127f4728a0b4d9ad9ee2c9912222d1bbf9c5a"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/frontend/tests/collaboration.browser.mjs",
+    "sha256": "dacbda4eeab25887d133771a9e4ff6b2fa5d7e8ed969ece5ea15738acd7e729d"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/frontend/tests/peer-permissions.browser.mjs",
+    "sha256": "77778eedb204fe9fd1f7dbb3d35d2fcb0a3e908f1d5f0d5e86781dc750988bb0"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/integration/conversation_execution_read_integration_test.go",
+    "sha256": "863dac8ee4e700441025e2d62746492ef968b79b399f9d72f83f27dd8d1585e0"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_agent_discovery.go",
+    "sha256": "5e4be3a075852c0811c3f4a232c636ec25e25b7435fc9bb18c1105fdc50d4179"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_agent_discovery_test.go",
+    "sha256": "40fbe16e5570cb91708c766752e68270a0c3803f93c342e59d0fd410b2003051"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_agents.go",
+    "sha256": "56c41501e5c5f6d78bdb30dd66958fb636a8524aead604dfb7fbcfc43ba55f0e"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_artifact_tools.go",
+    "sha256": "27c5f678dff24a2267de8bb2f38f9f43e05242726ec98b4e93311be086a29ae4"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_authorization.go",
+    "sha256": "663b986a71920470cdfce5d3bef250d51d091ba69ea23cf706dc45d4883398ef"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_collaboration_authorization.go",
+    "sha256": "8d1f57314b3b0721da0dd4089290c7457977e0908cf4ff6122ae0a1a735567e3"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_collaboration_authorization_test.go",
+    "sha256": "ad45830c7c07be34b794a37626f1c5e562882b2e419a0cc89d070d3bc707c0c5"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_confirmation_port.go",
+    "sha256": "61c52b6a5d6f9aa5e6bd68a458ce52f9e4fb128e8cb6697d8b178701f80870cf"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_context.go",
+    "sha256": "743713861943d5e0cb8e77c58ecac1633faff8f621f14de2ad5c779d9e293e88"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_delegations.go",
+    "sha256": "d10bd474c74bc8d45c78eec3b69208e81a133150bed9aac42aaa4d52ded8e833"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_delivery_tool_sources.go",
+    "sha256": "b1d4cd67a96006cbce1d34c9e805e2887aeefb3b0069f2a1a6489e7d626afaf5"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_delivery_tool_sources_test.go",
+    "sha256": "caec73e06f55d7b0e092888a7ea6d9e2810b930904024d994c6edc04ac23630b"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_dependencies.go",
+    "sha256": "b672784a34e70d1957a17d585d9f0ff82c9655e5b6695619164a0bdb88c8ceb6"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_disagreement.go",
+    "sha256": "2f44dd92fe795d8132ac8abb725e6f901cd81bf8f587357996c039ec825d985a"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_disagreement_test.go",
+    "sha256": "59463cc7543a291c267e782746ebf369a259fabbcb286fd28e2fe713e5c4d226"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_dispatch.go",
+    "sha256": "95ad8b39cfabd4b71962d87c174736bbf5976136393604d2b222750bb14a30e8"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_execution_read.go",
+    "sha256": "5756327fb0c5d440f84dd267de5c32cbb0359b1a4491e73e4c5baedc2f38519c"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_interaction.go",
+    "sha256": "b4beff5161710078fce632e60ac9f709c55f8b0060db352c6f37388ff0d02bc0"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_peer_inbox.go",
+    "sha256": "5062d52fb1f1b204e7ba36ed046c1af4d45ab87720c780223fb1d61dc03187bc"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_peer_sources_test.go",
+    "sha256": "03084d690084885a6b55ec01517c32400227f65467036f26630005cb658b6fdd"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_personal_tools.go",
+    "sha256": "de2afd70394bafd29d113061cb7d421ff0b4bf2aa7c7c076312b491aff156f7d"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_profile.go",
+    "sha256": "e4e13f6930073569bd589a7bbd708fb453f1cbc5f1516e545cb12315c94d2d64"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_result.go",
+    "sha256": "480689c7a612d984cdef3865efaabcd7cb5101e4ec6da67b894ab5c48d79a3fe"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go",
+    "sha256": "9b26bea1d09092bfc059a9987ebda05810d9db0841252de9e77cb5c935b2b191"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_sources.go",
+    "sha256": "c2c6006aa1ad279cd89d7edea176ab4ed98046fb6d2cbf94dccf25e5f5f680bb"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_tasks.go",
+    "sha256": "22b8ab4944b7937c9e99322f204b496e83fbb675d7f5d9464eb212cba794d6ab"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_verification.go",
+    "sha256": "dce902890b33260f4c086b6637b69758560d80af36984daa23eeee974c7fd660"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/product/product.go",
+    "sha256": "e6c2c8046f99d651e39837c2db662ac2fcbf133bf1c24fe32c6cce0c7bb1373a"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/saas/conversation_identity.go",
+    "sha256": "3dd017b58d18341f8af505f58b70dc22da7b58ae3060af7aa7c093c21eaff863"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/account_tools.go",
+    "sha256": "b4488e4363ad354bbe44cbbb65cd51740fb0c4dd26a7441dc5f256310634a578"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_collaboration_authorization.go",
+    "sha256": "da3835d0127221b2a3360dedc8db9f6d7374846a7b7e806cb1803c87d9ff838c"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_collaboration_permission_browser_test.go",
+    "sha256": "3785edec1c9c14f563469cb96f5e9c02234fadbc4b6541f3188311677777ad78"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_collaboration_permissions_test.go",
+    "sha256": "021e8bd63384dbac70324a6a8576d934b65b73dfede265ef36a8e610dbef1ac8"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_collaboration_setup.go",
+    "sha256": "7860b0d96594410f86dc555e3774b749d51791e6f3701cf227e10a4346a7fcab"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_collaboration_test.go",
+    "sha256": "6f69ce2608b4b7f9fe5797498d8e4092e067816aa16948b379522238b2a3157c"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_delivery_mail_permissions_test.go",
+    "sha256": "95beeeb2e652ee0977369ade81d265dbf96d71ab532c816c1f4c5c8d6d6a74e2"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_peer_disagreement_test.go",
+    "sha256": "8e4cbcd52464a8b2076cb1304822821c4fc19af8b61a9c3e470c79b3493c1edf"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_peer_outcome_test.go",
+    "sha256": "bcc3381e1cf9978cd395a1ae45a239e29bc40ef48ec15f184927124f1fc925bc"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_tools.go",
+    "sha256": "af8488d8fe99d920204e08d2c9a05b99ade7d63b85937a040ab435786e16838d"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/capability/binding_test.go",
+    "sha256": "a770adffa0ae24d8f422091639a5308c994f20e02257464fd2bc4844cb6dcd25"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/transport/http/module/adapter_test.go",
+    "sha256": "6636b4cb7888fdf585e73b760ea44a0d413fd02b4771af97a4948cbc8f136f53"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/transport/http/module/conversation_adapter.go",
+    "sha256": "d798536a01a08f9d29b8303e57cce19464211b2d2e52a2ff810af425e0bbee21"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/module/conversation_assembly.go",
+    "sha256": "744000cc722ae0c1c30ea69f1e65b075f51a8af544c3bf4071823c1e69aab86a"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/module/factory.go",
+    "sha256": "e2b8283198ea7e14269d069a866ca710d182496fd23889277a2978a0648083a8"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/remote/conversation_collaboration.go",
+    "sha256": "7233bdc8250d8a884dab8094167b54149aa620cd8701cf30967a0cd823a861c9"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/server/server_test.go",
+    "sha256": "fdfe892fc224a46a430f51df8e8b0ddfc91ff1a93304e9315f4cb90983ca36cf"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent-sdk/conversation_collaboration.go",
+    "sha256": "3bcf7a642e3563b76cce34e092e278141340505cf91381c2f22712870cc8169b"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent-sdk/conversation_collaboration_authorization.go",
+    "sha256": "7eb3fde1d0846de0bc3b1d49a14c6b857b291063094774e0f8fcb1d5decad60e"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent-sdk/conversation_execution.go",
+    "sha256": "a2941adfb97b09ecb4cedcba5908c52ce0301d03ac08e8ac6c45d89b4bab8269"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent-sdk/conversation_http.go",
+    "sha256": "6bdee3325a4b66c9876a7f8bccec81a290a2bd00513f15aeeb2a72f8470bcf42"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent-sdk/http_adapter.go",
+    "sha256": "2eb3803e4f19f04f34a7d0f7abdb658b172fabe490d6a2e980325784c932c1e0"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent-sdk/http_adapter_test.go",
+    "sha256": "110b8e1b4415e02caa589653f5e0ef0da3c9088ce46132eaa2247126ce220ecd"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-tools/internal/adapter/accounttools/adapter.go",
+    "sha256": "c15f6936ad5ae480e0d93acd740736e60c06beafb29a66845153b3637015e52f"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-tools/internal/application/tool/combine.go",
+    "sha256": "6447c2186785f0c1e515a055188dbf741de31e2370e3205bd158bd9b4615715d"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-tools/internal/application/tool/registry.go",
+    "sha256": "d7c016dfc8b865833cec4624602463eaefa2832d7c0f7fd4964143cc0ae913c6"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-tools/internal/application/tool/result_read_test.go",
+    "sha256": "e3ef287d39e603775f977febc5611602e33f46b6808c41885f6804c57f9e63f9"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-tools-sdk/README.md",
+    "sha256": "7bc31fc13f65819d990c82c07d74c19d9510db54c57e498a258edab71a9b8c9c"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-tools-sdk/tools.go",
+    "sha256": "76a26ae4a767bbce3e8b7b50ea969d4b26d657047a17c0dff07bf5a3eac1326c"
+  }
+]

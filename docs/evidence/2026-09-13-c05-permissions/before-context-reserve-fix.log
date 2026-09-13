@@ -1,0 +1,24 @@
+=== RUN   TestExecutionReferencesSurviveTurnsSummariesAndServiceRestart
+    conversation_execution_read_integration_test.go:69: context probe messages=3 bytes=6820 last_role=user last_tool=
+    conversation_execution_read_integration_test.go:69: context probe messages=5 bytes=7721 last_role=tool last_tool=original-operation
+    conversation_execution_read_integration_test.go:69: context probe messages=5 bytes=7131 last_role=user last_tool=
+    conversation_execution_read_integration_test.go:69: context probe messages=7 bytes=8631 last_role=tool last_tool=inspect
+    conversation_execution_read_integration_test.go:69: context probe messages=9 bytes=10172 last_role=tool last_tool=full-result
+    conversation_execution_read_integration_test.go:69: context probe messages=7 bytes=7476 last_role=user last_tool=
+    conversation_execution_read_integration_test.go:69: context probe messages=9 bytes=15300 last_role=user last_tool=
+    conversation_execution_read_integration_test.go:69: context probe messages=5 bytes=8040 last_role=user last_tool=
+    conversation_execution_read_integration_test.go:69: context probe messages=7 bytes=15682 last_role=user last_tool=
+    conversation_execution_read_integration_test.go:69: context probe messages=5 bytes=8043 last_role=user last_tool=
+    conversation_execution_read_integration_test.go:69: context probe messages=7 bytes=15685 last_role=user last_tool=
+    conversation_execution_read_integration_test.go:69: context probe messages=5 bytes=8045 last_role=user last_tool=
+    conversation_execution_read_integration_test.go:69: context probe messages=7 bytes=15686 last_role=user last_tool=
+    conversation_execution_read_integration_test.go:69: context probe messages=5 bytes=8045 last_role=user last_tool=
+    conversation_execution_read_integration_test.go:69: context probe messages=7 bytes=15713 last_role=user last_tool=
+    conversation_execution_read_integration_test.go:69: context probe messages=9 bytes=16754 last_role=tool last_tool=find-source
+    conversation_execution_read_integration_test.go:69: context probe messages=11 bytes=17916 last_role=tool last_tool=original-message
+    conversation_execution_read_integration_test.go:69: context probe messages=13 bytes=19416 last_role=tool last_tool=inspect
+    conversation_execution_read_integration_test.go:176: recover failed: execution_context_exceeded steps=4
+--- FAIL: TestExecutionReferencesSurviveTurnsSummariesAndServiceRestart (0.13s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/integration	0.590s
+FAIL

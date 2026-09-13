@@ -1,9 +1,13 @@
 import type { Run } from "./api.ts";
-import type { ToolView } from "./execution-state.ts";
+import type { StepView, ToolView } from "./execution-state.ts";
 import { resumable } from "./interaction-state.ts";
 
 export type ResultKind = "completed" | "accepted" | "failed" | "unconfirmed" | "unstarted" | "interrupted" | "waiting" | "active";
 export type RecoveryTarget = { kind: "resume" | "reconcile"; step?: number; callID?: string };
+export function outcomeInspectionTargets(status: string | undefined, steps: StepView[] = []) {
+  if (!status || !["cancelled", "failed", "needs_reconciliation"].includes(status)) return [];
+  return steps.flatMap(step => step.calls.filter(call => call.effect === "write" && ["uncertain", "needs_reconciliation", "running", "interrupted"].includes(call.status)).map(call => ({step: step.number, call})));
+}
 const terminal = (run: Run) => ["completed", "failed", "cancelled"].includes(run.status);
 
 export function resultKind(run: Run, call: ToolView): ResultKind {

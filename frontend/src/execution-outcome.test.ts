@@ -2,9 +2,37 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { Run } from "./api.ts";
 import { applyExecutionEvent, type ToolView } from "./execution-state.ts";
-import { executionOutcome, recoveryTarget, repairRequest } from "./execution-outcome.ts";
+import { executionOutcome, outcomeInspectionTargets, recoveryTarget, repairRequest } from "./execution-outcome.ts";
 
 const call = (id: string, status: string, effect: "read" | "write" = "write"): ToolView => ({id, name:"fixture", arguments:"{}", status, effect});
+
+test("a reused receipt retains its original identity across streamed completion and stopping", () => {
+  const initial = run("running", [call("reuse", "queued")]);
+  const receipt = {conversation_id:"original-conversation",run_id:"original-run",step:0,call_id:"original-call",sha256:"original-hash"};
+  const completed = applyExecutionEvent(initial,{seq:1,type:"tool.completed",data:{attempt:1,step:0,call_id:"reuse",status:"completed",effect:"write",resource_id:"existing"}});
+  const reused = applyExecutionEvent(completed,{seq:2,type:"tool.receipt.reused",data:{attempt:1,step:0,call_id:"reuse",reference:receipt}});
+  const stopped = {...applyExecutionEvent(reused,{seq:3,type:"run.cancelled"}),status:"cancelled" as const};
+  assert.equal(stopped.steps![0].calls[0].status,"completed");
+  assert.deepEqual(stopped.steps![0].calls[0].reused_from,receipt);
+  assert.equal(stopped.steps![0].calls[0].resource_id,"existing");
+  assert.deepEqual(outcomeInspectionTargets(stopped.status,stopped.steps),[]);
+  assert.equal(initial.steps![0].calls[0].reused_from,undefined);
+});
+
+test("receipt inspection leaves execution stopped and cannot create a retry target for known effects", () => {
+  const r = run("cancelled", [call("unknown","interrupted"),call("known","completed"),call("read","interrupted","read"),call("unstarted","not_started")]);
+  assert.deepEqual(outcomeInspectionTargets(r.status,r.steps).map(x=>x.call.id),["unknown"]);
+  assert.deepEqual(outcomeInspectionTargets("running",r.steps),[]);
+  const started = applyExecutionEvent(r,{seq:1,type:"tool.inspection.started",data:{attempt:1,step:0,call_id:"unknown",status:"reading",actor_id:"owner",checked_at:"2026-09-13T10:00:00Z"}});
+  assert.equal(started.status,"cancelled");
+  assert.equal(started.steps![0].calls[0].status,"interrupted");
+  const result = applyExecutionEvent(started,{seq:2,type:"tool.completed",data:{attempt:1,step:0,call_id:"unknown",status:"completed",effect:"write",resource_id:"existing",result_preview:'{"id":"existing"}'}});
+  const done = applyExecutionEvent(result,{seq:3,type:"tool.inspection.completed",data:{attempt:1,step:0,call_id:"unknown",status:"completed",actor_id:"owner",checked_at:"2026-09-13T10:00:01Z"}});
+  assert.equal(done.status,"cancelled");
+  assert.equal(done.steps![0].calls[0].resource_id,"existing");
+  assert.equal(done.steps![0].calls[0].outcome_inspection?.status,"completed");
+  assert.deepEqual(outcomeInspectionTargets(done.status,done.steps),[]);
+});
 function run(status: Run["status"], calls: ToolView[]): Run {
   return {id:"source-run",conversation_id:"conversation",status,attempt:1,user_seq:1,draft_bytes:0,last_event_seq:0,steps:[{number:0,attempt:1,status:"tools",text:"",calls}]};
 }

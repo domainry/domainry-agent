@@ -18,6 +18,12 @@ func (h *assemblyConfirmationHost) VerifyConversationToolConfirmation(ctx contex
 	if !r.Authority.Known || r.Authority.RuntimeID != h.service.runtimeID || r.Authority.WorkspaceID == "" || r.Authority.UserID == "" || r.Definition.Effect != "write" || r.ConversationID == "" || r.RunID == "" || r.Call.ID == "" || r.Call.Name != r.Definition.Key || r.Confirmation == nil || r.ConfirmationID == "" {
 		return false, nil
 	}
+	if r.OutcomeInspectionToken != "" {
+		if inspector, ok := h.service.repo.(persistence.ConversationOutcomeInspectionRepository); ok {
+			return inspector.VerifyConversationOutcomeInspection(ctx, r)
+		}
+		return false, nil
+	}
 	repo, ok := h.service.repo.(persistence.ConversationInteractionRepository)
 	if !ok {
 		return false, conversationFailure("unavailable", "interaction_unavailable")

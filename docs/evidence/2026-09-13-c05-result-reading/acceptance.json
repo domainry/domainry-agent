@@ -1,0 +1,41 @@
+{
+  "status": "partial",
+  "todo": "C05",
+  "completed_todo_items": 4,
+  "total_todo_items": 25,
+  "c05_complete": false,
+  "implemented": [
+    "Tools explicit independent result-read policy",
+    "mail/calendar/web read adapter source authorization",
+    "Agent delivery-only consumption and preserved assembly ports",
+    "mail HTTP delivery after tool action revocation with current source checks"
+  ],
+  "validation": {
+    "unit.log": {
+      "passed": true,
+      "packages_passed": 10
+    },
+    "mail-http.log": {
+      "passed": true,
+      "packages_passed": 1
+    },
+    "full-regression.log": {
+      "passed": true,
+      "packages_passed": 31
+    },
+    "race-final.log": {
+      "passed": true,
+      "packages_passed": 3
+    },
+    "browser-http.log": {
+      "passed": true,
+      "packages_passed": 1
+    }
+  },
+  "source_files_verified": 71,
+  "remaining": [
+    "other owners: Report, Analysis, write receipts, business/Knowledge",
+    "cross-user principals and participants",
+    "explicit source sharing UI and revocation"
+  ]
+}

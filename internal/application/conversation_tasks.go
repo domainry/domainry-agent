@@ -22,7 +22,7 @@ func (s *ConversationService) prepareConversationTask(ctx context.Context, in ag
 
 func (s *ConversationService) prepareConversationTaskStart(ctx context.Context, start agentsdk.ConversationTaskStart, authority agentsdk.ConversationAuthority, conversationID, sourceRunID string, allowedActions map[string]struct{}) (agentsdk.ConversationTask, error) {
 	if !conversationText(start.Goal, 2048, true) || !conversationText(start.Input, 8192, false) ||
-		len(start.AllowedTools) > 16 || start.Budget.MaxSteps < 1 || start.Budget.MaxSteps > min(32, s.options.MaxSteps) ||
+		len(start.AllowedTools) > 128 || start.Budget.MaxSteps < 1 || start.Budget.MaxSteps > min(32, s.options.MaxSteps) ||
 		start.Budget.MaxToolCalls < 1 || start.Budget.MaxToolCalls > min(32, s.options.MaxToolCalls) ||
 		start.Budget.MaxOutputBytes < 256 || start.Budget.MaxOutputBytes > min(65536, s.options.MaxOutputBytes) ||
 		start.Budget.TimeoutSeconds < 1 || time.Duration(start.Budget.TimeoutSeconds)*time.Second > min(30*time.Minute, s.options.RunTimeout) {
@@ -195,6 +195,13 @@ func conversationTaskAllowedTools(task agentsdk.ConversationTask) []string {
 	return out
 }
 
+func conversationTaskExecutionConversation(task agentsdk.ConversationTask) string {
+	if task.ExecutionConversationID != "" {
+		return task.ExecutionConversationID
+	}
+	return task.SourceConversationID
+}
+
 func conversationTaskProgress(run agentsdk.ConversationRun) agentsdk.ConversationTaskProgress {
 	out := agentsdk.ConversationTaskProgress{RunStatus: run.Status, Attempt: run.Attempt, Steps: len(run.Steps), LastEventSeq: run.LastEventSeq}
 	for _, step := range run.Steps {
@@ -247,7 +254,7 @@ func (s *ConversationService) conversationTaskArtifacts(ctx context.Context, tas
 	}
 	cursor := ""
 	for len(items) < 50 {
-		page, err := s.Artifacts(ctx, agentsdk.ConversationArtifactQuery{SourceConversationID: task.SourceConversationID, Cursor: cursor, Limit: 50}, a)
+		page, err := s.Artifacts(ctx, agentsdk.ConversationArtifactQuery{SourceConversationID: conversationTaskExecutionConversation(task), Cursor: cursor, Limit: 50}, a)
 		if err != nil {
 			var coded *agentsdk.Error
 			if errors.As(err, &coded) && (coded.Class == "forbidden" || coded.Class == "unavailable") {
@@ -278,15 +285,34 @@ func (s *ConversationService) projectConversationTask(ctx context.Context, task 
 	summary := agentsdk.ConversationTaskSummary{
 		ID: task.ID, Status: task.Status, Goal: task.Goal, AllowedTools: conversationTaskAllowedTools(task), Budget: task.Budget,
 		SourceConversationID: task.SourceConversationID, SourceRunID: task.SourceRunID, ExecutionRunID: task.ExecutionRunID,
+		DelegationID: task.DelegationID, ExecutionConversationID: task.ExecutionConversationID,
 		Artifacts: []agentsdk.ConversationArtifact{}, ArtifactsComplete: true, CompletionEventID: task.CompletionEventID,
 		CompletionEventSeq: task.CompletionEventSeq, ErrorCode: task.ErrorCode, CreatedAt: task.CreatedAt, UpdatedAt: task.UpdatedAt, CompletedAt: task.CompletedAt,
 	}
 	summary.Control = conversationTaskControlState(task, nil)
+	if task.Agent != nil {
+		summary.AgentID = task.Agent.ID
+	}
 	out := agentsdk.ConversationTaskDetail{ConversationTaskSummary: summary, Input: task.Input, Steps: []agentsdk.ConversationStepView{}}
+	superseded := false
+	if task.DelegationID != "" {
+		repo, err := s.collaborationRepository()
+		if err != nil {
+			return out, err
+		}
+		d, err := repo.ConversationDelegation(ctx, task.DelegationID, a)
+		if err != nil {
+			return out, err
+		}
+		superseded = d.TaskID != task.ID || d.ConversationID != conversationTaskExecutionConversation(task) || max(1, task.AgreementRevision) != d.AgreementRevision || len(d.PendingChanges) > 0
+		if superseded {
+			out.Control = agentsdk.ConversationTaskControlState{ResumeBlocker: "delegation_superseded"}
+		}
+	}
 	if task.ExecutionRunID == "" {
 		return out, nil
 	}
-	run, err := s.Run(ctx, task.SourceConversationID, task.ExecutionRunID, a)
+	run, err := s.Run(ctx, conversationTaskExecutionConversation(task), task.ExecutionRunID, a)
 	if err != nil {
 		var coded *agentsdk.Error
 		if errors.As(err, &coded) && (coded.Class == "not_found" || coded.Class == "forbidden") {
@@ -300,6 +326,9 @@ func (s *ConversationService) projectConversationTask(ctx context.Context, task 
 	}
 	out.Progress = conversationTaskProgress(run)
 	out.Control = conversationTaskControlState(task, &run)
+	if superseded {
+		out.Control = agentsdk.ConversationTaskControlState{ResumeBlocker: "delegation_superseded"}
+	}
 	if run.AccessError != "" {
 		out.AccessError = run.AccessError
 		return out, nil
@@ -318,7 +347,7 @@ func (s *ConversationService) projectConversationTask(ctx context.Context, task 
 		if !ok {
 			return out, conversationFailure("unavailable", "task_result_unavailable")
 		}
-		message, messageErr := history.HistoryMessage(ctx, task.SourceConversationID, task.ResultMessageID, a)
+		message, messageErr := history.HistoryMessage(ctx, conversationTaskExecutionConversation(task), task.ResultMessageID, a)
 		if messageErr != nil {
 			return out, messageErr
 		}
@@ -347,6 +376,9 @@ func (s *ConversationService) ConversationTask(ctx context.Context, id string, a
 	if err != nil {
 		return agentsdk.ConversationTaskDetail{}, err
 	}
+	if err = s.authorizeCollaborationTask(ctx, task, "execution_read", a); err != nil {
+		return agentsdk.ConversationTaskDetail{}, err
+	}
 	return s.projectConversationTask(ctx, task, a, true)
 }
 
@@ -364,6 +396,12 @@ func (s *ConversationService) ConversationTasks(ctx context.Context, in agentsdk
 		return out, err
 	}
 	for _, task := range page.Items {
+		if err := s.authorizeCollaborationTask(ctx, task, "execution_read", a); err != nil {
+			if collaborationDenied(err) {
+				continue
+			}
+			return agentsdk.ConversationTaskPage{}, err
+		}
 		view, projectErr := s.projectConversationTask(ctx, task, a, false)
 		if projectErr != nil {
 			return out, projectErr
@@ -423,6 +461,12 @@ func (s *ConversationService) cancelConversationTask(ctx context.Context, id str
 	if err != nil {
 		return agentsdk.ConversationTaskDetail{}, err
 	}
+	for _, operation := range []string{"manage", "execution_read"} {
+		if err = s.authorizeCollaborationTask(ctx, task, operation, a); err != nil {
+			return agentsdk.ConversationTaskDetail{}, err
+		}
+	}
+
 	if task.Terminal() {
 		return s.projectConversationTask(ctx, task, a, true)
 	}
@@ -433,7 +477,7 @@ func (s *ConversationService) cancelConversationTask(ctx context.Context, id str
 		}
 		task, err = controls.CancelQueuedConversationTask(ctx, id, a)
 	} else {
-		_, err = s.Cancel(ctx, task.SourceConversationID, task.ExecutionRunID, a)
+		_, err = s.Cancel(ctx, conversationTaskExecutionConversation(task), task.ExecutionRunID, a)
 		if err == nil {
 			task, err = s.conversationTaskRecord(ctx, id, a)
 		}
@@ -458,6 +502,12 @@ func (s *ConversationService) resumeConversationTask(ctx context.Context, id str
 	if err != nil {
 		return agentsdk.ConversationTaskDetail{}, err
 	}
+	for _, operation := range []string{"manage", "execution_read"} {
+		if err = s.authorizeCollaborationTask(ctx, task, operation, a); err != nil {
+			return agentsdk.ConversationTaskDetail{}, err
+		}
+	}
+
 	if task.Status == agentsdk.ConversationTaskStatusCompleted {
 		return agentsdk.ConversationTaskDetail{}, conversationFailure("conflict", "task_completed")
 	}
@@ -474,7 +524,7 @@ func (s *ConversationService) resumeConversationTask(ctx context.Context, id str
 			s.signalConversationTasks()
 		}
 	} else {
-		run, runErr := s.Run(ctx, task.SourceConversationID, task.ExecutionRunID, a)
+		run, runErr := s.Run(ctx, conversationTaskExecutionConversation(task), task.ExecutionRunID, a)
 		if runErr != nil {
 			return agentsdk.ConversationTaskDetail{}, runErr
 		}
@@ -484,7 +534,7 @@ func (s *ConversationService) resumeConversationTask(ctx context.Context, id str
 		if task.Status == agentsdk.ConversationTaskStatusRunning && run.Status != "needs_reconciliation" {
 			return s.projectConversationTask(ctx, task, a, true)
 		}
-		_, err = s.Resume(ctx, task.SourceConversationID, task.ExecutionRunID, a)
+		_, err = s.Resume(ctx, conversationTaskExecutionConversation(task), task.ExecutionRunID, a)
 		if err == nil {
 			task, err = s.conversationTaskRecord(ctx, id, a)
 		}
@@ -500,6 +550,14 @@ var _ agentsdk.ConversationTaskControlService = (*ConversationService)(nil)
 func (s *ConversationService) executionCatalogForRun(ctx context.Context, claim persistence.ConversationClaim) ([]agentsdk.ConversationToolDefinition, map[string]conversationCompiledTool, error) {
 	if claim.Run.BackgroundTask == nil {
 		return s.executionCatalog(ctx, claim.Authority)
+	}
+	if len(claim.Run.BackgroundTask.Requirements.Sources) > 0 {
+		audit := s.sourceAudit(claim.Authority, claim.Run.ConversationID)
+		for _, ref := range claim.Run.BackgroundTask.Requirements.Sources {
+			if _, err := audit.run(ctx, ref); err != nil {
+				return nil, nil, err
+			}
+		}
 	}
 	definitions, catalog, err := s.registeredExecutionCatalog(ctx, claim.Authority)
 	if err != nil {
@@ -538,6 +596,21 @@ func (s *ConversationService) executionCatalogForRun(ctx context.Context, claim 
 
 func (s *ConversationService) conversationRunLimits(claim persistence.ConversationClaim) (steps, calls, output int, timeout time.Duration) {
 	steps, calls, output, timeout = s.options.MaxSteps, s.options.MaxToolCalls, s.options.MaxOutputBytes, s.options.RunTimeout
+	if agent := claim.Run.Agent; agent != nil {
+		limits := agent.Profile.ExecutionLimits
+		if limits.MaxSteps > 0 {
+			steps = min(steps, limits.MaxSteps)
+		}
+		if limits.MaxToolCalls > 0 {
+			calls = min(calls, limits.MaxToolCalls)
+		}
+		if limits.MaxOutputBytes > 0 {
+			output = min(output, limits.MaxOutputBytes)
+		}
+		if limits.TimeoutSeconds > 0 {
+			timeout = min(timeout, time.Duration(limits.TimeoutSeconds)*time.Second)
+		}
+	}
 	if task := claim.Run.BackgroundTask; task != nil {
 		steps = min(steps, task.Budget.MaxSteps)
 		calls = min(calls, task.Budget.MaxToolCalls)
@@ -601,6 +674,11 @@ func (s *ConversationService) conversationTaskWorker(ctx context.Context, repo p
 	retry := max(s.options.Poll, time.Second)
 	for ctx.Err() == nil {
 		_, launched, err := repo.LaunchConversationTask(ctx, s.runtimeID)
+		if err == nil && !launched {
+			if peers, ok := s.repo.(persistence.ConversationCollaborationRepository); ok {
+				_, launched, err = peers.LaunchConversationPeerMessage(ctx, s.runtimeID)
+			}
+		}
 		if err == nil && launched {
 			s.signal()
 			continue
@@ -613,6 +691,7 @@ func (s *ConversationService) conversationTaskWorker(ctx context.Context, repo p
 			case <-ctx.Done():
 				return
 			case <-s.taskWake:
+			case <-time.After(2 * time.Second):
 			}
 		} else {
 			select {

@@ -1,0 +1,6 @@
+=== RUN   TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery
+    conversation_collaboration_test.go:333: Agent disagreement flow stopped after 3 steps: {Number:2 Attempt:1 Status:completed Text:Fixture expected current issue after raise:  Calls:[] Usage:map[] StartedAt:2026-09-13 06:36:44.525629 +0000 UTC CompletedAt:2026-09-13 06:36:44.531979 +0000 UTC DurationMilliseconds:6}
+--- FAIL: TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery (8.44s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	8.948s
+FAIL

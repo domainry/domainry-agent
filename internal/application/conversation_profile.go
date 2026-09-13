@@ -73,32 +73,32 @@ func (h *profileToolHost) ConversationTools(ctx context.Context, a sdk.Conversat
 	defs, err := h.base.ConversationTools(ctx, a)
 	out := []sdk.ConversationToolDefinition{}
 	for _, d := range defs {
-		if h.allowed[d.Key] {
+		if conversationProfileAllows(ctx, d.Key, h.allowed) {
 			out = append(out, d)
 		}
 	}
 	return out, err
 }
 func (h *profileToolHost) AuthorizeConversationTool(ctx context.Context, in sdk.ConversationToolRequest) (sdk.ConversationToolAuthorization, error) {
-	if !h.allowed[in.Definition.Key] {
+	if !conversationProfileAllows(ctx, in.Definition.Key, h.allowed) {
 		return sdk.ConversationToolAuthorization{}, nil
 	}
 	return h.base.AuthorizeConversationTool(ctx, in)
 }
 func (h *profileToolHost) InvokeConversationTool(ctx context.Context, in sdk.ConversationToolRequest) (sdk.ConversationToolResult, error) {
-	if !h.allowed[in.Definition.Key] {
+	if !conversationProfileAllows(ctx, in.Definition.Key, h.allowed) {
 		return sdk.ConversationToolResult{}, fmt.Errorf("tool is not loaded by this Agent")
 	}
 	return h.base.InvokeConversationTool(ctx, in)
 }
 func (h *profileToolHost) ReconcileConversationTool(ctx context.Context, in sdk.ConversationToolRequest) (sdk.ConversationToolResult, error) {
-	if !h.allowed[in.Definition.Key] {
+	if !conversationProfileAllows(ctx, in.Definition.Key, h.allowed) {
 		return sdk.ConversationToolResult{}, fmt.Errorf("tool is not loaded by this Agent")
 	}
 	return h.base.ReconcileConversationTool(ctx, in)
 }
 func (h *profileToolHost) AuthorizeConversationToolResult(ctx context.Context, in sdk.ConversationToolRequest, out sdk.ConversationToolResult) error {
-	if !h.allowed[in.Definition.Key] {
+	if !conversationProfileAllows(ctx, in.Definition.Key, h.allowed) {
 		return conversationFailure("forbidden", "tool_access_denied")
 	}
 	if p, ok := h.base.(sdk.ConversationToolResultAuthorizer); ok {

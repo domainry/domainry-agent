@@ -75,6 +75,8 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		}
 		in.TodoID = r.PathValue("todoID")
 		in.TaskID = r.PathValue("taskID")
+		in.AgentID = r.PathValue("agentID")
+		in.DelegationID = r.PathValue("delegationID")
 		in.ArtifactID = r.PathValue("artifactID")
 		in.ArtifactExportID = r.PathValue("exportID")
 		in.LibraryID = r.PathValue("libraryID")
@@ -114,6 +116,8 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		in.Limit = int(number("limit"))
 		in.ArtifactVersion = number("version")
 		in.ArtifactBefore = number("before")
+		in.AgreementBefore = number("before_revision")
+		in.DisagreementID = r.PathValue("disagreementID")
 		archived := false
 		if raw := q.Get("include_archived"); raw != "" {
 			var err error
@@ -171,6 +175,16 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			}
 		}
 		switch op {
+		case "agents_match":
+			body = &in.AgentMatch
+		case "agents_create", "agents_update":
+			body = &in.AgentWrite
+		case "delegations_create":
+			body = &in.DelegationCreate
+		case "delegations_update":
+			body = &in.DelegationUpdate
+		case "delegations_message":
+			body = &in.AgentMessage
 		case "libraries_bind_source":
 			body = &in.LibrarySourceWrite
 		case "documents_transfer":

@@ -3,6 +3,7 @@ import { active, request, runPath, watchRun, type Run } from "./api";
 import { liveStepText } from "./execution-state";
 import { waiting } from "./interaction-state";
 import { describeError, errorMessage } from "./errors";
+import { InteractionCard } from "./InteractionCard";
 import { ExecutionActivity } from "./ExecutionActivity";
 import type { ToolView } from "./execution-state.ts";
 import { executionOutcome } from "./execution-outcome.ts";
@@ -62,7 +63,7 @@ export function RunDialog({ conversationID, runID, onClose, onResume, onRepair, 
         {run.error_code && <p role="alert" className="text-destructive text-sm">{errorMessage(run.error_code)}</p>}
         {run.access_error && <p role="alert" className="text-destructive text-sm">{errorMessage(run.access_error)}</p>}
         {!run.access_error && (run.steps?.length || ["failed", "cancelled"].includes(run.status) ? <ExecutionActivity run={run} onResume={onResume ? () => { onResume(run); onClose(); } : undefined} onRepair={onRepair ? (step, call, label) => onRepair(run, step, call, label) : undefined} recoveryDisabled={recoveryDisabled} repairDisabled={repairDisabled} /> : <p className="subtle">这次处理没有已保存的工具调用记录。</p>)}
-        {!run.access_error && run.interaction?.status === "pending" && <div className="run-waiting"><strong>{statuses[run.status]}</strong><p>{run.interaction.question || "请回到对话中的操作卡片继续处理。"}</p><Button variant="outline" onClick={onClose}>回到对话</Button></div>}
+        {!run.access_error && run.interaction?.status === "pending" && <InteractionCard key={run.interaction.id + ":" + run.interaction.revision} interaction={run.interaction} onRun={setRun} onRefresh={() => setRefresh(value => value + 1)} />}
         {liveStepText(run) && <section aria-label={run.status === "completed" ? "已保存的回复" : "未完成的回复"}><p className="subtle">{run.status === "completed" ? "已保存的回复" : "未完成的回复"}</p><KnowledgeResponse text={liveStepText(run)} citations={runCitations(run)} /></section>}
         {!run.access_error && run.audit?.length ? <section className="run-audit" aria-label="运行审计"><h3>运行审计</h3><ol>{run.audit.map(event => <li key={event.seq}><div><strong>{auditEventLabel(event)}</strong><time dateTime={event.occurred_at}>{new Date(event.occurred_at).toLocaleString()}</time></div><small className="subtle">序号 {event.seq}{event.attempt ? ` · 尝试 ${event.attempt}` : ""}{event.authorization_revision ? ` · 授权版本 ${event.authorization_revision}` : ""}{event.actor_id ? ` · 操作人 ${event.actor_id}` : ""}{event.duration_ms !== undefined ? ` · ${durationLabel(event.duration_ms)}` : ""}{event.error_code ? ` · ${event.error_code}` : ""}</small></li>)}</ol>{run.audit_complete === false && <p className="subtle">这里只显示本次运行的部分审计记录；完整原始事件仍可按序读取。</p>}</section> : null}
       </>}

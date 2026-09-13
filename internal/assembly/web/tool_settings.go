@@ -59,6 +59,37 @@ type selectedToolConnections struct {
 	known    map[string]bool
 }
 
+func (p *selectedToolConnections) ToolResultReadConnectionAvailable(ctx context.Context, a toolsdk.Authority, key string) (bool, error) {
+	var candidate toolsdk.Availability
+	switch key {
+	case "report_query":
+		candidate = p.host.reportToolAvailability
+	case "analysis_run":
+		candidate = p.host.analysisToolAvailability
+	default:
+		return p.ToolConnectionAvailable(ctx, a, key)
+	}
+	if !a.Known || a.RuntimeID != p.host.runtimeID || a.WorkspaceID == "" || a.UserID == "" || !p.host.external && a.WorkspaceID != string(p.host.application.WorkspaceID) || !p.known[key] {
+		return false, nil
+	}
+	if p.previous != nil {
+		var ready bool
+		var err error
+		if reader, ok := p.previous.(toolsdk.ResultReadAvailability); ok {
+			ready, err = reader.ConversationToolResultReadAvailable(ctx, a, key)
+		} else {
+			ready, err = p.previous.ConversationToolAvailable(ctx, a, key)
+		}
+		if err != nil || !ready {
+			return false, err
+		}
+	}
+	if reader, ok := candidate.(toolsdk.ResultReadAvailability); ok {
+		return reader.ConversationToolResultReadAvailable(ctx, a, key)
+	}
+	return false, nil
+}
+
 func (p *selectedToolConnections) ToolConnectionAvailable(ctx context.Context, a toolsdk.Authority, key string) (bool, error) {
 	if !a.Known || a.RuntimeID != p.host.runtimeID || a.WorkspaceID == "" || a.UserID == "" || !p.host.external && a.WorkspaceID != string(p.host.application.WorkspaceID) {
 		return false, nil

@@ -166,6 +166,9 @@ func (s *Server) descriptor(w http.ResponseWriter, _ *http.Request) {
 		}
 		if status, ok := s.config.Conversations.(agentsdk.ConversationExecutionStatusProvider); ok && status.ConversationExecutionEnabled() {
 			descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationExecutionV1)
+			if _, ok := s.config.Conversations.(agentsdk.ConversationCollaborationService); ok {
+				descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationCollaborationV1)
+			}
 		}
 	}
 	writeJSON(w, http.StatusOK, descriptor)

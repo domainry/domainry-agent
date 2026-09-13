@@ -1,0 +1,20 @@
+{
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "c05_complete": false,
+  "phase": "collaboration_permissions",
+  "source_hashes_verified": 55,
+  "checks": {
+    "agent_and_sdk_full_regression": "passed",
+    "frontend_tests": 70,
+    "frontend_build": "passed",
+    "real_chrome_and_peer_http_scenarios": 5,
+    "race": "passed",
+    "private_attachment_source_regressions": "passed"
+  },
+  "remaining_c05": [
+    "independent source-owner result-read authorization",
+    "cross-user collaboration participants and execution subjects",
+    "explicit Knowledge sharing references and UI"
+  ]
+}

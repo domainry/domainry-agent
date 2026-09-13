@@ -1,0 +1,53 @@
+{
+  "scope": "C04 outcome inspection only; transfer and completion/disagreement review remain pending",
+  "files": [
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_outcome_inspection.go",
+      "sha256": "6688e6c94418c0a576b9443b57fe285335367be550820f8998e79e1e8767cf4e"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_confirmation_port.go",
+      "sha256": "61c52b6a5d6f9aa5e6bd68a458ce52f9e4fb128e8cb6697d8b178701f80870cf"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_outcome_inspection_test.go",
+      "sha256": "d3361d8737b4281fade5a9de36b9c621c98fef4a70ebc2434e1fa0c604aec7e0"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_outcome_inspection_store.go",
+      "sha256": "35cd392099da08b2f7ebb5fe9f47c144a03cf84ea1390450db812c988eff7844"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_outcome_inspection_store_test.go",
+      "sha256": "6d74c2b35edc20353637bc2768293b35beac546d6f8ea78f71f7320c78996a08"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_run_audit.go",
+      "sha256": "c6517e82f187fa406e25d5ab870f5890bbfc4c53745689100204afb876f88049"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_peer_outcome_test.go",
+      "sha256": "b4b433a588d2dbd8d0404b54716873d3d35cd1bc515e3510f384109d3f779e63"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/CollaborationDialog.tsx",
+      "sha256": "f77db6729d3090cd3f574320e3aa7c825d0ffd0e36b766998f03ba72272f502d"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/src/execution-state.ts",
+      "sha256": "47c0da1ba8ea2624faa29c222a046fc7b8559bfe3133c05930c8141bf85e0002"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent/frontend/tests/peer-outcome.browser.mjs",
+      "sha256": "4c2fd0a2142223299cbc91818a1a1e1eb92105bd6849e41e7a1ab138a33fbd5e"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-tools-sdk/tools.go",
+      "sha256": "450c92f555b5e6179e2fe8b2bb36d33f5d11e659f44762a862d1bd9a8855d359"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-tools/internal/application/tool/registry.go",
+      "sha256": "60571aaf0105c24c149032ce292903d7a3c5c83d7bfbab87acaf6e0f0240da3f"
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import { applyExecutionEvent, executionEventNames, type ExecutionEvent, type Ste
 import { applyInteractionEvent, interactionEventNames, waiting, type Interaction } from "./interaction-state.ts";
 import type { Citation } from "./knowledge-state.ts";
 export type ConversationRecord = {
+  agent_id?: string; delegation_id?: string;
   id: string;
   title: string;
   archived: boolean;
@@ -15,6 +16,7 @@ export type ConversationRecord = {
   updated_at: string;
 };
 export type MessageRecord = {
+ peer_event?: { message_id: string; delegation_id: string; from_agent_id?: string; to_agent_id: string; kind: string };
 	citations?: Citation[];
 	access_error?: string;
 	background_task_id?: string;

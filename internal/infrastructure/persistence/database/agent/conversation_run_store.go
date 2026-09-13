@@ -103,6 +103,9 @@ func (s *ConversationStore) Enqueue(ctx context.Context, id string, in agentsdk.
 		if !errors.As(err, &coded) || coded.Code != "agent.conversation.run_not_found" {
 			return err
 		}
+		if c.DelegationID != "" {
+			return conversationError("conflict", "delegation_message_required")
+		}
 		if c.Archived {
 			return conversationError("conflict", "archived")
 		}
@@ -113,7 +116,10 @@ func (s *ConversationStore) Enqueue(ctx context.Context, id string, in agentsdk.
 			return err
 		}
 		now := time.Now().UTC()
-		v := conversationRunRow{Authority: a, Run: agentsdk.ConversationRun{ID: conversationID("crun_"), ConversationID: id, ClientMessageID: in.ClientMessageID, RequestHash: hash, Status: "queued", UserSeq: c.LastSeq + 1, CreatedAt: now, UpdatedAt: now}}
+		if c.AgentID != "" && (in.ExecutionAgent == nil || in.ExecutionAgent.ID != c.AgentID) {
+			return conversationError("conflict", "agent_changed")
+		}
+		v := conversationRunRow{Authority: a, Run: agentsdk.ConversationRun{ID: conversationID("crun_"), Agent: in.ExecutionAgent, ConversationID: id, ClientMessageID: in.ClientMessageID, RequestHash: hash, Status: "queued", UserSeq: c.LastSeq + 1, CreatedAt: now, UpdatedAt: now}}
 		if in.WriteScope != nil {
 			scope := *in.WriteScope
 			v.Run.WriteScope = &scope
@@ -184,6 +190,13 @@ func (s *ConversationStore) Claim(ctx context.Context, runtimeID, owner string, 
 					return conversationError("forbidden", "runtime_denied")
 				}
 				if old.Run.Status == "queued" {
+					available, err := s.peerAgentCapacity(ctx, tx, old)
+					if err != nil {
+						return err
+					}
+					if !available {
+						continue
+					}
 					ownerKey := conversationOwner(old.Authority)
 					workspaceKey := conversationHash([]string{old.Authority.RuntimeID, old.Authority.WorkspaceID})
 					if saturatedOwners[ownerKey] || saturatedWorkspaces[workspaceKey] {
@@ -241,6 +254,15 @@ func (s *ConversationStore) claimed(ctx context.Context, tx *sql.Tx, claim agent
 	}
 	if v.Run.Status != "running" || v.Owner != claim.Owner || v.Fence != claim.Fence || v.Expires <= time.Now().UnixMilli() {
 		return v, conversationError("conflict", "lease_lost")
+	}
+	if task := v.Run.BackgroundTask; task != nil && task.DelegationID != "" {
+		d, err := s.conversationDelegation(ctx, tx, task.DelegationID, claim.Authority)
+		if err != nil {
+			return v, err
+		}
+		if d.TaskID != task.TaskID || d.ConversationID != v.Run.ConversationID || d.Status != "running" && d.Status != "delivered" || len(d.PendingChanges) > 0 || max(1, task.AgreementRevision) != d.AgreementRevision || task.BriefVersion != d.Brief.Version {
+			return v, conversationError("conflict", "delegation_superseded")
+		}
 	}
 	return v, nil
 }
@@ -362,89 +384,115 @@ func (s *ConversationStore) Resume(ctx context.Context, id, runID string, a agen
 func (s *ConversationStore) transition(ctx context.Context, id, runID string, a agentsdk.ConversationAuthority, resume bool) (agentsdk.ConversationRun, error) {
 	var out agentsdk.ConversationRun
 	err := s.transaction(ctx, func(tx *sql.Tx) error {
-		c, err := s.get(ctx, tx, id, a)
-		if err != nil {
-			return err
-		}
-		old, err := s.runRow(ctx, tx, id, runID, a)
-		if err != nil {
-			return err
-		}
-		v := old
-		background := v.Run.BackgroundTask != nil
-		out = v.Run
-		if resume {
-			if v.Run.Status == "waiting_user" || v.Run.Status == "waiting_confirmation" {
-				return conversationError("conflict", "interaction_response_required")
-			}
-			if !v.Run.Terminal() && v.Run.Status != "needs_reconciliation" {
-				return nil
-			}
-			if v.Run.Status == "completed" {
-				return conversationError("conflict", "run_completed")
-			}
-			if c.Archived {
-				return conversationError("conflict", "archived")
-			}
-			if i := v.Run.Interaction; i != nil && i.Kind != "reconciliation" && (i.Status == "cancelled" || i.Status == "expired" || i.Status == "rejected") {
-				return conversationError("conflict", "interaction_closed")
-			}
-			if !background && (c.ActiveRunID != "" && !(c.ActiveRunID == runID && v.Run.Status == "needs_reconciliation") || c.LastSeq != max(v.Run.UserSeq, v.Run.LastInputSeq)) {
-				return conversationError("conflict", "run_superseded")
-			}
-			if err = s.checkConversationQueueCapacity(ctx, tx, a); err != nil {
-				return err
-			}
-			v.Run.Status = "queued"
-			// Explicit resumption refreshes the trusted role selection only;
-			// owner scope and frozen operations remain unchanged.
-			v.Authority = a
-			v.Run.ErrorCode = ""
-			v.Run.DraftText, v.Run.DraftBytes = "", 0
-			if !background {
-				c.ActiveRunID = runID
-			}
-		} else {
-			if v.Run.Terminal() {
-				return nil
-			}
-			if err = s.interruptConversationWrites(ctx, tx, &v); err != nil {
-				return err
-			}
-			v.Run.Status = "cancelled"
-			if c.ActiveRunID == runID {
-				c.ActiveRunID = ""
-			}
-			if err = s.closeRunInteraction(ctx, tx, &v, "cancelled"); err != nil {
-				return err
-			}
-		}
-		v.Fence++
-		v.Owner = ""
-		v.Expires = 0
-		if !background {
-			if err = s.save(ctx, tx, c, c.Revision, a); err != nil {
-				return err
-			}
-		}
-		if err = s.event(ctx, tx, &v, "run."+v.Run.Status, map[string]any{"attempt": v.Run.Attempt, "draft_reset": resume}); err != nil {
-			return err
-		}
-		if v.Run.BackgroundTask != nil {
-			if resume {
-				err = s.resumeConversationTask(ctx, tx, v.Run, v.Authority)
-			} else {
-				err = s.finishConversationTask(ctx, tx, v.Run, v.Authority, "")
-			}
-			if err != nil {
-				return err
-			}
-		}
-		out = v.Run
-		return s.saveRun(ctx, tx, v, old)
+		var err error
+		out, err = s.transitionRun(ctx, tx, id, runID, a, resume)
+		return err
 	})
 	return out, err
 }
+func (s *ConversationStore) transitionRun(ctx context.Context, tx *sql.Tx, id, runID string, a agentsdk.ConversationAuthority, resume bool) (agentsdk.ConversationRun, error) {
+	var out agentsdk.ConversationRun
+
+	c, err := s.get(ctx, tx, id, a)
+	if err != nil {
+		return out, err
+	}
+	old, err := s.runRow(ctx, tx, id, runID, a)
+	if err != nil {
+		return out, err
+	}
+	v := old
+	background := v.Run.BackgroundTask != nil
+	out = v.Run
+	if resume {
+		if task := v.Run.BackgroundTask; task != nil && task.DelegationID != "" {
+			d, err := s.conversationDelegation(ctx, tx, task.DelegationID, a)
+			if err != nil {
+				return out, err
+			}
+			if d.TaskID != task.TaskID || d.ConversationID != v.Run.ConversationID || d.Brief.Version != task.BriefVersion || max(1, task.AgreementRevision) != d.AgreementRevision || len(d.PendingChanges) > 0 || d.Status != "paused" && d.Status != "failed" && d.Status != "running" && d.Status != "delivered" {
+				return out, conversationError("conflict", "delegation_transition_invalid")
+			}
+			if v.Run.Terminal() || v.Run.Status == "needs_reconciliation" {
+				previous := d.Revision
+				d.Revision++
+				d.Status = "running"
+				d.UpdatedAt = time.Now().UTC()
+				if err = s.saveConversationDelegation(ctx, tx, d, previous, a); err != nil {
+					return out, err
+				}
+			}
+		}
+		if v.Run.Status == "waiting_user" || v.Run.Status == "waiting_confirmation" {
+			return out, conversationError("conflict", "interaction_response_required")
+		}
+		if !v.Run.Terminal() && v.Run.Status != "needs_reconciliation" {
+			return out, nil
+		}
+		if v.Run.Status == "completed" {
+			return out, conversationError("conflict", "run_completed")
+		}
+		if c.Archived {
+			return out, conversationError("conflict", "archived")
+		}
+		if i := v.Run.Interaction; i != nil && i.Kind != "reconciliation" && (i.Status == "cancelled" || i.Status == "expired" || i.Status == "rejected") {
+			return out, conversationError("conflict", "interaction_closed")
+		}
+		if !background && (c.ActiveRunID != "" && !(c.ActiveRunID == runID && v.Run.Status == "needs_reconciliation") || c.LastSeq != max(v.Run.UserSeq, v.Run.LastInputSeq)) {
+			return out, conversationError("conflict", "run_superseded")
+		}
+		if err = s.checkConversationQueueCapacity(ctx, tx, a); err != nil {
+			return out, err
+		}
+		v.Run.Status = "queued"
+		// Explicit resumption refreshes the trusted role selection only;
+		// owner scope and frozen operations remain unchanged.
+		v.Authority = a
+		v.Run.ErrorCode = ""
+		v.Run.DraftText, v.Run.DraftBytes = "", 0
+		if !background {
+			c.ActiveRunID = runID
+		}
+	} else {
+		if v.Run.Terminal() {
+			return out, nil
+		}
+		if err = s.interruptConversationWrites(ctx, tx, &v); err != nil {
+			return out, err
+		}
+		v.Run.Status = "cancelled"
+		if c.ActiveRunID == runID {
+			c.ActiveRunID = ""
+		}
+		if err = s.closeRunInteraction(ctx, tx, &v, "cancelled"); err != nil {
+			return out, err
+		}
+	}
+	v.Fence++
+	v.Owner = ""
+	v.Expires = 0
+	if !background {
+		if err = s.save(ctx, tx, c, c.Revision, a); err != nil {
+			return out, err
+		}
+	}
+	if err = s.event(ctx, tx, &v, "run."+v.Run.Status, map[string]any{"attempt": v.Run.Attempt, "draft_reset": resume}); err != nil {
+		return out, err
+	}
+	if v.Run.BackgroundTask != nil {
+		if resume {
+			err = s.resumeConversationTask(ctx, tx, v.Run, v.Authority)
+		} else {
+			err = s.finishConversationTask(ctx, tx, v.Run, v.Authority, "")
+		}
+		if err != nil {
+			return out, err
+		}
+	}
+	out = v.Run
+	return out, s.saveRun(ctx, tx, v, old)
+}
+
 func (s *ConversationStore) Events(ctx context.Context, id, runID string, after int64, limit int, a agentsdk.ConversationAuthority) (agentsdk.ConversationEventPage, error) {
 	out := agentsdk.ConversationEventPage{Items: []agentsdk.ConversationEvent{}, NextSeq: after}
 	if _, err := s.Get(ctx, id, a); err != nil {

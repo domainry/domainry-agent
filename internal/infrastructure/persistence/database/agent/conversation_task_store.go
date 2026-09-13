@@ -402,7 +402,7 @@ func (s *ConversationStore) LaunchConversationTask(ctx context.Context, runtimeI
 		}
 		for _, candidate := range candidates {
 			task, authority := candidate.task, candidate.authority
-			if conversationAuthority(authority) != nil || authority.RuntimeID != runtimeID || task.Status != agentsdk.ConversationTaskStatusQueued || task.SourceConversationID == "" || candidate.schedule == nil && task.SourceRunID == "" {
+			if conversationAuthority(authority) != nil || authority.RuntimeID != runtimeID || task.Status != agentsdk.ConversationTaskStatusQueued || task.SourceConversationID == "" || candidate.schedule == nil && task.DelegationID == "" && task.SourceRunID == "" {
 				continue
 			}
 			if candidate.schedule != nil && (!scheduledConversationStoreKey(candidate.schedule.PlanID) || !scheduledConversationStoreKey(candidate.schedule.SchedulerRunID) || candidate.schedule.ScheduledFor.IsZero()) {
@@ -416,6 +416,23 @@ func (s *ConversationStore) LaunchConversationTask(ctx context.Context, runtimeI
 				}
 				return getErr
 			}
+			var delegation agentsdk.ConversationDelegation
+			if task.DelegationID != "" {
+				delegation, err = s.conversationDelegation(ctx, tx, task.DelegationID, authority)
+				if err != nil {
+					return err
+				}
+				if delegation.Status != "accepted" || delegation.TaskID != task.ID {
+					continue
+				}
+				if task.Agent == nil || task.Agent.ID != delegation.ToAgentID || task.Brief == nil || task.Brief.Version != delegation.Brief.Version || task.ExecutionConversationID != delegation.ConversationID {
+					return conversationError("conflict", "delegation_task_invalid")
+				}
+				conversation, err = s.get(ctx, tx, task.ExecutionConversationID, authority)
+				if err != nil {
+					return err
+				}
+			}
 			if conversation.ActiveRunID != "" {
 				continue
 			}
@@ -427,10 +444,24 @@ func (s *ConversationStore) LaunchConversationTask(ctx context.Context, runtimeI
 			messageText := agentsdk.ConversationTaskPrompt(task)
 			now := time.Now().UTC().Truncate(time.Millisecond)
 			run := conversationRunRow{Authority: authority, Run: agentsdk.ConversationRun{
-				ID: conversationID("crun_"), ConversationID: conversation.ID, ClientMessageID: "background_" + task.ID,
+				Agent: task.Agent,
+				ID:    conversationID("crun_"), ConversationID: conversation.ID, ClientMessageID: "background_" + task.ID + "_" + conversationHash(task.UpdatedAt)[:12],
 				RequestHash: conversationHash([]any{task.ID, task.Goal, task.Input, task.ToolScope, task.Budget, task.FollowUp}), Status: "queued", UserSeq: conversation.LastSeq + 1,
 				BackgroundTask: &agentsdk.ConversationTaskExecution{TaskID: task.ID, ToolScope: append([]agentsdk.ConversationTaskToolScope(nil), task.ToolScope...), Budget: task.Budget, FollowUp: task.FollowUp}, CreatedAt: now, UpdatedAt: now,
 			}}
+			if task.DelegationID != "" {
+				run.Run.BackgroundTask.Handoff = task.Handoff
+				run.Run.BackgroundTask.InputSource = task.InputSource
+				run.Run.BackgroundTask.Requirements = task.Requirements
+				run.Run.BackgroundTask.Dependencies = task.Dependencies
+				run.Run.BackgroundTask.AgreementRevision = max(1, task.AgreementRevision)
+				run.Run.BackgroundTask.DelegationID, run.Run.BackgroundTask.BriefVersion = task.DelegationID, task.Brief.Version
+				previous := delegation.Revision
+				delegation.Status, delegation.Revision, delegation.UpdatedAt = "running", previous+1, now
+				if err = s.saveConversationDelegation(ctx, tx, delegation, previous, authority); err != nil {
+					return err
+				}
+			}
 			message := agentsdk.ConversationMessage{
 				ID: conversationID("msg_"), ConversationID: conversation.ID, RunID: run.Run.ID, Seq: run.Run.UserSeq,
 				Role: "user", Content: messageText, BackgroundTaskID: task.ID, CreatedAt: now,
@@ -481,7 +512,7 @@ func (s *ConversationStore) finishConversationTask(ctx context.Context, tx *sql.
 	if run.BackgroundTask == nil || run.BackgroundTask.TaskID == "" {
 		return nil
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(authority)), query.Equal("task_id", run.BackgroundTask.TaskID), query.Equal("source_conversation_id", run.ConversationID))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(authority)), query.Equal("task_id", run.BackgroundTask.TaskID))).Build()
 	if err != nil {
 		return err
 	}
@@ -490,6 +521,13 @@ func (s *ConversationStore) finishConversationTask(ctx context.Context, tx *sql.
 		return err
 	}
 	task := row.task
+	executionConversationID := task.SourceConversationID
+	if task.ExecutionConversationID != "" {
+		executionConversationID = task.ExecutionConversationID
+	}
+	if executionConversationID != run.ConversationID {
+		return conversationError("conflict", "task_run_changed")
+	}
 	if conversationOwner(row.authority) != conversationOwner(authority) || task.Status != agentsdk.ConversationTaskStatusRunning || task.ExecutionRunID != run.ID {
 		return conversationError("conflict", "task_run_changed")
 	}
@@ -507,6 +545,9 @@ func (s *ConversationStore) finishConversationTask(ctx context.Context, tx *sql.
 	task.CompletionEventID = "task_event_" + conversationHash([]any{task.ID, run.ID, run.LastEventSeq, run.Status})[:32]
 	row.task = task
 	if task, err = s.recordConversationFollowUpTerminal(ctx, tx, row, run, resultContent, now); err != nil {
+		return err
+	}
+	if err = s.finishConversationDelegation(ctx, tx, task, run, authority); err != nil {
 		return err
 	}
 	q, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", task.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(task)).Where(query.And(query.Equal("owner_key", conversationOwner(row.authority)), query.Equal("task_id", task.ID), query.Equal("status", agentsdk.ConversationTaskStatusRunning))).Build()

@@ -13,11 +13,11 @@ func (s *ConversationService) generateConversationReply(ctx context.Context, cla
 	if err := s.authorizeConversationClaim(ctx, claim, "model"); err != nil {
 		return agentsdk.ConversationModelResult{}, err
 	}
-	streamer, ok := s.model.(agentsdk.ConversationStreamingModel)
+	streamer, ok := s.conversationModel(ctx).(agentsdk.ConversationStreamingModel)
 	if !ok {
 		modelCtx, cancel := s.externalCallContext(ctx, 0)
 		defer cancel()
-		return s.model.GenerateConversation(modelCtx, input)
+		return s.conversationModel(ctx).GenerateConversation(modelCtx, input)
 	}
 	streamCtx, cancel := s.externalCallContext(ctx, 0)
 	defer cancel()

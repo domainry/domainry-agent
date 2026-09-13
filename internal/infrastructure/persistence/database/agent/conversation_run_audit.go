@@ -13,6 +13,7 @@ import (
 const conversationRunAuditLimit = 4096
 
 type conversationRunAuditData struct {
+	ActorID        string                            `json:"actor_id"`
 	Step           int                               `json:"step"`
 	Attempt        int                               `json:"attempt"`
 	CallID         string                            `json:"call_id"`
@@ -147,6 +148,19 @@ func (s *ConversationStore) projectConversationRunAudit(ctx context.Context, run
 			if tool := conversationRunTool(run, data.Step, data.CallID); tool != nil {
 				started := event.CreatedAt
 				tool.StartedAt = &started
+			}
+		case event.Type == "tool.receipt.reused":
+			entry.Type, entry.Status = "outcome_receipt", "reused"
+			key := conversationHash([]any{data.Step, data.CallID})
+			if !toolSeen[key] {
+				toolSeen[key] = true
+				run.Metrics.ToolCalls++
+			}
+		case event.Type == "tool.inspection.started" || event.Type == "tool.inspection.completed":
+			entry.Type, entry.Status = "outcome_inspection", data.Status
+			entry.ActorID = data.ActorID
+			if tool := conversationRunTool(run, data.Step, data.CallID); tool != nil {
+				entry.Tool = tool.Name
 			}
 		case strings.HasPrefix(event.Type, "tool."):
 			entry.Type, entry.Status = "tool", strings.TrimPrefix(event.Type, "tool.")

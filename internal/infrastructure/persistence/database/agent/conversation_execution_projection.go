@@ -3,6 +3,7 @@ package agent
 import (
 	"encoding/json"
 	"strings"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 )
@@ -32,6 +33,9 @@ func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind strin
 		return nil
 	}
 	var event struct {
+		Reference       *agentsdk.ConversationResultReference `json:"reference"`
+		ActorID         string                                `json:"actor_id"`
+		CheckedAt       time.Time                             `json:"checked_at"`
 		Effect          string                                `json:"effect"`
 		Completion      string                                `json:"completion"`
 		Step            int                                   `json:"step"`
@@ -73,6 +77,14 @@ func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind strin
 	}
 	step := &run.Steps[index]
 	switch kind {
+	case "tool.receipt.reused":
+		for j := range step.Calls {
+			if step.Calls[j].ID == event.CallID {
+				step.Calls[j].ReusedFrom = event.Reference
+				return nil
+			}
+		}
+		return conversationError("bad_request", "step_event_invalid")
 	case "step.started":
 		return nil
 	case "step.attempt.started":
@@ -114,6 +126,14 @@ func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind strin
 		for _, call := range event.Calls {
 			step.Calls = append(step.Calls, agentsdk.ConversationToolView{ID: call.ID, Name: call.Name, Arguments: call.Arguments, Status: "queued"})
 		}
+	case "tool.inspection.started", "tool.inspection.completed":
+		for i := range step.Calls {
+			if step.Calls[i].ID == event.CallID {
+				step.Calls[i].OutcomeInspection = &agentsdk.ConversationOutcomeInspectionView{Status: event.Status, ActorID: event.ActorID, CheckedAt: event.CheckedAt}
+				return nil
+			}
+		}
+		return conversationError("conflict", "step_call_missing")
 	case "tool.started", "tool.completed", "tool.uncertain", "tool.waiting":
 		found := false
 		for i := range step.Calls {

@@ -1,0 +1,15 @@
+ok  	github.com/domainry/domainry-agent/internal/execution	1.095s
+ok  	github.com/domainry/domainry-agent/internal/application	0.902s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	3.537s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	1.375s
+ok  	github.com/domainry/domainry-agent/module	1.622s
+ok  	github.com/domainry/domainry-agent/remote	3.087s
+ok  	github.com/domainry/domainry-agent-sdk	1.761s
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	2.189s
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	2.859s
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]

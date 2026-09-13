@@ -133,6 +133,9 @@ func personalToolClaim(in agentsdk.ConversationToolRequest) persistence.Conversa
 }
 
 func (h *PersonalConversationHost) supportsPersonalTool(definition agentsdk.ConversationToolDefinition) bool {
+	if _, peer := collaborationTool(definition.Key); peer {
+		return false
+	}
 	if definition.Key == "task_start" {
 		if h.tasks == nil || !h.supportsConversationInteractions() {
 			return false
@@ -349,6 +352,15 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 			audit := service.sourceAudit(in.Authority, in.ConversationID)
 			items := make([]agentsdk.ConversationHistoryHit, 0, len(value.Items))
 			for _, hit := range value.Items {
+				if hit.ConversationID != in.ConversationID {
+					if err := service.authorizeCollaborationConversation(ctx, hit.ConversationID, "execution_read", in.Authority); err != nil {
+						if collaborationDenied(err) {
+							value.Omitted = true
+							continue
+						}
+						return agentsdk.ConversationToolResult{}, err
+					}
+				}
 				if hit.Role == "assistant" {
 					if _, err := audit.historyReference(ctx, hit.ConversationID, hit.MessageID, hit.RunID); err != nil {
 						value.Omitted = true
@@ -368,6 +380,11 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 			MaxBytes       int    `json:"max_bytes"`
 		}
 		_ = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		if args.ConversationID != in.ConversationID {
+			if err := h.sourceService().authorizeCollaborationConversation(ctx, args.ConversationID, "execution_read", in.Authority); err != nil {
+				return personalToolFailure(sourceAccessCode(err)), nil
+			}
+		}
 		message, err := h.history.HistoryMessage(ctx, args.ConversationID, args.MessageID, in.Authority)
 		if err != nil {
 			return agentsdk.ConversationToolResult{}, err

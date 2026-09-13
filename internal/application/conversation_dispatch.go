@@ -17,6 +17,40 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 		return tasks.StartScheduledConversationTask(ctx, r.ScheduledTask)
 	}
 	a := r.Authority
+	if strings.HasPrefix(op, "agents_") || strings.HasPrefix(op, "delegations_") {
+		peers, ok := s.(agentsdk.ConversationCollaborationService)
+		if !ok {
+			return nil, conversationFailure("unavailable", "collaboration_unavailable")
+		}
+		switch op {
+		case "agents_access":
+			return peers.ConversationCollaborationAccess(ctx, a)
+		case "agents_match":
+			return peers.MatchConversationAgents(ctx, r.AgentMatch, a)
+		case "agents_list":
+			return peers.ConversationAgents(ctx, a)
+		case "agents_create":
+			return peers.WriteConversationAgent(ctx, "", r.AgentWrite, a)
+		case "agents_update":
+			return peers.WriteConversationAgent(ctx, r.AgentID, r.AgentWrite, a)
+		case "delegations_list":
+			return peers.ConversationDelegations(ctx, r.TaskQuery.SourceConversationID, a)
+		case "delegations_create":
+			return peers.CreateConversationDelegation(ctx, r.DelegationCreate, a)
+		case "delegations_history":
+			return peers.ConversationAgreementHistory(ctx, r.DelegationID, r.AgreementBefore, a)
+		case "delegations_disagreement":
+			return peers.ConversationDisagreementHistory(ctx, r.DelegationID, r.DisagreementID, r.AgreementBefore, a)
+		case "delegations_deliveries":
+			return peers.ConversationDeliveryHistory(ctx, r.DelegationID, r.AgreementBefore, a)
+		case "delegations_get":
+			return peers.ConversationDelegation(ctx, r.DelegationID, a)
+		case "delegations_update":
+			return peers.UpdateConversationDelegation(ctx, r.DelegationID, r.DelegationUpdate, a)
+		case "delegations_message":
+			return peers.SendConversationAgentMessage(ctx, r.DelegationID, r.AgentMessage, a)
+		}
+	}
 	if op == "result_read" {
 		reader, ok := s.(agentsdk.ConversationResultReader)
 		if !ok {

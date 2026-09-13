@@ -1,0 +1,4 @@
+=== RUN   TestPeerCollaborationPermissionsRecheckCurrentRoleAcrossEntrypoints
+--- PASS: TestPeerCollaborationPermissionsRecheckCurrentRoleAcrossEntrypoints (17.60s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	18.706s

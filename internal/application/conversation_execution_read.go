@@ -41,6 +41,11 @@ func (s *ConversationService) authorizeConversationRecord(ctx context.Context, c
 	if recipient != "" && recipient != conversationID && (privateAttachmentCall(source.Call) || privateRemoteAttachmentCall(source.Call)) {
 		return conversationFailure("forbidden", "attachment_conversation_mismatch")
 	}
+	if recipient != conversationID {
+		if err := s.authorizeCollaborationConversation(ctx, conversationID, "execution_read", a); err != nil {
+			return err
+		}
+	}
 	key := conversationDigest([]any{conversationID, runID, conversationRecordHash(source)})
 	if complete, exists := seen[key]; exists {
 		if complete {
@@ -103,6 +108,11 @@ func (s *ConversationService) reauthorizeReadDependencies(ctx context.Context, s
 		if json.Unmarshal(source.Result.Content, &previous) != nil || json.Unmarshal([]byte(source.Call.Arguments), &args) != nil || previous.ConversationID != args.ConversationID || previous.RunID != args.RunID || len(previous.Items) > 5 {
 			return conversationFailure("conflict", "execution_reference_invalid")
 		}
+		if previous.ConversationID != recipient {
+			if err := s.authorizeCollaborationConversation(ctx, previous.ConversationID, "execution_read", a); err != nil {
+				return err
+			}
+		}
 		if _, err := s.repo.Run(ctx, previous.ConversationID, previous.RunID, a); err != nil {
 			return err
 		}
@@ -138,6 +148,11 @@ func (s *ConversationService) readConversationExecution(ctx context.Context, in 
 	repo, ok := s.repo.(persistence.ConversationExecutionReadRepository)
 	if !ok {
 		return personalToolFailure("execution_read_unavailable")
+	}
+	if args.ConversationID != in.ConversationID {
+		if err := s.authorizeCollaborationConversation(ctx, args.ConversationID, "execution_read", in.Authority); err != nil {
+			return executionReadFailure(err)
+		}
 	}
 	page, err := repo.ReadExecutionCalls(ctx, args, in.Authority)
 	if err != nil {

@@ -1,0 +1,33 @@
+=== RUN   TestCompletionChecksUseDataAndActualReceiptSemantics
+=== RUN   TestCompletionChecksUseDataAndActualReceiptSemantics/completed
+=== RUN   TestCompletionChecksUseDataAndActualReceiptSemantics/accepted_is_not_completed
+=== RUN   TestCompletionChecksUseDataAndActualReceiptSemantics/unknown_is_not_failure
+=== RUN   TestCompletionChecksUseDataAndActualReceiptSemantics/definitive_failure
+=== RUN   TestCompletionChecksUseDataAndActualReceiptSemantics/wrong_period
+--- PASS: TestCompletionChecksUseDataAndActualReceiptSemantics (0.00s)
+    --- PASS: TestCompletionChecksUseDataAndActualReceiptSemantics/completed (0.00s)
+    --- PASS: TestCompletionChecksUseDataAndActualReceiptSemantics/accepted_is_not_completed (0.00s)
+    --- PASS: TestCompletionChecksUseDataAndActualReceiptSemantics/unknown_is_not_failure (0.00s)
+    --- PASS: TestCompletionChecksUseDataAndActualReceiptSemantics/definitive_failure (0.00s)
+    --- PASS: TestCompletionChecksUseDataAndActualReceiptSemantics/wrong_period (0.00s)
+=== RUN   TestCompletionSeparatesRecipientClaimsFromReviewAndUnresolvedWork
+--- PASS: TestCompletionSeparatesRecipientClaimsFromReviewAndUnresolvedWork (0.00s)
+=== RUN   TestCompletionRejectsInvalidRulesAndDoesNotHideEvidenceErrors
+--- PASS: TestCompletionRejectsInvalidRulesAndDoesNotHideEvidenceErrors (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/execution	0.638s
+testing: warning: no tests to run
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	0.393s [no tests to run]
+=== RUN   TestPeerVerificationReadsActualReceiptsAndCannotOverrideFailedData
+--- PASS: TestPeerVerificationReadsActualReceiptsAndCannotOverrideFailedData (0.01s)
+=== RUN   TestPeerVerificationRequiresIndependentCurrentReviewAndRetainsHistory
+--- PASS: TestPeerVerificationRequiresIndependentCurrentReviewAndRetainsHistory (0.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.420s
+=== RUN   TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery
+    conversation_collaboration_test.go:319: GET /agent/delegations/delegation_b1a4f33640158419bf567b0a4b6472fd: status 403, want 200, body {"code":"agent.conversation.tool_access_denied"}
+--- FAIL: TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery (2.65s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	3.106s
+FAIL

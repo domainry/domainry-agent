@@ -1,0 +1,40 @@
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+const {chromium}=createRequire(import.meta.url)(process.env.AGENT_PLAYWRIGHT_MODULE||'playwright');
+const origin=process.env.AGENT_UI_ORIGIN,output=process.env.AGENT_UI_TEST_OUTPUT;
+assert.ok(origin&&output);await mkdir(output,{recursive:true});
+const browser=await chromium.launch({headless:true,channel:'chrome'});
+const page=await browser.newPage({viewport:{width:1360,height:1000}});page.setDefaultTimeout(15000);
+const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+const work=()=>page.getByRole('dialog',{name:'Agent 协作',exact:true});
+try{
+ await page.goto(origin+'#'+process.env.AGENT_UI_CONVERSATION);
+ await page.getByLabel('账号',{exact:true}).fill('admin@example.com');await page.getByLabel('密码',{exact:true}).fill(process.env.AGENT_UI_PASSWORD);await page.getByRole('button',{name:'登录',exact:true}).click();
+ await page.getByRole('button',{name:'Agent 协作 目录、委派与沟通',exact:true}).click();
+ await work().getByRole('button',{name:'转交工作',exact:true}).click();
+ await work().getByLabel('接收 Agent',{exact:true}).selectOption({label:'接替核查 Agent'});
+ await work().getByLabel('剩余工作',{exact:true}).fill('核对两项原回执并完成剩余复核');await work().getByLabel('原因与处理意见',{exact:true}).fill('原执行已停止，换接收方继续');
+ await page.screenshot({path:join(output,'peer-transfer-form.png'),fullPage:true});
+ await work().getByRole('button',{name:'提交转交工作',exact:true}).click();
+ await work().locator('summary').filter({hasText:'接单与转交记录（2 次）'}).click();
+ const history=work().getByRole('list',{name:'接单历史'});await history.getByText('第 2 次 · 接替核查 Agent · 当前接收方',{exact:true}).waitFor();
+ assert.equal(await history.locator('li').count(),2);await history.scrollIntoViewIfNeeded();await page.screenshot({path:join(output,'peer-transfer-history.png'),fullPage:true});
+ await work().getByRole('button',{name:'查看实时执行与工具调用',exact:true}).click();
+ const run=page.getByRole('dialog',{name:'处理记录',exact:true});await run.getByText('已保存的回复',{exact:true}).waitFor();
+ assert.equal(await run.getByRole('button',{name:'确认执行',exact:true}).count(),0);
+ const calls=run.locator('.execution-tool').filter({hasText:'复用原回执'});assert.equal(await calls.count(),2);
+ await calls.first().locator('summary').click();await calls.last().locator('summary').click();
+ assert.equal(await run.getByText(/本次未重新提交操作/).count(),2);
+ assert.equal(await run.getByRole('alert').count(),0);
+ assert.equal(await run.getByText(/新操作需确认；本次复用原回执/).count(),2);
+ await page.screenshot({path:join(output,'peer-transfer-reused.png'),fullPage:true});await run.getByRole('button',{name:'关闭',exact:true}).click();
+ await history.getByRole('button',{name:'查看原执行记录',exact:true}).click();await run.getByText('原回执核查',{exact:true}).waitFor({state:'attached'});assert.match(await run.innerText(),/已停止/);await run.getByRole('button',{name:'关闭',exact:true}).click();
+ await page.reload();await page.getByRole('button',{name:'Agent 协作 目录、委派与沟通',exact:true}).click();await work().locator('summary').filter({hasText:'接单与转交记录（2 次）'}).click();
+ await history.getByText('第 2 次 · 接替核查 Agent · 当前接收方',{exact:true}).waitFor();
+ await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>{const el=document.querySelector('.collaboration-dialog');const r=el?.getBoundingClientRect();return r&&r.x>=0&&r.right<=window.innerWidth&&el.scrollWidth<=el.clientWidth+1;});
+ await history.scrollIntoViewIfNeeded();await page.screenshot({path:join(output,'peer-transfer-mobile.png'),fullPage:true});
+ assert.deepEqual(errors,[]);await writeFile(join(output,'report.json'),JSON.stringify({complete:true,errors,checks:['transfer current agreement','new recipient','immutable assignment history','remaining work','old execution remains stopped','two original receipts reused without confirmation','reload','mobile']},null,2));
+}catch(e){await page.screenshot({path:join(output,'failure.png'),fullPage:true});await writeFile(join(output,'failure.txt'),String(e)+'\n'+errors.join('\n')+'\n'+await page.locator('body').innerText());throw e;}
+finally{await browser.close();}

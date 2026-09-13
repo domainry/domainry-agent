@@ -1,0 +1,42 @@
+=== RUN   TestExecutionReferencesSurviveTurnsSummariesAndServiceRestart
+--- PASS: TestExecutionReferencesSurviveTurnsSummariesAndServiceRestart (0.14s)
+=== RUN   TestExecutionReadPaginationIsolationAndRevocation
+=== RUN   TestExecutionReadPaginationIsolationAndRevocation/pages
+=== RUN   TestExecutionReadPaginationIsolationAndRevocation/denied
+=== RUN   TestExecutionReadPaginationIsolationAndRevocation/changed
+=== RUN   TestExecutionReadPaginationIsolationAndRevocation/revoked_after_read
+=== RUN   TestExecutionReadPaginationIsolationAndRevocation/revoked_after_freeze
+=== RUN   TestExecutionReadPaginationIsolationAndRevocation/nested
+--- PASS: TestExecutionReadPaginationIsolationAndRevocation (0.20s)
+    --- PASS: TestExecutionReadPaginationIsolationAndRevocation/pages (0.04s)
+    --- PASS: TestExecutionReadPaginationIsolationAndRevocation/denied (0.03s)
+    --- PASS: TestExecutionReadPaginationIsolationAndRevocation/changed (0.03s)
+    --- PASS: TestExecutionReadPaginationIsolationAndRevocation/revoked_after_read (0.03s)
+    --- PASS: TestExecutionReadPaginationIsolationAndRevocation/revoked_after_freeze (0.04s)
+    --- PASS: TestExecutionReadPaginationIsolationAndRevocation/nested (0.04s)
+=== RUN   TestConversationCompactionMemoryAndOriginalHistory
+--- PASS: TestConversationCompactionMemoryAndOriginalHistory (0.10s)
+=== RUN   TestExecutionCompactsStoredResultsAndResumesExactInput
+--- PASS: TestExecutionCompactsStoredResultsAndResumesExactInput (0.13s)
+=== RUN   TestResultReadReauthorizesOriginalAndNestedSourcesBeforeModel
+=== RUN   TestResultReadReauthorizesOriginalAndNestedSourcesBeforeModel/nested=false
+=== RUN   TestResultReadReauthorizesOriginalAndNestedSourcesBeforeModel/nested=true
+--- PASS: TestResultReadReauthorizesOriginalAndNestedSourcesBeforeModel (0.08s)
+    --- PASS: TestResultReadReauthorizesOriginalAndNestedSourcesBeforeModel/nested=false (0.03s)
+    --- PASS: TestResultReadReauthorizesOriginalAndNestedSourcesBeforeModel/nested=true (0.05s)
+=== RUN   TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets
+=== RUN   TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets/hash
+=== RUN   TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets/missing
+=== RUN   TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets/version
+=== RUN   TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets/permission
+=== RUN   TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets/utf8
+=== RUN   TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets/past_end
+--- PASS: TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets (0.06s)
+    --- PASS: TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets/hash (0.01s)
+    --- PASS: TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets/missing (0.01s)
+    --- PASS: TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets/version (0.01s)
+    --- PASS: TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets/permission (0.01s)
+    --- PASS: TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets/utf8 (0.01s)
+    --- PASS: TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets/past_end (0.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	1.410s

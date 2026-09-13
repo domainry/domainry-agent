@@ -33,6 +33,7 @@ func NewBinding() (*modulecapability.StaticBinding, error) {
 		key, name, description string
 		chains                 []string
 	}{
+		{agentsdk.AgentCapabilityCollaboration, "Peer Agent collaboration", "Configure independent Agents, delegate versioned work, exchange durable messages and inspect execution and delivery.", []string{"identity_principal_to_persistent_conversation"}},
 		{agentsdk.AgentCapabilityConversation, "Persistent personal conversations", "Own durable messages, explicit personal memory, context compaction and resumable tool execution, independently of business routing.", []string{"identity_principal_to_persistent_conversation"}},
 		{agentsdk.AgentCapabilityBackgroundTasks, "Durable background tasks", "Inspect, cancel and resume owner-scoped background executions while preserving their source conversation and run boundaries.", []string{"identity_principal_to_persistent_conversation"}},
 		{agentsdk.AgentCapabilityPersonalTodos, "Personal todos", "Manage owner-scoped work items, ordered batches, deadlines and completion independently of Agent execution and scheduled jobs.", []string{"identity_principal_to_persistent_conversation"}},

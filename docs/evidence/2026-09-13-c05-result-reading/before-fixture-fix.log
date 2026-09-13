@@ -1,0 +1,6 @@
+=== RUN   TestPeerDeliveryReadsMailWithoutToolExecutionPermission
+    conversation_delivery_mail_permissions_test.go:190: PUT /tools/preferences/mail_read: status 400, want 200, body {"code":"tools.settings.input_invalid"}
+--- FAIL: TestPeerDeliveryReadsMailWithoutToolExecutionPermission (3.42s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	4.619s
+FAIL

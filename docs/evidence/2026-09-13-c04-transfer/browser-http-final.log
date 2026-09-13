@@ -1,0 +1,5 @@
+=== RUN   TestPeerTransferOnlyContinuesRemainingHTTPWork
+    conversation_peer_outcome_test.go:410: 2 actual file effects, 1 POST per key, 2 GETs for original uncertain operation, 3 receiver model calls; transfer=true; restart, exact receipt reuse and original budget verified
+--- PASS: TestPeerTransferOnlyContinuesRemainingHTTPWork (6.93s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	7.515s

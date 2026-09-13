@@ -1,0 +1,6 @@
+ok  	github.com/domainry/domainry-agent/internal/application	1.399s
+--- FAIL: TestPeerCollaborationPermissionsRecheckCurrentRoleAcrossEntrypoints (38.50s)
+    conversation_collaboration_permissions_test.go:132: source remained active
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	39.226s
+FAIL

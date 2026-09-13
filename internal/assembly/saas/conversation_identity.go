@@ -10,6 +10,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-foundation/requestcontext"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
+	"github.com/domainry/domainry-identity-sdk/authorization/evaluator"
 	identityremote "github.com/domainry/domainry-identity-sdk/remote"
 )
 
@@ -57,3 +58,35 @@ func (h *ConversationIdentity) AuthorizeConversationExecution(ctx context.Contex
 }
 
 var _ agentsdk.ConversationExecutionAuthorizer = (*ConversationIdentity)(nil)
+
+func (h *ConversationIdentity) AuthorizeConversationCollaboration(ctx context.Context, in agentsdk.ConversationCollaborationAuthorizationRequest) (agentsdk.ConversationCollaborationAuthorization, error) {
+	var out agentsdk.ConversationCollaborationAuthorization
+	a := in.Authority
+	if !a.Known || a.RuntimeID != h.runtimeID || a.WorkspaceID != string(h.application.WorkspaceID) || a.UserID == "" || in.OwnerUserID == "" {
+		return out, nil
+	}
+	resolution, err := h.binding.Principals().Resolve(requestcontext.WithWorkspaceID(ctx, a.WorkspaceID), identitysdk.PrincipalResolutionRequest{SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
+	if err != nil {
+		return out, err
+	}
+	if !resolution.Principal.Known || resolution.Principal.UserID != a.UserID || resolution.Principal.WorkspaceID != a.WorkspaceID {
+		return out, nil
+	}
+	out.Revision = string(resolution.AccessBundle.AuthorizationRevision)
+	for _, operation := range in.Operations {
+		p := agentsdk.ConversationCollaborationPermission(operation)
+		if p == nil {
+			continue
+		}
+		decision, err := evaluator.Evaluate(resolution.AccessBundle, identitysdk.AccessRequest{ObjectKey: p.ResourceKey, Action: p.OperationKey}, identitysdk.ResourceFacts{"owner_user_id": in.OwnerUserID, "workspace_id": a.WorkspaceID, "delegation_id": in.DelegationID, "from_agent_id": in.FromAgentID, "to_agent_id": in.ToAgentID}, time.Now().UTC())
+		if err != nil {
+			return agentsdk.ConversationCollaborationAuthorization{}, err
+		}
+		if decision.Allowed {
+			out.Allowed = append(out.Allowed, operation)
+		}
+	}
+	return out, nil
+}
+
+var _ agentsdk.ConversationCollaborationAuthorizer = (*ConversationIdentity)(nil)

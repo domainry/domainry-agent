@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "errors": [],
+  "checks": [
+    "transfer current agreement",
+    "new recipient",
+    "immutable assignment history",
+    "remaining work",
+    "old execution remains stopped",
+    "two original receipts reused without confirmation",
+    "reload",
+    "mobile"
+  ]
+}

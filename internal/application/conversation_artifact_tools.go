@@ -18,7 +18,8 @@ func (h *PersonalConversationHost) sourceService() *ConversationService {
 	if h.artifacts != nil {
 		return h.artifacts
 	}
-	return &ConversationService{repo: h.repo, options: ConversationOptions{Knowledge: h.knowledge, PersonalAuthorizer: h.authorizer}}
+	policy, _ := h.authorizer.(agentsdk.ConversationCollaborationAuthorizer)
+	return &ConversationService{repo: h.repo, options: ConversationOptions{Knowledge: h.knowledge, PersonalAuthorizer: h.authorizer, CollaborationAuthorizer: policy}}
 }
 
 func artifactReadAuthorizationRequest(in agentsdk.ConversationToolRequest) agentsdk.ConversationToolRequest {

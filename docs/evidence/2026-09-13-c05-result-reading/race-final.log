@@ -1,0 +1,15 @@
+=== RUN   TestDeliveryToolReadPreservesScopeAndCurrentSourceDenial
+--- PASS: TestDeliveryToolReadPreservesScopeAndCurrentSourceDenial (0.01s)
+=== RUN   TestPeerMessagesAndDeliveriesDoNotSharePrivateAttachmentsImplicitly
+--- PASS: TestPeerMessagesAndDeliveriesDoNotSharePrivateAttachmentsImplicitly (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	2.096s
+=== RUN   TestPeerDeliveryReadsMailWithoutToolExecutionPermission
+    conversation_delivery_mail_permissions_test.go:224: real mail HTTP once; delivery and receipt history readable after mail.read revocation and restart; raw execution denied; model invocation failed before vendor IO; tool disable, account data revocation and account revoke hide delivery
+--- PASS: TestPeerDeliveryReadsMailWithoutToolExecutionPermission (67.66s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	69.273s
+=== RUN   TestIndependentResultReadRequiresExplicitCurrentSourcePolicy
+--- PASS: TestIndependentResultReadRequiresExplicitCurrentSourcePolicy (0.00s)
+PASS
+ok  	github.com/domainry/domainry-tools/internal/application/tool	1.841s

@@ -562,3 +562,48 @@ button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visib
 .account-write-addresses { list-style: disc; padding-left: 1.25rem; }
 .account-write-addresses li { padding: .2rem 0; overflow-wrap: anywhere; }
 .account-write-text { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 24rem; overflow: auto; font: inherit; }
+
+.collaboration-dialog { width: min(1000px, 95vw); max-width: calc(100vw - 20px); min-width: 0; grid-template-columns: minmax(0, 1fr); max-height: 90dvh; overflow-y: auto; }
+.peer-editor { width: min(680px, 94vw); max-width: calc(100vw - 20px); min-width: 0; grid-template-columns: minmax(0, 1fr); max-height: 90dvh; overflow-y: auto; }
+.peer-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 12px; }
+.peer-card { padding: 16px; border: 1px solid var(--border); border-radius: 12px; display: grid; gap: 10px; }
+.peer-card h3, .peer-card p { margin: 0; }
+.peer-tools { overflow-wrap: anywhere; font-size: 12px; color: var(--muted-foreground); }
+.peer-form { display: grid; gap: 14px; padding: 8px 0; }
+.peer-form label { display: grid; gap: 6px; font-size: 13px; }
+.peer-form textarea, .peer-form select { border: 1px solid var(--border); background: var(--background); color: inherit; border-radius: 8px; padding: 8px 10px; width: 100%; }
+.peer-form textarea { resize: vertical; }
+.peer-tool-options { max-height: 240px; overflow-y: auto; display: grid; gap: 8px; padding: 8px 0; }
+.peer-tool-options label { display: flex; align-items: center; gap: 8px; }
+.peer-tool-options small { margin-left: 10px; color: var(--muted-foreground); }
+.peer-definition { display: contents; }
+.peer-messages { max-height: 340px; overflow-y: auto; list-style: none; padding: 0; display: grid; gap: 12px; }
+.peer-messages li { padding: 12px; background: var(--muted); border-radius: 8px; }
+.peer-messages p, .collaboration-dialog .task-result p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.collaboration-dialog pre { max-height: 260px; overflow: auto; }
+
+.collaboration-dialog > *, .peer-editor > *, .collaboration-dialog .task-detail > * { min-width: 0; }
+.peer-form fieldset { min-inline-size: 0; }
+.peer-form .todo-toolbar { flex-wrap: wrap; }
+@media (max-width: 650px) {
+ .collaboration-dialog .task-detail-heading { flex-wrap: wrap; }
+ .collaboration-dialog .todo-toolbar { flex-wrap: wrap; }
+ .peer-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.peer-availability { margin-block: .75rem; padding: .7rem; border: 1px solid var(--border); border-radius: .6rem; overflow-wrap: anywhere; }
+.peer-availability p { margin-block: .3rem; }
+.peer-availability small { display: block; margin-block: .25rem; }
+.peer-form label.peer-source-choice { display: flex; gap: .6rem; align-items: flex-start; margin-block: .5rem; }
+.peer-source-choice input { flex: 0 0 auto; margin-top: .25rem; }
+
+.peer-dependencies section { padding: .65rem 0; border-bottom: 1px solid var(--border); }
+.peer-disagreement-claims { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; }
+.peer-disagreement-claims dl, [aria-label="分歧处理决定"] dl { display: grid; gap: 8px; margin-block: 12px; }
+.peer-disagreement-claims dt, [aria-label="分歧处理决定"] dt { color: var(--muted-foreground); font-size: 12px; }
+.peer-disagreement-claims dd, [aria-label="分歧处理决定"] dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.peer-field-options { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin: .5rem 0; }
+.peer-field-options label { display: flex; align-items: center; gap: .35rem; }
+.peer-requirements { padding: 1rem 0; border-block: 1px solid var(--border); }
+.peer-requirements details { margin: .65rem 0; overflow-wrap: anywhere; }
+.peer-requirements summary { cursor: pointer; }

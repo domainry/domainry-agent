@@ -61,6 +61,13 @@ func confirmationReceipt(i agentsdk.ConversationInteraction, a agentsdk.Conversa
 }
 
 func (s *ConversationService) Respond(ctx context.Context, id, runID string, response agentsdk.ConversationInteractionResponse, a agentsdk.ConversationAuthority) (agentsdk.ConversationRun, error) {
+	if err := s.authorizeCollaborationConversation(ctx, id, "manage", a); err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
+	if err := s.authorizeCollaborationConversation(ctx, id, "execution_read", a); err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
+
 	if err := s.authorize(a); err != nil {
 		return agentsdk.ConversationRun{}, err
 	}

@@ -3,6 +3,7 @@ import { RunDialog } from "./RunDialog";
 import { repairRequest } from "./execution-outcome.ts";
 import type { ToolView } from "./execution-state.ts";
 import { TodoDialog } from "./TodoDialog";
+import { CollaborationDialog } from "./CollaborationDialog";
 import { TaskDialog } from "./TaskDialog";
 import { ScheduleDialog } from "./ScheduleDialog";
 import { ArtifactDialog } from "./ArtifactDialog";
@@ -127,6 +128,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
     () => drafts.read(location.hash.slice(1)).text,
   );
   const [todoDialog, setTodoDialog] = useState(false);
+  const [collaborationDialog, setCollaborationDialog] = useState(false);
   const [taskDialog, setTaskDialog] = useState(false);
   const [scheduleDialog, setScheduleDialog] = useState(false);
   const [artifactDialog, setArtifactDialog] = useState<false | true | { id: string; version: number }>(false);
@@ -518,6 +520,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
         </div>
         <div className="sidebar-bottom">
           <div className="library-caption">我的工作空间</div>
+          <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setCollaborationDialog(true); }}><Sparkles size={17} />Agent 协作<span className="subtle">目录、委派与沟通</span></Button>
           <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setTodoDialog(true); }}><Check size={17} />个人待办<span className="subtle">事项与截止日期</span></Button>
           <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setTaskDialog(true); }}><ListChecks size={17} />后台任务<span className="subtle">进度、等待与成果</span></Button>
           {session.mode === "identity" && <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setScheduleDialog(true); }}><CalendarClock size={17} />计划与提醒<span className="subtle">查看、修改与暂停</span></Button>}
@@ -636,13 +639,13 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
             ) : (
               history.items.map((message) => (
                 <Message
-                  from={message.role}
+                  from={message.peer_event?"assistant":message.role}
                   key={message.id}
                   data-message-id={message.id}
                   data-background-task-id={message.background_task_id}
                 >
                   <div className="message-name">
-                    {message.role === "user" ? "你" : <><span className="message-avatar">d.</span>Domainry <span className="agent-label">Agent</span></>}
+                    {message.peer_event ? "Agent 协作通知" : message.role === "user" ? "你" : <><span className="message-avatar">d.</span>Domainry <span className="agent-label">Agent</span></>}
                     {message.background_task_id && <span className="agent-label">后台任务</span>}
                   </div>
                   <MessageContent>
@@ -650,7 +653,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                     {message.role === "assistant" ? (
                       message.access_error ? <p role="status" className="subtle">{errorMessage(message.access_error)}</p> : <KnowledgeResponse text={message.content} citations={message.citations} />
                     ) : (
-                      <div className="user-text">{message.content}</div>
+                      <div className="user-text">{message.peer_event?"收到委派任务的新消息，Agent 正在继续处理。具体发件方和内容可在协作记录中查看。":message.content}</div>
                     )}
                   </MessageContent>
                   <div className="message-actions">
@@ -678,7 +681,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                         )}
                       </Button>
                     )}
-                    <Button
+                    {!message.peer_event&&<Button
                       variant="ghost"
                       size="sm"
                       className="save-memory-action"
@@ -698,7 +701,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                     >
                       <Brain size={14} />
                       保存为记忆
-                    </Button>
+                    </Button>}
                   </div>
                 </Message>
               ))
@@ -797,11 +800,12 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
           {!blocksConversation && <label className="memory-write-scope"><input type="checkbox" checked={backgroundTaskWrite} disabled={!canEdit || record?.archived || !!drafts.read(selectedId).pending} onChange={event => { const allowed = event.target.checked; drafts.writeBackgroundTaskScope(selectedId, allowed); setBackgroundTaskWrite(allowed); setDraftUnavailable(!drafts.available); }} />允许本次请求创建独立的后台任务</label>}
             </div>
           </details>
+          {record?.delegation_id && <Button variant="outline" onClick={()=>setCollaborationDialog(true)}>打开协作 · 发送补充信息或更新需求</Button>}
           <PromptInput onSubmit={submit} className="composer">
             <PromptInputTextarea
               aria-label="消息"
               placeholder={
-                record?.archived
+                record?.delegation_id ? "在 Agent 协作中发送消息、管理这项委派…" : record?.archived
                   ? "恢复会话后继续讨论…"
                   : blocksConversation && isWaiting ? "请先处理上方的补充信息或确认事项…"
                   : "输入消息，继续你的讨论…"
@@ -809,7 +813,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
               value={input}
               onChange={(e) => setInput(e.currentTarget.value)}
               disabled={
-                !record || record.archived || busy || loading || !!record.active_run_id || blocksConversation
+                !record || !!record.delegation_id || record.archived || busy || loading || !!record.active_run_id || blocksConversation
               }
             />
             <PromptInputFooter>
@@ -850,7 +854,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                   disabled={
                     busy ||
                     (!(isActive && !run?.background_task) &&
-                      (!input.trim() || !record || record.archived || !!record.active_run_id || blocksConversation || loading))
+                      (!input.trim() || !record || !!record.delegation_id || record.archived || !!record.active_run_id || blocksConversation || loading))
                   }
                   onStop={() =>
                     void mutate(async () => {
@@ -976,7 +980,9 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
         </DialogContent>
       </Dialog>
       {inspectedRun && inspectedRun.conversationID === selectedId && <RunDialog key={`${inspectedRun.conversationID}:${inspectedRun.runID}`} {...inspectedRun} onClose={() => setInspectedRun(null)} onResume={inspectedRun.runID === run?.id ? resumeExecution : undefined} onRepair={prepareRepair} recoveryDisabled={recoveryDisabled} repairDisabled={repairDisabled} />}
+
       {todoDialog && <TodoDialog conversationID={selectedId} onClose={() => setTodoDialog(false)} onSource={id => { setTodoDialog(false); activate(id); }} />}
+      {collaborationDialog && <CollaborationDialog conversationID={selectedId} onClose={() => setCollaborationDialog(false)} onSource={id => {setCollaborationDialog(false); activate(id);}} onArtifact={(id,version)=>{setCollaborationDialog(false);setArtifactDialog({id,version});}}/>}
       {taskDialog && <TaskDialog conversationID={selectedId} onClose={() => setTaskDialog(false)} onSource={id => { setTaskDialog(false); activate(id); }} onRun={(conversationID, runID) => { setTaskDialog(false); activate(conversationID, runID); }} onArtifact={(id, version) => { setTaskDialog(false); setArtifactDialog({ id, version }); }} />}
       {scheduleDialog && <ScheduleDialog onClose={() => setScheduleDialog(false)} onAsk={prompt => { setScheduleDialog(false); setInputState(prompt); }} />}
       {toolSettings && <ToolSettingsDialog key={session.scope} session={session} onClose={() => { setToolSettings(false); refreshResultAccess(); }} />}

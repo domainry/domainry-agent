@@ -27,6 +27,10 @@ func (h *Host) registerConversationToolPermissions(ctx context.Context) error {
 		return err
 	}
 	definitions := []identitysdk.PermissionDefinition{}
+	for _, operation := range agentsdk.ConversationCollaborationOperations() {
+		p := agentsdk.ConversationCollaborationPermission(operation)
+		definitions = append(definitions, identitysdk.PermissionDefinition{PermissionKey: p.Key, ResourceKey: p.ResourceKey, OperationKey: p.OperationKey, Label: p.Label, Category: p.Category, SourceKind: "agent_collaboration"})
+	}
 	for _, action := range agentsdk.ConversationToolActions() {
 		permission := action.Permission
 		definitions = append(definitions, identitysdk.PermissionDefinition{PermissionKey: permission.Key, ResourceKey: permission.ResourceKey, OperationKey: permission.OperationKey, Label: permission.Label, Category: permission.Category, SourceKind: action.SourceKind})

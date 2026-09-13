@@ -1,0 +1,93 @@
+import type { ResultReference } from './execution-state.ts';
+import type { ConversationTaskDetail } from './task-state.ts';
+export type PeerAgent = { definition_key?: string; definition_version?: string; definition_digest?: string; id: string; name: string; description: string; instructions: string; tools: string[]; skill_keys: string[]; model_key: string; enabled: boolean; max_concurrent: number; revision: number };
+export type AgentPage = { availability?: AgentCandidate[]; definitions?: AgentDefinition[]; skills?: SkillSummary[]; items: PeerAgent[]; tools: { key: string; description: string; effect: string }[]; models: string[]; complete: boolean };
+export type TaskBrief = { verification_rules?: CompletionRule[]; version: number; goal: string; deliverable: string; audience: string; constraints: string[]; completion_conditions: string[]; assumptions: string[]; due_at?: string };
+export type PeerMessage = {disagreement_id?:string;disagreement_revision?:number; agreement_revision?: number; delivery_mode?: string; after_run_id?: string; reply_to_id?: string; answered_by_id?: string; superseded?: boolean; change?: RequirementChange; id: string; from_agent_id?: string; from_user_id?: string; to_agent_id: string; kind: string; content: string; brief_version: number; consumed_by_run_id?: string; created_at: string };
+export type StructuredInput = {data:unknown;schema?:unknown};
+export type Assignment = {number:number;agent_id:string;agent_revision:number;conversation_id:string;task_id:string;agreement_revision:number;reason:string;actor_id:string;created_at:string;previous_delivery?:Delegation["delivery"]};
+export type Handoff = {remaining_work:string;runs:{conversation_id:string;run_id:string}[];effects:{tool:string;arguments:string;status:string;completion?:string;resource_id?:string;reference:ResultReference}[]};
+export type CollaborationOperation = 'discover'|'configure'|'initiate'|'view'|'receive'|'manage'|'communicate'|'execution_read'|'delivery_read'|'share';
+export type CollaborationAuthorization = {allowed:CollaborationOperation[]|null;revision:string};
+export type CollaborationAccess = Record<Exclude<CollaborationOperation,'discover'|'configure'|'initiate'>,boolean>;
+export type Delegation = {access?:CollaborationAccess;disagreements?:DisagreementSummary[];disagreements_omitted?:boolean;verification?: DeliveryVerification; assignment_number?:number;assignments?:Assignment[];handoff?:Handoff; structured_input?: StructuredInput; root_conversation_id?: string; dependencies?: TaskDependency[]; dependency_states?: DependencyState[]; pending_changes?: RequirementChange[]; agreement_revision?: number; adopted_agreement_revision?: number; adopted_at?: string; messages_complete?: boolean; id: string; from_agent_id: string; to_agent_id: string; source_conversation_id: string; conversation_id: string; purpose: string; brief: TaskBrief; status: string; revision: number; decision?: string; task?: ConversationTaskDetail; messages: PeerMessage[]; delivery?: { conditions?: ConditionAssessment[]; agreement_revision?: number; brief_version: number; summary: string; data?: unknown; evidence: { conversation_id: string; run_id: string }[]; unresolved: string[] } };
+export const delegationLabel: Record<string,string> = { accepted: '已接单', running: '执行中', awaiting_delivery: '等待提交交付', delivered: '等待验收', accepted_delivery: '已验收', needs_changes: '需要修改', needs_update: '需求已更新，等待继续', paused: '已暂停', cancelled: '已取消', rejected: '已拒绝', failed: '执行失败' };
+export function delegationNeedsAttention(d: Delegation): boolean { return disagreementsBlock(d) || !!d.task?.waiting || !!d.pending_changes?.length || d.messages.some(m => isOpenQuestion(m,d)) || ['awaiting_delivery', 'delivered', 'needs_changes', 'needs_update', 'failed', 'rejected'].includes(d.status); }
+export function delegationActions(d: Delegation): string[] {
+ if (!d.access?.view || !d.access.manage) return [];
+ return delegationStatusActions(d).filter(action=>!['accept_delivery','review_delivery'].includes(action)||d.access?.delivery_read);
+}
+function delegationStatusActions(d: Delegation): string[] {
+ if (d.status==='cancelled') return [];
+ if (d.status==='rejected') return ['transfer'];
+ if (d.status==='accepted_delivery') return ['update_brief','update_input','set_dependencies'];
+ const actions = ['update_brief','update_input','set_dependencies','cancel'];
+ if(d.task&&['completed','failed','cancelled'].includes(d.task.status)) actions.push('transfer');
+ if (['paused','needs_changes','needs_update','failed'].includes(d.status)) actions.unshift('resume'); else actions.unshift('pause');
+ if (['delivered','awaiting_delivery'].includes(d.status)) actions.unshift('request_changes');
+ if(d.status==='delivered'&&deliveryIsCurrent(d)) actions.unshift('review_delivery');
+ if (d.status === 'delivered' && d.task?.status === 'completed' && deliveryIsCurrent(d) && !disagreementsBlock(d)) actions.unshift('accept_delivery');
+ return actions;
+}
+export const decisionLabel: Record<string,string> = { review_delivery: '核对交付', transfer: '转交工作', update_input: '更新输入资料', set_dependencies: '调整依赖', pause: '暂停', cancel: '取消委派', resume: '继续执行', update_brief: '更新需求', accept_delivery: '验收通过', request_changes: '要求修改' };
+export function lines(value: string): string[] { return value.split('\n').map(s => s.trim()).filter(Boolean); }
+export function peerPath(id: string): string { return `/agent/delegations/${encodeURIComponent(id)}`; }
+
+export type AgentDefinition = { key: string; version: string; name: string; description: string; instructions: string; tools: string[]; skill_keys: string[] };
+export type SkillSummary = { key: string; version: string; name: string; description: string; allowed_tools: string[] };
+export type AgentRequirements = { task_type?: string; tools?: string[]; skills?: string[]; sources?: { conversation_id: string; run_id: string; before_step?: number }[]; input_tokens?: number; output_tokens?: number; max_model_cost?: number; currency?: string };
+export type AgentCandidate = { agent_id: string; revision: number; state: string; can_accept: boolean; running: number; queued: number; waiting: number; available_slots: number; missing_tools: string[]; missing_skills: string[]; unavailable_tools: string[]; source_access: string; reasons: string[]; checked_at: string; cost: { known: boolean; amount: number; currency?: string; input_tokens: number; output_tokens: number; basis: string; price?: { basis: string; updated_at: string } }; history: { runs: number; completed_runs: number; failed_runs: number; accepted_deliveries: number; reviewed_deliveries: number; usage_samples: number; mean_duration_ms: number; mean_tool_calls: number } };
+export type AgentMatches = { items: AgentCandidate[]; recommended_agent_id?: string; checked_at: string; basis: string; history_complete: boolean };
+export const agentAvailabilityLabel: Record<string,string> = { ready: '可以接单', queued: '接单后排队', blocked: '暂不能接单' };
+export const agentReasonLabel: Record<string,string> = { receiver_access_denied: '当前执行身份没有接单权限', agent_disabled: '已停用', agent_model_or_profile_unavailable: '模型或能力定义不可用，请更新配置', delegation_cycle: '当前会话或来源链中的 Agent，不能循环委派', source_access_denied: '所需资料无法在独立会话中读取', configured_tools_unavailable: '部分已选工具当前不可用', capabilities_missing: '缺少这项工作需要的工具或 Skill', queue_full: '当前用户或工作空间的队列已满', wait_for_capacity: '正在处理其他工作，需要等待执行名额', cost_unknown: '成本依据不足或币种不符，无法满足费用筛选', estimated_cost_exceeded: '模型预估费用超过筛选上限' };
+
+export type DependencyInput = { delegation_id: string; brief_version: number; agreement_revision?: number; fields?: string[] };
+export type TaskDependency = DependencyInput & { digest: string; values: Partial<TaskBrief> & {input?: StructuredInput} };
+export type DependencyState = { delegation_id: string; current_brief_version: number; current_agreement_revision: number; state: string };
+export type RequirementChange = { id: string; source_delegation_id: string; source_brief_version: number; source_agreement_revision: number; via_delegation_id?: string; changed_fields: string[]; created_at: string };
+export type AgreementEntry = { structured_input?: StructuredInput; revision: number; brief: TaskBrief; dependencies: TaskDependency[]; changed_fields: string[]; reason: string; from_user_id?: string; from_agent_id?: string; created_at: string };
+export type AgreementHistory = { items: AgreementEntry[]; complete: boolean; next_before?: number };
+export const briefFieldLabel: Record<string,string> = { verification_rules: '完成条件检查规则', assignment: '接收方与剩余工作', input: '结构化输入', goal: '目标', deliverable: '交付物', audience: '面向谁', constraints: '约束', completion_conditions: '完成条件', assumptions: '假设', due_at: '截止时间', dependencies: '依赖要求' };
+export function deliveryIsCurrent(d: Delegation): boolean { return !!d.delivery && d.delivery.brief_version===d.brief.version && (d.delivery.agreement_revision||1)===(d.agreement_revision||1) && !d.pending_changes?.length; }
+export function isOpenQuestion(m: PeerMessage,d: Delegation): boolean { return m.kind==='question' && !m.answered_by_id && !m.superseded && m.brief_version===d.brief.version && (m.agreement_revision||1)===(d.agreement_revision||1) && !['cancelled','rejected','accepted_delivery'].includes(d.status); }
+export function reviewedDependencies(d: Delegation): DependencyInput[] { return (d.dependencies||[]).map(edge=>{const state=d.dependency_states?.find(s=>s.delegation_id===edge.delegation_id);return {delegation_id:edge.delegation_id,brief_version:state?.current_brief_version||edge.brief_version,agreement_revision:state?.current_agreement_revision||edge.agreement_revision||1,fields:edge.fields};}); }
+
+export type CompletionRule = {condition:number;kind:'data'|'receipt';schema?:unknown;tool?:string;arguments_schema?:unknown;result_schema?:unknown;min_receipts?:number;completion?:'completed'|'accepted'};
+export type ConditionAssessment = {condition:number;verdict:'met'|'unmet'|'unknown';basis:string;receipts?:ResultReference[]};
+export type CompletionCheck = ConditionAssessment & {requirement:string;method:string};
+export type DeliveryVerification = {delivery_digest:string;brief_version:number;agreement_revision:number;checks:CompletionCheck[];ready:boolean;blockers:string[];actor_id:string;agent_id?:string;source?:{conversation_id:string;run_id:string};checked_at:string};
+export type DeliveryHistory = {items:{revision:number;kind:string;delivery:NonNullable<Delegation['delivery']>;verification:DeliveryVerification;reason:string}[];complete:boolean;next_before?:number};
+
+export function initialDeliveryReview(d:Delegation):ConditionAssessment[] {
+ return d.brief.completion_conditions.map((_,condition)=>{
+  const check=d.verification?.checks.find(c=>c.condition===condition);
+  const claim=d.delivery?.conditions?.find(c=>c.condition===condition);
+  const reviewed=check&&['agent','user'].includes(check.method);
+  return {condition,verdict:reviewed?check.verdict:'unknown',basis:reviewed?check.basis:'',receipts:check?.receipts||claim?.receipts};
+ });
+}
+
+// Rule indexes are local to an exact brief. Preserve only unchanged conditions;
+// inserting/removing/reordering text must not silently move a rule to new work.
+export function withCompletionConditions(brief:TaskBrief,conditions:string[]):TaskBrief {
+ const previous=brief.completion_conditions.map(c=>c.trim()),next=conditions.map(c=>c.trim());
+ const verification_rules=(brief.verification_rules||[]).flatMap(rule=>{
+  const text=previous[rule.condition];
+  if(!text)return [];
+  if(previous.filter(c=>c===text).length===1&&next.filter(c=>c===text).length===1)return [{...rule,condition:next.indexOf(text)}];
+  // Duplicate conditions are ambiguous after edits and need explicit rules.
+  return [];
+ });
+ return {...brief,completion_conditions:conditions,verification_rules};
+}
+
+export type DisagreementClaimInput={conclusion:string;data_scope:string;period:string;source_version:string;calculation:string;receipts?:ResultReference[]};
+export type DisagreementActor={user_id:string;agent_id?:string;source?:{conversation_id:string;run_id:string}};
+export type DisagreementSummary={id:string;revision:number;title:string;condition?:number;requirement?:string;status:string;brief_version:number;agreement_revision:number;delivery_digest:string;owner_agent_id?:string;owner_user_id?:string;next_action?:string;updated_at:string};
+export type EvidenceComparison={data_scope:string;period:string;source_version:string;calculation:string};
+export type DisagreementDecision={outcome:string;adopt_claim_id?:string;basis:string;comparison:EvidenceComparison;owner_agent_id?:string;next_action?:string;brief_version:number;agreement_revision:number;delivery_digest:string};
+export type DisagreementRecord=DisagreementSummary&{claims:(DisagreementClaimInput&{id:string;actor:DisagreementActor;created_at:string})[];decision?:DisagreementDecision;actor:DisagreementActor;decision_actor?:DisagreementActor;event:string;reason:string};
+export type DisagreementHistory={items:DisagreementRecord[];complete:boolean;next_before?:number};
+export const disagreementLabel:Record<string,string>={needs_review:'需按新版本核对',open:'待核对',checking:'需要补查',needs_revision:'需要修订',waiting_user:'等待用户判断',resolved:'已采用结论'};
+export function disagreementNeedsReview(issue:DisagreementSummary,d:Delegation):boolean{return issue.brief_version!==d.brief.version||issue.agreement_revision!==(d.agreement_revision||1)||issue.delivery_digest!==(d.delivery?d.verification?.delivery_digest:'');}
+export function disagreementsBlock(d:Delegation):boolean{return d.status!=='cancelled'&&(!!d.disagreements_omitted||(d.disagreements||[]).some(issue=>issue.status!=='resolved'||disagreementNeedsReview(issue,d)));}

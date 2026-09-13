@@ -29,7 +29,7 @@ type ConversationStore struct {
 func NewConversationStore(s *Store) *ConversationStore { return &ConversationStore{store: s} }
 
 func (s *ConversationStore) Ready(ctx context.Context) error {
-	for _, table := range []string{"_agent_conversations", "_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_user_memories", "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationFollowUpStateTable, conversationFollowUpEventTable, attachmentTable, attachmentCleanupTable} {
+	for _, table := range []string{"_agent_conversations", "_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_user_memories", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationFollowUpStateTable, conversationFollowUpEventTable, attachmentTable, attachmentCleanupTable, conversationAgentTable, conversationDelegationTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDisagreementTable} {
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("owner_key").Limit(1).Build()
 		if err != nil {
 			return err
@@ -205,7 +205,7 @@ func (s *ConversationStore) Create(ctx context.Context, in agentsdk.Conversation
 		return c, err
 	}
 	now := time.Now().UTC().Truncate(time.Millisecond)
-	c = agentsdk.Conversation{ID: conversationID("conv_"), Title: in.Title, RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, UserID: a.UserID, MemoryEnabled: in.MemoryEnabled, Revision: 1, CreatedAt: now, UpdatedAt: now}
+	c = agentsdk.Conversation{ID: conversationID("conv_"), AgentID: in.AgentID, Title: in.Title, RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, UserID: a.UserID, MemoryEnabled: in.MemoryEnabled, Revision: 1, CreatedAt: now, UpdatedAt: now}
 	q, args, err := query.NewInsertBuilder(s.store.Renderer(), "_agent_conversations").Columns("owner_key", "conversation_id", "client_id", "request_hash", "title", "updated_at", "archived", "revision", "payload_json").Values(conversationOwner(a), c.ID, in.ClientID, hash, strings.ToLower(c.Title), now.UnixMilli(), 0, 1, conversationJSON(c)).Build()
 	if err = conversationExec(ctx, s.store.Database(), q, args, err); err != nil {
 		if old, replayErr := lookup(); replayErr == nil {
@@ -335,11 +335,22 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 		if c.Revision != revision {
 			return conversationError("conflict", "revision_conflict")
 		}
-		q, args, e := query.NewDeleteBuilder(s.store.Renderer(), "_agent_conversations").Where(query.And(conversationScope(a, id), query.Equal("revision", revision))).Build()
+		q, args, e := query.NewSelectBuilder(s.store.Renderer(), conversationDelegationTable).Projections(query.Project(query.CountAll())).Where(query.And(query.Equal("owner_key", owner), query.Or(query.Equal("conversation_id", id), query.Equal("source_conversation_id", id)))).Build()
+		if e != nil {
+			return e
+		}
+		var linked int
+		if e = tx.QueryRowContext(ctx, q, args...).Scan(&linked); e != nil {
+			return e
+		}
+		if linked > 0 {
+			return conversationError("conflict", "conversation_has_delegations")
+		}
+		q, args, e = query.NewDeleteBuilder(s.store.Renderer(), "_agent_conversations").Where(query.And(conversationScope(a, id), query.Equal("revision", revision))).Build()
 		if err = conversationCAS(ctx, tx, q, args, e); err != nil {
 			return err
 		}
-		for _, table := range []string{"_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_inputs", "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable} {
+		for _, table := range []string{"_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_inputs", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", interactionTable} {
 			q, args, e := query.NewDeleteBuilder(s.store.Renderer(), table).Where(conversationScope(a, id)).Build()
 			if err = conversationExec(ctx, tx, q, args, e); err != nil {
 				return err

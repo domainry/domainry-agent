@@ -8,6 +8,7 @@ export type ConversationTaskWaiting = { id: string; kind: string; question: stri
 export type ConversationTaskResult = { message_id: string; preview: string; bytes: number; complete: boolean };
 export type ConversationTaskControlState = { can_cancel: boolean; can_resume: boolean; resume_blocker?: string };
 export type ConversationTaskSummary = {
+  agent_id?: string; delegation_id?: string; execution_conversation_id?: string;
   id: string; status: ConversationTaskStatus; goal: string; allowed_tools: string[];
   budget: { max_steps: number; max_tool_calls: number; max_output_bytes: number; timeout_seconds: number };
   source_conversation_id: string; source_run_id: string; execution_run_id?: string;

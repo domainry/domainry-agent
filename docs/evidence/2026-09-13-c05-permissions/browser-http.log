@@ -1,0 +1,15 @@
+=== RUN   TestPeerCollaborationPermissionsRecheckCurrentRoleAcrossEntrypoints
+--- PASS: TestPeerCollaborationPermissionsRecheckCurrentRoleAcrossEntrypoints (19.52s)
+=== RUN   TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery
+--- PASS: TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery (51.76s)
+=== RUN   TestPeerOutcomeInspectionOnlyReadsOriginalHTTPReceipt
+    conversation_peer_outcome_test.go:413: 2 actual file effects, 1 POST per key, 2 GETs for original uncertain operation, 1 receiver model calls; transfer=false; restart, exact receipt reuse and original budget verified
+--- PASS: TestPeerOutcomeInspectionOnlyReadsOriginalHTTPReceipt (1.17s)
+=== RUN   TestPeerTransferOnlyContinuesRemainingHTTPWork
+    conversation_peer_outcome_test.go:413: 2 actual file effects, 1 POST per key, 2 GETs for original uncertain operation, 3 receiver model calls; transfer=true; restart, exact receipt reuse and original budget verified
+--- PASS: TestPeerTransferOnlyContinuesRemainingHTTPWork (2.13s)
+=== RUN   TestPeerTransferAgentToolContinuesRemainingHTTPWork
+    conversation_peer_outcome_test.go:413: 2 actual file effects, 1 POST per key, 2 GETs for original uncertain operation, 3 receiver model calls; transfer=true; restart, exact receipt reuse and original budget verified
+--- PASS: TestPeerTransferAgentToolContinuesRemainingHTTPWork (4.19s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	81.148s

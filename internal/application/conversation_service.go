@@ -22,6 +22,11 @@ import (
 )
 
 type ConversationOptions struct {
+	// AgentModels is a trusted host registry. API callers select keys, never
+	// provider URLs or credentials. "default" refers to the primary model.
+	AgentModels      map[string]agentsdk.ConversationModel
+	AgentModelPrices map[string]agentsdk.ConversationModelPrice
+	AgentDefinitions []agentsdk.AgentSchema
 	KnowledgeFactory knowledge.Factory
 	Agent            *agentsdk.AgentSchema
 	Skills           []agentsdk.SkillSchema
@@ -36,6 +41,7 @@ type ConversationOptions struct {
 	// the engine does not depend on a settings implementation or its database.
 	BindToolPolicy func(toolsdk.Catalog, toolsdk.Availability) (toolsdk.Availability, error)
 
+	CollaborationAuthorizer                                   agentsdk.ConversationCollaborationAuthorizer
 	ExecutionAuthorizer                                       agentsdk.ConversationExecutionAuthorizer
 	DocumentStorage                                           agentsdk.KnowledgeDocumentStorage
 	DocumentPoll                                              time.Duration
@@ -98,6 +104,15 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	}
 	if options.ExecutionAuthorizer == nil {
 		options.ExecutionAuthorizer, _ = options.ToolHost.(agentsdk.ConversationExecutionAuthorizer)
+	}
+	if options.CollaborationAuthorizer == nil {
+		options.CollaborationAuthorizer, _ = options.PersonalAuthorizer.(agentsdk.ConversationCollaborationAuthorizer)
+	}
+	if options.CollaborationAuthorizer == nil {
+		options.CollaborationAuthorizer, _ = options.ExecutionAuthorizer.(agentsdk.ConversationCollaborationAuthorizer)
+	}
+	if options.CollaborationAuthorizer == nil {
+		options.CollaborationAuthorizer, _ = options.ToolHost.(agentsdk.ConversationCollaborationAuthorizer)
 	}
 	if err := validateAttachmentKnowledge(repo, &options); err != nil {
 		return nil, err
@@ -265,6 +280,58 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	if err := activateDocumentSources(repo, runtimeID, options); err != nil {
 		return nil, err
 	}
+	models := make(map[string]agentsdk.ConversationModel, len(options.AgentModels))
+	for key, model := range options.AgentModels {
+		models[key] = model
+	}
+	options.AgentModels = models
+	prices := make(map[string]agentsdk.ConversationModelPrice, len(options.AgentModelPrices))
+	for key, price := range options.AgentModelPrices {
+		if err := validateAgentModelPrice(key, price, options.AgentModels); err != nil {
+			return nil, err
+		}
+		prices[key] = price
+	}
+	options.AgentModelPrices = prices
+	if options.AgentDefinitions != nil {
+		raw, err := json.Marshal(options.AgentDefinitions)
+		if err != nil {
+			return nil, err
+		}
+		var definitions []agentsdk.AgentSchema
+		if err = json.Unmarshal(raw, &definitions); err != nil {
+			return nil, err
+		}
+		seen := map[string]bool{}
+		if len(definitions) > 64 {
+			return nil, fmt.Errorf("too many Agent definitions")
+		}
+		for _, d := range definitions {
+			if seen[d.Key] {
+				return nil, fmt.Errorf("duplicate Agent definition %s", d.Key)
+			}
+			seen[d.Key] = true
+			if _, err = definition.CompileProfile(d, options.Skills, d.Tools); err != nil {
+				return nil, err
+			}
+		}
+		options.AgentDefinitions = definitions
+	}
+	if options.Agent != nil {
+		raw, _ := json.Marshal(options.Agent)
+		var copy agentsdk.AgentSchema
+		if err := json.Unmarshal(raw, &copy); err != nil {
+			return nil, err
+		}
+		options.Agent = &copy
+	}
+	if options.Skills != nil {
+		raw, _ := json.Marshal(options.Skills)
+		options.Skills = nil
+		if err := json.Unmarshal(raw, &options.Skills); err != nil {
+			return nil, err
+		}
+	}
 	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, wake: make(chan struct{}, options.Workers), taskWake: make(chan struct{}, 1), followUpWake: make(chan struct{}, 1), attachmentWake: make(chan struct{}, 1), active: map[string]conversationActive{}}
 	s.documentWake = make(chan struct{}, 1)
 	s.attachmentIndexWake = make(chan struct{}, 1)
@@ -278,6 +345,9 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	}
 	if options.ToolHost != nil && len(options.AttachmentKnowledge) > 0 {
 		s.options.ToolHost = &attachmentKnowledgeHost{base: options.ToolHost, service: s}
+	}
+	if _, ok := repo.(agentpersistence.ConversationCollaborationRepository); ok && s.options.ToolHost != nil && s.options.PersonalAuthorizer != nil {
+		s.options.ToolHost = &collaborationToolHost{ConversationToolHost: s.options.ToolHost, service: s}
 	}
 	if err := s.configureProfile(); err != nil {
 		return nil, err
@@ -307,7 +377,7 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 			s.wg.Add(1)
 			go s.worker(ctx)
 		}
-		if personalHost != nil && personalHost.tasks == s {
+		if _, ok := repo.(agentpersistence.ConversationTaskWorkerRepository); ok {
 			s.wg.Add(1)
 			go s.conversationTaskWorker(ctx, repo.(agentpersistence.ConversationTaskWorkerRepository))
 		}
@@ -430,6 +500,14 @@ func (s *ConversationService) Create(ctx context.Context, in agentsdk.Conversati
 	if strings.TrimSpace(in.Title) == "" {
 		in.Title = "新会话"
 	}
+	if in.AgentID != "" {
+		if !conversationKey(in.AgentID) {
+			return agentsdk.Conversation{}, conversationFailure("bad_request", "agent_invalid")
+		}
+		if _, err := s.freezeConversationAgent(ctx, in.AgentID, a); err != nil {
+			return agentsdk.Conversation{}, err
+		}
+	}
 	return s.repo.Create(ctx, in, a)
 }
 func (s *ConversationService) List(ctx context.Context, in agentsdk.ConversationQuery, a agentsdk.ConversationAuthority) (agentsdk.ConversationPage, error) {
@@ -439,15 +517,38 @@ func (s *ConversationService) List(ctx context.Context, in agentsdk.Conversation
 	if !conversationText(in.Search, 512, false) || len(in.BeforeID) > 256 || in.Limit < 0 || in.Limit > 100 {
 		return agentsdk.ConversationPage{}, conversationFailure("bad_request", "query_invalid")
 	}
-	return s.repo.List(ctx, in, a)
+	page, err := s.repo.List(ctx, in, a)
+	if err != nil {
+		return page, err
+	}
+	visible := make([]agentsdk.Conversation, 0, len(page.Items))
+	for _, c := range page.Items {
+		if c.DelegationID != "" {
+			if err := s.authorizeCollaborationConversation(ctx, c.ID, "view", a); err != nil {
+				if collaborationDenied(err) {
+					continue
+				}
+				return agentsdk.ConversationPage{}, err
+			}
+		}
+		visible = append(visible, c)
+	}
+	page.Items = visible
+	return page, nil
 }
 func (s *ConversationService) Get(ctx context.Context, id string, a agentsdk.ConversationAuthority) (agentsdk.Conversation, error) {
+	if err := s.authorizeCollaborationConversation(ctx, id, "view", a); err != nil {
+		return agentsdk.Conversation{}, err
+	}
 	if err := s.authorize(a); err != nil {
 		return agentsdk.Conversation{}, err
 	}
 	return s.repo.Get(ctx, id, a)
 }
 func (s *ConversationService) Update(ctx context.Context, id string, in agentsdk.ConversationUpdate, a agentsdk.ConversationAuthority) (agentsdk.Conversation, error) {
+	if err := s.authorizeCollaborationConversation(ctx, id, "manage", a); err != nil {
+		return agentsdk.Conversation{}, err
+	}
 	if err := s.authorize(a); err != nil {
 		return agentsdk.Conversation{}, err
 	}
@@ -457,6 +558,9 @@ func (s *ConversationService) Update(ctx context.Context, id string, in agentsdk
 	return s.repo.Update(ctx, id, in, a)
 }
 func (s *ConversationService) Delete(ctx context.Context, id string, revision int64, a agentsdk.ConversationAuthority) error {
+	if err := s.authorizeCollaborationConversation(ctx, id, "manage", a); err != nil {
+		return err
+	}
 	if err := s.authorize(a); err != nil {
 		return err
 	}
@@ -482,6 +586,12 @@ func (s *ConversationService) Delete(ctx context.Context, id string, revision in
 	return nil
 }
 func (s *ConversationService) Send(ctx context.Context, id string, in agentsdk.ConversationSend, a agentsdk.ConversationAuthority) (agentsdk.ConversationRun, error) {
+	if err := s.authorizeCollaborationConversation(ctx, id, "manage", a); err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
+	if err := s.authorizeCollaborationConversation(ctx, id, "execution_read", a); err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
 	if err := s.authorize(a); err != nil {
 		return agentsdk.ConversationRun{}, err
 	}
@@ -494,6 +604,17 @@ func (s *ConversationService) Send(ctx context.Context, id string, in agentsdk.C
 	if err := s.authorizeConversationExecution(ctx, id, "", "send", a); err != nil {
 		return agentsdk.ConversationRun{}, err
 	}
+	in.ExecutionAgent = nil
+	conversation, err := s.repo.Get(ctx, id, a)
+	if err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
+	if conversation.AgentID != "" {
+		in.ExecutionAgent, err = s.freezeConversationAgent(ctx, conversation.AgentID, a)
+		if err != nil {
+			return agentsdk.ConversationRun{}, err
+		}
+	}
 	out, err := s.repo.Enqueue(ctx, id, in, a)
 	if err == nil {
 		s.signal()
@@ -502,6 +623,9 @@ func (s *ConversationService) Send(ctx context.Context, id string, in agentsdk.C
 	return out, err
 }
 func (s *ConversationService) Messages(ctx context.Context, id string, in agentsdk.ConversationMessageQuery, a agentsdk.ConversationAuthority) (agentsdk.ConversationMessagePage, error) {
+	if err := s.authorizeCollaborationConversation(ctx, id, "execution_read", a); err != nil {
+		return agentsdk.ConversationMessagePage{}, err
+	}
 	if err := s.authorize(a); err != nil {
 		return agentsdk.ConversationMessagePage{}, err
 	}
@@ -536,6 +660,9 @@ func (s *ConversationService) Messages(ctx context.Context, id string, in agents
 	return out, nil
 }
 func (s *ConversationService) Run(ctx context.Context, id, run string, a agentsdk.ConversationAuthority) (agentsdk.ConversationRun, error) {
+	if err := s.authorizeCollaborationConversation(ctx, id, "execution_read", a); err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
 	if err := s.authorize(a); err != nil {
 		return agentsdk.ConversationRun{}, err
 	}
@@ -546,6 +673,9 @@ func (s *ConversationService) Run(ctx context.Context, id, run string, a agentsd
 	return out, err
 }
 func (s *ConversationService) Events(ctx context.Context, id, run string, after int64, limit int, a agentsdk.ConversationAuthority) (agentsdk.ConversationEventPage, error) {
+	if err := s.authorizeCollaborationConversation(ctx, id, "execution_read", a); err != nil {
+		return agentsdk.ConversationEventPage{}, err
+	}
 	if err := s.authorize(a); err != nil {
 		return agentsdk.ConversationEventPage{}, err
 	}
@@ -566,6 +696,12 @@ func (s *ConversationService) Events(ctx context.Context, id, run string, after 
 	return out, nil
 }
 func (s *ConversationService) Cancel(ctx context.Context, id, run string, a agentsdk.ConversationAuthority) (agentsdk.ConversationRun, error) {
+	if err := s.authorizeCollaborationConversation(ctx, id, "manage", a); err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
+	if err := s.authorizeCollaborationConversation(ctx, id, "execution_read", a); err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
 	if err := s.authorize(a); err != nil {
 		return agentsdk.ConversationRun{}, err
 	}
@@ -583,6 +719,12 @@ func (s *ConversationService) Cancel(ctx context.Context, id, run string, a agen
 	return out, err
 }
 func (s *ConversationService) Resume(ctx context.Context, id, run string, a agentsdk.ConversationAuthority) (agentsdk.ConversationRun, error) {
+	if err := s.authorizeCollaborationConversation(ctx, id, "manage", a); err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
+	if err := s.authorizeCollaborationConversation(ctx, id, "execution_read", a); err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
 	if err := s.authorize(a); err != nil {
 		return agentsdk.ConversationRun{}, err
 	}
@@ -644,6 +786,7 @@ func (s *ConversationService) worker(ctx context.Context) {
 	}
 }
 func (s *ConversationService) execute(parent context.Context, claim agentpersistence.ConversationClaim) {
+	parent, selectionErr := s.selectConversationAgent(parent, claim.Run.Agent, claim.Authority)
 	_, _, maxOutputBytes, runTimeout := s.conversationRunLimits(claim)
 	ctx, cancel := context.WithTimeout(parent, runTimeout)
 	defer cancel()
@@ -680,6 +823,9 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 	var input agentsdk.ConversationModelRequest
 	found := false
 	err := s.authorizeConversationClaim(ctx, claim, "execute")
+	if selectionErr != nil {
+		err = selectionErr
+	}
 	if err == nil {
 		input, found, err = s.repo.ModelInput(ctx, claim, nil)
 	}
@@ -759,11 +905,11 @@ func conversationModelFailureCode(err error, fallback string) string {
 	if errors.As(err, &failure) {
 		code := strings.TrimPrefix(failure.Code, "agent.conversation.")
 		switch code {
-		case "execution_access_denied", "execution_authorization_unavailable":
+		case "execution_access_denied", "execution_authorization_unavailable", "collaboration_access_denied", "collaboration_authorization_unavailable":
 			return code
 		case "source_access_unavailable", "source_reference_invalid", "source_read_unavailable", "source_limit_exceeded", "source_snapshot_changed":
 			return code
-		case "model_changed", "execution_limit", "execution_context_exceeded", "tool_catalog_invalid", "tool_access_denied", "tool_unavailable", "tool_availability_failed", "tool_changed", "tool_confirmation_required", "tool_result_uncertain", "tool_result_invalid", "interaction_unavailable", "interaction_closed", "interaction_expired", "interaction_access_denied", "question_must_be_separate":
+		case "agent_changed", "agent_disabled", "agent_snapshot_invalid", "agent_model_unavailable", "delegation_superseded", "model_changed", "execution_limit", "execution_context_exceeded", "tool_catalog_invalid", "tool_access_denied", "tool_unavailable", "tool_availability_failed", "tool_changed", "tool_confirmation_required", "tool_result_uncertain", "tool_result_invalid", "interaction_unavailable", "interaction_closed", "interaction_expired", "interaction_access_denied", "question_must_be_separate":
 			return code
 		case "execution_reference_invalid", "execution_reference_changed", "execution_read_unavailable", "result_reference_invalid", "result_reference_changed", "result_not_found", "result_read_unavailable", "tool_call_not_found", "run_not_found":
 			return code

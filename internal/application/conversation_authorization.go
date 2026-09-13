@@ -34,5 +34,24 @@ func (s *ConversationService) authorizeConversationExecution(ctx context.Context
 }
 
 func (s *ConversationService) authorizeConversationClaim(ctx context.Context, claim persistence.ConversationClaim, stage string) error {
+	if _, err := s.selectConversationAgent(ctx, claim.Run.Agent, claim.Authority); err != nil {
+		return err
+	}
+	if task := claim.Run.BackgroundTask; task != nil && task.DelegationID != "" {
+		repo, err := s.collaborationRepository()
+		if err != nil {
+			return err
+		}
+		d, err := repo.ConversationDelegation(ctx, task.DelegationID, claim.Authority)
+		if err != nil {
+			return err
+		}
+		if err = s.authorizeCollaboration(ctx, "receive", &d, claim.Authority); err != nil {
+			return err
+		}
+		if d.TaskID != task.TaskID || d.ConversationID != claim.Run.ConversationID || d.Brief.Version != task.BriefVersion || max(1, task.AgreementRevision) != max(1, d.AgreementRevision) || len(d.PendingChanges) > 0 || d.Status != "running" && d.Status != "delivered" {
+			return conversationFailure("conflict", "delegation_superseded")
+		}
+	}
 	return s.authorizeConversationExecution(ctx, claim.Run.ConversationID, claim.Run.ID, stage, claim.Authority)
 }

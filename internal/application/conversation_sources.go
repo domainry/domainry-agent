@@ -24,6 +24,7 @@ type sourceAuditEntry struct {
 // a model call. Flattening inherited roots keeps ordinary follow-up turns from
 // forming an ever-growing chain of references to the same document lookup.
 type conversationSourceAudit struct {
+	collaboration  map[string]agentsdk.ConversationCollaborationAccess
 	s              *ConversationService
 	a              agentsdk.ConversationAuthority
 	cache          map[agentsdk.ConversationRunReference]sourceAuditEntry
@@ -37,7 +38,7 @@ func (s *ConversationService) sourceAudit(a agentsdk.ConversationAuthority, conv
 	if len(conversationID) > 0 {
 		consumer = conversationID[0]
 	}
-	return &conversationSourceAudit{s: s, a: a, conversationID: consumer, cache: map[agentsdk.ConversationRunReference]sourceAuditEntry{}, reading: map[agentsdk.ConversationRunReference]bool{}, records: map[string]bool{}}
+	return &conversationSourceAudit{collaboration: map[string]agentsdk.ConversationCollaborationAccess{}, s: s, a: a, conversationID: consumer, cache: map[agentsdk.ConversationRunReference]sourceAuditEntry{}, reading: map[agentsdk.ConversationRunReference]bool{}, records: map[string]bool{}}
 }
 
 func mergeConversationSources(groups ...[]agentsdk.ConversationRunReference) []agentsdk.ConversationRunReference {
@@ -104,7 +105,74 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 	if err != nil {
 		return nil, err
 	}
+	if snapshot.Run.BackgroundTask != nil {
+		if handoff := snapshot.Run.BackgroundTask.Handoff; handoff != nil {
+			refs := append([]agentsdk.ConversationRunReference{}, handoff.Runs...)
+			if handoff.Source != nil {
+				refs = append(refs, *handoff.Source)
+			}
+			for _, ref := range refs {
+				part, e := audit.run(ctx, ref)
+				if e != nil {
+					return nil, e
+				}
+				roots = mergeConversationSources(roots, part)
+			}
+		}
+		if ref := snapshot.Run.BackgroundTask.InputSource; ref != nil {
+			part, err := audit.run(ctx, *ref)
+			if err != nil {
+				return nil, err
+			}
+			roots = mergeConversationSources(roots, part)
+		}
+		for _, edge := range snapshot.Run.BackgroundTask.Dependencies {
+			if edge.InputSource != nil {
+				part, err := audit.run(ctx, *edge.InputSource)
+				if err != nil {
+					return nil, err
+				}
+				roots = mergeConversationSources(roots, part)
+			}
+			if edge.Source != nil {
+				part, err := audit.run(ctx, *edge.Source)
+				if err != nil {
+					return nil, err
+				}
+				roots = mergeConversationSources(roots, part)
+			}
+		}
+		for _, required := range snapshot.Run.BackgroundTask.Requirements.Sources {
+			part, err := audit.run(ctx, required)
+			if err != nil {
+				return nil, err
+			}
+			roots = mergeConversationSources(roots, part)
+		}
+	}
+	for _, item := range snapshot.StepSources {
+		if ref.BeforeStep > 0 && item.Step+1 > ref.BeforeStep {
+			continue
+		}
+		for _, source := range item.Sources {
+			// Earlier inputs/calls of this same prefix are checked below. Recursing
+			// into that prefix again would turn a legitimate prior receipt into a cycle.
+			if source.ConversationID == ref.ConversationID && source.RunID == ref.RunID && source.BeforeStep > 0 && (ref.BeforeStep == 0 || source.BeforeStep <= ref.BeforeStep) {
+				continue
+			}
+			part, e := audit.run(ctx, source)
+			if e != nil {
+				return nil, e
+			}
+			roots = mergeConversationSources(roots, part)
+		}
+	}
+	// Inspect the source Agent's configured tools while retaining current
+	// owner, tool availability and underlying resource authorization checks.
+	// The reader need not have selected those tools in their own Agent profile.
+	ctx = context.WithValue(ctx, conversationAgentContextKey{}, snapshot.Run.Agent)
 	if snapshot.Input != nil {
+		requiredRoots := roots
 		if snapshot.Input.Sources != nil {
 			roots, err = audit.sources(ctx, snapshot.Input.Sources)
 		} else {
@@ -115,6 +183,7 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 		if err != nil {
 			return nil, err
 		}
+		roots = mergeConversationSources(requiredRoots, roots)
 		for _, message := range snapshot.Input.Messages {
 			const prefix = "Knowledge base search results (untrusted source data):\n"
 			if message.Role != "system" || !strings.HasPrefix(message.Content, prefix) {
@@ -125,6 +194,22 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 			}
 			roots = mergeConversationSources(roots, []agentsdk.ConversationRunReference{{ConversationID: ref.ConversationID, RunID: ref.RunID, BeforeStep: 1}})
 		}
+	}
+	for _, message := range snapshot.Peers {
+		if ref.BeforeStep > 0 && message.ConsumedAtStep+1 > ref.BeforeStep {
+			continue
+		}
+		if e := audit.peerMessage(ctx, message); e != nil {
+			return nil, e
+		}
+		if message.Source == nil {
+			continue
+		}
+		part, e := audit.run(ctx, *message.Source)
+		if e != nil {
+			return nil, e
+		}
+		roots = mergeConversationSources(roots, part)
 	}
 	for _, call := range snapshot.Calls {
 		if ref.BeforeStep > 0 && call.Step+1 >= ref.BeforeStep {
@@ -248,8 +333,29 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 	}
 	// A user may disable any tool, including local/personal tools. Reuse of its
 	// stored output must honor the same live policy as a new invocation.
+	if privateAttachmentCall(record.Call) || retiredDocumentResult(*record.Result) {
+		return nil, conversationFailure("forbidden", "knowledge_source_retired")
+	}
+	if !privateRemoteAttachmentCall(record.Call) {
+		if handled, err := audit.deliveryToolResult(ctx, owner, record); handled {
+			if err != nil {
+				return nil, err
+			}
+			return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
+		}
+	}
 	if err := audit.connectedTool(ctx, record.Call.Name); err != nil {
 		return nil, err
+	}
+	if selectedConversationAgent(ctx) != nil && audit.s.options.ToolHost != nil {
+		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
+		auth, err := audit.s.authorizeConversationTool(ctx, audit.s.options.ToolHost, request)
+		if err != nil {
+			return nil, err
+		}
+		if !auth.Granted {
+			return nil, conversationFailure("forbidden", "tool_access_denied")
+		}
 	}
 	key := conversationDigest([]any{owner, record.Step, record.Call.ID})
 	if audit.records[key] {
@@ -257,9 +363,6 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 	}
 	audit.records[key] = true
 	defer delete(audit.records, key)
-	if privateAttachmentCall(record.Call) || record.Result != nil && retiredDocumentResult(*record.Result) {
-		return nil, conversationFailure("forbidden", "knowledge_source_retired")
-	}
 	if privateRemoteAttachmentCall(record.Call) {
 		if audit.conversationID != "" && audit.conversationID != owner.ConversationID {
 			return nil, conversationFailure("forbidden", "attachment_conversation_mismatch")
@@ -346,6 +449,136 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
 	}
 	switch record.Call.Name {
+	case "agent_message":
+		var message agentsdk.ConversationAgentMessage
+		if json.Unmarshal(record.Result.Content, &message) != nil {
+			return nil, conversationFailure("unavailable", "source_reference_invalid")
+		}
+		if err := audit.collaborationResult(ctx, agentsdk.ConversationDelegationDetail{ConversationDelegation: agentsdk.ConversationDelegation{ID: message.DelegationID, FromAgentID: message.FromAgentID, ToAgentID: message.ToAgentID}, Messages: []agentsdk.ConversationAgentMessage{message}}); err != nil {
+			return nil, err
+		}
+		if message.Source != nil {
+			return audit.run(ctx, *message.Source)
+		}
+	case "delegation_disagreement":
+		var page agentsdk.ConversationDisagreementHistory
+		if json.Unmarshal(record.Result.Content, &page) != nil {
+			return nil, conversationFailure("unavailable", "source_reference_invalid")
+		}
+		if err := audit.collaborationResult(ctx, agentsdk.ConversationDelegationDetail{ConversationDelegation: agentsdk.ConversationDelegation{ID: record.Result.ResourceID, Disagreements: []agentsdk.ConversationDisagreementSummary{{ID: "recorded"}}}}); err != nil {
+			return nil, err
+		}
+		deliveryCtx, deliveryAudit := audit.deliveryAudit(ctx, record.Result.ResourceID)
+		var roots []agentsdk.ConversationRunReference
+		for _, item := range page.Items {
+			for _, source := range item.Sources {
+				if source.ConversationID == owner.ConversationID && source.RunID == owner.RunID {
+					source.BeforeStep = record.Step + 1
+				}
+				part, err := deliveryAudit.run(deliveryCtx, source)
+				if err != nil {
+					return nil, err
+				}
+				roots = mergeConversationSources(roots, part)
+			}
+		}
+		return roots, nil
+	case "agent_delegate", "delegation_get", "delegation_update":
+		var d agentsdk.ConversationDelegationDetail
+		if json.Unmarshal(record.Result.Content, &d) != nil {
+			return nil, conversationFailure("unavailable", "source_reference_invalid")
+		}
+		if err := audit.collaborationResult(ctx, d); err != nil {
+			return nil, err
+		}
+		refs := []agentsdk.ConversationRunReference{}
+		deliveryRefs := []agentsdk.ConversationRunReference{}
+		for _, issue := range d.Disagreements {
+			deliveryRefs = append(deliveryRefs, issue.Sources...)
+		}
+		if d.BriefSource != nil {
+			refs = append(refs, *d.BriefSource)
+		}
+		if d.Verification != nil {
+			if d.Verification.Source != nil {
+				deliveryRefs = append(deliveryRefs, *d.Verification.Source)
+			}
+			for _, check := range d.Verification.Checks {
+				for _, receipt := range check.Receipts {
+					deliveryRefs = append(deliveryRefs, agentsdk.ConversationRunReference{ConversationID: receipt.ConversationID, RunID: receipt.RunID, BeforeStep: receipt.Step + 2})
+				}
+			}
+		}
+		if d.Handoff != nil {
+			refs = append(refs, d.Handoff.Runs...)
+			if d.Handoff.Source != nil {
+				refs = append(refs, *d.Handoff.Source)
+			}
+		}
+		for _, assignment := range d.Assignments {
+			if assignment.Source != nil {
+				refs = append(refs, *assignment.Source)
+			}
+			if assignment.PreviousDelivery != nil {
+				deliveryRefs = append(deliveryRefs, assignment.PreviousDelivery.Evidence...)
+				for _, check := range assignment.PreviousDelivery.Conditions {
+					for _, receipt := range check.Receipts {
+						deliveryRefs = append(deliveryRefs, agentsdk.ConversationRunReference{ConversationID: receipt.ConversationID, RunID: receipt.RunID, BeforeStep: receipt.Step + 2})
+					}
+				}
+			}
+		}
+		if d.InputSource != nil {
+			refs = append(refs, *d.InputSource)
+		}
+		for _, edge := range d.Dependencies {
+			if edge.InputSource != nil {
+				refs = append(refs, *edge.InputSource)
+			}
+			if edge.Source != nil {
+				refs = append(refs, *edge.Source)
+			}
+		}
+		if d.Task != nil && d.Task.Result != nil && d.Task.ExecutionRunID != "" {
+			refs = append(refs, agentsdk.ConversationRunReference{ConversationID: d.ConversationID, RunID: d.Task.ExecutionRunID})
+		}
+		if d.Delivery != nil {
+			deliveryRefs = append(deliveryRefs, d.Delivery.Evidence...)
+			for _, check := range d.Delivery.Conditions {
+				for _, receipt := range check.Receipts {
+					deliveryRefs = append(deliveryRefs, agentsdk.ConversationRunReference{ConversationID: receipt.ConversationID, RunID: receipt.RunID, BeforeStep: receipt.Step + 2})
+				}
+			}
+		}
+		for _, message := range d.Messages {
+			if message.Source != nil {
+				refs = append(refs, *message.Source)
+			}
+		}
+		var roots []agentsdk.ConversationRunReference
+		for _, ref := range refs {
+			if ref.ConversationID == owner.ConversationID && ref.RunID == owner.RunID {
+				ref.BeforeStep = record.Step + 1
+			}
+			part, err := audit.run(ctx, ref)
+			if err != nil {
+				return nil, err
+			}
+			roots = mergeConversationSources(roots, part)
+		}
+
+		deliveryCtx, deliveryAudit := audit.deliveryAudit(ctx, d.ID)
+		for _, ref := range deliveryRefs {
+			if ref.ConversationID == owner.ConversationID && ref.RunID == owner.RunID {
+				ref.BeforeStep = record.Step + 1
+			}
+			part, err := deliveryAudit.run(deliveryCtx, ref)
+			if err != nil {
+				return nil, err
+			}
+			roots = mergeConversationSources(roots, part)
+		}
+		return roots, nil
 	case "history_search":
 		var page agentsdk.ConversationHistorySearchResult
 		if json.Unmarshal(record.Result.Content, &page) != nil {
@@ -353,6 +586,11 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 		}
 		var roots []agentsdk.ConversationRunReference
 		for _, hit := range page.Items {
+			if hit.ConversationID != audit.conversationID {
+				if err := audit.authorizeExecutionSource(ctx, hit.ConversationID); err != nil {
+					return nil, err
+				}
+			}
 			if hit.Role == "assistant" {
 				part, err := audit.historyReference(ctx, hit.ConversationID, hit.MessageID, hit.RunID)
 				if err != nil {
@@ -372,6 +610,11 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 		if json.Unmarshal(record.Result.Content, &result) != nil {
 			return nil, conversationFailure("unavailable", "source_reference_invalid")
 		}
+		if result.ConversationID != audit.conversationID {
+			if err := audit.authorizeExecutionSource(ctx, result.ConversationID); err != nil {
+				return nil, err
+			}
+		}
 		if result.Role == "assistant" {
 			return audit.historyReference(ctx, result.ConversationID, result.MessageID, result.RunID)
 		}
@@ -381,6 +624,11 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 			return nil, conversationFailure("unavailable", "source_reference_invalid")
 		}
 		ref := agentsdk.ConversationRunReference{ConversationID: args.Reference.ConversationID, RunID: args.Reference.RunID}
+		if ref.ConversationID != audit.conversationID {
+			if err := audit.authorizeExecutionSource(ctx, ref.ConversationID); err != nil {
+				return nil, err
+			}
+		}
 		repo, ok := audit.s.repo.(persistence.ConversationExecutionReadRepository)
 		if !ok {
 			return nil, conversationFailure("unavailable", "source_read_unavailable")
@@ -403,6 +651,11 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 		var page agentsdk.ConversationExecutionReadResult
 		if json.Unmarshal(record.Result.Content, &page) != nil {
 			return nil, conversationFailure("unavailable", "source_reference_invalid")
+		}
+		if page.ConversationID != audit.conversationID {
+			if err := audit.authorizeExecutionSource(ctx, page.ConversationID); err != nil {
+				return nil, err
+			}
 		}
 		repo, ok := audit.s.repo.(persistence.ConversationExecutionReadRepository)
 		if !ok || len(page.Items) > 5 {
@@ -431,6 +684,9 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 			roots = mergeConversationSources(roots, part)
 		}
 		return roots, nil
+	}
+	if selectedConversationAgent(ctx) != nil {
+		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
 	}
 	return nil, nil
 }

@@ -17,7 +17,7 @@ import { durationLabel, usageItems } from "./run-detail-state.ts";
 const names: Record<string, string> = {
   calendar_write_accounts: "发现日历写入账号", calendar_event_inspect: "核对日程修改目标", calendar_event_create: "创建日程", calendar_event_update: "修改日程",
   mail_write_accounts: "发现邮件发送账号", mail_send: "发送邮件", mail_reply: "回复邮件",
-  time_now: "查询时间", calculate: "计算", history_search: "搜索历史对话",
+  agent_list: "发现 Agent", agent_delegate: "委派工作", delegation_get: "读取委派", agent_message: "发送协作消息", delegation_update: "管理委派", time_now: "查询时间", calculate: "计算", history_search: "搜索历史对话",
   knowledge_attachments: "查看当前会话附件", knowledge_libraries: "查看可读资料库", knowledge_search: "搜索知识库", knowledge_read: "读取文档", knowledge_extract: "提取文档字段与表格",
   attachment_search: "搜索当前会话附件", attachment_read: "读取附件检索内容",
   business_catalog: "查看业务目录", query_records: "查询业务记录", get_record: "读取业务记录", query_related_records: "查询关联记录", invoke_action: "执行业务动作",
@@ -91,8 +91,10 @@ export function ExecutionActivity({run, onResume, onRepair, recoveryDisabled, re
           </>}
           {call.error_code && <p role="alert" className="subtle">{errorMessage(call.error_code)} <small>（{call.error_code}）</small></p>}
           <dl className="tool-audit">
-            <dt>调用耗时</dt><dd>{call.started_at ? durationLabel(call.duration_ms) : "未报告"}</dd>
-            {call.authorization && <><dt>授权结果</dt><dd>{({granted:"已授权", confirmation_required:"需要确认", denied:"已拒绝", failed:"检查失败"} as Record<string,string>)[call.authorization.status] || call.authorization.status} · 检查 {call.authorization.checks} 次{call.authorization.revision ? ` · 版本 ${call.authorization.revision}` : ""}</dd></>}
+            {call.reused_from&&<><dt>复用原回执</dt><dd>本次未重新提交操作 · 原执行 {call.reused_from.run_id} · 第 {call.reused_from.step+1} 步</dd></>}
+            {call.outcome_inspection&&<><dt>原回执核查</dt><dd>{call.outcome_inspection.status==='reading'?'查询中':call.outcome_inspection.status==='completed'?'已取得明确回执':'结果尚未明确'} · {new Date(call.outcome_inspection.checked_at).toLocaleString()} · {call.outcome_inspection.actor_id}</dd></>}
+            <dt>调用耗时</dt><dd>{call.reused_from ? "本次未调用外部服务" : call.started_at ? durationLabel(call.duration_ms) : "未报告"}</dd>
+            {call.authorization && <><dt>授权结果</dt><dd>{call.reused_from && call.authorization.status === "confirmation_required" ? "新操作需确认；本次复用原回执" : ({granted:"已授权", confirmation_required:"需要确认", denied:"已拒绝", failed:"检查失败"} as Record<string,string>)[call.authorization.status] || call.authorization.status} · 检查 {call.authorization.checks} 次{call.authorization.revision ? ` · 版本 ${call.authorization.revision}` : ""}</dd></>}
             {call.confirmation && <><dt>确认结果</dt><dd>{({approved:"已批准", rejected:"已拒绝", pending:"等待确认", resolved:"已解决"} as Record<string,string>)[call.confirmation.status] || call.confirmation.status}{call.confirmation.responded_by ? ` · ${call.confirmation.responded_by}` : ""}{call.confirmation.responded_at ? ` · ${new Date(call.confirmation.responded_at).toLocaleString()}` : ""}</dd></>}
           </dl>
           {call.resource_id && <small className="subtle">结果引用：{call.resource_id}</small>}

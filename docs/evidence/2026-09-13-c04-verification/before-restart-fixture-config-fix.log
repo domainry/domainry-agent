@@ -1,0 +1,31 @@
+=== RUN   TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery
+    conversation_collaboration_test.go:372: bind Agent conversation host: invalid Agent model price configuration for review
+--- FAIL: TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery (3.35s)
+panic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]
+[signal SIGSEGV: segmentation violation code=0x2 addr=0x80 pc=0x1056eea18]
+
+goroutine 49 [running]:
+testing.tRunner.func1.2({0x1071659c0, 0x10759af20})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1974 +0x1a0
+testing.tRunner.func1()
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1977 +0x318
+panic({0x1071659c0?, 0x10759af20?})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/panic.go:860 +0x12c
+github.com/domainry/domainry-agent/internal/assembly/web.(*Host).Close(0x0, {0x10740fa08, 0x107617320})
+	/Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go:299 +0x28
+github.com/domainry/domainry-agent/internal/assembly/web.TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery.func1()
+	/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_collaboration_test.go:154 +0x34
+runtime.Goexit()
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/panic.go:694 +0x60
+testing.(*common).FailNow(0x67188bbf3b08)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1022 +0x48
+testing.(*common).Fatal(0x67188bbf3b08, {0x67188d921eb8?, 0x0?, 0x0?})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1221 +0x54
+github.com/domainry/domainry-agent/internal/assembly/web.TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery(0x67188bbf3b08)
+	/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_collaboration_test.go:372 +0x3ab0
+testing.tRunner(0x67188bbf3b08, 0x1073eb2e8)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2036 +0xc4
+created by testing.(*T).Run in goroutine 1
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2101 +0x3a8
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	3.881s
+FAIL

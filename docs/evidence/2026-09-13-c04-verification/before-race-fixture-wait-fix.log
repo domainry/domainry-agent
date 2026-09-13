@@ -1,0 +1,16 @@
+=== RUN   TestPeerVerificationHistoryRechecksReviewAndEveryReceiptSource
+--- PASS: TestPeerVerificationHistoryRechecksReviewAndEveryReceiptSource (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.421s
+=== RUN   TestPeerVerificationReadsActualReceiptsAndCannotOverrideFailedData
+--- PASS: TestPeerVerificationReadsActualReceiptsAndCannotOverrideFailedData (0.22s)
+=== RUN   TestPeerVerificationRequiresIndependentCurrentReviewAndRetainsHistory
+--- PASS: TestPeerVerificationRequiresIndependentCurrentReviewAndRetainsHistory (0.22s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	2.010s
+=== RUN   TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery
+    conversation_collaboration_test.go:318: outcome wait timed out
+--- FAIL: TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery (58.97s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	59.586s
+FAIL

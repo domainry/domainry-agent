@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "realChrome": true,
+  "realIdentityRoleEdits": true,
+  "scenarios": [
+    "revocation closes open run and delivery history",
+    "metadata omits execution delivery and communication",
+    "delivery reader without execution permission",
+    "revocation closes pending management form",
+    "administrator setup is explicit"
+  ],
+  "errors": []
+}

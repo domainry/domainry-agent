@@ -112,9 +112,28 @@ func (s *ConversationStore) ExecutionStep(ctx context.Context, claim persistence
 			}
 		}
 		now := time.Now().UTC()
+		if err = s.consumeConversationPeerInbox(ctx, tx, claim, input.InboxMessageIDs, number); err != nil {
+			return err
+		}
+		if err = s.recordAgreementAdoption(ctx, tx, row.Run, claim.Authority); err != nil {
+			return err
+		}
 		out = persistence.ConversationExecutionStep{Number: number, Input: *input, CreatedAt: now, UpdatedAt: now}
 		if err = s.executionWrite(ctx, tx, "_agent_conversation_steps", claim, number, "", out, true); err != nil {
 			return err
+		}
+		if len(input.ContextSources) > 64 {
+			return conversationError("bad_request", "source_limit_exceeded")
+		}
+		for _, ref := range input.ContextSources {
+			if !personalMemoryKey(ref.ConversationID) || !personalMemoryKey(ref.RunID) || ref.BeforeStep < 0 || ref.BeforeStep > 257 || ref.ConversationID == claim.Run.ConversationID && ref.RunID == claim.Run.ID && (ref.BeforeStep == 0 || ref.BeforeStep > number+1) {
+				return conversationError("bad_request", "source_reference_invalid")
+			}
+		}
+		if len(input.ContextSources) > 0 {
+			if err = s.executionWrite(ctx, tx, conversationStepSourceTable, claim, number, "", input.ContextSources, true); err != nil {
+				return err
+			}
 		}
 		found = true
 		old := row
@@ -189,7 +208,14 @@ func (s *ConversationStore) CompleteExecutionStep(ctx context.Context, claim per
 }
 
 func (s *ConversationStore) readExecutionTool(ctx context.Context, db conversationDB, claim persistence.ConversationClaim, number int, callID string, out *persistence.ConversationToolExecution) (bool, error) {
-	return s.executionRead(ctx, db, "_agent_conversation_tool_calls", query.And(executionScope(claim, number), query.Equal("call_key", conversationHash(callID))), out)
+	// A persisted receipt is a full snapshot. Decoding into a prior receipt
+	// merges omitted fields (including a cleared error or completion marker).
+	var saved persistence.ConversationToolExecution
+	found, err := s.executionRead(ctx, db, "_agent_conversation_tool_calls", query.And(executionScope(claim, number), query.Equal("call_key", conversationHash(callID))), &saved)
+	if err == nil {
+		*out = saved
+	}
+	return found, err
 }
 
 func (s *ConversationStore) ExecutionTools(ctx context.Context, claim persistence.ConversationClaim, number int) ([]persistence.ConversationToolExecution, error) {

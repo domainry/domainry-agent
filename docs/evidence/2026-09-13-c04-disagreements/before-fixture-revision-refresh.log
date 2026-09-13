@@ -1,0 +1,7 @@
+ok  	github.com/domainry/domainry-agent/internal/application	1.394s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	2.535s
+--- FAIL: TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery (40.38s)
+    conversation_collaboration_test.go:283: POST /agent/delegations/delegation_b1a4f33640158419bf567b0a4b6472fd/decisions: status 409, want 200, body {"code":"agent.conversation.revision_conflict"}
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	40.977s
+FAIL
