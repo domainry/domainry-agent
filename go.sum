@@ -15,8 +15,8 @@ github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dlclark/regexp2 v1.11.0 h1:G/nrcoOa7ZXlpoa/91N3X7mM3r8eIlMBBJZvsz/mxKI=
 github.com/dlclark/regexp2 v1.11.0/go.mod h1:DHkYz0B9wPfa6wondMfaivmHpzrQ3v9q8cnmRbL6yW8=
-github.com/domainry/domainry-agent-sdk v0.1.15 h1:iC2Y71Iv6ZhQIcw3cmwrr3uXXHbaqvT4CFYJN4nbjV0=
-github.com/domainry/domainry-agent-sdk v0.1.15/go.mod h1:6OhkMd9ik0A7kbhakuhZZwa4gLXgKMtZLrywR7JtHz8=
+github.com/domainry/domainry-agent-sdk v0.1.16 h1:/ca4Erz1tsRSRlFSqoyklYyR43VcJT376IELyDH9jzA=
+github.com/domainry/domainry-agent-sdk v0.1.16/go.mod h1:6OhkMd9ik0A7kbhakuhZZwa4gLXgKMtZLrywR7JtHz8=
 github.com/domainry/domainry-audit v0.1.11 h1:qGMDIo4Oxjp5dH/1Dz0gFPaKRAFxACPawgXP/sa1pks=
 github.com/domainry/domainry-audit v0.1.11/go.mod h1:gnPaYjiD14tqL1ty8TX/o5RCyAZ8+5yEkq79dl5fcEI=
 github.com/domainry/domainry-audit-sdk v0.1.5 h1:aZohNPwsLT6XEfK+GrT8tQMXqF3Ih8P5LevS1wFAHGU=
