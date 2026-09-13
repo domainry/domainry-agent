@@ -28,6 +28,7 @@ export function setSession(session: AppSession | null) {
   generation++;
 }
 export function sessionScope() { return current?.mode === "identity" ? current.scope : ""; }
+export function sessionUserID() { return current?.user_id || ""; }
 
 // Web Locks serialize refresh-cookie rotation across tabs. No credential is
 // stored in localStorage, sessionStorage, a URL, or a cross-tab message.

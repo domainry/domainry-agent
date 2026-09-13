@@ -1,0 +1,100 @@
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/unlisted_run
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/prefix
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_delegation
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_execution
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_role
+--- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages (0.03s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/unlisted_run (0.00s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/prefix (0.00s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_delegation (0.00s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_execution (0.00s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_role (0.00s)
+=== RUN   TestDeliveryResultEndpointRequiresExactDeliveryPublication
+--- PASS: TestDeliveryResultEndpointRequiresExactDeliveryPublication (0.00s)
+=== RUN   TestSourceReleaseUsesProducerOnlyForImmutableEvidenceAndKeepsActualDataReader
+--- PASS: TestSourceReleaseUsesProducerOnlyForImmutableEvidenceAndKeepsActualDataReader (0.00s)
+=== RUN   TestSourceReleasePersistentPublisherRoleRecheckedSeparatelyFromOriginalProof
+--- PASS: TestSourceReleasePersistentPublisherRoleRecheckedSeparatelyFromOriginalProof (0.00s)
+=== RUN   TestPublishedSourceContextUsesExactPublicationPurposeAndActualRole
+--- PASS: TestPublishedSourceContextUsesExactPublicationPurposeAndActualRole (0.00s)
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/unassigned-role
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-user
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-workspace
+--- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope (0.00s)
+    --- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/unassigned-role (0.00s)
+    --- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-user (0.00s)
+    --- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-workspace (0.00s)
+=== RUN   TestSourceReleaseFirstSharingOfMixedOldRoleRootsUsesEachImmutableAuthority
+--- PASS: TestSourceReleaseFirstSharingOfMixedOldRoleRootsUsesEachImmutableAuthority (0.00s)
+=== RUN   TestSourceReleaseCurrentRoleRootCanFirstShareInheritedOldRoleWithoutGrantingRawScope
+--- PASS: TestSourceReleaseCurrentRoleRootCanFirstShareInheritedOldRoleWithoutGrantingRawScope (0.00s)
+=== RUN   TestSourceReleasePrefixCannotExpandToUnpublishedRunOrSteps
+--- PASS: TestSourceReleasePrefixCannotExpandToUnpublishedRunOrSteps (0.00s)
+=== RUN   TestSourceReleaseSameUserDifferentRolesPreservesOriginalProofAndCurrentReader
+--- PASS: TestSourceReleaseSameUserDifferentRolesPreservesOriginalProofAndCurrentReader (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	3.782s
+=== RUN   TestLegacySourcePublisherUsesHistoricalDeliveryRunAndRejectsUnprovenActors
+=== RUN   TestLegacySourcePublisherUsesHistoricalDeliveryRunAndRejectsUnprovenActors/deliver
+=== RUN   TestLegacySourcePublisherUsesHistoricalDeliveryRunAndRejectsUnprovenActors/review_delivery
+=== RUN   TestLegacySourcePublisherUsesHistoricalDeliveryRunAndRejectsUnprovenActors/manual
+=== RUN   TestLegacySourcePublisherUsesHistoricalDeliveryRunAndRejectsUnprovenActors/unrelated-root
+=== RUN   TestLegacySourcePublisherUsesHistoricalDeliveryRunAndRejectsUnprovenActors/wrong-delegation
+--- PASS: TestLegacySourcePublisherUsesHistoricalDeliveryRunAndRejectsUnprovenActors (1.08s)
+    --- PASS: TestLegacySourcePublisherUsesHistoricalDeliveryRunAndRejectsUnprovenActors/deliver (0.22s)
+    --- PASS: TestLegacySourcePublisherUsesHistoricalDeliveryRunAndRejectsUnprovenActors/review_delivery (0.21s)
+    --- PASS: TestLegacySourcePublisherUsesHistoricalDeliveryRunAndRejectsUnprovenActors/manual (0.21s)
+    --- PASS: TestLegacySourcePublisherUsesHistoricalDeliveryRunAndRejectsUnprovenActors/unrelated-root (0.22s)
+    --- PASS: TestLegacySourcePublisherUsesHistoricalDeliveryRunAndRejectsUnprovenActors/wrong-delegation (0.22s)
+=== RUN   TestLegacyManualSourcePublicationNeedsExplicitResubmission
+--- PASS: TestLegacyManualSourcePublicationNeedsExplicitResubmission (0.24s)
+=== RUN   TestLegacySourcePublisherContractUsesActualChangeRunAndPreservesOldInputProducer
+--- PASS: TestLegacySourcePublisherContractUsesActualChangeRunAndPreservesOldInputProducer (0.19s)
+=== RUN   TestLegacyMessageSourcePublisherUsesImmutableSenderRun
+=== RUN   TestLegacyMessageSourcePublisherUsesImmutableSenderRun/recorded
+=== RUN   TestLegacyMessageSourcePublisherUsesImmutableSenderRun/legacy
+=== RUN   TestLegacyMessageSourcePublisherUsesImmutableSenderRun/wrong-role
+--- PASS: TestLegacyMessageSourcePublisherUsesImmutableSenderRun (0.64s)
+    --- PASS: TestLegacyMessageSourcePublisherUsesImmutableSenderRun/recorded (0.21s)
+    --- PASS: TestLegacyMessageSourcePublisherUsesImmutableSenderRun/legacy (0.20s)
+    --- PASS: TestLegacyMessageSourcePublisherUsesImmutableSenderRun/wrong-role (0.23s)
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/actual
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/current-metadata-changed
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/undeclared
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/other-delegation
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/incomplete
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/wrong-step
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/other-operation
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/manual-history
+--- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall (1.55s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/actual (0.19s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/current-metadata-changed (0.19s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/undeclared (0.19s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/other-delegation (0.19s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/incomplete (0.19s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/wrong-step (0.21s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/other-operation (0.20s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/manual-history (0.19s)
+=== RUN   TestSourceReleasesPersistOnlyExplicitReferencesAndBoundedPrefixes
+--- PASS: TestSourceReleasesPersistOnlyExplicitReferencesAndBoundedPrefixes (0.20s)
+=== RUN   TestSourceReleaseTransactionRollsBackWhenOriginRunIsNotOwnedByPublisher
+--- PASS: TestSourceReleaseTransactionRollsBackWhenOriginRunIsNotOwnedByPublisher (0.23s)
+=== RUN   TestSourceReleasesSameIdentityDelegationWithoutSubjectRowPublishesOriginalOldRole
+--- PASS: TestSourceReleasesSameIdentityDelegationWithoutSubjectRowPublishesOriginalOldRole (0.22s)
+=== RUN   TestSourceReleaseAdmissionPublishesRequiredMixedOldRootsAndRollsBackUnknownRoots
+--- PASS: TestSourceReleaseAdmissionPublishesRequiredMixedOldRootsAndRollsBackUnknownRoots (0.21s)
+=== RUN   TestSourceReleasesSameUserDifferentRolesPersistOriginalExecutionProvenance
+--- PASS: TestSourceReleasesSameUserDifferentRolesPersistOriginalExecutionProvenance (0.19s)
+=== RUN   TestSourceReleasesUseImmutableRunRoleWhenPublisherAndReaderUseAnotherRole
+--- PASS: TestSourceReleasesUseImmutableRunRoleWhenPublisherAndReaderUseAnotherRole (0.18s)
+=== RUN   TestPeerTransferLegacyAssignmentUsesOriginalProvenance
+=== RUN   TestPeerTransferLegacyAssignmentUsesOriginalProvenance/original_available
+=== RUN   TestPeerTransferLegacyAssignmentUsesOriginalProvenance/original_missing
+--- PASS: TestPeerTransferLegacyAssignmentUsesOriginalProvenance (0.44s)
+    --- PASS: TestPeerTransferLegacyAssignmentUsesOriginalProvenance/original_available (0.20s)
+    --- PASS: TestPeerTransferLegacyAssignmentUsesOriginalProvenance/original_missing (0.23s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	9.459s

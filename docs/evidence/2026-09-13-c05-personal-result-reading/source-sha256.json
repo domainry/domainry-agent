@@ -1,0 +1,15 @@
+{
+  "heads": {
+    "/Users/tiger/Projects/domainry-agent": "68fbfb5ce4d4b541d07afc2e3f13cf76cfb302f5"
+  },
+  "files": {
+    "internal/application/conversation_delivery_personal_sources.go": "97763ef0cdc7f169c831992f784bfcdd2badb55a30fc5313dec16f458407bbc7",
+    "internal/application/conversation_delivery_todo_sources.go": "06f94261e1b50890e7abe87831b0d75adfe4efcad7a114e565c91d851534a88e",
+    "internal/application/conversation_delivery_personal_sources_test.go": "0c80413f5ea1bf7ec99d0322078e8d490faafcffe54096b369a81d383596148b",
+    "internal/application/conversation_sources.go": "a97323d733076e4de3f808e4f3836e38c315857eea01384bce7a5c6fcea3c12d",
+    "internal/assembly/web/conversation_delivery_personal_permissions_test.go": "0d16c68f461860c71c96af38e8695a53831acec0e40884b00277c10875d716f2",
+    "../domainry-agent-sdk/conversation_personal_tools.go": "47c5b6fa2f18a34e2eb30ec9fda8e1397f461bb950455d76ec9960dafced908b",
+    "internal/application/conversation_todo.go": "66ac9ea481caae582534c9da691b919e1f2cc8d48f646a46d08c5a5291e18cb0",
+    "internal/application/conversation_personal_tools.go": "de2afd70394bafd29d113061cb7d421ff0b4bf2aa7c7c076312b491aff156f7d"
+  }
+}

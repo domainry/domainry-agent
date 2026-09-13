@@ -35,6 +35,12 @@ func (h *PersonalConversationHost) AuthorizeConversationToolResult(ctx context.C
 }
 
 func (audit *conversationSourceAudit) artifactToolRecord(ctx context.Context, owner agentsdk.ConversationRunReference, execution persistence.ConversationToolExecution) ([]agentsdk.ConversationRunReference, error) {
+	return audit.artifactToolResult(ctx, owner, execution, false)
+}
+
+// deliveryRead is set only after the collaboration projection authorizes the
+// saved delivery. Ordinary history/result replay retains the execution policy.
+func (audit *conversationSourceAudit) artifactToolResult(ctx context.Context, owner agentsdk.ConversationRunReference, execution persistence.ConversationToolExecution, deliveryRead bool) ([]agentsdk.ConversationRunReference, error) {
 	definition, ok := artifactTool(execution.Call.Name)
 	if !ok || conversationDigest(definition) != conversationDigest(execution.Definition) {
 		return nil, conversationFailure("conflict", "tool_changed")
@@ -45,26 +51,48 @@ func (audit *conversationSourceAudit) artifactToolRecord(ctx context.Context, ow
 		return nil, conversationFailure("unavailable", "artifacts_unavailable")
 	}
 	request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: execution.Step, Call: execution.Call, Definition: definition}
-	decision, err := audit.s.authorizeConversationTool(ctx, policy, request)
-	if err != nil {
-		return nil, err
-	}
-	if !decision.Granted {
-		return nil, conversationFailure("forbidden", "tool_access_denied")
-	}
-	if definition.Key == "artifact_edit" || definition.Key == "artifact_export" {
-		request = artifactReadAuthorizationRequest(request)
-		decision, err = audit.s.authorizeConversationTool(ctx, policy, request)
+	var err error
+	if !deliveryRead {
+		decision, err := audit.s.authorizeConversationTool(ctx, policy, request)
 		if err != nil {
 			return nil, err
 		}
 		if !decision.Granted {
 			return nil, conversationFailure("forbidden", "tool_access_denied")
 		}
+		if definition.Key == "artifact_edit" || definition.Key == "artifact_export" {
+			request = artifactReadAuthorizationRequest(request)
+			decision, err := audit.s.authorizeConversationTool(ctx, policy, request)
+			if err != nil {
+				return nil, err
+			}
+			if !decision.Granted {
+				return nil, conversationFailure("forbidden", "tool_access_denied")
+			}
+		}
+	} else if definition.Effect != "write" {
+		// Saved enumeration results still require enumeration access. The
+		// producer's execution profile is irrelevant to the reader's grant.
+		var args any
+		if err := decodeArtifactToolResult([]byte(request.Call.Arguments), &args); err != nil {
+			return nil, err
+		}
+		if _, err := audit.s.artifactAccess(ctx, audit.a, definition.Key, args); err != nil {
+			return nil, err
+		}
 	}
 	var roots []agentsdk.ConversationRunReference
 	check := func(meta agentsdk.ConversationArtifact) (persistence.ConversationArtifactRecord, error) {
-		record, err := repo.ArtifactRecord(ctx, meta.ID, meta.Version, audit.a)
+		reader := repo
+		if deliveryRead {
+			// Knowledge owns current read authorization and owner-scoped access;
+			// reading never acquires a mutation lease or repeats the operation.
+			reader, err = audit.s.artifactAccess(ctx, audit.a, "artifact_read", map[string]any{"id": meta.ID, "version": meta.Version})
+			if err != nil {
+				return persistence.ConversationArtifactRecord{}, err
+			}
+		}
+		record, err := reader.ArtifactRecord(ctx, meta.ID, meta.Version, audit.a)
 		if err != nil {
 			return record, err
 		}
@@ -86,13 +114,13 @@ func (audit *conversationSourceAudit) artifactToolRecord(ctx context.Context, ow
 		if execution.Result.ResourceID != result.Artifact.ID {
 			return nil, conversationFailure("conflict", "artifact_result_invalid")
 		}
-		if definition.Key == "artifact_create" {
+		if definition.Key == "artifact_create" && !deliveryRead {
 			// A creation receipt becomes a reference to a saved resource. Its
 			// later disclosure also requires read access to that exact version.
 			read, _ := artifactTool("artifact_read")
 			request.Definition = read
 			request.Call = agentsdk.ConversationToolCall{ID: execution.Call.ID, Name: read.Key, Arguments: conversationJSONText(map[string]any{"id": result.Artifact.ID, "version": result.Artifact.Version})}
-			decision, err = audit.s.authorizeConversationTool(ctx, policy, request)
+			decision, err := audit.s.authorizeConversationTool(ctx, policy, request)
 			if err != nil {
 				return nil, err
 			}
@@ -154,6 +182,12 @@ func (audit *conversationSourceAudit) artifactToolRecord(ctx context.Context, ow
 		}
 		if err = decodeArtifactToolResult(execution.Result.Content, &result); err != nil || json.Unmarshal([]byte(execution.Call.Arguments), &args) != nil || args.ID != result.Export.ArtifactID || args.Version != result.Export.Version || args.Format != result.Export.Format || execution.Result.ResourceID != args.ID {
 			return nil, conversationFailure("conflict", "artifact_result_invalid")
+		}
+		if deliveryRead {
+			repo, err = audit.s.artifactAccess(ctx, audit.a, "artifact_read", map[string]any{"id": args.ID, "version": args.Version})
+			if err != nil {
+				return nil, err
+			}
 		}
 		metadata, err := repo.ArtifactExport(ctx, result.Export.ID, audit.a)
 		if err != nil {

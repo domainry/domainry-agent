@@ -1,0 +1,6 @@
+=== RUN   TestPeerSharedDocumentsUseExplicitKnowledgeCopyAndCurrentReadPermission
+    conversation_shared_documents_test.go:99: open Agent module: datasource requires a document provider and explicit response mappings
+--- FAIL: TestPeerSharedDocumentsUseExplicitKnowledgeCopyAndCurrentReadPermission (0.28s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	1.421s
+FAIL

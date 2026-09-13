@@ -76,20 +76,29 @@ func (s *ConversationService) authorizeConversationRecord(ctx context.Context, c
 			return err
 		}
 	}
-	if err = s.reauthorizeReadDependencies(ctx, source, a, current, seen, recipient); err != nil {
+	if err = s.reauthorizeReadDependencies(ctx, agentsdk.ConversationRunReference{ConversationID: conversationID, RunID: runID}, source, a, current, seen, recipient); err != nil {
 		return err
 	}
 	seen[key] = true
 	return nil
 }
 
-func (s *ConversationService) reauthorizeReadDependencies(ctx context.Context, source persistence.ConversationToolExecution, a agentsdk.ConversationAuthority, current map[string]conversationCompiledTool, seen map[string]bool, recipient string) error {
+func (s *ConversationService) reauthorizeReadDependencies(ctx context.Context, owner agentsdk.ConversationRunReference, source persistence.ConversationToolExecution, a agentsdk.ConversationAuthority, current map[string]conversationCompiledTool, seen map[string]bool, recipient string) error {
 	if source.Result == nil || source.Result.Status != "completed" {
 		return nil
+	}
+	if _, known := scheduleResultReadDefinition(source.Call.Name); known {
+		_, err := s.sourceAudit(a, recipient).scheduleToolRecord(ctx, owner, source)
+		return err
 	}
 	switch source.Call.Name {
 	case "history_search", "history_read":
 		_, err := s.sourceAudit(a, recipient).record(ctx, agentsdk.ConversationRunReference{}, source)
+		return err
+	case "task_start", "task_get", "task_list", "task_cancel", "task_resume":
+		// Task projections contain their own source input, execution and
+		// artifacts. A control grant alone cannot release those dependencies.
+		_, err := s.sourceAudit(a, recipient).taskToolRecord(ctx, owner, source)
 		return err
 	case "tool_result_read":
 		var previous agentsdk.ConversationResultRead
@@ -172,14 +181,7 @@ func (s *ConversationService) readConversationExecution(ctx context.Context, in 
 			}
 			return executionReadFailure(err)
 		}
-		entry := agentsdk.ConversationExecutionEntry{Step: source.Step, CallID: source.Call.ID, Tool: source.Call.Name, RecordHash: conversationRecordHash(source), State: source.State}
-		if source.Result != nil {
-			entry.Status, entry.ResourceID, entry.ErrorCode = source.Result.Status, source.Result.ResourceID, source.Result.ErrorCode
-			entry.Completion = source.Result.Completion
-			if source.State == "completed" {
-				entry.Reference = &agentsdk.ConversationResultReference{ConversationID: args.ConversationID, RunID: args.RunID, Step: source.Step, CallID: source.Call.ID, SHA256: conversationDigest(source.Result)}
-			}
-		}
+		entry := conversationExecutionEntry(args.ConversationID, args.RunID, source)
 		out.Items = append(out.Items, entry)
 	}
 	result, err := personalToolResult(out)
@@ -190,4 +192,16 @@ func (s *ConversationService) readConversationExecution(ctx context.Context, in 
 		return personalToolFailure("execution_read_exceeded")
 	}
 	return result
+}
+
+func conversationExecutionEntry(conversationID, runID string, source persistence.ConversationToolExecution) agentsdk.ConversationExecutionEntry {
+	entry := agentsdk.ConversationExecutionEntry{Step: source.Step, CallID: source.Call.ID, Tool: source.Call.Name, RecordHash: conversationRecordHash(source), State: source.State}
+	if source.Result != nil {
+		entry.Status, entry.ResourceID, entry.ErrorCode = source.Result.Status, source.Result.ResourceID, source.Result.ErrorCode
+		entry.Completion = source.Result.Completion
+		if source.State == "completed" {
+			entry.Reference = &agentsdk.ConversationResultReference{ConversationID: conversationID, RunID: runID, Step: source.Step, CallID: source.Call.ID, SHA256: conversationDigest(source.Result)}
+		}
+	}
+	return entry
 }

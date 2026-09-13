@@ -1,5 +1,7 @@
 # N02–N03 分析职责边界
 
+2026-09-13 C05 增量：[独立成果读取](testing-2026-09-13-c05-report-and-receipts.md)接入 Analysis 的目录／结果阅读授权及读取凭证，仍核对当前资料范围、规格、字段和来源版本；本页下述执行与原结果回放权限不变。
+
 N02 已完成 Report owner／Runtime 宿主、Tools／Agent／产品组合和完整表格文件数据集。三次增量分别见[完整结构化表格接收端](testing-2026-09-12-n02-analysis-table-contract.md)、[工具与产品验收](testing-2026-09-12-n02-analysis-tools.md)和[真实文件数据链验收](testing-2026-09-12-n02-analysis-table-files.md)。
 
 Report 通过可选 `AnalysisTableHost` 注入独立 `AnalysisTableSource`，不要求来源实现 SQL。Report 负责完整流的精确计算和行数／单元格摘要／当前权限／前后版本核对；来源服务负责文件解析、原件／工作表版本及数据授权。Knowledge Base Connector 现已提供受信文档目录和版本化分页读取，产品可同时发现 `business_object` 与配置允许的 `table_file`；不恢复 Agent 本地解析，也不把检索片段当全量数据。

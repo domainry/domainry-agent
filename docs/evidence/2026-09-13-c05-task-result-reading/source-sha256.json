@@ -1,0 +1,20 @@
+{
+  "heads": {
+    "/Users/tiger/Projects/domainry-agent": "68fbfb5ce4d4b541d07afc2e3f13cf76cfb302f5"
+  },
+  "files": {
+    "internal/application/conversation_delivery_task_sources.go": "c10cfe0bd62556b79927bc0ef1b331ec7300dc94f7996eb0d3815524353f1079",
+    "internal/application/conversation_delivery_task_sources_test.go": "730a28b7142b60145d8b3c81ecbc76f0d59c8f62bb4d049a71ff8318b69df073",
+    "internal/assembly/web/conversation_delivery_task_permissions_test.go": "7eb89b38685d46b28689e05a59b2d4ce79eee6f7c0b2840e986a427552174d33",
+    "internal/application/conversation_delivery_personal_sources.go": "dbb55a235cc907f80ca667e1d2453e7e4ce4d1f874c027062a71b530d679a5e5",
+    "internal/application/conversation_delivery_personal_sources_test.go": "0c80413f5ea1bf7ec99d0322078e8d490faafcffe54096b369a81d383596148b",
+    "internal/application/conversation_sources.go": "702ced98b0d4d8955a64e1a35b23e594556bdd9cabd569c081c67306c9d45b75",
+    "internal/application/conversation_execution_read.go": "68c66fc1559e4b7bc23e80d5dc2a8ef3f7bf1b958af1d393d7dff8c0d9e06c78",
+    "internal/application/conversation_execution.go": "fe1dcc894d3c02275494035301a4456c6e0ab5ffa6f2045e2a31953c911ea72f",
+    "internal/application/conversation_tasks.go": "22b8ab4944b7937c9e99322f204b496e83fbb675d7f5d9464eb212cba794d6ab",
+    "internal/assembly/web/conversation_task_start_test.go": "44bce35590c99472e53f80e4adc0af90ed18b2d8b3637a0f001834c6d8ee210a",
+    "../domainry-agent-sdk/conversation_task.go": "382cac0ef0565082c83b3cb8a3773317f065bd320bb4cdc4a5d995999f771387",
+    "../domainry-agent-sdk/conversation_personal_tools.go": "47c5b6fa2f18a34e2eb30ec9fda8e1397f461bb950455d76ec9960dafced908b",
+    "../domainry-agent-sdk/persistence/conversation_execution.go": "71ff5ea7e240d93f09898a890760c706526e71e9c3418edadf3325221ccf91cf"
+  }
+}

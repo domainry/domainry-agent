@@ -1,0 +1,10 @@
+=== RUN   TestPeerHistoryDeliveryReadsOriginalMessagesAndExecutionAfterToolRevocation
+    conversation_delivery_history_permissions_test.go:214: Actual history search/read, execution index/result slice, current data permissions, immutable pages, revocation and restart verified
+--- PASS: TestPeerHistoryDeliveryReadsOriginalMessagesAndExecutionAfterToolRevocation (4.59s)
+=== RUN   TestPeerTaskDeliveryReadsOriginalReceiptsAfterControlRevocation
+    conversation_delivery_task_permissions_test.go:205: Actual task start/list/get/cancel/resume, delegated task data permission, original current/history receipts and restart verified
+--- PASS: TestPeerTaskDeliveryReadsOriginalReceiptsAfterControlRevocation (4.45s)
+=== RUN   TestCompactedResultReadThroughIdentityHTTP
+--- PASS: TestCompactedResultReadThroughIdentityHTTP (1.25s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	10.750s

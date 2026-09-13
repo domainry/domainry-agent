@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-tools/module_test [github.com/domainry/domainry-tools/module.test]
+../domainry-tools/module/account_write_result_read_test.go:13:2: "github.com/domainry/domainry-tools-sdk" imported as sdk and not used
+FAIL	github.com/domainry/domainry-tools/module [build failed]
+FAIL

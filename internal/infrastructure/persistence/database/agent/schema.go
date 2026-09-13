@@ -163,7 +163,23 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, attachments, attachmentCleanup, libraries, documents, datasources, parses, retired, attachmentIndex, tasks, scheduledTasks, followUps, subjects, capacity, collaboration, agreements, assignments, deliveries, disagreements}, nil
+	agentSharing, err := conversationAgentSharingMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	participants, err := conversationParticipantsMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	subjectsBinding, err := conversationDelegationSubjectsMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	sourceReleases, err := conversationSourceReleasesMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, attachments, attachmentCleanup, libraries, documents, datasources, parses, retired, attachmentIndex, tasks, scheduledTasks, followUps, subjects, capacity, collaboration, agreements, assignments, deliveries, disagreements, agentSharing, participants, subjectsBinding, sourceReleases}, nil
 }
 
 func workerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {

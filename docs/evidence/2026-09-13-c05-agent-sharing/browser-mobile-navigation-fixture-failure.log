@@ -1,0 +1,22 @@
+=== RUN   TestSharedAgentHTTPUsesActualCallerAndStopsAfterGrantRevocation
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 20000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: 'Agent 协作 目录、委派与沟通', exact: true })[22m
+
+    at /Users/tiger/Projects/domainry-agent/frontend/tests/agent-sharing.browser.mjs:55:73 {
+  log: [
+    "  - waiting for getByRole('button', { name: 'Agent 协作 目录、委派与沟通', exact: true })"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.22.0
+    conversation_agent_sharing_test.go:265: exit status 1
+--- FAIL: TestSharedAgentHTTPUsesActualCallerAndStopsAfterGrantRevocation (34.91s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	36.214s
+FAIL

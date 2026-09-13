@@ -1,0 +1,56 @@
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/unlisted_run
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/prefix
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_delegation
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_execution
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_role
+--- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages (0.01s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/unlisted_run (0.00s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/prefix (0.00s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_delegation (0.00s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_execution (0.00s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_role (0.00s)
+=== RUN   TestSourceReleaseUsesProducerOnlyForImmutableEvidenceAndKeepsActualDataReader
+--- PASS: TestSourceReleaseUsesProducerOnlyForImmutableEvidenceAndKeepsActualDataReader (0.00s)
+=== RUN   TestSourceReleasePersistentPublisherRoleRecheckedSeparatelyFromOriginalProof
+--- PASS: TestSourceReleasePersistentPublisherRoleRecheckedSeparatelyFromOriginalProof (0.00s)
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/unassigned-role
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-user
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-workspace
+--- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope (0.00s)
+    --- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/unassigned-role (0.00s)
+    --- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-user (0.00s)
+    --- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-workspace (0.00s)
+=== RUN   TestSourceReleaseFirstSharingOfMixedOldRoleRootsUsesEachImmutableAuthority
+--- PASS: TestSourceReleaseFirstSharingOfMixedOldRoleRootsUsesEachImmutableAuthority (0.00s)
+=== RUN   TestSourceReleaseCurrentRoleRootCanFirstShareInheritedOldRoleWithoutGrantingRawScope
+--- PASS: TestSourceReleaseCurrentRoleRootCanFirstShareInheritedOldRoleWithoutGrantingRawScope (0.00s)
+=== RUN   TestSourceReleasePrefixCannotExpandToUnpublishedRunOrSteps
+--- PASS: TestSourceReleasePrefixCannotExpandToUnpublishedRunOrSteps (0.00s)
+=== RUN   TestSourceReleaseSameUserDifferentRolesPreservesOriginalProofAndCurrentReader
+--- PASS: TestSourceReleaseSameUserDifferentRolesPreservesOriginalProofAndCurrentReader (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.473s
+=== RUN   TestDelegationSameIdentityAuthorityLookupPreservesOriginalRoleForNewReaders
+--- PASS: TestDelegationSameIdentityAuthorityLookupPreservesOriginalRoleForNewReaders (0.17s)
+=== RUN   TestSourceReleasesPersistOnlyExplicitReferencesAndBoundedPrefixes
+--- PASS: TestSourceReleasesPersistOnlyExplicitReferencesAndBoundedPrefixes (0.21s)
+=== RUN   TestSourceReleaseTransactionRollsBackWhenOriginRunIsNotOwnedByPublisher
+--- PASS: TestSourceReleaseTransactionRollsBackWhenOriginRunIsNotOwnedByPublisher (0.17s)
+=== RUN   TestSourceReleasesSameIdentityDelegationWithoutSubjectRowPublishesOriginalOldRole
+--- PASS: TestSourceReleasesSameIdentityDelegationWithoutSubjectRowPublishesOriginalOldRole (0.17s)
+=== RUN   TestSourceReleaseAdmissionPublishesRequiredMixedOldRootsAndRollsBackUnknownRoots
+--- PASS: TestSourceReleaseAdmissionPublishesRequiredMixedOldRootsAndRollsBackUnknownRoots (0.18s)
+=== RUN   TestSourceReleasesSameUserDifferentRolesPersistOriginalExecutionProvenance
+--- PASS: TestSourceReleasesSameUserDifferentRolesPersistOriginalExecutionProvenance (0.18s)
+=== RUN   TestSourceReleasesUseImmutableRunRoleWhenPublisherAndReaderUseAnotherRole
+--- PASS: TestSourceReleasesUseImmutableRunRoleWhenPublisherAndReaderUseAnotherRole (0.16s)
+=== RUN   TestPeerTransferLegacyAssignmentUsesOriginalProvenance
+=== RUN   TestPeerTransferLegacyAssignmentUsesOriginalProvenance/original_available
+=== RUN   TestPeerTransferLegacyAssignmentUsesOriginalProvenance/original_missing
+--- PASS: TestPeerTransferLegacyAssignmentUsesOriginalProvenance (0.38s)
+    --- PASS: TestPeerTransferLegacyAssignmentUsesOriginalProvenance/original_available (0.19s)
+    --- PASS: TestPeerTransferLegacyAssignmentUsesOriginalProvenance/original_missing (0.19s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	3.406s

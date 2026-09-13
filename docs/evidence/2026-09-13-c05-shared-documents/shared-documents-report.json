@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "realChrome": true,
+  "realIdentityAndKnowledge": true,
+  "scenarios": [
+    "select exact library file version and send explicit reference",
+    "download original independent attachment copy",
+    "share revocation disables new sharing",
+    "read revocation clears references and related message",
+    "restoration and refresh recover persisted reference",
+    "narrow viewport and blur clear"
+  ],
+  "sends": [
+    {
+      "to_agent_id": "agent_92ded6dbaa9d4f534164ffad19bcde4b",
+      "content": "浏览器明确共享这份资料，请核对原件。",
+      "brief_version": 1,
+      "agreement_revision": 1,
+      "kind": "message",
+      "delivery_mode": "next_step",
+      "documents": [
+        {
+          "library_id": "lib_41f6db3b4702093dfa788ecd63a7c163",
+          "document_id": "kdoc_a5c2cef3a1de4cb19ff4dc109f7cd82c",
+          "revision": 5,
+          "sha256": "b94e735f7500b4f695ad9df3864428fde77cb7c1d7bbaec1a337bbbe7677d3e8"
+        }
+      ],
+      "client_id": "a8a4f464-803f-43ca-ae3c-26d9ed4b34be"
+    }
+  ],
+  "errors": []
+}

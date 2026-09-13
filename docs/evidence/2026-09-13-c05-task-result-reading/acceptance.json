@@ -1,0 +1,33 @@
+{
+  "phase": "C05 independent task receipts and nested task data reading",
+  "phaseComplete": true,
+  "C05Complete": false,
+  "completedItems": 4,
+  "totalItems": 25,
+  "operations": [
+    "task_start",
+    "task_get",
+    "task_list",
+    "task_cancel",
+    "task_resume"
+  ],
+  "agentRealHTTP": true,
+  "racePassed": true,
+  "sameOriginalUserBoundary": true,
+  "taskDetailsRequireCurrentExecutionRead": true,
+  "rawResultAndRecoveryCheckNestedTaskSources": true,
+  "doesNotInvokeTaskControl": true,
+  "remainingC05": [
+    "history/execution owner read strategies",
+    "cross-user/role participants and execution subjects"
+  ],
+  "logFiles": [
+    "agent-application-full.log",
+    "agent-http-final.log",
+    "agent-http-regression.log",
+    "agent-race.log",
+    "agent-owner-artifact.log",
+    "agent-http-route-fixture-failure.log",
+    "agent-http-busy-fixture-failure.log"
+  ]
+}

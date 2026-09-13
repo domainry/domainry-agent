@@ -43,6 +43,21 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 			return peers.ConversationDisagreementHistory(ctx, r.DelegationID, r.DisagreementID, r.AgreementBefore, a)
 		case "delegations_deliveries":
 			return peers.ConversationDeliveryHistory(ctx, r.DelegationID, r.AgreementBefore, a)
+		case "delegations_result":
+			reader, ok := s.(agentsdk.ConversationDeliveryResultReader)
+			if !ok {
+				return nil, conversationFailure("unavailable", "result_read_unavailable")
+			}
+			return reader.ReadConversationDeliveryResult(ctx, r.DelegationID, r.DeliveryResultRead, a)
+		case "delegations_artifact", "delegations_export":
+			reader, ok := s.(agentsdk.ConversationDeliveryArtifactReader)
+			if !ok {
+				return nil, conversationFailure("unavailable", "artifacts_unavailable")
+			}
+			if op == "delegations_export" {
+				return reader.DownloadConversationDeliveryArtifact(ctx, r.DelegationID, r.DeliveryArtifactRead, a)
+			}
+			return reader.ReadConversationDeliveryArtifact(ctx, r.DelegationID, r.DeliveryArtifactRead, a)
 		case "delegations_get":
 			return peers.ConversationDelegation(ctx, r.DelegationID, a)
 		case "delegations_update":

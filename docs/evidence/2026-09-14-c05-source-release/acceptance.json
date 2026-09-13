@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-14",
+  "item": "C05",
+  "complete": false,
+  "completed_items": 4,
+  "total_items": 25,
+  "verified": [
+    "Agent-originated cross-subject delegation after required tool confirmation",
+    "receiver current bound role",
+    "Agent-originated message with source",
+    "automatic clock receipt delivery",
+    "issuer account receipt reading and acceptance",
+    "current reader and producer revocation",
+    "restart",
+    "raw private conversation isolation",
+    "unpublished receipt denial",
+    "source prefix bounds",
+    "private Todo data checked as actual reader",
+    "atomic release rollback",
+    "producer release erasure"
+  ],
+  "pending": [
+    "other professional cross-subject sources",
+    "full execution detail sharing",
+    "cross-subject transfer",
+    "multi-owner dependencies",
+    "participant execution and delivery scopes",
+    "full cross-subject subject lifecycle",
+    "whole-goal budget"
+  ]
+}

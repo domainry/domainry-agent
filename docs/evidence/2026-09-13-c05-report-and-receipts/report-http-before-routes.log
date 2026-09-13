@@ -1,0 +1,6 @@
+=== RUN   TestPeerReportDeliveryUsesReadingPolicyWithoutExecutableCatalog
+    conversation_delivery_report_permissions_test.go:205: POST /app/product/tool-settings-setup: status 404, want 200, body 404 page not found
+--- FAIL: TestPeerReportDeliveryUsesReadingPolicyWithoutExecutableCatalog (0.68s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	1.460s
+FAIL

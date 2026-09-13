@@ -1,0 +1,38 @@
+{
+  "date": "2026-09-14",
+  "item": "C05",
+  "complete": false,
+  "completed_items": 4,
+  "total_items": 25,
+  "verified": [
+    "bound issuer and executor roles remain separate for the same user",
+    "source and message contexts preserve the original producer role",
+    "publication proof provenance comes from the immutable run authority",
+    "server-only snapshot authority restores the reader original run in the source graph",
+    "unpublished third role and foreign snapshot identity are denied",
+    "Identity scoped function grants are unique while data and audit policies are preserved",
+    "actual assigned professional role and results-only browser role coexist",
+    "actual Agent dispatch after required account confirmation and automatic four-receipt delivery",
+    "issuer account HTTP acceptance",
+    "exact original report and analysis total 70",
+    "ordinary raw execution source denial and unpublished receipt denial",
+    "restart",
+    "field and row denial while original issuer and executor roles remain assigned",
+    "professional role removal denies original receipt reading",
+    "previous cross-user HTTP and professional Runtime regression",
+    "app/source/transport/Identity package and new source/Identity race verification"
+  ],
+  "pending": [
+    "first sharing of unpublished sources produced by another old role",
+    "mixed-role and multi-owner root source graphs",
+    "remaining professional source sharing and automatic delivery",
+    "participant execution, delivery and management scopes",
+    "full execution detail sharing",
+    "cross-subject transfer and lifecycle",
+    "C06-C07 and later TODO items"
+  ],
+  "models": "deterministic wire fixture; real Identity/Runtime/Report/Tools/SQLite; issuer acceptance is an account action",
+  "database": "SQLite",
+  "source_files": 49,
+  "business_rpc_contract_sha256": "0975df00be8381ea7a3ec45a9b2aa68dedcd999c8c6901bd1ad8f82466374a53"
+}

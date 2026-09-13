@@ -1,0 +1,45 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
+const {chromium}=createRequire(import.meta.url)(process.env.AGENT_PLAYWRIGHT_MODULE||'playwright');
+const origin=process.env.AGENT_UI_ORIGIN,output=process.env.AGENT_UI_TEST_OUTPUT;
+assert.ok(origin&&output);await mkdir(output,{recursive:true});
+const browser=await chromium.launch({headless:true,channel:'chrome'});
+const page=await browser.newPage({viewport:{width:1360,height:1000}});page.setDefaultTimeout(20000);
+const errors=[],sends=[];page.on('pageerror',e=>errors.push(String(e)));page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/messages'))sends.push(r.postDataJSON());});
+const work=()=>page.getByRole('dialog',{name:'Agent 协作',exact:true});
+const change=async profile=>{const r=await page.request.post(origin+'/fixture/shared-documents?profile='+profile);assert.equal(r.status(),204);};
+try {
+ await page.goto(origin+'#'+process.env.AGENT_UI_CONVERSATION);
+ await page.getByLabel('账号',{exact:true}).fill('admin@example.com');await page.getByLabel('密码',{exact:true}).fill('Shared-Document-Changed!26');await page.getByRole('button',{name:'登录',exact:true}).click();
+ await page.getByRole('button',{name:'Agent 协作 目录、委派与沟通',exact:true}).click();
+ await work().getByRole('button',{name:'选择共享资料',exact:true}).click();
+ const picker=work().getByRole('region',{name:'共享资料选择',exact:true});
+ await picker.getByLabel('共享资料库',{exact:true}).selectOption({label:'委派共享资料库 · 共享'});
+ await picker.getByRole('button',{name:'共享资料.txt 可检索',exact:true}).click();
+ await work().getByLabel('补充信息或讨论分歧',{exact:true}).fill('浏览器明确共享这份资料，请核对原件。');
+ await work().getByRole('button',{name:'发送消息并共享引用',exact:true}).click();
+ const message=work().locator('.peer-messages > li').filter({hasText:'浏览器明确共享这份资料，请核对原件。'});
+ await message.waitFor();assert.equal(sends.length,1);assert.equal(sends[0].documents.length,1);assert.equal(sends[0].documents[0].document_id,process.env.AGENT_UI_DOCUMENT);assert.match(sends[0].documents[0].sha256,/^[a-f0-9]{64}$/);
+ await message.getByRole('button',{name:'查看共享资料（1）',exact:true}).click();
+ await message.getByText(/共享资料.txt · 版本/).waitFor();
+ const downloading=page.waitForEvent('download');await message.getByRole('button',{name:'下载共享原文件',exact:true}).click();
+ const download=await downloading;assert.equal(download.suggestedFilename(),'共享资料.txt');assert.equal(await readFile(await download.path(),'utf8'),'共享资料原件：已核对 8 家供应商。\n');
+ await change('no-share');await work().getByRole('button',{name:'选择共享资料',exact:true}).waitFor({state:'hidden'});
+ assert.ok(await work().getByRole('button',{name:'查看共享资料（1）',exact:true}).count()>0);
+ await change('no-read');await work().getByRole('button',{name:'查看共享资料（1）',exact:true}).first().waitFor({state:'hidden'});
+ assert.doesNotMatch(await work().innerText(),/浏览器明确共享这份资料|请核对这份明确共享的资料|共享资料.txt/);
+ await change('all');await message.getByRole('button',{name:'查看共享资料（1）',exact:true}).click();await message.getByText(/共享资料.txt · 版本/).waitFor();
+ await page.setViewportSize({width:390,height:844});await message.scrollIntoViewIfNeeded();
+ await page.waitForFunction(()=>{const el=document.querySelector('.collaboration-dialog'),r=el?.getBoundingClientRect();return r&&r.x>=0&&r.right<=innerWidth&&el.scrollWidth<=el.clientWidth+1;});
+ await page.screenshot({path:join(output,'shared-documents-mobile.png'),fullPage:true});
+ await page.setViewportSize({width:1360,height:1000});await page.reload();
+ await page.getByRole('button',{name:'Agent 协作 目录、委派与沟通',exact:true}).click();
+ await message.getByRole('button',{name:'查看共享资料（1）',exact:true}).click();await message.getByText(/共享资料.txt · 版本/).waitFor();
+ await page.screenshot({path:join(output,'shared-documents-desktop.png'),fullPage:true});
+ await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await message.getByText(/共享资料.txt · 版本/).waitFor({state:'hidden'});
+ assert.deepEqual(errors,[]);
+ await writeFile(join(output,'shared-documents-report.json'),JSON.stringify({passed:true,realChrome:true,realIdentityAndKnowledge:true,scenarios:['select exact library file version and send explicit reference','download original independent attachment copy','share revocation disables new sharing','read revocation clears references and related message','restoration and refresh recover persisted reference','narrow viewport and blur clear'],sends,errors},null,2));
+}catch(e){await page.screenshot({path:join(output,'shared-documents-failure.png'),fullPage:true});throw e;}
+finally{await browser.close();}

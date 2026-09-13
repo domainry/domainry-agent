@@ -1,0 +1,42 @@
+go 1.26.0
+
+use (
+	/Users/tiger/Projects/domainry-agent
+	/Users/tiger/Projects/domainry-agent-sdk
+	/Users/tiger/Projects/domainry-audit
+	/Users/tiger/Projects/domainry-audit-sdk
+	/Users/tiger/Projects/domainry-connector-sdk
+	/Users/tiger/Projects/domainry-connectors
+	/Users/tiger/Projects/domainry-data-exchange-sdk
+	/Users/tiger/Projects/domainry-identity
+	/Users/tiger/Projects/domainry-identity-bridge
+	/Users/tiger/Projects/domainry-identity-sdk
+	/Users/tiger/Projects/domainry-integration
+	/Users/tiger/Projects/domainry-integration-sdk
+	/Users/tiger/Projects/domainry-knowledge
+	/Users/tiger/Projects/domainry-lifecycle
+	/Users/tiger/Projects/domainry-lifecycle-sdk
+	/Users/tiger/Projects/domainry-metadata
+	/Users/tiger/Projects/domainry-notification
+	/Users/tiger/Projects/domainry-notification-sdk
+	/Users/tiger/Projects/domainry-report
+	/Users/tiger/Projects/domainry-report-sdk
+	/Users/tiger/Projects/domainry-runtime
+	/Users/tiger/Projects/domainry-scheduler
+	/Users/tiger/Projects/domainry-scheduler-sdk
+	/Users/tiger/Projects/domainry-todo
+	/Users/tiger/Projects/domainry-tools
+	/Users/tiger/Projects/domainry-tools-sdk
+)
+
+replace github.com/domainry/domainry-todo v0.0.0 => /Users/tiger/Projects/domainry-todo
+
+replace github.com/domainry/domainry-identity-sdk v0.1.4 => /Users/tiger/Projects/domainry-identity-sdk
+
+replace github.com/domainry/domainry-identity v0.2.3 => /Users/tiger/Projects/domainry-identity
+
+replace github.com/domainry/domainry-tools v0.0.0 => /Users/tiger/Projects/domainry-tools
+
+replace github.com/domainry/domainry-tools-sdk v0.0.0 => /Users/tiger/Projects/domainry-tools-sdk
+
+replace github.com/domainry/domainry-knowledge v0.0.0 => /Users/tiger/Projects/domainry-knowledge

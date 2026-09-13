@@ -1,0 +1,22 @@
+=== RUN   TestPeerArtifactDeliveryReadsKnowledgeVersionsWithoutMutationRights
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: 'Agent 协作 目录、委派与沟通', exact: true })[22m
+
+    at /Users/tiger/Projects/domainry-agent/frontend/tests/delivery-result.browser.mjs:39:91 {
+  log: [
+    "  - waiting for getByRole('button', { name: 'Agent 协作 目录、委派与沟通', exact: true })"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.22.0
+    conversation_delivery_artifact_permissions_test.go:280: exit status 1
+--- FAIL: TestPeerArtifactDeliveryReadsKnowledgeVersionsWithoutMutationRights (36.53s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	37.332s
+FAIL

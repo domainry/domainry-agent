@@ -1,0 +1,17 @@
+--- FAIL: TestSaaSDeliveryReaderPreservesRevisionReferenceAndCurrentDenial (0.19s)
+    conversation_delivery_result_test.go:54: source-owned request lost in signed SaaS dispatch: &{ConversationService:<nil> ConversationCollaborationService:<nil> input:{DeliveryRevision:0 ConversationResultRead:{Reference:{ConversationID: RunID: Step:0 CallID: SHA256:} Offset:0 MaxBytes:0}} authority:{Known:false RuntimeID: WorkspaceID: UserID: RoleKey:} id: calls:0 denied:false} {Reference:{ConversationID: RunID: Step:0 CallID: SHA256:} JSONText: Offset:0 NextOffset:0 TotalBytes:0 Complete:false} agent.conversation.runtime_denied
+FAIL
+FAIL	github.com/domainry/domainry-agent/remote	1.697s
+ok  	github.com/domainry/domainry-agent/server	1.381s
+ok  	github.com/domainry/domainry-agent/internal/application	1.220s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	(cached)
+ok  	github.com/domainry/domainry-agent-sdk	(cached)
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	(cached)
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	(cached)
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+FAIL

@@ -118,20 +118,44 @@ func (s *ConversationService) CreateConversationDelegation(ctx context.Context, 
 		return out, conversationFailure("forbidden", "delegation_source_invalid")
 	}
 	in.ToolRequest = peer.ToolRequest
-	agent, err := s.freezeConversationAgent(ctx, in.AgentID, a)
+	agent, executor, err := s.delegationExecutionAgent(ctx, in.AgentID, a)
 	if err != nil {
 		return out, err
 	}
-	if err = s.authorizeCollaboration(ctx, "receive", &agentsdk.ConversationDelegation{FromAgentID: from, ToAgentID: agent.ID}, a); err != nil {
+	if err := s.authorizeCollaboration(delegationExecutorContext(ctx), "receive", &agentsdk.ConversationDelegation{OwnerUserID: a.UserID, FromAgentID: from, ToAgentID: agent.ID, ExecutionSubject: executionSubject(executor)}, executor); err != nil {
 		return out, err
 	}
 	sourceAgent, err := s.freezeConversationAgent(ctx, from, a)
 	if err != nil {
 		return out, err
 	}
-	targetCtx, err := s.selectConversationAgent(ctx, agent, a)
+	targetCtx, err := s.selectConversationAgent(delegationExecutorContext(ctx), agent, executor)
 	if err != nil {
 		return out, err
+	}
+	if err := s.checkProspectiveDelegationSources(targetCtx, in.Requirements.Sources, a, executor); err != nil {
+		return out, conversationFailure("forbidden", "delegation_contract_source_unavailable")
+	}
+	if executor != a {
+		if err := s.authorizeConversationExecution(targetCtx, source.ID, "", "delegate", executor); err != nil {
+			return out, err
+		}
+		if err := s.validateDependencySources(targetCtx, in.Dependencies, "new_peer_conversation", executor); err != nil {
+			return out, err
+		}
+	}
+	if peer.RunID != "" {
+		ref := agentsdk.ConversationRunReference{ConversationID: source.ID, RunID: peer.RunID}
+		if peer.ToolRequest != nil {
+			ref.BeforeStep = peer.ToolRequest.Step + 1
+		}
+		releaseCtx, err := s.sourceReleaseContext(targetCtx, "contract", "", a, executor, []agentsdk.ConversationRunReference{ref})
+		if err != nil {
+			return out, err
+		}
+		if err := s.checkRunSources(releaseCtx, ref, executor); err != nil {
+			return out, conversationFailure("forbidden", "delegation_contract_source_unavailable")
+		}
 	}
 	if in.Budget == (agentsdk.ConversationTaskBudget{}) {
 		in.Budget = agentsdk.ConversationTaskBudget{MaxSteps: min(12, s.options.MaxSteps), MaxToolCalls: min(12, s.options.MaxToolCalls), MaxOutputBytes: min(8192, s.options.MaxOutputBytes), TimeoutSeconds: int(min(5*time.Minute, s.options.RunTimeout) / time.Second)}
@@ -142,10 +166,18 @@ func (s *ConversationService) CreateConversationDelegation(ctx context.Context, 
 			allowed = append(allowed, key)
 		}
 	}
-	task, err := s.prepareConversationTaskStart(targetCtx, agentsdk.ConversationTaskStart{Goal: in.Brief.Goal, Input: in.Input, AllowedTools: allowed, Budget: in.Budget}, a, source.ID, peer.RunID, nil)
+	authorizationConversation, authorizationRun := source.ID, peer.RunID
+	if executor.UserID != a.UserID {
+		// The recipient conversation does not exist until admission commits.
+		// Check tool grants without presenting the issuer's private conversation
+		// as an execution resource owned by the recipient.
+		authorizationConversation, authorizationRun = "", ""
+	}
+	task, err := s.prepareConversationTaskStart(targetCtx, agentsdk.ConversationTaskStart{Goal: in.Brief.Goal, Input: in.Input, AllowedTools: allowed, Budget: in.Budget}, executor, authorizationConversation, authorizationRun, nil)
 	if err != nil {
 		return out, err
 	}
+	task.SourceConversationID, task.SourceRunID = source.ID, peer.RunID
 	task.Brief = &in.Brief
 	task.StructuredInput = in.StructuredInput
 	task.MaxInputBytes = s.options.MaxInputBytes
@@ -157,7 +189,11 @@ func (s *ConversationService) CreateConversationDelegation(ctx context.Context, 
 	if err != nil {
 		return out, err
 	}
-	d, err := repo.CreateConversationDelegation(ctx, persistence.ConversationDelegationAdmission{Request: in, FromAgentID: from, SourceRunID: peer.RunID, SourceAgent: *sourceAgent, Agent: *agent, Task: task}, a)
+	admission := persistence.ConversationDelegationAdmission{Request: in, FromAgentID: from, SourceRunID: peer.RunID, SourceAgent: *sourceAgent, Agent: *agent, Task: task}
+	if agent.DelegationRoleKey != "" {
+		admission.ExecutionAuthority = &executor
+	}
+	d, err := repo.CreateConversationDelegation(ctx, admission, a)
 	if err != nil {
 		return out, err
 	}
@@ -173,6 +209,9 @@ func (s *ConversationService) projectConversationDelegation(ctx context.Context,
 	if !access.View {
 		return agentsdk.ConversationDelegationDetail{}, conversationFailure("forbidden", "collaboration_access_denied")
 	}
+	if d.OwnerUserID != "" && d.OwnerUserID != a.UserID && !delegationExecutor(d, a) {
+		return s.projectParticipantDelegation(ctx, d, access, a)
+	}
 	if !access.DeliveryRead {
 		d.Delivery = nil
 		d.Verification = nil
@@ -183,7 +222,14 @@ func (s *ConversationService) projectConversationDelegation(ctx context.Context,
 	if !access.ExecutionRead {
 		d.Handoff = nil
 	}
-	deliveryCtx := deliverySourceContext(ctx, d.ID)
+	deliveryCtx, deliveryErr := s.delegationDeliverySourceContext(ctx, d, a)
+	if deliveryErr != nil {
+		return agentsdk.ConversationDelegationDetail{}, deliveryErr
+	}
+	contractCtx, contractErr := s.delegationContractSourceContext(ctx, d, a)
+	if contractErr != nil {
+		return agentsdk.ConversationDelegationDetail{}, contractErr
+	}
 	projectDisagreementVerification(&d)
 	if err := s.projectDisagreements(deliveryCtx, &d, a, ""); err != nil {
 		return agentsdk.ConversationDelegationDetail{}, err
@@ -205,6 +251,14 @@ func (s *ConversationService) projectConversationDelegation(ctx context.Context,
 	}
 	out := agentsdk.ConversationDelegationDetail{Access: &access, ConversationDelegation: d, MessagesComplete: true, Messages: []agentsdk.ConversationAgentMessage{}}
 	out.SourceAgent = nil
+	if d.OwnerUserID != "" && d.OwnerUserID != a.UserID {
+		out.Participants = nil
+		for _, p := range d.Participants {
+			if p.UserID == a.UserID {
+				out.Participants = append(out.Participants, p)
+			}
+		}
+	}
 	if err := s.checkHandoffSources(ctx, d.Handoff, a, ""); err != nil {
 		return agentsdk.ConversationDelegationDetail{}, err
 	}
@@ -244,12 +298,12 @@ func (s *ConversationService) projectConversationDelegation(ctx context.Context,
 	}
 	audit := s.sourceAudit(a)
 	if d.InputSource != nil {
-		if _, err := audit.run(ctx, *d.InputSource); err != nil {
+		if _, err := audit.run(contractCtx, *d.InputSource); err != nil {
 			return agentsdk.ConversationDelegationDetail{}, err
 		}
 	}
 	if d.BriefSource != nil {
-		if _, err := audit.run(ctx, *d.BriefSource); err != nil {
+		if _, err := audit.run(contractCtx, *d.BriefSource); err != nil {
 			return agentsdk.ConversationDelegationDetail{}, err
 		}
 	}
@@ -270,11 +324,15 @@ func (s *ConversationService) projectConversationDelegation(ctx context.Context,
 	if dependencyErr != nil {
 		return out, dependencyErr
 	}
-	if _, err := s.repo.Get(ctx, d.SourceConversationID, a); err != nil {
-		return out, err
+	if d.OwnerUserID == "" || d.OwnerUserID == a.UserID {
+		if _, err := s.repo.Get(ctx, d.SourceConversationID, a); err != nil {
+			return out, err
+		}
 	}
-	if _, err := s.repo.Get(ctx, d.ConversationID, a); err != nil {
-		return out, err
+	if d.ExecutionSubject == nil || delegationExecutor(d, a) {
+		if _, err := s.repo.Get(ctx, d.ConversationID, a); err != nil {
+			return out, err
+		}
 	}
 	repo, err := s.collaborationRepository()
 	if err != nil {
@@ -291,11 +349,7 @@ func (s *ConversationService) projectConversationDelegation(ctx context.Context,
 		out.Messages = out.Messages[len(out.Messages)-128:]
 	}
 	if access.ExecutionRead {
-		tasks, ok := s.repo.(persistence.ConversationTaskReadRepository)
-		if !ok {
-			return out, conversationFailure("unavailable", "tasks_unavailable")
-		}
-		task, err := tasks.ConversationTask(ctx, d.TaskID, a)
+		task, err := s.delegationTaskRecord(ctx, d, a)
 		if err != nil {
 			return out, err
 		}
@@ -307,9 +361,16 @@ func (s *ConversationService) projectConversationDelegation(ctx context.Context,
 	}
 	for i := range out.Messages {
 		m := &out.Messages[i]
+		if e := s.checkSharedDocuments(ctx, m.Documents, a); e != nil {
+			m.Content = "共享资料当前不可访问或版本已变化，请重新核对资料引用。"
+			m.Documents, m.DocumentsOmitted = nil, true
+		}
 		if m.Source != nil {
-			if e := s.checkRunSources(ctx, *m.Source, a); e != nil {
+			messageCtx, e := s.messageSourceContext(ctx, *m, a)
+			if e != nil || s.checkRunSources(messageCtx, *m.Source, a) != nil {
 				m.Content = "消息来源当前无法验证，内容暂不可查看。"
+				m.DocumentsOmitted = m.DocumentsOmitted || len(m.Documents) > 0
+				m.Documents = nil
 			}
 		}
 	}
@@ -366,6 +427,9 @@ func (s *ConversationService) ConversationDelegations(ctx context.Context, conve
 	for _, d := range items {
 		detail, err := s.projectConversationDelegation(ctx, d, a)
 		if err != nil {
+			if d.OwnerUserID != "" && d.OwnerUserID != a.UserID && collaborationDenied(err) {
+				continue
+			}
 			return out, err
 		}
 		out.Items = append(out.Items, detail)
@@ -377,6 +441,9 @@ func (s *ConversationService) UpdateConversationDelegation(ctx context.Context, 
 	var out agentsdk.ConversationDelegationDetail
 	if err := s.authorize(a); err != nil {
 		return out, err
+	}
+	if in.Participants != nil && in.Action != "set_participants" {
+		return out, conversationFailure("bad_request", "delegation_participants_invalid")
 	}
 	if !conversationKey(in.ClientID) || in.ExpectedRevision < 1 || !conversationText(in.Reason, 4096, true) || in.Brief != nil && !validConversationBrief(*in.Brief) {
 		return out, conversationFailure("bad_request", "delegation_update_invalid")
@@ -400,6 +467,9 @@ func (s *ConversationService) UpdateConversationDelegation(ctx context.Context, 
 	if collaborationUpdateOperation(in) == "" {
 		return out, conversationFailure("bad_request", "delegation_action_invalid")
 	}
+	if in.Action == "set_participants" {
+		return s.updateDelegationParticipants(ctx, d, in, a)
+	}
 	if err = s.authorizeCollaboration(ctx, "view", &d, a); err != nil {
 		return out, err
 	}
@@ -420,7 +490,7 @@ func (s *ConversationService) UpdateConversationDelegation(ctx context.Context, 
 		if in.StructuredInput == nil {
 			return out, conversationFailure("bad_request", "structured_input_invalid")
 		}
-		task, err := s.conversationTaskRecord(ctx, d.TaskID, a)
+		task, err := s.delegationTaskRecord(ctx, d, a)
 		if err != nil {
 			return out, err
 		}
@@ -480,12 +550,20 @@ func (s *ConversationService) UpdateConversationDelegation(ctx context.Context, 
 			copy.Evidence = append(append([]agentsdk.ConversationRunReference{}, copy.Evidence...), agentsdk.ConversationRunReference{ConversationID: peer.ConversationID, RunID: peer.RunID, BeforeStep: peer.ToolRequest.Step + 1})
 			in.Delivery = &copy
 		}
-		if err = s.validateConversationDelivery(ctx, d, in.Delivery, a); err != nil {
+		submissionCtx, sourceErr := s.proposedDeliverySourceContext(ctx, d, in.Delivery, a)
+		if sourceErr != nil {
+			return out, sourceErr
+		}
+		if err = s.validateConversationDelivery(submissionCtx, d, in.Delivery, a); err != nil {
 			return out, err
 		}
 	}
 	if in.Action == "accept_delivery" || in.Action == "review_delivery" {
-		if err = s.validateConversationDelivery(ctx, d, d.Delivery, a); err != nil {
+		releaseCtx, err := s.delegationDeliverySourceContext(ctx, d, a)
+		if err != nil {
+			return out, err
+		}
+		if err = s.validateConversationDelivery(releaseCtx, d, d.Delivery, a); err != nil {
 			return out, err
 		}
 		if in.Review == nil {
@@ -493,7 +571,7 @@ func (s *ConversationService) UpdateConversationDelegation(ctx context.Context, 
 		}
 	}
 	if in.Action == "accept_delivery" {
-		task, err := s.conversationTaskRecord(ctx, d.TaskID, a)
+		task, err := s.delegationTaskRecord(ctx, d, a)
 		if err != nil {
 			return out, err
 		}
@@ -535,10 +613,14 @@ func (s *ConversationService) validateConversationDelivery(ctx context.Context, 
 		return conversationFailure("bad_request", "delegation_delivery_invalid")
 	}
 	for _, ref := range delivery.Evidence {
-		if _, err := s.repo.Run(ctx, ref.ConversationID, ref.RunID, a); err != nil {
+		refCtx, err := s.publishedReferenceContext(ctx, ref, a)
+		if err != nil {
 			return err
 		}
-		if err := s.checkRunSources(ctx, ref, a); err != nil {
+		if _, err := s.repo.Run(refCtx, ref.ConversationID, ref.RunID, releasedEvidenceAuthority(refCtx, ref, a)); err != nil {
+			return err
+		}
+		if err := s.checkRunSources(refCtx, ref, a); err != nil {
 			return err
 		}
 	}
@@ -575,9 +657,44 @@ func (s *ConversationService) SendConversationAgentMessage(ctx context.Context, 
 	if err = s.authorizeCollaboration(ctx, "communicate", &d, a); err != nil {
 		return out, err
 	}
+	if len(in.Documents) > 0 {
+		if err = s.authorizeCollaboration(ctx, "share", &d, a); err != nil {
+			return out, err
+		}
+		if err = s.checkSharedDocuments(ctx, in.Documents, a); err != nil {
+			return out, err
+		}
+	}
+	if d.OwnerUserID != "" && d.OwnerUserID != a.UserID && !delegationExecutor(d, a) {
+		if err = s.validateAgentSharingSubjects(ctx, a, []string{d.OwnerUserID}); err != nil {
+			return out, err
+		}
+		// The repository resolves only the already accepted recipient and its
+		// frozen configuration. The sending participant never becomes executor.
+		in.ExecutionAgent = nil
+		out, err = repo.SendConversationAgentMessage(ctx, id, in, peer.ConversationID, a)
+		if err == nil {
+			out.ConversationID = ""
+			s.signalConversationTasks()
+			s.signal()
+		}
+		return out, err
+	}
 	in.ExecutionAgent = nil
+	recipient := a
+	if executionRepo, ok := s.repo.(persistence.ConversationDelegationExecutionRepository); ok {
+		subjects, err := executionRepo.ConversationDelegationAuthorities(ctx, d.ID, a)
+		if err != nil {
+			return out, err
+		}
+		if in.ToAgentID == d.ToAgentID {
+			recipient = subjects.Executor
+		} else if in.ToAgentID == d.FromAgentID {
+			recipient = subjects.Issuer
+		}
+	}
 	if in.ToAgentID == d.ToAgentID {
-		task, err := s.conversationTaskRecord(ctx, d.TaskID, a)
+		task, err := s.delegationTaskRecord(ctx, d, a)
 		if err != nil {
 			return out, err
 		}
@@ -588,7 +705,7 @@ func (s *ConversationService) SendConversationAgentMessage(ctx context.Context, 
 	if in.ExecutionAgent == nil {
 		return out, conversationFailure("forbidden", "agent_message_recipient_invalid")
 	}
-	if _, err = s.selectConversationAgent(ctx, in.ExecutionAgent, a); err != nil {
+	if _, err = s.selectConversationAgent(delegationExecutorContext(ctx), in.ExecutionAgent, recipient); err != nil {
 		return out, err
 	}
 	out, err = repo.SendConversationAgentMessage(ctx, id, in, peer.ConversationID, a)

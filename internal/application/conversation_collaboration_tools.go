@@ -157,6 +157,13 @@ func (h *collaborationToolHost) InvokeConversationTool(ctx context.Context, in a
 			result, err = h.service.ConversationDelegation(ctx, args.ID, in.Authority)
 			resourceID = args.ID
 		}
+	case "delegation_source_read":
+		var args agentsdk.ConversationDelegationSourceRead
+		err = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		if err == nil {
+			result, err = h.service.readDelegationSource(ctx, in, args)
+			resourceID = args.ID
+		}
 	case "agent_message":
 		var args agentsdk.ConversationAgentToolMessage
 		err = json.Unmarshal([]byte(in.Call.Arguments), &args)

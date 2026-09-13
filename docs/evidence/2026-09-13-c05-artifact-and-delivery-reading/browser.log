@@ -1,0 +1,5 @@
+=== RUN   TestPeerArtifactDeliveryReadsKnowledgeVersionsWithoutMutationRights
+    conversation_delivery_artifact_permissions_test.go:283: real Knowledge/Identity/Tools/Agent/SQLite: three confirmed writes and four saved receipts; delivery reading survives mutation grant revocation/restart, enforces tool preferences and artifact read revocation, raw execution stays hidden
+--- PASS: TestPeerArtifactDeliveryReadsKnowledgeVersionsWithoutMutationRights (17.54s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	17.973s

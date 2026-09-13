@@ -1,0 +1,4 @@
+=== RUN   TestPeerSharedDocumentsUseExplicitKnowledgeCopyAndCurrentReadPermission
+--- PASS: TestPeerSharedDocumentsUseExplicitKnowledgeCopyAndCurrentReadPermission (13.74s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	14.510s

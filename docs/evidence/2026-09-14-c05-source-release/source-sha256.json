@@ -1,0 +1,23 @@
+{
+  "/Users/tiger/Projects/domainry-agent-sdk/persistence/conversation_collaboration.go": "691f89c9ebea22b97bda7030754711abeaf345118ef1971c50354b15b9c0b0e3",
+  "/Users/tiger/Projects/domainry-agent/internal/application/conversation_shared_sources.go": "b294fdc39348ac415e75bc09c21b05eded12fb1cfde42aecc7297ed57cb19b86",
+  "/Users/tiger/Projects/domainry-agent/internal/application/conversation_shared_sources_test.go": "c4b59dc72d9d1d408ad414388747a6fce3e690796a028e48ab75ca5587812126",
+  "/Users/tiger/Projects/domainry-agent/internal/application/conversation_sources.go": "6d35adc89958f742410833accca6c77a2f19df0948fe1113887e10c71a4eb2ce",
+  "/Users/tiger/Projects/domainry-agent/internal/application/conversation_delegations.go": "2ebce8a238092f314885e893b07d721a9a15f41d498317fc5972ff85cbb3041f",
+  "/Users/tiger/Projects/domainry-agent/internal/application/conversation_verification.go": "26e6afbbbfb842aa2312582a32a93b857c363ca585611338bb207af88bb79ed7",
+  "/Users/tiger/Projects/domainry-agent/internal/application/conversation_peer_inbox.go": "9c1edbb1a0f8c57cf9e1eba3e8c0ee3399a80a3ec86179772a40c5bc8e1c154d",
+  "/Users/tiger/Projects/domainry-agent/internal/application/conversation_delivery_result.go": "6429ee31d0a7c6697c18eb63b8bc66efdda6f86fa437d92dd738554c4e771bd3",
+  "/Users/tiger/Projects/domainry-agent/internal/application/conversation_delivery_personal_sources.go": "9220689b9e5f6ca463eeb8bc3b8cb454fb587c5ce3af108d70989a5013ea8027",
+  "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_source_release_test.go": "a403244605170cc0dff9a5f2968f2b335e73b3b456f217d6fd2e3f4c34054589",
+  "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_source_releases_store.go": "189a35e76fa97dc0ff1a94ac034727f77dd241bb7962683b543aad0fa053770a",
+  "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_source_releases_schema.go": "e96880bfb4808af21cb089f07c2032e5a2a0d8a62a4449f17756d70f85caec6a",
+  "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_source_releases_store_test.go": "bb86e605f7f1b21b319d568defe6ce5c4468108affb4c422926e9a8d8735d71a",
+  "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_delegation_store.go": "ab9965ba0495056dcc5b2a874ba712437418b6b7ccd4c542f96984443285084d",
+  "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_peer_messages_store.go": "b2bb015eb37ace3ae6d59536d840b67306855aa617f1afc139210ef22b904ed8",
+  "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_verification_store.go": "20c24d43617ea30e047fc2820d53ce1bb453476e1c37aceb753ffc9aa6234c73",
+  "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/subject_lifecycle.go": "383a7281eef49b80df2be3039ab8698a41bbd040f28135a80ae67cdb17626619",
+  "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/schema.go": "9f82f26db6f7e2de7058f7a47d29285dc4329812b97bdec6a1be94f8611e4fbf",
+  "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/schema_test.go": "56d694b865d3d6951fd5e4cc3ec12b0d4e863e7ad92829b02aa961c3fb5574c8",
+  "/Users/tiger/Projects/domainry-agent/docs/testing-2026-09-14-c05-source-release.md": "7aaf5dc03c0d2d38cbef9df22d129b7895ec3f330dfba4c1bff97ed56b24b803",
+  "/Users/tiger/Projects/domainry-agent/docs/agent-core-capabilities-todo.md": "67ef83ea2c64a21f870bb548810be8b27b1fcba1990868ca89412276ae67961b"
+}

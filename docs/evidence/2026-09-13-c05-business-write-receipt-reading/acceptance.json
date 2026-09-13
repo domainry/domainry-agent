@@ -1,0 +1,45 @@
+{
+  "phase": "C05 independent business action and workflow-start receipt reading",
+  "phaseComplete": true,
+  "C05Complete": false,
+  "completedItems": 4,
+  "totalItems": 25,
+  "operations": [
+    "invoke_action",
+    "workflow_start"
+  ],
+  "ownerPermissions": [
+    "action.receipt.<actionKey>.read",
+    "workflow.receipt.<workflowKey>.read"
+  ],
+  "permissionRegistrationDoesNotGrantRoles": true,
+  "runtimeRealRPC": true,
+  "agentRealHTTP": true,
+  "racePassed": true,
+  "browser": "No production frontend changes or new browser acceptance in this phase",
+  "remainingC05": [
+    "cross-user/role participants and execution subjects",
+    "remaining owner result read strategies"
+  ],
+  "sameOriginalUserBoundary": true,
+  "deletedOrUnreadableRecords": "Hidden; no tombstone access exception",
+  "businessRPCContractSHA256": "e1c83b73a9ea7a2eedaf06efe3af087ba3b3ab34cd9151ef14730733d5bd4f06",
+  "publishedModuleSetGate": {
+    "passed": false,
+    "reason": "Workspace Agent capability differs from published v0.1.22 / SDK v0.1.14 pin; fixed-version release gate is not a workspace test",
+    "lockChanged": false
+  },
+  "logFiles": [
+    "agent-initial-fixture-failure.log",
+    "agent-http-final.log",
+    "agent-application-full.log",
+    "agent-race.log",
+    "runtime-rpc-initial-fixture-failure.log",
+    "runtime-owner-rpc.log",
+    "runtime-owner-final.log",
+    "runtime-bootstrap-final.log",
+    "runtime-race.log",
+    "runtime-race-final.log",
+    "runtime-regression-published-pin-mismatch.log"
+  ]
+}

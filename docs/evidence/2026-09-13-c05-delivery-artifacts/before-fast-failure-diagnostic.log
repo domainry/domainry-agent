@@ -1,0 +1,6 @@
+=== RUN   TestPeerArtifactDeliveryReadsKnowledgeVersionsWithoutMutationRights
+    conversation_delivery_artifact_permissions_test.go:163: artifact worker ended before delivery: status=failed error=provider_failed steps=1
+--- FAIL: TestPeerArtifactDeliveryReadsKnowledgeVersionsWithoutMutationRights (0.76s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	1.504s
+FAIL

@@ -1,0 +1,49 @@
+{
+  "date": "2026-09-14",
+  "entry": "C05",
+  "complete": false,
+  "completed_entries": 4,
+  "total_entries": 25,
+  "source_file_count": 53,
+  "accepted_logs": [
+    "source-regression.log",
+    "source-race.log",
+    "source-transport.log",
+    "report-regression.log",
+    "report-race.log",
+    "professional-runtime.log",
+    "reading-http-regression.log",
+    "clock-reading-regression.log"
+  ],
+  "verified": [
+    "unpublished same-owner old-role provenance lookup is private and owner/runtime/workspace scoped",
+    "mixed roots resolve each immutable role separately",
+    "trusted internal references may adopt an old role only under bounded server-root scope and current share checks",
+    "inactive same-role provenance context does not add unrelated share permission",
+    "same-identity delegation without a subject row still persists old-role releases",
+    "metadata-only updates do not republish unchanged historical contract sources",
+    "authenticated valid original analysis with hidden reader fields/dataset denies with 403; invalid specification 400, invalid proof 409, owner unavailable 503 remain distinct",
+    "real mixed-old-role account first HTTP delivery; original report and analysis totals 70",
+    "failed first publication leaves receipts unreleased",
+    "exact original reads and restart preservation",
+    "current reader field and individual original-role revocation",
+    "independently readable public clock current/history preserved after execution revocation and denied after actual delivery_read revocation",
+    "thirteen other named permission and result-reading HTTP regressions",
+    "existing cross-user and same-user/different-role professional automatic four-receipt delivery regressions"
+  ],
+  "limitations": [
+    "SQLite only",
+    "deterministic model wire only",
+    "new mixed-old-role first delivery is account HTTP, not model autonomous delivery",
+    "combined Runtime and transport runs preceded final metadata-only contract publication adjustment; final application/store/race and fourteen HTTP cases cover it"
+  ],
+  "pending": [
+    "mixed-old-role tool dispatch and automatic delivery",
+    "multi-owner old-role first publication, mixed roots and dependencies",
+    "other professional cross-subject source reads and automatic delivery",
+    "participant management/execution/delivery scopes",
+    "complete execution-detail sharing",
+    "cross-subject transfer and subject lifecycle",
+    "C06 and remaining TODO entries"
+  ]
+}

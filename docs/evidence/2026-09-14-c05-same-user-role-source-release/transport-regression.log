@@ -1,0 +1,4 @@
+ok  	github.com/domainry/domainry-agent-sdk/persistence	0.375s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	0.481s
+ok  	github.com/domainry/domainry-agent/remote	1.789s
+ok  	github.com/domainry/domainry-agent/server	1.051s

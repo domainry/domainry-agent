@@ -1,0 +1,6 @@
+=== RUN   TestDelegationExecutionHTTPUsesConsentingReceiversRoleAndStopsAfterRevocation
+--- PASS: TestDelegationExecutionHTTPUsesConsentingReceiversRoleAndStopsAfterRevocation (2.66s)
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+--- PASS: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (5.33s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	10.630s

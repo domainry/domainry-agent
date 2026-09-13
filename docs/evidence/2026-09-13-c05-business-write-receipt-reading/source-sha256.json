@@ -1,0 +1,36 @@
+{
+  "heads": {
+    "/Users/tiger/Projects/domainry-agent": "68fbfb5ce4d4b541d07afc2e3f13cf76cfb302f5",
+    "/Users/tiger/Projects/domainry-agent-sdk": "f843f8aba4521c491277c9047c2d9d8bc8fccbe1",
+    "/Users/tiger/Projects/domainry-runtime": "c837ae318ae4b7b90b34a5a96de022b97ff7be0a"
+  },
+  "files": {
+    "internal/application/conversation_delivery_business_sources.go": "2430cdc4ec00314e803c5af0fef4562e0df824a2692cd10ee2d6b208d1a01ff8",
+    "internal/application/conversation_delivery_business_sources_test.go": "4bff66515edb0b9efaa0dc10c24b1dae9c1e1af308b9833ced0eb39bd6c1f21a",
+    "internal/assembly/web/conversation_delivery_business_permissions_test.go": "4bf50288825052bf3caad62f268f1060a394bd28b3ba90bcf92ce7f0116f43c2",
+    "internal/assembly/web/conversation_delivery_business_write_permissions_test.go": "631ee0d893e52261d2d8850c4eab45492ede108a8f301cca4eddc3db180bb5a2",
+    "internal/assembly/web/conversation_delivery_report_permissions_test.go": "0342dd27636becc5e786bf6d7720415fc9f1f50b2f4a399d1c202ee42f41c3e1",
+    "../domainry-agent-sdk/conversation_business_result_read.go": "c80f1fa5de79cf6ed5a1693c4edf1916c8fcda36f7fe2d6fc0394fb50880f369",
+    "../domainry-agent-sdk/businessrpc/methods.go": "d2c8c4284bc032817a701894b909545dc3cb1ebf739528f6e14fd30c859a5ea6",
+    "../domainry-runtime/runtime/domain/action/contract/action_receipt_authorization.go": "2c10f0b822fd0af399f4f4f7c72eb910afbc0ee304d5056ddbc7fa99feae4e99",
+    "../domainry-runtime/runtime/domain/workflow/contract/workflow_receipt_authorization.go": "b956c91f5d365eaf154be0642670e6bd59eefbd7a6d45dd8f2ae1fd55fd1d3bd",
+    "../domainry-runtime/runtime/domain/action/projection/receipt_authorization_projection.go": "362ee3577b51435a81a423ddb34e930a75035b7485e2c5df2a1ac2cf3ac7f6a0",
+    "../domainry-runtime/runtime/domain/action/service/action_authorization_registry_builder.go": "1d96c04a372f4a0a6256cd6e7eae781fd8f5446d6755edc0bb8e1ab7d7b67e79",
+    "../domainry-runtime/runtime/domain/action/service/action_receipt_authorization_test.go": "ebe50beee430854552b2009f7288fee26bebfdc906a5f904e83e461bd4d2ce31",
+    "../domainry-runtime/runtime/application/action/action_application_service.go": "a96d253293fe17b8cf3a5fd255f0980f3f25ffdac224455860dd31719fd09e1a",
+    "../domainry-runtime/runtime/application/action/action_invocation_inspection.go": "f0fe7e5916139fa6fea60c2d8b4000453ca7531be9bcdec5537789bc1f07c42f",
+    "../domainry-runtime/runtime/application/action/action_invocation_receipt_read.go": "9e443e0c35ef7169c53c4e37c8975f45335b0b4375b29c58881e79ff0c3a3068",
+    "../domainry-runtime/runtime/application/action/action_invocation_receipt_read_test.go": "223292e4e61ff631ccdef3b8e81a87d99db0fac1c718090818e8883f612ea2eb",
+    "../domainry-runtime/runtime/application/workflow/workflow_agent_invocation_application_service.go": "1aa24b41f2e140ab2abf2f0d6a44df6630cfd898634114b519ad3b5c13a40eff",
+    "../domainry-runtime/runtime/application/workflow/workflow_agent_receipt_read.go": "a8e2ba985d03d0405d5e1b6533e0c4f90be7af8c65d37006cc70fc82fff1011c",
+    "../domainry-runtime/runtime/application/workflow/workflow_agent_receipt_read_test.go": "58ff0a440da0a24e825af6e6884b8b6b7604dd5f240b2e6a14d114db8b6903f7",
+    "../domainry-runtime/runtime/bootstrap/composition/action_application_wiring.go": "cbf94d656cf2756d5e87d3f897f13cd7f83d52815eee6c22b7469234ec4fc1d4",
+    "../domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_write_receipt_read_rpc_test.go": "30e9d09267f139771ece258ae8c8caf65e060065be9272c285ca04b80423845c",
+    "../domainry-runtime/runtime/application/agenthost/conversation_business_actions.go": "5d6ce4d68ce6a6dbef27cdae73746851d7b52fd70d7132a2a513b2c069192b7c",
+    "../domainry-runtime/runtime/application/agenthost/conversation_business_workflows.go": "b07e21d5cf3bfd792daf62fe68d8cc37e46a9f8b281f223627abdffbcf799af8",
+    "../domainry-runtime/runtime/application/agenthost/conversation_business_receipt_read.go": "11344050e058e4634495dc940f4e1d2a4b8a8a42718bb2be1f3bcc789356bbd3",
+    "../domainry-runtime/runtime/application/agenthost/conversation_business_write_receipt_read.go": "8ca0bf4cebcccf9008147b7000bc68b44e4179d49def788d49ac01facad6fbfe",
+    "../domainry-runtime/config/runtime-module-set.lock.json": "d006b85da7cb00a2e6032cfcf1a41e87a9f756d401954c3e1ca50b339320df70",
+    "../domainry-runtime/scripts/ci/contracts/runtime-composition-test-matrix.md": "d6b4acf7d8a49a3c3bdfdd101ac0a4969597a43145790f79c785bad14502cba5"
+  }
+}

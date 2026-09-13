@@ -1,0 +1,6 @@
+--- FAIL: TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions (0.01s)
+    --- FAIL: TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_export (0.00s)
+        conversation_delivery_artifact_sources_test.go:177: modified or unverifiable evidence accepted
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	1.055s
+FAIL

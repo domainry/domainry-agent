@@ -1,0 +1,6 @@
+=== RUN   TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission
+    conversation_tools_test.go:216: Identity PUT: 400 {"code":"backend.identity.role_permission_invalid","error":{"code":"backend.identity.role_permission_invalid"}}
+--- FAIL: TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission (1.25s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	1.991s
+FAIL

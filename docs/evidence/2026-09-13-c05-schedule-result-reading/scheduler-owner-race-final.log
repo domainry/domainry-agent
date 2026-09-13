@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-scheduler/internal/application/scheduler	2.071s
+ok  	github.com/domainry/domainry-scheduler/remote	2.441s
+ok  	github.com/domainry/domainry-scheduler/internal/assembly/saas	3.422s

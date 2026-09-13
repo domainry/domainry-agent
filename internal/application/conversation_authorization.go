@@ -46,6 +46,9 @@ func (s *ConversationService) authorizeConversationClaim(ctx context.Context, cl
 		if err != nil {
 			return err
 		}
+		if err := s.authorizeDelegationExecutionBinding(ctx, d, claim.Run.Agent, claim.Authority); err != nil {
+			return err
+		}
 		if err = s.authorizeCollaboration(ctx, "receive", &d, claim.Authority); err != nil {
 			return err
 		}

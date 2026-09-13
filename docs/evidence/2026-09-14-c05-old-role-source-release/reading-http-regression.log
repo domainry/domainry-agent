@@ -1,0 +1,37 @@
+=== RUN   TestPeerCollaborationPermissionsRecheckCurrentRoleAcrossEntrypoints
+--- PASS: TestPeerCollaborationPermissionsRecheckCurrentRoleAcrossEntrypoints (8.67s)
+=== RUN   TestPeerArtifactDeliveryReadsKnowledgeVersionsWithoutMutationRights
+    conversation_delivery_artifact_permissions_test.go:333: real Knowledge/Identity/Tools/Agent/SQLite: three confirmed writes and four saved receipts; delivery reading survives mutation grant revocation/restart, enforces tool preferences and artifact read revocation, raw execution stays hidden
+--- PASS: TestPeerArtifactDeliveryReadsKnowledgeVersionsWithoutMutationRights (17.07s)
+=== RUN   TestPeerBusinessDeliveryReadsWithoutProfessionalToolExecution
+--- PASS: TestPeerBusinessDeliveryReadsWithoutProfessionalToolExecution (8.23s)
+=== RUN   TestPeerBusinessWriteDeliveryReadsOriginalReceiptsWithoutExecution
+--- PASS: TestPeerBusinessWriteDeliveryReadsOriginalReceiptsWithoutExecution (7.76s)
+=== RUN   TestPeerHistoryDeliveryReadsOriginalMessagesAndExecutionAfterToolRevocation
+    conversation_delivery_history_permissions_test.go:214: Actual history search/read, execution index/result slice, current data permissions, immutable pages, revocation and restart verified
+--- PASS: TestPeerHistoryDeliveryReadsOriginalMessagesAndExecutionAfterToolRevocation (9.29s)
+=== RUN   TestPeerKnowledgeDeliveryReadsWithoutSearchReadOrExtractExecution
+--- PASS: TestPeerKnowledgeDeliveryReadsWithoutSearchReadOrExtractExecution (12.54s)
+=== RUN   TestPeerDeliveryReadsMailWithoutToolExecutionPermission
+    conversation_delivery_mail_permissions_test.go:224: real mail HTTP once; delivery and receipt history readable after mail.read revocation and restart; raw execution denied; model invocation failed before vendor IO; tool disable, account data revocation and account revoke hide delivery
+--- PASS: TestPeerDeliveryReadsMailWithoutToolExecutionPermission (7.32s)
+=== RUN   TestPeerPersonalDeliveryReadsOriginalResultsWithOnlyDataReadPermissions
+    conversation_delivery_personal_permissions_test.go:273: Actual personal tools, user responses, source data permissions, immutable current/history receipts, revocation and restart verified.
+--- PASS: TestPeerPersonalDeliveryReadsOriginalResultsWithOnlyDataReadPermissions (25.57s)
+=== RUN   TestPeerPersonalDeletionDeliveryReadsOnlyOriginalAcknowledgements
+    conversation_delivery_personal_permissions_test.go:273: Actual personal tools, user responses, source data permissions, immutable current/history receipts, revocation and restart verified.
+--- PASS: TestPeerPersonalDeletionDeliveryReadsOnlyOriginalAcknowledgements (5.69s)
+=== RUN   TestPeerReportDeliveryUsesReadingPolicyWithoutExecutableCatalog
+    conversation_delivery_report_permissions_test.go:316: Agent/Identity HTTP and durable worker: four owner-attested Report/Analysis result references, tool preferences enforced, delivery/history readable without execution catalog or tool Action, raw execution denied, restart preserved, owner read denial hid delivery
+--- PASS: TestPeerReportDeliveryUsesReadingPolicyWithoutExecutableCatalog (5.61s)
+=== RUN   TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation
+    conversation_delivery_schedule_permissions_test.go:184: Seven real calls completed; current host requested 0 confirmations
+--- PASS: TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation (13.41s)
+=== RUN   TestPeerTaskDeliveryReadsOriginalReceiptsAfterControlRevocation
+    conversation_delivery_task_permissions_test.go:205: Actual task start/list/get/cancel/resume, delegated task data permission, original current/history receipts and restart verified
+--- PASS: TestPeerTaskDeliveryReadsOriginalReceiptsAfterControlRevocation (5.47s)
+=== RUN   TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission
+    conversation_delivery_write_permissions_test.go:167: real Agent/Identity/Tools/Integration/Provider HTTP: exact confirmation, effects={"mail_send":1}, saved catalog/receipt readable without send or account-write action and after restart; data/account/tool revocation hides result; no additional vendor IO
+--- PASS: TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission (7.87s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	135.026s

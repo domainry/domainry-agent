@@ -1,0 +1,4 @@
+=== RUN   TestPeerBusinessDeliveryReadsWithoutProfessionalToolExecution
+--- PASS: TestPeerBusinessDeliveryReadsWithoutProfessionalToolExecution (96.50s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	98.117s

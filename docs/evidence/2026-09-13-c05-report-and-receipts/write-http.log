@@ -1,0 +1,5 @@
+=== RUN   TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission
+    conversation_delivery_write_permissions_test.go:162: real Agent/Identity/Tools/Integration/Provider HTTP: exact confirmation, effects={"mail_send":1}, saved catalog/receipt readable without send or account-write action and after restart; data/account/tool revocation hides result; no additional vendor IO
+--- PASS: TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission (6.54s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	7.297s

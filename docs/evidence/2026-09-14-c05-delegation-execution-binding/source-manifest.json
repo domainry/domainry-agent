@@ -1,0 +1,106 @@
+[
+  {
+    "path": "../domainry-agent-sdk/conversation_collaboration.go",
+    "sha256": "01d042ad2f1ca543bb6c488c8ce358b25fa9bbca6a0f4c05f3a11a2724463b0b"
+  },
+  {
+    "path": "../domainry-agent-sdk/persistence/conversation_collaboration.go",
+    "sha256": "f986dee03fac727acb6f8c6283929bf99c87d9e3dc16967a9e73526e1a7ae1ee"
+  },
+  {
+    "path": "internal/application/conversation_delegation_execution.go",
+    "sha256": "7311971a97c4bc0c283d4790cb9343564aa0dd71a86b50f751984c75823c0e45"
+  },
+  {
+    "path": "internal/application/conversation_delegation_execution_test.go",
+    "sha256": "eb4e15b0e71d29b90577d34bf763459a40834c20a0ef12393aaec45459574f2a"
+  },
+  {
+    "path": "internal/application/conversation_agents.go",
+    "sha256": "1bc299eaf27c792a389ea94a6337244e92bb0fa2c6025c0a8afe8cfb81f09011"
+  },
+  {
+    "path": "internal/application/conversation_agent_discovery.go",
+    "sha256": "c2071baf475bd5ea8d5dafee66c0a4b544cc21f4b8ef2e6fbece70696569251e"
+  },
+  {
+    "path": "internal/application/conversation_delegations.go",
+    "sha256": "1d5ffc5a629439907e8e70a65e6aaa3a8b22c74d100e8ff67d602a769837c4fc"
+  },
+  {
+    "path": "internal/application/conversation_authorization.go",
+    "sha256": "35496016f1a8d3374a08d4482eae85fc0e6653e86460a39547b1a11095f18b26"
+  },
+  {
+    "path": "internal/application/conversation_collaboration_authorization.go",
+    "sha256": "ddd8eef1ad6fe4c940b6acfb03f2211bbff8b5da73c6fb214704257204b3eaeb"
+  },
+  {
+    "path": "internal/application/conversation_participants.go",
+    "sha256": "b3ccc3a6f109e2e906ea803bda4771321f45e78a78612228c2a57ba3250302da"
+  },
+  {
+    "path": "internal/application/conversation_participants_test.go",
+    "sha256": "3727b2f86179515be2d11b51c91e3f886a47846cd488cd6a8d90772d9f8a91c5"
+  },
+  {
+    "path": "internal/application/conversation_peer_inbox.go",
+    "sha256": "47f1ebfbe54c3bdd4909bbba5fbf51838e0be9aa5962596411e492f25d4d72e9"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_agents_store.go",
+    "sha256": "8fc564a5f8b4d9ab613fb7006dd37854cb3fee4efcdfe84bb43fc125cd157b61"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_agent_execution_test.go",
+    "sha256": "ab51f561437bd4e403ff2a8cba5206a4cf36763e702db73acbc0e1803a96a5b9"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_delegation_store.go",
+    "sha256": "f3cc09b283b6ddae64782bb13b91d9bd6b7865c6e54c40341694e3df1efc6766"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_delegation_subjects_store.go",
+    "sha256": "13790f6ff35e6b42c238ebc7a197b2cea204dec9d441402d9e6bb26fa07e0a99"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_peer_messages_store.go",
+    "sha256": "0f98f5b6ceb10ec92e519a9f301895d7b094b2178e8bd0135c4b797e35d5fbad"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_participants_store.go",
+    "sha256": "f20f825564ad4995ff5df38e1cce1de6c9ab29401087bb87c5695aa930710d91"
+  },
+  {
+    "path": "internal/assembly/web/conversation_delegation_execution_test.go",
+    "sha256": "cd665ca79e8da7495b245d2f804aef34023567706b58431d4bb6b8ce49cdc72d"
+  },
+  {
+    "path": "frontend/src/CollaborationDialog.tsx",
+    "sha256": "dce536e1e56dd77f7d6045d4221b92dd28018e6c85ad963224178efef5810c32"
+  },
+  {
+    "path": "frontend/src/collaboration-state.ts",
+    "sha256": "e9aba01616f7fd55918dc051d898665fc88b1271752c575edf8714852230c13c"
+  },
+  {
+    "path": "frontend/src/collaboration-state.test.ts",
+    "sha256": "ca4eb20352ba816f0b567d2a65b2e6273baa77a660b87aa55789d330a6175c91"
+  },
+  {
+    "path": "frontend/src/errors.ts",
+    "sha256": "4f3b118bde98046cb7ffcd4c1a8de64f8b6b1db6b8e07f60e760c776af389812"
+  },
+  {
+    "path": "frontend/tests/delegation-execution.browser.mjs",
+    "sha256": "fe7f1ceb5e5cfd24fa1af6afae13b15a7ae2cf147e30a3fb52669d5254f76c5f"
+  },
+  {
+    "path": "docs/testing-2026-09-14-c05-delegation-execution-binding.md",
+    "sha256": "7ab4aff46320aae7c40778cb032d50fffdcb3ef93d7bd110d0c8bcff67638a22"
+  },
+  {
+    "path": "docs/agent-core-capabilities-todo.md",
+    "sha256": "d8e0c55bdfc0e540663374d909d267444dcacdfb368865522917f9a73903c569"
+  }
+]

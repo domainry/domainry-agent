@@ -1,7 +1,25 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { delegationActions, delegationNeedsAttention, deliveryIsCurrent, initialDeliveryReview, withCompletionConditions, reviewedDependencies, disagreementsBlock, type Delegation } from './collaboration-state.ts';
+import { agentWriteInput, delegationActions, delegationNeedsAttention, deliveryIsCurrent, initialDeliveryReview, withCompletionConditions, reviewedDependencies, disagreementsBlock, type Delegation, type PeerAgent } from './collaboration-state.ts';
 const work = { access:{view:true,manage:true,execution_read:true,delivery_read:true,communicate:true,receive:true,share:true}, id:'d',status:'delivered',brief:{version:1},agreement_revision:2,delivery:{brief_version:1,agreement_revision:1},task:{status:'completed'},messages:[] } as unknown as Delegation;
+test('agent editor submits only write fields and preserves sharing when sharing access is absent',()=>{
+ const response={id:'peer',owner_user_id:'owner',shared:false,shared_with_user_ids:['recipient'],revision:3,created_at:'server timestamp',updated_at:'server timestamp',definition_version:'v1',definition_digest:'server digest',name:'Review',description:'Review work',instructions:'Use current permissions',tools:['time_now'],skill_keys:[],model_key:'default',enabled:true,max_concurrent:1};
+ const write=agentWriteInput(response as PeerAgent,true);
+ for(const key of ['id','owner_user_id','shared','created_at','updated_at','revision','definition_version','definition_digest'])assert.equal(Object.hasOwn(write,key),false,key);
+ assert.equal(write.expected_revision,3);
+ assert.deepEqual(write.shared_with_user_ids,['recipient']);
+ assert.equal(Object.hasOwn(agentWriteInput(response,false),'shared_with_user_ids'),false);
+ assert.deepEqual(agentWriteInput({...response,shared_with_user_ids:[]},true).shared_with_user_ids,[]);
+});
+test('editing ordinary configuration preserves the saved execution role unless explicitly rebound',()=>{
+ const agent={delegation_execution:'owner',delegation_role_key:'saved-finance-role',owner_user_id:'owner',revision:4} as PeerAgent;
+ const ordinary=agentWriteInput(agent,true);
+ assert.equal(Object.hasOwn(ordinary,'delegation_execution'),false);
+ assert.equal(Object.hasOwn(ordinary,'delegation_role_key'),false);
+ assert.equal(agentWriteInput(agent,true,'owner').delegation_execution,'owner');
+ assert.equal(agentWriteInput(agent,false,'caller').delegation_execution,'caller');
+ assert.equal(Object.hasOwn(agentWriteInput(agent,true,'owner'),'delegation_role_key'),false);
+});
 test('same brief does not make an old dependency agreement acceptable',()=>{
  assert.equal(deliveryIsCurrent(work),false);assert.equal(delegationActions(work).includes('accept_delivery'),false);
  const current={...work,delivery:{...work.delivery!,agreement_revision:2}};

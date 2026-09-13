@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: agent editor submits only write fields and preserves sharing when sharing access is absent
+ok 1 - agent editor submits only write fields and preserves sharing when sharing access is absent
+  ---
+  duration_ms: 2.116
+  type: 'test'
+  ...
+# Subtest: editing ordinary configuration preserves the saved execution role unless explicitly rebound
+ok 2 - editing ordinary configuration preserves the saved execution role unless explicitly rebound
+  ---
+  duration_ms: 0.13125
+  type: 'test'
+  ...
+# Subtest: same brief does not make an old dependency agreement acceptable
+ok 3 - same brief does not make an old dependency agreement acceptable
+  ---
+  duration_ms: 0.128375
+  type: 'test'
+  ...
+# Subtest: acceptance form keeps receipt evidence but does not turn recipient claims into reviewer judgments
+ok 4 - acceptance form keeps receipt evidence but does not turn recipient claims into reviewer judgments
+  ---
+  duration_ms: 0.123416
+  type: 'test'
+  ...
+# Subtest: question attention closes on reply or requirement replacement
+ok 5 - question attention closes on reply or requirement replacement
+  ---
+  duration_ms: 0.094833
+  type: 'test'
+  ...
+# Subtest: resume preserves selected fields and pins reviewed upstream agreement
+ok 6 - resume preserves selected fields and pins reviewed upstream agreement
+  ---
+  duration_ms: 0.12825
+  type: 'test'
+  ...
+# Subtest: condition edits never silently associate an old check with different work
+ok 7 - condition edits never silently associate an old check with different work
+  ---
+  duration_ms: 0.203041
+  type: 'test'
+  ...
+# Subtest: acceptance requires current resolved disagreements, including after delivery replacement or lost evidence access
+ok 8 - acceptance requires current resolved disagreements, including after delivery replacement or lost evidence access
+  ---
+  duration_ms: 0.117375
+  type: 'test'
+  ...
+# Subtest: collaboration controls require separate current permissions
+ok 9 - collaboration controls require separate current permissions
+  ---
+  duration_ms: 0.295084
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 86.454209

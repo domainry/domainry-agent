@@ -3,6 +3,7 @@ import { sessionFetch, sessionScope } from "./session.ts";
 import { applyExecutionEvent, executionEventNames, type ExecutionEvent, type StepView } from "./execution-state.ts";
 import { applyInteractionEvent, interactionEventNames, waiting, type Interaction } from "./interaction-state.ts";
 import type { Citation } from "./knowledge-state.ts";
+import type { ExecutionSubject } from "./collaboration-state.ts";
 export type ConversationRecord = {
   agent_id?: string; delegation_id?: string;
   id: string;
@@ -27,6 +28,7 @@ export type MessageRecord = {
   content: string;
 };
 export type Run = {
+	agent?: {id:string;revision:number;owner_user_id?:string;execution_subject?:ExecutionSubject};
 	access_error?: string;
   id: string;
   conversation_id: string;

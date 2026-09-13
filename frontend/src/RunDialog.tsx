@@ -50,6 +50,9 @@ export function RunDialog({ conversationID, runID, onClose, onResume, onRepair, 
       {error && <p role="alert" className="text-destructive text-sm">{error}</p>}
       {run && <>
         <dl className="run-metadata">
+          {run.agent && <><dt>Agent</dt><dd>{run.agent.id} · 配置版本 {run.agent.revision}</dd></>}
+          {run.agent?.owner_user_id && <><dt>配置所有者</dt><dd>{run.agent.owner_user_id}</dd></>}
+          {run.agent?.execution_subject && <><dt>执行用户</dt><dd>{run.agent.execution_subject.user_id} · 工作空间 {run.agent.execution_subject.workspace_id}</dd></>}
           {run.correlation_id && <><dt>关联 ID</dt><dd><code>{run.correlation_id}</code></dd></>}
           {run.started_at && <><dt>开始时间</dt><dd>{new Date(run.started_at).toLocaleString()}</dd></>}
           {run.completed_at && <><dt>结束时间</dt><dd>{new Date(run.completed_at).toLocaleString()}</dd></>}

@@ -1,0 +1,8 @@
+=== RUN   TestPeerPersonalDeliveryReadsOriginalResultsWithOnlyDataReadPermissions
+    conversation_delivery_personal_permissions_test.go:273: Actual personal tools, user responses, source data permissions, immutable current/history receipts, revocation and restart verified.
+--- PASS: TestPeerPersonalDeliveryReadsOriginalResultsWithOnlyDataReadPermissions (11.00s)
+=== RUN   TestPeerPersonalDeletionDeliveryReadsOnlyOriginalAcknowledgements
+    conversation_delivery_personal_permissions_test.go:273: Actual personal tools, user responses, source data permissions, immutable current/history receipts, revocation and restart verified.
+--- PASS: TestPeerPersonalDeletionDeliveryReadsOnlyOriginalAcknowledgements (3.38s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	14.849s

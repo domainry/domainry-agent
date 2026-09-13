@@ -1,0 +1,24 @@
+=== RUN   TestPeerArtifactDeliveryReadsKnowledgeVersionsWithoutMutationRights
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('dialog', { name: 'Agent 协作', exact: true }).getByRole('region', { name: '交付完成条件核对', exact: true }) to be hidden[22m
+[2m    34 × locator resolved to visible <section aria-label="交付完成条件核对" class="peer-dependencies">…</section>[22m
+
+    at /Users/tiger/Projects/domainry-agent/frontend/tests/delivery-result.browser.mjs:24:84 {
+  log: [
+    "  - waiting for getByRole('dialog', { name: 'Agent 协作', exact: true }).getByRole('region', { name: '交付完成条件核对', exact: true }) to be hidden",
+    '    34 × locator resolved to visible <section aria-label="交付完成条件核对" class="peer-dependencies">…</section>'
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.22.0
+    conversation_delivery_artifact_permissions_test.go:280: exit status 1
+--- FAIL: TestPeerArtifactDeliveryReadsKnowledgeVersionsWithoutMutationRights (25.08s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	25.533s
+FAIL

@@ -1,0 +1,59 @@
+?   	github.com/domainry/domainry-agent/capability	[no test files]
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	3.425s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-playground	[no test files]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/definition	(cached)
+ok  	github.com/domainry/domainry-agent/integration	92.955s
+ok  	github.com/domainry/domainry-agent/internal/application	(cached)
+ok  	github.com/domainry/domainry-agent/internal/architecture	1.208s
+ok  	github.com/domainry/domainry-agent/internal/assembly/conversation	(cached)
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	0.940s
+?   	github.com/domainry/domainry-agent/internal/assembly/saas	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	279.747s
+ok  	github.com/domainry/domainry-agent/internal/capability	(cached)
+?   	github.com/domainry/domainry-agent/internal/composition	[no test files]
+?   	github.com/domainry/domainry-agent/internal/dataaccess	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/execution	(cached)
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence	(cached)
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/base	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	(cached)
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost	(cached)
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	(cached)
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	(cached)
+ok  	github.com/domainry/domainry-agent/internal/transport/http/playground	(cached)
+?   	github.com/domainry/domainry-agent/internal/transport/http/product	[no test files]
+?   	github.com/domainry/domainry-agent/internal/transport/http/web	[no test files]
+ok  	github.com/domainry/domainry-agent/module	1.384s
+ok  	github.com/domainry/domainry-agent/remote	(cached)
+ok  	github.com/domainry/domainry-agent/server	(cached)
+?   	github.com/domainry/domainry-agent/testsupport	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/databasetest	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/producttest	[no test files]
+?   	github.com/domainry/domainry-agent/web	[no test files]
+?   	github.com/domainry/domainry-agent/webhost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk	(cached)
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	(cached)
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	(cached)
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+ok  	github.com/domainry/domainry-knowledge/artifact	(cached)
+?   	github.com/domainry/domainry-knowledge/contract	[no test files]
+ok  	github.com/domainry/domainry-knowledge/extraction	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/application/knowledge	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/architecture	(cached)
+?   	github.com/domainry/domainry-knowledge/internal/assembly/module	[no test files]
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/artifactstorage	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/attachmentstorage	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/connectortransport	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/documentstorage	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/persistence/database/knowledge	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/persistence/database/record	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/provider	(cached)
+?   	github.com/domainry/domainry-knowledge/module	[no test files]

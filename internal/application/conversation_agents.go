@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
@@ -53,7 +54,7 @@ func (s *ConversationService) conversationModel(ctx context.Context) agentsdk.Co
 
 func (s *ConversationService) defaultConversationAgent(ctx context.Context, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgent, error) {
 	ctx = context.WithValue(ctx, conversationAgentContextKey{}, (*agentsdk.ConversationAgentSnapshot)(nil))
-	agent := agentsdk.ConversationAgent{ID: "default", Name: "默认 Agent", Instructions: conversationExecutionSystem, ModelKey: "default", Enabled: s.model != nil, MaxConcurrent: s.options.Workers, Revision: 1, Tools: []string{}, SkillKeys: []string{}}
+	agent := agentsdk.ConversationAgent{OwnerUserID: a.UserID, ID: "default", Name: "默认 Agent", Instructions: conversationExecutionSystem, ModelKey: "default", Enabled: s.model != nil, MaxConcurrent: s.options.Workers, Revision: 1, Tools: []string{}, SkillKeys: []string{}}
 	if s.options.Agent != nil {
 		agent.Name, agent.Description, agent.Instructions = s.options.Agent.Name, s.options.Agent.Description, s.options.Agent.Instructions
 		agent.Tools, agent.SkillKeys = append([]string{}, s.options.Agent.Tools...), append([]string{}, s.options.Agent.SkillKeys...)
@@ -77,7 +78,11 @@ func (s *ConversationService) conversationAgent(ctx context.Context, id string, 
 	if err != nil {
 		return agentsdk.ConversationAgent{}, err
 	}
-	return repo.ConversationAgent(ctx, id, a)
+	agent, err := repo.ConversationAgent(ctx, id, a)
+	if err == nil && agent.Shared {
+		err = s.validateAgentSharingSubjects(ctx, a, []string{agent.OwnerUserID})
+	}
+	return agent, err
 }
 
 func (s *ConversationService) ConversationAgents(ctx context.Context, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgentPage, error) {
@@ -107,7 +112,22 @@ func (s *ConversationService) conversationAgentDirectory(ctx context.Context, a 
 	if err != nil {
 		return out, err
 	}
-	out.Items = append([]agentsdk.ConversationAgent{first}, items...)
+	out.Items = []agentsdk.ConversationAgent{first}
+	for _, agent := range items {
+		if agent.Shared {
+			if err := s.validateAgentSharingSubjects(ctx, a, []string{agent.OwnerUserID}); err != nil {
+				if ctx.Err() != nil {
+					return out, ctx.Err()
+				}
+				var coded *agentsdk.Error
+				if errors.As(err, &coded) && coded.Class == "forbidden" {
+					continue
+				}
+				return out, err
+			}
+		}
+		out.Items = append(out.Items, agent)
+	}
 	if s.options.ToolHost != nil {
 		out.Tools, _, err = s.executionCatalog(context.WithValue(ctx, conversationAgentCatalogKey{}, true), a)
 	}
@@ -129,6 +149,12 @@ func (s *ConversationService) conversationAgentDirectory(ctx context.Context, a 
 func (s *ConversationService) WriteConversationAgent(ctx context.Context, id string, in agentsdk.ConversationAgentWrite, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgent, error) {
 	var out agentsdk.ConversationAgent
 	if err := s.authorizeCollaboration(ctx, "configure", nil, a); err != nil {
+		return out, err
+	}
+	if err := s.prepareAgentSharing(ctx, id, &in, a); err != nil {
+		return out, err
+	}
+	if err := s.prepareAgentExecutionBinding(ctx, in, a); err != nil {
 		return out, err
 	}
 	in.DefinitionVersion, in.DefinitionDigest = "", ""
@@ -187,6 +213,11 @@ func (s *ConversationService) freezeConversationAgent(ctx context.Context, id st
 		}
 	}
 	snapshot := &agentsdk.ConversationAgentSnapshot{ID: agent.ID, Revision: agent.Revision, ModelKey: agent.ModelKey, Profile: agentsdk.AgentSchema{Key: agent.ID, Version: strconv.FormatInt(agent.Revision, 10), Name: agent.Name, Description: agent.Description, Instructions: agent.Instructions, Tools: append([]string{}, agent.Tools...), SkillKeys: append([]string{}, agent.SkillKeys...)}}
+	snapshot.OwnerUserID = agent.OwnerUserID
+	if snapshot.OwnerUserID == "" {
+		snapshot.OwnerUserID = a.UserID
+	}
+	snapshot.ExecutionSubject = executionSubject(a)
 	for _, key := range agent.SkillKeys {
 		found := false
 		for _, skill := range s.options.Skills {
@@ -233,6 +264,9 @@ func (s *ConversationService) selectConversationAgent(ctx context.Context, snaps
 	if snapshot == nil {
 		return ctx, nil
 	}
+	if snapshot.ExecutionSubject != nil && *snapshot.ExecutionSubject != *executionSubject(a) {
+		return ctx, conversationFailure("forbidden", "execution_subject_mismatch")
+	}
 	copy := *snapshot
 	copy.Digest = ""
 	if snapshot.Digest == "" || conversationDigest(copy) != snapshot.Digest {
@@ -253,6 +287,23 @@ func (s *ConversationService) selectConversationAgent(ctx context.Context, snaps
 	fresh, err := s.freezeConversationAgent(ctx, snapshot.ID, a)
 	if err != nil {
 		return ctx, err
+	}
+	if snapshot.DelegationRoleKey != "" {
+		if current.DelegationExecution != "owner" || current.OwnerUserID != a.UserID || current.DelegationRoleKey != a.RoleKey || snapshot.DelegationRoleKey != a.RoleKey {
+			return ctx, conversationFailure("forbidden", "execution_subject_mismatch")
+		}
+		bindDelegationSnapshot(fresh, a)
+	}
+	if snapshot.ExecutionSubject == nil && snapshot.OwnerUserID == "" {
+		// Older snapshots could only refer to an owned configuration. Preserve
+		// those snapshots without admitting a legacy identity through sharing.
+		if current.Shared {
+			return ctx, conversationFailure("forbidden", "execution_subject_mismatch")
+		}
+		fresh.ExecutionSubject = nil
+		fresh.OwnerUserID = ""
+		fresh.Digest = ""
+		fresh.Digest = conversationDigest(*fresh)
 	}
 	if fresh.Digest != snapshot.Digest {
 		return ctx, conversationFailure("conflict", "agent_changed")

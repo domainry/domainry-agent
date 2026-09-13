@@ -408,7 +408,15 @@ func (s *ConversationStore) LaunchConversationTask(ctx context.Context, runtimeI
 			if candidate.schedule != nil && (!scheduledConversationStoreKey(candidate.schedule.PlanID) || !scheduledConversationStoreKey(candidate.schedule.SchedulerRunID) || candidate.schedule.ScheduledFor.IsZero()) {
 				continue
 			}
-			conversation, getErr := s.get(ctx, tx, task.SourceConversationID, authority)
+			sourceAuthority := authority
+			if task.DelegationID != "" {
+				subjects, _, err := s.delegationSubjects(ctx, tx, task.DelegationID, authority)
+				if err != nil {
+					return err
+				}
+				sourceAuthority = subjects.source
+			}
+			conversation, getErr := s.get(ctx, tx, task.SourceConversationID, sourceAuthority)
 			if getErr != nil {
 				var coded *agentsdk.Error
 				if errors.As(getErr, &coded) && coded.Class == "not_found" {
@@ -437,7 +445,7 @@ func (s *ConversationStore) LaunchConversationTask(ctx context.Context, runtimeI
 				continue
 			}
 			if task.SourceRunID != "" {
-				if _, sourceErr := s.runRow(ctx, tx, task.SourceConversationID, task.SourceRunID, authority); sourceErr != nil {
+				if _, sourceErr := s.runRow(ctx, tx, task.SourceConversationID, task.SourceRunID, sourceAuthority); sourceErr != nil {
 					return sourceErr
 				}
 			}

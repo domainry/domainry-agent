@@ -1,0 +1,8 @@
+=== RUN   TestReportResultReadScopeIncludesHiddenPredicatesButNotExecutionRevision
+--- PASS: TestReportResultReadScopeIncludesHiddenPredicatesButNotExecutionRevision (0.00s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/modulehost/report	0.703s
+=== RUN   TestResultReadAvailabilityPreservesPreferenceWithoutExecutionCatalog
+--- PASS: TestResultReadAvailabilityPreservesPreferenceWithoutExecutionCatalog (0.00s)
+PASS
+ok  	github.com/domainry/domainry-tools/internal/application/preferences	1.022s

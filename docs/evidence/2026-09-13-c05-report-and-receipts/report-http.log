@@ -1,0 +1,9 @@
+=== RUN   TestPeerReportDeliveryUsesReadingPolicyWithoutExecutableCatalog
+    conversation_delivery_report_permissions_test.go:300: Agent/Identity HTTP and durable worker: four owner-attested Report/Analysis result references, tool preferences enforced, delivery/history readable without execution catalog or tool Action, raw execution denied, restart preserved, owner read denial hid delivery
+--- PASS: TestPeerReportDeliveryUsesReadingPolicyWithoutExecutableCatalog (8.48s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	9.448s
+=== RUN   TestContractAndConfigurationFailBeforeIO
+--- PASS: TestContractAndConfigurationFailBeforeIO (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	0.472s

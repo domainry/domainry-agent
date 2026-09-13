@@ -1,0 +1,5 @@
+=== RUN   TestReportAndAnalysisIndependentResultReadThroughRealOwnerRPC
+    conversation_result_read_rpc_test.go:239: actual Report/Runtime/Identity/SQLite and Tools through RPC: query pages and catalog cursors, analysis result/catalog, tool and report execution grants revoked, independent reads survive restart, read/source/field grants and row scope revoked, real business mutation invalidates old values, raw replay/invocation/tampered result denied
+--- PASS: TestReportAndAnalysisIndependentResultReadThroughRealOwnerRPC (14.93s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	15.556s

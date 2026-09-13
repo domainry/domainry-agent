@@ -21,3 +21,7 @@ Work／PM 的 1.4.0 默认 profile 选择现有七个业务工具，业务 Skill
 实施顺序：SDK 服务边界与隔离 HTTP → Runtime 真实宿主服务与 Module 共用装配 → 独立产品配置／授权／来源 → 真实跨服务、网页、写入回执与撤权／重启验收。证据写回 F05，完成前不进入 F06。
 
 N01 已在实际 Report owner 补齐可选受权目录、真实查询来源及历史结果复核，宿主新增三个相应传输方法；当前契约与职责见[报表查询边界](report-query-boundaries.md)，验收见[N01 owner／宿主增量](testing-2026-09-12-n01-report-owner.md)。上文 F05 契约与交付结论保留历史。
+
+C05 增加可选 `ConversationBusinessResultReadSource` 和受信任业务服务的 `business_result_read` 方法，处理明确提交到委派交付中的原始业务回执。Runtime 内置目录、记录查询、单条记录、关联查询及流程状态使用当前资料／流程访问策略；此入口不要求原 Agent 工具 Action，也不执行写入或恢复。普通调用、原执行历史及不支持独立阅读的来源维持原授权。当前服务契约为 `e1c83b73a9ea7a2eedaf06efe3af087ba3b3ab34cd9151ef14730733d5bd4f06`，客户端、服务端与部署 pin 需一起更新；现有配置不会被自动改写。业务动作和流程启动回执仍待 owner 的独立阅读策略，见[C05 业务原回执阅读](testing-2026-09-13-c05-business-result-reading.md)。
+
+C05 后续已为业务动作与流程启动接入独立 owner 回执阅读：`action.receipt.<actionKey>.read`／`workflow.receipt.<workflowKey>.read` 明确覆盖原参数与中立回执，现有角色不自动获权。当前 Identity、原执行账本、原执行人、发布定义、记录引用与流程参与范围继续核对；不输出 handler 原始结果、不取得执行租约或启动恢复。自定义 owner 的可选端口缺失时保持原授权策略。业务 RPC 契约未再次变化；具体实现、记录删除边界与发布 pin 差异见[业务写入回执验收](testing-2026-09-13-c05-business-write-receipt-reading.md)。

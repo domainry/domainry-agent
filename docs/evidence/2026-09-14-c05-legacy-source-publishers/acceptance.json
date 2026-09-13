@@ -1,0 +1,53 @@
+{
+  "date": "2026-09-14",
+  "entry": "C05",
+  "phase": "legacy publication role restoration and actual submitter",
+  "c05_complete": false,
+  "completed_items": 4,
+  "total_items": 25,
+  "source_files": 68,
+  "checks": {
+    "regression.log": {
+      "packages": 8,
+      "exit_code": 0
+    },
+    "race.log": {
+      "packages": 2,
+      "exit_code": 0
+    },
+    "http.log": {
+      "scenarios": 2,
+      "exit_code": 0
+    },
+    "runtime.log": {
+      "scenarios": 4,
+      "exit_code": 0
+    }
+  },
+  "verified": [
+    "actual manual contract/delivery publishing roles",
+    "assessment/acceptance do not republish",
+    "immutable legacy delivery/change/message publisher recovery",
+    "unknown publisher rejected without producer-policy fallback",
+    "manual explicit resubmission",
+    "legacy row IDs and payloads unchanged on reads",
+    "exact delegation/purpose/prefix source scope",
+    "current reader and original provider remain independent",
+    "actual wire dispatch/read/automatic delivery/account acceptance",
+    "real old-format delivery restoration, original values, publisher/original-provider/field revocation and restart"
+  ],
+  "pending": [
+    "legacy contract required-root publication identity and full historical assignment association",
+    "full explicit republishing UI and accepted-history handling",
+    "multi-owner old/mixed source roots and dependencies",
+    "additional professional source adapters",
+    "participant management/execution/delivery scopes",
+    "complete execution-detail sharing",
+    "cross-subject transfer and subject lifecycle",
+    "C06 and all remaining TODO items"
+  ],
+  "database": "SQLite",
+  "model": "deterministic wire fixture",
+  "full_browser_acceptance": false,
+  "online_model_acceptance": false
+}

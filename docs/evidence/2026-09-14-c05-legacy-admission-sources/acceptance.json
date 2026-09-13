@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-14",
+  "entry": "C05",
+  "phase": "legacy admission roots and historical page identity",
+  "c05_complete": false,
+  "completed_items": 4,
+  "total_items": 25,
+  "source_files": 69,
+  "checks": {
+    "regression.log": {
+      "packages": 8,
+      "exit_code": 0
+    },
+    "race.log": {
+      "packages": 2,
+      "exit_code": 0
+    },
+    "http.log": {
+      "scenarios": 2,
+      "exit_code": 0
+    },
+    "runtime.log": {
+      "scenarios": 4,
+      "exit_code": 0
+    }
+  },
+  "verified": [
+    "exact original completed admission call, step, delegation ID and explicitly declared source roots",
+    "current requirements metadata neither necessary nor sufficient for legacy publication recovery",
+    "immutable original provider and actual publisher remain separate",
+    "delivery-result endpoint requires exact delivery publication purpose, delegation and original receipt prefix",
+    "historical source pages retain immutable original role and server-owned assignment membership without granting live invocation",
+    "actual wire dispatch/read/automatic delivery/account acceptance with both contract and delivery publications converted to old format",
+    "original values, equivalent current reader, saved page replay, publisher/original-provider/field revocation and restart"
+  ],
+  "pending": [
+    "full explicit republishing UI and accepted-history handling",
+    "complete historical assignment flows",
+    "multi-owner old/mixed source roots and dependencies",
+    "additional professional source adapters",
+    "participant management/execution/delivery scopes",
+    "complete execution-detail sharing",
+    "cross-subject transfer and subject lifecycle",
+    "C06 and all remaining TODO items"
+  ],
+  "database": "SQLite",
+  "model": "deterministic wire fixture",
+  "full_browser_acceptance": false,
+  "online_model_acceptance": false
+}

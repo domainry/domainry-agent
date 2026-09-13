@@ -30,7 +30,8 @@ type conversationSourceAudit struct {
 	cache          map[agentsdk.ConversationRunReference]sourceAuditEntry
 	reading        map[agentsdk.ConversationRunReference]bool
 	records        map[string]bool
-	conversationID string // model consumer; empty only for explicit user reads
+	conversationID string                          // model consumer; empty only for explicit user reads
+	evidenceOwner  *agentsdk.ConversationAuthority // immutable ledger routing only
 }
 
 func (s *ConversationService) sourceAudit(a agentsdk.ConversationAuthority, conversationID ...string) *conversationSourceAudit {
@@ -86,6 +87,21 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 	if ref.BeforeStep < 0 || ref.BeforeStep > 257 {
 		return nil, conversationFailure("unavailable", "source_reference_invalid")
 	}
+	if audit.evidenceOwner == nil {
+		ctx, err = audit.s.publishedReferenceContext(ctx, ref, audit.a)
+		if err != nil {
+			return nil, err
+		}
+		if producer := releasedEvidenceAuthority(ctx, ref, audit.a); producer != audit.a {
+			if err := audit.authorizeReleasedSourceRead(ctx); err != nil {
+				return nil, err
+			}
+			child := audit.s.sourceAudit(audit.a, audit.conversationID)
+			child.evidenceOwner = &producer
+			child.reading, child.records = audit.reading, audit.records
+			return child.run(ctx, ref)
+		}
+	}
 	if saved, ok := audit.cache[ref]; ok {
 		return saved.roots, saved.err
 	}
@@ -101,11 +117,87 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 	if !ok {
 		return nil, conversationFailure("unavailable", "source_read_unavailable")
 	}
-	snapshot, err := repo.ConversationSourceSnapshot(ctx, ref, audit.a)
+	snapshot, err := repo.ConversationSourceSnapshot(ctx, ref, audit.evidenceAuthority(ref))
 	if err != nil {
+		var coded *agentsdk.Error
+		if audit.evidenceOwner == nil && errors.As(err, &coded) && coded.Class == "not_found" {
+			releaseCtx, found, releaseErr := audit.publishedSourceContext(ctx, ref)
+			if releaseErr != nil {
+				return nil, releaseErr
+			}
+			if found {
+				delete(audit.reading, ref)
+				return audit.run(releaseCtx, ref)
+			}
+		}
+		if audit.evidenceOwner != nil && *audit.evidenceOwner != audit.a && errors.As(err, &coded) && coded.Class == "not_found" {
+			// Inherited provenance can return to the reader's own conversation.
+			// Keep the immutable ledgers separate rather than substituting the
+			// producer for all participants in the source graph.
+			delete(audit.reading, ref)
+			child := audit.s.sourceAudit(audit.a, audit.conversationID)
+			child.evidenceOwner = &audit.a
+			child.reading, child.records = audit.reading, audit.records
+			return child.run(ctx, ref)
+		}
 		return nil, err
 	}
+	release, scoped := ctx.Value(conversationSourceReleaseKey{}).(conversationSourceRelease)
+	if snapshot.Authority.Known && snapshot.Authority != audit.evidenceAuthority(ref) && (audit.evidenceOwner != nil || scoped && release.reader == audit.a) {
+		original := snapshot.Authority
+		ledger := audit.evidenceAuthority(ref)
+		if err := audit.s.authorize(original); err != nil {
+			return nil, err
+		}
+		if original.RuntimeID != ledger.RuntimeID || original.WorkspaceID != ledger.WorkspaceID || original.UserID != ledger.UserID {
+			return nil, conversationFailure("forbidden", "execution_subject_mismatch")
+		}
+		// Preserve each run's proof role, including an older role first shared
+		// through this submitted root's immutable provenance. Only references
+		// traversed from a trusted snapshot may introduce that bounded context.
+		if original != audit.a {
+			releaseCtx, found, releaseErr := audit.publishedSourceContext(ctx, ref)
+			if releaseErr != nil {
+				return nil, releaseErr
+			}
+			if !found {
+				parent, inherited := ctx.Value(conversationSourceParentKey{}).(agentsdk.ConversationAuthority)
+				release, shared := ctx.Value(conversationSourceReleaseKey{}).(conversationSourceRelease)
+				if !inherited || !shared || release.reader != audit.a || parent.RuntimeID != original.RuntimeID || parent.WorkspaceID != original.WorkspaceID || parent.UserID != original.UserID {
+					return nil, conversationFailure("forbidden", "source_reference_not_released")
+				}
+				if err := audit.authorizeReleasedSourceRead(ctx); err != nil {
+					return nil, err
+				}
+				if !release.active {
+					if err := audit.s.authorizeCollaboration(delegationExecutorContext(ctx), "share", nil, release.producer); err != nil {
+						return nil, err
+					}
+				}
+				releaseCtx, releaseErr = audit.s.sourceReleaseContext(ctx, release.purpose, release.delegationID, original, audit.a, []agentsdk.ConversationRunReference{ref})
+				if releaseErr != nil {
+					return nil, releaseErr
+				}
+			}
+			if releasedEvidenceAuthority(releaseCtx, ref, audit.a) != original {
+				return nil, conversationFailure("forbidden", "source_reference_not_released")
+			}
+			ctx = releaseCtx
+		}
+		delete(audit.reading, ref)
+		child := audit.s.sourceAudit(audit.a, audit.conversationID)
+		child.evidenceOwner = &original
+		child.reading, child.records = audit.reading, audit.records
+		return child.run(ctx, ref)
+	}
+	ctx = context.WithValue(ctx, conversationSourceParentKey{}, audit.evidenceAuthority(ref))
 	if snapshot.Run.BackgroundTask != nil {
+		if task := snapshot.Run.BackgroundTask; task.DelegationID != "" && len(task.Requirements.Sources) > 0 {
+			ctx, err = audit.s.delegationRunSourceContext(ctx, snapshot.Run, audit.a)
+			if err != nil {
+				return nil, err
+			}
+		}
 		if handoff := snapshot.Run.BackgroundTask.Handoff; handoff != nil {
 			refs := append([]agentsdk.ConversationRunReference{}, handoff.Runs...)
 			if handoff.Source != nil {
@@ -230,7 +322,7 @@ func (audit *conversationSourceAudit) history(ctx context.Context, id string, th
 	var roots []agentsdk.ConversationRunReference
 	var after int64
 	for page := 0; page < 256 && after < through; page++ {
-		messages, err := audit.s.repo.History(ctx, id, after, through, 1000, audit.a)
+		messages, err := audit.s.repo.History(ctx, id, after, through, 1000, audit.evidenceAuthority(agentsdk.ConversationRunReference{ConversationID: id}))
 		if err != nil {
 			return nil, err
 		}
@@ -262,7 +354,7 @@ func (audit *conversationSourceAudit) inlineKnowledge(ctx context.Context, snaps
 	if audit.s.options.Knowledge == nil {
 		return conversationFailure("forbidden", "knowledge_access_denied")
 	}
-	messages, err := audit.s.repo.History(ctx, snapshot.Run.ConversationID, snapshot.Run.UserSeq-1, snapshot.Run.UserSeq, 1, audit.a)
+	messages, err := audit.s.repo.History(ctx, snapshot.Run.ConversationID, snapshot.Run.UserSeq-1, snapshot.Run.UserSeq, 1, audit.evidenceAuthority(agentsdk.ConversationRunReference{ConversationID: snapshot.Run.ConversationID}))
 	if err != nil {
 		return err
 	}
@@ -336,10 +428,49 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 	if privateAttachmentCall(record.Call) || retiredDocumentResult(*record.Result) {
 		return nil, conversationFailure("forbidden", "knowledge_source_retired")
 	}
+	key := conversationDigest([]any{owner, record.Step, record.Call.ID})
+	if audit.records[key] {
+		return nil, conversationFailure("unavailable", "source_reference_invalid")
+	}
+	audit.records[key] = true
+	defer delete(audit.records, key)
+	if record.Call.Name == "delegation_source_read" {
+		return audit.delegationSourceToolRecord(ctx, owner, record)
+	}
+	if handled, roots, err := audit.deliveryArtifactToolResult(ctx, owner, record); handled {
+		return roots, err
+	}
+	if handled, roots, err := audit.deliveryTaskToolResult(ctx, owner, record); handled {
+		return roots, err
+	}
+	if handled, roots, err := audit.deliveryHistoryToolResult(ctx, owner, record); handled {
+		return roots, err
+	}
+	if handled, err := audit.deliveryPersonalToolResult(ctx, owner, record); handled {
+		if err != nil {
+			return nil, err
+		}
+		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
+	}
+	if handled, err := audit.deliveryKnowledgeToolResult(ctx, owner, record); handled {
+		if err != nil {
+			return nil, err
+		}
+		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
+	}
+	if handled, err := audit.deliveryBusinessToolResult(ctx, owner, record); handled {
+		if err != nil {
+			return nil, err
+		}
+		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
+	}
 	if !privateRemoteAttachmentCall(record.Call) {
 		if handled, err := audit.deliveryToolResult(ctx, owner, record); handled {
 			if err != nil {
 				return nil, err
+			}
+			if _, known := scheduleResultReadDefinition(record.Call.Name); known {
+				return audit.scheduleToolRecord(ctx, owner, record)
 			}
 			return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
 		}
@@ -347,7 +478,11 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 	if err := audit.connectedTool(ctx, record.Call.Name); err != nil {
 		return nil, err
 	}
-	if selectedConversationAgent(ctx) != nil && audit.s.options.ToolHost != nil {
+	readCollaborationSource, err := audit.deliveryCollaborationSource(ctx, record)
+	if err != nil {
+		return nil, err
+	}
+	if !readCollaborationSource && selectedConversationAgent(ctx) != nil && audit.s.options.ToolHost != nil {
 		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
 		auth, err := audit.s.authorizeConversationTool(ctx, audit.s.options.ToolHost, request)
 		if err != nil {
@@ -357,12 +492,6 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 			return nil, conversationFailure("forbidden", "tool_access_denied")
 		}
 	}
-	key := conversationDigest([]any{owner, record.Step, record.Call.ID})
-	if audit.records[key] {
-		return nil, conversationFailure("unavailable", "source_reference_invalid")
-	}
-	audit.records[key] = true
-	defer delete(audit.records, key)
 	if privateRemoteAttachmentCall(record.Call) {
 		if audit.conversationID != "" && audit.conversationID != owner.ConversationID {
 			return nil, conversationFailure("forbidden", "attachment_conversation_mismatch")
@@ -446,9 +575,14 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 		if err = audit.s.authorizeStoredToolResult(ctx, request, *record.Result); err != nil {
 			return nil, err
 		}
+		if _, known := scheduleResultReadDefinition(record.Call.Name); known {
+			return audit.scheduleToolRecord(ctx, owner, record)
+		}
 		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
 	}
 	switch record.Call.Name {
+	case "task_start", "task_get", "task_list", "task_cancel", "task_resume":
+		return audit.taskToolRecord(ctx, owner, record)
 	case "agent_message":
 		var message agentsdk.ConversationAgentMessage
 		if json.Unmarshal(record.Result.Content, &message) != nil {

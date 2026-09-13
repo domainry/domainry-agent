@@ -1,0 +1,74 @@
+[
+  {
+    "path": "../domainry-agent-sdk/persistence/conversation_collaboration.go",
+    "sha256": "11a7dec200424a32ccd2b70b164dda60e4d5f14ca55c8ee7a1da36fabc64c7d0"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_delegation_subjects_schema.go",
+    "sha256": "98cb5bd5b3c680a4ec0499af3285250b490886f672ff7fa19f7ea5e62f21d179"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_delegation_subjects_store.go",
+    "sha256": "2d51f72248a7f1f06765ca1ac175d63fb540ed5e70a562c886b38ca096fb6100"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_delegation_subjects_store_test.go",
+    "sha256": "1abc1712d3f69364f5e5cafcab36d40cd99cf15abbbc8137fd160aba681f2425"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_delegation_store.go",
+    "sha256": "4191a25809cd95840b22a77cb9efeb2b5bf2639eb7ba3cbb96c14cdb83b1b9d1"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_task_store.go",
+    "sha256": "73672ae6a6ca9d76baa248bab4084999ff320e09be3c50dd0875b8f6b705de67"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_participants_store.go",
+    "sha256": "0a934dd06d0e63628a9d8694071530fd65c92522fa0a9b7ca8c6550e55c39070"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_peer_messages_store.go",
+    "sha256": "1b4131962ff8441dd4268fb002c274717ef1a55071524c36a062a3d3539a81bc"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_peer_delivery_store.go",
+    "sha256": "1201797935c48c6c67849475a92bb1e02b4a494eaef0f8509a820995a9eaa4c4"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_peer_inbox_store.go",
+    "sha256": "822e723681a3ea82d21a682591ca69cba467adf85ddfcdfb01c5c5198be2b067"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_collaboration_control_store.go",
+    "sha256": "2284c9d32a766b370aea59df4e3e0f0ab4e77fd8e4ce00e56ace6b3efb8d3695"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_assignments_store.go",
+    "sha256": "89b27ab1803bfcb9dc92fb5764a4ef27240079a091143f64552f19ac70cf3bf7"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_dependencies_store.go",
+    "sha256": "e9aadef9188ba3a2e3ebda4e4e30e3484fa043a39d5b8b63d6bdc8ec32140790"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_verification_store.go",
+    "sha256": "53133dc5ff9c7fbe157301ece57c44582df519fe50865c1f4f2aa7d93a04118f"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_transfer_store.go",
+    "sha256": "73d24a9ec7e4f3b05daac4304433105568404406012f9df32cf8cc46703d3795"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_store.go",
+    "sha256": "b69475dd36107d681bec3e6784ab34cf7ff332103fa99a7b5a4cd8de8848d9b5"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/schema.go",
+    "sha256": "62471980173d090dd2a59daddc9be4e2f3cc1fadfa6b99d75387654f58454e44"
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/schema_test.go",
+    "sha256": "f8685f93d402d58ba96a251b00aa2f0ba0f135d18592d5b13619d739a1f39281"
+  }
+]

@@ -86,9 +86,6 @@ func (s *ConversationService) readResultSlice(ctx context.Context, args agentsdk
 			return agentsdk.ConversationResultSlice{}, err
 		}
 	}
-	fail := func(code string) (agentsdk.ConversationResultSlice, error) {
-		return agentsdk.ConversationResultSlice{}, conversationFailure("bad_request", code)
-	}
 	_, current, err := s.executionCatalog(ctx, a)
 	if err != nil {
 		return agentsdk.ConversationResultSlice{}, err
@@ -96,6 +93,15 @@ func (s *ConversationService) readResultSlice(ctx context.Context, args agentsdk
 	result, err := s.authorizedConversationResult(ctx, args.Reference, a, current, map[string]bool{}, recipient)
 	if err != nil {
 		return agentsdk.ConversationResultSlice{}, err
+	}
+	return s.conversationResultSlice(args, result)
+}
+
+// Shared pagination for ordinary execution readers and released deliveries.
+// Callers must authorize the exact immutable result before slicing any bytes.
+func (s *ConversationService) conversationResultSlice(args agentsdk.ConversationResultRead, result agentsdk.ConversationToolResult) (agentsdk.ConversationResultSlice, error) {
+	fail := func(code string) (agentsdk.ConversationResultSlice, error) {
+		return agentsdk.ConversationResultSlice{}, conversationFailure("bad_request", code)
 	}
 	raw, err := json.Marshal(result)
 	if err != nil {

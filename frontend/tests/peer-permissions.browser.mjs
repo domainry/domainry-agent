@@ -27,7 +27,7 @@ try {
  await page.screenshot({path:join(output,'peer-permissions-metadata.png'),fullPage:true});
  await change('delivery');
  await work().getByText('独立核查完成',{exact:true}).waitFor();
- assert.equal(await work().getByRole('button',{name:/查看实时执行|查看执行证据|查看第.*原回执/}).count(),0);
+ assert.equal(await work().getByRole('button',{name:/查看实时执行|查看执行证据|查看该回执的执行过程/}).count(),0);
  assert.equal(await work().getByRole('button',{name:'核对交付',exact:true}).count(),0);
  await work().getByRole('button',{name:'查看交付与验收历史',exact:true}).click();
  await work().getByRole('list',{name:'交付与验收历史',exact:true}).waitFor();

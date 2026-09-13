@@ -1,0 +1,4 @@
+=== RUN   TestPeerKnowledgeDeliveryReadsWithoutSearchReadOrExtractExecution
+--- PASS: TestPeerKnowledgeDeliveryReadsWithoutSearchReadOrExtractExecution (6.57s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	7.268s

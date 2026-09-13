@@ -1,0 +1,12 @@
+=== RUN   TestDelegationSubjectsSeparateExecutionAndReturnMessagesToIssuer
+--- PASS: TestDelegationSubjectsSeparateExecutionAndReturnMessagesToIssuer (0.02s)
+=== RUN   TestDelegationSubjectsRejectUnrelatedPrincipalsAndIdentityChangingRetries
+--- PASS: TestDelegationSubjectsRejectUnrelatedPrincipalsAndIdentityChangingRetries (0.01s)
+=== RUN   TestDelegationSubjectsIssuerControlPreservesExecutorAcrossResume
+--- PASS: TestDelegationSubjectsIssuerControlPreservesExecutorAcrossResume (0.01s)
+=== RUN   TestDelegationSubjectsFollowOriginAcrossExecutionOwners
+--- PASS: TestDelegationSubjectsFollowOriginAcrossExecutionOwners (0.01s)
+=== RUN   TestDelegationSubjectsKeepDifferentRolesForTheSameUser
+--- PASS: TestDelegationSubjectsKeepDifferentRolesForTheSameUser (0.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.730s

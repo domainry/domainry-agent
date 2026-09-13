@@ -1,0 +1,11 @@
+=== RUN   TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission
+    account_write_fixture_test.go:226: explicit recipient groups lost
+    account_write_fixture_test.go:246: approved Cc recipient changed
+    account_write_fixture_test.go:246: approved Bcc recipient changed
+    account_write_fixture_test.go:246: approved To recipient changed
+    account_write_fixture_test.go:256: full approved mail body changed
+    conversation_delivery_write_permissions_test.go:145: GET /agent/delegations/delegation_842aac68faccd5e2a5e7afbf2746ee0b/deliveries: status 503, want 403, body {"code":"agent.conversation.tool_unavailable"}
+--- FAIL: TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission (6.26s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	6.714s
+FAIL

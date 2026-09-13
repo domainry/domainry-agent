@@ -9,10 +9,11 @@ import (
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent/internal/execution"
 	"github.com/domainry/domainry-orm/query"
+	"sort"
 	"time"
 )
 
-func (s *ConversationStore) conversationDelegation(ctx context.Context, db conversationDB, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationDelegation, error) {
+func (s *ConversationStore) ownedConversationDelegation(ctx context.Context, db conversationDB, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationDelegation, error) {
 	var out agentsdk.ConversationDelegation
 	if err := conversationAuthority(a); err != nil {
 		return out, err
@@ -28,12 +29,23 @@ func (s *ConversationStore) conversationDelegation(ctx context.Context, db conve
 		return out, err
 	}
 	err = json.Unmarshal(raw, &out)
+	out.OwnerUserID = a.UserID
 	normalizeAgreement(&out)
 	return out, err
 }
 
+func (s *ConversationStore) conversationDelegation(ctx context.Context, db conversationDB, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationDelegation, error) {
+	d, err := s.ownedConversationDelegation(ctx, db, id, a)
+	var coded *agentsdk.Error
+	if err == nil || !errors.As(err, &coded) || coded.Code != "agent.conversation.delegation_not_found" {
+		return d, err
+	}
+	return s.executionDelegation(ctx, db, id, a)
+}
+
 func (s *ConversationStore) ConversationDelegation(ctx context.Context, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationDelegation, error) {
-	return s.conversationDelegation(ctx, s.store.Database(), id, a)
+	d, _, err := s.participantDelegation(ctx, s.store.Database(), id, a, "view")
+	return d, err
 }
 
 func (s *ConversationStore) ConversationDelegations(ctx context.Context, conversationID string, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationDelegation, error) {
@@ -42,11 +54,13 @@ func (s *ConversationStore) ConversationDelegations(ctx context.Context, convers
 		return nil, err
 	}
 	p := query.Equal("owner_key", conversationOwner(a))
+	conversationDelegationID := ""
 	if conversationID != "" {
 		c, err := s.get(ctx, s.store.Database(), conversationID, a)
 		if err != nil {
 			return nil, err
 		}
+		conversationDelegationID = c.DelegationID
 		p = query.And(p, query.Or(query.Equal("source_conversation_id", conversationID), query.Equal("conversation_id", conversationID), query.Equal("delegation_id", c.DelegationID)))
 	}
 	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDelegationTable).Columns("payload_json").Where(p).OrderBy(query.Descending("created_at"), query.Descending("delegation_id")).Limit(101).Build()
@@ -67,14 +81,64 @@ func (s *ConversationStore) ConversationDelegations(ctx context.Context, convers
 		if err = json.Unmarshal(raw, &item); err != nil {
 			return nil, err
 		}
+		item.OwnerUserID = a.UserID
 		normalizeAgreement(&item)
 		out = append(out, item)
 	}
-	return out, rows.Err()
+	err = rows.Err()
+	rows.Close()
+	if err != nil {
+		return out, err
+	}
+	if conversationID != "" {
+		if len(out) == 0 && conversationDelegationID != "" {
+			d, err := s.conversationDelegation(ctx, s.store.Database(), conversationDelegationID, a)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, d)
+		}
+		return out, nil
+	}
+	shared, err := s.participantDelegations(ctx, a)
+	if err != nil {
+		return out, err
+	}
+	out = append(out, shared...)
+	received, err := s.executionDelegations(ctx, a)
+	if err != nil {
+		return nil, err
+	}
+	seen := map[string]bool{}
+	for _, d := range out {
+		seen[d.ID] = true
+	}
+	for _, d := range received {
+		if !seen[d.ID] {
+			out = append(out, d)
+		}
+	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].CreatedAt.Equal(out[j].CreatedAt) {
+			return out[i].ID > out[j].ID
+		}
+		return out[i].CreatedAt.After(out[j].CreatedAt)
+	})
+	if len(out) > 101 {
+		out = out[:101]
+	}
+	return out, nil
 }
 
 func (s *ConversationStore) CreateConversationDelegation(ctx context.Context, in persistence.ConversationDelegationAdmission, a agentsdk.ConversationAuthority) (agentsdk.ConversationDelegation, error) {
 	var out agentsdk.ConversationDelegation
+	executor := a
+	if in.ExecutionAuthority != nil {
+		executor = *in.ExecutionAuthority
+	}
+	if conversationAuthority(executor) != nil || !sameConversationWorkspace(a, executor) {
+		return out, conversationError("forbidden", "execution_subject_mismatch")
+	}
 	err := s.transaction(ctx, func(tx *sql.Tx) error {
 		if err := conversationAuthority(a); err != nil {
 			return err
@@ -84,6 +148,9 @@ func (s *ConversationStore) CreateConversationDelegation(ctx context.Context, in
 		}
 		key := conversationHash([]string{"delegate", in.Request.ClientID})
 		request := []any{in.Request, in.FromAgentID, in.SourceRunID}
+		if in.ExecutionAuthority != nil {
+			request = append(request, executor)
+		}
 		if replay, err := s.collaborationReplay(ctx, tx, a, key, request, &out); err != nil || replay {
 			return err
 		}
@@ -116,7 +183,7 @@ func (s *ConversationStore) CreateConversationDelegation(ctx context.Context, in
 				return conversationError("conflict", "run_superseded")
 			}
 		}
-		if err = s.checkConversationQueueCapacity(ctx, tx, a); err != nil {
+		if err = s.checkConversationQueueCapacity(ctx, tx, executor); err != nil {
 			return err
 		}
 		if err = s.lockConversationWorkspaceCapacity(ctx, tx, a); err != nil {
@@ -130,6 +197,20 @@ func (s *ConversationStore) CreateConversationDelegation(ctx context.Context, in
 			if !current.Enabled || current.Revision != in.Agent.Revision {
 				return conversationError("conflict", "agent_changed")
 			}
+			if in.Agent.DelegationRoleKey != "" && (in.ExecutionAuthority == nil || current.DelegationExecution != "owner" || current.OwnerUserID != executor.UserID || current.DelegationRoleKey != executor.RoleKey || in.Agent.DelegationRoleKey != executor.RoleKey) {
+				return conversationError("forbidden", "execution_subject_mismatch")
+			}
+			if current.Shared && in.Agent.ExecutionSubject == nil || in.Agent.OwnerUserID != "" && in.Agent.OwnerUserID != current.OwnerUserID {
+				return conversationError("forbidden", "execution_subject_mismatch")
+			}
+			if conversationOwner(executor) != conversationOwner(a) && (!current.Shared || current.OwnerUserID != executor.UserID || in.Agent.OwnerUserID != current.OwnerUserID) {
+				return conversationError("forbidden", "execution_subject_mismatch")
+			}
+		} else if conversationOwner(executor) != conversationOwner(a) {
+			return conversationError("forbidden", "execution_subject_mismatch")
+		}
+		if in.Agent.ExecutionSubject != nil && *in.Agent.ExecutionSubject != (agentsdk.ConversationExecutionSubject{RuntimeID: executor.RuntimeID, WorkspaceID: executor.WorkspaceID, UserID: executor.UserID}) {
+			return conversationError("forbidden", "execution_subject_mismatch")
 		}
 		rootID, err := s.conversationDelegationRoot(ctx, tx, source.ID, in.Request.AgentID, a)
 		if err != nil {
@@ -155,6 +236,8 @@ func (s *ConversationStore) CreateConversationDelegation(ctx context.Context, in
 		task.Agent, task.DelegationID, task.ExecutionConversationID = &in.Agent, id, conversationID
 		task.Brief = &in.Request.Brief
 		out = agentsdk.ConversationDelegation{ID: id, FromAgentID: in.FromAgentID, ToAgentID: in.Agent.ID, SourceConversationID: source.ID, SourceRunID: in.SourceRunID, ConversationID: conversationID, TaskID: task.ID, Purpose: in.Request.Purpose, Brief: in.Request.Brief, Input: in.Request.Input, Budget: task.Budget, OutputSchema: in.Request.OutputSchema, Status: "accepted", Revision: 1, CreatedAt: now, UpdatedAt: now}
+		out.OwnerUserID = a.UserID
+		out.ExecutionSubject = &agentsdk.ConversationExecutionSubject{RuntimeID: executor.RuntimeID, WorkspaceID: executor.WorkspaceID, UserID: executor.UserID}
 		out.SourceAgent, out.RootConversationID = &in.SourceAgent, rootID
 		out.Requirements = in.Request.Requirements
 		out.StructuredInput = in.Request.StructuredInput
@@ -192,17 +275,23 @@ func (s *ConversationStore) CreateConversationDelegation(ctx context.Context, in
 		if task.MaxInputBytes > 0 && len(agentsdk.ConversationTaskPrompt(task)) > task.MaxInputBytes {
 			return conversationError("bad_request", "task_input_exceeded")
 		}
-		conversation := agentsdk.Conversation{ID: conversationID, DelegationID: id, AgentID: in.Agent.ID, Title: in.Request.Brief.Goal, RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, UserID: a.UserID, Revision: 1, CreatedAt: now, UpdatedAt: now}
-		q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversations").Columns("owner_key", "conversation_id", "client_id", "request_hash", "title", "updated_at", "archived", "revision", "payload_json").Values(conversationOwner(a), conversationID, id, conversationHash(out), conversation.Title, now.UnixMilli(), 0, 1, conversationJSON(conversation)).Build()
+		conversation := agentsdk.Conversation{ID: conversationID, DelegationID: id, AgentID: in.Agent.ID, Title: in.Request.Brief.Goal, RuntimeID: executor.RuntimeID, WorkspaceID: executor.WorkspaceID, UserID: executor.UserID, Revision: 1, CreatedAt: now, UpdatedAt: now}
+		q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversations").Columns("owner_key", "conversation_id", "client_id", "request_hash", "title", "updated_at", "archived", "revision", "payload_json").Values(conversationOwner(executor), conversationID, id, conversationHash(out), conversation.Title, now.UnixMilli(), 0, 1, conversationJSON(conversation)).Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}
-		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationTaskTable).Columns("owner_key", "workspace_key", "task_id", "runtime_id", "source_conversation_id", "source_run_id", "status", "authority_json", "request_hash", "created_at", "updated_at", "payload_json").Values(conversationOwner(a), conversationHash([]string{a.RuntimeID, a.WorkspaceID}), task.ID, a.RuntimeID, source.ID, in.SourceRunID, task.Status, conversationJSON(a), conversationHash(id), now.UnixMilli(), now.UnixMilli(), conversationJSON(task)).Build()
+		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationTaskTable).Columns("owner_key", "workspace_key", "task_id", "runtime_id", "source_conversation_id", "source_run_id", "status", "authority_json", "request_hash", "created_at", "updated_at", "payload_json").Values(conversationOwner(executor), conversationHash([]string{executor.RuntimeID, executor.WorkspaceID}), task.ID, executor.RuntimeID, source.ID, in.SourceRunID, task.Status, conversationJSON(executor), conversationHash(id), now.UnixMilli(), now.UnixMilli(), conversationJSON(task)).Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}
 		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationDelegationTable).Columns("owner_key", "delegation_id", "conversation_id", "source_conversation_id", "root_conversation_id", "status", "revision", "created_at", "payload_json").Values(conversationOwner(a), id, conversationID, source.ID, rootID, out.Status, out.Revision, now.UnixMilli(), conversationJSON(out)).Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
+			return err
+		}
+		if err = s.saveDelegationSubjects(ctx, tx, id, a, executor, now); err != nil {
+			return err
+		}
+		if err := s.saveDelegationContractReleases(ctx, tx, out, a); err != nil {
 			return err
 		}
 		if err = s.saveAgreementRevision(ctx, tx, out, nil, in.Request.Purpose, in.Request.ToolRequest, a); err != nil {
@@ -217,7 +306,26 @@ func (s *ConversationStore) CreateConversationDelegation(ctx context.Context, in
 }
 
 func (s *ConversationStore) saveConversationDelegation(ctx context.Context, tx *sql.Tx, out agentsdk.ConversationDelegation, expected int64, a agentsdk.ConversationAuthority) error {
-	q, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationDelegationTable).Set("conversation_id", out.ConversationID).Set("status", out.Status).Set("revision", out.Revision).Set("payload_json", conversationJSON(out)).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", out.ID), query.Equal("revision", expected))).Build()
+	if out.BriefSource != nil || out.InputSource != nil || len(out.Requirements.Sources) > 0 {
+		previous, err := s.ownedConversationDelegation(ctx, tx, out.ID, delegationRecordAuthority(out, a))
+		if err != nil {
+			return err
+		}
+		// Publishing is tied to a new/changed source, not every metadata CAS.
+		// Unavailable historical sources must not prevent pause/cancel/transfer
+		// or replace their provenance with the current caller's role.
+		if conversationHash([]any{out.BriefSource, out.InputSource, out.Requirements.Sources}) != conversationHash([]any{previous.BriefSource, previous.InputSource, previous.Requirements.Sources}) {
+			if err := s.saveDelegationContractReleases(ctx, tx, out, a); err != nil {
+				return err
+			}
+		}
+	}
+	if out.OwnerUserID != "" && out.OwnerUserID != a.UserID {
+		if _, err := s.executionDelegation(ctx, tx, out.ID, a); err != nil {
+			return err
+		}
+	}
+	q, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationDelegationTable).Set("conversation_id", out.ConversationID).Set("status", out.Status).Set("revision", out.Revision).Set("payload_json", conversationJSON(out)).Where(query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(out, a))), query.Equal("delegation_id", out.ID), query.Equal("revision", expected))).Build()
 	return conversationCAS(ctx, tx, q, args, err)
 }
 
@@ -241,6 +349,22 @@ func (s *ConversationStore) UpdateConversationDelegation(ctx context.Context, id
 		out, err = s.conversationDelegation(ctx, tx, id, a)
 		if err != nil {
 			return err
+		}
+		if in.Action == "republish_delivery" {
+			out, err = s.republishDelivery(ctx, tx, out, in, a)
+			if err != nil {
+				return err
+			}
+			return s.saveCollaborationMutation(ctx, tx, a, key, in, out)
+		}
+		if in.Publication != nil {
+			return conversationError("bad_request", "delivery_publication_invalid")
+		}
+		if out.OwnerUserID != a.UserID && in.Action != "deliver" && in.Action != "reject" {
+			return conversationError("forbidden", "delegation_actor_invalid")
+		}
+		if out.ExecutionSubject != nil && out.ExecutionSubject.UserID != out.OwnerUserID && (in.Action == "deliver" || in.Action == "reject") && a.UserID != out.ExecutionSubject.UserID {
+			return conversationError("forbidden", "delegation_actor_invalid")
 		}
 		if out.Revision != in.ExpectedRevision {
 			return conversationError("conflict", "revision_conflict")
@@ -286,7 +410,11 @@ func (s *ConversationStore) UpdateConversationDelegation(ctx context.Context, id
 				if !report.Ready {
 					return conversationError("conflict", "completion_conditions_unmet")
 				}
-				q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", out.TaskID))).Build()
+				executor, err := s.delegationExecutionAuthority(ctx, tx, out, a)
+				if err != nil {
+					return err
+				}
+				q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(executor)), query.Equal("task_id", out.TaskID))).Build()
 				if err != nil {
 					return err
 				}

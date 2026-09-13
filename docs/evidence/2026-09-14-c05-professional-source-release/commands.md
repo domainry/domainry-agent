@@ -1,0 +1,15 @@
+# C05 professional source release verification
+
+All commands exited 0. Agent/SDK/Tools/Report commands used the Agent directory and its current go.work. Runtime commands used the Runtime directory and GOWORK=/tmp/runtime-work/go.work, preserved here. No branch, worktree, commit, push or deployment was performed.
+
+- `go test ./internal/application ../domainry-agent-sdk/businessrpc ../domainry-tools/internal/adapter/reporttools ../domainry-tools/internal/adapter/analysistools ../domainry-report/internal/application/report -count=1` → regression.log
+- `go test ../domainry-report/internal/application/report -run '^TestShared' -count=1` → report-owner.log
+- `GOWORK=/tmp/runtime-work/go.work go test ./runtime/application/agenthost ./runtime/modulehost/report -count=1` → runtime-policy.log
+- `GOWORK=/tmp/runtime-work/go.work go test ./runtime/bootstrap/integrationtest -run '^(TestCrossUserReportAndAnalysisReadThroughRealOwnerAndToolRPC|TestReportAndAnalysisIndependentResultReadThroughRealOwnerRPC|TestConversationGovernedReportRPCUsesRealOwnerAndCurrentData)$' -count=1` → runtime-rpc.log
+- `GOWORK=/tmp/runtime-work/go.work go test ./runtime/bootstrap/integrationtest -run '^TestCrossUserAgentProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead$' -count=1` → agent-delivery.log
+- `GOWORK=/tmp/runtime-work/go.work go test -race ./runtime/application/agenthost ./runtime/modulehost/report -run 'TestConversationCollaboration|TestShared' -count=1` → runtime-race.log
+- `go test -race ./internal/application ../domainry-agent-sdk/businessrpc ../domainry-report/internal/application/report -run 'TestDeliveryToolReadKeeps|TestShared' -count=1` → source-race.log
+
+The full package regressions preceded two added signing-key/whitespace cases and the Identity-error classification case. The Report-specific and both race logs cover those cases. The source-race command was rerun after adding the missing owner-scope attestation classification case: both query and analysis shared reads return 503 when the owner cannot attest the original scope. Its earlier attempt failed because a test import was misplaced; the preserved source-race.log is the corrected final passing run. The actual-owner and automatic-delivery scenarios preceded this missing-port classification change and cover the unchanged assembled happy paths. Source hashes were captured after all functional edits; runtime/bootstrap/runtime/data_exchange_system_subjects.go was corrected only to use the actual Lifecycle SDK package name, with no owner semantics change.
+
+The automatic-delivery test creates a real second Identity user and obtains issued credentials through its HTTP provisioning response. The issuer model emits agent_delegate; the fixture account approves its required interaction. Receiver queries and delivers automatically. Issuer acceptance is an explicit account HTTP action, not autonomous model acceptance. Source policy still checks the actual reader. This is a C05 increment, not completion of C05 or the full 25-item TODO.

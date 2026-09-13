@@ -1,0 +1,3 @@
+ok  	github.com/domainry/domainry-agent/internal/application	1.359s
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	199.239s
+ok  	github.com/domainry/domainry-agent/remote	5.195s

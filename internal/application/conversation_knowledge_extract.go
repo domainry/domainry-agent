@@ -140,6 +140,10 @@ func buildKnowledgeExtraction(ctx context.Context, args agentsdk.KnowledgeExtrac
 	return out, nil
 }
 func (h *knowledgeConversationHost) authorizeExtractionResult(ctx context.Context, in agentsdk.ConversationToolRequest, result agentsdk.ConversationToolResult) error {
+	return h.authorizeExtractionResultUsing(ctx, in, result, false)
+}
+
+func (h *knowledgeConversationHost) authorizeExtractionResultUsing(ctx context.Context, in agentsdk.ConversationToolRequest, result agentsdk.ConversationToolResult, resultRead bool) error {
 	legacy := conversationDigest(in.Definition) == conversationDigest(agentsdk.LegacyKnowledgeExtractionTool())
 	if in.Call.Name != "knowledge_extract" || in.Definition.Key != "knowledge_extract" || !knownKnowledgeDefinition(in.Definition) {
 		return conversationFailure("conflict", "extraction_result_invalid")
@@ -167,6 +171,11 @@ func (h *knowledgeConversationHost) authorizeExtractionResult(ctx context.Contex
 		return conversationFailure("unavailable", "knowledge_extraction_content_unavailable")
 	}
 	fullSource := saved.Source
+	if resultRead {
+		if err := h.revalidateKnowledgeResult(ctx, fullSource, in.Authority, true); err != nil {
+			return err
+		}
+	}
 	passages, err := normalizer.KnowledgeExtractionPassages(ctx, fullSource, in.Authority)
 	if err != nil {
 		return err
@@ -178,7 +187,7 @@ func (h *knowledgeConversationHost) authorizeExtractionResult(ctx context.Contex
 	if conversationDigest(expected) != conversationDigest(saved) {
 		return conversationFailure("conflict", "extraction_result_invalid")
 	}
-	return selected.RevalidateKnowledge(ctx, fullSource, in.Authority)
+	return h.revalidateKnowledgeResult(ctx, fullSource, in.Authority, resultRead)
 }
 
 func (h *knowledgeConversationHost) extractionSource(in agentsdk.ConversationToolRequest, args *agentsdk.KnowledgeExtractionArguments) (agentsdk.ConversationKnowledgeSource, error) {

@@ -1,0 +1,6 @@
+=== RUN   TestPeerSharedDocumentsUseExplicitKnowledgeCopyAndCurrentReadPermission
+    conversation_shared_documents_test.go:247: Agent did not return exact reference through actual agent_message tool
+--- FAIL: TestPeerSharedDocumentsUseExplicitKnowledgeCopyAndCurrentReadPermission (1.67s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	2.632s
+FAIL

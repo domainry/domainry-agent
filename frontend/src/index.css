@@ -578,7 +578,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visib
 .peer-tool-options small { margin-left: 10px; color: var(--muted-foreground); }
 .peer-definition { display: contents; }
 .peer-messages { max-height: 340px; overflow-y: auto; list-style: none; padding: 0; display: grid; gap: 12px; }
-.peer-messages li { padding: 12px; background: var(--muted); border-radius: 8px; }
+.peer-messages li { min-width: 0; padding: 12px; background: var(--muted); border-radius: 8px; overflow-wrap: anywhere; }
 .peer-messages p, .collaboration-dialog .task-result p { white-space: pre-wrap; overflow-wrap: anywhere; }
 .collaboration-dialog pre { max-height: 260px; overflow: auto; }
 

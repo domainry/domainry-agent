@@ -1,0 +1,4 @@
+ok  	github.com/domainry/domainry-runtime/runtime/application/action	1.557s
+ok  	github.com/domainry/domainry-runtime/runtime/application/workflow	1.732s
+ok  	github.com/domainry/domainry-runtime/runtime/application/agenthost	2.203s
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	34.740s

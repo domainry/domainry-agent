@@ -11,6 +11,25 @@ import (
 	"github.com/domainry/domainry-orm/query"
 )
 
+func (s *ConversationStore) ConversationSourceAuthority(ctx context.Context, ref agentsdk.ConversationRunReference, a agentsdk.ConversationAuthority) (agentsdk.ConversationAuthority, error) {
+	if err := conversationAuthority(a); err != nil {
+		return agentsdk.ConversationAuthority{}, err
+	}
+	if !personalMemoryKey(ref.ConversationID) || !personalMemoryKey(ref.RunID) || ref.BeforeStep < 0 || ref.BeforeStep > 257 {
+		return agentsdk.ConversationAuthority{}, conversationError("bad_request", "source_reference_invalid")
+	}
+	row, err := s.runRow(ctx, s.store.Database(), ref.ConversationID, ref.RunID, a)
+	if err != nil {
+		return agentsdk.ConversationAuthority{}, err
+	}
+	if conversationAuthority(row.Authority) != nil || conversationOwner(row.Authority) != conversationOwner(a) {
+		return agentsdk.ConversationAuthority{}, conversationError("forbidden", "execution_subject_mismatch")
+	}
+	return row.Authority, nil
+}
+
+var _ persistence.ConversationSourceAuthorityRepository = (*ConversationStore)(nil)
+
 func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref agentsdk.ConversationRunReference, a agentsdk.ConversationAuthority) (persistence.ConversationSourceSnapshot, error) {
 	var out persistence.ConversationSourceSnapshot
 	if err := conversationAuthority(a); err != nil {
@@ -25,6 +44,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 			return err
 		}
 		out.Run = row.Run
+		out.Authority = row.Authority
 		predicate := query.And(conversationScope(a, ref.ConversationID), query.Equal("run_id", ref.RunID))
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_inputs").Columns("payload_json").Where(predicate).Build()
 		if err != nil {

@@ -1,0 +1,23 @@
+{
+  "phase": "C05 built-in business read results and same-delegation provenance",
+  "phaseComplete": true,
+  "C05Complete": false,
+  "completedItems": 4,
+  "totalItems": 25,
+  "operations": [
+    "business_catalog",
+    "query_records",
+    "get_record",
+    "query_related_records",
+    "workflow_get"
+  ],
+  "remainingC05": [
+    "cross-user and role participants/execution subjects",
+    "action/workflow-start receipt read policies",
+    "remaining source-owner result read strategies"
+  ],
+  "businessRPCContractSHA256": "e1c83b73a9ea7a2eedaf06efe3af087ba3b3ab34cd9151ef14730733d5bd4f06",
+  "historicalPolicyBoundary": "Changed effective policy requires exact currently visible original projection; no replacement of saved values",
+  "rawCollaborationResults": "No provenance-only exception for direct raw receipt reads",
+  "browser": "No new production UI or new browser acceptance in this phase"
+}

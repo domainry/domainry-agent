@@ -1,0 +1,30 @@
+{
+  "phase": "C05 independent history and execution source reading",
+  "phaseComplete": true,
+  "C05Complete": false,
+  "completedItems": 4,
+  "totalItems": 25,
+  "operations": [
+    "history_search",
+    "history_read",
+    "execution_read",
+    "tool_result_read"
+  ],
+  "agentRealHTTP": true,
+  "racePassed": true,
+  "rawCommunicationRequiresCurrentPermission": true,
+  "sameOriginalUserBoundary": true,
+  "doesNotRerunSources": true,
+  "remainingC05": [
+    "Scheduler seven plan receipt policies",
+    "cross-user/role participants and execution subjects"
+  ],
+  "logFiles": [
+    "agent-application-full.log",
+    "agent-http-final.log",
+    "agent-owner-final.log",
+    "agent-race.log",
+    "agent-unfinished-fixture-failure.log",
+    "agent-unfinished-race.log"
+  ]
+}

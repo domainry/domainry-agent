@@ -1,0 +1,6 @@
+=== RUN   TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation
+    conversation_delivery_schedule_permissions_test.go:182: expected seven actual receipts and five confirmations 7 0
+--- FAIL: TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation (4.14s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	4.899s
+FAIL

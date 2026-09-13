@@ -1,0 +1,4 @@
+=== RUN   TestSharedAgentHTTPUsesActualCallerAndStopsAfterGrantRevocation
+--- PASS: TestSharedAgentHTTPUsesActualCallerAndStopsAfterGrantRevocation (12.50s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	12.967s

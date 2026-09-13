@@ -1,0 +1,35 @@
+{
+  "phase": "C05 independent personal result reading",
+  "phaseComplete": true,
+  "C05Complete": false,
+  "completedItems": 4,
+  "totalItems": 25,
+  "operations": [
+    "calculate",
+    "time_now",
+    "ask_user",
+    "memory_search",
+    "memory_save",
+    "memory_forget",
+    "todo_list",
+    "todo_get",
+    "todo_create",
+    "todo_update",
+    "todo_delete"
+  ],
+  "agentRealHTTP": true,
+  "racePassed": true,
+  "sameOriginalUserBoundary": true,
+  "taskHistoryExecutionReading": "Next phase; not included in this source snapshot",
+  "remainingC05": [
+    "task/history/execution owner strategies",
+    "cross-user/role participants and execution subjects"
+  ],
+  "logFiles": [
+    "agent-application-full.log",
+    "agent-http-final.log",
+    "agent-race.log",
+    "agent-http-settings-fixture-failure.log",
+    "agent-http-status-fixture-failure.log"
+  ]
+}

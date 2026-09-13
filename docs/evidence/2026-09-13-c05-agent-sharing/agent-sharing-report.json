@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "realChrome": true,
+  "realIdentityUsers": true,
+  "scenarios": [
+    "owner shares existing configuration",
+    "recipient directory hides editing",
+    "configuration update strips server-owned fields",
+    "recipient receives current configuration",
+    "390px layout",
+    "revoke sharing removes live directory entry and survives reload"
+  ],
+  "errors": []
+}

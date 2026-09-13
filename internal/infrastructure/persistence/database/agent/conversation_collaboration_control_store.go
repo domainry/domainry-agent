@@ -76,6 +76,13 @@ func (s *ConversationStore) conversationDelegationRoot(ctx context.Context, tx *
 			if d.ToAgentID == receiver {
 				return "", conversationError("conflict", "delegation_cycle")
 			}
+			subjects, found, err := s.delegationSubjects(ctx, tx, d.ID, a)
+			if err != nil {
+				return "", err
+			}
+			if found {
+				a = subjects.source
+			}
 			current = d.SourceConversationID
 			continue
 		}
@@ -104,6 +111,15 @@ func (s *ConversationStore) conversationDelegationRoot(ctx context.Context, tx *
 func (s *ConversationStore) controlDelegationTask(ctx context.Context, tx *sql.Tx, d agentsdk.ConversationDelegation, action string, a agentsdk.ConversationAuthority) error {
 	if action == "deliver" || action == "accept_delivery" || action == "review_delivery" || action == "disagreement" {
 		return nil
+	}
+	// The caller's management policy and mutation lease were checked before
+	// this internal control. Preserve the accepted execution user's role.
+	subjects, found, err := s.delegationSubjects(ctx, tx, d.ID, a)
+	if err != nil {
+		return err
+	}
+	if found {
+		a = subjects.execution
 	}
 	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", d.TaskID))).Build()
 	if err != nil {
@@ -191,9 +207,21 @@ func (s *ConversationStore) peerAgentCapacity(ctx context.Context, tx *sql.Tx, r
 	}
 	agent, err := s.conversationAgent(ctx, tx, run.Run.Agent.ID, run.Authority)
 	if err != nil {
+		var coded *agentsdk.Error
+		if errors.As(err, &coded) && coded.Code == "agent.conversation.agent_not_found" {
+			// Let the application claim and terminate a revoked configuration;
+			// a missing grant must not poison the queue for unrelated work.
+			return true, nil
+		}
 		return false, err
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(run.Authority)), query.Equal("status", "running"), query.GreaterThan("lease_expires_at", time.Now().UnixMilli()))).Build()
+	if !agent.Enabled || agent.Revision != run.Run.Agent.Revision {
+		return true, nil
+	}
+	// A shared Agent remains one identity. Count its leases across callers in
+	// this workspace while exposing none of those callers' execution details.
+	scope := query.Or(query.Equal("owner_key", conversationOwner(run.Authority)), query.And(query.Equal("runtime_id", run.Authority.RuntimeID), query.Equal("workspace_key", conversationHash([]string{run.Authority.RuntimeID, run.Authority.WorkspaceID}))))
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("payload_json").Where(query.And(scope, query.Equal("status", "running"), query.GreaterThan("lease_expires_at", time.Now().UnixMilli()))).Build()
 	if err != nil {
 		return false, err
 	}

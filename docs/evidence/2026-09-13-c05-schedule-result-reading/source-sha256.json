@@ -1,0 +1,39 @@
+{
+  "heads": {
+    "/Users/tiger/Projects/domainry-agent": "68fbfb5ce4d4b541d07afc2e3f13cf76cfb302f5",
+    "/Users/tiger/Projects/domainry-tools": "08807ddc3a31bb906fbacc1f3363522a52f67cf7",
+    "/Users/tiger/Projects/domainry-tools-sdk": "bf78c4b6f24bc95be1dec59b1740ebe4349535ea",
+    "/Users/tiger/Projects/domainry-scheduler": "57adf90e8a408824692a914d99875b15b3132ba9",
+    "/Users/tiger/Projects/domainry-scheduler-sdk": "f357fad25eb6c24e7640ad04e1945ef560ed4d68"
+  },
+  "files": {
+    "internal/application/conversation_schedule_sources.go": "0e7836f4a38f5da4d86741a9357d0ad432544d26f4d26585bf96ed32ad72450d",
+    "internal/application/conversation_schedule_sources_test.go": "c0a3dbd64705a488070670ed45b286a76071dfd3f8d79a1bf0a2714ab1613bbb",
+    "internal/application/conversation_delivery_tool_sources.go": "f170cb5fc07a17e173c69c435b9445008139661b619f4856c48e771d7a2ab4ec",
+    "internal/application/conversation_sources.go": "3e0e84c979a2d0d587162497f3d4a3615c1f57f1d3f5521aadff69ad36ce226a",
+    "internal/application/conversation_execution_read.go": "738e45867e972072f29974cce888544749ceeec57736a10cf5dee6f3a1048e6f",
+    "internal/application/conversation_delivery_personal_sources.go": "dbb55a235cc907f80ca667e1d2453e7e4ce4d1f874c027062a71b530d679a5e5",
+    "internal/application/conversation_collaboration_authorization.go": "682f1607ee6d74763012c77f98bafb349080eea0ed79e299de00aa9d86b222fc",
+    "internal/assembly/web/conversation_delivery_schedule_permissions_test.go": "fbed2d43e137cd50cdd4353b2179a19f91872a6bbd503eea15280b44533cce8a",
+    "internal/assembly/web/schedule_tools.go": "e9b72ae48b9c18942049f95754a5cc250b80329ec269883608ecde9511f3fdd2",
+    "internal/assembly/web/tool_settings.go": "10e45cdd5c527694e4428fed7bef6fc85bfb01f410679109690311e3642a4dd5",
+    "../domainry-tools/internal/adapter/scheduletools/adapter.go": "00896fc04ba9c2a651b8b3a95db3adbc4df094f2e2a0e2227497eb113aebc915",
+    "../domainry-tools/internal/adapter/scheduletools/result_read.go": "74cb3eeeab7bb0300731a84c85f2c4b326446857eaa86b829b7c3e69279506b2",
+    "../domainry-tools/internal/adapter/scheduletools/result_read_test.go": "762857aee02553fdaa0e3e833cb8da7ac328471d540030d634fb39b6cb1bc9d8",
+    "../domainry-tools-sdk/schedule.go": "374f1aa8f29449eec15438cb8cf73264fc381dd4d8804b442d8ea47023fe15ac",
+    "../domainry-scheduler-sdk/scheduled_plan_receipt.go": "76d5348d7986aaa0af0d354920415d5e530ccebbaf61811b268eb29fafe65c31",
+    "../domainry-scheduler-sdk/scheduled_plan.go": "ab5b2d74bee6eae280b79f00cd65321367f8026d64be9948cf74482b9e77ea4d",
+    "../domainry-scheduler-sdk/saashost/scheduled_plan_receipt.go": "f718c877ce861292edd1f4b60b3bc94d7a5b7c801a1af9bfb03c3b1e66f7bddc",
+    "../domainry-scheduler-sdk/saashost/httptransport/scheduled_plan_receipt.go": "38eb4a5886a74e6b83bd5130239b27622ee15bd827797f2d175d66344fce4664",
+    "../domainry-scheduler-sdk/saashost/httptransport/transport.go": "9ab7a72db3eb747f52da4233575dc90616e22faa7b64e6740eaeae4fa3acf5c8",
+    "../domainry-scheduler/internal/application/scheduler/scheduled_plan_receipt.go": "617b9b2f892f6f5cb401e32c0f958f853acccf0beb714eebcb1ddb6badbe9167",
+    "../domainry-scheduler/internal/application/scheduler/scheduled_plan_receipt_test.go": "acd2c4ba861f1af1ba5122c647a8b2ca26833637c9d9b6fe35e6744c537e956d",
+    "../domainry-scheduler/internal/application/scheduler/service.go": "ca1e2ead0a62bccb856cf23fa9a1b67f3ad6663f8bf7b809fea584f272d1ffa6",
+    "../domainry-scheduler/internal/assembly/saas/database_service.go": "e833119df4e9c07eb4cd4c65e7edd801e0b4a77a399815edc87b808a7a10e43a",
+    "../domainry-scheduler/internal/assembly/saas/scheduled_plan_receipt.go": "4c046183c92d07c9a043f09e0cfc752e9b3890f282864ba2683182e510673ce6",
+    "../domainry-scheduler/internal/assembly/saas/scheduled_plan_receipt_test.go": "428c890cdbbf8553c457f0fe6d21ef62600cc309a622d1bba56b60336f342f7f",
+    "../domainry-scheduler/internal/transport/http/saas/server.go": "4084530ed19ef6d70d9d3e4f7f2268236d125d122c31c0cc59c70b091be911ad",
+    "../domainry-scheduler/remote/scheduled_plan_receipt.go": "b4213b8001fd2f0cef3be1b9f94d61f5d205d590883a6f77a0e9aded30e190dd",
+    "../domainry-scheduler/remote/scheduled_plan_receipt_test.go": "6e01be41fbf27b47e79696a5f396796b68409bb0a6f27d682eb873912358ccc6"
+  }
+}

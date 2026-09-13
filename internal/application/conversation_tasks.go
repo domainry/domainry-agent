@@ -552,6 +552,11 @@ func (s *ConversationService) executionCatalogForRun(ctx context.Context, claim 
 		return s.executionCatalog(ctx, claim.Authority)
 	}
 	if len(claim.Run.BackgroundTask.Requirements.Sources) > 0 {
+		var err error
+		ctx, err = s.delegationRunSourceContext(ctx, claim.Run, claim.Authority)
+		if err != nil {
+			return nil, nil, err
+		}
 		audit := s.sourceAudit(claim.Authority, claim.Run.ConversationID)
 		for _, ref := range claim.Run.BackgroundTask.Requirements.Sources {
 			if _, err := audit.run(ctx, ref); err != nil {

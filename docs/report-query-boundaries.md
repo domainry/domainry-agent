@@ -1,5 +1,7 @@
 # N01 报表查询边界
 
+2026-09-13 C05 增量：[独立成果读取](testing-2026-09-13-c05-report-and-receipts.md)增加 Report 的 `ResultReader`／`report.results.read`、实际资料范围证明及 Tools／Agent 交付读取；普通执行和原结果回放继续使用下述权限。下文 N01 的三方法与契约摘要是该阶段记录，当前 RPC 指纹及升级边界以 C05 记录为准。
+
 依据 2026-09-12 实际源码：Report SDK `Queries` 已提供真实 Summary／ObjectSQL 查询；Report 应用层拥有发布定义、参数规范化、报表权限、字段授权编译、稳定分页和源版本检查。Runtime 的 Record／Identity 端口负责实际受权数据投影。N01 沿用这条链路。
 
 Report SDK 新增可选 `GovernedQueries`，从既有 `ApplicationBinding.Queries()` 获取。旧 `Queries` 接口及四个 Report 产品 HTTP 操作不变。

@@ -1,0 +1,44 @@
+?   	github.com/domainry/domainry-report/capability	[no test files]
+ok  	github.com/domainry/domainry-report/contract	1.019s
+--- FAIL: TestReportCapabilityTracksOwnerRoutesAndValidation (0.00s)
+    capability_test.go:22: normalize Report Action "report.results.read": action "report.results.read" requires an executable binding
+--- FAIL: TestReportCapabilityPublishesGovernedExportPrerequisites (0.00s)
+    capability_test.go:72: normalize Report Action "report.results.read": action "report.results.read" requires an executable binding
+--- FAIL: TestReportCapabilityPreservesObjectSQLResultKindDiagnostic (0.00s)
+    capability_test.go:126: normalize Report Action "report.results.read": action "report.results.read" requires an executable binding
+--- FAIL: TestReportHTTPAdapterOwnsExactRoutesGovernanceAndOpenAPI (0.00s)
+    http_adapter_test.go:64: normalize Report Action "report.results.read": action "report.results.read" requires an executable binding
+--- FAIL: TestReportOpenAPIPrerequisitesStayAlignedWithActionMetadata (0.00s)
+    http_adapter_test.go:191: normalize Report Action "report.results.read": action "report.results.read" requires an executable binding
+--- FAIL: TestReportHTTPAdapterRejectsTrailingJSONAndForwardsCallerProof (0.00s)
+    http_adapter_test.go:232: normalize Report Action "report.results.read": action "report.results.read" requires an executable binding
+FAIL
+FAIL	github.com/domainry/domainry-report/internal/adapter/reportsdk	1.315s
+--- FAIL: TestAuthorizationActionsFreezeAsOneManifest (0.00s)
+    authorization_actions_test.go:14: normalize Report Action "report.results.read": action "report.results.read" requires an executable binding
+FAIL
+FAIL	github.com/domainry/domainry-report/internal/application/report	0.973s
+ok  	github.com/domainry/domainry-report/internal/architecture	2.434s
+?   	github.com/domainry/domainry-report/internal/assembly/module	[no test files]
+?   	github.com/domainry/domainry-report/internal/domain/report/repository	[no test files]
+ok  	github.com/domainry/domainry-report/internal/domain/report/service/analysis	1.832s
+ok  	github.com/domainry/domainry-report/internal/domain/report/service/export	2.081s
+?   	github.com/domainry/domainry-report/internal/domain/report/service/objectsql	[no test files]
+?   	github.com/domainry/domainry-report/internal/infrastructure/persistence/database/migration	[no test files]
+ok  	github.com/domainry/domainry-report/internal/infrastructure/persistence/database/report	3.204s
+ok  	github.com/domainry/domainry-report/internal/infrastructure/persistence/database/schema	2.809s
+--- FAIL: TestPublicModuleBindsIndependentStructuredTableSourceAndReauthorizesSavedResult (0.01s)
+    analysis_table_integration_test.go:94: build Report capability disclosure: normalize Report Action "report.results.read": action "report.results.read" requires an executable binding
+--- FAIL: TestPublicModuleFacadeRunsRealHostDatabaseReportLifecycle (0.01s)
+    module_integration_test.go:633: build Report capability disclosure: normalize Report Action "report.results.read": action "report.results.read" requires an executable binding
+FAIL
+FAIL	github.com/domainry/domainry-report/module	3.881s
+?   	github.com/domainry/domainry-report/query/objectsql	[no test files]
+ok  	github.com/domainry/domainry-report-sdk	3.466s
+ok  	github.com/domainry/domainry-report-sdk/contract	3.778s
+ok  	github.com/domainry/domainry-report-sdk/model	3.676s
+?   	github.com/domainry/domainry-report-sdk/modulehost	[no test files]
+?   	github.com/domainry/domainry-report-sdk/persistence	[no test files]
+?   	github.com/domainry/domainry-report-sdk/query	[no test files]
+ok  	github.com/domainry/domainry-report-sdk/query/objectsql	3.727s
+FAIL

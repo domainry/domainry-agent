@@ -86,8 +86,8 @@ func TestSaaSManifestOwnsEveryServiceRouteAndInjectsCurrentAction(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(actions) != 114 {
-		t.Fatalf("Agent SaaS actions=%d, want 114", len(actions))
+	if len(actions) != 117 {
+		t.Fatalf("Agent SaaS actions=%d, want 117", len(actions))
 	}
 	patterns := map[string]bool{}
 	for _, action := range actions {

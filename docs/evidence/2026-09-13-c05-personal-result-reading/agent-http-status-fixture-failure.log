@@ -1,0 +1,9 @@
+=== RUN   TestPeerPersonalDeliveryReadsOriginalResultsWithOnlyDataReadPermissions
+    conversation_delivery_personal_permissions_test.go:268: GET /agent/delegations/delegation_8821edc771e1a3eff959693731ace930/deliveries: status 403, want 503, body {"code":"agent.conversation.source_snapshot_changed"}
+--- FAIL: TestPeerPersonalDeliveryReadsOriginalResultsWithOnlyDataReadPermissions (12.25s)
+=== RUN   TestPeerPersonalDeletionDeliveryReadsOnlyOriginalAcknowledgements
+    conversation_delivery_personal_permissions_test.go:273: Actual personal tools, user responses, source data permissions, immutable current/history receipts, revocation and restart verified.
+--- PASS: TestPeerPersonalDeletionDeliveryReadsOnlyOriginalAcknowledgements (3.58s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	16.966s
+FAIL

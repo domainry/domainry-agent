@@ -39,7 +39,17 @@ func (s *ConversationStore) verifyDelegationDelivery(ctx context.Context, db con
 	}
 	lookup := func(ref sdk.ConversationResultReference) (persistence.ConversationToolExecution, error) {
 		var record persistence.ConversationToolExecution
-		claim := persistence.ConversationClaim{Authority: a, Run: sdk.ConversationRun{ID: ref.RunID, ConversationID: ref.ConversationID}}
+		owner := a
+		if d.ExecutionSubject != nil && d.ExecutionSubject.UserID != a.UserID {
+			subjects, found, err := s.delegationSubjects(ctx, db, d.ID, a)
+			if err != nil {
+				return record, err
+			}
+			if found {
+				owner = subjects.execution
+			}
+		}
+		claim := persistence.ConversationClaim{Authority: owner, Run: sdk.ConversationRun{ID: ref.RunID, ConversationID: ref.ConversationID}}
 		found, err := s.readExecutionTool(ctx, db, claim, ref.Step, ref.CallID, &record)
 		if err != nil {
 			return record, err
@@ -113,12 +123,20 @@ func (s *ConversationStore) saveDeliveryRecord(ctx context.Context, tx *sql.Tx, 
 	if d.Delivery == nil || d.Verification == nil {
 		return conversationError("conflict", "completion_verification_missing")
 	}
+	// Review, acceptance and legacy preservation record assessments, not a
+	// new publication by the recipient. They must not manufacture a grant.
+	if kind == "deliver" {
+		if err := s.saveDelegationDeliveryReleases(ctx, tx, d, a); err != nil {
+			return err
+		}
+	}
 	entry := sdk.ConversationDeliveryRecord{Revision: d.Revision, Kind: kind, Delivery: *d.Delivery, Verification: *d.Verification, Reason: reason}
-	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationDeliveryRecordTable).Columns("owner_key", "delegation_id", "revision", "payload_json").Values(conversationOwner(a), d.ID, d.Revision, conversationJSON(entry)).OnConflictDoNothing("owner_key", "delegation_id", "revision").Build()
+	record := delegationRecordAuthority(d, a)
+	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationDeliveryRecordTable).Columns("owner_key", "delegation_id", "revision", "payload_json").Values(conversationOwner(record), d.ID, d.Revision, conversationJSON(entry)).OnConflictDoNothing("owner_key", "delegation_id", "revision").Build()
 	if err = conversationExec(ctx, tx, q, args, err); err != nil {
 		return err
 	}
-	q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationDeliveryRecordTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", d.ID), query.Equal("revision", d.Revision))).Build()
+	q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationDeliveryRecordTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(record)), query.Equal("delegation_id", d.ID), query.Equal("revision", d.Revision))).Build()
 	if err != nil {
 		return err
 	}
@@ -138,13 +156,14 @@ func (s *ConversationStore) saveDeliveryRecord(ctx context.Context, tx *sql.Tx, 
 
 func (s *ConversationStore) ConversationDeliveryHistory(ctx context.Context, id string, before int64, a sdk.ConversationAuthority) (sdk.ConversationDeliveryHistory, error) {
 	out := sdk.ConversationDeliveryHistory{Items: []sdk.ConversationDeliveryRecord{}, Complete: true}
-	if _, err := s.ConversationDelegation(ctx, id, a); err != nil {
+	d, err := s.ConversationDelegation(ctx, id, a)
+	if err != nil {
 		return out, err
 	}
 	if before < 0 {
 		return out, conversationError("bad_request", "cursor_invalid")
 	}
-	predicate := query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", id))
+	predicate := query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(d, a))), query.Equal("delegation_id", id))
 	if before > 0 {
 		predicate = query.And(predicate, query.LessThan("revision", before))
 	}

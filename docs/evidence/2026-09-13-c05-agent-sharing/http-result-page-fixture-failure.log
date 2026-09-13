@@ -1,0 +1,6 @@
+=== RUN   TestSharedAgentHTTPUsesActualCallerAndStopsAfterGrantRevocation
+    conversation_agent_sharing_test.go:185: POST /agent/conversations/conv_1053cf0d621937001614ecc738fcbf91/runs/crun_29e99731e42f78cb415ad77afcd9a228/result: status 400, want 200, body {"code":"agent.conversation.result_offset_invalid"}
+--- FAIL: TestSharedAgentHTTPUsesActualCallerAndStopsAfterGrantRevocation (1.15s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	1.926s
+FAIL

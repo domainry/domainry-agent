@@ -443,8 +443,37 @@ func TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery(t *testing
 		t.Fatal("revoked disagreement sources leaked", revoked.Disagreements)
 	}
 	b.call("GET", "/agent/delegations/"+d.ID+"/disagreements/"+d.Disagreements[0].ID, "", 403)
-	if revoked.Task == nil || revoked.Task.Result != nil || revoked.Delivery != nil || revoked.Verification != nil {
-		t.Fatalf("revoked result leaked %+v", revoked)
+	if revoked.Task == nil || revoked.Task.Result != nil {
+		t.Fatalf("revoked raw execution result leaked %+v", revoked.Task)
+	}
+	// The attested public clock receipt has an independent reading policy.
+	// Losing its execution grant hides raw execution but retains the submitted
+	// projection and its historical versions under current delivery_read.
+	wantDelivery, _ := json.Marshal(restoredDelegation.Delivery)
+	actualDelivery, _ := json.Marshal(revoked.Delivery)
+	if revoked.Delivery == nil || revoked.Verification == nil || !revoked.Verification.Ready || string(wantDelivery) != string(actualDelivery) {
+		t.Fatalf("execution revocation altered independently readable submitted clock results: %s", actualDelivery)
+	}
+	var readableHistory sdk.ConversationDeliveryHistory
+	if err := json.Unmarshal(b.call("GET", "/agent/delegations/"+d.ID+"/deliveries", "", 200).Body.Bytes(), &readableHistory); err != nil {
+		t.Fatal(err)
+	}
+	readableHistoryJSON, _ := json.Marshal(readableHistory)
+	if string(afterJSON) != string(readableHistoryJSON) {
+		t.Fatalf("execution revocation altered independently readable delivery history: %s", readableHistoryJSON)
+	}
+	mutateTestRolePermissions(t, host, b, func(previous []identitysdk.ProjectRolePermission) []identitysdk.ProjectRolePermission {
+		out := []identitysdk.ProjectRolePermission{}
+		for _, permission := range previous {
+			if permission.PermissionKey != sdk.ConversationCollaborationPermission("delivery_read").Key {
+				out = append(out, permission)
+			}
+		}
+		return out
+	})
+	var deniedDelivery sdk.ConversationDelegationDetail
+	if err := json.Unmarshal(b.call("GET", "/agent/delegations/"+d.ID, "", 200).Body.Bytes(), &deniedDelivery); err != nil || deniedDelivery.Delivery != nil || deniedDelivery.Verification != nil {
+		t.Fatal("current submitted values survived delivery reading revocation", deniedDelivery.Delivery, err)
 	}
 	b.call("GET", "/agent/delegations/"+d.ID+"/deliveries", "", 403)
 }

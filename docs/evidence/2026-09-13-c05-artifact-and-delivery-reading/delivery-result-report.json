@@ -1,0 +1,12 @@
+{
+  "current": true,
+  "immutableHistory": true,
+  "readRevocation": true,
+  "restoration": true,
+  "refresh": true,
+  "closeClears": true,
+  "narrowViewport": true,
+  "rawExecutionRequests": 0,
+  "pages": 2,
+  "errors": []
+}

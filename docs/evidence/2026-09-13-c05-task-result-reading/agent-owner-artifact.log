@@ -1,0 +1,14 @@
+=== RUN   TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources
+=== RUN   TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_start
+=== RUN   TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_get
+=== RUN   TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_list
+=== RUN   TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_cancel
+=== RUN   TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_resume
+--- PASS: TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources (0.01s)
+    --- PASS: TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_start (0.00s)
+    --- PASS: TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_get (0.00s)
+    --- PASS: TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_list (0.00s)
+    --- PASS: TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_cancel (0.00s)
+    --- PASS: TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_resume (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	0.671s

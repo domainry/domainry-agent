@@ -1,0 +1,24 @@
+ok  	github.com/domainry/domainry-agent/internal/application	0.768s
+ok  	github.com/domainry/domainry-agent-sdk	1.062s
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	(cached)
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	1.738s
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+ok  	github.com/domainry/domainry-knowledge/artifact	1.377s
+?   	github.com/domainry/domainry-knowledge/contract	[no test files]
+ok  	github.com/domainry/domainry-knowledge/extraction	2.101s
+ok  	github.com/domainry/domainry-knowledge/internal/application/knowledge	2.453s
+ok  	github.com/domainry/domainry-knowledge/internal/architecture	2.764s
+?   	github.com/domainry/domainry-knowledge/internal/assembly/module	[no test files]
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/artifactstorage	3.169s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/attachmentstorage	3.573s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/connectortransport	(cached)
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/documentstorage	3.742s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/persistence/database/knowledge	3.429s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/persistence/database/record	3.711s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/provider	3.794s
+?   	github.com/domainry/domainry-knowledge/module	[no test files]

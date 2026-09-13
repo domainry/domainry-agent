@@ -1,0 +1,28 @@
+{
+  "heads": {
+    "/Users/tiger/Projects/domainry-agent": "68fbfb5ce4d4b541d07afc2e3f13cf76cfb302f5",
+    "/Users/tiger/Projects/domainry-agent-sdk": "f843f8aba4521c491277c9047c2d9d8bc8fccbe1",
+    "/Users/tiger/Projects/domainry-knowledge": "6bc7bf13765cd11dae029e5dadc9490cf5f70c5a"
+  },
+  "files": {
+    "internal/application/conversation_delivery_knowledge_sources.go": "40a1ba1963642106bcc9558745025b6d8e63351a0a9e0dba9f48493a29d06301",
+    "internal/application/conversation_delivery_knowledge_sources_test.go": "c1fe9d85199202c435f9849f753e0ab832a2e660a08f5cc1fc29a061206184fd",
+    "internal/application/conversation_sources.go": "922ca0641e833b4583754773e91a68e9052dc6fa2cd903196cb4d8bbe772ea5d",
+    "internal/application/conversation_knowledge_tools.go": "b1b4db498ee5bff2b190f0df0d1bd610649a85beec3b6035b20f191f524b70a7",
+    "internal/application/conversation_knowledge_extract.go": "006e04bf2a1d8bd44e71b0f1e285f9a5e9ccffc3f8db7026f7438db2fda21d24",
+    "internal/application/conversation_delivery_result.go": "069b2c07ef66a54d472fa30b4aa1ddfc17850c4bc8a2ae1215067530587508b2",
+    "internal/application/conversation_collaboration_authorization.go": "ffa756b7b9b5092cb0843408c2773ca2d86872a622481e1fc77e592bd9ddba67",
+    "internal/assembly/web/conversation_delivery_knowledge_permissions_test.go": "2946cc3686924f7b30558d6d56d6de9ca10eb329c78574538a76fdb111e86b81",
+    "frontend/tests/knowledge-delivery.browser.mjs": "d76677d0cf22fd518edfef835675a0887b93b1f7cdc2aea9be0980ff1a553578",
+    "frontend/src/StoredResult.tsx": "57d32f4e7a11f792dd1fcf0438d5b31377095d30041538cdac5681170661bf34",
+    "frontend/src/DeliveryVerification.tsx": "0ccbc2703cf28541dd06b14dbea49bbdf0ae41b892f90ab13e3807e4be159cc8",
+    "remote/conversation_results.go": "e3b906144c7451b6a3c6eb0c01f8c7a9f1b102381254471216561d27d0b890e7",
+    "internal/transport/http/module/conversation_adapter.go": "b407651ce4f5744e6abb959fe02da14639caf510e1329e1d1df0308ac07d0a02",
+    "../domainry-agent-sdk/conversation_knowledge_result_read.go": "f8d095d304cb37579c20561190c9ef3b57da6bce9937547c2e2e3813ffceeaca",
+    "../domainry-knowledge/internal/application/knowledge/knowledge_result_read.go": "b01749061dc227edf8bbdac4ec73eb4fa2da43bcf1f54798d811e28492fd49e5",
+    "../domainry-knowledge/internal/application/knowledge/knowledge_result_read_test.go": "148602d535c478aa713af16f7a473e4f9c89562e733e79b4ae7b0975958f25b3",
+    "../domainry-knowledge/internal/application/knowledge/knowledge_library_source.go": "188ee35481ff2ba3c566d0f1cbec9d85e161575f4983fdca68f9126e8522d0ce",
+    "../domainry-knowledge/internal/infrastructure/provider/knowledge_execution.go": "601f205ab4281655de23e9619bbdf807fae480691e35496cc63dc2e6c18b5b6f",
+    "../domainry-knowledge/internal/infrastructure/provider/knowledge_execution_test.go": "699129a64db0fcba76edc6a2479a9a09b48f45da697243fc292f1a4dc1aa0629"
+  }
+}

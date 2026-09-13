@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"sort"
@@ -68,7 +69,7 @@ func (s *ConversationService) MatchConversationAgents(ctx context.Context, in ag
 }
 
 func (s *ConversationService) matchConversationAgentDirectory(ctx context.Context, page agentsdk.ConversationAgentPage, in agentsdk.ConversationAgentMatchRequest, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgentMatchPage, error) {
-	out := agentsdk.ConversationAgentMatchPage{Items: []agentsdk.ConversationAgentCandidate{}, CheckedAt: time.Now().UTC(), HistoryComplete: true, Basis: "Current owner authorization, registered capabilities, durable queue/leases and the latest 200 terminal owner runs. Execution admission checks these facts again; a recommendation is not a reservation. Ranking: readiness, reviewed outcomes (at least 3 samples), backlog, comparable model cost, duration, stable ID."}
+	out := agentsdk.ConversationAgentMatchPage{Items: []agentsdk.ConversationAgentCandidate{}, CheckedAt: time.Now().UTC(), HistoryComplete: true, Basis: "Current issuer authorization, owned or explicitly shared configurations, explicit receiving-role bindings, actual executor tool grants and queue capacity, durable workspace Agent leases, and the latest 200 terminal issuer-owned runs. Execution admission checks these facts again; a recommendation is not a reservation. Ranking: readiness, reviewed outcomes (at least 3 samples), backlog, comparable model cost, duration, stable ID."}
 	repo, ok := s.repo.(persistence.ConversationAgentDiscoveryRepository)
 	if !ok {
 		return out, conversationFailure("unavailable", "agent_discovery_unavailable")
@@ -99,17 +100,15 @@ func (s *ConversationService) matchConversationAgentDirectory(ctx context.Contex
 		}
 		usable[tool.Key] = auth.Granted
 	}
+	usabilityByExecutor := map[agentsdk.ConversationAuthority]map[string]bool{a: usable}
+	capacityByExecutor := map[agentsdk.ConversationAuthority]agentsdk.ConversationExecutionCapacity{a: capacity}
 	// A new isolated conversation cannot inherit any private attachment scope.
 	// The prospective consumer is a server-only sentinel, never a user ID.
 	sourceAccess := "not_requested"
 	if len(in.Requirements.Sources) > 0 {
 		sourceAccess = "verified"
-		audit := s.sourceAudit(a, "new_peer_conversation")
-		for _, ref := range in.Requirements.Sources {
-			if _, err := audit.run(ctx, ref); err != nil {
-				sourceAccess = "denied"
-				break
-			}
+		if err := s.checkProspectiveDelegationSources(ctx, in.Requirements.Sources, a, a); err != nil {
+			sourceAccess = "denied"
 		}
 	}
 	for _, agent := range page.Items {
@@ -120,24 +119,58 @@ func (s *ConversationService) matchConversationAgentDirectory(ctx context.Contex
 			candidate.State = "blocked"
 			candidate.Reasons = append(candidate.Reasons, reason)
 		}
-		if err := s.authorizeCollaboration(ctx, "receive", &agentsdk.ConversationDelegation{ToAgentID: agent.ID}, a); err != nil {
-			if collaborationDenied(err) {
-				block("receiver_access_denied")
-			} else {
-				return out, err
-			}
-		}
 		if !agent.Enabled {
 			block("agent_disabled")
 		}
-		snapshot, freezeErr := s.freezeConversationAgent(ctx, agent.ID, a)
+		snapshot, executor, freezeErr := s.delegationExecutionAgent(ctx, agent.ID, a)
 		if freezeErr != nil && agent.Enabled {
-			block("agent_model_or_profile_unavailable")
+			var coded *agentsdk.Error
+			if !errors.As(freezeErr, &coded) || coded.Code == "agent.conversation.collaboration_authorization_unavailable" || coded.Code == "agent.conversation.agent_sharing_subjects_unavailable" {
+				return out, freezeErr
+			}
+			if collaborationDenied(freezeErr) {
+				block("receiver_access_denied")
+			} else {
+				block("agent_model_or_profile_unavailable")
+			}
+		}
+		candidateUsable, candidateCapacity := usable, capacity
+		if freezeErr == nil && executor != a {
+			var found bool
+			candidateUsable, found = usabilityByExecutor[executor]
+			candidateCapacity = capacityByExecutor[executor]
+			if !found {
+				executionCtx := delegationExecutorContext(ctx)
+				definitions, _, err := s.executionCatalog(context.WithValue(executionCtx, conversationAgentCatalogKey{}, true), executor)
+				if err != nil {
+					return out, err
+				}
+				candidateUsable = map[string]bool{}
+				for _, tool := range definitions {
+					auth, err := s.options.ToolHost.AuthorizeConversationTool(executionCtx, agentsdk.ConversationToolRequest{Authority: executor, Definition: tool})
+					if err != nil {
+						return out, err
+					}
+					candidateUsable[tool.Key] = auth.Granted
+				}
+				if cr, ok := s.repo.(persistence.ConversationCapacityRepository); ok {
+					candidateCapacity, err = cr.ConversationExecutionCapacity(executionCtx, executor)
+					if err != nil {
+						return out, err
+					}
+				}
+				usabilityByExecutor[executor], capacityByExecutor[executor] = candidateUsable, candidateCapacity
+			}
+			if len(in.Requirements.Sources) > 0 {
+				if err := s.checkProspectiveDelegationSources(ctx, in.Requirements.Sources, a, executor); err != nil {
+					candidate.SourceAccess = "denied"
+				}
+			}
 		}
 		if excluded[agent.ID] {
 			block("delegation_cycle")
 		}
-		if sourceAccess == "denied" {
+		if candidate.SourceAccess == "denied" {
 			block("source_access_denied")
 		}
 		tools, skills := map[string]bool{}, map[string]bool{}
@@ -146,7 +179,7 @@ func (s *ConversationService) matchConversationAgentDirectory(ctx context.Contex
 				continue
 			}
 			tools[key] = true
-			if !usable[key] {
+			if !candidateUsable[key] {
 				candidate.UnavailableTools = append(candidate.UnavailableTools, key)
 			}
 		}
@@ -169,10 +202,10 @@ func (s *ConversationService) matchConversationAgentDirectory(ctx context.Contex
 		if len(candidate.MissingTools) > 0 || len(candidate.MissingSkills) > 0 {
 			block("capabilities_missing")
 		}
-		if s.options.MaxQueuedPerUser > 0 && capacity.UserQueued >= s.options.MaxQueuedPerUser || s.options.MaxQueuedPerWorkspace > 0 && capacity.WorkspaceQueued >= s.options.MaxQueuedPerWorkspace {
+		if s.options.MaxQueuedPerUser > 0 && candidateCapacity.UserQueued >= s.options.MaxQueuedPerUser || s.options.MaxQueuedPerWorkspace > 0 && candidateCapacity.WorkspaceQueued >= s.options.MaxQueuedPerWorkspace {
 			block("queue_full")
 		}
-		if candidate.AvailableSlots == 0 || candidate.Queued > 0 || s.options.MaxRunningPerUser > 0 && capacity.UserRunning >= s.options.MaxRunningPerUser || s.options.MaxRunningPerWorkspace > 0 && capacity.WorkspaceRunning >= s.options.MaxRunningPerWorkspace {
+		if candidate.AvailableSlots == 0 || candidate.Queued > 0 || s.options.MaxRunningPerUser > 0 && candidateCapacity.UserRunning >= s.options.MaxRunningPerUser || s.options.MaxRunningPerWorkspace > 0 && candidateCapacity.WorkspaceRunning >= s.options.MaxRunningPerWorkspace {
 			candidate.AvailableSlots = 0
 			if candidate.CanAccept {
 				candidate.State = "queued"

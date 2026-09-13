@@ -1,0 +1,385 @@
+package application
+
+import (
+	"context"
+	"encoding/json"
+	"testing"
+	"time"
+
+	sdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent-sdk/persistence"
+)
+
+func TestSourceReleaseUsesProducerOnlyForImmutableEvidenceAndKeepsActualDataReader(t *testing.T) {
+	producer := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "producer", RoleKey: "producer-role"}
+	reader := producer
+	reader.UserID, reader.RoleKey = "reader", "reader-role"
+	owner := sdk.ConversationRunReference{ConversationID: "producer", RunID: "run", BeforeStep: 2}
+	policy := &executionBindingTestPolicy{deniedRole: "denied-role"}
+	availability := &deliveryArtifactPolicy{denied: map[string]bool{}, disabled: map[string]bool{}}
+	definition, _ := personalResultReadDefinition("calculate")
+	args := `{"operation":"expression","expression":"0.1 + 0.2"}`
+	value, err := calculateConversation(calculationInput{Operation: "expression", Expression: "0.1 + 0.2"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw, _ := json.Marshal(value)
+	now := time.Date(2026, 9, 14, 0, 0, 0, 0, time.UTC)
+	record := persistence.ConversationToolExecution{State: "completed", Definition: definition, Call: sdk.ConversationToolCall{ID: "call", Name: "calculate", Arguments: args}, Result: &sdk.ConversationToolResult{Status: "completed", Content: raw}, IdempotencyKey: "original", CreatedAt: now, UpdatedAt: now}
+	repo := &personalReceiptRepository{a: producer, record: record}
+	s := &ConversationService{runtimeID: reader.RuntimeID, repo: repo, options: ConversationOptions{CollaborationAuthorizer: policy, PersonalAuthorizer: availability, ToolAvailability: availability}}
+	ctx, err := s.sourceReleaseContext(t.Context(), "contract", "", producer, reader, []sdk.ConversationRunReference{owner})
+	if err != nil {
+		t.Fatal(err)
+	}
+	audit := s.sourceAudit(reader)
+	audit.evidenceOwner = &producer
+	if handled, err := audit.deliveryPersonalToolResult(ctx, owner, record); !handled || err != nil || repo.reads != 1 || audit.a != reader {
+		t.Fatal("released calculation was not independently checked with the real reader", handled, err, repo.reads)
+	}
+	// An authenticated private Todo receipt does not release the producer's Todo.
+	item := sdk.ConversationTodo{ID: "private", Title: "Producer private data", Revision: 1, Status: "open", Timezone: "Asia/Shanghai", SourceConversationID: "producer", SourceRunID: "run", CreatedAt: now, UpdatedAt: now}
+	definition, _ = personalResultReadDefinition("todo_get")
+	raw, _ = json.Marshal(item)
+	record.Definition, record.Call.Name, record.Call.Arguments = definition, "todo_get", `{"id":"private"}`
+	record.Result = &sdk.ConversationToolResult{Status: "completed", Content: raw}
+	repo.record, repo.todos = record, map[string]sdk.ConversationTodo{item.ID: item}
+	if handled, err := audit.deliveryPersonalToolResult(ctx, owner, record); !handled || err == nil {
+		t.Fatal("source release inherited producer's private data permission", handled, err)
+	}
+	policy.deniedRole = producer.RoleKey
+	if err := audit.authorizeReleasedSourceRead(ctx); !collaborationDenied(err) {
+		t.Fatal("revoked producer sharing permission survived", err)
+	}
+	other := reader
+	other.UserID = "unrelated"
+	if err := s.sourceAudit(other).authorizeReleasedSourceRead(ctx); !collaborationDenied(err) {
+		t.Fatal("source scope could be reused by a different reader", err)
+	}
+}
+
+type sameUserRoleSourceGraph struct {
+	persistence.ConversationRepository
+	snapshots map[string]persistence.ConversationSourceSnapshot
+	reads     map[string][]sdk.ConversationAuthority
+}
+
+type publisherRoleSourceGraph struct {
+	sameUserRoleSourceGraph
+	persistence.ConversationCollaborationRepository
+	release persistence.ConversationSourceRelease
+	extra   []persistence.ConversationSourceRelease
+}
+
+func (r *publisherRoleSourceGraph) ConversationDelegation(context.Context, string, sdk.ConversationAuthority) (sdk.ConversationDelegation, error) {
+	return sdk.ConversationDelegation{ID: r.release.DelegationID, OwnerUserID: r.release.Producer.UserID}, nil
+}
+
+func (r *publisherRoleSourceGraph) ConversationSourceReleases(context.Context, sdk.ConversationRunReference, sdk.ConversationAuthority) ([]persistence.ConversationSourceRelease, error) {
+	return append([]persistence.ConversationSourceRelease{r.release}, r.extra...), nil
+}
+
+func TestSourceReleasePersistentPublisherRoleRecheckedSeparatelyFromOriginalProof(t *testing.T) {
+	reader := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user", RoleKey: "reader"}
+	publisher, original := reader, reader
+	publisher.RoleKey, original.RoleKey = "publishing-role", "old-proof-role"
+	root := sdk.ConversationRunReference{ConversationID: "source", RunID: "old-run", BeforeStep: 2}
+	r := &publisherRoleSourceGraph{release: persistence.ConversationSourceRelease{DelegationID: "delegation", Purpose: "contract", Reference: root, Producer: original, Publisher: &publisher}}
+	r.snapshots = map[string]persistence.ConversationSourceSnapshot{root.RunID: {Authority: original}}
+	r.reads = map[string][]sdk.ConversationAuthority{}
+	policy := &executionBindingTestPolicy{deniedRole: "revoked"}
+	s := &ConversationService{runtimeID: reader.RuntimeID, repo: r, options: ConversationOptions{CollaborationAuthorizer: policy}}
+	ctx, found, err := s.sourceAudit(reader).publishedSourceContext(t.Context(), root)
+	if err != nil || !found || releasedEvidenceAuthority(ctx, root, reader) != original {
+		t.Fatal("publisher replaced immutable proof identity", found, err)
+	}
+	for _, role := range []string{publisher.RoleKey, original.RoleKey} {
+		policy.deniedRole = role
+		if _, found, err := s.sourceAudit(reader).publishedSourceContext(t.Context(), root); found || !collaborationDenied(err) {
+			t.Fatal("revoked publication role survived persisted release", role, found, err)
+		}
+		if err := s.sourceAudit(reader).authorizeReleasedSourceRead(ctx); !collaborationDenied(err) {
+			t.Fatal("publisher was lost after creating a reading context", role, err)
+		}
+	}
+	policy.deniedRole = "revoked"
+	r.release.Publisher = nil
+	if _, found, err := s.sourceAudit(reader).publishedSourceContext(t.Context(), root); found || !collaborationDenied(err) {
+		t.Fatal("an unknown legacy publisher granted access", found, err)
+	}
+	known := r.release
+	known.Publisher = &publisher
+	r.extra = []persistence.ConversationSourceRelease{known}
+	if _, found, err := s.sourceAudit(reader).publishedSourceContext(t.Context(), root); err != nil || !found {
+		t.Fatal("explicit publication did not restore an unverified legacy source", found, err)
+	}
+	policy.deniedRole = publisher.RoleKey
+	if _, found, err := s.sourceAudit(reader).publishedSourceContext(t.Context(), root); found || !collaborationDenied(err) {
+		t.Fatal("legacy row bypassed a known publisher's revocation", found, err)
+	}
+}
+
+func TestPublishedSourceContextUsesExactPublicationPurposeAndActualRole(t *testing.T) {
+	reader := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user", RoleKey: "reader"}
+	original, publisher, admitted := reader, reader, reader
+	original.RoleKey, publisher.RoleKey, admitted.RoleKey = "old-proof", "actual-publisher", "admission-role"
+	root := sdk.ConversationRunReference{ConversationID: "source", RunID: "old-run", BeforeStep: 2}
+	r := &publisherRoleSourceGraph{release: persistence.ConversationSourceRelease{DelegationID: "delegation", Purpose: "delivery", Reference: root, Producer: original}}
+	r.snapshots = map[string]persistence.ConversationSourceSnapshot{root.RunID: {Authority: original}}
+	r.reads = map[string][]sdk.ConversationAuthority{}
+	policy := &executionBindingTestPolicy{deniedRole: admitted.RoleKey}
+	s := &ConversationService{runtimeID: reader.RuntimeID, repo: r, options: ConversationOptions{CollaborationAuthorizer: policy}}
+	ctx := context.WithValue(t.Context(), conversationPublishedSourceKey{}, conversationPublishedSource{purpose: "delivery", delegationID: r.release.DelegationID, roots: []sdk.ConversationRunReference{root}})
+	if _, err := s.publishedReferenceContext(ctx, root, reader); !collaborationDenied(err) {
+		t.Fatal("persisted context inferred an unknown publisher from admission", err)
+	}
+	known := r.release
+	known.Publisher, known.Purpose = &publisher, "contract"
+	r.extra = []persistence.ConversationSourceRelease{known}
+	if _, err := s.publishedReferenceContext(ctx, root, reader); !collaborationDenied(err) {
+		t.Fatal("a contract grant replaced a delivery publication", err)
+	}
+	r.extra[0].Purpose = "delivery"
+	resolved, err := s.publishedReferenceContext(ctx, root, reader)
+	if err != nil || releasedEvidenceAuthority(resolved, root, reader) != original {
+		t.Fatal("frozen admission role replaced the actual publisher", err)
+	}
+	policy.deniedRole = publisher.RoleKey
+	if _, err := s.publishedReferenceContext(ctx, root, reader); !collaborationDenied(err) {
+		t.Fatal("persisted context bypassed publication-role revocation", err)
+	}
+	policy.deniedRole = admitted.RoleKey
+	r.extra[0].DelegationID = "another-delegation"
+	if _, err := s.publishedReferenceContext(ctx, root, reader); !collaborationDenied(err) {
+		t.Fatal("another delegation replaced the required publication", err)
+	}
+}
+
+func (r *sameUserRoleSourceGraph) ConversationSourceSnapshot(_ context.Context, ref sdk.ConversationRunReference, a sdk.ConversationAuthority) (persistence.ConversationSourceSnapshot, error) {
+	r.reads[ref.RunID] = append(r.reads[ref.RunID], a)
+	return r.snapshots[ref.RunID], nil
+}
+
+func (r *sameUserRoleSourceGraph) ConversationSourceAuthority(_ context.Context, ref sdk.ConversationRunReference, _ sdk.ConversationAuthority) (sdk.ConversationAuthority, error) {
+	snapshot, ok := r.snapshots[ref.RunID]
+	if !ok {
+		return sdk.ConversationAuthority{}, conversationFailure("not_found", "run_not_found")
+	}
+	return snapshot.Authority, nil
+}
+
+func TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope(t *testing.T) {
+	reader := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "same-user", RoleKey: "reader-role"}
+	producer := reader
+	producer.RoleKey = "professional-role"
+	root := sdk.ConversationRunReference{ConversationID: "delivery", RunID: "professional-run", BeforeStep: 3}
+	input := sdk.ConversationRunReference{ConversationID: "contract", RunID: "issuer-run", BeforeStep: 2}
+	repo := &sameUserRoleSourceGraph{snapshots: map[string]persistence.ConversationSourceSnapshot{
+		root.RunID:  {Authority: producer, StepSources: []persistence.ConversationStepSources{{Step: 0, Sources: []sdk.ConversationRunReference{input}}}},
+		input.RunID: {Authority: reader},
+	}, reads: map[string][]sdk.ConversationAuthority{}}
+	s := &ConversationService{runtimeID: reader.RuntimeID, repo: repo, options: ConversationOptions{CollaborationAuthorizer: &executionBindingTestPolicy{deniedRole: "unassigned-role"}}}
+	ctx, err := s.sourceReleaseContext(t.Context(), "contract", "", producer, reader, []sdk.ConversationRunReference{root})
+	if err != nil {
+		t.Fatal(err)
+	}
+	audit := s.sourceAudit(reader)
+	if _, err := audit.run(ctx, root); err != nil {
+		t.Fatal(err)
+	}
+	reads := repo.reads[input.RunID]
+	if len(reads) != 2 || reads[0] != producer || reads[1] != reader || audit.a != reader {
+		t.Fatal("producer role propagated into the issuer's own source run", reads)
+	}
+	old := reader
+	old.RoleKey = "older-role"
+	repo.snapshots[input.RunID] = persistence.ConversationSourceSnapshot{Authority: old}
+	if _, err := s.sourceAudit(reader).run(ctx, root); err != nil {
+		t.Fatal("trusted inherited source could not be shared under its currently authorized original role", err)
+	}
+	// The inherited grant is created only while walking a server-owned parent.
+	direct := s.sourceAudit(reader)
+	direct.evidenceOwner = &producer
+	if _, err := direct.run(ctx, input); !collaborationDenied(err) {
+		t.Fatal("a shared root authorized an unrelated direct reference", err)
+	}
+	for _, change := range []string{"unassigned-role", "wrong-user", "wrong-workspace"} {
+		t.Run(change, func(t *testing.T) {
+			original := reader
+			switch change {
+			case "unassigned-role":
+				original.RoleKey = "unassigned-role"
+			case "wrong-user":
+				original.UserID = "unrelated"
+			case "wrong-workspace":
+				original.WorkspaceID = "foreign"
+			}
+			repo.snapshots[input.RunID] = persistence.ConversationSourceSnapshot{Authority: original}
+			if _, err := s.sourceAudit(reader).run(ctx, root); !collaborationDenied(err) {
+				t.Fatal("source traversal used a revoked or foreign proof identity", change, err)
+			}
+		})
+	}
+}
+
+func TestSourceReleaseFirstSharingOfMixedOldRoleRootsUsesEachImmutableAuthority(t *testing.T) {
+	reader := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "same-user", RoleKey: "current-role"}
+	first, second := reader, reader
+	first.RoleKey, second.RoleKey = "old-report-role", "old-analysis-role"
+	refs := []sdk.ConversationRunReference{{ConversationID: "report", RunID: "old-report", BeforeStep: 3}, {ConversationID: "analysis", RunID: "old-analysis", BeforeStep: 2}, {ConversationID: "current", RunID: "current-run", BeforeStep: 1}}
+	repo := &sameUserRoleSourceGraph{snapshots: map[string]persistence.ConversationSourceSnapshot{
+		refs[0].RunID: {Authority: first}, refs[1].RunID: {Authority: second}, refs[2].RunID: {Authority: reader},
+	}, reads: map[string][]sdk.ConversationAuthority{}}
+	policy := &executionBindingTestPolicy{deniedRole: "unassigned-role"}
+	s := &ConversationService{runtimeID: reader.RuntimeID, repo: repo, options: ConversationOptions{CollaborationAuthorizer: policy}}
+	ctx, err := s.sourceReleaseContext(t.Context(), "contract", "", reader, reader, refs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, original := range []sdk.ConversationAuthority{first, second, reader} {
+		if got := releasedEvidenceAuthority(ctx, refs[i], reader); got != original {
+			t.Fatal("mixed root inherited the publisher's current role", i, got)
+		}
+		if _, err := s.sourceAudit(reader).run(ctx, refs[i]); err != nil {
+			t.Fatal(err)
+		}
+		if reads := repo.reads[refs[i].RunID]; len(reads) != 1 || reads[0] != original {
+			t.Fatal("root did not use its own immutable proof identity", i, reads)
+		}
+	}
+	outside := refs[0]
+	outside.BeforeStep++
+	if got := releasedEvidenceAuthority(ctx, outside, reader); got != reader {
+		t.Fatal("old role scope expanded beyond its submitted prefix", got)
+	}
+	for _, revoked := range []sdk.ConversationAuthority{first, second, reader} {
+		policy.deniedRole = revoked.RoleKey
+		if _, err := s.sourceReleaseContext(t.Context(), "contract", "", reader, reader, refs); !collaborationDenied(err) {
+			t.Fatal("first sharing ignored a revoked publisher or original role", revoked, err)
+		}
+		if err := s.sourceAudit(reader).authorizeReleasedSourceRead(ctx); !collaborationDenied(err) {
+			t.Fatal("an existing mixed-role context retained a revoked grant", revoked, err)
+		}
+	}
+	policy.deniedRole = "unassigned-role"
+	for _, change := range []string{"user", "workspace", "runtime", "unknown"} {
+		foreign := first
+		switch change {
+		case "user":
+			foreign.UserID = "unrelated"
+		case "workspace":
+			foreign.WorkspaceID = "unrelated"
+		case "runtime":
+			foreign.RuntimeID = "unrelated"
+		case "unknown":
+			foreign.Known = false
+		}
+		repo.snapshots[refs[0].RunID] = persistence.ConversationSourceSnapshot{Authority: foreign}
+		if _, err := s.sourceReleaseContext(t.Context(), "contract", "", reader, reader, refs); !collaborationDenied(err) {
+			t.Fatal("source authority port supplied an untrusted root identity", change, err)
+		}
+	}
+}
+
+func TestSourceReleaseCurrentRoleRootCanFirstShareInheritedOldRoleWithoutGrantingRawScope(t *testing.T) {
+	reader := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "same-user", RoleKey: "current-role"}
+	old := reader
+	old.RoleKey = "old-role"
+	root := sdk.ConversationRunReference{ConversationID: "current", RunID: "current-run", BeforeStep: 2}
+	inherited := sdk.ConversationRunReference{ConversationID: "old", RunID: "old-run", BeforeStep: 2}
+	repo := &sameUserRoleSourceGraph{snapshots: map[string]persistence.ConversationSourceSnapshot{
+		root.RunID: {Authority: reader, StepSources: []persistence.ConversationStepSources{{Sources: []sdk.ConversationRunReference{inherited}}}}, inherited.RunID: {Authority: old},
+	}, reads: map[string][]sdk.ConversationAuthority{}}
+	policy := &executionBindingTestPolicy{deniedRole: "unassigned-role"}
+	s := &ConversationService{runtimeID: reader.RuntimeID, repo: repo, options: ConversationOptions{CollaborationAuthorizer: policy}}
+	ctx, err := s.sourceReleaseContext(t.Context(), "contract", "", reader, reader, []sdk.ConversationRunReference{root})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if releasedSourcePurpose(ctx) != "" || releasedEvidenceAuthority(ctx, inherited, reader) != reader {
+		t.Fatal("current-role root granted an independent read scope before inherited authorization")
+	}
+	if _, err := s.sourceAudit(reader).run(ctx, root); err != nil {
+		t.Fatal("same-role root could not introduce its old-role provenance", err)
+	}
+	reads := repo.reads[inherited.RunID]
+	if len(reads) != 2 || reads[0] != reader || reads[1] != old {
+		t.Fatal("inherited original role was not restored", reads)
+	}
+	policy.deniedRole = old.RoleKey
+	if _, err := s.sourceAudit(reader).run(ctx, root); !collaborationDenied(err) {
+		t.Fatal("old-role first sharing ignored current original-role denial", err)
+	}
+	policy.deniedRole = reader.RoleKey
+	if _, err := s.sourceAudit(reader).run(ctx, root); !collaborationDenied(err) {
+		t.Fatal("inherited first sharing ignored the current publisher's sharing denial", err)
+	}
+	if err := s.sourceAudit(reader).authorizeReleasedSourceRead(ctx); err != nil {
+		t.Fatal("inactive same-role provenance introduced an unrelated sharing requirement", err)
+	}
+}
+
+func TestSourceReleasePrefixCannotExpandToUnpublishedRunOrSteps(t *testing.T) {
+	reader := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "reader"}
+	producer := reader
+	producer.UserID = "producer"
+	root := sdk.ConversationRunReference{ConversationID: "source", RunID: "run", BeforeStep: 3}
+	s := &ConversationService{runtimeID: reader.RuntimeID, options: ConversationOptions{CollaborationAuthorizer: sharingSubjectTestPolicy{}}}
+	ctx, err := s.sourceReleaseContext(t.Context(), "contract", "", producer, reader, []sdk.ConversationRunReference{root})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, ref := range []sdk.ConversationRunReference{{ConversationID: "source", RunID: "run", BeforeStep: 0}, {ConversationID: "source", RunID: "run", BeforeStep: 4}, {ConversationID: "other", RunID: "run", BeforeStep: 2}, {ConversationID: "source", RunID: "other", BeforeStep: 2}} {
+		if got := releasedEvidenceAuthority(ctx, ref, reader); got != reader {
+			t.Fatal("unpublished evidence acquired producer's record ownership", ref, got)
+		}
+	}
+	if got := releasedEvidenceAuthority(ctx, sdk.ConversationRunReference{ConversationID: "source", RunID: "run", BeforeStep: 2}, reader); got != producer {
+		t.Fatal("published prefix did not locate producer's evidence", got)
+	}
+	foreign := producer
+	foreign.WorkspaceID = "other-workspace"
+	if _, err := s.sourceReleaseContext(t.Context(), "contract", "", foreign, reader, []sdk.ConversationRunReference{root}); !collaborationDenied(err) {
+		t.Fatal("cross-workspace source release admitted", err)
+	}
+	foreign.UserID = reader.UserID
+	if _, err := s.sourceReleaseContext(t.Context(), "contract", "", foreign, reader, []sdk.ConversationRunReference{root}); !collaborationDenied(err) {
+		t.Fatal("same user bypassed source workspace boundary", err)
+	}
+}
+
+func TestSourceReleaseSameUserDifferentRolesPreservesOriginalProofAndCurrentReader(t *testing.T) {
+	producer := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "same-user", RoleKey: "professional-role"}
+	reader := producer
+	reader.RoleKey = "reader-role"
+	policy := &executionBindingTestPolicy{deniedRole: "unassigned-role"}
+	s := &ConversationService{runtimeID: reader.RuntimeID, options: ConversationOptions{CollaborationAuthorizer: policy}}
+	root := sdk.ConversationRunReference{ConversationID: "source", RunID: "run", BeforeStep: 3}
+	ctx, err := s.sourceReleaseContext(t.Context(), "contract", "", producer, reader, []sdk.ConversationRunReference{root})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if releasedSourcePurpose(ctx) == "" || releasedEvidenceAuthority(ctx, root, reader) != producer {
+		t.Fatal("same user's different role lost original proof identity")
+	}
+	if err := s.sourceAudit(reader).authorizeReleasedSourceRead(ctx); err != nil {
+		t.Fatal(err)
+	}
+	wrongRole := reader
+	wrongRole.RoleKey = "other-role"
+	if err := s.sourceAudit(wrongRole).authorizeReleasedSourceRead(ctx); !collaborationDenied(err) {
+		t.Fatal("server read context could be reused under another role", err)
+	}
+	message := sdk.ConversationAgentMessage{SenderUserID: producer.UserID, SenderRoleKey: producer.RoleKey, Source: &root}
+	messageCtx, err := s.messageSourceContext(t.Context(), message, reader)
+	if err != nil || releasedEvidenceAuthority(messageCtx, root, reader) != producer {
+		t.Fatal("same-user message discarded the sender role", err)
+	}
+	policy.deniedRole = producer.RoleKey
+	if err := s.sourceAudit(reader).authorizeReleasedSourceRead(ctx); !collaborationDenied(err) {
+		t.Fatal("same user bypassed revoked producer sharing", err)
+	}
+	if _, err := s.messageSourceContext(t.Context(), message, reader); !collaborationDenied(err) {
+		t.Fatal("same-user sender role revocation was ignored", err)
+	}
+}

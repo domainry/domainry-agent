@@ -1,0 +1,6 @@
+=== RUN   TestPeerTaskDeliveryReadsOriginalReceiptsAfterControlRevocation
+    conversation_delivery_task_permissions_test.go:138: POST /agent/conversations/conv_faba78bc5d2c999fdfc68b8c533cdd6f/messages: status 409, want 202, body {"code":"agent.conversation.busy"}
+--- FAIL: TestPeerTaskDeliveryReadsOriginalReceiptsAfterControlRevocation (2.55s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	3.700s
+FAIL

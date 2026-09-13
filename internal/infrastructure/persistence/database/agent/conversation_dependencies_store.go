@@ -107,7 +107,7 @@ func (s *ConversationStore) saveAgreementRevision(ctx context.Context, tx *sql.T
 			entry.FromAgentID = "default"
 		}
 	}
-	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationAgreementTable).Columns("owner_key", "delegation_id", "revision", "payload_json").Values(conversationOwner(a), d.ID, entry.Revision, conversationJSON(entry)).OnConflictDoNothing("owner_key", "delegation_id", "revision").Build()
+	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationAgreementTable).Columns("owner_key", "delegation_id", "revision", "payload_json").Values(conversationOwner(delegationRecordAuthority(d, a)), d.ID, entry.Revision, conversationJSON(entry)).OnConflictDoNothing("owner_key", "delegation_id", "revision").Build()
 	return conversationExec(ctx, tx, q, args, err)
 }
 
@@ -120,7 +120,7 @@ func (s *ConversationStore) ConversationAgreementHistory(ctx context.Context, id
 	if before < 0 {
 		return out, conversationError("bad_request", "cursor_invalid")
 	}
-	p := query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", id))
+	p := query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(current, a))), query.Equal("delegation_id", id))
 	if before > 0 {
 		p = query.And(p, query.LessThan("revision", before))
 	}

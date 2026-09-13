@@ -1,0 +1,12 @@
+=== RUN   TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights
+=== RUN   TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_search
+=== RUN   TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_read
+=== RUN   TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_libraries
+=== RUN   TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_extract
+--- PASS: TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights (0.02s)
+    --- PASS: TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_search (0.00s)
+    --- PASS: TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_read (0.00s)
+    --- PASS: TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_libraries (0.00s)
+    --- PASS: TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_extract (0.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	0.692s

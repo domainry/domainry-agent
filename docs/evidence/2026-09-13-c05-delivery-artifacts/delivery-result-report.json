@@ -1,0 +1,15 @@
+{
+  "current": true,
+  "immutableHistory": true,
+  "fullOriginalVersion": true,
+  "fullEditedVersion": true,
+  "originalExportDownload": true,
+  "readRevocation": true,
+  "restoration": true,
+  "refresh": true,
+  "closeClears": true,
+  "narrowViewport": true,
+  "rawExecutionRequests": 0,
+  "pages": 3,
+  "errors": []
+}

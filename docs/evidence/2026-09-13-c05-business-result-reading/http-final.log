@@ -1,0 +1,18 @@
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/business_catalog
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/query_records
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/get_record
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/query_related_records
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/workflow_get
+--- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence (0.01s)
+    --- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/business_catalog (0.00s)
+    --- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/query_records (0.00s)
+    --- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/get_record (0.00s)
+    --- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/query_related_records (0.00s)
+    --- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/workflow_get (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	0.691s
+=== RUN   TestPeerBusinessDeliveryReadsWithoutProfessionalToolExecution
+--- PASS: TestPeerBusinessDeliveryReadsWithoutProfessionalToolExecution (5.37s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	5.881s

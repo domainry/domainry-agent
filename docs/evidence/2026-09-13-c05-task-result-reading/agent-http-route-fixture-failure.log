@@ -1,0 +1,6 @@
+=== RUN   TestPeerTaskDeliveryReadsOriginalReceiptsAfterControlRevocation
+    conversation_delivery_task_permissions_test.go:130: GET /agent/tasks/task_92869c82d2b0f8b537648f94dc6a6ab5: status 404, want 200, body 404 page not found
+--- FAIL: TestPeerTaskDeliveryReadsOriginalReceiptsAfterControlRevocation (2.25s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	3.264s
+FAIL

@@ -14,9 +14,14 @@ import (
 // source read policy. Local knowledge, private files and collaboration tools
 // retain their own reference traversal and are not treated as opaque outputs.
 func (audit *conversationSourceAudit) deliveryToolResult(ctx context.Context, owner sdk.ConversationRunReference, record persistence.ConversationToolExecution) (bool, error) {
-	scope, _ := ctx.Value(conversationDeliverySourceKey{}).(string)
+	scope := releasedSourcePurpose(ctx)
 	if scope == "" {
 		return false, nil
+	}
+	if definition, known := scheduleResultReadDefinition(record.Call.Name); known {
+		if handled, err := audit.attestDeliveryPersonalRecord(ctx, owner, record, definition); !handled || err != nil {
+			return handled, err
+		}
 	}
 	if _, local := knowledgeTool(record.Call.Name); local {
 		return false, nil
@@ -58,12 +63,15 @@ func (audit *conversationSourceAudit) deliveryToolResult(ctx context.Context, ow
 	} else if err := audit.connectedTool(ctx, record.Call.Name); err != nil {
 		return true, err
 	}
-	if err := audit.s.authorizeCollaborationID(ctx, scope, "delivery_read", audit.a); err != nil {
+	if err := audit.authorizeReleasedSourceRead(ctx); err != nil {
 		return true, err
 	}
 	// Preserve the original operation identity for source-owned receipt checks,
 	// without handing a reader any worker lease or execution confirmation.
 	request := sdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition, IdempotencyKey: record.IdempotencyKey}
+	if producer := audit.evidenceAuthority(owner); producer.UserID != audit.a.UserID || producer.RoleKey != audit.a.RoleKey {
+		request.ResultProducer = &producer
+	}
 	ctx, cancel := audit.s.externalCallContext(ctx, time.Duration(record.Definition.TimeoutMillis)*time.Millisecond)
 	defer cancel()
 	err := authorizeToolResultRead(ctx, audit.s.options.ToolHost, request, *record.Result)

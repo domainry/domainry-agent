@@ -1,0 +1,7 @@
+ok  	github.com/domainry/domainry-agent/internal/application	3.226s
+ok  	github.com/domainry/domainry-tools/internal/application/preferences	2.434s
+ok  	github.com/domainry/domainry-tools/internal/adapter/reporttools	2.118s
+ok  	github.com/domainry/domainry-tools/internal/adapter/analysistools	1.842s
+ok  	github.com/domainry/domainry-tools/module	3.317s
+ok  	github.com/domainry/domainry-report/internal/application/report	1.463s
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	1.815s

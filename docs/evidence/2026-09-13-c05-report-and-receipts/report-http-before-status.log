@@ -1,0 +1,6 @@
+=== RUN   TestPeerReportDeliveryUsesReadingPolicyWithoutExecutableCatalog
+    conversation_delivery_report_permissions_test.go:295: GET /agent/delegations/delegation_fb0c4f981d40cdab2e00bb9bd1a9d286/deliveries: status 403, want 200, body {"code":"source.access_denied"}
+--- FAIL: TestPeerReportDeliveryUsesReadingPolicyWithoutExecutableCatalog (15.93s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	16.960s
+FAIL

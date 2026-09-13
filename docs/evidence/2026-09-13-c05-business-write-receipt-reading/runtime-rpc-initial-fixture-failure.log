@@ -1,0 +1,6 @@
+=== RUN   TestBusinessWriteReceiptReadThroughRealOwnerRPC
+    conversation_business_write_receipt_read_rpc_test.go:109: receipt permission authorized an action
+--- FAIL: TestBusinessWriteReceiptReadThroughRealOwnerRPC (1.19s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	1.941s
+FAIL

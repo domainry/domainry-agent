@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-14",
+  "entry": "C05",
+  "complete": false,
+  "completed_entries": 4,
+  "total_entries": 25,
+  "source_file_count": 65,
+  "accepted_logs": [
+    "regression.log",
+    "race.log",
+    "transport.log",
+    "cross-user-http.log",
+    "professional-runtime.log",
+    "current-reader-runtime.log"
+  ],
+  "runtime_scenarios": {
+    "combined": 4,
+    "final_focused": 1
+  },
+  "verified": [
+    "explicit required roots are checked for issuer and bound actual receiver, then rechecked before admission",
+    "matching does not publish references",
+    "required roots and tasks/delegation publish atomically; unknown original rolls back",
+    "only current receiving execution can invoke delegation_source_read within an admitted prefix",
+    "stored original pages are byte-checked and reauthorize live data without acquiring professional execution grants",
+    "same-identity immutable task/source authority survives current reading role change",
+    "new persisted publisher and producer roles remain separate and both currently authorized",
+    "unlisted run, later step, wrong delegation/run/role, forged page, revoked fields/original role deny",
+    "real mixed-old-role model tool dispatch, complete original reads, automatic original-receipt delivery and account acceptance",
+    "equivalent current reader can reauthorize original receipts and stored source pages after restart",
+    "removing publisher while providers stay assigned denies both originals",
+    "removing report provider only denies report and preserves independent analysis",
+    "existing professional cross-user and same-user/different-role automatic delivery plus account first-delivery regressions"
+  ],
+  "limitations": [
+    "SQLite",
+    "deterministic model wire",
+    "account-confirmed dispatch and account acceptance",
+    "combined Runtime command preceded final fixture assertions/timeout allowance and concurrent dependency import correction; focused run covers those final sources",
+    "legacy release entries without Publisher keep old producer-scoped publication policy"
+  ],
+  "pending": [
+    "accurate legacy publisher restoration and historical assignment association",
+    "multi-owner first release/mixed roots/dependencies",
+    "other professional cross-subject sources and automatic delivery",
+    "participant management/execution/delivery scopes",
+    "complete execution detail sharing",
+    "cross-subject transfer and subject lifecycle",
+    "C06 and remaining TODO entries"
+  ]
+}

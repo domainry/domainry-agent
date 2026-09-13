@@ -35,11 +35,19 @@ func (s SubjectLifecycle) authority(workspaceID, subjectID string) (agentsdk.Con
 }
 
 var agentSubjectOwnerTables = []string{
-	conversationAgentMessageTable, conversationAgreementTable, conversationAssignmentTable, conversationDeliveryRecordTable, conversationDisagreementTable, conversationStepSourceTable, conversationDelegationTable, conversationAgentTable, conversationCollaborationMutationTable,
+	conversationSourceReleaseTable, conversationAgentMessageTable, conversationAgreementTable, conversationAssignmentTable, conversationDeliveryRecordTable, conversationDisagreementTable, conversationStepSourceTable, conversationDelegationTable, conversationAgentTable, conversationCollaborationMutationTable,
 	"_agent_conversation_interactions", "_agent_conversation_tool_calls", "_agent_conversation_steps",
 	"_agent_conversation_events", "_agent_conversation_summaries", "_agent_conversation_messages",
 	"_agent_conversation_inputs", "_agent_conversation_runs", conversationFollowUpEventTable,
 	conversationFollowUpStateTable, conversationTaskTable, "_agent_conversations", "_agent_user_memories",
+}
+
+func agentSubjectOwnerPredicate(table, owner string) query.Predicate {
+	owned := query.Equal("owner_key", owner)
+	if table == conversationSourceReleaseTable {
+		return query.Or(owned, query.Equal("producer_key", owner))
+	}
+	return owned
 }
 
 func (s SubjectLifecycle) PreviewSubject(ctx context.Context, workspaceID, subjectID string) (json.RawMessage, error) {
@@ -49,7 +57,7 @@ func (s SubjectLifecycle) PreviewSubject(ctx context.Context, workspaceID, subje
 	}
 	counts := map[string]int64{}
 	for _, table := range agentSubjectOwnerTables {
-		statement, args, buildErr := query.NewSelectBuilder(s.store.Renderer(), table).Projections(query.Project(query.CountAll())).Where(query.Equal("owner_key", conversationOwner(a))).Build()
+		statement, args, buildErr := query.NewSelectBuilder(s.store.Renderer(), table).Projections(query.Project(query.CountAll())).Where(agentSubjectOwnerPredicate(table, conversationOwner(a))).Build()
 		if buildErr != nil {
 			return nil, buildErr
 		}
@@ -80,7 +88,7 @@ func (s SubjectLifecycle) ExportSubjectForRequest(ctx context.Context, _ string,
 	}
 	export := map[string][]json.RawMessage{}
 	for _, table := range agentSubjectOwnerTables {
-		items, readErr := s.payloads(ctx, table, query.Equal("owner_key", conversationOwner(a)))
+		items, readErr := s.payloads(ctx, table, agentSubjectOwnerPredicate(table, conversationOwner(a)))
 		if readErr != nil {
 			return nil, readErr
 		}
@@ -144,7 +152,7 @@ func (s SubjectLifecycle) EraseSubjectForRequest(ctx context.Context, requestID,
 		}
 		changed := map[string]int64{}
 		for _, table := range agentSubjectOwnerTables {
-			statement, deleteArgs, deleteErr := query.NewDeleteBuilder(s.store.Renderer(), table).Where(query.Equal("owner_key", owner)).Build()
+			statement, deleteArgs, deleteErr := query.NewDeleteBuilder(s.store.Renderer(), table).Where(agentSubjectOwnerPredicate(table, owner)).Build()
 			if deleteErr != nil {
 				return deleteErr
 			}

@@ -493,7 +493,7 @@ func (s *ConversationService) executeConversationTool(ctx context.Context, claim
 		if err = s.authorizeStoredToolResult(ctx, request, *record.Result); err != nil {
 			return agentsdk.ConversationToolResult{}, err
 		}
-		if err = s.reauthorizeReadDependencies(ctx, record, claim.Authority, current, map[string]bool{}, claim.Run.ConversationID); err != nil {
+		if err = s.reauthorizeReadDependencies(ctx, agentsdk.ConversationRunReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID}, record, claim.Authority, current, map[string]bool{}, claim.Run.ConversationID); err != nil {
 			return agentsdk.ConversationToolResult{}, err
 		}
 		return *record.Result, nil

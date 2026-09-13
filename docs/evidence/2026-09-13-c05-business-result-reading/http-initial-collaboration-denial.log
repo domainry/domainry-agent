@@ -1,0 +1,6 @@
+=== RUN   TestPeerBusinessDeliveryReadsWithoutProfessionalToolExecution
+    conversation_delivery_business_permissions_test.go:196: delivery hidden or execution leaked {0x6b6a947040c0 [{1 agent_aebe0abc54f33d7c2a30b1bd72851ca4 1 conv_0dc267e3e88ce887549724a84eb05e22 task_0dc267e3e88ce887549724a84eb05e22 1 核对业务 admin <nil> <nil> 2026-09-13 12:47:55.14 +0000 UTC}] [] {[] false <nil> 1 <nil> <nil> <nil> [] [] 1 1 2026-09-13 12:47:55.256294 +0000 UTC <nil> { [] [] [] 0 0 <nil> } conv_9c8705050c0b412531cccacc93e82c2b <nil> delegation_f643479d3580bbad691a0fc76e2e4e62 default agent_aebe0abc54f33d7c2a30b1bd72851ca4 conv_9c8705050c0b412531cccacc93e82c2b  conv_0dc267e3e88ce887549724a84eb05e22 task_0dc267e3e88ce887549724a84eb05e22 核对业务 {[] 1 核对金额与流程 准确原值及状态  [] [附五类原始回执] [] <nil>}  {12 12 8192 300} [] delivered 5 <nil> 已核对原工具回执 2026-09-13 12:47:55.14 +0000 UTC 2026-09-13 12:47:57.39 +0000 UTC} true <nil> []}
+--- FAIL: TestPeerBusinessDeliveryReadsWithoutProfessionalToolExecution (3.89s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	4.833s
+FAIL

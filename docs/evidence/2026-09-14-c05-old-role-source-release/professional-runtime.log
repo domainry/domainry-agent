@@ -1,0 +1,8 @@
+=== RUN   TestUnpublishedMixedOldRoleReportAndAnalysisFirstDeliveryThroughRealHTTP
+--- PASS: TestUnpublishedMixedOldRoleReportAndAnalysisFirstDeliveryThroughRealHTTP (24.23s)
+=== RUN   TestCrossUserAgentProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead
+--- PASS: TestCrossUserAgentProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead (85.22s)
+=== RUN   TestSameUserDifferentRolesProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead
+--- PASS: TestSameUserDifferentRolesProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead (96.96s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	207.733s

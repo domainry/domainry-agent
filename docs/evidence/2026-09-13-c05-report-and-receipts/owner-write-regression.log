@@ -1,0 +1,24 @@
+ok  	github.com/domainry/domainry-integration/capability	0.392s [no tests to run]
+ok  	github.com/domainry/domainry-integration/cmd/integration-server	0.399s [no tests to run]
+?   	github.com/domainry/domainry-integration/internal/adapter/accountwrite	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/adapter/integrationsdk	1.856s [no tests to run]
+ok  	github.com/domainry/domainry-integration/internal/application/integration	1.132s [no tests to run]
+ok  	github.com/domainry/domainry-integration/internal/architecture	1.490s
+ok  	github.com/domainry/domainry-integration/internal/assembly/module	0.793s [no tests to run]
+ok  	github.com/domainry/domainry-integration/internal/assembly/saas	8.889s
+?   	github.com/domainry/domainry-integration/internal/domain/integration/model	[no test files]
+?   	github.com/domainry/domainry-integration/internal/domain/integration/repository	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/domain/integration/service	2.488s [no tests to run]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/connectortransport	1.762s [no tests to run]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/architecture	2.123s [no tests to run]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/integration	3.262s
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/migration	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/database/schema	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-integration/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-integration/internal/infrastructure/security	3.727s [no tests to run]
+ok  	github.com/domainry/domainry-integration/internal/transport/http/module	3.336s [no tests to run]
+ok  	github.com/domainry/domainry-integration/internal/transport/http/saas	4.312s
+ok  	github.com/domainry/domainry-integration/module	3.797s [no tests to run]

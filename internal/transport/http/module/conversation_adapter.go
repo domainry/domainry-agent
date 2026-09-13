@@ -207,6 +207,10 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			body = &in.Response
 		case "result_read":
 			body = &in.ResultRead
+		case "delegations_result":
+			body = &in.DeliveryResultRead
+		case "delegations_artifact", "delegations_export":
+			body = &in.DeliveryArtifactRead
 		case "memories_write":
 			body = &in.Memory
 		case "todos_create":
@@ -255,7 +259,7 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			writeError(w, err)
 			return
 		}
-		if op == "artifacts_download" {
+		if op == "artifacts_download" || op == "delegations_export" {
 			download, ok := result.(agentsdk.ConversationArtifactDownload)
 			if !ok {
 				writeCode(w, 500, "agent.conversation.artifact_download_invalid")

@@ -63,13 +63,18 @@ func configureIdentityFixture(t *testing.T) *identityFixture {
 			json.NewEncoder(w).Encode(map[string]string{"code": "identity.application_credential_invalid"})
 			return
 		}
+		if state.revoked.Load() {
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(map[string]string{"code": "identity.principal_unavailable"})
+			return
+		}
 		user := string(in.SubjectID)
 		if state.forged.Load() {
 			user = "another-user"
 		}
 		json.NewEncoder(w).Encode(identitysdk.PrincipalResolution{
-			Principal:    identitysdk.Principal{Known: !state.revoked.Load(), WorkspaceID: "workspace", UserID: user, RoleKey: in.RoleKey},
-			AccessBundle: identitysdk.AccessBundle{ContractVersion: identitysdk.CurrentPolicyBundleVersion, ExpiresAt: time.Now().Add(time.Minute), Subject: identitysdk.Subject{WorkspaceID: "workspace", SubjectID: in.SubjectID}},
+			Principal:    identitysdk.Principal{ContractVersion: identitysdk.PrincipalContextContractVersion, Known: true, WorkspaceID: "workspace", UserID: user, RoleKey: in.RoleKey, AuthorizationRevision: "current-revision"},
+			AccessBundle: identitysdk.AccessBundle{ContractVersion: identitysdk.CurrentPolicyBundleVersion, AuthorizationRevision: "current-revision", ExpiresAt: time.Now().Add(time.Minute), Subject: identitysdk.Subject{WorkspaceID: "workspace", SubjectID: in.SubjectID}},
 		})
 	})
 	mux.Handle("/", capabilities)

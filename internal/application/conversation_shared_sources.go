@@ -1,0 +1,396 @@
+package application
+
+import (
+	"context"
+	"errors"
+
+	sdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent-sdk/persistence"
+)
+
+// A source release permits evidence traversal for deliberately submitted text.
+// It carries the actual reader separately from the producer used to locate the
+// immutable ledger. It never authorizes a tool invocation or a raw endpoint.
+type conversationSourceReleaseKey struct{}
+
+// Introduced only while traversing references from a server-owned snapshot.
+// A submitted root does not authorize another arbitrary root of the same user.
+type conversationSourceParentKey struct{}
+
+type conversationPublishedSourceKey struct{}
+type conversationPublishedSource struct {
+	purpose, delegationID string
+	roots                 []sdk.ConversationRunReference
+}
+
+func (scope conversationPublishedSource) contains(ref sdk.ConversationRunReference) bool {
+	for _, root := range scope.roots {
+		if sourcePrefixContains(root, ref) {
+			return true
+		}
+	}
+	return false
+}
+
+// Persisted contracts and deliveries must use their recorded publisher, not
+// the relationship's original execution role. Prospective submissions have
+// no such marker and remain validated before their publication transaction.
+func (s *ConversationService) publishedReferenceContext(ctx context.Context, ref sdk.ConversationRunReference, reader sdk.ConversationAuthority) (context.Context, error) {
+	scope, ok := ctx.Value(conversationPublishedSourceKey{}).(conversationPublishedSource)
+	if !ok || !scope.contains(ref) {
+		return ctx, nil
+	}
+	candidate, found, err := s.sourceAudit(reader).publishedSourceContext(ctx, ref)
+	if err != nil {
+		return ctx, err
+	}
+	if found {
+		return candidate, nil
+	}
+	// An original current-role result needs no publication, but storage
+	// ownership alone never substitutes a different original role.
+	if repo, ok := s.repo.(persistence.ConversationSourceAuthorityRepository); ok {
+		original, err := repo.ConversationSourceAuthority(ctx, ref, reader)
+		if err != nil {
+			var coded *sdk.Error
+			if !errors.As(err, &coded) || coded.Class != "not_found" {
+				return ctx, err
+			}
+			return ctx, conversationFailure("forbidden", "source_publisher_unverified")
+		}
+		if original == reader {
+			candidate, err := s.sourceReleaseContext(ctx, scope.purpose, scope.delegationID, reader, reader, []sdk.ConversationRunReference{ref})
+			if err != nil {
+				return ctx, err
+			}
+			if err := s.sourceAudit(reader).authorizeReleasedSourceRead(candidate); err != nil {
+				return ctx, err
+			}
+			return candidate, nil
+		}
+	}
+	return ctx, conversationFailure("forbidden", "source_publisher_unverified")
+}
+
+type conversationSourceRelease struct {
+	reader                sdk.ConversationAuthority
+	producer              sdk.ConversationAuthority
+	roots                 []sdk.ConversationRunReference
+	origins               map[sdk.ConversationRunReference]sdk.ConversationAuthority
+	active                bool
+	purpose, delegationID string
+}
+
+func sourcePrefixContains(root, ref sdk.ConversationRunReference) bool {
+	return root.ConversationID == ref.ConversationID && root.RunID == ref.RunID && (root.BeforeStep == 0 || ref.BeforeStep > 0 && ref.BeforeStep <= root.BeforeStep)
+}
+
+func releasedSourcePurpose(ctx context.Context) string {
+	if result, _ := ctx.Value(conversationContractResultKey{}).(bool); result {
+		return "released:contract"
+	}
+	if id, _ := ctx.Value(conversationDeliverySourceKey{}).(string); id != "" {
+		return id
+	}
+	if release, ok := ctx.Value(conversationSourceReleaseKey{}).(conversationSourceRelease); ok && release.active {
+		return "released:" + release.purpose
+	}
+	return ""
+}
+
+func (s *ConversationService) sourceReleaseContext(ctx context.Context, purpose, id string, producer, reader sdk.ConversationAuthority, roots []sdk.ConversationRunReference) (context.Context, error) {
+	if err := s.authorize(reader); err != nil {
+		return ctx, err
+	}
+	if err := s.authorize(producer); err != nil {
+		return ctx, err
+	}
+	if producer.RuntimeID != reader.RuntimeID || producer.WorkspaceID != reader.WorkspaceID {
+		return ctx, conversationFailure("forbidden", "execution_subject_mismatch")
+	}
+	origins := make(map[sdk.ConversationRunReference]sdk.ConversationAuthority, len(roots))
+	shared := producer != reader
+	if len(roots) > 256 {
+		return ctx, conversationFailure("unavailable", "source_limit_exceeded")
+	}
+	for _, ref := range roots {
+		if ref.ConversationID == "" || ref.RunID == "" || ref.BeforeStep < 0 || ref.BeforeStep > 257 {
+			return ctx, conversationFailure("unavailable", "source_reference_invalid")
+		}
+		original := producer
+		if repo, ok := s.repo.(persistence.ConversationSourceAuthorityRepository); ok {
+			var err error
+			original, err = repo.ConversationSourceAuthority(ctx, ref, producer)
+			if err != nil {
+				return ctx, err
+			}
+			if err := s.authorize(original); err != nil {
+				return ctx, err
+			}
+			if original.RuntimeID != producer.RuntimeID || original.WorkspaceID != producer.WorkspaceID || original.UserID != producer.UserID {
+				return ctx, conversationFailure("forbidden", "execution_subject_mismatch")
+			}
+		}
+		origins[ref] = original
+		shared = shared || original != reader
+	}
+	if !shared {
+		if purpose != "delivery" {
+			ctx = deliverySourceContext(ctx, "")
+		}
+		// Keep the trusted publication boundary for inherited older roles.
+		// Current-role roots retain ordinary execution/source checks until
+		// traversal actually encounters a separately authorized role.
+		return context.WithValue(ctx, conversationSourceReleaseKey{}, conversationSourceRelease{reader: reader, producer: producer, roots: append([]sdk.ConversationRunReference{}, roots...), origins: origins, purpose: purpose, delegationID: id}), nil
+	}
+	if err := s.validateAgentSharingSubjects(ctx, reader, []string{producer.UserID}); err != nil {
+		return ctx, err
+	}
+	if err := s.authorizeCollaboration(delegationExecutorContext(ctx), "share", nil, producer); err != nil {
+		return ctx, err
+	}
+	checked := map[sdk.ConversationAuthority]bool{producer: true, reader: true}
+	for _, original := range origins {
+		if !checked[original] {
+			if err := s.authorizeCollaboration(delegationExecutorContext(ctx), "share", nil, original); err != nil {
+				return ctx, err
+			}
+			checked[original] = true
+		}
+	}
+	if id != "" {
+		op := "view"
+		if purpose == "delivery" {
+			op = "delivery_read"
+		}
+		if purpose == "message" {
+			op = "communicate"
+		}
+		if err := s.authorizeCollaborationID(delegationExecutorContext(ctx), id, op, reader); err != nil {
+			return ctx, err
+		}
+	}
+	if purpose != "delivery" {
+		ctx = deliverySourceContext(ctx, "")
+	}
+	return context.WithValue(ctx, conversationSourceReleaseKey{}, conversationSourceRelease{reader: reader, producer: producer, roots: append([]sdk.ConversationRunReference{}, roots...), origins: origins, active: true, purpose: purpose, delegationID: id}), nil
+}
+
+func (audit *conversationSourceAudit) publishedSourceContext(ctx context.Context, ref sdk.ConversationRunReference) (context.Context, bool, error) {
+	repo, ok := audit.s.repo.(persistence.ConversationSourceReleaseRepository)
+	if !ok {
+		return ctx, false, nil
+	}
+	releases, err := repo.ConversationSourceReleases(ctx, ref, audit.a)
+	if err != nil {
+		return ctx, false, err
+	}
+	var denied error
+	for _, release := range releases {
+		if scope, ok := ctx.Value(conversationPublishedSourceKey{}).(conversationPublishedSource); ok && scope.contains(ref) && (release.DelegationID != scope.delegationID || release.Purpose != scope.purpose) {
+			continue
+		}
+		if !sourcePrefixContains(release.Reference, ref) || release.Producer == audit.a || release.DelegationID == "" {
+			continue
+		}
+		if release.Purpose != "contract" && release.Purpose != "message" && release.Purpose != "delivery" {
+			return ctx, false, conversationFailure("unavailable", "source_reference_invalid")
+		}
+		if release.Publisher == nil {
+			denied = conversationFailure("forbidden", "source_publisher_unverified")
+			continue
+		}
+		publisher := *release.Publisher
+		candidate, err := audit.s.sourceReleaseContext(ctx, release.Purpose, release.DelegationID, publisher, audit.a, []sdk.ConversationRunReference{release.Reference})
+		if err == nil {
+			if releasedEvidenceAuthority(candidate, ref, audit.a) != release.Producer {
+				return ctx, false, conversationFailure("forbidden", "execution_subject_mismatch")
+			}
+			return candidate, true, nil
+		}
+		if !collaborationDenied(err) {
+			return ctx, false, err
+		}
+		denied = err
+	}
+	return ctx, false, denied
+}
+
+func (audit *conversationSourceAudit) authorizeReleasedSourceRead(ctx context.Context) error {
+	if release, ok := ctx.Value(conversationSourceReleaseKey{}).(conversationSourceRelease); ok {
+		if release.reader != audit.a {
+			return conversationFailure("forbidden", "source_reader_mismatch")
+		}
+		if release.active {
+			if err := audit.s.authorizeCollaboration(delegationExecutorContext(ctx), "share", nil, release.producer); err != nil {
+				return err
+			}
+			checked := map[sdk.ConversationAuthority]bool{release.producer: true, audit.a: true}
+			for _, original := range release.origins {
+				if !checked[original] {
+					if err := audit.s.authorizeCollaboration(delegationExecutorContext(ctx), "share", nil, original); err != nil {
+						return err
+					}
+					checked[original] = true
+				}
+			}
+		}
+		if release.delegationID == "" {
+			return nil
+		} // trusted prospective admission
+		op := "view"
+		if release.purpose == "delivery" {
+			op = "delivery_read"
+		}
+		if release.purpose == "message" {
+			op = "communicate"
+		}
+		return audit.s.authorizeCollaborationID(delegationExecutorContext(ctx), release.delegationID, op, audit.a)
+	}
+	id, _ := ctx.Value(conversationDeliverySourceKey{}).(string)
+	return audit.s.authorizeCollaborationID(ctx, id, "delivery_read", audit.a)
+}
+
+func (audit *conversationSourceAudit) evidenceAuthority(ref sdk.ConversationRunReference) sdk.ConversationAuthority {
+	if audit.evidenceOwner != nil {
+		return *audit.evidenceOwner
+	}
+	return audit.a
+}
+
+func releasedEvidenceAuthority(ctx context.Context, ref sdk.ConversationRunReference, reader sdk.ConversationAuthority) sdk.ConversationAuthority {
+	if release, ok := ctx.Value(conversationSourceReleaseKey{}).(conversationSourceRelease); ok && release.reader == reader {
+		for _, root := range release.roots {
+			if sourcePrefixContains(root, ref) {
+				if original, ok := release.origins[root]; ok {
+					return original
+				}
+				return release.producer
+			}
+		}
+	}
+	return reader
+}
+
+func (s *ConversationService) sharedEvidenceAuthority(ctx context.Context, ref sdk.ConversationRunReference, a sdk.ConversationAuthority) (sdk.ConversationAuthority, error) {
+	ctx, err := s.publishedReferenceContext(ctx, ref, a)
+	if err != nil {
+		return a, err
+	}
+	if producer := releasedEvidenceAuthority(ctx, ref, a); producer != a {
+		return producer, nil
+	}
+	audit := s.sourceAudit(a)
+	releaseCtx, found, err := audit.publishedSourceContext(ctx, ref)
+	if err != nil {
+		return a, err
+	}
+	if found {
+		return releasedEvidenceAuthority(releaseCtx, ref, a), nil
+	}
+	return a, nil
+}
+
+func (s *ConversationService) delegationContractSourceContext(ctx context.Context, d sdk.ConversationDelegation, a sdk.ConversationAuthority) (context.Context, error) {
+	if d.OwnerUserID == "" {
+		return ctx, nil
+	}
+	repo, ok := s.repo.(persistence.ConversationDelegationExecutionRepository)
+	if !ok {
+		if d.OwnerUserID == a.UserID {
+			return ctx, nil
+		}
+		return ctx, conversationFailure("unavailable", "delegation_execution_unavailable")
+	}
+	subjects, err := repo.ConversationDelegationAuthorities(ctx, d.ID, a)
+	if err != nil {
+		return ctx, err
+	}
+	refs := append([]sdk.ConversationRunReference{}, d.Requirements.Sources...)
+	if d.BriefSource != nil {
+		refs = append(refs, *d.BriefSource)
+	}
+	if d.InputSource != nil {
+		refs = append(refs, *d.InputSource)
+	}
+	for _, edge := range d.Dependencies {
+		if edge.Source != nil {
+			refs = append(refs, *edge.Source)
+		}
+		if edge.InputSource != nil {
+			refs = append(refs, *edge.InputSource)
+		}
+	}
+	if _, ok := s.repo.(persistence.ConversationSourceReleaseRepository); ok {
+		return context.WithValue(ctx, conversationPublishedSourceKey{}, conversationPublishedSource{purpose: "contract", delegationID: d.ID, roots: refs}), nil
+	}
+	return s.sourceReleaseContext(ctx, "contract", d.ID, subjects.Issuer, a, refs)
+}
+
+func (s *ConversationService) delegationDeliverySourceContext(ctx context.Context, d sdk.ConversationDelegation, a sdk.ConversationAuthority) (context.Context, error) {
+	ctx = deliverySourceContext(ctx, d.ID)
+	if d.ExecutionSubject == nil {
+		return ctx, nil
+	}
+	repo, ok := s.repo.(persistence.ConversationDelegationExecutionRepository)
+	if !ok {
+		if d.ExecutionSubject.UserID == a.UserID {
+			return ctx, nil
+		}
+		return ctx, conversationFailure("unavailable", "delegation_execution_unavailable")
+	}
+	subjects, err := repo.ConversationDelegationAuthorities(ctx, d.ID, a)
+	if err != nil {
+		return ctx, err
+	}
+	refs := []sdk.ConversationRunReference{}
+	if d.Delivery != nil {
+		refs = append(refs, d.Delivery.Evidence...)
+		for _, claim := range d.Delivery.Conditions {
+			for _, ref := range claim.Receipts {
+				refs = append(refs, sdk.ConversationRunReference{ConversationID: ref.ConversationID, RunID: ref.RunID, BeforeStep: ref.Step + 2})
+			}
+		}
+	}
+	if d.Verification != nil {
+		if d.Verification.Source != nil && d.Verification.ActorID == subjects.Executor.UserID {
+			refs = append(refs, *d.Verification.Source)
+		}
+		for _, check := range d.Verification.Checks {
+			for _, ref := range check.Receipts {
+				refs = append(refs, sdk.ConversationRunReference{ConversationID: ref.ConversationID, RunID: ref.RunID, BeforeStep: ref.Step + 2})
+			}
+		}
+	}
+	if _, ok := s.repo.(persistence.ConversationSourceReleaseRepository); ok {
+		return context.WithValue(ctx, conversationPublishedSourceKey{}, conversationPublishedSource{purpose: "delivery", delegationID: d.ID, roots: refs}), nil
+	}
+	return s.sourceReleaseContext(ctx, "delivery", d.ID, subjects.Executor, a, refs)
+}
+
+// Validate a new submission before publishing anything. The current submitter
+// must own every root; immutable provenance chooses its original proof role.
+// Accept/review paths instead use the already recorded executor and releases.
+func (s *ConversationService) proposedDeliverySourceContext(ctx context.Context, d sdk.ConversationDelegation, delivery *sdk.ConversationDelegationDelivery, a sdk.ConversationAuthority) (context.Context, error) {
+	if delivery == nil {
+		return ctx, nil
+	}
+	refs := append([]sdk.ConversationRunReference{}, delivery.Evidence...)
+	for _, condition := range delivery.Conditions {
+		for _, ref := range condition.Receipts {
+			if ref.Step < 0 || ref.Step > 255 {
+				return ctx, conversationFailure("bad_request", "result_reference_invalid")
+			}
+			refs = append(refs, sdk.ConversationRunReference{ConversationID: ref.ConversationID, RunID: ref.RunID, BeforeStep: ref.Step + 2})
+		}
+	}
+	return s.sourceReleaseContext(ctx, "delivery", d.ID, a, a, mergeConversationSources(refs))
+}
+
+func (s *ConversationService) messageSourceContext(ctx context.Context, m sdk.ConversationAgentMessage, a sdk.ConversationAuthority) (context.Context, error) {
+	if m.Source == nil || m.SenderUserID == "" {
+		return ctx, nil
+	}
+	producer := sdk.ConversationAuthority{Known: true, RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, UserID: m.SenderUserID, RoleKey: m.SenderRoleKey}
+	return s.sourceReleaseContext(ctx, "message", m.DelegationID, producer, a, []sdk.ConversationRunReference{*m.Source})
+}

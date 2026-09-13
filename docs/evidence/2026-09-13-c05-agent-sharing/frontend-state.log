@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: agent editor submits only write fields and preserves sharing when sharing access is absent
+ok 1 - agent editor submits only write fields and preserves sharing when sharing access is absent
+  ---
+  duration_ms: 0.673
+  type: 'test'
+  ...
+# Subtest: same brief does not make an old dependency agreement acceptable
+ok 2 - same brief does not make an old dependency agreement acceptable
+  ---
+  duration_ms: 0.112792
+  type: 'test'
+  ...
+# Subtest: acceptance form keeps receipt evidence but does not turn recipient claims into reviewer judgments
+ok 3 - acceptance form keeps receipt evidence but does not turn recipient claims into reviewer judgments
+  ---
+  duration_ms: 0.1545
+  type: 'test'
+  ...
+# Subtest: question attention closes on reply or requirement replacement
+ok 4 - question attention closes on reply or requirement replacement
+  ---
+  duration_ms: 0.072167
+  type: 'test'
+  ...
+# Subtest: resume preserves selected fields and pins reviewed upstream agreement
+ok 5 - resume preserves selected fields and pins reviewed upstream agreement
+  ---
+  duration_ms: 0.173208
+  type: 'test'
+  ...
+# Subtest: condition edits never silently associate an old check with different work
+ok 6 - condition edits never silently associate an old check with different work
+  ---
+  duration_ms: 0.105791
+  type: 'test'
+  ...
+# Subtest: acceptance requires current resolved disagreements, including after delivery replacement or lost evidence access
+ok 7 - acceptance requires current resolved disagreements, including after delivery replacement or lost evidence access
+  ---
+  duration_ms: 0.152125
+  type: 'test'
+  ...
+# Subtest: collaboration controls require separate current permissions
+ok 8 - collaboration controls require separate current permissions
+  ---
+  duration_ms: 0.078667
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 72.593417

@@ -198,7 +198,11 @@ func TestPeerTransferLegacyAssignmentUsesOriginalProvenance(t *testing.T) {
 				d.Revision++
 				d.AgreementRevision = 2
 				d.BriefSource = &sdk.ConversationRunReference{ConversationID: "later", RunID: "changed", BeforeStep: 1}
-				return repo.saveConversationDelegation(t.Context(), tx, d, previous, a)
+				// Seed the historical bytes directly: the current writer now
+				// validates/publishes source roots and correctly rejects these
+				// intentionally unavailable legacy run references.
+				q, args, e = query.NewUpdateBuilder(repo.store.Renderer(), conversationDelegationTable).Set("revision", d.Revision).Set("payload_json", conversationJSON(d)).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", d.ID), query.Equal("revision", previous))).Build()
+				return conversationCAS(t.Context(), tx, q, args, e)
 			})
 			if err != nil {
 				t.Fatal(err)

@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-14",
+  "work": "C05 delegation and execution storage separation",
+  "storageVerified": true,
+  "publicCrossSubjectAdmissionEnabled": false,
+  "C05Complete": false,
+  "completedTODOItems": 4,
+  "totalTODOItems": 25,
+  "verified": [
+    "separate task and coordination record ownership",
+    "actual stored executor and issuer roles",
+    "private conversation and task isolation",
+    "reply and terminal event routing",
+    "issuer pause and resume",
+    "delivery and acceptance actor recording",
+    "origin traversal across execution owners",
+    "same-user different-role bindings",
+    "admission identity-changing retries rejected",
+    "current shared-agent and participant HTTP scenarios"
+  ],
+  "remaining": [
+    "explicit receiver execution consent and current host authorization",
+    "application admission, matching, worker and recovery integration",
+    "cross-subject source and delivery reading contracts",
+    "participant management and execution/delivery scopes",
+    "subject-bound transfer and retirement handling",
+    "cross-owner dependency propagation and whole-goal budgets"
+  ],
+  "validationScope": "Real SQLite repository lifecycle; existing Identity HTTP regression. No cross-subject application or browser acceptance is claimed.",
+  "sourceManifest": "source-manifest.json"
+}

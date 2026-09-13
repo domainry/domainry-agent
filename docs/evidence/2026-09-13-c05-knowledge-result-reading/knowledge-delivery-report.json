@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "realChrome": true,
+  "current": [
+    "libraries",
+    "search",
+    "fetch",
+    "extract"
+  ],
+  "extractionValueAndEvidence": true,
+  "immutableHistory": true,
+  "sourceRevocation": true,
+  "restoration": true,
+  "refresh": true,
+  "closeClears": true,
+  "narrowViewport": true,
+  "rawExecutionRequests": 0,
+  "pages": 6,
+  "errors": []
+}

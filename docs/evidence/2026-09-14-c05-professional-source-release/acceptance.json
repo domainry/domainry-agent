@@ -1,0 +1,39 @@
+{
+  "date": "2026-09-14",
+  "item": "C05",
+  "complete": false,
+  "completed_items": 4,
+  "total_items": 25,
+  "verified": [
+    "original producer HMAC and actual reader authority are separate",
+    "report query, catalog, analysis result and catalog shared RPC",
+    "strict contract compatibility rejection",
+    "Runtime collaboration policy and active-subject validator",
+    "actual two-user Identity provisioning and login",
+    "actual reader has no report/analysis execution grant",
+    "both current source and field policy",
+    "producer query grant removed while receipts remain readable",
+    "reader row projection must cover original projection",
+    "source mutation invalidates old proofs even with unchanged numeric total",
+    "Agent tool dispatch after required account confirmation",
+    "automatic report and analysis execution and four-receipt delivery",
+    "issuer account HTTP acceptance",
+    "restart",
+    "private conversation isolation and unpublished receipt denial",
+    "receiver original role no longer assigned denies reading",
+    "new application, SDK, Report and Runtime race checks"
+  ],
+  "pending": [
+    "remaining professional source sharing",
+    "same-user different-role source routing",
+    "multi-owner dependencies",
+    "participant execution/delivery/management scopes",
+    "full execution detail sharing",
+    "cross-subject transfer and lifecycle",
+    "C06-C07 and later TODO items"
+  ],
+  "models": "deterministic streaming wire fixtures; real Identity/Runtime/Report/Tools/SQLite; no real-model completion-rate claim",
+  "database": "SQLite",
+  "business_rpc_contract_sha256": "0975df00be8381ea7a3ec45a9b2aa68dedcd999c8c6901bd1ad8f82466374a53",
+  "source_files": 41
+}

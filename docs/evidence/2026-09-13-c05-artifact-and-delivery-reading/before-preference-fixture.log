@@ -1,0 +1,6 @@
+=== RUN   TestPeerArtifactDeliveryReadsKnowledgeVersionsWithoutMutationRights
+    conversation_delivery_artifact_permissions_test.go:167: PUT /tools/preferences/artifact_create: status 400, want 200, body {"code":"tools.settings.input_invalid"}
+--- FAIL: TestPeerArtifactDeliveryReadsKnowledgeVersionsWithoutMutationRights (6.09s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	6.545s
+FAIL

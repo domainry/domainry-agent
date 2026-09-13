@@ -27,7 +27,7 @@ func OpenConversationIdentity(ctx context.Context, runtimeID string, config iden
 	if strings.TrimSpace(runtimeID) == "" || strings.TrimSpace(config.Endpoint) == "" || strings.TrimSpace(config.WorkspaceID) == "" || strings.TrimSpace(config.Audience) == "" || strings.TrimSpace(config.Issuer) == "" || strings.TrimSpace(config.ServiceAccessToken) == "" || strings.TrimSpace(config.CapabilityContractSHA256) == "" {
 		return nil, errors.New("Agent SaaS conversations require IDENTITY_ENDPOINT, IDENTITY_WORKSPACE_ID, IDENTITY_AUDIENCE, IDENTITY_ISSUER, IDENTITY_SERVICE_ACCESS_TOKEN and IDENTITY_CAPABILITY_CONTRACT_SHA256")
 	}
-	application := identitysdk.ApplicationRef{TenantID: identitysdk.TenantID(strings.TrimSpace(config.TenantID)), WorkspaceID: identitysdk.WorkspaceID(strings.TrimSpace(config.WorkspaceID)), ApplicationKey: identitysdk.ApplicationKey(strings.TrimSpace(config.Audience))}
+	application := identitysdk.ApplicationRef{WorkspaceID: identitysdk.WorkspaceID(strings.TrimSpace(config.WorkspaceID)), ApplicationKey: identitysdk.ApplicationKey(strings.TrimSpace(config.Audience))}
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
 	binding, err := identityremote.NewFactory(config).Open(ctx, application)
@@ -51,6 +51,9 @@ func (h *ConversationIdentity) AuthorizeConversationExecution(ctx context.Contex
 	// performs a fresh principal resolution; no queued policy bundle is reused.
 	resolution, err := h.binding.Principals().Resolve(requestcontext.WithWorkspaceID(ctx, a.WorkspaceID), identitysdk.PrincipalResolutionRequest{SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
 	if err != nil {
+		if subjectResolutionDenied(err) {
+			return false, nil
+		}
 		return false, err
 	}
 	p := resolution.Principal
@@ -58,6 +61,22 @@ func (h *ConversationIdentity) AuthorizeConversationExecution(ctx context.Contex
 }
 
 var _ agentsdk.ConversationExecutionAuthorizer = (*ConversationIdentity)(nil)
+
+// Source Identity returns these exact subject denials after authenticating the
+// application credential. Credential failures and malformed responses remain
+// unavailable, so they cannot be mistaken for a successful policy lookup.
+func subjectResolutionDenied(err error) bool {
+	var boundary *identitysdk.Error
+	if !errors.As(err, &boundary) || boundary.StatusCode != 403 && boundary.StatusCode != 404 {
+		return false
+	}
+	switch boundary.Code {
+	case "identity.principal_unavailable", "identity.session_role_unavailable", "identity.subject_not_found":
+		return true
+	default:
+		return false
+	}
+}
 
 func (h *ConversationIdentity) AuthorizeConversationCollaboration(ctx context.Context, in agentsdk.ConversationCollaborationAuthorizationRequest) (agentsdk.ConversationCollaborationAuthorization, error) {
 	var out agentsdk.ConversationCollaborationAuthorization
@@ -67,6 +86,9 @@ func (h *ConversationIdentity) AuthorizeConversationCollaboration(ctx context.Co
 	}
 	resolution, err := h.binding.Principals().Resolve(requestcontext.WithWorkspaceID(ctx, a.WorkspaceID), identitysdk.PrincipalResolutionRequest{SubjectID: identitysdk.SubjectID(a.UserID), RoleKey: a.RoleKey})
 	if err != nil {
+		if subjectResolutionDenied(err) {
+			return out, nil
+		}
 		return out, err
 	}
 	if !resolution.Principal.Known || resolution.Principal.UserID != a.UserID || resolution.Principal.WorkspaceID != a.WorkspaceID {

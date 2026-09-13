@@ -1,0 +1,5 @@
+=== RUN   TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation
+    conversation_delivery_schedule_permissions_test.go:184: Seven real calls completed; current host requested 0 confirmations
+--- PASS: TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation (10.04s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	11.303s

@@ -1,0 +1,42 @@
+{
+  "phase": "C05 independent schedule receipt reading",
+  "phaseComplete": true,
+  "C05Complete": false,
+  "completedItems": 4,
+  "totalItems": 25,
+  "operations": [
+    "schedule_create",
+    "schedule_list",
+    "schedule_get",
+    "schedule_update",
+    "schedule_pause",
+    "schedule_resume",
+    "schedule_delete"
+  ],
+  "agentRealHTTP": true,
+  "agentSchedulerOwnerFixture": true,
+  "schedulerRealSQLiteSaaSRestart": true,
+  "racePassed": true,
+  "sourceReadRequiresCurrentOwnerPermission": true,
+  "sameOriginalUserBoundary": true,
+  "readonlyDeletionDoesNotInitializeSchedulerApplication": true,
+  "originalReceiptBodyUnchanged": true,
+  "remainingC05": [
+    "cross-user/role participants and execution subjects"
+  ],
+  "logFiles": [
+    "agent-application-and-tools.log",
+    "agent-http-confirmation-fixture-failure.log",
+    "agent-http-final.log",
+    "agent-http-preference-fixture-failure.log",
+    "agent-origin.log",
+    "agent-race.log",
+    "agent-regression.log",
+    "scheduler-http-fixture-build-failure.log",
+    "scheduler-http.log",
+    "scheduler-owner-final.log",
+    "scheduler-owner-race-final.log",
+    "scheduler-owner-race.log",
+    "scheduler-sdk-and-tools.log"
+  ]
+}

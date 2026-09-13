@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "realChrome": true,
+  "realIdentityUsers": true,
+  "scenarios": [
+    "invite observer to one delegation",
+    "no private work or owner controls",
+    "upgrade to communication",
+    "actual sender label",
+    "message consumed by original worker",
+    "390px layout",
+    "remove participant clears live detail and survives reload"
+  ],
+  "errors": []
+}

@@ -1,0 +1,20 @@
+=== RUN   TestDeliveryToolReadPreservesScopeAndCurrentSourceDenial
+--- PASS: TestDeliveryToolReadPreservesScopeAndCurrentSourceDenial (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	0.712s
+=== RUN   TestReportLegacyResultsRetainExecutionChecksAfterOwnerUpgrade
+=== RUN   TestReportLegacyResultsRetainExecutionChecksAfterOwnerUpgrade/{"operation":"query","report_key":"sales"}
+=== RUN   TestReportLegacyResultsRetainExecutionChecksAfterOwnerUpgrade/{"operation":"catalog"}
+--- PASS: TestReportLegacyResultsRetainExecutionChecksAfterOwnerUpgrade (0.01s)
+    --- PASS: TestReportLegacyResultsRetainExecutionChecksAfterOwnerUpgrade/{"operation":"query","report_key":"sales"} (0.00s)
+    --- PASS: TestReportLegacyResultsRetainExecutionChecksAfterOwnerUpgrade/{"operation":"catalog"} (0.00s)
+PASS
+ok  	github.com/domainry/domainry-tools/internal/adapter/reporttools	1.458s
+=== RUN   TestAnalysisLegacyResultsRetainExecutionChecksAfterOwnerUpgrade
+=== RUN   TestAnalysisLegacyResultsRetainExecutionChecksAfterOwnerUpgrade/{"operation":"run","spec":{"dataset_key":"sales","measures":[{"key":"total","function":"sum","field":"amount"}]}}
+=== RUN   TestAnalysisLegacyResultsRetainExecutionChecksAfterOwnerUpgrade/{"operation":"catalog"}
+--- PASS: TestAnalysisLegacyResultsRetainExecutionChecksAfterOwnerUpgrade (0.02s)
+    --- PASS: TestAnalysisLegacyResultsRetainExecutionChecksAfterOwnerUpgrade/{"operation":"run","spec":{"dataset_key":"sales","measures":[{"key":"total","function":"sum","field":"amount"}]}} (0.01s)
+    --- PASS: TestAnalysisLegacyResultsRetainExecutionChecksAfterOwnerUpgrade/{"operation":"catalog"} (0.01s)
+PASS
+ok  	github.com/domainry/domainry-tools/internal/adapter/analysistools	1.092s

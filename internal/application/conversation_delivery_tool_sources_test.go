@@ -17,6 +17,46 @@ type deliveryReadTestHost struct {
 	lastRequest            sdk.ConversationToolRequest
 }
 
+type deliveryReadAvailabilityProbe struct {
+	ready                       bool
+	executionChecks, readChecks int
+}
+
+func TestDeliveryToolReadKeepsReaderAuthoritySeparateFromProducerProof(t *testing.T) {
+	definition := sdk.ConversationToolDefinition{Key: "specialist_read", Version: "1", ActionKey: "specialist.execute", TimeoutMillis: 1000}
+	host := &deliveryReadTestHost{}
+	reader := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "reader", RoleKey: "read-role"}
+	producer := reader
+	producer.UserID, producer.RoleKey = "producer", "professional-role"
+	s := &ConversationService{runtimeID: "runtime", repo: privatePeerSources{}, options: ConversationOptions{ToolDefinitions: []sdk.ConversationToolDefinition{definition}, ToolHost: host, CollaborationAuthorizer: fixedCollaborationTestPolicy{"view", "delivery_read"}}}
+	audit := s.sourceAudit(reader)
+	audit.evidenceOwner = &producer
+	record := persistence.ConversationToolExecution{Definition: definition, Step: 2, Call: sdk.ConversationToolCall{ID: "original-call", Name: definition.Key, Arguments: `{}`}, Result: &sdk.ConversationToolResult{Status: "completed", Content: json.RawMessage(`{"value":"9007199254740993"}`)}, IdempotencyKey: "original-key", LeaseOwner: "original-worker", Fence: 4}
+	owner := sdk.ConversationRunReference{ConversationID: "producer-conversation", RunID: "original-run"}
+	ctx := deliverySourceContext(t.Context(), "released")
+	if _, err := audit.record(ctx, owner, record); err != nil {
+		t.Fatal(err)
+	}
+	request := host.lastRequest
+	if request.Authority != reader || request.ResultProducer == nil || *request.ResultProducer != producer || request.IdempotencyKey != record.IdempotencyKey || request.Step != record.Step || request.LeaseOwner != "" || request.Fence != 0 || request.Confirmation != nil || host.executionChecks != 0 {
+		t.Fatal("producer proof became execution authority", request, host.executionChecks)
+	}
+	host.err = &tools.Error{Class: "forbidden", Code: "actual-reader-data-revoked"}
+	if _, err := audit.record(ctx, owner, record); err == nil || host.executionChecks != 0 {
+		t.Fatal("reader denial fell back to producer execution rights", err)
+	}
+}
+
+func (p *deliveryReadAvailabilityProbe) ConversationToolAvailable(context.Context, tools.Authority, string) (bool, error) {
+	p.executionChecks++
+	return false, nil
+}
+
+func (p *deliveryReadAvailabilityProbe) ConversationToolResultReadAvailable(ctx context.Context, _ tools.Authority, _ string) (bool, error) {
+	p.readChecks++
+	return p.ready, ctx.Err()
+}
+
 func (h *deliveryReadTestHost) AuthorizeConversationTool(context.Context, sdk.ConversationToolRequest) (sdk.ConversationToolAuthorization, error) {
 	h.executionChecks++
 	return sdk.ConversationToolAuthorization{}, nil
@@ -46,6 +86,22 @@ func TestDeliveryToolReadPreservesScopeAndCurrentSourceDenial(t *testing.T) {
 	}
 	if base.lastRequest.IdempotencyKey != record.IdempotencyKey || base.lastRequest.Authority != a || base.lastRequest.LeaseOwner != "" || base.lastRequest.Fence != 0 || base.lastRequest.Confirmation != nil {
 		t.Fatalf("source reading lost operation identity or acquired execution authority: %+v", base.lastRequest)
+	}
+	availability := &deliveryReadAvailabilityProbe{ready: true}
+	s.options.ToolAvailability = availability
+	if _, err := audit.record(ctx, owner, record); err != nil || availability.executionChecks != 0 || availability.readChecks != 1 {
+		t.Fatalf("delivery used execution catalog instead of source readiness: %v; %+v", err, availability)
+	}
+	availability.ready = false
+	readsBefore := base.reads
+	if _, err := audit.record(ctx, owner, record); err == nil || base.reads != readsBefore {
+		t.Fatalf("disabled source reached result reader: %v", err)
+	}
+	availability.ready = true
+	cancelled, cancel := context.WithCancel(ctx)
+	cancel()
+	if _, err := audit.record(cancelled, owner, record); err == nil || base.reads != readsBefore {
+		t.Fatalf("cancelled readiness reached result reader: %v", err)
 	}
 	base.err = &tools.Error{Class: "forbidden", Code: "source.revoked"}
 	before := base.executionChecks

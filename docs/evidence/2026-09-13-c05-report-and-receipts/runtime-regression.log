@@ -1,0 +1,4 @@
+ok  	github.com/domainry/domainry-runtime/runtime/modulehost/report	0.788s
+ok  	github.com/domainry/domainry-runtime/runtime/application/agenthost	0.931s [no tests to run]
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/transport	0.588s [no tests to run]
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	183.474s

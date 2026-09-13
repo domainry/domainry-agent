@@ -1,0 +1,162 @@
+[
+  {
+    "path": "../domainry-agent-sdk/conversation_participants.go",
+    "sha256": "0822131ffa1dd700cde21aac5d5d7a92de739834a6e24bbef55e256d172bfd35",
+    "bytes": 803
+  },
+  {
+    "path": "../domainry-agent-sdk/conversation_collaboration.go",
+    "sha256": "5a9d07747fa2b1ff1ca786ba7d1d094be930e84c156b12e91046fc7e8ec8fb8e",
+    "bytes": 16821
+  },
+  {
+    "path": "../domainry-agent-sdk/conversation_collaboration_tools.go",
+    "sha256": "715a38b89e85d0aa0542151f15655690ddb6cdb354f6d6dab936bc19e165be7b",
+    "bytes": 10597
+  },
+  {
+    "path": "../domainry-agent-sdk/persistence/conversation_collaboration.go",
+    "sha256": "0a518d1e62fa70ef62251f3a208f84cf823f89d630b0dd27c19f6778fd785567",
+    "bytes": 5264
+  },
+  {
+    "path": "internal/application/conversation_participants.go",
+    "sha256": "a8bdc2f7219530f716906c323177d838d945bd6485cebcced06b991e047dbbc6",
+    "bytes": 6955
+  },
+  {
+    "path": "internal/application/conversation_participants_test.go",
+    "sha256": "c9296feea9abcfa57240e182b145e4151d9e1d26e4e49e33adc6a8d3ceb614ae",
+    "bytes": 4953
+  },
+  {
+    "path": "internal/application/conversation_collaboration_authorization.go",
+    "sha256": "3a09df1d40c9c6651764d41f99c72850172b99c6065464dae5bf083099224e86",
+    "bytes": 10350
+  },
+  {
+    "path": "internal/application/conversation_delegations.go",
+    "sha256": "580173d6d1c088608a503f1f3f626aab27d4b7e4fa07e755616fdd5e25f0386a",
+    "bytes": 23476
+  },
+  {
+    "path": "internal/application/conversation_peer_inbox.go",
+    "sha256": "c4a2e4d69de0fd23f056671c99ba460079b5b8baccbb1154562c977e78d1f1f5",
+    "bytes": 2837
+  },
+  {
+    "path": "internal/assembly/web/conversation_participants_test.go",
+    "sha256": "7731c5f465bbca30cb0e90b61087156e8bc06a667372639e95158e74337ad156",
+    "bytes": 13123
+  },
+  {
+    "path": "internal/assembly/web/conversation_collaboration_authorization.go",
+    "sha256": "da3835d0127221b2a3360dedc8db9f6d7374846a7b7e806cb1803c87d9ff838c",
+    "bytes": 1425
+  },
+  {
+    "path": "internal/assembly/web/conversation_agent_sharing.go",
+    "sha256": "08028d5e95aea8dd609a3a9c26a50dfb6f600b0bf5bea8985723387011eef55a",
+    "bytes": 1064
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_participants_schema.go",
+    "sha256": "430510475036caf5083e31c74cc6eaa35f22d30ffd90681e4ff8fcd31d77aee5",
+    "bytes": 1043
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_participants_store.go",
+    "sha256": "25f6b60645d975afc8c6931e15b9f2348359eb480b502d5d3a26781f50ea1a32",
+    "bytes": 9631
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_participants_store_test.go",
+    "sha256": "390531f417c5d674702af4a1c79e79c0047ef030a6acc4d5b26986a1e9d4169b",
+    "bytes": 5999
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_delegation_store.go",
+    "sha256": "08c8aadadc541d68b6eac1cda7c905e337616703026bfe7aed09a346d17eb5ea",
+    "bytes": 23705
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_peer_messages_store.go",
+    "sha256": "9c5a638b7c4660c038c720b4979507e37643f1676e7a0c846c1f2cab359a4b66",
+    "bytes": 8356
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_peer_delivery_store.go",
+    "sha256": "d4151c0d2d79ab1af62c79a425617181ad637b3b950b858f8a79dd681119c19b",
+    "bytes": 5389
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_peer_inbox_store.go",
+    "sha256": "dcc0f85622f153bd6196be8564a82bd6611aefe3219618946c2194911e8c9ae7",
+    "bytes": 13070
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/conversation_store.go",
+    "sha256": "f299e44d751f673667c6b86f763e6180101f8dae5bda752944251d5d93d44ba5",
+    "bytes": 17631
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/schema.go",
+    "sha256": "9689a37ee1b582cbc0f748c7bcc626e9cf7897d13f2eccabe1654aa2a1458ad9",
+    "bytes": 9339
+  },
+  {
+    "path": "internal/infrastructure/persistence/database/agent/schema_test.go",
+    "sha256": "f6cabbb0a51852c99429cd176a3d11029256cea7dbc87c1a2099fba68f2cb667",
+    "bytes": 2497
+  },
+  {
+    "path": "remote/conversation_participants_test.go",
+    "sha256": "c837984c5fa12ced04fadcdf5bb9fe662469ee04f00eb76d966861df727d0994",
+    "bytes": 3841
+  },
+  {
+    "path": "frontend/src/DelegationParticipants.tsx",
+    "sha256": "662b7a7de6b6acd7e90f86682e32615b74fa4298d1c8849d3a91ce110598bf50",
+    "bytes": 3030
+  },
+  {
+    "path": "frontend/src/CollaborationDialog.tsx",
+    "sha256": "769ee03026c522b4437ce8e5f5f1c38abc7c602f5ee3d703ab92185f0819be83",
+    "bytes": 33759
+  },
+  {
+    "path": "frontend/src/CollaborationRequirements.tsx",
+    "sha256": "a1f91cd739d2fed59838b6c443f8832becaffc7a11caff7fda8d7e8d69158640",
+    "bytes": 6441
+  },
+  {
+    "path": "frontend/src/PeerMessages.tsx",
+    "sha256": "ae77a987c6b289df25d3a55543fc939973685348b5093a82da109b2dc8b14049",
+    "bytes": 5064
+  },
+  {
+    "path": "frontend/src/collaboration-state.ts",
+    "sha256": "08da9e99d06e15059f00e76a5a8f04ab55f137d445721ea99b5708837c437e82",
+    "bytes": 15509
+  },
+  {
+    "path": "frontend/src/session.ts",
+    "sha256": "6275fd1aa3de569fda5aa8ef4e2a8adffbb6ba95ee2d54eaa44d19b504ff8cc2",
+    "bytes": 4325
+  },
+  {
+    "path": "frontend/src/errors.ts",
+    "sha256": "bdf881ad41d38fd0ae0d3d0c2752c74bfd928df4060bfef446c37683723434ec",
+    "bytes": 29176
+  },
+  {
+    "path": "frontend/src/index.css",
+    "sha256": "a40f86037bada515363454743d167cb737cfc14fe0037c8c1c6e9c5a857d52b2",
+    "bytes": 49290
+  },
+  {
+    "path": "frontend/tests/delegation-participants.browser.mjs",
+    "sha256": "d11276797f6329b6e89d0124f60f59ba7ccae7a728b635e66a927cf1d5ed8f9e",
+    "bytes": 5532
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "heads": {
+    "/Users/tiger/Projects/domainry-agent": "68fbfb5ce4d4b541d07afc2e3f13cf76cfb302f5"
+  },
+  "files": {
+    "internal/application/conversation_delivery_history_sources.go": "0d8d8f60b79ccf6cd1578d294a0aabd354742e88dbdb58c70a8c371f2201afc4",
+    "internal/application/conversation_delivery_execution_sources.go": "2d48602dea318801d94c78f33d64c609a29239d06f3ededad7d668527091c4ca",
+    "internal/application/conversation_delivery_history_sources_test.go": "feb3f586503ed579ec6cdbd9cde9b0c54b43fd0d36c8f2cf3366e24c0c31e311",
+    "internal/application/conversation_delivery_wrapped_sources_test.go": "961faca5889e74487ffd5eb8d2538cb792fe39b50edd3e3b6ed19132e9eaaac2",
+    "internal/application/conversation_collaboration_authorization.go": "682f1607ee6d74763012c77f98bafb349080eea0ed79e299de00aa9d86b222fc",
+    "internal/application/conversation_delivery_collaboration_sources.go": "5cc43bdd6e3650024fc49b52e3e08e1ddc971d75017809e883324468a448f7f5",
+    "internal/application/conversation_delivery_task_sources.go": "5a614c967f5b61776f36e7bab0e04beb109c9175e7a1af940905047099b8106a",
+    "internal/application/conversation_delivery_task_sources_test.go": "904460e23195385e25ba495bec30fbd0121380836f1f764c70d33866da51a115",
+    "internal/application/conversation_delivery_personal_sources.go": "dbb55a235cc907f80ca667e1d2453e7e4ce4d1f874c027062a71b530d679a5e5",
+    "internal/application/conversation_sources.go": "b6211ff332c28cfc13048cf32082bf69114c515c6c27950bd6bcd329270867df",
+    "internal/application/conversation_execution_read.go": "f9c1d5c9088506df6b9a04d380a588f76b95115b95865f55fd2e1b40bdccd1bb",
+    "internal/assembly/web/conversation_delivery_history_permissions_test.go": "94d9c44f09b808f8b47e0e73a31d5ded059fb9454994bdd6b0cee8f3cd1e37a2"
+  }
+}

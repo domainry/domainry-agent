@@ -1,0 +1,41 @@
+{
+  "date": "2026-09-14",
+  "work": "C05 explicit receiver execution binding and application admission",
+  "bindingFlowVerified": true,
+  "publicCrossSubjectAdmissionEnabled": true,
+  "agentOriginatedCrossSubjectSourceSharingComplete": false,
+  "C05Complete": false,
+  "completedTODOItems": 4,
+  "totalTODOItems": 25,
+  "verified": [
+    "owner-selected execution role persisted without client-selected authority",
+    "ordinary conversation remains caller execution",
+    "matching uses actual receiver tool grants and capacity",
+    "actual Identity two-user admission and Todo execution",
+    "issuer message consumed by receiver with actual sender role",
+    "direct private execution endpoints remain isolated",
+    "explicit human summary delivery and issuer acceptance",
+    "binding revocation prevents subsequent tool execution",
+    "restart preserves accepted delegation",
+    "same-user different-role application binding",
+    "role-sensitive configuration idempotency",
+    "ordinary edits preserve role binding",
+    "receiver relation does not grant issuer management",
+    "real Chrome binding editor and recipient directory",
+    "immediate edit after save uses returned revision",
+    "issuer detail labels inaccessible execution and hides private conversation navigation",
+    "390px editor layout"
+  ],
+  "remaining": [
+    "cross-subject Agent-originated agreement and input source release",
+    "cross-subject Agent message provenance",
+    "automatic delivery source and immutable receipt readers",
+    "authorized cross-subject execution detail sharing",
+    "participant management and execution/delivery scopes",
+    "subject-bound transfer and retirement/erasure",
+    "cross-owner dependency propagation and whole-goal budgets",
+    "dedicated SaaS cross-subject end-to-end acceptance"
+  ],
+  "validationScope": "Real SQLite, Identity HTTP, deterministic model with actual Todo tool; human-submitted summary delivery; real Chrome. Not full autonomous cross-subject collaboration or published release.",
+  "sourceManifest": "source-manifest.json"
+}

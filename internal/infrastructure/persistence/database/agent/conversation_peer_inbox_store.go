@@ -90,6 +90,13 @@ func (s *ConversationStore) consumeConversationPeerInbox(ctx context.Context, tx
 		if err = json.Unmarshal(raw, &message); err != nil {
 			return err
 		}
+		if message.ParticipantUserID != "" {
+			// Lock the exact grant row until input/consumption commits. Revocation
+			// cannot complete between this check and freezing participant input.
+			if err = s.lockConversationParticipantGrant(ctx, tx, message, claim.Authority); err != nil {
+				return err
+			}
+		}
 		ready, err := s.peerMessageReady(ctx, tx, message, claim.Authority)
 		if err != nil {
 			return err
@@ -274,6 +281,11 @@ func (s *ConversationStore) LaunchConversationPeerMessage(ctx context.Context, r
 
 func (s *ConversationStore) conversationDelegationRemainingBudget(ctx context.Context, tx *sql.Tx, d agentsdk.ConversationDelegation, a agentsdk.ConversationAuthority) (agentsdk.ConversationTaskBudget, error) {
 	remaining := d.Budget
+	var err error
+	a, err = s.delegationExecutionAuthority(ctx, tx, d, a)
+	if err != nil {
+		return remaining, err
+	}
 	assignments, err := s.conversationAssignments(ctx, tx, d, a)
 	if err != nil {
 		return remaining, err

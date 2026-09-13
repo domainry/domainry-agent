@@ -1,0 +1,8 @@
+# github.com/domainry/domainry-scheduler/internal/assembly/saas [github.com/domainry/domainry-scheduler/internal/assembly/saas.test]
+internal/assembly/saas/scheduled_plan_receipt_test.go:32:28: undefined: transport.New
+internal/assembly/saas/scheduled_plan_receipt_test.go:32:42: undefined: transport.Options
+ok  	github.com/domainry/domainry-scheduler/internal/application/scheduler	1.064s
+ok  	github.com/domainry/domainry-scheduler/remote	0.651s
+FAIL	github.com/domainry/domainry-scheduler/internal/assembly/saas [build failed]
+ok  	github.com/domainry/domainry-scheduler/internal/transport/http/saas	1.434s
+FAIL

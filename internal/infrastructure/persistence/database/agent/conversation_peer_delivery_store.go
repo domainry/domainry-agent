@@ -18,6 +18,12 @@ func (s *ConversationStore) peerMessageReady(ctx context.Context, db conversatio
 	if err != nil {
 		return false, err
 	}
+	if m.ParticipantUserID != "" {
+		grant, allowed := delegationParticipant(d, m.ParticipantUserID, "communicate")
+		if !allowed || grant.Revision != m.ParticipantRevision || m.FromUserID != m.ParticipantUserID {
+			return false, nil
+		}
+	}
 	if m.BriefVersion != d.Brief.Version || max(1, m.AgreementRevision) != d.AgreementRevision {
 		return false, nil
 	}
@@ -59,7 +65,7 @@ func (s *ConversationStore) preparePeerMessageDelivery(ctx context.Context, tx *
 	if m.Kind != "reply" {
 		return nil
 	}
-	p := query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", d.ID), query.Equal("message_id", m.ReplyToID))
+	p := query.And(delegationMessageScope(d, a), query.Equal("message_id", m.ReplyToID))
 	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAgentMessageTable).Columns("payload_json").Where(p).Build()
 	if err != nil {
 		return err
@@ -94,7 +100,7 @@ func (s *ConversationStore) preparePeerMessageDelivery(ctx context.Context, tx *
 }
 
 func (s *ConversationStore) supersedePeerMessages(ctx context.Context, tx *sql.Tx, d sdk.ConversationDelegation, a sdk.ConversationAuthority) error {
-	p := query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", d.ID), query.Equal("consumed_run_id", ""))
+	p := query.And(delegationMessageScope(d, a), query.Equal("consumed_run_id", ""))
 	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAgentMessageTable).Columns("payload_json").Where(p).Build()
 	if err != nil {
 		return err
@@ -113,7 +119,12 @@ func (s *ConversationStore) supersedePeerMessages(ctx context.Context, tx *sql.T
 		if err = json.Unmarshal(raw, &m); err != nil {
 			break
 		}
-		if m.BriefVersion != d.Brief.Version || max(1, m.AgreementRevision) != d.AgreementRevision {
+		participantRevoked := false
+		if m.ParticipantUserID != "" {
+			grant, allowed := delegationParticipant(d, m.ParticipantUserID, "communicate")
+			participantRevoked = !allowed || grant.Revision != m.ParticipantRevision
+		}
+		if participantRevoked || m.BriefVersion != d.Brief.Version || max(1, m.AgreementRevision) != d.AgreementRevision {
 			m.Superseded = true
 			items = append(items, m)
 		}

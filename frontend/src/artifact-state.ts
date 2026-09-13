@@ -21,15 +21,16 @@ export function parseArtifactMutation(raw: string | null): ArtifactMutation | nu
   } catch { return null; }
 }
 
-export async function downloadArtifact(value: ArtifactExport): Promise<void> {
+export async function downloadArtifact(value: ArtifactExport, source?:{path:string;body:unknown;signal:AbortSignal}): Promise<void> {
   const scope = sessionScope();
-  const response = await sessionFetch(`/agent/artifact-exports/${encodeURIComponent(value.id)}/download`, { method: "GET", credentials: "same-origin", cache: "no-store" });
+  const response = await sessionFetch(source?.path||`/agent/artifact-exports/${encodeURIComponent(value.id)}/download`, { method: source?"POST":"GET", credentials: "same-origin", cache: "no-store", ...(source?{headers:{"Content-Type":"application/json"},body:JSON.stringify(source.body),signal:source.signal}:{}) });
   if (!response.ok) {
     const data = await response.json().catch(() => ({}));
     throw new ApiError(typeof data.code === "string" ? data.code : "request_failed", response.status);
   }
   const blob = await response.blob();
   const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", await blob.arrayBuffer())), n => n.toString(16).padStart(2, "0")).join("");
+  source?.signal.throwIfAborted();
   if (scope !== sessionScope()) throw new ApiError("agent.web.identity_changed", 409);
   if (blob.size !== value.bytes || hash !== value.sha256) throw new ApiError("agent.conversation.artifact_export_mismatch");
   const url = URL.createObjectURL(blob);

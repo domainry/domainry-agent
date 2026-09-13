@@ -1,0 +1,4 @@
+=== RUN   TestSameUserDifferentRolesProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead
+--- PASS: TestSameUserDifferentRolesProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead (88.91s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	89.541s

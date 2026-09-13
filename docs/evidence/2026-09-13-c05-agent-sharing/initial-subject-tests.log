@@ -1,0 +1,10 @@
+=== RUN   TestAgentSnapshotBindsActualCallerWithoutTakingConfigurationOwnerAuthority
+--- PASS: TestAgentSnapshotBindsActualCallerWithoutTakingConfigurationOwnerAuthority (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	0.642s
+=== RUN   TestSharedAgentKeepsExecutionOwnersAndGlobalCapacitySeparate
+--- PASS: TestSharedAgentKeepsExecutionOwnersAndGlobalCapacitySeparate (0.02s)
+=== RUN   TestAgentSharingAdmissionIsAtomicAtRecipientDirectoryLimit
+--- PASS: TestAgentSharingAdmissionIsAtomicAtRecipientDirectoryLimit (0.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	1.048s

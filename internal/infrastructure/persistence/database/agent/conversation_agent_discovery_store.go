@@ -19,9 +19,15 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 	err := s.transaction(ctx, func(tx *sql.Tx) error {
 		out = persistence.ConversationAgentObservations{Load: map[string]persistence.ConversationAgentLoad{}, HistoryComplete: true}
 		owner := query.Equal("owner_key", conversationOwner(a))
-		// Count all live owner rows, including waiting interactions. Queued tasks
-		// and their runs are mutually exclusive in the launch transaction.
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("payload_json", "lease_expires_at").Where(query.And(owner, query.Or(query.Equal("status", "queued"), query.Equal("status", "running"), query.Equal("status", "waiting_user"), query.Equal("status", "waiting_confirmation"), query.Equal("status", "needs_reconciliation")))).Build()
+		visible, err := s.visibleConversationAgentIDs(ctx, tx, a)
+		if err != nil {
+			return err
+		}
+		workspace := query.Or(owner, query.And(query.Equal("runtime_id", a.RuntimeID), query.Equal("workspace_key", conversationHash([]string{a.RuntimeID, a.WorkspaceID}))))
+		// Aggregate visible Agent load across workspace users, without exposing
+		// their task identities. Queued tasks and their runs are mutually
+		// exclusive in the launch transaction; default stays caller-scoped.
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("payload_json", "lease_expires_at", "owner_key").Where(query.And(workspace, query.Or(query.Equal("status", "queued"), query.Equal("status", "running"), query.Equal("status", "waiting_user"), query.Equal("status", "waiting_confirmation"), query.Equal("status", "needs_reconciliation")))).Build()
 		if err != nil {
 			return err
 		}
@@ -33,8 +39,9 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 		for rows.Next() {
 			var raw []byte
 			var expires int64
+			var rowOwner string
 			var run agentsdk.ConversationRun
-			if err = rows.Scan(&raw, &expires); err != nil {
+			if err = rows.Scan(&raw, &expires, &rowOwner); err != nil {
 				break
 			}
 			if err = json.Unmarshal(raw, &run); err != nil {
@@ -43,6 +50,9 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 			id := "default"
 			if run.Agent != nil {
 				id = run.Agent.ID
+			}
+			if !visible[id] || id == "default" && rowOwner != conversationOwner(a) {
+				continue
 			}
 			load := out.Load[id]
 			if run.Waiting() {
@@ -61,7 +71,7 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 		if err != nil {
 			return err
 		}
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns("payload_json").Where(query.And(owner, query.Equal("status", "queued"))).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns("payload_json", "owner_key").Where(query.And(workspace, query.Equal("status", "queued"))).Build()
 		if err != nil {
 			return err
 		}
@@ -72,7 +82,8 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 		for rows.Next() {
 			var raw []byte
 			var task agentsdk.ConversationTask
-			if err = rows.Scan(&raw); err != nil {
+			var rowOwner string
+			if err = rows.Scan(&raw, &rowOwner); err != nil {
 				break
 			}
 			if err = json.Unmarshal(raw, &task); err != nil {
@@ -81,6 +92,9 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 			id := "default"
 			if task.Agent != nil {
 				id = task.Agent.ID
+			}
+			if !visible[id] || id == "default" && rowOwner != conversationOwner(a) {
+				continue
 			}
 			load := out.Load[id]
 			load.Queued++

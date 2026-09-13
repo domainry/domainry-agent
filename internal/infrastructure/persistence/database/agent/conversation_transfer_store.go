@@ -50,6 +50,19 @@ func (s *ConversationStore) TransferConversationDelegation(ctx context.Context, 
 		if err != nil {
 			return err
 		}
+		if d.OwnerUserID != a.UserID {
+			return conversationError("forbidden", "delegation_actor_invalid")
+		}
+		_, subjectBound, err := s.delegationSubjects(ctx, tx, d.ID, a)
+		if err != nil {
+			return err
+		}
+		if subjectBound {
+			// Cross-subject transfer must also move the persisted subject binding
+			// and keep per-assignment execution evidence. The existing admission
+			// is caller-scoped and cannot safely perform that transition.
+			return conversationError("conflict", "execution_subject_mismatch")
+		}
 		if d.Revision != in.Request.ExpectedRevision {
 			return conversationError("conflict", "revision_conflict")
 		}

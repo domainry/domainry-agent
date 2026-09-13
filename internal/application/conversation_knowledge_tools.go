@@ -1,6 +1,7 @@
 package application
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -169,6 +170,17 @@ func (h *knowledgeConversationHost) AuthorizeConversationInteraction(ctx context
 }
 
 func (h *knowledgeConversationHost) AuthorizeConversationToolResult(ctx context.Context, in agentsdk.ConversationToolRequest, result agentsdk.ConversationToolResult) error {
+	return h.authorizeKnowledgeResult(ctx, in, result, false)
+}
+
+func (h *knowledgeConversationHost) revalidateKnowledgeResult(ctx context.Context, saved agentsdk.ConversationKnowledgeResult, a agentsdk.ConversationAuthority, resultRead bool) error {
+	if resultRead {
+		return agentsdk.AuthorizeKnowledgeResultRead(ctx, h.source, saved, a)
+	}
+	return h.source.RevalidateKnowledge(ctx, saved, a)
+}
+
+func (h *knowledgeConversationHost) authorizeKnowledgeResult(ctx context.Context, in agentsdk.ConversationToolRequest, result agentsdk.ConversationToolResult, resultRead bool) error {
 	if privateAttachmentCall(in.Call) || retiredDocumentResult(result) {
 		return conversationFailure("forbidden", "knowledge_source_retired")
 	}
@@ -179,11 +191,15 @@ func (h *knowledgeConversationHost) AuthorizeConversationToolResult(ctx context.
 		return nil
 	}
 	if in.Call.Name == "knowledge_extract" {
-		return h.authorizeExtractionResult(ctx, in, result)
+		return h.authorizeExtractionResultUsing(ctx, in, result, resultRead)
 	}
 	var evidence agentsdk.ConversationKnowledgeResult
 	var args knowledgeArguments
-	if json.Unmarshal(result.Content, &evidence) != nil || json.Unmarshal([]byte(in.Call.Arguments), &args) != nil {
+	decoder := json.NewDecoder(bytes.NewReader(result.Content))
+	if resultRead {
+		decoder.DisallowUnknownFields()
+	}
+	if !json.Valid(result.Content) || decoder.Decode(&evidence) != nil || json.Unmarshal([]byte(in.Call.Arguments), &args) != nil {
 		return conversationFailure("conflict", "knowledge_response_invalid")
 	}
 	if h.source == nil {
@@ -208,7 +224,7 @@ func (h *knowledgeConversationHost) AuthorizeConversationToolResult(ctx context.
 			return conversationFailure("conflict", "knowledge_response_invalid")
 		}
 	}
-	return h.source.RevalidateKnowledge(ctx, evidence, in.Authority)
+	return h.revalidateKnowledgeResult(ctx, evidence, in.Authority, resultRead)
 }
 
 func (s *ConversationService) authorizeStoredToolResult(ctx context.Context, in agentsdk.ConversationToolRequest, result agentsdk.ConversationToolResult) error {

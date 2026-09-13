@@ -1,0 +1,33 @@
+{
+  "heads": {
+    "/Users/tiger/Projects/domainry-agent": "68fbfb5ce4d4b541d07afc2e3f13cf76cfb302f5",
+    "/Users/tiger/Projects/domainry-agent-sdk": "f843f8aba4521c491277c9047c2d9d8bc8fccbe1",
+    "/Users/tiger/Projects/domainry-runtime": "c837ae318ae4b7b90b34a5a96de022b97ff7be0a"
+  },
+  "files": {
+    "internal/application/conversation_delivery_business_sources.go": "2430cdc4ec00314e803c5af0fef4562e0df824a2692cd10ee2d6b208d1a01ff8",
+    "internal/application/conversation_delivery_business_sources_test.go": "0c9eb72e3f9a5ae1db036f0402293d3c3f386ca2f318de4d6c4baddd0afb5890",
+    "internal/application/conversation_delivery_collaboration_sources.go": "4cf9d8c42af4b0310b475e7cb4ae0cd67993277145947add0868ef1427e3fb5c",
+    "internal/application/conversation_delivery_collaboration_sources_test.go": "3243102b3502b07da39c9efbf7ce60caae1fdf443d5ee2262b29fce75bc16452",
+    "internal/application/conversation_delivery_result.go": "92ffed1517280d2cdc118efc941c7d471e205259396b47a37bb2eddcb051011c",
+    "internal/application/conversation_sources.go": "c841733d7f1ffd8732a7ea2e34076c7e883aa646108ecc101e7b24783dad1c77",
+    "internal/application/conversation_collaboration_authorization.go": "ffa756b7b9b5092cb0843408c2773ca2d86872a622481e1fc77e592bd9ddba67",
+    "internal/application/conversation_business_tools.go": "b39a24bd988396b3381288c04facbe6a9e3b7073a1115bf995f411c69428d4b3",
+    "internal/assembly/web/conversation_delivery_business_permissions_test.go": "f0f8d9e8da344ae553719956f0c09ca17a71b882cdc72a6352efc63c69a44ba0",
+    "internal/assembly/web/conversation_delivery_report_permissions_test.go": "0342dd27636becc5e786bf6d7720415fc9f1f50b2f4a399d1c202ee42f41c3e1",
+    "../domainry-agent-sdk/conversation_business_result_read.go": "c80f1fa5de79cf6ed5a1693c4edf1916c8fcda36f7fe2d6fc0394fb50880f369",
+    "../domainry-agent-sdk/businessrpc/business_result_read_test.go": "5cd85ee1b90eb4bebfb7b3fb085b6ede8102b0c5618d1e95cf87819f114dae3b",
+    "../domainry-agent-sdk/businessrpc/businessrpc_test.go": "391e266967b7d7d7cf811f29441580762221990688d73581937697cf0257b3c4",
+    "../domainry-agent-sdk/businessrpc/client.go": "0476a839306b77a40b00d53ad832c1072ad6b656febb39bc9faaa66a87032a09",
+    "../domainry-agent-sdk/businessrpc/dispatch.go": "b1956faf6f52208d8a8c51608bd35fe84f27d0e9a21582ce3e0d0659241113c9",
+    "../domainry-agent-sdk/businessrpc/protocol.go": "b1787a86588698455d6af50f8c91d88f574b9f790be112b8d3f3c7652df24852",
+    "../domainry-agent-sdk/businessrpc/server.go": "788521e68f163fac1a0656a774f2ff480bfd0b4fe52ea1af2db9713487251711",
+    "../domainry-agent-sdk/businessrpc/result_read.go": "10adb7175fd311827fc9acac62dd5910da9dad1207a854a38310e0b830331c69",
+    "../domainry-runtime/runtime/application/agenthost/conversation_business_receipt_read.go": "eace6a56223a040620b902924d9ccf4f41fcebb7e448fdf4f28b40e9675442fe",
+    "../domainry-runtime/runtime/application/agenthost/conversation_business_receipt_read_test.go": "d9ee21e5b27b0f71c3968fa7d600ca8eb8022e74e4ca9b2b312c83a9dbbad9cb",
+    "../domainry-runtime/runtime/application/agenthost/conversation_business_workflows.go": "8cd05a6b0a90330d412dcdfe419d0ccb578d3315629f181daa5574985ac92ad6",
+    "../domainry-runtime/runtime/application/agenthost/conversation_business_evidence.go": "9c8fc573aab926d76a3d1bf7f483692dc08310e744681a142667d8812ec6df45",
+    "../domainry-runtime/runtime/application/agenthost/conversation_business_host.go": "e1a8f0632a239accea494b869a33b4af777d541da1801c7c741c3fe63eb38ffd",
+    "../domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_receipt_read_rpc_test.go": "f14fb0d995e4b01eb2ca84043e711548a2ffea60a84fc761244e66cf5f3b7563"
+  }
+}

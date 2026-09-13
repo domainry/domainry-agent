@@ -1,0 +1,39 @@
+{
+  "phase": "C05 shared Agent configuration and actual execution subject",
+  "phaseComplete": true,
+  "C05Complete": false,
+  "completedItems": 4,
+  "totalItems": 25,
+  "agentRealHTTP": true,
+  "realIdentityUsers": 2,
+  "realSQLiteAndRestart": true,
+  "SaaSActorAndGrantSemantics": true,
+  "racePassed": true,
+  "realChromePassed": true,
+  "sharedConfigurationOnly": true,
+  "toolsUseActualCallerPermissions": true,
+  "privateTaskAndHistoryIsolation": true,
+  "workspaceAgentCapacityShared": true,
+  "revokedGrantSurvivesRestart": true,
+  "migration": 25,
+  "remainingC05": [
+    "per-delegation participant and role grants",
+    "cross-subject dispatch, communication and management with each subject current professional permissions",
+    "explicit participant scopes for delivery and execution reading"
+  ],
+  "logFiles": [
+    "initial-subject-tests.log",
+    "http-result-page-fixture-failure.log",
+    "http-final.log",
+    "regression.log",
+    "race-http.log",
+    "directory-policy.log",
+    "transport-and-history.log",
+    "race-final-boundaries.log",
+    "final-core.log",
+    "frontend-state.log",
+    "frontend-build.log",
+    "browser-mobile-navigation-fixture-failure.log",
+    "browser-final.log"
+  ]
+}

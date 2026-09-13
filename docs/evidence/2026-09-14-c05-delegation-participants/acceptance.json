@@ -1,0 +1,30 @@
+{
+  "date": "2026-09-14",
+  "phase": "C05 delegation participants view and communication",
+  "phaseComplete": true,
+  "C05Complete": false,
+  "completedTODOItems": 4,
+  "totalTODOItems": 25,
+  "verified": [
+    "actual Identity owner policy intersected with explicit membership",
+    "view and communication scope separation",
+    "actual sender and original executor",
+    "current sender role retained on intake",
+    "revocation invalidates pending input",
+    "rejoin cannot revive old messages",
+    "sender-scoped idempotency",
+    "independent membership write receipt",
+    "SQLite restart",
+    "SaaS actor and grants",
+    "real Chrome two users and 390px layout",
+    "focused race checks"
+  ],
+  "limitations": [
+    "cross-subject professional execution and delivery remain pending",
+    "participant management, execution-read and delivery-read scopes remain pending",
+    "private derived agreement and Agent message sources require a further sharing contract",
+    "SQLite database execution; PostgreSQL and MySQL migration rendering only",
+    "not published"
+  ],
+  "sourceManifest": "source-manifest.json"
+}

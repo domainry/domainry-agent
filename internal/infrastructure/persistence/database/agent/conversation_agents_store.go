@@ -35,7 +35,7 @@ func (s *ConversationStore) saveCollaborationMutation(ctx context.Context, tx *s
 	return conversationExec(ctx, tx, q, args, err)
 }
 
-func (s *ConversationStore) conversationAgent(ctx context.Context, db conversationDB, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgent, error) {
+func (s *ConversationStore) ownedConversationAgent(ctx context.Context, db conversationDB, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgent, error) {
 	var out agentsdk.ConversationAgent
 	if err := conversationAuthority(a); err != nil {
 		return out, err
@@ -53,6 +53,10 @@ func (s *ConversationStore) conversationAgent(ctx context.Context, db conversati
 		return out, err
 	}
 	err = json.Unmarshal(raw, &out)
+	if err == nil {
+		out.OwnerUserID = a.UserID
+		out.Shared = false
+	}
 	return out, err
 }
 
@@ -85,7 +89,16 @@ func (s *ConversationStore) ConversationAgents(ctx context.Context, a agentsdk.C
 		}
 		out = append(out, item)
 	}
-	return out, rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	rows.Close()
+	for i := range out {
+		out[i].OwnerUserID = a.UserID
+		out[i].Shared = false
+	}
+	shared, err := s.sharedConversationAgents(ctx, a)
+	return append(out, shared...), err
 }
 
 func (s *ConversationStore) WriteConversationAgent(ctx context.Context, id string, in agentsdk.ConversationAgentWrite, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgent, error) {
@@ -98,7 +111,14 @@ func (s *ConversationStore) WriteConversationAgent(ctx context.Context, id strin
 			return conversationError("bad_request", "agent_invalid")
 		}
 		key := conversationHash([]string{"agent", id, in.ClientID})
-		if replay, err := s.collaborationReplay(ctx, tx, a, key, in, &out); err != nil || replay {
+		var request any = in
+		if in.DelegationExecution != nil && *in.DelegationExecution == "owner" {
+			request = struct {
+				Input   agentsdk.ConversationAgentWrite
+				RoleKey string
+			}{in, a.RoleKey}
+		}
+		if replay, err := s.collaborationReplay(ctx, tx, a, key, request, &out); err != nil || replay {
 			return err
 		}
 		if err := s.lockConversationWorkspaceCapacity(ctx, tx, a); err != nil {
@@ -109,12 +129,8 @@ func (s *ConversationStore) WriteConversationAgent(ctx context.Context, id strin
 			if in.ExpectedRevision != 0 {
 				return conversationError("conflict", "revision_conflict")
 			}
-			q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAgentTable).Projections(query.Project(query.CountAll())).Where(query.Equal("owner_key", conversationOwner(a))).Build()
+			count, err := s.visibleConversationAgentCount(ctx, tx, a)
 			if err != nil {
-				return err
-			}
-			var count int
-			if err = tx.QueryRowContext(ctx, q, args...).Scan(&count); err != nil {
 				return err
 			}
 			if count >= 64 {
@@ -123,7 +139,7 @@ func (s *ConversationStore) WriteConversationAgent(ctx context.Context, id strin
 			out = agentsdk.ConversationAgent{ID: "agent_" + conversationHash([]string{conversationOwner(a), in.ClientID})[:32], CreatedAt: now}
 		} else {
 			var err error
-			out, err = s.conversationAgent(ctx, tx, id, a)
+			out, err = s.ownedConversationAgent(ctx, tx, id, a)
 			if err != nil {
 				return err
 			}
@@ -135,6 +151,26 @@ func (s *ConversationStore) WriteConversationAgent(ctx context.Context, id strin
 		out.DefinitionKey, out.DefinitionVersion, out.DefinitionDigest = in.DefinitionKey, in.DefinitionVersion, in.DefinitionDigest
 		out.Tools, out.SkillKeys = append([]string{}, in.Tools...), append([]string{}, in.SkillKeys...)
 		out.ModelKey, out.Enabled, out.MaxConcurrent = in.ModelKey, in.Enabled, in.MaxConcurrent
+		out.OwnerUserID, out.Shared = a.UserID, false
+		if in.DelegationExecution != nil {
+			switch *in.DelegationExecution {
+			case "caller":
+				out.DelegationExecution, out.DelegationRoleKey = "", ""
+			case "owner":
+				if a.RoleKey == "" {
+					return conversationError("bad_request", "agent_execution_role_required")
+				}
+				out.DelegationExecution, out.DelegationRoleKey = "owner", a.RoleKey
+			default:
+				return conversationError("bad_request", "agent_execution_mode_invalid")
+			}
+		}
+		if in.SharedWithUserIDs != nil {
+			if err := validateAgentSharingUsers(*in.SharedWithUserIDs, a.UserID); err != nil {
+				return err
+			}
+			out.SharedWithUserIDs = append([]string{}, (*in.SharedWithUserIDs)...)
+		}
 		out.Revision, out.UpdatedAt = in.ExpectedRevision+1, now
 		if id == "" {
 			q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationAgentTable).Columns("owner_key", "agent_id", "revision", "payload_json").Values(conversationOwner(a), out.ID, out.Revision, conversationJSON(out)).Build()
@@ -147,7 +183,10 @@ func (s *ConversationStore) WriteConversationAgent(ctx context.Context, id strin
 				return err
 			}
 		}
-		return s.saveCollaborationMutation(ctx, tx, a, key, in, out)
+		if err := s.saveConversationAgentGrants(ctx, tx, out, a); err != nil {
+			return err
+		}
+		return s.saveCollaborationMutation(ctx, tx, a, key, request, out)
 	})
 	return out, err
 }

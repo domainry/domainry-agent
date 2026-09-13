@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "realChrome": true,
+  "realIdentityUsers": true,
+  "scenarios": [
+    "bind authenticated selected role",
+    "shared directory states receiving identity",
+    "issuer cannot edit binding",
+    "ordinary edits preserve saved role",
+    "390px layout",
+    "disable owner execution persists after reload"
+  ],
+  "errors": []
+}

@@ -1,0 +1,8 @@
+=== RUN   TestDeliveredExecutionIndexDoesNotReleaseUnfinishedOrErrorPayloads
+=== RUN   TestDeliveredExecutionIndexDoesNotReleaseUnfinishedOrErrorPayloads/started
+=== RUN   TestDeliveredExecutionIndexDoesNotReleaseUnfinishedOrErrorPayloads/failed-result
+--- PASS: TestDeliveredExecutionIndexDoesNotReleaseUnfinishedOrErrorPayloads (0.01s)
+    --- PASS: TestDeliveredExecutionIndexDoesNotReleaseUnfinishedOrErrorPayloads/started (0.01s)
+    --- PASS: TestDeliveredExecutionIndexDoesNotReleaseUnfinishedOrErrorPayloads/failed-result (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.705s

@@ -67,7 +67,11 @@ func (p *selectedToolConnections) ToolResultReadConnectionAvailable(ctx context.
 	case "analysis_run":
 		candidate = p.host.analysisToolAvailability
 	default:
-		return p.ToolConnectionAvailable(ctx, a, key)
+		adapter := p.host.accountToolAvailability[key]
+		if _, ok := adapter.(toolsdk.ResultReadAvailability); !ok {
+			return p.ToolConnectionAvailable(ctx, a, key)
+		}
+		candidate = adapter
 	}
 	if !a.Known || a.RuntimeID != p.host.runtimeID || a.WorkspaceID == "" || a.UserID == "" || !p.host.external && a.WorkspaceID != string(p.host.application.WorkspaceID) || !p.known[key] {
 		return false, nil
@@ -85,6 +89,9 @@ func (p *selectedToolConnections) ToolResultReadConnectionAvailable(ctx context.
 		}
 	}
 	if reader, ok := candidate.(toolsdk.ResultReadAvailability); ok {
+		if ready, err := p.host.toolAccountAvailable(ctx, a, key); err != nil || !ready {
+			return false, err
+		}
 		return reader.ConversationToolResultReadAvailable(ctx, a, key)
 	}
 	return false, nil

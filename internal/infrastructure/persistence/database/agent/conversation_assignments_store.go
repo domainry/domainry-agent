@@ -13,7 +13,7 @@ import (
 )
 
 func (s *ConversationStore) conversationAssignments(ctx context.Context, db conversationDB, d sdk.ConversationDelegation, a sdk.ConversationAuthority) ([]sdk.ConversationDelegationAssignment, error) {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAssignmentTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", d.ID))).OrderBy(query.Ascending("number")).Limit(17).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAssignmentTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(d, a))), query.Equal("delegation_id", d.ID))).OrderBy(query.Ascending("number")).Limit(17).Build()
 	if err != nil {
 		return nil, err
 	}
@@ -108,6 +108,11 @@ func (s *ConversationStore) insertConversationAssignment(ctx context.Context, tx
 
 func (s *ConversationStore) prepareDelegationHandoff(ctx context.Context, tx *sql.Tx, d sdk.ConversationDelegation, remainingWork string, a sdk.ConversationAuthority) (sdk.ConversationDelegationHandoff, error) {
 	out := sdk.ConversationDelegationHandoff{RemainingWork: remainingWork, Runs: []sdk.ConversationRunReference{}, Effects: []sdk.ConversationDelegationEffect{}}
+	var err error
+	a, err = s.delegationExecutionAuthority(ctx, tx, d, a)
+	if err != nil {
+		return out, err
+	}
 	assignments, err := s.conversationAssignments(ctx, tx, d, a)
 	if err != nil {
 		return out, err

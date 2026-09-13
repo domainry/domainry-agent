@@ -30,6 +30,9 @@ func (s *ConversationService) collaborationAuthorization(ctx context.Context, op
 	}
 	in := sdk.ConversationCollaborationAuthorizationRequest{Authority: a, Operations: append([]string{}, operations...), OwnerUserID: a.UserID}
 	if d != nil {
+		if d.OwnerUserID != "" {
+			in.OwnerUserID = d.OwnerUserID
+		}
 		in.DelegationID = d.ID
 		in.FromAgentID = d.FromAgentID
 		in.ToAgentID = d.ToAgentID
@@ -49,6 +52,19 @@ func (s *ConversationService) collaborationAuthorization(ctx context.Context, op
 	decision, err := policy.AuthorizeConversationCollaboration(ctx, in)
 	if err != nil || ctx.Err() != nil {
 		return denied, conversationFailure("unavailable", "collaboration_authorization_unavailable")
+	}
+	if d != nil && d.OwnerUserID != "" && d.OwnerUserID != a.UserID {
+		granted := participantOperations(*d, a.UserID)
+		if delegationExecutor(*d, a) {
+			granted = []string{"view", "receive", "communicate", "execution_read", "delivery_read"}
+		}
+		allowed := []string{}
+		for _, op := range decision.Allowed {
+			if slices.Contains(granted, op) {
+				allowed = append(allowed, op)
+			}
+		}
+		decision.Allowed = allowed
 	}
 	return decision, nil
 }
@@ -92,7 +108,7 @@ func (audit *conversationSourceAudit) collaborationResult(ctx context.Context, d
 	// provenance may include the same delegation's working context, which is
 	// checked without exposing those raw execution or communication records.
 	deliveryScope, _ := ctx.Value(conversationDeliverySourceKey{}).(string)
-	projectedDelivery := deliveryScope != "" && deliveryScope == d.ID && access.DeliveryRead
+	projectedDelivery := deliveryScope != "" && deliveryScope == d.ID && access.DeliveryRead && !rawExecutionSource(ctx)
 	if !access.View || !projectedDelivery && ((d.Task != nil || d.Handoff != nil) && !access.ExecutionRead || len(d.Messages) > 0 && !access.Communicate) {
 		return conversationFailure("forbidden", "collaboration_access_denied")
 	}
@@ -102,6 +118,11 @@ func (audit *conversationSourceAudit) collaborationResult(ctx context.Context, d
 	}
 	if delivery && !access.DeliveryRead {
 		return conversationFailure("forbidden", "collaboration_access_denied")
+	}
+	for _, message := range d.Messages {
+		if err := audit.s.checkSharedDocuments(ctx, message.Documents, audit.a); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -119,6 +140,8 @@ func (s *ConversationService) authorizeCollaboration(ctx context.Context, operat
 
 func collaborationUpdateOperation(in sdk.ConversationDelegationUpdate) string {
 	switch in.Action {
+	case "set_participants":
+		return "share"
 	case "deliver", "reject":
 		return "receive"
 	case "disagreement":
@@ -174,12 +197,32 @@ func collaborationDenied(err error) bool {
 // authorization and private-attachment boundaries.
 type conversationDeliverySourceKey struct{}
 
+type conversationRawExecutionSourceKey struct{}
+
+func rawExecutionSource(ctx context.Context) bool {
+	value, _ := ctx.Value(conversationRawExecutionSourceKey{}).(bool)
+	return value
+}
+
+// History messages and task details expose execution-derived text. Keep the
+// delivery's independent resource readers, but require raw collaboration data
+// permissions throughout that text's provenance. Never share cached decisions
+// made under the narrower submitted-result projection.
+func (audit *conversationSourceAudit) rawExecutionSourceAudit(ctx context.Context) (context.Context, *conversationSourceAudit) {
+	if rawExecutionSource(ctx) {
+		return ctx, audit
+	}
+	child := audit.s.sourceAudit(audit.a, audit.conversationID)
+	child.reading, child.records = audit.reading, audit.records
+	return context.WithValue(ctx, conversationRawExecutionSourceKey{}, true), child
+}
+
 func deliverySourceContext(ctx context.Context, id string) context.Context {
 	return context.WithValue(ctx, conversationDeliverySourceKey{}, id)
 }
 func (audit *conversationSourceAudit) authorizeExecutionSource(ctx context.Context, conversationID string) error {
 	scope, _ := ctx.Value(conversationDeliverySourceKey{}).(string)
-	if scope != "" {
+	if scope != "" && !rawExecutionSource(ctx) {
 		c, err := audit.s.repo.Get(ctx, conversationID, audit.a)
 		if err != nil {
 			return err

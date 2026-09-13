@@ -1,0 +1,7 @@
+=== RUN   TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation
+    conversation_delivery_schedule_permissions_test.go:184: Seven real calls completed; current host requested 0 confirmations
+    conversation_delivery_schedule_permissions_test.go:236: PUT /tools/preferences/schedule_delete: status 400, want 200, body {"code":"tools.settings.input_invalid"}
+--- FAIL: TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation (9.18s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	10.361s
+FAIL
