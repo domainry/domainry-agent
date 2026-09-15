@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.test]
+runtime/bootstrap/integrationtest/conversation_multiple_owner_dependencies_test.go:251: cannot use []agent.ConversationDelegationParticipant{…} (value of type []agentsdk.ConversationDelegationParticipant) as *[]agentsdk.ConversationDelegationParticipantInput value in struct literal
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [build failed]
+FAIL

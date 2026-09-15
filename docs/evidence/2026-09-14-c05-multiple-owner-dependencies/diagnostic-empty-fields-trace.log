@@ -1,0 +1,10 @@
+=== RUN   TestMultipleOwnerProfessionalDependenciesReadOriginalsAndDeliverThroughRealRuntime
+    conversation_multiple_owner_dependencies_test.go:267: Admit multiple-owner-root from conv_3c5b059d2af97c107de4512f06b623be to agent_780fddfe761cc21b76fc1857069f8fc1
+    conversation_multiple_owner_dependencies_test.go:290: Admit multiple-owner-upstream from conv_c1dc0fd48133af072c508c32defbeb38 to agent_73904f1fc479d13d7af60271c5ae6526
+    conversation_multiple_owner_dependencies_test.go:300: Admit multiple-owner-final from conv_be364d6387bcd477bca4f048c6022c4f to agent_fd8c98adac95c9d1e72b9706e91754db
+DEBUG frozen contract revision=true brief=true requirements=true input=true dependency-count=3/2 dependencies=false
+    conversation_multiple_owner_dependencies_test.go:300: actual dependency task failed: task error=delegation_source_not_released run error=delegation_source_not_released steps=null
+--- FAIL: TestMultipleOwnerProfessionalDependenciesReadOriginalsAndDeliverThroughRealRuntime (8.20s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	8.840s
+FAIL

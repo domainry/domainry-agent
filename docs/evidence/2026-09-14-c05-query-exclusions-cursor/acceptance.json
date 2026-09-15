@@ -1,0 +1,93 @@
+{
+  "phase_status": "accepted_query_exclusion_scope_proofs_and_actual_original_cursor_agent_delivery",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "accepted_logs": [
+    "runtime-scope-owners.log",
+    "runtime-scope-race.log",
+    "real-current-query-and-business-rpc.log",
+    "real-intermediate-three-business-roots.log",
+    "real-managed-knowledge-race-20m.log",
+    "real-unmanaged-legacy-knowledge-race-20m.log"
+  ],
+  "accepted_exit_codes": {
+    "runtime-scope-owners.log": 0,
+    "runtime-scope-race.log": 0,
+    "real-current-query-and-business-rpc.log": 0,
+    "real-intermediate-three-business-roots.log": 0,
+    "real-managed-knowledge-race-20m.log": 0,
+    "real-unmanaged-legacy-knowledge-race-20m.log": 0
+  },
+  "diagnostic_failed_logs": [
+    "diagnostic-not-union-before-fix.log",
+    "diagnostic-native-exclusions-before-fix.log",
+    "diagnostic-rpc-execution-gate-expectation.log",
+    "diagnostic-other-knowledge-default-timeout.log"
+  ],
+  "pending_logs": [],
+  "real_current_business_roots": [
+    "TestCrossUserBusinessAgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance",
+    "TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart"
+  ],
+  "real_current_root_seconds": {
+    "TestCrossUserBusinessAgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance": 155.88,
+    "TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart": 9.53
+  },
+  "actual_shared_execution_steps": 8,
+  "actual_original_query_receipts": 5,
+  "actual_original_sha_checks": 20,
+  "actual_original_sha_rounds": 4,
+  "actual_owner_rpc_read_without_execution_rights": true,
+  "actual_owner_rpc_reader_execution_gate_checked": true,
+  "actual_execution_authorized_foreign_cursor_rejected": true,
+  "actual_execution_authorized_reader_fresh_query_accepted": true,
+  "actual_producer_role_preserved_when_execution_grants_withdrawn": true,
+  "actual_task_budget_unchanged": {
+    "steps": 12,
+    "calls": 12,
+    "output_bytes": 8192,
+    "timeout_seconds": 90
+  },
+  "source_sdk_translation_and_actual_subject_bindings_preserved": true,
+  "negation_neq_notin_and_finite_union_coverage_checked": true,
+  "real_orm_exclusion_combinations": 4,
+  "orm_custom_predicate_uses_sdk_fixture_not_identity_custom_row_policy_publication": true,
+  "source_sdk_evaluator_implication_checks": true,
+  "no_json_type_intersection_empty_scope_claim": true,
+  "real_managed_knowledge_race": {
+    "status": "accepted",
+    "roots": [
+      "TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart"
+    ],
+    "sha_checks": 16,
+    "source_baseline": "historical-managed-race-launch.json"
+  },
+  "real_other_knowledge_race": {
+    "status": "accepted",
+    "accepted": true,
+    "roots": [
+      "TestCrossUserUnmanagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart",
+      "TestCrossUserLegacyKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart"
+    ],
+    "sha_checks": 28
+  },
+  "default_timeout_other_knowledge_command_failed_not_accepted": true,
+  "runtime_published_module_set_lock_modified": false,
+  "runtime_bootstrap_complete_package_accepted": false,
+  "source_manifest": "source-sha256.json",
+  "source_files": 1130,
+  "artifact_manifest": "artifact-sha256.json",
+  "previous_artifacts_unchanged": 21,
+  "previous_acceptance_sha256": "6c3bad25f3bb44f9113d05f957ff58d638aa85623b7128b4251d2782581879f5",
+  "remaining": [
+    "broader business query expression scopes",
+    "other multiple-owner old roles and mixed roots",
+    "complete historical admission and execution-source receipts",
+    "other dependency management",
+    "broader Identity subject exit linkage",
+    "published Runtime module-set synchronization",
+    "earlier actual professional write race timeouts",
+    "all later TODO items retained in original order"
+  ]
+}

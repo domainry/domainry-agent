@@ -1,0 +1,8 @@
+=== RUN   TestExecutionPublicationOwnerMetadataRequiresOnlyViewAndRejectsForeignProofs
+--- PASS: TestExecutionPublicationOwnerMetadataRequiresOnlyViewAndRejectsForeignProofs (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.422s
+=== RUN   TestExecutionPublicationOwnerMetadataIsPrivateAndSurvivesRoleChangeAndRestart
+--- PASS: TestExecutionPublicationOwnerMetadataIsPrivateAndSurvivesRoleChangeAndRestart (0.25s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	2.015s

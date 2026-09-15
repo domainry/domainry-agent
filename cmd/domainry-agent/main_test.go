@@ -17,10 +17,10 @@ func clearAgentEnvironment(t *testing.T) {
 	for _, name := range []string{"AGENT_KNOWLEDGE_BASE_URL", "AGENT_KNOWLEDGE_API_KEY", "AGENT_KNOWLEDGE_TEAM_ID", "AGENT_KNOWLEDGE_KB_ID", "AGENT_KNOWLEDGE_WORKSPACE_ID", "AGENT_KNOWLEDGE_TOP_K"} {
 		t.Setenv(name, "")
 	}
-	for _, name := range []string{"AGENT_HTTP_BASE_URL", "AGENT_HTTP_API_KEY", "AGENT_HTTP_AGENT_ID", "AGENT_SAAS_API_KEY", "AGENT_SAAS_RUNTIME_ID", "AGENT_CONVERSATION_PROVIDER", "AGENT_CONVERSATION_PROTOCOL", "AGENT_CONVERSATION_BASE_URL", "AGENT_CONVERSATION_MODEL_URL", "AGENT_CONVERSATION_MODEL_API_KEY", "AGENT_CONVERSATION_MODEL", "AGENT_PROVIDER_API_KEY"} {
+	for _, name := range []string{"AGENT_HTTP_BASE_URL", "AGENT_HTTP_API_KEY", "AGENT_HTTP_AGENT_ID", "AGENT_SAAS_API_KEY", "AGENT_SAAS_RUNTIME_ID", "AGENT_CONVERSATION_PROVIDER", "AGENT_CONVERSATION_PROTOCOL", "AGENT_CONVERSATION_BASE_URL", "AGENT_CONVERSATION_MODEL_URL", "AGENT_CONVERSATION_MODEL_API_KEY", "AGENT_CONVERSATION_MODEL", "AGENT_PROVIDER_API_KEY", "AGENT_CONVERSATION_CONTEXT_TOKENS", "AGENT_CONVERSATION_IMAGE_INPUT", "AGENT_CONVERSATION_STRUCTURED_OUTPUT", "AGENT_CONVERSATION_PROTOCOL_CONTINUATION", "AGENT_CONVERSATION_REASONING_EFFORTS", "AGENT_CONVERSATION_REASONING_EFFORT"} {
 		t.Setenv(name, "")
 	}
-	for _, name := range []string{"AGENT_CONVERSATION_WORKERS", "AGENT_CONVERSATION_MAX_QUEUED_PER_USER", "AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE", "AGENT_CONVERSATION_MAX_RUNNING_PER_USER", "AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE", "AGENT_CONVERSATION_RUN_TIMEOUT", "AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT"} {
+	for _, name := range []string{"AGENT_CONVERSATION_WORKERS", "AGENT_CONVERSATION_MAX_QUEUED_PER_USER", "AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE", "AGENT_CONVERSATION_MAX_RUNNING_PER_USER", "AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE", "AGENT_CONVERSATION_RUN_TIMEOUT", "AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT", "AGENT_CONVERSATION_MODEL_MAX_ATTEMPTS", "AGENT_CONVERSATION_MODEL_RETRY_BASE_DELAY", "AGENT_CONVERSATION_MODEL_RETRY_MAX_DELAY"} {
 		t.Setenv(name, "")
 	}
 	for _, name := range []string{"IDENTITY_ENDPOINT", "IDENTITY_TENANT_ID", "IDENTITY_WORKSPACE_ID", "IDENTITY_ISSUER", "IDENTITY_AUDIENCE", "IDENTITY_SERVICE_ACCESS_TOKEN", "IDENTITY_CAPABILITY_CONTRACT_SHA256"} {
@@ -37,8 +37,11 @@ func TestConversationOptionsFromEnvironment(t *testing.T) {
 	t.Setenv("AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE", "3")
 	t.Setenv("AGENT_CONVERSATION_RUN_TIMEOUT", "4m")
 	t.Setenv("AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT", "45s")
+	t.Setenv("AGENT_CONVERSATION_MODEL_MAX_ATTEMPTS", "4")
+	t.Setenv("AGENT_CONVERSATION_MODEL_RETRY_BASE_DELAY", "125ms")
+	t.Setenv("AGENT_CONVERSATION_MODEL_RETRY_MAX_DELAY", "8s")
 	options, err := conversationOptionsFromEnvironment()
-	if err != nil || options.Workers != 3 || options.MaxQueuedPerUser != 7 || options.MaxQueuedPerWorkspace != 70 || options.MaxRunningPerUser != 2 || options.MaxRunningPerWorkspace != 3 || options.RunTimeout != 4*time.Minute || options.ExternalCallTimeout != 45*time.Second {
+	if err != nil || options.Workers != 3 || options.MaxQueuedPerUser != 7 || options.MaxQueuedPerWorkspace != 70 || options.MaxRunningPerUser != 2 || options.MaxRunningPerWorkspace != 3 || options.RunTimeout != 4*time.Minute || options.ExternalCallTimeout != 45*time.Second || options.MaxModelAttempts != 4 || options.ModelRetryBaseDelay != 125*time.Millisecond || options.ModelRetryMaxDelay != 8*time.Second {
 		t.Fatalf("options=%+v err=%v", options, err)
 	}
 	t.Setenv("AGENT_CONVERSATION_MAX_RUNNING_PER_USER", "zero")
@@ -92,7 +95,7 @@ func TestConversationExecutableStartsWithoutLegacyProvider(t *testing.T) {
 	if json.Unmarshal(got.Body.Bytes(), &descriptor) != nil || descriptor.Validate() != nil {
 		t.Fatal("invalid descriptor")
 	}
-	if len(descriptor.Capabilities) != 2 || !descriptor.HasCapability(agentsdk.CapabilityConversationStreamV1) || descriptor.HasCapability(agentsdk.CapabilityScheduledConversationTask) || descriptor.HasCapability(agentsdk.CapabilityTaskStart) {
+	if len(descriptor.Capabilities) != 3 || !descriptor.HasCapability(agentsdk.CapabilityConversationStreamV1) || !descriptor.HasCapability(agentsdk.CapabilityConversationExternalAgentV1) || descriptor.HasCapability(agentsdk.CapabilityScheduledConversationTask) || descriptor.HasCapability(agentsdk.CapabilityTaskStart) {
 		t.Fatalf("incorrect capabilities %+v", descriptor.Capabilities)
 	}
 	closeService()

@@ -1,0 +1,39 @@
+{
+  "steps": [
+    "saving from an original message records project-fact type, conversation scope, topics, uncertainty and exact source",
+    "an explicit correction keeps its previous revision and is recalled for a relevant request in the same conversation",
+    "a conversation-scoped project fact is excluded from another conversation automatically",
+    "compiled mobile UI shows provenance and correction metadata and deletion removes the active memory"
+  ],
+  "javascriptErrors": [],
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "resourceFailures": [
+    {
+      "status": 401,
+      "path": "/app/session"
+    },
+    {
+      "status": 401,
+      "path": "/auth/refresh"
+    }
+  ],
+  "mutations": [
+    {
+      "method": "PUT",
+      "status": 200,
+      "path": "/agent/conversations/memories/2f4e92eb-59e1-4928-b7e8-74d2714a9b64"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "path": "/agent/conversations/memories/2f4e92eb-59e1-4928-b7e8-74d2714a9b64"
+    },
+    {
+      "method": "DELETE",
+      "status": 200,
+      "path": "/agent/conversations/memories/2f4e92eb-59e1-4928-b7e8-74d2714a9b64"
+    }
+  ],
+  "error": "AssertionError [ERR_ASSERTION]: [{\"status\":401,\"path\":\"/app/session\"},{\"status\":401,\"path\":\"/auth/refresh\"}]"
+}

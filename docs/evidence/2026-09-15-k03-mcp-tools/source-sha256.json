@@ -1,0 +1,23 @@
+{
+  "domainry-connector-sdk/mcptool/contract.go": "29fe0f1c805d00cf275a3e55cb22414988904b47adac4c7eff2cac6cba02c565",
+  "domainry-connectors/providers/mcp_tool/mcp/provider.go": "b96f0fd204994e542461fa410ae6f052f7171a767f0d7dabd073e7e281198664",
+  "domainry-connectors/internal/assembly/module/work_accounts.go": "e79528a593d074aa06995dbdb6eaa98e7ef95974ead49fbf7985e34a0776c620",
+  "domainry-integration-sdk/http_adapter.go": "839ff2e4bd0a8f2cefbcaaf53aadb9fc8c3bf5cc7f691cc8aa4afdf177028158",
+  "domainry-integration-sdk/remote/factory.go": "e3a459b8c96904eb656e91aec51e71d95b427756e6171531536d2008358471a7",
+  "domainry-integration/internal/adapter/accountwrite/codec.go": "5917a20ae04686d5445e92daf80d892c2cd47133256b77ab40ed2335e4d511a9",
+  "domainry-integration/internal/infrastructure/persistence/database/integration/connection_account_write_executor.go": "337173bd40c795733ecee649fa207f8b475f2f54e4528fef7e080303eec3fa64",
+  "domainry-integration/module/module.go": "d5b7a1fed7ba6ba0bd3100c6265bdaa8eb11bb56076f596876e294b4c70ca514",
+  "domainry-tools-sdk/mcp.go": "97af0a632d3a04ff3acf82f6a37b27db4d179e1144e8efd87e5fe2612a3f2e30",
+  "domainry-tools/internal/adapter/mcptools/adapter.go": "9c4e58b1c865ded823de6b3110933c1414cc2da1191d850f0159ce1114e37778",
+  "domainry-tools/internal/adapter/accounttools/adapter.go": "7c043385e2e1ffd41c08007a96f3ae09ccad0d39b9a0bd8ca22244997029b281",
+  "domainry-tools/internal/adapter/accounttools/write.go": "299ef6ad2a4c0c0f1c85bf1947d6d4f8d4d484cb0f0b2da172c92d6c309c1f00",
+  "domainry-tools/module/module.go": "5b91417481a0f2306f5bddc68024b84f8a2e71a4f344e353bfe7e14738578894",
+  "domainry-agent-sdk/conversation_personal_tools.go": "f12145a2af9d18f3661dd324b8dc075c1e1457b04a60ca204410ddbb74f41704",
+  "domainry-agent-sdk/businessrpc/server.go": "3dd8def24136396fff481e4b7b729722caebf3e8ebc89ee14d04c30f1446edf6",
+  "domainry-runtime/runtime/application/agenthost/conversation_business_host.go": "21933e396bb3995eae3352e4fda9f40785cf7ae3f1589798414ca22fd9a4c10e",
+  "domainry-runtime/runtime/bootstrap/transport/conversation_report_tools.go": "4d62754a8605d26639128feaacf3140118696cf6296a86a9355197739db459ae",
+  "domainry-runtime/runtime/bootstrap/transport/http_integration_agent_handler_wiring.go": "b5b9cb856ce31f6ed5dbd80c73195fb324df9048b0fbda4e9e10d1225451e7b5",
+  "domainry-runtime/runtime/bootstrap/runtime/startup.go": "c40a0d0523fb161256948cfe9e923c574f588dc598f5f693c6899866165b7ccb",
+  "domainry-agent/internal/assembly/web/account_tools.go": "6db6a2c32b38454ad9ff133c7956d4fc260050d474ee2b342997e0249c2b46ad",
+  "domainry-agent/internal/assembly/web/host.go": "ebc48828e1880883f0e87498d91453729ae84ff1d937cc1ea6046048e29c02a6"
+}

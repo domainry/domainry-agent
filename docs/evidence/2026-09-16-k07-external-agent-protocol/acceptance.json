@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-16",
+  "item": "K07",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 22,
+  "deepseek_harness_head": "0d1f50007f9bca3f52b06e1c3074fa14d5fb0720",
+  "results": {
+    "agent_sdk_workspace_full": { "exit_code": 0 },
+    "agent_protocol_packages": { "exit_code": 0 },
+    "identity_http_sqlite_external_chain": { "exit_code": 0 },
+    "saas_remote_protocol_chain": { "exit_code": 0 },
+    "frontend_tests": { "exit_code": 0, "tests": 94 },
+    "frontend_build": { "exit_code": 0 },
+    "diff_check": { "repositories": 2, "exit_code": 0 }
+  },
+  "behavior": [
+    "external processes are configured and delegated to as ordinary peer Agents without a parent child resource model",
+    "assignment query claim and report reauthorize the exact frozen execution subject and Agent configuration",
+    "steering cancellation resume structured output and execution details are explicitly negotiated and enforced",
+    "ordered cursor-bound idempotent events expose bounded work detail while unsupported detail is stated explicitly",
+    "stop acknowledgement and effect state are required before a new attempt can resume",
+    "formal structured delivery remains separate from terminal text and is required before task completion",
+    "local workers skip external tasks and scan beyond external queue pages for eligible local work",
+    "Module and SaaS adapters preserve the exact authority capabilities session cursor events and message acknowledgements"
+  ],
+  "remaining": [
+    "K08 complete coding execution environment is the last requested P3 item",
+    "V01 remains outside this requested long task boundary"
+  ]
+}

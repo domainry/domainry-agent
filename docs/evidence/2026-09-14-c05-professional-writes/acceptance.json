@@ -1,0 +1,103 @@
+{
+  "phase_status": "accepted_actual_calendar_create_update_and_mail_reply_current_original_result_reading",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_manifest": "source-sha256.json",
+  "source_files": 321,
+  "artifact_manifest": "artifact-sha256.json",
+  "artifact_files": 14,
+  "accepted_logs": [
+    "http.log",
+    "write-publication-http.log"
+  ],
+  "accepted_exit_codes": {
+    "http.log": 0,
+    "write-publication-http.log": 0
+  },
+  "root_seconds": {
+    "http.log": {
+      "TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission": "9.28",
+      "TestCrossUserWorkspaceMailSourcesAutomaticDeliveryAndSharedExecution": "20.76",
+      "TestCrossUserWorkspaceCalendarSourcesAutomaticDeliveryAndSharedExecution": "22.77",
+      "TestCrossUserWorkspaceWebSourcesAutomaticDeliveryAndSharedExecution": "9.08",
+      "TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution": "12.60",
+      "TestCrossUserWorkspaceCalendarCreateReceiptsAutomaticDeliveryAndSharedExecution": "12.13",
+      "TestCrossUserWorkspaceCalendarUpdateReceiptsAutomaticDeliveryAndSharedExecution": "15.80",
+      "TestCrossUserWorkspaceMailReplyReceiptsAutomaticDeliveryAndSharedExecution": "12.09",
+      "TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart": "2.59"
+    },
+    "write-publication-http.log": {
+      "TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution": "16.24",
+      "TestCrossUserWorkspaceCalendarCreateReceiptsAutomaticDeliveryAndSharedExecution": "14.08",
+      "TestCrossUserWorkspaceCalendarUpdateReceiptsAutomaticDeliveryAndSharedExecution": "21.02",
+      "TestCrossUserWorkspaceMailReplyReceiptsAutomaticDeliveryAndSharedExecution": "15.88"
+    }
+  },
+  "diagnostic_failed_logs": [
+    "diagnostic-calendar-update-placeholder.log",
+    "diagnostic-instrumentation-goto.log",
+    "diagnostic-dispatch-observation-window.log",
+    "diagnostic-delivery-observation-window.log",
+    "diagnostic-execution-timeout-after-delivery.log",
+    "diagnostic-business-producer-scope-before.log"
+  ],
+  "cross_user_write_race_accepted": false,
+  "race_timeout_after_delivery_persisted": true,
+  "fixture_wait_windows_are_separate_from_task_budgets": true,
+  "execution_budget_raised": false,
+  "context_budget_raised": false,
+  "new_task_budget": {
+    "max_steps": 12,
+    "max_tool_calls": 12,
+    "max_output_bytes": 8192,
+    "timeout_seconds": 60
+  },
+  "real_identity": true,
+  "real_http": true,
+  "real_integration_connectors_tools_and_original_ledger": true,
+  "fixture_vendor": true,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "new_frontend_acceptance": false,
+  "new_runtime_acceptance": false,
+  "sdk_runtime_tools_production_changed": false,
+  "historical_artifacts_preserved": true,
+  "previous_phase": "2026-09-14-c05-shared-account-sources",
+  "previous_source_manifest_sha256": "367e4c54f36f496549c2af6eeed8938e58791ec1d49b550458a9ea1a88343f51",
+  "previous_artifact_manifest_sha256": "dc5bb94bf71ffd541e8058286c2c2a3eaff0717ee959dd1e489ab2a5fee06d85",
+  "previous_artifact_files": 22,
+  "profile_symbols_binary": "/tmp/c05-shared-write-race.test",
+  "profile_symbols_binary_sha256": "616e0ec989d0565a0ae89af9af4a5f180f27a1df4a12ad4aedb932c237bd2087",
+  "business_scope_before_regression": {
+    "overlay_only": true,
+    "owner_read_calls": 0,
+    "failing_operations": [
+      "business_catalog",
+      "query_records",
+      "get_record",
+      "query_related_records",
+      "workflow_get",
+      "invoke_action",
+      "workflow_start"
+    ]
+  },
+  "scope": [
+    "actual cross-user agent_delegate, owner-bound receiver and independent confirmation",
+    "Calendar create and update actual originals, observed ETag and exact clearing PATCH",
+    "Mail reply actual original message, Reply-To, explicit CC/BCC, full body and accepted/unknown receipt",
+    "both users professional execution and account write revoked, current account read retained",
+    "original delivery/execution JSON and SHA, 256-byte pages, explicit account acceptance, restart and current source revoke",
+    "one actual vendor effect, no repeated vendor IO during result reading",
+    "original canonical read/private-personal-account/pending/failed-payload regressions",
+    "waiting-confirmation publication before started mutating vendor HTTP",
+    "actual cross-user business evidence fingerprint gap identified before owner policy"
+  ],
+  "remaining": [
+    "cross-user business original evidence producer proof versus current reader data scopes",
+    "Knowledge and other source-owner cross-subject evidence bindings",
+    "write race timeout after delivered evidence and verified-successful-call reads across failed task outcome",
+    "complete remaining C05 historical, dependency and lifecycle requirement audit",
+    "all later TODO items remain in original goal scope"
+  ]
+}

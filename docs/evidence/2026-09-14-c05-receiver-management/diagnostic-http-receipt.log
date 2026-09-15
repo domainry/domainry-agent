@@ -1,0 +1,6 @@
+=== RUN   TestDelegationExecutionHTTPUsesConsentingReceiversRoleAndStopsAfterRevocation
+    conversation_delegation_execution_test.go:217: unexpected issuer review state failed/collaboration_access_denied
+--- FAIL: TestDelegationExecutionHTTPUsesConsentingReceiversRoleAndStopsAfterRevocation (2.79s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	3.565s
+FAIL

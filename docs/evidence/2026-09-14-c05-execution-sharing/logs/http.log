@@ -1,0 +1,6 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+    conversation_source_release_test.go:63: open Agent module: build Agent capability binding: module "agent": module capability category is invalid
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (0.26s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	1.011s
+FAIL

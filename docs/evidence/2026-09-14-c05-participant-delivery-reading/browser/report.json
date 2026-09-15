@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "page_errors": [],
+  "scenarios": [
+    "actual third-user result reading",
+    "delivery history",
+    "execution detail withheld",
+    "independent grants survive communication changes",
+    "delivery withdrawal clears old result",
+    "regrant requires fresh reading",
+    "mobile width"
+  ]
+}

@@ -1,0 +1,6 @@
+=== RUN   TestParticipantTransferKeepsIssuerLedgerAndRechecksGrantBeforeReplay
+--- PASS: TestParticipantTransferKeepsIssuerLedgerAndRechecksGrantBeforeReplay (0.03s)
+=== RUN   TestParticipantTransferSeparatesManagerAndReplacementIdentity
+--- PASS: TestParticipantTransferSeparatesManagerAndReplacementIdentity (0.02s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	1.194s

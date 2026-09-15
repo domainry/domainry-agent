@@ -1,0 +1,30 @@
+{
+  "directory": "/tmp/c05-business-union-patch-validation",
+  "commands": [
+    {
+      "args": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-business-union-scope/phase.patch"
+      ],
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "git",
+        "apply",
+        "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-business-union-scope/phase.patch"
+      ],
+      "exit_code": 0,
+      "stderr": ""
+    }
+  ],
+  "reconstructed_sha256": {
+    "runtime/application/agenthost/conversation_business_shared_scope.go": "4a8f4fd1f52586da2e50d46dc994971caec8aceba7a3aab4d0f3d8d63c36a5f0",
+    "runtime/application/agenthost/conversation_business_shared_union_scope.go": "da4460fe0d709b8e82dca2255c89581a1cb3ab8445829da6b70bf6cfa031bebf",
+    "runtime/application/agenthost/conversation_business_shared_union_scope_test.go": "1cfae79f427f7b83cf7a3e627e59b6d766df635136b71d2cf2471156fa710ff9",
+    "runtime/application/agenthost/conversation_business_union_sql_truth_test.go": "16d1fe0f79cfa07164717bce9751e1426e14e90aebf6683f21f9ecfeff8f4ce3"
+  }
+}

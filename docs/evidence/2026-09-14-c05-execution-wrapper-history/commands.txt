@@ -1,0 +1,9 @@
+GOWORK=/Users/tiger/Projects/domainry-agent/go.work
+go test -race ./internal/application -count=1 -v
+go test ./internal/application ./internal/infrastructure/persistence/database/agent ./internal/infrastructure/provider ./internal/capability ./internal/transport/http/module ./remote ./server ./module -count=1 -v
+go test ./internal/assembly/product -run '^TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart$' -count=1 -timeout=5m -v
+go test -race ./internal/assembly/product -run '^TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart$' -count=1 -timeout=12m -cpuprofile=/tmp/c05-execution-wrappers-product-serial-300-cpu.pprof -o=/tmp/c05-execution-wrappers-product-serial-300.test -v
+The full-code command uses every one of 36 code_packages in agent-executable-packages.json, -count=1 -timeout=20m -v; excludes only seven archived diagnostic snapshot directories.
+The full-code regression compiled before the final invalid-source-boundary guard and observer-only fixture change. It is a versioned baseline, not a claim of every current source having been compiled in that command.
+The final eight-core/Application race compile the bounds guard; actual Product normal uses the 90s inspector observer. The final serial Product race uses the service's unchanged ordinary five-minute inspector budget as its observation window. Its launch is recorded separately; production sources are identical.
+Actual task budget remains 12 steps / 12 calls / 8192 output bytes / 60 seconds. Whole-package test observation limits do not alter task or model budgets.

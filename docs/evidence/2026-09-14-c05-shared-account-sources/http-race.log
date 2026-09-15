@@ -1,0 +1,5 @@
+=== RUN   TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart
+    conversation_shared_failed_execution_test.go:164: actual connector HTTP 503, durably started failed call and subsequent model reply; shared run retains exact state/timing while failed parameters/results/reply/control stay hidden after execution revocation and restart; no repeat vendor IO
+--- PASS: TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart (37.77s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	39.420s

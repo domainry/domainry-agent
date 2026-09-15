@@ -1,0 +1,1052 @@
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/context-trace-overlay
+found packages web (conversation_collaboration_test.go) and application (conversation_execution_context.go) in /Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/context-trace-overlay
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/context-trace-overlay [setup failed]
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:24:2: no required module provides package github.com/domainry/domainry-runtime/pkg/runtimeext; to add it:
+	go get github.com/domainry/domainry-runtime/pkg/runtimeext
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:25:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/action; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/action
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go:7:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/agenthost; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/agenthost
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:27:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/appschema; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/appschema
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go:8:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/auditbinding; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/auditbinding
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:30:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/automation; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/automation
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:31:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/businesssystem; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/businesssystem
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:32:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/capability; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/capability
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:33:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/changeplan; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/changeplan
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:34:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/deployment; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/deployment
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:35:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/dispatch; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/dispatch
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:36:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/pipeline; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/pipeline
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:37:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/publicationhandoff; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/publicationhandoff
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go:9:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/record; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/record
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:39:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/recordtimer; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/recordtimer
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:40:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/report/export/application; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/report/export/application
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:41:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/workflow; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/workflow
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:42:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/action/contract; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/action/contract
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go:10:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/action/runtime; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/action/runtime
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:12:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/appschema/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/appschema/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_appschema_projection.go:12:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/appschema/projection; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/appschema/projection
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:45:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/appschema/repository; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/appschema/repository
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:13:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/appschema/service; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/appschema/service
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:46:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/automation/contract; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/automation/contract
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:14:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/automation/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/automation/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:48:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/automation/repository; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/automation/repository
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:49:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/changeplan/repository; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/changeplan/repository
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:15:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/definition/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/definition/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:51:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/deployment/repository; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/deployment/repository
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go:11:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/manifest/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/manifest/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:16:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/principal/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/principal/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_appschema_projection.go:7:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/profilebinding/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/profilebinding/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:6:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/publication/repository; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/publication/repository
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/workflow_identity_application_wiring.go:15:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/record/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/record/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:52:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/record/repository; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/record/repository
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go:12:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/record/runtime; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/record/runtime
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:53:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/record/service; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/record/service
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:54:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/report/contract; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/report/contract
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:55:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/workflow/contract; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/workflow/contract
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/workflow_application_wiring.go:11:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/workflow/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/workflow/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:56:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/workspaceaggregate/contract; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/workspaceaggregate/contract
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:57:2: no required module provides package github.com/domainry/domainry-runtime/runtime/modulehost/report; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/modulehost/report
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition [setup failed]
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/domain/appschema/service
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:12:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/appschema/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/appschema/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/domain/appschema/service
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:15:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/definition/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/definition/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/domain/appschema/service
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:16:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/principal/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/principal/model
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/domain/appschema/service [setup failed]
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:24:2: no required module provides package github.com/domainry/domainry-runtime/pkg/runtimeext; to add it:
+	go get github.com/domainry/domainry-runtime/pkg/runtimeext
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:25:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/action; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/action
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go:7:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/agenthost; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/agenthost
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:27:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/appschema; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/appschema
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go:8:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/auditbinding; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/auditbinding
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:30:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/automation; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/automation
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:31:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/businesssystem; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/businesssystem
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:32:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/capability; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/capability
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:33:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/changeplan; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/changeplan
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:34:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/deployment; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/deployment
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:35:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/dispatch; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/dispatch
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:36:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/pipeline; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/pipeline
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:37:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/publicationhandoff; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/publicationhandoff
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go:9:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/record; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/record
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:39:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/recordtimer; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/recordtimer
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:40:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/report/export/application; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/report/export/application
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:41:2: no required module provides package github.com/domainry/domainry-runtime/runtime/application/workflow; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/application/workflow
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:42:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/action/contract; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/action/contract
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go:10:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/action/runtime; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/action/runtime
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:12:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/appschema/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/appschema/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_appschema_projection.go:12:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/appschema/projection; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/appschema/projection
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:45:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/appschema/repository; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/appschema/repository
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:13:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/appschema/service; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/appschema/service
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:46:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/automation/contract; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/automation/contract
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:14:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/automation/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/automation/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:48:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/automation/repository; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/automation/repository
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:49:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/changeplan/repository; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/changeplan/repository
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:15:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/definition/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/definition/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:51:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/deployment/repository; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/deployment/repository
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go:11:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/manifest/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/manifest/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:16:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/principal/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/principal/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_appschema_projection.go:7:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/profilebinding/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/profilebinding/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:6:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/publication/repository; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/publication/repository
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/workflow_identity_application_wiring.go:15:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/record/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/record/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:52:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/record/repository; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/record/repository
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go:12:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/record/runtime; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/record/runtime
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:53:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/record/service; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/record/service
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:54:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/report/contract; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/report/contract
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:55:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/workflow/contract; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/workflow/contract
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/workflow_application_wiring.go:11:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/workflow/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/workflow/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:56:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/workspaceaggregate/contract; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/workspaceaggregate/contract
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/runtime_services_state.go:57:2: no required module provides package github.com/domainry/domainry-runtime/runtime/modulehost/report; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/modulehost/report
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/composition [setup failed]
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/domain/appschema/service
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:12:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/appschema/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/appschema/model
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/domain/appschema/service
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go:16:2: no required module provides package github.com/domainry/domainry-runtime/runtime/domain/principal/model; to add it:
+	go get github.com/domainry/domainry-runtime/runtime/domain/principal/model
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/domain/appschema/service [setup failed]
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/tools/internal/adapter/recordtools
+package github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/tools/internal/adapter/recordtools
+	docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/tools/internal/adapter/recordtools/adapter.go:12:2: use of internal package github.com/domainry/domainry-tools/internal/application/tool not allowed
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/tools/internal/adapter/recordtools [setup failed]
+?   	github.com/domainry/domainry-agent/capability	[no test files]
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:33:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:33:72: undefined: conversationDB
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:58:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:58:73: undefined: conversationDB
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:76:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:97:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:97:80: undefined: conversationDB
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:112:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:147:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:147:82: undefined: conversationDB
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:147:82: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:11:14: undefined: conversationSourceAudit
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:17:14: undefined: conversationSourceAudit
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:18:29: undefined: conversationPublishedSourceKey
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:18:64: undefined: conversationPublishedSource
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:19:33: undefined: conversationSourceReleaseKey
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:19:66: undefined: conversationSourceRelease
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:27:9: undefined: conversationDigest
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:31:13: undefined: conversationSourceParentKey
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:32:13: undefined: conversationDeliverySourceKey
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:33:13: undefined: conversationRawExecutionSourceKey
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:33:13: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_sources.go:29:18: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_sources.go:38:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_sources.go:837:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_sources.go:841:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_sources.go:851:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_tasks.go:16:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_tasks.go:24:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_tasks.go:115:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_tasks.go:181:53: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_tasks.go:251:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_tasks.go:251:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:48:62: undefined: LibraryKnowledgeBinding
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:62:60: undefined: ConversationKnowledge
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:117:12: undefined: validateAttachmentKnowledge
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:184:70: undefined: knowledgeOptions
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:190:20: undefined: PersonalConversationHost
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:191:40: undefined: PersonalConversationHost
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:207:23: undefined: businessConversationHost
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:228:23: undefined: knowledgeConversationHost
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:280:12: undefined: activateDocumentSources
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_tasks.go:551:163: undefined: conversationCompiledTool
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:280:12: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:24:24: undefined: conversationText
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:38:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:205:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:224:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:430:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:445:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:474:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:643:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:682:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:771:53: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:24:24: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest [github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest.test]
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:18:2: undefined: businessWebModel
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:31:197: undefined: sharedProfessionalJSON
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:154: undefined: sharedProfessionalJSON
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:193:61: undefined: businessBrowser
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:220:20: undefined: openAnalysisRPC
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:263:38: undefined: businessRPCManifest
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:263:59: undefined: independentBusinessReadRoles
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:263:89: undefined: sharedResultUserRoles
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:263:112: undefined: sharedProfessionalCollaborationRoles
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:263:150: undefined: sharedBusinessReceiptRoles
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:263:150: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application [github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application.test]
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application/conversation_verification_compaction_test.go:13:2: undefined: privatePeerSources
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application/conversation_delegations.go:38:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application/conversation_delegations.go:205:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application/conversation_delegations.go:218:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application/conversation_delegations.go:238:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application/conversation_delegations.go:427:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application/conversation_delegations.go:442:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application/conversation_delegations.go:471:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application/conversation_delegations.go:654:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application/conversation_delegations.go:693:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application/conversation_delegations.go:693:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application/conversation_delegations.go:38:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application/conversation_delegations.go:205:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application/conversation_delegations.go:218:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application/conversation_delegations.go:238:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application/conversation_delegations.go:433:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application/conversation_delegations.go:448:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application/conversation_delegations.go:477:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application/conversation_delegations.go:660:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application/conversation_delegations.go:699:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application/conversation_delegations.go:788:53: undefined: ConversationService
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application/conversation_delegations.go:788:53: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest [github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest.test]
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:18:2: undefined: businessWebModel
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:31:197: undefined: sharedProfessionalJSON
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:154: undefined: sharedProfessionalJSON
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:193:61: undefined: businessBrowser
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:220:20: undefined: openAnalysisRPC
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:263:38: undefined: businessRPCManifest
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:263:59: undefined: independentBusinessReadRoles
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:263:89: undefined: sharedResultUserRoles
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:263:112: undefined: sharedProfessionalCollaborationRoles
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:263:150: undefined: sharedBusinessReceiptRoles
+docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go:263:150: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application/conversation_execution.go:68:10: undefined: ConversationService
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application/conversation_execution.go:76:10: undefined: ConversationService
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application/conversation_execution.go:130:10: undefined: ConversationService
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application/conversation_execution.go:153:10: undefined: ConversationService
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application/conversation_execution.go:189:10: undefined: ConversationService
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application/conversation_execution.go:205:10: undefined: ConversationService
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application/conversation_execution.go:378:10: undefined: ConversationService
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application/conversation_execution.go:448:10: undefined: ConversationService
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application/conversation_transfer.go:12:10: undefined: ConversationService
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application/conversation_transfer.go:214:10: undefined: ConversationService
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application/conversation_transfer.go:214:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web [github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web.test]
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web/conversation_agent_recovery_browser_test.go:60:13: undefined: Options
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web/conversation_agent_recovery_browser_test.go:61:15: undefined: Open
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web/conversation_agent_recovery_browser_test.go:75:8: undefined: browser
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web/conversation_agent_recovery_browser_test.go:78:2: undefined: grantCollaborationPermissions
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web/conversation_agent_recovery_browser_test.go:90:11: undefined: accountDecode
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web/conversation_agent_recovery_browser_test.go:90:83: undefined: accountJSON
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web/conversation_agent_recovery_browser_test.go:91:12: undefined: accountDecode
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web/conversation_agent_recovery_browser_test.go:91:86: undefined: accountJSON
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web/conversation_agent_recovery_browser_test.go:94:7: undefined: accountDecode
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web/conversation_agent_recovery_browser_test.go:94:95: undefined: accountJSON
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web/conversation_agent_recovery_browser_test.go:94:95: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent [github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent.test]
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:21:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:21:67: undefined: conversationDB
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:37:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:58:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:58:81: undefined: conversationRunRow
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:67:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:178:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:218:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:218:71: undefined: conversationDB
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:229:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:229:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/conversation_collaboration.go:61:17: undefined: ConversationAgentDefinition
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/conversation_collaboration.go:62:17: undefined: ConversationSkillSummary
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/conversation_collaboration.go:63:17: undefined: ConversationAgentCandidate
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/conversation_collaboration.go:77:21: undefined: ConversationExecutionSubject
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/conversation_collaboration.go:82:20: undefined: AgentSchema
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/conversation_collaboration.go:83:22: undefined: SkillSchema
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/conversation_collaboration.go:88:25: undefined: ConversationCompletionRule
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/conversation_collaboration.go:106:20: undefined: ConversationDependencyInput
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/conversation_collaboration.go:107:18: undefined: ConversationAgentRequirements
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/conversation_collaboration.go:124:29: undefined: ConversationDelegationParticipant
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/conversation_collaboration.go:124:29: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/module [github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/module.test]
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/module/factory_test.go:13:2: "github.com/domainry/domainry-agent-sdk/lifecycle" imported as agentlifecycle and not used
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/module/factory_test.go:56:15: undefined: NewFactory
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/module/factory_test.go:56:26: undefined: Options
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/module/factory_test.go:107:12: undefined: NewFactory
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/module/factory_test.go:107:23: undefined: Options
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/module/factory_test.go:142:18: undefined: NewFactory
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/module/factory_test.go:142:29: undefined: Options
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/persistence
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/persistence/conversation_execution.go:54:33: undefined: ConversationClaim
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/persistence/conversation_execution.go:55:41: undefined: ConversationClaim
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/persistence/conversation_execution.go:56:34: undefined: ConversationClaim
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/persistence/conversation_execution.go:57:38: undefined: ConversationClaim
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/persistence/conversation_execution.go:58:39: undefined: ConversationClaim
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/persistence/conversation_execution.go:75:47: undefined: ConversationClaim
+docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/persistence/conversation_execution.go:76:47: undefined: ConversationClaim
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application.test]
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application/conversation_personal_tools.go:18:14: undefined: ConversationService
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application/conversation_personal_tools.go:19:14: undefined: ConversationService
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application/conversation_personal_tools.go:20:13: undefined: ConversationKnowledge
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application/conversation_sources.go:28:18: undefined: ConversationService
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application/conversation_sources.go:35:18: undefined: conversationModelSourceRecords
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application/conversation_delivery_task_sources_test.go:15:3: undefined: personalReceiptRepository
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application/conversation_execution_read.go:22:10: undefined: ConversationService
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application/conversation_execution_read.go:40:10: undefined: ConversationService
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application/conversation_execution_read.go:40:209: undefined: conversationCompiledTool
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application/conversation_execution_read.go:86:10: undefined: ConversationService
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application/conversation_execution_read.go:86:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent.test]
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_agreement_store.go:22:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_agreement_store.go:93:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_agreement_store.go:161:59: undefined: ConversationStore
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go:143:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go:209:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go:322:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go:343:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go:407:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go:453:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go:457:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go:457:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web.test]
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web/conversation_task_start_test.go:289:13: undefined: Options
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web/conversation_task_start_test.go:293:15: undefined: Open
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web/conversation_task_start_test.go:302:8: undefined: browser
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web/conversation_task_start_test.go:305:2: undefined: grantPersonalTools
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web/conversation_task_start_test.go:313:3: undefined: mutateTestRolePermissions
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web/conversation_task_start_test.go:379:13: undefined: Options
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web/conversation_task_start_test.go:383:12: undefined: Host
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web/conversation_task_start_test.go:387:15: undefined: Open
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web/conversation_task_start_test.go:402:8: undefined: browser
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web/conversation_task_start_test.go:405:2: undefined: grantPersonalTools
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web/conversation_task_start_test.go:405:2: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider/conversation_execution.go:18:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider/conversation_execution.go:26:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider/conversation_execution.go:30:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider/conversation_execution.go:39:40: undefined: ConversationModelConfig
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider/conversation_execution.go:40:24: undefined: ConversationProtocolChat
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider/conversation_execution.go:40:71: undefined: ConversationProtocolMessages
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider/conversation_execution.go:40:122: undefined: ConversationProtocolResponses
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider/conversation_execution.go:51:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider/conversation_execution.go:93:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider/conversation_execution.go:266:43: undefined: ConversationModel
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider/conversation_execution.go:40:122: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module/conversation_adapter.go:62:4: undefined: writeCode
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module/conversation_adapter.go:71:6: undefined: writeCode
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module/conversation_adapter.go:104:5: undefined: writeCode
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module/conversation_adapter.go:110:6: undefined: writeCode
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module/conversation_adapter.go:142:4: undefined: writeCode
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module/conversation_adapter.go:153:6: undefined: writeCode
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module/conversation_adapter.go:159:5: undefined: writeCode
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module/conversation_adapter.go:163:5: undefined: writeCode
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module/conversation_adapter.go:168:5: undefined: writeCode
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module/conversation_adapter.go:249:5: undefined: writeCode
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module/conversation_adapter.go:249:5: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote.test]
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote/conversation_tasks_test.go:14:2: undefined: releasedResultService
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote/conversation_tasks_test.go:21:4: s.calls undefined (type *remoteConversationTaskService has no field or method calls)
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote/conversation_tasks.go:9:10: undefined: conversationClient
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote/conversation_tasks.go:15:10: undefined: conversationClient
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote/conversation_tasks.go:21:10: undefined: conversationClient
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote/conversation_tasks.go:27:10: undefined: conversationClient
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote/conversation_tasks.go:33:10: undefined: conversationClient
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote/conversation_tasks.go:39:39: undefined: conversationClient
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote/conversation_tasks.go:40:46: undefined: conversationClient
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote/conversation_tasks.go:41:48: undefined: conversationClient
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote/conversation_tasks_test.go:21:4: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module.test]
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module/conversation_assembly.go:14:10: undefined: binding
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module/conversation_assembly.go:34:56: undefined: binding
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module/conversation_assembly.go:40:22: undefined: ConversationOptions
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module/conversation_assembly.go:45:10: undefined: binding
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module/factory_test.go:56:15: undefined: NewFactory
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module/factory_test.go:56:26: undefined: Options
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module/factory_test.go:107:12: undefined: NewFactory
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module/factory_test.go:107:23: undefined: Options
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module/factory_test.go:142:18: undefined: NewFactory
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module/factory_test.go:142:29: undefined: Options
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module/factory_test.go:142:29: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/server
+docs/evidence/2026-09-15-e01-persistent-goals/source/agent/server/authorization_actions.go:112:44: undefined: conversationSaaSActionPrefix
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/businessrpc
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/businessrpc/protocol.go:73:50: undefined: sharedReadInput
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/businessrpc/protocol.go:74:48: undefined: sharedReadInput
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/businessrpc/protocol.go:75:49: undefined: sharedReadInput
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/businessrpc/protocol.go:76:50: undefined: sharedReadInput
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/businessrpc/protocol.go:77:51: undefined: sharedReadInput
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/sdk [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/sdk.test]
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/conversation.go:35:20: undefined: ConversationPeerEvent
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/conversation.go:36:21: undefined: ConversationCitation
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/conversation.go:50:22: undefined: ConversationAgentSnapshot
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/conversation.go:64:19: undefined: ConversationStepView
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/conversation.go:65:18: undefined: ConversationInteraction
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/conversation.go:150:18: undefined: ConversationSources
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/conversation_task.go:401:21: undefined: ConversationDelegationHandoff
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/conversation_task.go:402:21: undefined: ConversationRunReference
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/conversation_task.go:403:22: undefined: ConversationTaskDependency
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/conversation_task.go:405:20: undefined: ConversationAgentRequirements
+docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/conversation.go:150:18: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application.test]
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application/conversation_plan_sources_test.go:14:3: undefined: personalReceiptRepository
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application/conversation_collaboration_authorization.go:13:10: undefined: ConversationService
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application/conversation_collaboration_authorization.go:17:10: undefined: ConversationService
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application/conversation_collaboration_authorization.go:102:10: undefined: ConversationService
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application/conversation_collaboration_authorization.go:127:14: undefined: conversationSourceAudit
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application/conversation_collaboration_authorization.go:202:10: undefined: ConversationService
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application/conversation_collaboration_authorization.go:233:10: undefined: ConversationService
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application/conversation_collaboration_authorization.go:250:10: undefined: ConversationService
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application/conversation_collaboration_authorization.go:296:14: undefined: conversationSourceAudit
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application/conversation_collaboration_authorization.go:307:14: undefined: conversationSourceAudit
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application/conversation_collaboration_authorization.go:307:14: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/capability [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/capability.test]
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/capability/binding_test.go:15:18: undefined: NewBinding
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/capability/binding_test.go:58:97: undefined: AuthoringCategory
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/capability/binding_test.go:70:18: undefined: NewBinding
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/capability/binding_test.go:74:59: undefined: AuthoringCategory
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/capability/binding_test.go:139:21: undefined: AuthoringCategory
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/capability/binding_test.go:151:18: undefined: NewBinding
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/capability/binding_test.go:155:59: undefined: ToolGatewayCategory
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/capability/binding_test.go:174:18: undefined: NewBinding
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/capability/binding_test.go:178:59: undefined: DialogCategory
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web.test]
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web/conversation_source_release_test.go:22:39: undefined: peerWebModel
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web/schedule_tools.go:12:44: undefined: Options
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web/schedule_tools.go:38:10: undefined: Host
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web/schedule_tools.go:38:43: undefined: Options
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web/schedule_tools.go:74:10: undefined: Host
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web/conversation_delegation_execution_test.go:368:59: undefined: Host
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web/conversation_delegation_execution_test.go:368:73: undefined: Options
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web/conversation_delegation_execution_test.go:373:50: undefined: Host
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web/conversation_delegation_execution_test.go:373:64: undefined: Options
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web/conversation_tools_browser_test.go:19:54: undefined: Host
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web/conversation_tools_browser_test.go:19:54: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent.test]
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent/lifecycle_store.go:17:36: undefined: Store
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent/subject_lifecycle.go:19:13: undefined: Store
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent/conversation_plan_store.go:137:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent/conversation_plan_store.go:142:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent/conversation_plan_store.go:142:82: undefined: conversationDB
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent/conversation_plan_store.go:163:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent/conversation_plan_store.go:163:91: undefined: conversationDB
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent/conversation_plan_store.go:192:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent/conversation_plan_store.go:205:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent/conversation_plan_store.go:286:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent/conversation_plan_store.go:286:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module/conversation_adapter.go:62:4: undefined: writeCode
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module/conversation_adapter.go:71:6: undefined: writeCode
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module/conversation_adapter.go:104:5: undefined: writeCode
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module/conversation_adapter.go:110:6: undefined: writeCode
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module/conversation_adapter.go:143:4: undefined: writeCode
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module/conversation_adapter.go:154:6: undefined: writeCode
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module/conversation_adapter.go:160:5: undefined: writeCode
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module/conversation_adapter.go:164:5: undefined: writeCode
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module/conversation_adapter.go:169:5: undefined: writeCode
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module/conversation_adapter.go:250:5: undefined: writeCode
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module/conversation_adapter.go:250:5: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote/conversation_tasks.go:9:10: undefined: conversationClient
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote/conversation_tasks.go:15:10: undefined: conversationClient
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote/conversation_tasks.go:21:10: undefined: conversationClient
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote/conversation_tasks.go:27:10: undefined: conversationClient
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote/conversation_tasks.go:33:10: undefined: conversationClient
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote/conversation_tasks.go:39:10: undefined: conversationClient
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote/conversation_tasks.go:45:39: undefined: conversationClient
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote/conversation_tasks.go:46:46: undefined: conversationClient
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote/conversation_tasks.go:47:48: undefined: conversationClient
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote/conversation_tasks.go:48:43: undefined: conversationClient
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote/conversation_tasks.go:48:43: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module.test]
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module/conversation_assembly.go:14:10: undefined: binding
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module/conversation_assembly.go:34:56: undefined: binding
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module/conversation_assembly.go:40:22: undefined: ConversationOptions
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module/conversation_assembly.go:45:10: undefined: binding
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module/factory_test.go:56:15: undefined: NewFactory
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module/factory_test.go:56:26: undefined: Options
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module/factory_test.go:107:12: undefined: NewFactory
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module/factory_test.go:107:23: undefined: Options
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module/factory_test.go:142:18: undefined: NewFactory
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module/factory_test.go:142:29: undefined: Options
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module/factory_test.go:142:29: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server.test]
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server/authorization_actions.go:112:44: undefined: conversationSaaSActionPrefix
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server/server_test.go:94:21: undefined: conversationSaaSActionPrefix
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server/server_test.go:111:18: undefined: New
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server/server_test.go:111:22: undefined: Config
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server/server_test.go:127:18: undefined: New
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server/server_test.go:127:22: undefined: Config
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server/server_test.go:158:18: undefined: New
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server/server_test.go:158:22: undefined: Config
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server/server_test.go:173:5: undefined: agentExecutionRepositoriesReady
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server/server_test.go:176:6: undefined: agentExecutionRepositoriesReady
+docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server/server_test.go:176:6: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/businessrpc
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/businessrpc/protocol.go:73:50: undefined: sharedReadInput
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/businessrpc/protocol.go:74:48: undefined: sharedReadInput
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/businessrpc/protocol.go:75:49: undefined: sharedReadInput
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/businessrpc/protocol.go:76:50: undefined: sharedReadInput
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/businessrpc/protocol.go:77:51: undefined: sharedReadInput
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk.test]
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/conversation.go:35:20: undefined: ConversationPeerEvent
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/conversation.go:36:21: undefined: ConversationCitation
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/conversation.go:50:22: undefined: ConversationAgentSnapshot
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/conversation.go:64:19: undefined: ConversationStepView
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/conversation.go:65:18: undefined: ConversationInteraction
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/conversation.go:150:18: undefined: ConversationSources
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/conversation_task.go:409:21: undefined: ConversationDelegationHandoff
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/conversation_task.go:410:21: undefined: ConversationRunReference
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/conversation_task.go:411:22: undefined: ConversationTaskDependency
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/conversation_task.go:413:20: undefined: ConversationAgentRequirements
+docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/conversation.go:150:18: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/execution [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/execution.test]
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/execution/verification.go:43:17: undefined: CompileSchema
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/execution/verification.go:107:18: undefined: CompileSchema
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/execution/verification.go:108:24: undefined: ValidateJSON
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/execution/verification_test.go:105:15: undefined: DependencyProjection
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application/conversation_sources.go:28:18: undefined: ConversationService
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application/conversation_sources.go:35:18: undefined: conversationModelSourceRecords
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application/conversation_sources.go:38:10: undefined: ConversationService
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application/conversation_sources.go:884:10: undefined: ConversationService
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application/conversation_sources.go:888:10: undefined: ConversationService
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application/conversation_sources.go:898:10: undefined: ConversationService
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application/conversation_task_completion.go:13:10: undefined: ConversationService
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application/conversation_task_completion.go:74:10: undefined: ConversationService
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application/conversation_task_completion.go:78:10: undefined: ConversationService
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application/conversation_task_completion.go:107:10: undefined: ConversationService
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application/conversation_task_completion.go:107:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent.test]
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store.go:43:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store.go:43:76: undefined: conversationDB
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store.go:93:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store.go:98:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store.go:159:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store.go:240:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store.go:280:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store.go:280:97: undefined: conversationDB
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store.go:309:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store.go:325:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store.go:325:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web.test]
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web/conversation_task_start_test.go:365:13: undefined: Options
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web/conversation_task_start_test.go:369:15: undefined: Open
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web/conversation_task_start_test.go:378:8: undefined: browser
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web/conversation_task_start_test.go:381:2: undefined: grantPersonalTools
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web/conversation_task_start_test.go:552:2: undefined: servePersonalToolAcceptance
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web/conversation_task_start_test.go:568:13: undefined: Options
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web/conversation_task_start_test.go:572:15: undefined: Open
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web/conversation_task_start_test.go:581:8: undefined: browser
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web/conversation_task_start_test.go:584:2: undefined: grantPersonalTools
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web/conversation_task_start_test.go:592:3: undefined: mutateTestRolePermissions
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web/conversation_task_start_test.go:592:3: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module/conversation_adapter.go:62:4: undefined: writeCode
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module/conversation_adapter.go:71:6: undefined: writeCode
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module/conversation_adapter.go:104:5: undefined: writeCode
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module/conversation_adapter.go:110:6: undefined: writeCode
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module/conversation_adapter.go:144:4: undefined: writeCode
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module/conversation_adapter.go:155:6: undefined: writeCode
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module/conversation_adapter.go:161:5: undefined: writeCode
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module/conversation_adapter.go:165:5: undefined: writeCode
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module/conversation_adapter.go:170:5: undefined: writeCode
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module/conversation_adapter.go:253:5: undefined: writeCode
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module/conversation_adapter.go:253:5: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote/conversation_tasks.go:9:10: undefined: conversationClient
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote/conversation_tasks.go:15:10: undefined: conversationClient
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote/conversation_tasks.go:21:10: undefined: conversationClient
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote/conversation_tasks.go:27:10: undefined: conversationClient
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote/conversation_tasks.go:33:10: undefined: conversationClient
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote/conversation_tasks.go:39:10: undefined: conversationClient
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote/conversation_tasks.go:45:10: undefined: conversationClient
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote/conversation_tasks.go:51:10: undefined: conversationClient
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote/conversation_tasks.go:57:39: undefined: conversationClient
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote/conversation_tasks.go:58:46: undefined: conversationClient
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote/conversation_tasks.go:58:46: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/module
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/module/conversation_assembly.go:14:10: undefined: binding
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/module/conversation_assembly.go:34:56: undefined: binding
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/module/conversation_assembly.go:40:22: undefined: ConversationOptions
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/module/conversation_assembly.go:45:10: undefined: binding
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/server
+docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/server/authorization_actions.go:112:44: undefined: conversationSaaSActionPrefix
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk.test]
+docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk/conversation_http.go:233:23: undefined: ConversationContractPublicationRequest
+docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk/conversation_http.go:234:23: undefined: ConversationDeliveryPublicationRequest
+docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk/conversation_http.go:237:23: undefined: ConversationAgentMatchRequest
+docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk/conversation_http.go:239:23: undefined: ConversationAgentWrite
+docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk/conversation_http.go:241:23: undefined: ConversationDelegationCreate
+docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk/conversation_http.go:242:23: undefined: ConversationDelegationUpdate
+docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk/conversation_http.go:243:23: undefined: ConversationAgentMessageSend
+docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk/conversation_http.go:245:23: undefined: ConversationResultRead
+docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk/conversation_task.go:81:12: undefined: ConversationTaskBrief
+docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk/conversation_task.go:214:18: undefined: ConversationAuthority
+docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk/conversation_http.go:245:23: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application.test]
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application/conversation_service.go:48:63: undefined: LibraryKnowledgeBinding
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application/conversation_service.go:62:61: undefined: ConversationKnowledge
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application/conversation_context.go:37:42: s.conversationRunLimits undefined (type *ConversationService has no field or method conversationRunLimits)
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application/conversation_context.go:42:17: s.conversationKnowledgeContext undefined (type *ConversationService has no field or method conversationKnowledgeContext)
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application/conversation_context.go:52:20: s.conversationProfile undefined (type *ConversationService has no field or method conversationProfile)
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application/conversation_context.go:62:28: s.executionCatalogForRun undefined (type *ConversationService has no field or method executionCatalogForRun)
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application/conversation_context.go:69:24: undefined: conversationCitationInstruction
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application/conversation_context.go:77:20: s.recentConversationExecutionLinks undefined (type *ConversationService has no field or method recentConversationExecutionLinks)
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application/conversation_context.go:83:21: s.conversationStepInputBytes undefined (type *ConversationService has no field or method conversationStepInputBytes)
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application/conversation_context.go:83:200: s.conversationModel undefined (type *ConversationService has no field or method conversationModel)
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application/conversation_context.go:83:200: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/assembly/web [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/assembly/web.test]
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/assembly/web/conversation_parallel_tools_browser_test.go:39:13: undefined: Options
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/assembly/web/conversation_parallel_tools_browser_test.go:53:15: undefined: Open
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/assembly/web/conversation_parallel_tools_browser_test.go:72:12: undefined: browser
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/assembly/web/conversation_parallel_tools_test.go:143:15: undefined: Options
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/assembly/web/conversation_parallel_tools_test.go:144:17: undefined: Open
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/assembly/web/conversation_parallel_tools_test.go:153:16: undefined: browser
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent.test]
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:21:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:21:67: undefined: conversationDB
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:37:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:58:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:58:81: undefined: conversationRunRow
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:67:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:178:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:222:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:222:71: undefined: conversationDB
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:233:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:233:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider/conversation_execution.go:18:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider/conversation_execution.go:26:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider/conversation_execution.go:30:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider/conversation_execution.go:39:40: undefined: ConversationModelConfig
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider/conversation_execution.go:40:24: undefined: ConversationProtocolChat
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider/conversation_execution.go:40:71: undefined: ConversationProtocolMessages
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider/conversation_execution.go:40:122: undefined: ConversationProtocolResponses
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider/conversation_execution.go:51:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider/conversation_execution.go:93:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider/conversation_execution.go:266:43: undefined: ConversationModel
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider/conversation_execution.go:40:122: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk.test]
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/conversation.go:35:20: undefined: ConversationPeerEvent
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/conversation.go:36:21: undefined: ConversationCitation
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/conversation.go:50:22: undefined: ConversationAgentSnapshot
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/conversation.go:65:18: undefined: ConversationInteraction
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/conversation.go:68:18: undefined: ConversationTaskExecution
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/conversation.go:153:18: undefined: ConversationSources
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/conversation.go:200:19: undefined: ConversationAgentSnapshot
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/conversation_execution.go:26:24: undefined: ConversationResultReference
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/conversation_execution.go:30:25: undefined: ConversationCitation
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/conversation_execution.go:39:24: undefined: ConversationResultReference
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/conversation.go:200:19: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc.test]
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc/businessrpc_test.go:19:17: undefined: Scope
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc/businessrpc_test.go:131:87: undefined: Client
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc/businessrpc_test.go:133:18: undefined: NewHandler
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc/businessrpc_test.go:133:29: undefined: ServerOptions
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc/businessrpc_test.go:142:12: undefined: Open
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc/businessrpc_test.go:142:30: undefined: ClientOptions
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc/businessrpc_test.go:142:161: undefined: ContractSHA256
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc/businessrpc_test.go:222:10: undefined: definition
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc/businessrpc_test.go:227:20: undefined: methods
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc/businessrpc_test.go:229:66: undefined: reportOperation
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc/businessrpc_test.go:229:66: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/module [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/module.test]
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/module/factory.go:40:59: undefined: KnowledgeDatasourceConfig
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/module/factory.go:42:59: undefined: KnowledgeLibraryConfig
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/module/factory.go:194:12: undefined: assembleLibraryKnowledge
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/module/factory.go:197:12: undefined: assembleKnowledgeDatasources
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/module/factory.go:200:12: undefined: assembleAttachmentKnowledge
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/module/factory.go:211:15: undefined: conversationAssembly
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/module/factory.go:214:27: binding.openConversations undefined (type *binding has no field or method openConversations)
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/module/factory.go:248:24: undefined: conversationAssembly
+docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/module/factory.go:307:15: b.openConversations undefined (type *binding has no field or method openConversations)
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk.test]
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/conversation_agent_discovery.go:33:13: undefined: ConversationRunReference
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/conversation_task.go:116:12: undefined: ConversationTaskBrief
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/conversation_task.go:139:19: undefined: ConversationTaskBrief
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/conversation_task.go:175:13: undefined: ConversationAuthority
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/conversation_task.go:194:27: undefined: ConversationDelegationHandoff
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/conversation_task.go:195:27: undefined: ConversationStructuredInput
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/conversation_task.go:196:27: undefined: ConversationRunReference
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/conversation_task.go:198:28: undefined: ConversationTaskDependency
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/conversation_task.go:201:27: undefined: ConversationTaskBrief
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/conversation_task.go:203:27: undefined: ConversationPlan
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/conversation_task.go:203:27: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application.test]
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application/conversation_collaboration_tools.go:14:11: undefined: ConversationService
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application/conversation_personal_tools.go:18:14: undefined: ConversationService
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application/conversation_personal_tools.go:19:14: undefined: ConversationService
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application/conversation_personal_tools.go:20:13: undefined: ConversationKnowledge
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application/conversation_agent_discovery_test.go:47:2: undefined: privatePeerSources
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application/conversation_agent_discovery.go:53:10: undefined: ConversationService
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application/conversation_agent_discovery.go:71:10: undefined: ConversationService
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application/conversation_agent_discovery.go:254:10: undefined: ConversationService
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application/conversation_agent_discovery.go:390:10: undefined: ConversationService
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application/conversation_delivery_task_sources.go:50:14: undefined: conversationSourceAudit
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application/conversation_delivery_task_sources.go:50:14: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web.test]
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web/conversation_collaboration_test.go:33:31: undefined: peerDisagreementWire
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web/conversation_collaboration_test.go:54:26: m.resolveFixtureDisagreementStep undefined (type *peerReviewIssuerModel has no field or method resolveFixtureDisagreementStep)
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web/conversation_collaboration_test.go:299:13: undefined: Options
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web/conversation_collaboration_test.go:300:15: undefined: Open
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web/conversation_collaboration_test.go:316:8: undefined: browser
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web/conversation_collaboration_test.go:319:2: undefined: grantPersonalTools
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web/conversation_collaboration_test.go:320:2: undefined: grantCollaborationPermissions
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web/conversation_collaboration_test.go:497:25: undefined: verifyPeerDisagreementAgent
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web/conversation_collaboration_test.go:572:14: undefined: Open
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web/conversation_collaboration_test.go:676:47: undefined: browser
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web/conversation_collaboration_test.go:572:14: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent.test]
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent/conversation_agent_discovery_store.go:15:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent/conversation_agent_discovery_store.go:37:59: undefined: ConversationStore
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent/conversation_agent_discovery_store.go:39:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent/conversation_agent_discovery_store.go:193:60: undefined: ConversationStore
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent/conversation_work_budget_store.go:59:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent/conversation_work_budget_store.go:59:80: undefined: conversationDB
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent/conversation_work_budget_store.go:85:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent/conversation_work_budget_store.go:95:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent/conversation_work_budget_store.go:95:85: undefined: conversationDB
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent/conversation_work_budget_store.go:105:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent/conversation_work_budget_store.go:105:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/persistence
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/persistence/conversation_collaboration.go:86:53: undefined: ConversationClaim
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/persistence/conversation_execution.go:54:33: undefined: ConversationClaim
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/persistence/conversation_execution.go:55:41: undefined: ConversationClaim
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/persistence/conversation_execution.go:56:34: undefined: ConversationClaim
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/persistence/conversation_execution.go:57:38: undefined: ConversationClaim
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/persistence/conversation_execution.go:58:39: undefined: ConversationClaim
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/persistence/conversation_execution.go:75:47: undefined: ConversationClaim
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/persistence/conversation_execution.go:76:47: undefined: ConversationClaim
+docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/persistence/conversation_execution.go:85:45: undefined: ConversationClaim
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration_test [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration.test]
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration/conversation_result_integration_test.go:59:91: undefined: conversationAuthority
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration/conversation_result_integration_test.go:81:10: undefined: conversationRepository
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration/conversation_result_integration_test.go:83:12: undefined: executionModel
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration/conversation_result_integration_test.go:127:61: undefined: conversationAuthority
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration/conversation_result_integration_test.go:161:63: undefined: conversationAuthority
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration/conversation_result_integration_test.go:166:90: undefined: conversationAuthority
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration/conversation_result_integration_test.go:170:185: undefined: conversationAuthority
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration/conversation_result_integration_test.go:174:16: undefined: waitConversation
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration/conversation_result_integration_test.go:178:62: undefined: conversationAuthority
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration/conversation_result_integration_test.go:426:3: undefined: executionModel
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration/conversation_result_integration_test.go:178:62: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider.test]
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider/conversation_execution.go:18:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider/conversation_execution.go:26:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider/conversation_execution.go:30:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider/conversation_execution.go:39:40: undefined: ConversationModelConfig
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider/conversation_execution.go:40:24: undefined: ConversationProtocolChat
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider/conversation_execution.go:40:71: undefined: ConversationProtocolMessages
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider/conversation_execution.go:51:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider/conversation_execution.go:93:10: undefined: ConversationModel
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider/conversation_execution.go:266:43: undefined: ConversationModel
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider/conversation_execution_test.go:19:30: undefined: ConversationModel
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider/conversation_execution.go:40:71: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web.test]
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web/conversation_context_browser_test.go:191:13: undefined: Options
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web/conversation_context_browser_test.go:195:15: undefined: Open
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web/conversation_context_browser_test.go:209:8: undefined: browser
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web/conversation_result_test.go:82:13: undefined: Options
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web/conversation_result_test.go:83:15: undefined: Open
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web/conversation_result_test.go:92:8: undefined: browser
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web/conversation_result_test.go:95:2: undefined: grantPersonalTools
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web/conversation_result_test.go:158:2: undefined: grantPersonalTools
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web/conversation_task_start_test.go:365:13: undefined: Options
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web/conversation_task_start_test.go:369:15: undefined: Open
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web/conversation_task_start_test.go:369:15: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application.test]
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application/conversation_service.go:48:63: undefined: LibraryKnowledgeBinding
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application/conversation_service.go:62:61: undefined: ConversationKnowledge
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application/conversation_sources.go:35:18: undefined: conversationModelSourceRecords
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application/conversation_context.go:37:42: s.conversationRunLimits undefined (type *ConversationService has no field or method conversationRunLimits)
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application/conversation_context.go:42:17: s.conversationKnowledgeContext undefined (type *ConversationService has no field or method conversationKnowledgeContext)
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application/conversation_context.go:52:20: s.conversationProfile undefined (type *ConversationService has no field or method conversationProfile)
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application/conversation_context.go:76:28: s.executionCatalogForRun undefined (type *ConversationService has no field or method executionCatalogForRun)
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application/conversation_context.go:83:24: undefined: conversationCitationInstruction
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application/conversation_context.go:91:20: s.recentConversationExecutionLinks undefined (type *ConversationService has no field or method recentConversationExecutionLinks)
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application/conversation_context.go:97:200: s.conversationModel undefined (type *ConversationService has no field or method conversationModel)
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application/conversation_context.go:97:200: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent [github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent.test]
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:75:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:75:67: undefined: conversationDB
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:91:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:112:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:112:81: undefined: conversationRunRow
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:121:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:233:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:277:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:277:71: undefined: conversationDB
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:288:10: undefined: ConversationStore
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go:288:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/sdk
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/conversation.go:35:20: undefined: ConversationPeerEvent
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/conversation.go:36:21: undefined: ConversationCitation
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/conversation.go:50:22: undefined: ConversationAgentSnapshot
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/conversation.go:65:18: undefined: ConversationInteraction
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/conversation.go:68:18: undefined: ConversationTaskExecution
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/conversation.go:163:18: undefined: ConversationSources
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/conversation.go:210:19: undefined: ConversationAgentSnapshot
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/conversation.go:308:18: undefined: ConversationSources
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/conversation_execution.go:30:25: undefined: ConversationCitation
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/conversation_context.go:79:19: undefined: ConversationRunReference
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/conversation_context.go:79:19: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/sdk/persistence
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/persistence/conversation_execution.go:54:33: undefined: ConversationClaim
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/persistence/conversation_execution.go:55:41: undefined: ConversationClaim
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/persistence/conversation_execution.go:56:34: undefined: ConversationClaim
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/persistence/conversation_execution.go:57:38: undefined: ConversationClaim
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/persistence/conversation_execution.go:58:39: undefined: ConversationClaim
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/persistence/conversation_execution.go:75:47: undefined: ConversationClaim
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/persistence/conversation_execution.go:76:47: undefined: ConversationClaim
+docs/evidence/2026-09-15-e06-long-context-management/source/sdk/persistence/conversation_execution.go:85:45: undefined: ConversationClaim
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/module
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/module/factory.go:40:59: undefined: KnowledgeDatasourceConfig
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/module/factory.go:42:59: undefined: KnowledgeLibraryConfig
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/module/factory.go:194:12: undefined: assembleLibraryKnowledge
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/module/factory.go:197:12: undefined: assembleKnowledgeDatasources
+docs/evidence/2026-09-15-e06-long-context-management/source/agent/module/factory.go:200:12: undefined: assembleAttachmentKnowledge
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	2.062s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-playground	[no test files]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/definition	(cached)
+?   	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-context-meter	[no test files]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/agent/internal/application [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/after/runtime/runtime/bootstrap/integrationtest [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/agent/internal/application [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-schema-and-receipt-cache/before/runtime/runtime/bootstrap/integrationtest [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/application [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/assembly/web [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/internal/infrastructure/persistence/database/agent [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/agent/module [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c07-collaboration-recovery/source/sdk/persistence [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/application [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/assembly/web [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/persistence/database/agent [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/infrastructure/provider [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/internal/transport/http/module [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/module [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/remote [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/agent/server [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/sdk [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/businessrpc [build failed]
+?   	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/modulehost	[no test files]
+?   	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e01-persistent-goals/source/sdk/persistence	[no test files]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/application [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/assembly/web [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/capability [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/infrastructure/persistence/database/agent [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/internal/transport/http/module [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/module [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/remote [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/agent/server [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/businessrpc [build failed]
+?   	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/modulehost	[no test files]
+?   	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e02-dynamic-plans/source/sdk/persistence	[no test files]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/application [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/assembly/web [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/execution [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/infrastructure/persistence/database/agent [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/internal/transport/http/module [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/module [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/remote [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/agent/server [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk [build failed]
+?   	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e03-completion-acceptance/source/sdk/persistence	[no test files]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/application [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/assembly/web [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/persistence/database/agent [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/internal/infrastructure/provider [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/agent/module [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/sdk/businessrpc [build failed]
+?   	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/tools/internal/adapter/calendartools	[no test files]
+?   	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/tools/internal/adapter/mailtools	[no test files]
+?   	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/tools/internal/adapter/webtools	[no test files]
+ok  	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/tools/internal/application/tool	(cached)
+?   	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e04-controlled-tool-parallelism/source/tools-sdk	[no test files]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/application [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/assembly/web [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/agent/internal/infrastructure/persistence/database/agent [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e05-budget-progress-diagnostics/source/sdk/persistence [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/integration [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/application [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/assembly/web [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/persistence/database/agent [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/internal/infrastructure/provider [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/agent/module [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/sdk [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-15-e06-long-context-management/source/sdk/persistence [build failed]

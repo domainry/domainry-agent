@@ -13,11 +13,19 @@ import (
 type deliveryBusinessSource struct {
 	sdk.ConversationBusinessSource
 	a                   sdk.ConversationAuthority
+	producer            sdk.ConversationAuthority
 	e                   sdk.ConversationBusinessEvidence
 	denied, unsupported bool
 	reads               int
 	identity            string
 	afterRead           func()
+}
+
+func (s *deliveryBusinessSource) AuthorizeSharedBusinessResultRead(ctx context.Context, e sdk.ConversationBusinessEvidence, reader, producer sdk.ConversationAuthority) error {
+	if producer != s.producer {
+		return conversationFailure("forbidden", "business_access_denied")
+	}
+	return s.AuthorizeBusinessResultRead(ctx, e, reader)
 }
 
 func (s *deliveryBusinessSource) BusinessSourceIdentity() string {
@@ -94,6 +102,48 @@ func TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence(t *testing.T)
 			source.unsupported = true
 			if _, err := s.sourceAudit(a).record(ctx, owner, record); err == nil {
 				t.Fatal("unsupported owner bypassed original execution grants")
+			}
+		})
+	}
+}
+
+func TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader(t *testing.T) {
+	for _, key := range []string{"business_catalog", "query_records", "get_record", "query_related_records", "workflow_get", "invoke_action", "workflow_start"} {
+		t.Run(key, func(t *testing.T) {
+			reader := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "reader", RoleKey: "read-role"}
+			producer := reader
+			producer.UserID, producer.RoleKey = "producer", "professional-role"
+			source := &deliveryBusinessSource{a: reader, producer: producer}
+			source.e = sdk.ConversationBusinessEvidence{Version: 1, Operation: key, Source: source.BusinessSourceIdentity(), ScopeSHA256: businessEvidenceScope(source.BusinessSourceIdentity(), producer), Input: json.RawMessage(`{"object_key":"customer"}`), Data: json.RawMessage(`{"amount":9007199254740993}`), HostProof: "exact-original-owner-proof"}
+			definition, _ := businessTool(key)
+			raw, _ := json.Marshal(source.e)
+			record := persistence.ConversationToolExecution{State: "completed", Definition: definition, Call: sdk.ConversationToolCall{ID: "original-call", Name: key, Arguments: string(source.e.Input)}, Result: &sdk.ConversationToolResult{Status: "completed", Content: raw}}
+			s := &ConversationService{runtimeID: "runtime", repo: privatePeerSources{}, options: ConversationOptions{Business: source, CollaborationAuthorizer: fixedCollaborationTestPolicy{"view", "delivery_read"}}}
+			audit := s.sourceAudit(reader)
+			audit.evidenceOwner = &producer
+			owner := sdk.ConversationRunReference{ConversationID: "producer-conversation", RunID: "original-run"}
+			ctx := deliverySourceContext(t.Context(), "released")
+			handled, err := audit.deliveryBusinessToolResult(ctx, owner, record)
+			if !handled || err != nil || source.reads != 1 {
+				t.Fatal("released producer evidence rejected before actual reader policy", handled, err, source.reads)
+			}
+			source.denied = true
+			if handled, err := audit.deliveryBusinessToolResult(ctx, owner, record); !handled || err == nil {
+				t.Fatal("current reader denial fell back to execution", handled, err)
+			}
+			source.denied = false
+			wrong := producer
+			wrong.RoleKey = "unpublished-role"
+			audit.evidenceOwner = &wrong
+			if _, err := audit.deliveryBusinessToolResult(ctx, owner, record); err == nil {
+				t.Fatal("producer role replaced")
+			}
+			audit.evidenceOwner = &producer
+			copy := *record.Result
+			copy.Content = json.RawMessage(strings.Replace(string(raw), "9007199254740993", "9007199254740992", 1))
+			record.Result = &copy
+			if _, err := audit.deliveryBusinessToolResult(ctx, owner, record); err == nil {
+				t.Fatal("original bytes replaced")
 			}
 		})
 	}

@@ -1,0 +1,13 @@
+Runtime (GOWORK=/tmp/runtime-work/go.work):
+go test ./runtime/application/agenthost ./runtime/bootstrap/transport -count=1
+go test -race ./runtime/application/agenthost -run '^TestSharedBusiness' -count=1 -v
+go test ./runtime/bootstrap/integrationtest -run '^TestCrossUserBusiness(AgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance|OriginalReceiptsThroughRealOwnerRPCAndRestart)$' -count=1 -v
+go test -race ./runtime/bootstrap/integrationtest -run '^TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$' -timeout=20m -count=1 -v
+go test -race ./runtime/bootstrap/integrationtest -run '^TestCrossUser(Unmanaged|Legacy)KnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$' -timeout=20m -count=1 -v
+
+The intermediate three-root business log was compiled before native exclusion coverage was added; the current two-root command validates the final scope source and its launch hashes.
+The managed Knowledge race used the earlier phase sources recorded in historical-managed-race-launch.json; it does not establish a race acceptance for the new business scope implementation.
+The other Knowledge race was compiled before native business scope changes; its Knowledge fixture and Knowledge production sources remain unchanged. It does not establish a race acceptance for the new business scope implementation.
+The final direct AgentHost race covers the new scope production logic and all four ORM exclusion combinations.
+Only the Go test observation timeout changed after confirmed terminal default-timeout runs. All actual tasks remain 12 steps / 12 calls / 8192 bytes / 90 seconds.
+The published Runtime module-set lock remains unchanged; the full bootstrap package is not accepted.

@@ -79,7 +79,7 @@ export function InteractionCard({ interaction, onRun, onRefresh }: { interaction
       : interaction.tool.startsWith("schedule_")
       ? <ScheduleOperationPreview tool={interaction.tool} argumentsText={interaction.arguments} onReady={setPreviewReady} />
       : ["memory_save", "memory_forget"].includes(interaction.tool)
-      ? <MemoryOperationPreview tool={interaction.tool} argumentsText={interaction.arguments} />
+      ? <MemoryOperationPreview tool={interaction.tool} argumentsText={interaction.arguments} onReady={setPreviewReady} />
       : interaction.tool === "invoke_action"
       ? <BusinessOperationPreview argumentsText={interaction.arguments} onReady={setPreviewReady} />
       : interaction.tool === "workflow_start"

@@ -1,0 +1,50 @@
+{
+  "phase_status": "accepted_participant_dependencies_cross_owner_invalidation_and_upstream_publication_preservation",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 205,
+  "source_manifest": "source-sha256.json",
+  "artifact_files": 15,
+  "artifact_manifest": "artifact-sha256.json",
+  "accepted_logs": [
+    "core.log",
+    "race.log",
+    "republication-race.log",
+    "http.log",
+    "browser-http.log",
+    "frontend.log",
+    "build.log",
+    "focused.log"
+  ],
+  "real_identity": true,
+  "real_http": true,
+  "real_tool_execution": true,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "new_runtime_acceptance": false,
+  "real_chrome": true,
+  "screenshots_visually_inspected": 6,
+  "frontend_tests_passed": 79,
+  "scope": [
+    "exact upstream current view distinct from downstream manage",
+    "manager and receiving audience checked separately in admission transaction",
+    "original agreement version field projection digest and source references",
+    "upstream publisher original provider and actual reader role checks",
+    "exact upstream publication purpose and audience retained",
+    "cross owner transitive invalidation original workers and notifications",
+    "same opaque goal in another workspace remains independent",
+    "participant dependency projection and withdrawal hiding",
+    "actual Chrome request preserves dependency version and goal field",
+    "three account delivery acceptance restart and zero tool ledger after upstream withdrawal"
+  ],
+  "remaining": [
+    "multi owner mixed professional dependency sources and remaining dependency management scenarios",
+    "other professional cross subject sources and automatic delivery",
+    "full legacy admission and historical sharing",
+    "multi owner old role first publication and mixed roots",
+    "remaining execution source policies",
+    "broader Identity subject exit integration",
+    "remaining C05 and all subsequent TODO items"
+  ]
+}

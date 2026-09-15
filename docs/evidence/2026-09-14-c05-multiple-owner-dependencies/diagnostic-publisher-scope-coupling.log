@@ -1,0 +1,12 @@
+=== RUN   TestMultipleDependencyOwnersKeepIndependentOriginalPublishersAndRecipientScopes
+    conversation_dependency_sources_test.go:183: independent dependency page used the other owner's withdrawn role owner-a-publisher agent.conversation.collaboration_access_denied
+--- FAIL: TestMultipleDependencyOwnersKeepIndependentOriginalPublishersAndRecipientScopes (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	1.096s
+=== RUN   TestCrossOwnerContractRepublicationKeepsUpstreamPublisherAndRecipientAudience
+--- PASS: TestCrossOwnerContractRepublicationKeepsUpstreamPublisherAndRecipientAudience (0.02s)
+=== RUN   TestCrossOwnerDependencyChangeStopsTransitiveOriginalWorkersAndPreservesRealm
+--- PASS: TestCrossOwnerDependencyChangeStopsTransitiveOriginalWorkersAndPreservesRealm (0.02s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	1.501s
+FAIL

@@ -1,0 +1,16 @@
+=== RUN   TestSubjectExitRollsBackCounterpartCancellationWhenGrantScopeIsInvalid
+--- PASS: TestSubjectExitRollsBackCounterpartCancellationWhenGrantScopeIsInvalid (0.23s)
+=== RUN   TestConcurrentSubjectExitRequestsReturnTheSameDurableReceipt
+--- PASS: TestConcurrentSubjectExitRequestsReturnTheSameDurableReceipt (0.19s)
+=== RUN   TestIssuerSubjectExitStopsForeignWorkerAndKeepsCounterpartPrivateData
+--- PASS: TestIssuerSubjectExitStopsForeignWorkerAndKeepsCounterpartPrivateData (0.25s)
+=== RUN   TestExecutorSubjectExitRetainsIssuerMetadataAndInvalidatesDependentWork
+--- PASS: TestExecutorSubjectExitRetainsIssuerMetadataAndInvalidatesDependentWork (0.24s)
+=== RUN   TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly
+--- PASS: TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly (0.19s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	2.853s
+=== RUN   TestExitedSubjectDelegationRemainsMetadataWithoutReadingDeletedRecords
+--- PASS: TestExitedSubjectDelegationRemainsMetadataWithoutReadingDeletedRecords (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.347s

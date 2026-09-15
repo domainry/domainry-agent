@@ -1,0 +1,6 @@
+=== RUN   TestConversationKnowledgeAuthorizationUsesCurrentActorAndLibraryOwnerFacts
+--- PASS: TestConversationKnowledgeAuthorizationUsesCurrentActorAndLibraryOwnerFacts (0.04s)
+=== RUN   TestConversationKnowledgeCurrentVersionedToolDefinitionsAreAuthorized
+--- PASS: TestConversationKnowledgeCurrentVersionedToolDefinitionsAreAuthorized (0.04s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/application/agenthost	3.242s

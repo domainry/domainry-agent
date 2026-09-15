@@ -1,0 +1,66 @@
+{
+  "date": "2026-09-15",
+  "item": "E07",
+  "files": [
+    {
+      "path": "acceptance.json",
+      "bytes": 1915,
+      "sha256": "92a4e0a12e2d725e8c962f132daca1880c80ee3771428ced98f8af2dabb3fd70"
+    },
+    {
+      "path": "commands.md",
+      "bytes": 1782,
+      "sha256": "3664e0a718c2b56fcd916f76b8e9cb2f3a5e21aba795d5e80dbaadc8b84acacf"
+    },
+    {
+      "path": "logs/agent-core-test.log",
+      "bytes": 2604,
+      "sha256": "535cb39d518edbd0a49a592eee10eefc80701f07c080738661247108e3978135"
+    },
+    {
+      "path": "logs/agent-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/agent-sdk-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/agent-sdk-go-test.log",
+      "bytes": 607,
+      "sha256": "99c0dc5c5e04c3bc2efa32940bc34d2c19239d80e8e86579f59eff3261f2bddc"
+    },
+    {
+      "path": "logs/frontend-build.log",
+      "bytes": 32521,
+      "sha256": "3b25078b7dd9d359b98fd3afa1984114278aaf11b5d710f98b476f26ed5f8f41"
+    },
+    {
+      "path": "logs/frontend-test.log",
+      "bytes": 11742,
+      "sha256": "7c79731c1a3c506598763516d4b8cfd0e4a3014aa3f5e7609fe3106ac2fb6b1f"
+    },
+    {
+      "path": "logs/integration-test.log",
+      "bytes": 60,
+      "sha256": "81bef5a3514935bb42b3e50efd46424711498b6626c734ab40679eb1c1ec8836"
+    },
+    {
+      "path": "logs/model-recovery-race.log",
+      "bytes": 305,
+      "sha256": "4a0021082ca4584aa4269700e1de03b6abe1ed303b4f65247f0b7c4d054ef6a0"
+    },
+    {
+      "path": "logs/web-go-test.log",
+      "bytes": 71,
+      "sha256": "edcaae95430826b1c21536aa57e4aaa57470cf265d61d43cff73051fa8f35d90"
+    },
+    {
+      "path": "source-sha256.json",
+      "bytes": 8149,
+      "sha256": "97d56b3986c99e28cf00a1a709cb16198df045a745bde49281e9dddae25babae"
+    }
+  ]
+}

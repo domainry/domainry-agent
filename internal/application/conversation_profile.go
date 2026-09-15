@@ -5,6 +5,7 @@ import (
 	"fmt"
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent/definition"
+	"slices"
 	"time"
 )
 
@@ -20,6 +21,11 @@ func (s *ConversationService) configureProfile() error {
 		return nil
 	}
 	available := append(sdk.PersonalConversationTools(), sdk.ArtifactConversationTools()...)
+	if s.options.CodeRuntime == nil || s.options.CodingRuntime == nil {
+		available = slices.DeleteFunc(available, func(definition sdk.ConversationToolDefinition) bool {
+			return s.options.CodeRuntime == nil && definition.Key == sdk.ConversationCodeToolKey || s.options.CodingRuntime == nil && sdk.IsConversationCodingTool(definition.Key)
+		})
+	}
 	available = append(available, sdk.KnowledgeConversationTools()...)
 	available = append(available, sdk.AttachmentConversationTools()...)
 	available = append(available, sdk.KnowledgeLibraryCatalogTool(), sdk.KnowledgeExtractionTool())

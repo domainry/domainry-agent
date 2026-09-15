@@ -1,0 +1,27 @@
+=== RUN   TestBusinessIndependentReceiptReadThroughRealOwnerRPC
+--- PASS: TestBusinessIndependentReceiptReadThroughRealOwnerRPC (3.61s)
+=== RUN   TestCrossUserBusinessAgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-catalog: 5 pages, 1269 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-query: 5 pages, 1246 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-query-next: 7 pages, 1545 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-get: 3 pages, 604 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-related: 5 pages, 1158 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Original delivered pages authorized through actual owner RPC without execution rights; execution-authorized reader's own query accepted and foreign producer cursor rejected
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-catalog: 5 pages, 1269 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-query: 5 pages, 1246 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-query-next: 7 pages, 1545 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-get: 3 pages, 604 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-related: 5 pages, 1158 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-catalog: 5 pages, 1269 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-query: 5 pages, 1246 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-query-next: 7 pages, 1545 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-get: 3 pages, 604 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-related: 5 pages, 1158 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-catalog: 5 pages, 1269 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-query: 5 pages, 1246 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-query-next: 7 pages, 1545 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-get: 3 pages, 604 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-related: 5 pages, 1158 bytes, original SHA-256 verified
+--- PASS: TestCrossUserBusinessAgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance (133.50s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	137.771s

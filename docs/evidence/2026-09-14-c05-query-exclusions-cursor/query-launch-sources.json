@@ -1,0 +1,9 @@
+{
+  "recorded_at_utc": "2026-09-14T07:18:13.072249+00:00",
+  "command": "GOWORK=/tmp/runtime-work/go.work go test ./runtime/bootstrap/integrationtest -run '^TestCrossUserBusiness(AgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance|OriginalReceiptsThroughRealOwnerRPCAndRestart)$' -count=1 -v",
+  "sources": {
+    "/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_business_shared_scope.go": "49983d9b8011fa35a5899e9246537a155bece4daae06d1c46e8ce9eda8567d20",
+    "/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_business_shared_scope_test.go": "2cab28de3e0536d9b0569dfbeb8e73061b5ac126e7056f6dbfd78541ff00c674",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go": "cd40649c64200ef64899d87bb43fe8a9a3a420e9bd8631b260569962e8a7bfbd"
+  }
+}

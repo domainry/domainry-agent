@@ -1,0 +1,28 @@
+File: product.test
+Type: cpu
+Time: 2026-09-14 16:23:21 CST
+Duration: 177.38s, Total samples = 232.59s (131.12%)
+Showing nodes accounting for 187.62s, 80.67% of 232.59s total
+Dropped 1847 nodes (cum <= 1.16s)
+Showing top 20 nodes out of 381
+      flat  flat%   sum%        cum   cum%
+    57.08s 24.54% 24.54%     57.08s 24.54%  runtime.pthread_cond_signal
+    33.17s 14.26% 38.80%     33.17s 14.26%  syscall.rawsyscalln
+    16.34s  7.03% 45.83%     16.34s  7.03%  runtime.pthread_cond_wait
+    11.57s  4.97% 50.80%     23.52s 10.11%  runtime.checkptrBase
+    11.26s  4.84% 55.64%     11.26s  4.84%  __tsan_read
+     7.80s  3.35% 59.00%      7.80s  3.35%  racecall
+     7.36s  3.16% 62.16%      7.36s  3.16%  __tsan::MemoryRangeSet
+     7.36s  3.16% 65.33%      7.36s  3.16%  racecalladdr
+     6.06s  2.61% 67.93%      6.06s  2.61%  __tsan::MemoryAccessRangeT
+     5.87s  2.52% 70.45%     11.48s  4.94%  runtime.findObject
+     5.54s  2.38% 72.84%      5.54s  2.38%  runtime.spanOf (inline)
+     2.91s  1.25% 74.09%     19.38s  8.33%  runtime.checkptrStraddles
+     2.81s  1.21% 75.30%      2.81s  1.21%  runtime.usleep
+     2.58s  1.11% 76.40%      2.58s  1.11%  __tsan_write
+     2.50s  1.07% 77.48%      9.60s  4.13%  runtime.checkptrArithmetic
+     2.11s  0.91% 78.39%      2.11s  0.91%  __tsan_func_enter
+     1.84s  0.79% 79.18%     21.74s  9.35%  runtime.checkptrAlignment
+     1.36s  0.58% 79.76%      1.36s  0.58%  __tsan::MetaMap::FreeRange
+     1.27s  0.55% 80.31%      1.27s  0.55%  runtime.raceread
+     0.83s  0.36% 80.67%      1.26s  0.54%  runtime.racereadrangepc

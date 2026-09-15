@@ -1,0 +1,7 @@
+=== RUN   TestControlledToolParallelismBuiltBrowser
+PASS two explicitly independent reads preserve call order and expose actual bounded parallel metrics
+PASS compiled UI distinguishes run-level parallel metrics from the ordered per-step tool receipts
+PASS parallel execution evidence remains readable at 390px
+--- PASS: TestControlledToolParallelismBuiltBrowser (4.04s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	4.503s

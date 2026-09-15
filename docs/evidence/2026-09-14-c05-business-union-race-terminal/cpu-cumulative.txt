@@ -1,0 +1,58 @@
+File: c05-business-union-owner-observer-final-race.test
+Type: cpu
+Time: 2026-09-14 19:33:43 CST
+Duration: 185.19s, Total samples = 332.35s (179.47%)
+Showing nodes accounting for 51.14s, 15.39% of 332.35s total
+Dropped 1841 nodes (cum <= 1.66s)
+Showing top 50 nodes out of 359
+      flat  flat%   sum%        cum   cum%
+         0     0%     0%    106.02s 31.90%  runtime._System
+         0     0%     0%     68.23s 20.53%  encoding/json.Marshal
+     0.16s 0.048% 0.048%     67.95s 20.45%  encoding/json.(*encodeState).reflectValue
+         0     0% 0.048%     67.94s 20.44%  encoding/json.(*encodeState).marshal
+     0.03s 0.009% 0.057%     67.11s 20.19%  encoding/json.sliceEncoder.encode
+     0.25s 0.075%  0.13%     67.09s 20.19%  encoding/json.arrayEncoder.encode
+     2.61s  0.79%  0.92%     66.47s 20.00%  encoding/json.structEncoder.encode
+         0     0%  0.92%     63.88s 19.22%  github.com/domainry/domainry-runtime/runtime/domain/appschema/service.SchemaSnapshotHash
+         0     0%  0.92%     59.47s 17.89%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).worker
+         0     0%  0.92%     55.94s 16.83%  net/http.HandlerFunc.ServeHTTP
+     0.02s 0.006%  0.92%     52.38s 15.76%  runtime.systemstack
+     0.01s 0.003%  0.93%     51.96s 15.63%  database/sql.withLock
+         0     0%  0.93%     50.48s 15.19%  github.com/domainry/domainry-runtime/runtime/application/appschema.(*ApplicationSchemaQueryApplicationService).ForPrincipal
+         0     0%  0.93%     50.48s 15.19%  github.com/domainry/domainry-runtime/runtime/bootstrap/composition.(*RecordSchemaSnapshotProvider).SchemaForPrincipal
+         0     0%  0.93%     50.08s 15.07%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).RevalidateBusiness
+     0.01s 0.003%  0.93%     45.63s 13.73%  runtime.wakep
+         0     0%  0.93%     45.52s 13.70%  net/http.(*ServeMux).ServeHTTP
+         0     0%  0.93%     45.48s 13.68%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).run
+         0     0%  0.93%     45.36s 13.65%  runtime.semawakeup
+     0.04s 0.012%  0.94%     45.32s 13.64%  runtime.startm
+     0.01s 0.003%  0.94%     45.30s 13.63%  runtime.notewakeup
+    45.30s 13.63% 14.57%     45.30s 13.63%  runtime.pthread_cond_signal
+         0     0% 14.57%     44.91s 13.51%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).authorizeStoredToolResult
+         0     0% 14.57%     44.91s 13.51%  github.com/domainry/domainry-agent/internal/application.(*assemblyConfirmationHost).AuthorizeConversationToolResult
+         0     0% 14.57%     44.91s 13.51%  github.com/domainry/domainry-agent/internal/application.(*collaborationToolHost).AuthorizeConversationToolResult
+         0     0% 14.57%     44.91s 13.51%  github.com/domainry/domainry-agent/internal/application.(*extensionInteractionHost).AuthorizeConversationToolResult
+         0     0% 14.57%     44.91s 13.51%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).revalidateBusinessSnapshot
+         0     0% 14.57%     44.91s 13.51%  github.com/domainry/domainry-tools/internal/application/tool.(*Combined).AuthorizeConversationToolResult
+         0     0% 14.57%     44.73s 13.46%  github.com/domainry/domainry-agent/internal/application.(*businessConversationHost).AuthorizeConversationToolResult
+     2.67s   0.8% 15.38%     42.62s 12.82%  encoding/json.mapEncoder.encode
+         0     0% 15.38%     42.23s 12.71%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).objects
+         0     0% 15.38%     41.22s 12.40%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).record
+         0     0% 15.38%     38.66s 11.63%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).execute
+         0     0% 15.38%     37.99s 11.43%  github.com/domainry/domainry-runtime/runtime/bootstrap/composition.newRuntimeServicesState.func1
+         0     0% 15.38%     37.99s 11.43%  github.com/domainry/domainry-runtime/runtime/bootstrap/composition.recordSchemaSnapshot
+         0     0% 15.38%     37.98s 11.43%  github.com/domainry/domainry-runtime/runtime/domain/appschema/service.BuildSchemaSnapshot
+         0     0% 15.38%     37.59s 11.31%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withActionAuthorization.func10
+         0     0% 15.38%     37.22s 11.20%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).generateConversationExecution
+         0     0% 15.38%     35.99s 10.83%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withAuth.func11.1
+         0     0% 15.38%     35.81s 10.77%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withAdmission.func6
+         0     0% 15.38%     35.21s 10.59%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withOperationalControls.func7
+         0     0% 15.38%     34.64s 10.42%  modernc.org/sqlite/lib.Xsqlite3_step
+         0     0% 15.38%     34.57s 10.40%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withBusinessEventPublication.func8
+         0     0% 15.38%     33.45s 10.06%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withHighRiskOperationPolicy.func9
+     0.01s 0.003% 15.38%     33.29s 10.02%  modernc.org/sqlite.(*conn).step
+         0     0% 15.38%     32.91s  9.90%  github.com/domainry/domainry-identity-sdk/httpmiddleware.(*Middleware).RequirePasswordChanged.func1
+         0     0% 15.38%     32.18s  9.68%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withActionAuthorization.func10.1
+     0.01s 0.003% 15.38%     32.16s  9.68%  database/sql.(*DB).queryDC
+     0.01s 0.003% 15.39%     32.10s  9.66%  database/sql.(*DB).queryDC.func1
+         0     0% 15.39%     32.03s  9.64%  database/sql.ctxDriverQuery

@@ -29,7 +29,8 @@ func (audit *conversationSourceAudit) deliveryKnowledgeToolResult(ctx context.Co
 	if !ok {
 		return true, conversationFailure("forbidden", "knowledge_access_denied")
 	}
-	host := knowledgeConversationHost{source: source}
+	producer := audit.evidenceAuthority(owner)
+	host := knowledgeConversationHost{source: source, resultProducer: &producer}
 	request := sdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
 	ctx, cancel := audit.s.externalCallContext(ctx, 0)
 	defer cancel()

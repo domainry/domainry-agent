@@ -1,0 +1,7 @@
+{
+  "acceptance.json": "7258c5911b03c6de37f0a19db1af61bb8bd33bd696b2b092c9cf49522fad530c",
+  "previous-artifact-sha256.json": "f8abcd08d13e1d6fc137548ffb7606ac4d0463ffa43c37f150033e37ca480bf9",
+  "product-serial-cpu.pprof": "437a5251da8e62a3c69bf9d4bd4a3979f4888430efd1f53854daf34d36b5d872",
+  "real-product-serial-race.log": "fae6e3accd33627bee85cbef1f8320e9ed1374f1df76743fdbcb9c2c76a47071",
+  "source-launch.json": "4620be703a8f925f4c23785bfd1ae3c165d05dbad450317e0540614d26baf4e3"
+}

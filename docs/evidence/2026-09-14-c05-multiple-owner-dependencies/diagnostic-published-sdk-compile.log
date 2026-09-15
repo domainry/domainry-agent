@@ -1,0 +1,14 @@
+# github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.test]
+runtime/bootstrap/integrationtest/conversation_contract_publication_test.go:40:66: original.Requirements undefined (type agentsdk.ConversationAgreementRevision has no field or method Requirements)
+runtime/bootstrap/integrationtest/conversation_contract_publication_test.go:43:11: original.Requirements undefined (type agentsdk.ConversationAgreementRevision has no field or method Requirements)
+runtime/bootstrap/integrationtest/conversation_contract_publication_test.go:70:89: history.Items[0].Requirements undefined (type agentsdk.ConversationAgreementRevision has no field or method Requirements)
+runtime/bootstrap/integrationtest/conversation_contract_publication_test.go:94:49: history.Items[0].Requirements undefined (type agentsdk.ConversationAgreementRevision has no field or method Requirements)
+runtime/bootstrap/integrationtest/conversation_contract_publication_test.go:126:216: current.ContractOmitted undefined (type agentsdk.ConversationDelegationDetail has no field or method ContractOmitted)
+runtime/bootstrap/integrationtest/conversation_contract_publication_test.go:175:65: originalHistory.Items[0].Requirements undefined (type agentsdk.ConversationAgreementRevision has no field or method Requirements)
+runtime/bootstrap/integrationtest/conversation_contract_publication_test.go:180:23: undefined: agent.ConversationContractPublicationCandidates
+runtime/bootstrap/integrationtest/conversation_contract_publication_test.go:185:20: undefined: agent.ConversationContractPublicationPreview
+runtime/bootstrap/integrationtest/conversation_contract_publication_test.go:186:70: undefined: agent.ConversationContractPublicationRequest
+runtime/bootstrap/integrationtest/conversation_contract_publication_test.go:191:252: undefined: agent.ConversationContractPublication
+runtime/bootstrap/integrationtest/conversation_contract_publication_test.go:191:252: too many errors
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [build failed]
+FAIL

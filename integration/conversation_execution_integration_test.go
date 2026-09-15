@@ -19,6 +19,65 @@ type executionModel struct {
 	step  func(int, agentsdk.ConversationStepRequest) (agentsdk.ConversationStepResult, error)
 }
 
+type retryableExecutionError struct {
+	details agentsdk.ConversationModelFailureDetails
+}
+
+func (e *retryableExecutionError) Error() string { return "temporary model failure" }
+func (e *retryableExecutionError) Unwrap() error {
+	return &agentsdk.Error{Class: "unavailable", Code: "agent.conversation." + e.details.ErrorCode, Retryable: e.details.Retryable}
+}
+func (e *retryableExecutionError) ConversationModelFailureDetails() agentsdk.ConversationModelFailureDetails {
+	return e.details
+}
+
+type retryingExecutionModel struct {
+	mu    sync.Mutex
+	calls []time.Time
+}
+
+func (*retryingExecutionModel) GenerateConversation(context.Context, agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
+	return agentsdk.ConversationModelResult{}, fmt.Errorf("unexpected text-only model call")
+}
+func (*retryingExecutionModel) ConversationModelIdentity() agentsdk.ConversationModelIdentity {
+	return agentsdk.ConversationModelIdentity{Provider: "test", Protocol: "responses", Model: "reasoner", Fingerprint: "retry-model-v1"}
+}
+func (*retryingExecutionModel) ConversationModelCapabilities() agentsdk.ConversationModelCapabilities {
+	return agentsdk.ConversationModelCapabilities{ContextTokenLimit: 64_000, StructuredOutput: true, ProtocolContinuation: true, ReasoningEfforts: []string{"low", "high"}}
+}
+func (*retryingExecutionModel) ConversationModelDefaultReasoningEffort() string { return "high" }
+func (m *retryingExecutionModel) StreamConversationStep(_ context.Context, in agentsdk.ConversationStepRequest, emit func(agentsdk.ConversationModelEvent) error) (agentsdk.ConversationStepResult, error) {
+	m.mu.Lock()
+	m.calls = append(m.calls, time.Now())
+	number := len(m.calls)
+	m.mu.Unlock()
+	if in.ReasoningEffort != "high" || in.ModelCapabilities.ContextTokenLimit != 64_000 || !in.ModelCapabilities.ProtocolContinuation {
+		return agentsdk.ConversationStepResult{}, fmt.Errorf("frozen model capabilities missing")
+	}
+	switch number {
+	case 1:
+		if err := emit(agentsdk.ConversationModelEvent{Type: "text.delta", Delta: "failed fragment"}); err != nil {
+			return agentsdk.ConversationStepResult{}, err
+		}
+		return agentsdk.ConversationStepResult{}, &retryableExecutionError{details: agentsdk.ConversationModelFailureDetails{
+			Retryable: true, RetryAfter: 80 * time.Millisecond, ErrorCode: "provider_network", Usage: map[string]any{"input_tokens": 3},
+		}}
+	case 2:
+		return agentsdk.ConversationStepResult{
+			Message:      agentsdk.ConversationStepMessage{Role: "assistant", ToolCalls: []agentsdk.ConversationToolCall{{ID: "call-one", Name: "create_item", Arguments: `{"title":"retry-safe"}`}}},
+			FinishReason: "tool_calls", Model: "reasoner", Usage: map[string]any{"total_tokens": 10},
+		}, nil
+	default:
+		if len(in.Messages) == 0 || in.Messages[len(in.Messages)-1].Role != "tool" || in.Messages[len(in.Messages)-1].ToolCallID != "call-one" {
+			return agentsdk.ConversationStepResult{}, fmt.Errorf("persisted tool receipt missing")
+		}
+		if err := emit(agentsdk.ConversationModelEvent{Type: "text.delta", Delta: "retry completed"}); err != nil {
+			return agentsdk.ConversationStepResult{}, err
+		}
+		return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "retry completed"}, FinishReason: "stop", Model: "reasoner", Usage: map[string]any{"total_tokens": 5}}, nil
+	}
+}
+
 func (*executionModel) GenerateConversation(context.Context, agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
 	return agentsdk.ConversationModelResult{}, fmt.Errorf("unexpected text-only model call")
 }
@@ -115,6 +174,71 @@ func TestConversationExecutionReauthorizesToolDataBeforeNextModelRequest(t *test
 	}
 	if len(final.Steps) != 2 || len(final.Steps[0].Calls) != 1 || final.Steps[0].Calls[0].Status != "completed" {
 		t.Fatal("completed effect lost from public execution snapshot")
+	}
+}
+
+func TestConversationExecutionRetriesModelWithoutReplayingMessageStreamOrTool(t *testing.T) {
+	repo := conversationRepository(t)
+	host := &executionHost{allowed: true}
+	model := &retryingExecutionModel{}
+	options := application.ConversationOptions{ToolHost: host, MaxModelAttempts: 3, ModelRetryBaseDelay: time.Millisecond, ModelRetryMaxDelay: 200 * time.Millisecond}
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer service.Close()
+	authority := conversationAuthority()
+	conversation, err := service.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "bounded-model-retry"}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	send := agentsdk.ConversationSend{ClientMessageID: "same-logical-message", Message: "create once"}
+	run, err := service.Send(t.Context(), conversation.ID, send, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	replayed, err := service.Send(t.Context(), conversation.ID, send, authority)
+	if err != nil || replayed.ID != run.ID {
+		t.Fatalf("logical message was enqueued twice: first=%s replay=%s err=%v", run.ID, replayed.ID, err)
+	}
+	deadline := time.Now().Add(2 * time.Second)
+	observedWait := false
+	for time.Now().Before(deadline) {
+		snapshot, readErr := service.Run(t.Context(), conversation.ID, run.ID, authority)
+		if readErr != nil {
+			t.Fatal(readErr)
+		}
+		if len(snapshot.ModelAttempts) > 0 && snapshot.ModelAttempts[0].Status == "retry_scheduled" {
+			observedWait = true
+			if len(snapshot.Steps) != 1 || snapshot.Steps[0].Text != "" || snapshot.Steps[0].Status != "retry_wait" || snapshot.ModelAttempts[0].ErrorCode != "provider_network" || snapshot.ModelAttempts[0].Usage["input_tokens"] != float64(3) || snapshot.ModelAttempts[0].RetryAt == nil {
+				t.Fatalf("failed stream or retry evidence was not projected safely: %+v", snapshot)
+			}
+			break
+		}
+		time.Sleep(2 * time.Millisecond)
+	}
+	if !observedWait {
+		t.Fatal("persisted retry wait was not observable")
+	}
+	final := waitConversation(t, service, conversation.ID, run.ID)
+	if final.Status != "completed" || len(final.Steps) != 2 || final.Steps[1].Text != "retry completed" || len(final.ModelAttempts) != 3 || final.Metrics.ModelRetries != 1 {
+		t.Fatalf("retry did not complete with durable attempts: %+v", final)
+	}
+	model.mu.Lock()
+	callTimes := append([]time.Time(nil), model.calls...)
+	model.mu.Unlock()
+	if len(callTimes) != 3 || callTimes[1].Sub(callTimes[0]) < 60*time.Millisecond {
+		t.Fatalf("Retry-After was not bounded and honored: %+v", callTimes)
+	}
+	host.mu.Lock()
+	invokes := host.invokes
+	host.mu.Unlock()
+	if invokes != 1 {
+		t.Fatalf("tool effect was replayed: invokes=%d", invokes)
+	}
+	messages, err := service.Messages(t.Context(), conversation.ID, agentsdk.ConversationMessageQuery{}, authority)
+	if err != nil || len(messages.Items) != 2 || messages.Items[0].Content != "create once" || messages.Items[1].Content != "retry completed" {
+		t.Fatalf("failed stream or duplicate user message reached history: %+v err=%v", messages, err)
 	}
 }
 func (h *executionHost) ReconcileConversationTool(_ context.Context, request agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {

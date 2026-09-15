@@ -1,0 +1,34 @@
+File: c05-identity-resolution-runtime-race.test
+Type: cpu
+Time: 2026-09-14 18:13:10 CST
+Duration: 523.98s, Total samples = 968.68s (184.87%)
+Active filters:
+   focus=sdkPrincipalResolver|buildPrincipal|userByID|SnapshotForRole|ResolvePrinci…
+Showing nodes accounting for 90.72s, 9.37% of 968.68s total
+Dropped 821 nodes (cum <= 4.84s)
+Showing top 24 nodes out of 377
+      flat  flat%   sum%        cum   cum%
+         0     0%     0%    190.80s 19.70%  github.com/domainry/domainry-identity-sdk/application.principals.Resolve
+     0.03s 0.0031% 0.0031%    190.80s 19.70%  github.com/domainry/domainry-identity/internal/adapter/identitysdk.sdkPrincipalResolver.Resolve
+         0     0% 0.0031%    190.80s 19.70%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).principal
+     0.01s 0.001% 0.0041%    178.87s 18.47%  github.com/domainry/domainry-identity/internal/application/identity.(*IdentityEffectiveAccessApplicationService).ResolvePrincipalAccess
+         0     0% 0.0041%    151.22s 15.61%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).run
+     0.03s 0.0031% 0.0072%    147.81s 15.26%  database/sql.withLock
+         0     0% 0.0072%    122.79s 12.68%  net/http.HandlerFunc.ServeHTTP
+         0     0% 0.0072%    118.99s 12.28%  net/http.(*ServeMux).ServeHTTP
+     0.02s 0.0021% 0.0093%    113.46s 11.71%  github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).buildPrincipalForRole
+         0     0% 0.0093%    110.83s 11.44%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).record
+         0     0% 0.0093%    110.19s 11.38%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).collaborationAuthorization
+         0     0% 0.0093%    110.19s 11.38%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).AuthorizeConversationCollaboration
+         0     0% 0.0093%    108.32s 11.18%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).authorizeCollaboration
+         0     0% 0.0093%    104.43s 10.78%  github.com/domainry/domainry-agent/internal/application.InvokeConversation
+         0     0% 0.0093%    102.40s 10.57%  github.com/domainry/domainry-agent/internal/transport/http/module.NewConversationAdapter.(*conversationAdapter).handle.func1
+         0     0% 0.0093%     98.76s 10.20%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).projectConversationDelegationContent
+         0     0% 0.0093%     97.82s 10.10%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).projectConversationDelegation
+         0     0% 0.0093%     93.12s  9.61%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).registerModuleHTTPRoutes.(*HTTPRouter).moduleHTTPRouteHandler.func1
+     0.05s 0.0052% 0.014%     91.36s  9.43%  modernc.org/sqlite/lib.Xsqlite3_step
+         0     0% 0.014%     91.33s  9.43%  modernc.org/sqlite.(*conn).step
+     0.03s 0.0031% 0.018%     90.17s  9.31%  modernc.org/sqlite/lib._sqlite3Step
+     0.73s 0.075% 0.093%     90.01s  9.29%  modernc.org/sqlite/lib._sqlite3VdbeExec
+    89.82s  9.27%  9.37%     89.82s  9.27%  syscall.rawsyscalln
+         0     0%  9.37%     89.82s  9.27%  syscall.syscalln

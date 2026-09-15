@@ -1,0 +1,6 @@
+{
+  "Replace": {
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_dependencies_store.go": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-participant-management/source-before/testdata/internal/infrastructure/persistence/database/agent/conversation_dependencies_store.go",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_peer_messages_store.go": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-participant-management/source-before/testdata/internal/infrastructure/persistence/database/agent/conversation_peer_messages_store.go"
+  }
+}

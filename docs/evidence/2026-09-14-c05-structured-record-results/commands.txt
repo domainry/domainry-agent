@@ -1,0 +1,19 @@
+GOWORK=/Users/tiger/Projects/domainry-agent/go.work
+
+Tools:
+go test ./... -count=1
+go test -race ./internal/adapter/recordtools ./internal/application/tool -count=1 -v
+
+Agent:
+go test -race ./internal/application -count=1
+go test ./internal/assembly/product -run '^TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart$' -count=1 -v
+go test -race ./internal/assembly/product -run '^TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart$' -count=1 -v
+go test ./integration -run '^TestArtifactSourcesStopAtTheGeneratingStep$' -count=1 -v
+
+Diagnostic recursive command: go test ./... -count=1
+It includes archived standalone diagnostic .go files and is not accepted.
+The full executable package inventory is agent-executable-packages.json (36 code packages).
+The prepared code-regression.py executes every listed code package; it excludes only 7 immutable historical evidence package directories and never rewrites them.
+Dispatch and receiving execution have separate fixture observation windows. Actual task budget remains 12 steps / 12 calls / 8192 bytes / 60 seconds.
+The sourceModel fixture uses the production chat_completions encoder for input sizing; no execution context or budget was enlarged.
+The published Runtime module-set lock remains unchanged and full bootstrap is not accepted.

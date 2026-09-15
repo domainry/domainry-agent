@@ -176,7 +176,13 @@ func (h *knowledgeConversationHost) authorizeExtractionResultUsing(ctx context.C
 			return err
 		}
 	}
-	passages, err := normalizer.KnowledgeExtractionPassages(ctx, fullSource, in.Authority)
+	var passages []agentsdk.KnowledgeDocumentPassage
+	var err error
+	if resultRead && h.resultProducer != nil {
+		passages, err = agentsdk.SharedKnowledgeExtractionPassages(ctx, selected, fullSource, in.Authority, *h.resultProducer)
+	} else {
+		passages, err = normalizer.KnowledgeExtractionPassages(ctx, fullSource, in.Authority)
+	}
 	if err != nil {
 		return err
 	}

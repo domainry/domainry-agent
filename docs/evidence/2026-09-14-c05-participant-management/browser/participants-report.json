@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "realChrome": true,
+  "realIdentityUsers": true,
+  "scenarios": [
+    "invite observer to one delegation",
+    "no private work or owner controls",
+    "upgrade to communication",
+    "actual sender label",
+    "message consumed by original worker",
+    "independent manage scope survives communication selection",
+    "participant pauses and resumes original task",
+    "management withdrawal closes pending form but retains communication",
+    "restored management starts with empty form",
+    "390px layout",
+    "remove participant clears live detail and survives reload"
+  ],
+  "errors": []
+}

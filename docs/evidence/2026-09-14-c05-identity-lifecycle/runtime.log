@@ -1,0 +1,31 @@
+=== RUN   TestInactiveIdentityRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime
+    conversation_inactive_identity_dependencies_test.go:51: Admit multiple-owner-root from conv_f07e918b6d3025a270eb211a434804ca to agent_780fddfe761cc21b76fc1857069f8fc1
+    conversation_inactive_identity_dependencies_test.go:51: Admit multiple-owner-upstream from conv_c1dc0fd48133af072c508c32defbeb38 to agent_73904f1fc479d13d7af60271c5ae6526
+    conversation_inactive_identity_dependencies_test.go:51: Admit multiple-owner-final from conv_be364d6387bcd477bca4f048c6022c4f to agent_fd8c98adac95c9d1e72b9706e91754db
+    conversation_inactive_identity_dependencies_test.go:51: Actual Identity producer/publisher and receiver disable/restore, current source revalidation, new receiving admission denial, in-flight model response stopped before tool execution, accepted original delivery preserved and restart verified
+    conversation_inactive_identity_dependencies_test.go:51: Two actual professional owners, independent original and publication roles, explicit third audience, adopted upstream namespaces, Provider-visible own reading receipts, automatic verified delivery, original SHA/bytes, private endpoint denial, no repeated professional call, original-role/publisher-role/reader-field/audience withdrawal, account acceptance and restart verified
+--- PASS: TestInactiveIdentityRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime (37.06s)
+=== RUN   TestMultipleOwnerProfessionalDependenciesReadOriginalsAndDeliverThroughRealRuntime
+    conversation_multiple_owner_dependencies_test.go:154: Admit multiple-owner-root from conv_57700f68a1b221aa1c651bc27c83b1d7 to agent_780fddfe761cc21b76fc1857069f8fc1
+    conversation_multiple_owner_dependencies_test.go:154: Admit multiple-owner-upstream from conv_c1dc0fd48133af072c508c32defbeb38 to agent_73904f1fc479d13d7af60271c5ae6526
+    conversation_multiple_owner_dependencies_test.go:154: Admit multiple-owner-final from conv_be364d6387bcd477bca4f048c6022c4f to agent_fd8c98adac95c9d1e72b9706e91754db
+    conversation_multiple_owner_dependencies_test.go:154: Two actual professional owners, independent original and publication roles, explicit third audience, adopted upstream namespaces, Provider-visible own reading receipts, automatic verified delivery, original SHA/bytes, private endpoint denial, no repeated professional call, original-role/publisher-role/reader-field/audience withdrawal, account acceptance and restart verified
+--- PASS: TestMultipleOwnerProfessionalDependenciesReadOriginalsAndDeliverThroughRealRuntime (29.50s)
+=== RUN   TestMixedOldRoleSourceToolDispatchReadAndAutomaticDelivery
+    conversation_old_role_automatic_delivery_test.go:156: Actual old report and analysis runs, immutable roots, original-role matching, model tool dispatch, bound reading-only execution, complete paginated originals, automatic exact-reference delivery, account acceptance, legacy contract required-root recovery from exact original admission call and delivery recovery from immutable actor, equivalent current reader and original page replay, publisher/original-role/field revocation and restart verified; no receiver professional execution
+--- PASS: TestMixedOldRoleSourceToolDispatchReadAndAutomaticDelivery (24.80s)
+=== RUN   TestLegacyAgreementUpdateRestartResumeAndOriginalHistoryThroughRealHTTP
+    conversation_old_role_source_delivery_test.go:89: Preparing exact legacy agreement accepted_delivery 6 6
+    conversation_old_role_source_delivery_test.go:89: Real original report/analysis sources, legacy requirements recovery, exact preview, current field withdrawal, explicit actual publisher, original accepted task/delivery/history preservation, idempotency and restart verified
+    conversation_old_role_source_delivery_test.go:89: Real legacy original requirements updated, restart and original pages retained, withdrawn accepted executor rejected before mutation, exact resumed original execution role, new requirements/delivery/acceptance verified
+    conversation_old_role_source_delivery_test.go:89: Actual old report and analysis runs, immutable roots, original-role matching, model tool dispatch, bound reading-only execution, complete paginated originals, automatic exact-reference delivery, account acceptance, legacy contract required-root recovery from exact original admission call and delivery recovery from immutable actor, equivalent current reader and original page replay, publisher/original-role/field revocation and restart verified; no receiver professional execution
+--- PASS: TestLegacyAgreementUpdateRestartResumeAndOriginalHistoryThroughRealHTTP (78.53s)
+=== RUN   TestSubjectErasureRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime
+    conversation_subject_erasure_dependencies_test.go:36: Admit multiple-owner-root from conv_4cbec8ccade9e756627cd85a136e4bc8 to agent_780fddfe761cc21b76fc1857069f8fc1
+    conversation_subject_erasure_dependencies_test.go:36: Admit multiple-owner-upstream from conv_c1dc0fd48133af072c508c32defbeb38 to agent_73904f1fc479d13d7af60271c5ae6526
+    conversation_subject_erasure_dependencies_test.go:36: Admit multiple-owner-final from conv_be364d6387bcd477bca4f048c6022c4f to agent_fd8c98adac95c9d1e72b9706e91754db
+    conversation_subject_erasure_dependencies_test.go:36: Actual Runtime Lifecycle HTTP request, verification, owner previews, independent approval, Identity/Agent erasure, admitted counterpart cancellation, unavailable producer pages, unaffected original report, accepted downstream preservation, erased Agent directory and restart verified
+    conversation_subject_erasure_dependencies_test.go:36: Two actual professional owners, independent original and publication roles, explicit third audience, adopted upstream namespaces, Provider-visible own reading receipts, automatic verified delivery, original SHA/bytes, private endpoint denial, no repeated professional call, original-role/publisher-role/reader-field/audience withdrawal, account acceptance and restart verified
+--- PASS: TestSubjectErasureRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime (38.66s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	209.200s

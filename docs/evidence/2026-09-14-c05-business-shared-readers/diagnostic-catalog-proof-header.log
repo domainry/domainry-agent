@@ -1,0 +1,8 @@
+ok  	github.com/domainry/domainry-runtime/runtime/application/action	(cached)
+ok  	github.com/domainry/domainry-runtime/runtime/application/workflow	0.808s
+--- FAIL: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader (0.01s)
+    --- FAIL: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/business_catalog25 (0.00s)
+        conversation_business_shared_receipt_read_test.go:102: forged original accepted
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/application/agenthost	1.073s
+FAIL

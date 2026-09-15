@@ -1,0 +1,719 @@
+{
+  "steps": [
+    "registered project, business and file context stays ordered, refreshes by version and reports exact provider pressure and cache use",
+    "compiled UI exposes bounded source versions, change history, compaction and provider cache diagnostics without source content or hashes",
+    "revoking the old source removes the derived historical reply while a newly authorized source version can continue",
+    "context diagnostics remain readable at 390px after source refresh and revocation"
+  ],
+  "javascriptErrors": [],
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "resourceFailures": [
+    {
+      "status": 401,
+      "path": "/app/session"
+    },
+    {
+      "status": 401,
+      "path": "/auth/refresh"
+    }
+  ],
+  "complete": true,
+  "firstRun": {
+    "id": "crun_8776bd6336d8f77224529e241a6738d1",
+    "conversation_id": "conv_e5b02e0a0e8bdbacc41598ac703cb98e",
+    "client_message_id": "a7f90820-f723-48e3-bffa-92d2a60aa2e0",
+    "status": "completed",
+    "user_seq": 1,
+    "assistant_message_id": "msg_8675c76bf25ff655e2be0bacdf281adc",
+    "attempt": 1,
+    "draft_bytes": 0,
+    "last_event_seq": 21,
+    "steps": [
+      {
+        "number": 0,
+        "attempt": 1,
+        "status": "tools",
+        "text": "first context read",
+        "calls": [
+          {
+            "effect": "read",
+            "id": "first-read",
+            "name": "context_fixture_read",
+            "arguments": "{\"key\":\"first\"}",
+            "status": "completed",
+            "resource_id": "first-read",
+            "result_preview": "{\"value\":\"immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-\"}",
+            "result_reference": {
+              "conversation_id": "conv_e5b02e0a0e8bdbacc41598ac703cb98e",
+              "run_id": "crun_8776bd6336d8f77224529e241a6738d1",
+              "step": 0,
+              "call_id": "first-read",
+              "sha256": "b76555a46cf80f8365100e720b8f74a8520f8636d5a8999263ad7c5935daa761"
+            },
+            "authorization": {
+              "status": "granted",
+              "revision": "context-policy-v1",
+              "checks": 1
+            },
+            "started_at": "2026-09-15T05:18:46.728287Z",
+            "completed_at": "2026-09-15T05:18:46.729208Z",
+            "duration_ms": 0
+          }
+        ],
+        "usage": {
+          "cache_creation_input_tokens": 100,
+          "cache_read_input_tokens": 0,
+          "input_tokens": 100,
+          "output_tokens": 10
+        },
+        "context": {
+          "window": {
+            "limit_bytes": 20480,
+            "input_bytes": 5497,
+            "pressure_permille": 268,
+            "provider_serialized": true
+          },
+          "sources": [
+            {
+              "key": "project.rules",
+              "kind": "project_instructions",
+              "scope": "workspace",
+              "refresh": "run",
+              "version": "project-v1",
+              "order": 0,
+              "stable_prefix": true,
+              "updated_at": "2026-09-15T10:00:00.000000001Z"
+            },
+            {
+              "key": "business.current",
+              "kind": "business_record",
+              "scope": "conversation",
+              "refresh": "step",
+              "version": "record-v1",
+              "order": 10,
+              "updated_at": "2026-09-15T10:00:00.000000001Z"
+            },
+            {
+              "key": "file.current",
+              "kind": "file_reference",
+              "scope": "conversation",
+              "refresh": "run",
+              "version": "file-v1",
+              "order": 20,
+              "updated_at": "2026-09-15T10:00:00.000000001Z"
+            }
+          ],
+          "cache_creation_input_tokens": 100
+        },
+        "started_at": "2026-09-15T05:18:46.659934Z",
+        "completed_at": "2026-09-15T05:18:46.662981Z",
+        "duration_ms": 3
+      },
+      {
+        "number": 1,
+        "attempt": 1,
+        "status": "tools",
+        "text": "second context read",
+        "calls": [
+          {
+            "effect": "read",
+            "id": "second-read",
+            "name": "context_fixture_read",
+            "arguments": "{\"key\":\"second\"}",
+            "status": "completed",
+            "resource_id": "second-read",
+            "result_preview": "{\"value\":\"immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-immutable-result-\"}",
+            "result_reference": {
+              "conversation_id": "conv_e5b02e0a0e8bdbacc41598ac703cb98e",
+              "run_id": "crun_8776bd6336d8f77224529e241a6738d1",
+              "step": 1,
+              "call_id": "second-read",
+              "sha256": "c61258bdbe6f56b97fb36bf77ac485ea6ed7e93107463d6e51cb7e1ca1902c6a"
+            },
+            "authorization": {
+              "status": "granted",
+              "revision": "context-policy-v1",
+              "checks": 1
+            },
+            "started_at": "2026-09-15T05:18:46.927924Z",
+            "completed_at": "2026-09-15T05:18:46.928878Z",
+            "duration_ms": 0
+          }
+        ],
+        "usage": {
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 80,
+          "input_tokens": 120,
+          "output_tokens": 10
+        },
+        "context": {
+          "window": {
+            "limit_bytes": 20480,
+            "input_bytes": 16169,
+            "pressure_permille": 789,
+            "provider_serialized": true
+          },
+          "sources": [
+            {
+              "key": "project.rules",
+              "kind": "project_instructions",
+              "scope": "workspace",
+              "refresh": "run",
+              "version": "project-v1",
+              "order": 0,
+              "stable_prefix": true,
+              "updated_at": "2026-09-15T10:00:00.000000001Z"
+            },
+            {
+              "key": "business.current",
+              "kind": "business_record",
+              "scope": "conversation",
+              "refresh": "step",
+              "version": "record-v2",
+              "order": 10,
+              "updated_at": "2026-09-15T10:00:00.000000002Z"
+            },
+            {
+              "key": "file.current",
+              "kind": "file_reference",
+              "scope": "conversation",
+              "refresh": "run",
+              "version": "file-v1",
+              "order": 20,
+              "updated_at": "2026-09-15T10:00:00.000000001Z"
+            }
+          ],
+          "changes": [
+            {
+              "key": "business.current",
+              "previous_version": "record-v1",
+              "current_version": "record-v2",
+              "changed_at": "2026-09-15T05:18:46.762656Z"
+            }
+          ],
+          "cache_read_input_tokens": 80
+        },
+        "started_at": "2026-09-15T05:18:46.865271Z",
+        "completed_at": "2026-09-15T05:18:46.866978Z",
+        "duration_ms": 1
+      },
+      {
+        "number": 2,
+        "attempt": 1,
+        "status": "completed",
+        "text": "first context run completed",
+        "calls": [],
+        "usage": {
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 100,
+          "input_tokens": 140,
+          "output_tokens": 10
+        },
+        "context": {
+          "window": {
+            "limit_bytes": 20480,
+            "input_bytes": 15980,
+            "pressure_permille": 780,
+            "provider_serialized": true
+          },
+          "sources": [
+            {
+              "key": "project.rules",
+              "kind": "project_instructions",
+              "scope": "workspace",
+              "refresh": "run",
+              "version": "project-v1",
+              "order": 0,
+              "stable_prefix": true,
+              "updated_at": "2026-09-15T10:00:00.000000001Z"
+            },
+            {
+              "key": "business.current",
+              "kind": "business_record",
+              "scope": "conversation",
+              "refresh": "step",
+              "version": "record-v3",
+              "order": 10,
+              "updated_at": "2026-09-15T10:00:00.000000003Z"
+            },
+            {
+              "key": "file.current",
+              "kind": "file_reference",
+              "scope": "conversation",
+              "refresh": "run",
+              "version": "file-v1",
+              "order": 20,
+              "updated_at": "2026-09-15T10:00:00.000000001Z"
+            }
+          ],
+          "changes": [
+            {
+              "key": "business.current",
+              "previous_version": "record-v1",
+              "current_version": "record-v2",
+              "changed_at": "2026-09-15T05:18:46.762656Z"
+            },
+            {
+              "key": "business.current",
+              "previous_version": "record-v2",
+              "current_version": "record-v3",
+              "changed_at": "2026-09-15T05:18:46.978811Z"
+            }
+          ],
+          "compaction": {
+            "version": 1,
+            "results": 2,
+            "intervals": 1,
+            "before_bytes": 30044,
+            "after_bytes": 19046
+          },
+          "cache_read_input_tokens": 100
+        },
+        "started_at": "2026-09-15T05:18:47.097873Z",
+        "completed_at": "2026-09-15T05:18:47.101476Z",
+        "duration_ms": 3
+      }
+    ],
+    "model": "context-fixture",
+    "usage": {
+      "cache_creation_input_tokens": 100,
+      "cache_read_input_tokens": 180,
+      "input_tokens": 360,
+      "output_tokens": 30
+    },
+    "context": {
+      "window": {
+        "limit_bytes": 20480,
+        "input_bytes": 3829,
+        "pressure_permille": 186,
+        "provider_serialized": false
+      },
+      "sources": [
+        {
+          "key": "project.rules",
+          "kind": "project_instructions",
+          "scope": "workspace",
+          "refresh": "run",
+          "version": "project-v1",
+          "order": 0,
+          "stable_prefix": true,
+          "updated_at": "2026-09-15T10:00:00.000000001Z"
+        },
+        {
+          "key": "business.current",
+          "kind": "business_record",
+          "scope": "conversation",
+          "refresh": "step",
+          "version": "record-v1",
+          "order": 10,
+          "updated_at": "2026-09-15T10:00:00.000000001Z"
+        },
+        {
+          "key": "file.current",
+          "kind": "file_reference",
+          "scope": "conversation",
+          "refresh": "run",
+          "version": "file-v1",
+          "order": 20,
+          "updated_at": "2026-09-15T10:00:00.000000001Z"
+        }
+      ]
+    },
+    "correlation_id": "crun_8776bd6336d8f77224529e241a6738d1",
+    "metrics": {
+      "steps": 3,
+      "model_calls": 3,
+      "tool_calls": 2,
+      "tool_attempts": 2,
+      "parallel_tool_batches": 0,
+      "parallel_tool_calls": 0,
+      "peak_parallel_tools": 0,
+      "authorization_checks": 2,
+      "confirmation_decisions": 0,
+      "context_compactions": 1,
+      "compacted_results": 2,
+      "compacted_intervals": 1,
+      "peak_context_bytes": 16169,
+      "context_limit_bytes": 20480,
+      "cache_read_input_tokens": 180,
+      "cache_creation_input_tokens": 100
+    },
+    "audit": [
+      {
+        "seq": 1,
+        "type": "run",
+        "status": "queued",
+        "step": 0,
+        "occurred_at": "2026-09-15T05:18:46.498027Z"
+      },
+      {
+        "seq": 2,
+        "type": "run",
+        "status": "running",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:46.501159Z"
+      },
+      {
+        "seq": 3,
+        "type": "context",
+        "status": "assembled",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:46.571535Z"
+      },
+      {
+        "seq": 4,
+        "type": "step",
+        "status": "prepared",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:46.619009Z"
+      },
+      {
+        "seq": 5,
+        "type": "model",
+        "status": "started",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:46.659934Z"
+      },
+      {
+        "seq": 6,
+        "type": "model",
+        "status": "completed",
+        "step": 0,
+        "attempt": 1,
+        "duration_ms": 3,
+        "occurred_at": "2026-09-15T05:18:46.662981Z"
+      },
+      {
+        "seq": 7,
+        "type": "authorization",
+        "status": "granted",
+        "step": 0,
+        "attempt": 1,
+        "call_id": "first-read",
+        "tool": "context_fixture_read",
+        "action_key": "fixture.context.read",
+        "authorization_revision": "context-policy-v1",
+        "occurred_at": "2026-09-15T05:18:46.705134Z"
+      },
+      {
+        "seq": 8,
+        "type": "tool",
+        "status": "started",
+        "step": 0,
+        "attempt": 1,
+        "call_id": "first-read",
+        "tool": "context_fixture_read",
+        "occurred_at": "2026-09-15T05:18:46.728287Z"
+      },
+      {
+        "seq": 9,
+        "type": "tool",
+        "status": "completed",
+        "step": 0,
+        "attempt": 1,
+        "call_id": "first-read",
+        "tool": "context_fixture_read",
+        "occurred_at": "2026-09-15T05:18:46.729208Z"
+      },
+      {
+        "seq": 10,
+        "type": "step",
+        "status": "prepared",
+        "step": 1,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:46.763969Z"
+      },
+      {
+        "seq": 11,
+        "type": "model",
+        "status": "started",
+        "step": 1,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:46.865271Z"
+      },
+      {
+        "seq": 12,
+        "type": "model",
+        "status": "completed",
+        "step": 1,
+        "attempt": 1,
+        "duration_ms": 1,
+        "occurred_at": "2026-09-15T05:18:46.866978Z"
+      },
+      {
+        "seq": 13,
+        "type": "authorization",
+        "status": "granted",
+        "step": 1,
+        "attempt": 1,
+        "call_id": "second-read",
+        "tool": "context_fixture_read",
+        "action_key": "fixture.context.read",
+        "authorization_revision": "context-policy-v1",
+        "occurred_at": "2026-09-15T05:18:46.912418Z"
+      },
+      {
+        "seq": 14,
+        "type": "tool",
+        "status": "started",
+        "step": 1,
+        "attempt": 1,
+        "call_id": "second-read",
+        "tool": "context_fixture_read",
+        "occurred_at": "2026-09-15T05:18:46.927924Z"
+      },
+      {
+        "seq": 15,
+        "type": "tool",
+        "status": "completed",
+        "step": 1,
+        "attempt": 1,
+        "call_id": "second-read",
+        "tool": "context_fixture_read",
+        "occurred_at": "2026-09-15T05:18:46.928878Z"
+      },
+      {
+        "seq": 17,
+        "type": "step",
+        "status": "prepared",
+        "step": 2,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:46.985857Z"
+      },
+      {
+        "seq": 18,
+        "type": "model",
+        "status": "started",
+        "step": 2,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:47.097873Z"
+      },
+      {
+        "seq": 19,
+        "type": "model",
+        "status": "completed",
+        "step": 2,
+        "attempt": 1,
+        "duration_ms": 3,
+        "occurred_at": "2026-09-15T05:18:47.101476Z"
+      },
+      {
+        "seq": 21,
+        "type": "run",
+        "status": "completed",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:47.144378Z"
+      }
+    ],
+    "audit_complete": true,
+    "started_at": "2026-09-15T05:18:46.501159Z",
+    "completed_at": "2026-09-15T05:18:47.144378Z",
+    "duration_ms": 643,
+    "queue_duration_ms": 3,
+    "created_at": "2026-09-15T05:18:46.497869Z",
+    "updated_at": "2026-09-15T05:18:47.144417Z"
+  },
+  "secondRun": {
+    "id": "crun_703c67b832a6b1649fe83ef196b1f218",
+    "conversation_id": "conv_e5b02e0a0e8bdbacc41598ac703cb98e",
+    "client_message_id": "70fbf165-3f6a-4fe1-8a55-547e16cbe07c",
+    "status": "completed",
+    "user_seq": 3,
+    "assistant_message_id": "msg_0eee17c79e198c7ff15d79cead96ba41",
+    "attempt": 1,
+    "draft_bytes": 0,
+    "last_event_seq": 8,
+    "steps": [
+      {
+        "number": 0,
+        "attempt": 1,
+        "status": "completed",
+        "text": "旧来源已撤回，已使用当前 record-v4 上下文。",
+        "calls": [],
+        "usage": {
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 50,
+          "input_tokens": 80,
+          "output_tokens": 10
+        },
+        "context": {
+          "window": {
+            "limit_bytes": 20480,
+            "input_bytes": 5680,
+            "pressure_permille": 277,
+            "provider_serialized": true
+          },
+          "sources": [
+            {
+              "key": "project.rules",
+              "kind": "project_instructions",
+              "scope": "workspace",
+              "refresh": "run",
+              "version": "project-v1",
+              "order": 0,
+              "stable_prefix": true,
+              "updated_at": "2026-09-15T10:00:00.000000002Z"
+            },
+            {
+              "key": "business.current",
+              "kind": "business_record",
+              "scope": "conversation",
+              "refresh": "step",
+              "version": "record-v4",
+              "order": 10,
+              "updated_at": "2026-09-15T10:00:00.000000004Z"
+            },
+            {
+              "key": "file.current",
+              "kind": "file_reference",
+              "scope": "conversation",
+              "refresh": "run",
+              "version": "file-v2",
+              "order": 20,
+              "updated_at": "2026-09-15T10:00:00.000000002Z"
+            }
+          ],
+          "cache_read_input_tokens": 50
+        },
+        "started_at": "2026-09-15T05:18:47.811487Z",
+        "completed_at": "2026-09-15T05:18:47.812611Z",
+        "duration_ms": 1
+      }
+    ],
+    "model": "context-fixture",
+    "usage": {
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 50,
+      "input_tokens": 80,
+      "output_tokens": 10
+    },
+    "context": {
+      "window": {
+        "limit_bytes": 20480,
+        "input_bytes": 4012,
+        "pressure_permille": 195,
+        "provider_serialized": false
+      },
+      "sources": [
+        {
+          "key": "project.rules",
+          "kind": "project_instructions",
+          "scope": "workspace",
+          "refresh": "run",
+          "version": "project-v1",
+          "order": 0,
+          "stable_prefix": true,
+          "updated_at": "2026-09-15T10:00:00.000000002Z"
+        },
+        {
+          "key": "business.current",
+          "kind": "business_record",
+          "scope": "conversation",
+          "refresh": "step",
+          "version": "record-v4",
+          "order": 10,
+          "updated_at": "2026-09-15T10:00:00.000000004Z"
+        },
+        {
+          "key": "file.current",
+          "kind": "file_reference",
+          "scope": "conversation",
+          "refresh": "run",
+          "version": "file-v2",
+          "order": 20,
+          "updated_at": "2026-09-15T10:00:00.000000002Z"
+        }
+      ]
+    },
+    "correlation_id": "crun_703c67b832a6b1649fe83ef196b1f218",
+    "metrics": {
+      "steps": 1,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "tool_attempts": 0,
+      "parallel_tool_batches": 0,
+      "parallel_tool_calls": 0,
+      "peak_parallel_tools": 0,
+      "authorization_checks": 0,
+      "confirmation_decisions": 0,
+      "context_compactions": 0,
+      "compacted_results": 0,
+      "compacted_intervals": 0,
+      "peak_context_bytes": 5680,
+      "context_limit_bytes": 20480,
+      "cache_read_input_tokens": 50,
+      "cache_creation_input_tokens": 0
+    },
+    "audit": [
+      {
+        "seq": 1,
+        "type": "run",
+        "status": "queued",
+        "step": 0,
+        "occurred_at": "2026-09-15T05:18:47.703967Z"
+      },
+      {
+        "seq": 2,
+        "type": "run",
+        "status": "running",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:47.704398Z"
+      },
+      {
+        "seq": 3,
+        "type": "context",
+        "status": "assembled",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:47.751991Z"
+      },
+      {
+        "seq": 4,
+        "type": "step",
+        "status": "prepared",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:47.783397Z"
+      },
+      {
+        "seq": 5,
+        "type": "model",
+        "status": "started",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:47.811487Z"
+      },
+      {
+        "seq": 6,
+        "type": "model",
+        "status": "completed",
+        "step": 0,
+        "attempt": 1,
+        "duration_ms": 1,
+        "occurred_at": "2026-09-15T05:18:47.812611Z"
+      },
+      {
+        "seq": 8,
+        "type": "run",
+        "status": "completed",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T05:18:47.815816Z"
+      }
+    ],
+    "audit_complete": true,
+    "started_at": "2026-09-15T05:18:47.704398Z",
+    "completed_at": "2026-09-15T05:18:47.815816Z",
+    "duration_ms": 111,
+    "queue_duration_ms": 0,
+    "created_at": "2026-09-15T05:18:47.703893Z",
+    "updated_at": "2026-09-15T05:18:47.815834Z"
+  }
+}

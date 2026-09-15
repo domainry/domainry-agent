@@ -1,0 +1,29 @@
+{
+  "realIdentityAndHTTP": true,
+  "sourceWithdrawalHidesContent": true,
+  "readableFormCleared": true,
+  "pauseWithoutSourceRead": true,
+  "hiddenRequirementCannotResume": true,
+  "staleRevisionRejected": true,
+  "sourceRestoration": true,
+  "managerWithdrawalClosesForm": true,
+  "withdrawnManagerMutationRejected": true,
+  "restorationClearsForm": true,
+  "cancelWithoutSourceRead": true,
+  "narrowViewport": true,
+  "submissions": [
+    {
+      "expected_revision": 5,
+      "action": "pause",
+      "reason": "来源失权后暂停原委派",
+      "client_id": "4c896068-fabf-41c7-b484-e9eb111727e9"
+    },
+    {
+      "expected_revision": 6,
+      "action": "cancel",
+      "reason": "资料不可读时取消原委派",
+      "client_id": "62e15947-4c7a-41c9-9e4b-053fe8458f01"
+    }
+  ],
+  "errors": []
+}

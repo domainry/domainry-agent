@@ -1,0 +1,5 @@
+# github.com/domainry/domainry-agent/internal/assembly/web [github.com/domainry/domainry-agent/internal/assembly/web.test]
+internal/assembly/web/conversation_shared_account_sources_test.go:556:72: current.AgentID undefined (type agentsdk.ConversationDelegationDetail has no field or method AgentID)
+internal/assembly/web/conversation_shared_account_sources_test.go:556:91: initial.AgentID undefined (type agentsdk.ConversationDelegationDetail has no field or method AgentID)
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web [build failed]
+FAIL

@@ -1,0 +1,5 @@
+{
+  "Replace": {
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_sources.go": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-participant-delivery-reading/source-before/testdata/agent/internal/application/conversation_sources.go"
+  }
+}

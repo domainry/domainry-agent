@@ -1,0 +1,5 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+    conversation_source_release_test.go:164: Actual third-user Agent execution index, five-step read, exact result page, current source revocation, unpublished-run rejection and confirmed owner publication/withdrawal/republish verified
+--- PASS: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (32.13s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	32.580s

@@ -1,0 +1,12 @@
+Agent workspace:
+go test ./internal/application ../domainry-agent-sdk/...
+go test ./internal/assembly/web -run '^(TestPeerBusinessDeliveryReadsWithoutProfessionalToolExecution|TestPeerBusinessWriteDeliveryReadsOriginalReceiptsWithoutExecution)$' -count=1 -v
+go test -race ./internal/application ../domainry-agent-sdk/businessrpc -run '^(TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader|TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence|TestSharedProfessionalReadRPCPreservesReaderAndOriginalProvenance|TestBusinessResultReadRPCPreservesEvidenceWithoutToolGrant)$' -count=1
+
+Runtime workspace (GOWORK=/tmp/runtime-work/go.work):
+go test ./runtime/application/action ./runtime/application/workflow ./runtime/application/agenthost -count=1
+go test -race ./runtime/application/action ./runtime/application/workflow ./runtime/application/agenthost -run '^(TestActionIndependentReceiptReadPreservesOwnershipAllReferencesAndNoEffects|TestWorkflowIndependentReceiptReadRequiresCurrentParticipantAndOriginalLedger|TestSharedBusiness.*|TestBusinessReceiptReadUsesCurrentRecordsWithoutAgentToolGrants)$' -count=1
+go test ./runtime/bootstrap/integrationtest -run '^(TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart|TestBusinessIndependentReceiptReadThroughRealOwnerRPC|TestBusinessWriteReceiptReadThroughRealOwnerRPC|TestCrossUserBusinessAgentToolDispatchAutomaticDeliveryOriginalPagesAndAcceptance)$' -count=1 -v
+
+git diff --check: Agent, Agent SDK, Runtime
+Prior business seven-operation failure: immutable overlay from professional-writes phase; no new producer grants fabricated.

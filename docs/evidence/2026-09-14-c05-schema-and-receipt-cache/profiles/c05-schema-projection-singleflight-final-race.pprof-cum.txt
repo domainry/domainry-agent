@@ -1,0 +1,213 @@
+/tmp/c05-schema-projection-singleflight-final-race.test: stat /tmp/c05-schema-projection-singleflight-final-race.test: no such file or directory
+Fetched 1 source profiles out of 2
+Local symbolization failed for integrationtest.test: open /private/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/go-build26273901/b001/integrationtest.test: no such file or directory
+Some binary filenames not available. Symbolization may be incomplete.
+Try setting PPROF_BINARY_PATH to the search path for local binaries.
+File: integrationtest.test
+Type: cpu
+Time: 2026-09-14 20:31:18 CST
+Duration: 292.45s, Total samples = 464.08s (158.69%)
+Showing nodes accounting for 351.53s, 75.75% of 464.08s total
+Dropped 2485 nodes (cum <= 2.32s)
+Showing top 200 nodes out of 408
+      flat  flat%   sum%        cum   cum%
+     0.03s 0.0065% 0.0065%    134.46s 28.97%  database/sql.withLock
+     0.01s 0.0022% 0.0086%    124.44s 26.81%  runtime.wakep
+         0     0% 0.0086%    124.29s 26.78%  runtime.semawakeup
+   124.15s 26.75% 26.76%    124.18s 26.76%  runtime.pthread_cond_signal
+         0     0% 26.76%    124.14s 26.75%  runtime.notewakeup
+         0     0% 26.76%    124.12s 26.75%  runtime.startm
+     0.02s 0.0043% 26.76%    118.26s 25.48%  runtime.systemstack
+     0.02s 0.0043% 26.77%     94.96s 20.46%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).principal
+     0.01s 0.0022% 26.77%     94.93s 20.46%  github.com/domainry/domainry-identity-sdk/application.principals.Resolve
+     0.02s 0.0043% 26.78%     94.92s 20.45%  github.com/domainry/domainry-identity/internal/adapter/identitysdk.sdkPrincipalResolver.Resolve
+         0     0% 26.78%     93.05s 20.05%  net/http.HandlerFunc.ServeHTTP
+         0     0% 26.78%     89.59s 19.30%  net/http.(*ServeMux).ServeHTTP
+         0     0% 26.78%     89.28s 19.24%  runtime._System
+         0     0% 26.78%     88.70s 19.11%  github.com/domainry/domainry-identity/internal/application/identity.(*IdentityEffectiveAccessApplicationService).ResolvePrincipalAccess
+     0.01s 0.0022% 26.78%     85.06s 18.33%  modernc.org/sqlite/lib.Xsqlite3_step
+     0.01s 0.0022% 26.78%     83.22s 17.93%  modernc.org/sqlite.(*conn).step
+         0     0% 26.78%     80.97s 17.45%  database/sql.(*DB).queryDC
+     0.01s 0.0022% 26.78%     80.90s 17.43%  database/sql.(*DB).queryDC.func1
+     0.01s 0.0022% 26.78%     80.84s 17.42%  database/sql.ctxDriverQuery
+     0.01s 0.0022% 26.79%     80.83s 17.42%  github.com/domainry/domainry-foundation/telemetry.(*observedConn).QueryContext
+     0.01s 0.0022% 26.79%     80.82s 17.42%  github.com/domainry/domainry-foundation/telemetry.(*observedConn).queryContext
+         0     0% 26.79%     80.71s 17.39%  modernc.org/sqlite.(*conn).QueryContext
+         0     0% 26.79%     80.71s 17.39%  modernc.org/sqlite.(*conn).query
+         0     0% 26.79%     80.41s 17.33%  github.com/domainry/domainry-agent/internal/application.InvokeConversation
+         0     0% 26.79%     80.32s 17.31%  github.com/domainry/domainry-agent/internal/transport/http/module.NewConversationAdapter.(*conversationAdapter).handle.func1
+         0     0% 26.79%     79.04s 17.03%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).registerModuleHTTPRoutes.(*HTTPRouter).moduleHTTPRouteHandler.func1
+         0     0% 26.79%     74.97s 16.15%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withAdmission.func6
+         0     0% 26.79%     71.37s 15.38%  runtime.newproc.func1
+     0.02s 0.0043% 26.79%     70.08s 15.10%  modernc.org/sqlite/lib._sqlite3Step
+     0.61s  0.13% 26.92%     69.92s 15.07%  modernc.org/sqlite/lib._sqlite3VdbeExec
+         0     0% 26.92%     69.84s 15.05%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withOperationalControls.func7
+         0     0% 26.92%     67.89s 14.63%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).run
+         0     0% 26.92%     64.38s 13.87%  runtime.schedule
+         0     0% 26.92%     64.31s 13.86%  runtime.mcall
+         0     0% 26.92%     62.40s 13.45%  syscall.syscalln
+    62.39s 13.44% 40.37%     62.39s 13.44%  syscall.rawsyscalln
+     0.01s 0.0022% 40.37%     62.14s 13.39%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).record
+         0     0% 40.37%     61.74s 13.30%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withBusinessEventPublication.func8
+         0     0% 40.37%     60.94s 13.13%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).worker
+         0     0% 40.37%     58.78s 12.67%  github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).buildPrincipalForRole
+         0     0% 40.37%     57.91s 12.48%  runtime.park_m
+         0     0% 40.37%     56.50s 12.17%  syscall.syscall
+     0.04s 0.0086% 40.38%     53.94s 11.62%  modernc.org/sqlite/lib._sqlite3Prepare
+     0.15s 0.032% 40.41%     53.61s 11.55%  modernc.org/sqlite/lib._sqlite3RunParser
+     0.01s 0.0022% 40.41%     52.74s 11.36%  modernc.org/sqlite/lib._sqlite3OsShmLock (inline)
+         0     0% 40.41%     52.73s 11.36%  modernc.org/sqlite/lib._unixShmLock
+         0     0% 40.41%     52.70s 11.36%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withHighRiskOperationPolicy.func9
+         0     0% 40.41%     52.69s 11.35%  modernc.org/libc.Xfcntl
+         0     0% 40.41%     52.69s 11.35%  modernc.org/sqlite/lib._unixShmSystemLock
+         0     0% 40.41%     52.68s 11.35%  golang.org/x/sys/unix.FcntlFlock (inline)
+         0     0% 40.41%     52.68s 11.35%  golang.org/x/sys/unix.fcntl
+         0     0% 40.41%     52.68s 11.35%  modernc.org/libc.Xfcntl64
+     0.26s 0.056% 40.47%     51.82s 11.17%  modernc.org/sqlite/lib._sqlite3Parser
+         0     0% 40.47%     51.36s 11.07%  modernc.org/sqlite/lib._sqlite3LockAndPrepare
+     0.62s  0.13% 40.60%     50.04s 10.78%  modernc.org/sqlite/lib._yy_reduce
+     0.01s 0.0022% 40.61%     49.70s 10.71%  database/sql.(*DB).retry
+         0     0% 40.61%     48.55s 10.46%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).deliveryBusinessToolResult
+     0.01s 0.0022% 40.61%     47.78s 10.30%  runtime.findRunnable
+     0.01s 0.0022% 40.61%     46.15s  9.94%  database/sql.(*DB).QueryContext
+         0     0% 40.61%     46.14s  9.94%  database/sql.(*DB).QueryContext.func1
+         0     0% 40.61%     46.14s  9.94%  database/sql.(*DB).query
+         0     0% 40.61%     44.89s  9.67%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withActionAuthorization.func10.1
+     0.01s 0.0022% 40.61%     44.47s  9.58%  modernc.org/sqlite.(*stmt).query
+         0     0% 40.61%     42.51s  9.16%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withActionAuthorization.func10
+     0.02s 0.0043% 40.62%     42.09s  9.07%  database/sql.(*Rows).Next
+     0.02s 0.0043% 40.62%     41.33s  8.91%  database/sql.(*Rows).Next.func1
+     0.05s 0.011% 40.63%     41.30s  8.90%  database/sql.(*Rows).nextLocked
+     0.07s 0.015% 40.65%     41.22s  8.88%  modernc.org/sqlite.(*rows).Next
+     0.02s 0.0043% 40.65%     39.32s  8.47%  modernc.org/sqlite/lib._sqlite3Select
+         0     0% 40.65%     39.29s  8.47%  github.com/domainry/domainry-agent-sdk.AuthorizeSharedBusinessResultRead
+         0     0% 40.65%     39.12s  8.43%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withAuth.func11.1
+         0     0% 40.65%     37.73s  8.13%  github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent.(*ConversationStore).transaction
+         0     0% 40.65%     37.71s  8.13%  github.com/domainry/domainry-identity-sdk/httpmiddleware.(*Middleware).Authenticate.func1
+    18.59s  4.01% 44.66%     37.59s  8.10%  runtime.checkptrBase
+         0     0% 44.66%     36.80s  7.93%  modernc.org/sqlite/lib.Xsqlite3_prepare_v2 (inline)
+     0.01s 0.0022% 44.66%     36.70s  7.91%  modernc.org/sqlite.newStmt
+         0     0% 44.66%     36.57s  7.88%  modernc.org/sqlite.(*conn).prepareV2
+         0     0% 44.66%     36.45s  7.85%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).AuthorizeSharedBusinessResultRead
+         0     0% 44.66%     36.08s  7.77%  github.com/domainry/domainry-identity-sdk/httpmiddleware.(*Middleware).RequirePasswordChanged.func1
+     0.02s 0.0043% 44.66%     36.05s  7.77%  modernc.org/sqlite/lib._sqlite3VdbeHalt
+         0     0% 44.66%     35.79s  7.71%  github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent.(*ConversationStore).Claim
+         0     0% 44.66%     35.59s  7.67%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).delegationExecutionResultRecord
+         0     0% 44.66%     35.56s  7.66%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).readDelegationExecutionResult
+         0     0% 44.66%     35.54s  7.66%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).ReadConversationDelegationExecutionResult
+         0     0% 44.66%     35.42s  7.63%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withAuth.func11
+     0.01s 0.0022% 44.66%     35.37s  7.62%  runtime.ready
+         0     0% 44.66%     34.93s  7.53%  database/sql.(*Tx).QueryContext
+         0     0% 44.66%     33.84s  7.29%  github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent.(*ConversationStore).Claim.func1
+         0     0% 44.66%     33.50s  7.22%  modernc.org/sqlite/lib._vdbeCommit
+         0     0% 44.66%     33.24s  7.16%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withRuntimeAuthoringScenarioEvidence.func12
+     2.72s  0.59% 45.25%     32.81s  7.07%  runtime.checkptrAlignment
+         0     0% 45.25%     32.76s  7.06%  modernc.org/sqlite/lib._btreeEndTransaction
+         0     0% 45.25%     32.74s  7.05%  modernc.org/sqlite/lib._unlockBtreeIfUnused
+         0     0% 45.25%     32.73s  7.05%  modernc.org/sqlite/lib._releasePageOne (inline)
+         0     0% 45.25%     32.73s  7.05%  modernc.org/sqlite/lib._sqlite3BtreeCommitPhaseTwo
+         0     0% 45.25%     32.73s  7.05%  modernc.org/sqlite/lib._sqlite3PagerUnrefPageOne
+         0     0% 45.25%     32.71s  7.05%  modernc.org/sqlite/lib._pagerUnlockAndRollback
+         0     0% 45.25%     32.70s  7.05%  modernc.org/sqlite/lib._pagerUnlockIfUnused (inline)
+     0.01s 0.0022% 45.25%     32.69s  7.04%  modernc.org/sqlite/lib._pager_unlock
+         0     0% 45.25%     32.63s  7.03%  modernc.org/sqlite/lib._sqlite3WalEndReadTransaction
+     0.01s 0.0022% 45.26%     32.62s  7.03%  modernc.org/sqlite/lib._walUnlockShared
+         0     0% 45.26%     32.10s  6.92%  runtime.closechan.goready.func1
+    31.49s  6.79% 52.04%     31.49s  6.79%  __tsan::MemoryRangeSet
+         0     0% 52.04%     31.37s  6.76%  github.com/domainry/domainry-runtime/runtime/transport/http.CORSMiddleware.func1
+     0.01s 0.0022% 52.04%     30.77s  6.63%  github.com/domainry/domainry-identity/internal/application/identity.(*IdentityApplicationService).ResolvePrincipalForRole
+     0.01s 0.0022% 52.04%     30.75s  6.63%  github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).ResolvePrincipalForRole
+         0     0% 52.04%     30.74s  6.62%  github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).BuildPrincipalForRole (inline)
+         0     0% 52.04%     29.86s  6.43%  github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).ResolvePrincipalContext
+     3.69s   0.8% 52.84%     29.12s  6.27%  runtime.checkptrStraddles
+         0     0% 52.84%     28.71s  6.19%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withRecovery.func13
+         0     0% 52.84%     27.69s  5.97%  testing.tRunner
+    27.53s  5.93% 58.77%     27.53s  5.93%  runtime.usleep
+         0     0% 58.77%     26.71s  5.76%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).collaborationAuthorization
+         0     0% 58.77%     26.69s  5.75%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).AuthorizeConversationCollaboration
+         0     0% 58.77%     25.92s  5.59%  github.com/domainry/domainry-identity/internal/application/identity.(*IdentityEffectiveAccessApplicationService).snapshotFromPrincipalContext
+         0     0% 58.77%     25.90s  5.58%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).authorizeCollaboration
+     0.19s 0.041% 58.81%     25.72s  5.54%  runtime.stealWork
+         0     0% 58.81%     25.65s  5.53%  github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withMetrics.func14
+     0.01s 0.0022% 58.82%     25.36s  5.46%  runtime.runqgrab
+         0     0% 58.82%     25.36s  5.46%  runtime.runqsteal
+         0     0% 58.82%     24.01s  5.17%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).execute
+         0     0% 58.82%     23.22s  5.00%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).projectConversationDelegationContent
+         0     0% 58.82%     23.20s  5.00%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).projectConversationDelegation
+         0     0% 58.82%     22.04s  4.75%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).generateConversationExecution
+         0     0% 58.82%     21.72s  4.68%  github.com/domainry/domainry-agent-sdk/browsergateway.(*boundary).forwardConversation
+         0     0% 58.82%     21.41s  4.61%  github.com/domainry/domainry-agent-sdk/browsergateway.NewHandler.(*boundary).authenticated.func6
+         0     0% 58.82%     21.24s  4.58%  runtime.stopm
+     0.01s 0.0022% 58.82%     21.06s  4.54%  runtime.semasleep
+    21.04s  4.53% 63.35%     21.04s  4.53%  runtime.pthread_cond_wait
+         0     0% 63.35%     20.97s  4.52%  runtime.mPark (inline)
+     0.01s 0.0022% 63.35%     20.97s  4.52%  runtime.notesleep
+     0.01s 0.0022% 63.36%     20.69s  4.46%  modernc.org/sqlite/lib._sqlite3BtreeBeginTrans
+         0     0% 63.36%     20.68s  4.46%  modernc.org/sqlite/lib._btreeBeginTrans
+     0.01s 0.0022% 63.36%     20.63s  4.45%  modernc.org/sqlite/lib._lockBtree
+         0     0% 63.36%     20.27s  4.37%  modernc.org/sqlite/lib._sqlite3PagerSharedLock
+         0     0% 63.36%     20.26s  4.37%  modernc.org/sqlite/lib._pagerBeginReadTransaction
+         0     0% 63.36%     20.24s  4.36%  modernc.org/sqlite/lib._sqlite3WalBeginReadTransaction (inline)
+     0.01s 0.0022% 63.36%     20.24s  4.36%  modernc.org/sqlite/lib._walBeginReadTransaction
+         0     0% 63.36%     20.22s  4.36%  modernc.org/sqlite/lib._walTryBeginRead
+         0     0% 63.36%     20.08s  4.33%  modernc.org/sqlite/lib._walLockShared
+    19.71s  4.25% 67.61%     19.71s  4.25%  __tsan_read
+         0     0% 67.61%     18.24s  3.93%  github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.exerciseSharedBusinessAgentDelivery
+     9.25s  1.99% 69.60%     18.24s  3.93%  runtime.findObject
+         0     0% 69.60%     17.96s  3.87%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).AuthorizeConversationTool
+     0.07s 0.015% 69.62%     17.85s  3.85%  modernc.org/sqlite/lib._sqlite3WhereBegin
+     0.01s 0.0022% 69.62%     17.78s  3.83%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).sourceReleaseContext
+         0     0% 69.62%     17.67s  3.81%  github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.(*businessWebFixture).open
+         0     0% 69.62%     17.44s  3.76%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).authorizeAction
+         0     0% 69.62%     17.43s  3.76%  github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.TestCrossUserBusinessAgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance
+         0     0% 69.62%     17.42s  3.75%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).RevalidateBusiness
+         0     0% 69.62%     17.24s  3.71%  github.com/domainry/domainry-agent-sdk/browsergateway.NewHandler.func3
+         0     0% 69.62%     16.94s  3.65%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).revalidateBusinessSnapshot
+         0     0% 69.62%     16.64s  3.59%  database/sql.(*DB).QueryRowContext
+     0.01s 0.0022% 69.62%     16.58s  3.57%  runtime.resetspinning
+         0     0% 69.62%     16.57s  3.57%  encoding/json.Marshal
+         0     0% 69.62%     16.16s  3.48%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).QueryIdentityContext
+     0.01s 0.0022% 69.62%     16.12s  3.47%  encoding/json.(*encodeState).marshal
+     0.06s 0.013% 69.63%     16.11s  3.47%  encoding/json.(*encodeState).reflectValue
+         0     0% 69.63%     15.97s  3.44%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).readSharedBusinessSnapshot
+         0     0% 69.63%     15.89s  3.42%  github.com/domainry/domainry-identity/internal/application/identity.(*IdentityApplicationService).ListMenus
+         0     0% 69.63%     15.86s  3.42%  github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).ListMenus (inline)
+     0.01s 0.0022% 69.64%     15.86s  3.42%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).ListIdentityMenus
+         0     0% 69.64%     15.85s  3.42%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/authorization/menu.(*Store).ListIdentityMenus (inline)
+     0.01s 0.0022% 69.64%     15.85s  3.42%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/authorization/menu.(*Store).LoadMenus
+         0     0% 69.64%     15.73s  3.39%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).authorizeReleasedSourceRead
+     3.50s  0.75% 70.39%     15.72s  3.39%  runtime.checkptrArithmetic
+         0     0% 70.39%     15.61s  3.36%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).ConversationDelegation
+     0.09s 0.019% 70.41%     15.56s  3.35%  github.com/domainry/domainry-identity/internal/domain/identity/service.identityPermissionStateFingerprint
+         0     0% 70.41%     15.51s  3.34%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).publishedSourceContext
+         0     0% 70.41%     15.42s  3.32%  github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.newWithExtensionsUsingAllFactoriesAndStore
+         0     0% 70.41%     15.41s  3.32%  github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.NewWithScheduler
+         0     0% 70.41%     15.38s  3.31%  github.com/domainry/domainry-runtime/runtime/bootstrap.NewWithScheduler (inline)
+         0     0% 70.41%     15.23s  3.28%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/projection/user.(*Store).ListWithinDataScope
+         0     0% 70.41%     14.97s  3.23%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).ListIdentityUsers
+         0     0% 70.41%     14.97s  3.23%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).loadUsers
+         0     0% 70.41%     14.97s  3.23%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/projection/user.(*Store).List (inline)
+     0.01s 0.0022% 70.41%     14.82s  3.19%  modernc.org/sqlite/lib._sqlite3Reprepare
+         0     0% 70.41%     14.62s  3.15%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).registeredExecutionCatalog
+         0     0% 70.41%     14.43s  3.11%  github.com/domainry/domainry-tools/internal/application/tool.(*Combined).ConversationTools
+     0.02s 0.0043% 70.42%     14.36s  3.09%  encoding/json.sliceEncoder.encode
+     0.33s 0.071% 70.49%     14.34s  3.09%  encoding/json.arrayEncoder.encode
+         0     0% 70.49%     14.24s  3.07%  github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.(*businessBrowser).call.func1
+         0     0% 70.49%     14.23s  3.07%  github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).resolvePrincipalScopeIDs
+         0     0% 70.49%     14.17s  3.05%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).authorizeCollaborationID
+         0     0% 70.49%     13.83s  2.98%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).ListIdentityRoles
+         0     0% 70.49%     13.83s  2.98%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).loadRoles
+     0.02s 0.0043% 70.49%     13.83s  2.98%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/authorization/role.(*Store).List
+         0     0% 70.49%     13.71s  2.95%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).object
+         0     0% 70.49%     13.69s  2.95%  github.com/domainry/domainry-agent/internal/application.(*collaborationToolHost).ConversationTools
+     0.92s   0.2% 70.69%     13.56s  2.92%  encoding/json.structEncoder.encode
+         0     0% 70.69%     13.18s  2.84%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).QueryIdentityRowContext
+         0     0% 70.69%     12.95s  2.79%  github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.(*businessBrowser).call
+         0     0% 70.69%     12.93s  2.79%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).publishedReferenceContext
+    12.54s  2.70% 73.39%     12.54s  2.70%  racecall
+         0     0% 73.39%     11.46s  2.47%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).executeConversationTool
+         0     0% 73.39%     11.22s  2.42%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).ReadConversationDeliveryResult
+         0     0% 73.39%     11.22s  2.42%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).authorizedDeliveryResult
+    10.92s  2.35% 75.75%     10.92s  2.35%  __tsan::MemoryAccessRangeT
+         0     0% 75.75%     10.72s  2.31%  github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.newBusinessWebFixtureWithModel
+         0     0% 75.75%     10.70s  2.31%  github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).GetIdentityUser

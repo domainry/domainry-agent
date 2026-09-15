@@ -55,7 +55,8 @@ func New(config Config) (*Server, error) {
 		actionAgentSaaSSessionsQuery:  http.HandlerFunc(s.listSessions), actionAgentSaaSSessionsUpsert: http.HandlerFunc(s.upsertSession), actionAgentSaaSSessionsSetArchived: http.HandlerFunc(s.setSessionArchived),
 		actionAgentSaaSProposalsQuery: http.HandlerFunc(s.listProposals), actionAgentSaaSProposalsGet: http.HandlerFunc(s.getProposal), actionAgentSaaSProposalsStore: http.HandlerFunc(s.storeProposal), actionAgentSaaSProposalsDecide: http.HandlerFunc(s.decideProposal),
 		actionAgentSaaSCapabilitySummary: capabilityHandler, actionAgentSaaSCapabilityCategory: capabilityHandler, actionAgentSaaSCapabilityValidation: capabilityHandler,
-		agentsdk.ActionAgentScheduledConversationTaskStart: http.HandlerFunc(s.conversationHandler("scheduled_task_start")),
+		agentsdk.ActionAgentScheduledConversationTaskStart:      http.HandlerFunc(s.conversationHandler("scheduled_task_start")),
+		agentsdk.ActionAgentBusinessEventConversationTaskAccept: http.HandlerFunc(s.conversationHandler("business_event_task_accept")),
 	}
 	actions, err := SaaSAuthorizationActions()
 	if err != nil {
@@ -161,6 +162,9 @@ func (s *Server) descriptor(w http.ResponseWriter, _ *http.Request) {
 		if _, ok := s.config.Conversations.(agentsdk.ScheduledConversationTaskService); ok && scheduledAvailable {
 			descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityScheduledConversationTask)
 		}
+		if _, ok := s.config.Conversations.(agentsdk.BusinessEventConversationTaskService); ok && scheduledAvailable {
+			descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityBusinessEventConversationTask)
+		}
 		if status, ok := s.config.Conversations.(agentsdk.ConversationStatusProvider); ok && status.ConversationStreaming() {
 			descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationStreamV1)
 		}
@@ -169,6 +173,9 @@ func (s *Server) descriptor(w http.ResponseWriter, _ *http.Request) {
 			if _, ok := s.config.Conversations.(agentsdk.ConversationCollaborationService); ok {
 				descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationCollaborationV1)
 			}
+		}
+		if _, ok := s.config.Conversations.(agentsdk.ConversationExternalAgentService); ok {
+			descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationExternalAgentV1)
 		}
 	}
 	writeJSON(w, http.StatusOK, descriptor)

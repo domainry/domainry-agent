@@ -1,0 +1,9 @@
+=== RUN   TestModelSourceReceiptDiscardedNativeDenialInvalidatesCompletionMarker
+    conversation_model_sources_test.go:365: discarded later source denial retained an earlier completion marker 2 <nil>
+--- FAIL: TestModelSourceReceiptDiscardedNativeDenialInvalidatesCompletionMarker (0.00s)
+=== RUN   TestModelSourceReceiptDiscardedStricterDenialCannotAuthorizeInput
+    conversation_model_sources_test.go:384: discarded raw source denial authorized the model input 3 <nil>
+--- FAIL: TestModelSourceReceiptDiscardedStricterDenialCannotAuthorizeInput (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.665s
+FAIL

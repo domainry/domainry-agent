@@ -1,0 +1,80 @@
+{
+  "sealed_at": "2026-09-14T10:59:16.777520+00:00",
+  "phase": "C05 local completed collaboration receipt audit before model reuse",
+  "todo_complete": false,
+  "completed_todo_items": 4,
+  "total_todo_items": 25,
+  "application_final": {
+    "race_exit": 0,
+    "passed_roots": 140,
+    "new_roots": 13,
+    "new_subcases": 25
+  },
+  "agent_stage1_regression": {
+    "exit": 1,
+    "passed_tested_packages": 16,
+    "no_test_packages": 9,
+    "failed_package": "internal/assembly/web",
+    "reason": "Go default package observation timeout 10m; first account write root, unknown_original_receipt subcase; not a task-budget timeout or a passed complete regression",
+    "compiled_version": "stage1; later native host/service/purpose/denial guards are validated by final application tests"
+  },
+  "runtime_stage3_normal": {
+    "exit": 0,
+    "root_seconds": 47.35,
+    "compiled_version": "stage3; before sticky native audit failure fix"
+  },
+  "runtime_final_normal": {
+    "exit": 0,
+    "root_seconds": 44.5,
+    "package_seconds": 45.508,
+    "compiled_version": "final",
+    "contains": "actual revised role/admitted roots/new delivery/account acceptance/original pages/revocation/restart"
+  },
+  "runtime_final_race": {
+    "status": "running_at_seal",
+    "session_id": 26525,
+    "observed_live_pid": 56394,
+    "observed_command": "go test -race ./runtime/bootstrap/integrationtest -run ^TestLegacyAgreementUpdateRestartResumeAndOriginalHistoryThroughRealHTTP$ -count=1 -v -timeout=30m -cpuprofile=/tmp/c05-model-input-source-runtime-final-race.cpu -o /tmp/c05-model-input-source-runtime-final-race.test",
+    "root": "TestLegacyAgreementUpdateRestartResumeAndOriginalHistoryThroughRealHTTP",
+    "task_timeout_seconds": 180,
+    "task_budget_changed": false,
+    "go_observation_timeout": "30m",
+    "compiled_version": "final",
+    "terminal_result": null
+  },
+  "inputs": {
+    "agent": {
+      "count": 3969,
+      "unchanged": true
+    },
+    "runtime": {
+      "count": 9890,
+      "unchanged": true
+    }
+  },
+  "binaries": {
+    "stage3-normal": {
+      "path": "/tmp/c05-model-input-source-runtime-normal.test",
+      "sha256": "0db70687ef9adc41ef1525e562416645e99a3c698c3cffe8c40d3a44167fb513",
+      "copied": false
+    },
+    "final-normal": {
+      "path": "/tmp/c05-model-input-source-runtime-final-normal.test",
+      "sha256": "b0d75c6c2c79731d458a92705a7fa6663ee84b10245b77d529043da6707cde47",
+      "copied": false
+    },
+    "final-race": {
+      "path": "/tmp/c05-model-input-source-runtime-final-race.test",
+      "sha256": null,
+      "copied": false
+    }
+  },
+  "limits": [
+    "Timing from separate real roots is not a controlled performance benchmark.",
+    "Stage1 original failure includes expected-count/order failures as well as source revocation and step-integrity counterexamples; do not classify all failures as production leaks.",
+    "Initial private attachment fixture expected an incorrect error code; actual denial was attachment_conversation_mismatch.",
+    "Delivery provenance adds its independent source policy check; the initial expected-count failure was a fixture count, not a bypass.",
+    "No source authorization/proof survives a model input pass. Inherited runs, old/unknown roles, prefixes, altered/unrepresented calls retain complete traversal.",
+    "Final race is running; no terminal or complete C05 claim."
+  ]
+}

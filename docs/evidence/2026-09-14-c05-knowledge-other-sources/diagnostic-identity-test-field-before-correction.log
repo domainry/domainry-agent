@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-identity/internal/application/identity [github.com/domainry/domainry-identity/internal/application/identity.test]
+internal/application/identity/identity_effective_access_application_service_test.go:25:96: snapshot.Permissions[0].PermissionKey undefined (type identitymodel.IdentityEffectivePermissionGrant has no field or method PermissionKey)
+FAIL	github.com/domainry/domainry-identity/internal/application/identity [build failed]
+FAIL

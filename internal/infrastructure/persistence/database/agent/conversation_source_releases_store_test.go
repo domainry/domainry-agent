@@ -93,6 +93,52 @@ func TestSourceReleaseTransactionRollsBackWhenOriginRunIsNotOwnedByPublisher(t *
 	}
 }
 
+func TestSameIdentityDeliveryPersistsOwnRolePublisherForLaterReaders(t *testing.T) {
+	repo, actor, _, in := delegationSubjectFixture(t, true)
+	in.ExecutionAuthority = &actor
+	d, err := repo.CreateConversationDelegation(t.Context(), in, actor)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, found, err := repo.delegationSubjects(t.Context(), repo.store.Database(), d.ID, actor); err != nil || found {
+		t.Fatal("fixture must exercise the unmapped same-identity assignment", found, err)
+	}
+	launch, ok, err := repo.LaunchConversationTask(t.Context(), actor.RuntimeID)
+	if err != nil || !ok || launch.Authority != actor {
+		t.Fatal("original-role delivery run", launch, ok, err)
+	}
+	ref := sdk.ConversationRunReference{ConversationID: d.ConversationID, RunID: launch.Run.ID, BeforeStep: 2}
+	d.Delivery = &sdk.ConversationDelegationDelivery{Summary: "Submitted result"}
+	d.Verification = &sdk.ConversationDeliveryVerification{ActorID: actor.UserID, Source: &ref}
+	for range 2 {
+		if err := repo.transaction(t.Context(), func(tx *sql.Tx) error {
+			return repo.saveDelegationDeliveryReleases(t.Context(), tx, d, actor)
+		}); err != nil {
+			t.Fatal(err)
+		}
+		repo = NewConversationStore(repo.store)
+	}
+	reader := actor
+	reader.RoleKey = "later-reading-role"
+	releases, err := repo.ConversationSourceReleases(t.Context(), ref, reader)
+	if err != nil || len(releases) != 1 {
+		t.Fatal("submitted own-role verifier source has no exact publisher proof", releases, err)
+	}
+	release := releases[0]
+	if release.Producer != actor || release.Publisher == nil || *release.Publisher != actor || release.Reference != ref || release.DelegationID != d.ID || release.Purpose != "delivery" {
+		t.Fatal("reader replaced the original provider or actual publisher", release)
+	}
+	ref.BeforeStep++
+	if releases, err := repo.ConversationSourceReleases(t.Context(), ref, reader); err != nil || len(releases) != 0 {
+		t.Fatal("own-role delivery publication expanded the submitted prefix", releases, err)
+	}
+	ref.BeforeStep--
+	reader.UserID = "unrelated"
+	if releases, err := repo.ConversationSourceReleases(t.Context(), ref, reader); err != nil || len(releases) != 0 {
+		t.Fatal("own-role delivery publication escaped its intended owner", releases, err)
+	}
+}
+
 func TestSourceAuthorityResolvesUnpublishedOldRoleUnderExactOwnerScope(t *testing.T) {
 	repo, owner, current, in := delegationSubjectFixture(t, true)
 	original := owner

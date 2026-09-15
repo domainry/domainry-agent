@@ -10,11 +10,11 @@ import { parseAnalysisResult } from "./analysis-result.ts";
 
 export type DeliveryResultScope = { id:string; revision:number };
 
-export function StoredResult({reference,delivery,label="查看完整结果"}:{reference:ResultReference;delivery?:DeliveryResultScope;label?:string}) {
+export function StoredResult({reference,delivery,executionID,label="查看完整结果"}:{reference:ResultReference;delivery?:DeliveryResultScope;executionID?:string;label?:string}) {
   const [text,setText] = useState(""), [busy,setBusy] = useState(false), [error,setError] = useState("");
   const active = useRef<AbortController|null>(null);
   const container = useRef<HTMLElement|null>(null);
-  const key = JSON.stringify([reference,delivery]);
+  const key = JSON.stringify([reference,delivery,executionID]);
   function clear() { active.current?.abort(); active.current=null; setText("");setError("");setBusy(false); }
   useEffect(()=>{
     clear();
@@ -29,7 +29,7 @@ export function StoredResult({reference,delivery,label="查看完整结果"}:{re
     if(active.current)return;
     const abort=new AbortController();active.current=abort;setBusy(true);setError("");
     try {
-      const path=delivery?`/agent/delegations/${encodeURIComponent(delivery.id)}/delivery-result`:`/agent/conversations/${encodeURIComponent(reference.conversation_id)}/runs/${encodeURIComponent(reference.run_id)}/result`;
+      const path=executionID?`/agent/delegations/${encodeURIComponent(executionID)}/execution-result`:delivery?`/agent/delegations/${encodeURIComponent(delivery.id)}/delivery-result`:`/agent/conversations/${encodeURIComponent(reference.conversation_id)}/runs/${encodeURIComponent(reference.run_id)}/result`;
       const result=await readStoredResult(reference,offset=>request<ResultSlice>(path,"POST",{reference,offset,max_bytes:8192,...(delivery?{delivery_revision:delivery.revision}:{})},abort.signal),abort.signal);
       if(!abort.signal.aborted)setText(result);
     } catch(error){if(!abort.signal.aborted){setText("");setError(describeError(error));}}

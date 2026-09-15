@@ -1,0 +1,54 @@
+{
+  "date": "2026-09-15",
+  "item": "E03",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 9,
+  "results": {
+    "sdk_go_test": {"exit_code": 0},
+    "agent_core_packages": {"exit_code": 0},
+    "agent_web_package": {"exit_code": 0, "seconds": 471.280},
+    "integration": {"exit_code": 0, "seconds": 97.967},
+    "focused_race": {
+      "exit_code": 0,
+      "packages": [
+        "internal/execution",
+        "internal/application",
+        "internal/infrastructure/persistence/database/agent"
+      ]
+    },
+    "frontend_tests": {"passed": 87, "failed": 0, "exit_code": 0},
+    "frontend_build": {"exit_code": 0, "typescript": true, "vite": true},
+    "chrome": {
+      "exit_code": 0,
+      "steps": 3,
+      "javascript_errors": [],
+      "console_errors_after_login": [],
+      "console_warnings_after_login": [],
+      "viewport_widths": [1280, 390]
+    },
+    "controlled_comparison": {
+      "same_model": "planning-fixture",
+      "same_budget": {"max_steps": 1, "max_tool_calls": 1, "max_output_bytes": 2048, "timeout_seconds": 30},
+      "legacy_status": "completed",
+      "assessed_status": "awaiting_review",
+      "model_calls_each": 1,
+      "steps_each": 1,
+      "tool_calls_each": 0,
+      "manual_intervention_delta": 1
+    },
+    "diff_check": {"agent_exit_code": 0, "sdk_exit_code": 0, "bytes": 0}
+  },
+  "behavior": [
+    "assessed tasks distinguish execution end, Agent submission, review and accepted completion",
+    "completion_submit covers every current condition and binds the current task, run and agreement revision",
+    "program rules are recomputed from original data, receipts and artifacts and cannot be overridden",
+    "unmet, unknown or missing assessment remains awaiting_review with a resumable immutable run history",
+    "user or another Agent review binds the current delivery digest and completion revision",
+    "completion evidence and exact saved tool receipts are reauthorized whenever they are read",
+    "desktop UI exposes current checks, sources, blockers, review controls and immutable completion history"
+  ],
+  "remaining": [
+    "V01 still needs the same controlled baseline for the remaining core capability batches."
+  ]
+}

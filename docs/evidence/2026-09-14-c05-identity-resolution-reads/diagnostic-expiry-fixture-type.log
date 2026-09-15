@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-identity/internal/adapter/identitysdk [github.com/domainry/domainry-identity/internal/adapter/identitysdk.test]
+internal/adapter/identitysdk/principal_resolution_reads_test.go:196:199: cannot use &expired (value of type *"time".Time) as *string value in struct literal
+FAIL	github.com/domainry/domainry-identity/internal/adapter/identitysdk [build failed]
+FAIL

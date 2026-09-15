@@ -1,0 +1,6 @@
+=== RUN   TestMultipleOwnerProfessionalDependenciesReadOriginalsAndDeliverThroughRealRuntime
+    conversation_multiple_owner_dependencies_test.go:249: browser GET /agent/delegations/delegation_76ffa610e9bbc02f294fcea624027c40 status=429 want=200 body={"code":"capacity.workspace_rate_exceeded","contract_version":"runtime-authoring-v1","error":"capacity.workspace_rate_exceeded","message":"capacity.workspace_rate_exceeded","message_key":"capacity.workspace_rate_exceeded","params":{"current":"600","dimension":"workspace","limit":"600"},"request_id":"req_cf548601da1acaec1380cc6fa87e8ee7"}
+--- FAIL: TestMultipleOwnerProfessionalDependenciesReadOriginalsAndDeliverThroughRealRuntime (39.75s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	40.796s
+FAIL

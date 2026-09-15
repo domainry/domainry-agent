@@ -1,0 +1,11 @@
+=== RUN   TestCrossUserBusinessWritesAgentConfirmationsAutomaticDeliverySharedOriginalsAndRestart
+    conversation_business_shared_write_delivery_test.go:352: Exact professional execution result write-action-contract: 4 pages, 818 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:352: Exact professional execution result write-create: 4 pages, 879 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:352: Exact professional execution result write-workflow-contract: 3 pages, 729 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:352: Exact professional execution result write-start: 3 pages, 705 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:352: Exact professional execution result write-progress: 3 pages, 738 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:358: GET /identity/roles/headquarters_admin/permissions status=404 want=200 body={"code":"backend.identity.role_definition_not_found","error":{"code":"backend.identity.role_definition_not_found","params":{"role":"headquarters_admin"}},"params":{"role":"headquarters_admin"}}
+--- FAIL: TestCrossUserBusinessWritesAgentConfirmationsAutomaticDeliverySharedOriginalsAndRestart (49.82s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	50.478s
+FAIL

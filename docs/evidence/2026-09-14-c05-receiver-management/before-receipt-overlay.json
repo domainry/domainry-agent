@@ -1,0 +1,5 @@
+{
+  "Replace": {
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_collaboration_authorization.go": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-receiver-management/source-before/testdata/internal/application/conversation_collaboration_authorization.go"
+  }
+}

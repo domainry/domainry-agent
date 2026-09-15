@@ -1,0 +1,13 @@
+{
+  "acceptance.json": "bd83e1be543bae671d573532290c9aba565235a510ced2ce3ff02112a004f725",
+  "conversation_business_shared_query_scope.go.compiled.txt": "ba0aa1837c788a3f04c4fa64184f21a47a3c58a47fc92dc40e976bc98515fd4a",
+  "conversation_business_shared_receipt_read.go.compiled.txt": "a7bb82c01192d90ee249e66c768d1fddc77e9168bf1f04504a2c2bb2341f62eb",
+  "legacy-lifecycle-race-terminal.log": "54137f4fd7162a0e0540e230a54593ec7246f807a8169ba63c4207fdf0183103",
+  "prior-failed-archive-sha256.json": "aebae7ec1d011b92b5d9f7ab2476447bcb00bf442c2dbbfbf44377715ba5a977",
+  "prior-normal-archive-sha256.json": "274af7280f5651eca170d5f68b3a0f7aa3ddcccce5e931248799501e08d3f832",
+  "record_schema_projection_test.go.compiled.txt": "4bbf3cd3b809fc49fd65ae940afa28c49864f246f221fa8d88c85c8eca10f4ee",
+  "report_shared_result_scope.go.compiled.txt": "b61d9220158919564313ff22f5f7231e1793dc4d9e9c01b87104fb4c65f01b15",
+  "revised-execution-failure.json": "9b4f2d0ac15b9f4c873eac7428ac3af5fac0fb5be6131d9625f2e755b1d65545",
+  "source-compiled-sha256.json": "8bafe89599f247381ed1ca0298d423572108656fdf69f1c834db5a4372b156be",
+  "source-version-differences.json": "de0671bb588a537a124db91ec0a3bdbd4671a0966a96fd148b544463d33f0f1a"
+}

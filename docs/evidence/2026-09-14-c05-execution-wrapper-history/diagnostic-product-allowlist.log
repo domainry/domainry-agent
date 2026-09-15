@@ -1,0 +1,6 @@
+=== RUN   TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart
+    record_result_read_test.go:247: POST /agent/agents: 400 {"code":"agent.conversation.agent_profile_invalid"}
+--- FAIL: TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart (5.74s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/product	6.254s
+FAIL

@@ -1,0 +1,26 @@
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/business_catalog
+    conversation_delivery_business_sources_test.go:119: explicitly released original producer evidence was rejected before actual reader policy true agent.conversation.business_response_invalid 0
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/query_records
+    conversation_delivery_business_sources_test.go:119: explicitly released original producer evidence was rejected before actual reader policy true agent.conversation.business_response_invalid 0
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/get_record
+    conversation_delivery_business_sources_test.go:119: explicitly released original producer evidence was rejected before actual reader policy true agent.conversation.business_response_invalid 0
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/query_related_records
+    conversation_delivery_business_sources_test.go:119: explicitly released original producer evidence was rejected before actual reader policy true agent.conversation.business_response_invalid 0
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/workflow_get
+    conversation_delivery_business_sources_test.go:119: explicitly released original producer evidence was rejected before actual reader policy true agent.conversation.business_response_invalid 0
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/invoke_action
+    conversation_delivery_business_sources_test.go:119: explicitly released original producer evidence was rejected before actual reader policy true agent.conversation.business_response_invalid 0
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/workflow_start
+    conversation_delivery_business_sources_test.go:119: explicitly released original producer evidence was rejected before actual reader policy true agent.conversation.business_response_invalid 0
+--- FAIL: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader (0.00s)
+    --- FAIL: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/business_catalog (0.00s)
+    --- FAIL: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/query_records (0.00s)
+    --- FAIL: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/get_record (0.00s)
+    --- FAIL: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/query_related_records (0.00s)
+    --- FAIL: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/workflow_get (0.00s)
+    --- FAIL: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/invoke_action (0.00s)
+    --- FAIL: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/workflow_start (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.640s
+FAIL

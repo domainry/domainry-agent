@@ -1,0 +1,20 @@
+=== RUN   TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-search: 4 pages, 890 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-read: 4 pages, 920 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-extract: 7 pages, 1787 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-search: 4 pages, 890 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-read: 4 pages, 920 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-extract: 7 pages, 1787 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-search: 4 pages, 890 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-read: 4 pages, 920 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-extract: 7 pages, 1787 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-search: 4 pages, 890 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-read: 4 pages, 920 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-extract: 7 pages, 1787 bytes, original SHA-256 verified
+--- PASS: TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart (673.32s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	675.296s

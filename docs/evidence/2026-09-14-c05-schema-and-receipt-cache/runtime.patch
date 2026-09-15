@@ -1,0 +1,543 @@
+--- /dev/null
++++ b/runtime/bootstrap/composition/appschema_snapshot_cache_test.go
+@@ -0,0 +1,215 @@
++package composition
++
++import (
++	"fmt"
++	"sync"
++	"sync/atomic"
++	"testing"
++	"time"
++
++	identity "github.com/domainry/domainry-identity-sdk"
++	appschemamodel "github.com/domainry/domainry-runtime/runtime/domain/appschema/model"
++	automationmodel "github.com/domainry/domainry-runtime/runtime/domain/automation/model"
++	definitionmodel "github.com/domainry/domainry-runtime/runtime/domain/definition/model"
++	manifestmodel "github.com/domainry/domainry-runtime/runtime/domain/manifest/model"
++	principalmodel "github.com/domainry/domainry-runtime/runtime/domain/principal/model"
++	accessfixture "github.com/domainry/domainry-runtime/testsupport/identitysdkfixture"
++)
++
++func TestNewRuntimeServicesStateUsesGenerationAwareSchemaProvider(t *testing.T) {
++	records := newRuntimeServicesState(t.Context(), manifestmodel.ManifestSchema{}, RuntimeServicesDependencies{})
++	if records.RecordSchemaSnapshotProvider == nil || records.RecordSchemaSnapshotProvider.generation == nil {
++		t.Fatal("runtime constructor bypassed generation-aware schema provider")
++	}
++	var builds atomic.Int32
++	original := records.RecordSchemaSnapshotProvider.snapshot
++	records.RecordSchemaSnapshotProvider.snapshot = func() appschemamodel.ApplicationSchemaSnapshot {
++		builds.Add(1)
++		return original()
++	}
++	records.RecordSchemaSnapshotProvider.Schema()
++	records.RecordSchemaSnapshotProvider.Schema()
++	if got := builds.Load(); got != 1 {
++		t.Fatalf("constructed runtime rebuilt stable schema %d times, want 1", got)
++	}
++}
++
++func TestRecordSchemaSnapshotProviderBuildsColdGenerationOnceUnderConcurrency(t *testing.T) {
++	var builds atomic.Int32
++	provider := &RecordSchemaSnapshotProvider{
++		generation: func() uint64 { return 1 },
++		snapshot: func() appschemamodel.ApplicationSchemaSnapshot {
++			builds.Add(1)
++			time.Sleep(10 * time.Millisecond)
++			return appschemamodel.ApplicationSchemaSnapshot{SchemaHash: "stable"}
++		},
++	}
++	var wait sync.WaitGroup
++	for i := 0; i < 32; i++ {
++		wait.Add(1)
++		go func() {
++			defer wait.Done()
++			if snapshot := provider.Schema(); snapshot.SchemaHash != "stable" {
++				t.Errorf("incomplete concurrent snapshot: %+v", snapshot)
++			}
++		}()
++	}
++	wait.Wait()
++	if got := builds.Load(); got != 1 {
++		t.Fatalf("cold generation built %d times, want 1", got)
++	}
++}
++
++func TestRecordSchemaSnapshotProviderBuildsColdProjectionOnceUnderConcurrency(t *testing.T) {
++	records := &runtimeAssembly{
++		schema:          map[string]definitionmodel.ObjectSchema{"customer": {Key: "customer", Fields: []definitionmodel.FieldSchema{{Key: "name", Type: "text"}}}},
++		actions:         map[string]definitionmodel.ActionSchema{},
++		workflows:       map[string]definitionmodel.WorkflowSchema{},
++		automationRules: map[string]automationmodel.AutomationRuleSchema{},
++	}
++	ensureRecordSchemaSnapshotProvider(records)
++	p := accessfixture.Attach(principalmodel.Principal{Principal: identity.Principal{Known: true, UserID: "reader", WorkspaceID: "workspace-primary"}}, accessfixture.Bundle{Permissions: []string{"customer.read"}, FieldPolicies: []accessfixture.FieldPolicyFixture{{ObjectKey: "customer", FieldKey: "name", Read: true}}})
++	var wait sync.WaitGroup
++	results := make([]appschemamodel.ApplicationSchemaSnapshot, 32)
++	for i := range results {
++		wait.Add(1)
++		go func(index int) {
++			defer wait.Done()
++			results[index] = records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), p)
++		}(i)
++	}
++	wait.Wait()
++	if len(results[0].Objects) != 1 {
++		t.Fatal("valid concurrent projection denied", results[0])
++	}
++	for index := 1; index < len(results); index++ {
++		if len(results[index].Objects) != 1 || &results[index].Objects[0] != &results[0].Objects[0] {
++			t.Fatalf("concurrent projection %d was independently built: first=%p current=%p", index, &results[0].Objects[0], &results[index].Objects[0])
++		}
++	}
++}
++
++func TestRecordSchemaSnapshotProviderReusesProjectionAcrossAccessRefresh(t *testing.T) {
++	records := &runtimeAssembly{
++		schema:          map[string]definitionmodel.ObjectSchema{"customer": {Key: "customer", Fields: []definitionmodel.FieldSchema{{Key: "name", Type: "text"}}}},
++		actions:         map[string]definitionmodel.ActionSchema{},
++		workflows:       map[string]definitionmodel.WorkflowSchema{},
++		automationRules: map[string]automationmodel.AutomationRuleSchema{},
++	}
++	ensureRecordSchemaSnapshotProvider(records)
++	p := accessfixture.Attach(principalmodel.Principal{Principal: identity.Principal{Known: true, UserID: "reader", WorkspaceID: "workspace-primary"}}, accessfixture.Bundle{Permissions: []string{"customer.read"}, FieldPolicies: []accessfixture.FieldPolicyFixture{{ObjectKey: "customer", FieldKey: "name", Read: true}}})
++	first := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), p)
++	refreshed := p
++	copy := *p.AccessBundle
++	copy.ExpiresAt = copy.ExpiresAt.Add(time.Minute)
++	refreshed.AccessBundle = &copy
++	second := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), refreshed)
++	if len(first.Objects) != 1 || len(second.Objects) != 1 || &first.Objects[0] != &second.Objects[0] {
++		t.Fatalf("equivalent refreshed access rebuilt projection: first=%p second=%p", &first.Objects[0], &second.Objects[0])
++	}
++}
++
++func TestRecordSchemaSnapshotProviderReusesStableProjectionAndInvalidatesEveryMutation(t *testing.T) {
++	records := &runtimeAssembly{
++		schema:          map[string]definitionmodel.ObjectSchema{"customer": {Key: "customer", Name: "Initial", Fields: []definitionmodel.FieldSchema{{Key: "name", Type: "text"}}}},
++		actions:         map[string]definitionmodel.ActionSchema{},
++		workflows:       map[string]definitionmodel.WorkflowSchema{},
++		automationRules: map[string]automationmodel.AutomationRuleSchema{},
++	}
++	ensureRecordSchemaSnapshotProvider(records)
++	builds := 0
++	original := records.RecordSchemaSnapshotProvider.snapshot
++	records.RecordSchemaSnapshotProvider.snapshot = func() appschemamodel.ApplicationSchemaSnapshot {
++		builds++
++		return original()
++	}
++	p := accessfixture.Attach(principalmodel.Principal{Principal: identity.Principal{Known: true, UserID: "reader", WorkspaceID: "workspace-primary"}}, accessfixture.Bundle{Permissions: []string{"customer.read"}, FieldPolicies: []accessfixture.FieldPolicyFixture{{ObjectKey: "customer", FieldKey: "name", Read: true}}})
++	first := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), p)
++	second := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), p)
++	if builds != 1 || len(first.Objects) != 1 || len(second.Objects) != 1 || first.SchemaHash != second.SchemaHash || &first.Objects[0] != &second.Objects[0] {
++		t.Fatalf("stable immutable projection rebuilt: builds=%d first=%+v second=%+v", builds, first, second)
++	}
++	records.applyManifestMetadata("template", "2", "Updated", "UTC", []definitionmodel.ObjectSchema{{Key: "customer", Name: "Updated", Fields: []definitionmodel.FieldSchema{{Key: "name", Type: "text"}}}}, nil, nil, nil, nil, appschemamodel.IntegrationSchema{}, nil, nil, nil, nil)
++	updated := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), p)
++	if builds != 2 || len(updated.Objects) != 1 || updated.Objects[0].Name != "Updated" || updated.SchemaHash == first.SchemaHash {
++		t.Fatalf("metadata mutation retained cached projection: builds=%d snapshot=%+v", builds, updated)
++	}
++	registry := runtimeWorkflowRegistry{records: records}
++	registry.Set("review", definitionmodel.WorkflowSchema{Key: "review", Name: "Review"})
++	withWorkflow := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), p)
++	if builds != 3 || len(withWorkflow.Workflows) != 1 || withWorkflow.Workflows[0].Key != "review" {
++		t.Fatalf("workflow mutation retained cached projection: builds=%d snapshot=%+v", builds, withWorkflow)
++	}
++	registry.Delete("review")
++	withoutWorkflow := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), p)
++	if builds != 4 || len(withoutWorkflow.Workflows) != 0 {
++		t.Fatalf("workflow deletion retained cached projection: builds=%d snapshot=%+v", builds, withoutWorkflow)
++	}
++	records.applyManifestAgentMetadata(nil, nil, nil)
++	if snapshot := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), p); builds != 5 || snapshot.SchemaHash != withoutWorkflow.SchemaHash {
++		t.Fatalf("agent metadata generation was not observed: builds=%d snapshot=%+v", builds, snapshot)
++	}
++}
++
++func TestRecordSchemaSnapshotProviderDoesNotReuseExpiredAccessProjection(t *testing.T) {
++	records := &runtimeAssembly{
++		schema:          map[string]definitionmodel.ObjectSchema{"customer": {Key: "customer", Fields: []definitionmodel.FieldSchema{{Key: "name", Type: "text"}}}},
++		actions:         map[string]definitionmodel.ActionSchema{},
++		workflows:       map[string]definitionmodel.WorkflowSchema{},
++		automationRules: map[string]automationmodel.AutomationRuleSchema{},
++	}
++	ensureRecordSchemaSnapshotProvider(records)
++	p := accessfixture.Attach(principalmodel.Principal{Principal: identity.Principal{Known: true, UserID: "reader", WorkspaceID: "workspace-primary"}}, accessfixture.Bundle{Permissions: []string{"customer.read"}, FieldPolicies: []accessfixture.FieldPolicyFixture{{ObjectKey: "customer", FieldKey: "name", Read: true}}})
++	p.AccessBundle.ExpiresAt = time.Now().Add(20 * time.Millisecond)
++	if snapshot := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), p); len(snapshot.Objects) != 1 {
++		t.Fatal("valid projection denied", snapshot)
++	}
++	time.Sleep(30 * time.Millisecond)
++	if snapshot := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), p); len(snapshot.Objects) != 0 {
++		t.Fatal("expired access bundle reused cached projection", snapshot)
++	}
++}
++
++func TestRecordSchemaSnapshotProviderBoundsPrincipalsAndHandlesConcurrentPublication(t *testing.T) {
++	records := &runtimeAssembly{
++		schema:          map[string]definitionmodel.ObjectSchema{"customer": {Key: "customer", Fields: []definitionmodel.FieldSchema{{Key: "name", Type: "text"}}}},
++		actions:         map[string]definitionmodel.ActionSchema{},
++		workflows:       map[string]definitionmodel.WorkflowSchema{},
++		automationRules: map[string]automationmodel.AutomationRuleSchema{},
++	}
++	ensureRecordSchemaSnapshotProvider(records)
++	principal := func(index int) principalmodel.Principal {
++		user := fmt.Sprintf("reader-%d", index)
++		return accessfixture.Attach(principalmodel.Principal{Principal: identity.Principal{Known: true, UserID: user, WorkspaceID: "workspace-primary"}}, accessfixture.Bundle{Permissions: []string{"customer.read"}, FieldPolicies: []accessfixture.FieldPolicyFixture{{ObjectKey: "customer", FieldKey: "name", Read: true}}})
++	}
++	for i := 0; i < recordSchemaProjectionCacheLimit+44; i++ {
++		if snapshot := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), principal(i)); len(snapshot.Objects) != 1 {
++			t.Fatal("valid principal denied", i, snapshot)
++		}
++	}
++	records.RecordSchemaSnapshotProvider.mu.RLock()
++	cached := len(records.RecordSchemaSnapshotProvider.projectedSnapshot)
++	records.RecordSchemaSnapshotProvider.mu.RUnlock()
++	if cached == 0 || cached > recordSchemaProjectionCacheLimit {
++		t.Fatal("principal projection cache escaped its bound", cached)
++	}
++	var wait sync.WaitGroup
++	for i := 0; i < 32; i++ {
++		wait.Add(1)
++		go func(index int) {
++			defer wait.Done()
++			for j := 0; j < 10; j++ {
++				snapshot := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), principal(index))
++				if len(snapshot.Objects) != 1 || snapshot.Objects[0].Key != "customer" {
++					t.Errorf("concurrent projection incomplete: %+v", snapshot)
++					return
++				}
++			}
++		}(i)
++	}
++	records.applyManifestMetadata("template", "3", "Concurrent", "UTC", []definitionmodel.ObjectSchema{{Key: "customer", Name: "Concurrent", Fields: []definitionmodel.FieldSchema{{Key: "name", Type: "text"}}}}, nil, nil, nil, nil, appschemamodel.IntegrationSchema{}, nil, nil, nil, nil)
++	wait.Wait()
++	if snapshot := records.RecordSchemaSnapshotProvider.SchemaForPrincipal(t.Context(), principal(0)); len(snapshot.Objects) != 1 || snapshot.Objects[0].Name != "Concurrent" {
++		t.Fatal("publication did not invalidate concurrent projection", snapshot)
++	}
++}
+--- a/runtime/bootstrap/composition/appschema_snapshot_wiring.go
++++ b/runtime/bootstrap/composition/appschema_snapshot_wiring.go
+@@ -2,7 +2,13 @@
+ 
+ import (
+ 	"context"
+-
++	"crypto/sha256"
++	"encoding/hex"
++	"encoding/json"
++	"sync"
++	"time"
++
++	identitysdk "github.com/domainry/domainry-identity-sdk"
+ 	appschemamodel "github.com/domainry/domainry-runtime/runtime/domain/appschema/model"
+ 	appschemaservice "github.com/domainry/domainry-runtime/runtime/domain/appschema/service"
+ 	automationmodel "github.com/domainry/domainry-runtime/runtime/domain/automation/model"
+@@ -12,17 +18,72 @@
+ 
+ // RecordSchemaSnapshotProvider projects mutable Runtime schema state.
+ type RecordSchemaSnapshotProvider struct {
+-	snapshot func() appschemamodel.ApplicationSchemaSnapshot
+-}
++	snapshot   func() appschemamodel.ApplicationSchemaSnapshot
++	generation func() uint64
++
++	mu                sync.RWMutex
++	cached            bool
++	cachedGeneration  uint64
++	cachedSnapshot    appschemamodel.ApplicationSchemaSnapshot
++	projectedSnapshot map[string]recordSchemaProjectionCacheEntry
++}
++
++type recordSchemaProjectionCacheEntry struct {
++	snapshot  appschemamodel.ApplicationSchemaSnapshot
++	expiresAt time.Time
++}
++
++const recordSchemaProjectionCacheLimit = 256
+ 
+ func ensureRecordSchemaSnapshotProvider(records *runtimeAssembly) {
+ 	if records != nil && records.RecordSchemaSnapshotProvider == nil {
+-		records.RecordSchemaSnapshotProvider = &RecordSchemaSnapshotProvider{snapshot: func() appschemamodel.ApplicationSchemaSnapshot { return recordSchemaSnapshot(records) }}
++		records.RecordSchemaSnapshotProvider = &RecordSchemaSnapshotProvider{
++			snapshot: func() appschemamodel.ApplicationSchemaSnapshot { return recordSchemaSnapshot(records) },
++			generation: func() uint64 {
++				records.mu.RLock()
++				defer records.mu.RUnlock()
++				return records.schemaGeneration
++			},
++		}
+ 	}
+ }
+ 
+ func (s *RecordSchemaSnapshotProvider) Schema() appschemamodel.ApplicationSchemaSnapshot {
+-	return s.snapshot()
++	if s == nil || s.snapshot == nil {
++		return appschemamodel.ApplicationSchemaSnapshot{}
++	}
++	if s.generation == nil {
++		return s.snapshot()
++	}
++	generation := s.generation()
++	s.mu.RLock()
++	if s.cached && s.cachedGeneration == generation {
++		snapshot := s.cachedSnapshot
++		s.mu.RUnlock()
++		return snapshot
++	}
++	s.mu.RUnlock()
++
++	// Serialize the cold build. Schema construction includes the complete
++	// canonical hash, so allowing every concurrent first reader to repeat it
++	// defeats the generation cache under race instrumentation and startup load.
++	s.mu.Lock()
++	defer s.mu.Unlock()
++	generation = s.generation()
++	if s.cached && s.cachedGeneration == generation {
++		return s.cachedSnapshot
++	}
++	snapshot := s.snapshot()
++	if s.generation() != generation {
++		// The value is still a valid immutable snapshot from one instant. Do
++		// not retain it after a concurrent metadata publication.
++		return snapshot
++	}
++	s.cached = true
++	s.cachedGeneration = generation
++	s.cachedSnapshot = snapshot
++	s.projectedSnapshot = map[string]recordSchemaProjectionCacheEntry{}
++	return snapshot
+ }
+ 
+ func recordSchemaSnapshot(s *runtimeAssembly) appschemamodel.ApplicationSchemaSnapshot {
+@@ -64,5 +125,80 @@
+ }
+ 
+ func (s *RecordSchemaSnapshotProvider) SchemaForPrincipal(_ context.Context, principal principalmodel.Principal) appschemamodel.ApplicationSchemaSnapshot {
+-	return appschemaservice.SnapshotForPrincipal(s.Schema(), principal)
+-}
++	if s == nil || s.generation == nil {
++		return appschemaservice.SnapshotForPrincipal(s.Schema(), principal)
++	}
++	now := time.Now()
++	key, expiresAt, cacheable := recordSchemaProjectionKey(principal, now)
++	if !cacheable {
++		return appschemaservice.SnapshotForPrincipal(s.Schema(), principal)
++	}
++	for {
++		generation := s.generation()
++		s.mu.RLock()
++		entry, found := s.projectedSnapshot[key]
++		current := s.cached && s.cachedGeneration == generation
++		s.mu.RUnlock()
++		if current && found && now.Before(entry.expiresAt) {
++			return entry.snapshot
++		}
++
++		base := s.Schema()
++		generation = s.generation()
++		s.mu.Lock()
++		if !s.cached || s.cachedGeneration != generation {
++			s.mu.Unlock()
++			continue
++		}
++		// Serialize projection misses as well as base-schema misses. A single
++		// freshly authenticated principal can arrive through several concurrent
++		// request paths; each must reuse the same immutable visibility projection.
++		now = time.Now()
++		if entry, found = s.projectedSnapshot[key]; found && now.Before(entry.expiresAt) {
++			s.mu.Unlock()
++			return entry.snapshot
++		}
++		snapshot := appschemaservice.SnapshotForPrincipal(base, principal)
++		if s.generation() != generation || !now.Before(expiresAt) {
++			s.mu.Unlock()
++			return snapshot
++		}
++		if s.projectedSnapshot == nil || len(s.projectedSnapshot) >= recordSchemaProjectionCacheLimit {
++			s.projectedSnapshot = map[string]recordSchemaProjectionCacheEntry{}
++		}
++		s.projectedSnapshot[key] = recordSchemaProjectionCacheEntry{snapshot: snapshot, expiresAt: expiresAt}
++		s.mu.Unlock()
++		return snapshot
++	}
++}
++
++// SnapshotForPrincipal depends on the current policy bundle plus explicit
++// system scope. Request IDs, correlation IDs and business values do not affect
++// this schema projection. The complete policy bundle is hashed so revocation
++// and field/data rule changes cannot reuse a prior projection. Expiry is kept
++// on the cache entry instead of the key: a refreshed, otherwise identical
++// bundle may reuse the projection only until the earlier entry expires.
++func recordSchemaProjectionKey(principal principalmodel.Principal, now time.Time) (string, time.Time, bool) {
++	expiresAt := time.Time{}
++	var accessBundle *identitysdk.AccessBundle
++	if principal.AccessBundle != nil {
++		copy := *principal.AccessBundle
++		expiresAt = copy.ExpiresAt
++		if expiresAt.IsZero() || !expiresAt.After(now) {
++			return "", expiresAt, false
++		}
++		copy.ExpiresAt = time.Time{}
++		accessBundle = &copy
++	}
++	payload, err := json.Marshal(struct {
++		Known              bool                       `json:"known"`
++		AccessBundle       *identitysdk.AccessBundle  `json:"access_bundle,omitempty"`
++		SystemScope        principalmodel.SystemScope `json:"system_scope"`
++		SystemCapabilities []string                   `json:"system_capabilities,omitempty"`
++	}{principal.Known, accessBundle, principal.SystemScope, principal.SystemCapabilities})
++	if err != nil {
++		return "", time.Time{}, false
++	}
++	digest := sha256.Sum256(payload)
++	return hex.EncodeToString(digest[:]), expiresAt, true
++}
+--- a/runtime/bootstrap/composition/runtime_services_appschema_projection.go
++++ b/runtime/bootstrap/composition/runtime_services_appschema_projection.go
+@@ -21,6 +21,7 @@
+ 	objects = appschemaprojection.ApplicationSchemaEnrichObjectsWithFieldValueDomains(objects, dictionaries)
+ 	s.mu.Lock()
+ 	defer s.mu.Unlock()
++	s.schemaGeneration++
+ 	s.templateID = strings.TrimSpace(templateID)
+ 	s.templateVersion = strings.TrimSpace(templateVersion)
+ 	s.name = strings.TrimSpace(name)
+@@ -65,6 +66,7 @@
+ func (s *runtimeAssembly) applyManifestAgentMetadata(tasks []agentsdk.AgentTaskDefinition, entrypoints []agentsdk.AgentEntrypointAssignment, principals []agentsdk.AgentServicePrincipalBinding) {
+ 	s.mu.Lock()
+ 	defer s.mu.Unlock()
++	s.schemaGeneration++
+ 	s.agentTasks = append([]agentsdk.AgentTaskDefinition(nil), tasks...)
+ 	s.agentEntrypoints = append([]agentsdk.AgentEntrypointAssignment(nil), entrypoints...)
+ 	s.agentServicePrincipals = append([]agentsdk.AgentServicePrincipalBinding(nil), principals...)
+--- a/runtime/bootstrap/composition/runtime_services_initialization.go
++++ b/runtime/bootstrap/composition/runtime_services_initialization.go
+@@ -8,7 +8,6 @@
+ 	auditapplication "github.com/domainry/domainry-runtime/runtime/application/auditbinding"
+ 	recordapplication "github.com/domainry/domainry-runtime/runtime/application/record"
+ 	actionruntime "github.com/domainry/domainry-runtime/runtime/domain/action/runtime"
+-	appschemamodel "github.com/domainry/domainry-runtime/runtime/domain/appschema/model"
+ 	manifestmodel "github.com/domainry/domainry-runtime/runtime/domain/manifest/model"
+ 	recordruntime "github.com/domainry/domainry-runtime/runtime/domain/record/runtime"
+ )
+@@ -89,7 +88,7 @@
+ 		auditExportTokenKey:                 append([]byte(nil), deps.AuditExportTokenKey...),
+ 		workerDependencies:                  workerplatform.NormalizeDependencies(deps.Worker),
+ 	}
+-	services.RecordSchemaSnapshotProvider = &RecordSchemaSnapshotProvider{snapshot: func() appschemamodel.ApplicationSchemaSnapshot { return recordSchemaSnapshot(services) }}
++	ensureRecordSchemaSnapshotProvider(services)
+ 	services.ActionExecutionRuntime = actionruntime.NewActionExecutionRuntime(deps.ActionExecutions)
+ 	identityPrincipals := deps.IdentityPrincipals
+ 	services.identityPrincipals = identityPrincipals
+--- a/runtime/bootstrap/composition/runtime_services_state.go
++++ b/runtime/bootstrap/composition/runtime_services_state.go
+@@ -60,6 +60,7 @@
+ // runtimeAssembly is the private, constructor-only composition graph.
+ type runtimeAssembly struct {
+ 	templateID, templateVersion, name, timeZone string
++	schemaGeneration                            uint64
+ 	productBrandName                            string
+ 	actionRuntimeRevision                       string
+ 	actionProjectRevision                       string
+--- a/runtime/bootstrap/composition/workflow_application_wiring.go
++++ b/runtime/bootstrap/composition/workflow_application_wiring.go
+@@ -42,12 +42,14 @@
+ 	r.records.mu.Lock()
+ 	defer r.records.mu.Unlock()
+ 	r.records.workflows[strings.TrimSpace(key)] = value
++	r.records.schemaGeneration++
+ }
+ 
+ func (r runtimeWorkflowRegistry) Delete(key string) {
+ 	r.records.mu.Lock()
+ 	defer r.records.mu.Unlock()
+ 	delete(r.records.workflows, strings.TrimSpace(key))
++	r.records.schemaGeneration++
+ }
+ 
+ func (r runtimeWorkflowRegistry) Count() int {
+--- a/runtime/bootstrap/composition/workflow_identity_application_wiring.go
++++ b/runtime/bootstrap/composition/workflow_identity_application_wiring.go
+@@ -24,6 +24,9 @@
+ 		snapshot = appschemaservice.SnapshotForPrincipal(snapshot, principal)
+ 	}
+ 	if p.records.actionService != nil {
++		// Schema() is an immutable generation snapshot. The workflow adapter
++		// substitutes its executable action view in a private slice.
++		snapshot.Actions = append([]definitionmodel.ActionSchema(nil), snapshot.Actions...)
+ 		executable := make(map[string]definitionmodel.ActionSchema)
+ 		for _, action := range p.records.actionService.Definitions() {
+ 			executable[strings.TrimSpace(action.Key)] = action
+--- a/runtime/domain/appschema/service/appschema_i18n_remaining_test.go
++++ b/runtime/domain/appschema/service/appschema_i18n_remaining_test.go
+@@ -49,7 +49,7 @@
+ 	if localized.Name != "Anwendung" || !strings.HasSuffix(localized.SchemaHash, ":de") || len(localized.Objects) != 2 || len(localized.Agents) != 1 {
+ 		t.Fatalf("localized snapshot=%#v", localized)
+ 	}
+-	if got := service.ForPrincipalLocale(t.Context(), principalmodel.Principal{}, ""); got.SchemaHash != "hash" {
++	if got := service.ForPrincipalLocale(t.Context(), principalmodel.Principal{}, ""); got.SchemaHash != "hash" || got.Name != "App" || got.Objects[1].Name != "Order" || got.Objects[1].Fields[0].Name != "Status" || got.Actions[0].Label != "Approve" || got.Workflows[0].Name != "Notify" {
+ 		t.Fatalf("empty locale changed snapshot=%#v", got)
+ 	}
+ }
+--- a/runtime/domain/appschema/service/appschema_schema_i18n.go
++++ b/runtime/domain/appschema/service/appschema_schema_i18n.go
+@@ -3,13 +3,14 @@
+ import (
+ 	"context"
+ 	"fmt"
+-	metadatasdk "github.com/domainry/domainry-metadata-sdk"
+-
+-	principalmodel "github.com/domainry/domainry-runtime/runtime/domain/principal/model"
+-
+ 	"strings"
+ 
++	agentsdk "github.com/domainry/domainry-agent-sdk"
++	metadatasdk "github.com/domainry/domainry-metadata-sdk"
++	reportmodel "github.com/domainry/domainry-report-sdk/model"
+ 	appschemamodel "github.com/domainry/domainry-runtime/runtime/domain/appschema/model"
++	definitionmodel "github.com/domainry/domainry-runtime/runtime/domain/definition/model"
++	principalmodel "github.com/domainry/domainry-runtime/runtime/domain/principal/model"
+ )
+ 
+ func (s *ApplicationSchemaDomainService) ForPrincipalLocale(ctx context.Context, principal principalmodel.Principal, locale string) appschemamodel.ApplicationSchemaSnapshot {
+@@ -25,6 +26,10 @@
+ 	if err != nil || len(values) == 0 {
+ 		return snapshot
+ 	}
++	// Schema providers may return a shared immutable projection. Localization
++	// owns a derived value and must not rewrite that cached source through
++	// shared slice backing arrays.
++	snapshot = cloneSchemaSnapshotForLocalization(snapshot)
+ 	lookup := localizedTextLookup(values)
+ 	localize := func(entityType string, entityKey string, property string, fallback string) string {
+ 		if value := lookup[localizedTextLookupKey(entityType, entityKey, property)]; value != "" {
+@@ -97,6 +102,28 @@
+ 	return snapshot
+ }
+ 
++func cloneSchemaSnapshotForLocalization(snapshot appschemamodel.ApplicationSchemaSnapshot) appschemamodel.ApplicationSchemaSnapshot {
++	snapshot.Objects = append([]definitionmodel.ObjectSchema(nil), snapshot.Objects...)
++	for index := range snapshot.Objects {
++		snapshot.Objects[index].Fields = append([]definitionmodel.FieldSchema(nil), snapshot.Objects[index].Fields...)
++		snapshot.Objects[index].Validations = append([]definitionmodel.ValidationSchema(nil), snapshot.Objects[index].Validations...)
++	}
++	snapshot.Actions = append([]definitionmodel.ActionSchema(nil), snapshot.Actions...)
++	for index := range snapshot.Actions {
++		snapshot.Actions[index].PayloadFields = append([]definitionmodel.ActionPayloadField(nil), snapshot.Actions[index].PayloadFields...)
++	}
++	snapshot.GuardedWrites = append([]appschemamodel.ApplicationSchemaGuardedWriteContract(nil), snapshot.GuardedWrites...)
++	snapshot.Workflows = append([]definitionmodel.WorkflowSchema(nil), snapshot.Workflows...)
++	snapshot.Dictionaries = append([]appschemamodel.DictionarySchema(nil), snapshot.Dictionaries...)
++	for index := range snapshot.Dictionaries {
++		snapshot.Dictionaries[index].Items = append([]appschemamodel.DictionaryItemSchema(nil), snapshot.Dictionaries[index].Items...)
++	}
++	snapshot.Reports = append([]reportmodel.ReportSchema(nil), snapshot.Reports...)
++	snapshot.Skills = append([]agentsdk.SkillSchema(nil), snapshot.Skills...)
++	snapshot.Agents = append([]agentsdk.AgentSchema(nil), snapshot.Agents...)
++	return snapshot
++}
++
+ func localizedTextLookup(values []metadatasdk.LocalizedText) map[string]string {
+ 	out := map[string]string{}
+ 	for _, value := range values {

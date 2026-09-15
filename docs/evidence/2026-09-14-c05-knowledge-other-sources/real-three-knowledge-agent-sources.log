@@ -1,0 +1,52 @@
+=== RUN   TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-search: 4 pages, 890 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-read: 4 pages, 920 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-extract: 7 pages, 1787 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-search: 4 pages, 890 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-read: 4 pages, 920 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-extract: 7 pages, 1787 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-search: 4 pages, 890 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-read: 4 pages, 920 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-extract: 7 pages, 1787 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-search: 4 pages, 890 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-read: 4 pages, 920 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:211: Exact professional execution result knowledge-extract: 7 pages, 1787 bytes, original SHA-256 verified
+--- PASS: TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart (44.66s)
+=== RUN   TestCrossUserUnmanagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-search: 3 pages, 712 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-read: 3 pages, 742 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-extract: 7 pages, 1594 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-search: 3 pages, 712 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-read: 3 pages, 742 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-extract: 7 pages, 1594 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-search: 3 pages, 712 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-read: 3 pages, 742 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-extract: 7 pages, 1594 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-search: 3 pages, 712 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-read: 3 pages, 742 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:215: Exact professional execution result knowledge-extract: 7 pages, 1594 bytes, original SHA-256 verified
+--- PASS: TestCrossUserUnmanagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart (32.66s)
+=== RUN   TestCrossUserLegacyKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart
+    conversation_knowledge_shared_delivery_test.go:219: Exact professional execution result knowledge-search: 3 pages, 608 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:219: Exact professional execution result knowledge-read: 3 pages, 638 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:219: Exact professional execution result knowledge-extract: 6 pages, 1386 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:219: Exact professional execution result knowledge-search: 3 pages, 608 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:219: Exact professional execution result knowledge-read: 3 pages, 638 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:219: Exact professional execution result knowledge-extract: 6 pages, 1386 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:219: Exact professional execution result knowledge-search: 3 pages, 608 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:219: Exact professional execution result knowledge-read: 3 pages, 638 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:219: Exact professional execution result knowledge-extract: 6 pages, 1386 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:219: Exact professional execution result knowledge-search: 3 pages, 608 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:219: Exact professional execution result knowledge-read: 3 pages, 638 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:219: Exact professional execution result knowledge-extract: 6 pages, 1386 bytes, original SHA-256 verified
+--- PASS: TestCrossUserLegacyKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart (18.41s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	96.560s

@@ -1,0 +1,36 @@
+File: c05-identity-resolution-runtime-normal.test
+Type: cpu
+Time: 2026-09-14 18:11:53 CST
+Duration: 56.06s, Total samples = 127.29s (227.08%)
+Showing nodes accounting for 104.39s, 82.01% of 127.29s total
+Dropped 1615 nodes (cum <= 0.64s)
+Showing top 28 nodes out of 386
+      flat  flat%   sum%        cum   cum%
+    33.23s 26.11% 26.11%     33.23s 26.11%  runtime.pthread_cond_signal
+    19.72s 15.49% 41.60%     19.72s 15.49%  syscall.rawsyscalln
+    13.16s 10.34% 51.94%     13.16s 10.34%  runtime.usleep
+     5.51s  4.33% 56.27%      5.51s  4.33%  runtime.pthread_cond_wait
+     5.01s  3.94% 60.20%      5.01s  3.94%  runtime.(*bucket).mp
+     4.95s  3.89% 64.09%      6.31s  4.96%  runtime.tryDeferToSpanScan
+     4.08s  3.21% 67.30%      8.02s  6.30%  runtime.scanObjectsSmall
+     3.79s  2.98% 70.27%      3.79s  2.98%  runtime.pthread_kill
+     3.48s  2.73% 73.01%      8.54s  6.71%  runtime.scanObject
+     1.92s  1.51% 74.51%      1.92s  1.51%  runtime.madvise
+     1.28s  1.01% 75.52%      1.61s  1.26%  runtime.findObject
+     0.96s  0.75% 76.27%      0.96s  0.75%  runtime.memmove
+     0.85s  0.67% 76.94%      0.94s  0.74%  encoding/json.appendString[go.shape.string]
+     0.83s  0.65% 77.59%      1.41s  1.11%  runtime.unlock2
+     0.68s  0.53% 78.13%      0.73s  0.57%  runtime.typePointers.next
+     0.67s  0.53% 78.66%      6.13s  4.82%  runtime.mProf_FlushLocked
+     0.56s  0.44% 79.09%      5.92s  4.65%  runtime.lock2
+     0.50s  0.39% 79.49%      1.28s  1.01%  runtime.freeDeadSpanSPMCs
+     0.44s  0.35% 79.83%      2.58s  2.03%  runtime.mallocgcSmallScanNoHeader
+     0.42s  0.33% 80.16%      3.73s  2.93%  encoding/json.structEncoder.encode
+     0.39s  0.31% 80.47%      1.61s  1.26%  runtime.(*sweepLocked).sweep
+     0.34s  0.27% 80.74%      2.11s  1.66%  runtime.sweepone
+     0.32s  0.25% 80.99%      1.83s  1.44%  runtime.mapassign
+     0.31s  0.24% 81.23%      0.87s  0.68%  runtime.(*spanInlineMarkBits).tryAcquire
+     0.27s  0.21% 81.44%     20.59s 16.18%  runtime.gcDrain
+     0.27s  0.21% 81.66%      3.96s  3.11%  runtime.mallocgc
+     0.25s   0.2% 81.85%      0.81s  0.64%  runtime.scanObjectSmall
+     0.20s  0.16% 82.01%      1.52s  1.19%  github.com/domainry/domainry-identity/internal/domain/identity/service.(*identityMutablePermissionDefinitionSource).PermissionDefinitions

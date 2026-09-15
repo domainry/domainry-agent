@@ -32,6 +32,7 @@ type accountWriteProductFixture struct {
 	effects                 map[string]int
 	mailReceipts            []mail.Header
 	mailText                []string
+	expectedMailText        string
 	requests, modelRequests atomic.Int32
 }
 
@@ -58,7 +59,11 @@ func (tr accountWriteHTTPTransport) RoundTripHTTP(ctx context.Context, in connec
 }
 
 func newAccountWriteProductFixture(t *testing.T) *accountWriteProductFixture {
-	f := &accountWriteProductFixture{accountFixture: newAccountFixture(t), effects: map[string]int{}, event: map[string]any{
+	return newAccountWriteProductFixtureWithMailText(t, accountWriteMailText)
+}
+
+func newAccountWriteProductFixtureWithMailText(t *testing.T, text string) *accountWriteProductFixture {
+	f := &accountWriteProductFixture{accountFixture: newAccountFixture(t), expectedMailText: text, effects: map[string]int{}, event: map[string]any{
 		"kind": "calendar#event", "id": "review-event", "etag": `"version-1"`, "summary": "原评审日程", "status": "confirmed", "description": "原说明", "location": "原地点",
 		"start": map[string]string{"date": "2026-11-01"}, "end": map[string]string{"date": "2026-11-02"}, "attendees": []any{map[string]string{"email": "old@example.test", "displayName": "原参与者"}},
 	}}
@@ -246,7 +251,7 @@ func (f *accountWriteProductFixture) vendor(w http.ResponseWriter, r *http.Reque
 				f.t.Errorf("approved %s recipient changed", field)
 			}
 		}
-		wantText := accountWriteMailText
+		wantText := f.expectedMailText
 		if operation == "mail_reply" {
 			wantText = "完整回复正文"
 		} else if strings.HasSuffix(string(content), "\n受理后断线") {

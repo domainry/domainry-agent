@@ -1,0 +1,5 @@
+# github.com/domainry/domainry-agent/internal/assembly/web
+# [github.com/domainry/domainry-agent/internal/assembly/web]
+vet: internal/assembly/web/conversation_participant_delivery_test.go:135:2: undefined: exerciseParticipantDeliveryBrowser
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web [build failed]
+FAIL

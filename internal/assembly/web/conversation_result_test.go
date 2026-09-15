@@ -94,7 +94,7 @@ func TestCompactedResultReadThroughIdentityHTTP(t *testing.T) {
 	b.changePassword(initial, changed)
 	grantPersonalTools(t, host, b, true)
 	for i := 0; i < 16; i++ {
-		raw, _ := json.Marshal(agentsdk.ConversationMemoryWrite{Title: fmt.Sprintf("Preference %02d", i), Content: strings.Repeat("\n", 480) + fmt.Sprintf("memory-tail-%02d", i), Enabled: true})
+		raw, _ := json.Marshal(agentsdk.ConversationMemoryWrite{Title: fmt.Sprintf("Preference %02d", i), Content: strings.Repeat("x", 480) + fmt.Sprintf("memory-tail-%02d", i), Enabled: true})
 		b.call("PUT", fmt.Sprintf("/agent/conversations/memories/result-memory-%02d", i), string(raw), 200)
 	}
 	var c agentsdk.Conversation

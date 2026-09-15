@@ -1,0 +1,7 @@
+GOWORK=/tmp/runtime-work/go.work
+go test ./runtime/application/agenthost -count=1 -v
+go test -race ./runtime/application/agenthost -count=1 -v
+go test ./runtime/bootstrap/integrationtest -run '^TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart$' -count=1 -timeout=3m -v
+go test ./runtime/bootstrap/integrationtest -run '^TestCrossUserBusinessAgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance$' -count=1 -timeout=6m -v
+Before diagnostic: go test ./runtime/application/agenthost -run '^TestSharedBusiness(ExactQueryFiltersLimitOriginalPageScope|RelatedQueryFiltersUseTargetObjectScope)$' -count=1 -v
+Launch manifest from go list -deps -test -json for integrationtest and agenthost, including project Go/test/embed/module files. Production remains identical; final owner includes the separately recorded metadata-only decimal test.

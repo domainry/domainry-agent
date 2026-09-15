@@ -1,0 +1,4 @@
+=== RUN   TestSaaSExecutionSharingPreservesActualAuthorityAndScopedRequestsAndCurrentDenial
+--- PASS: TestSaaSExecutionSharingPreservesActualAuthorityAndScopedRequestsAndCurrentDenial (0.19s)
+PASS
+ok  	github.com/domainry/domainry-agent/remote	1.097s

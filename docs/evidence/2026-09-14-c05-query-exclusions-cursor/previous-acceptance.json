@@ -1,0 +1,98 @@
+{
+  "phase_status": "accepted_identity_exact_role_resolution_and_real_unmanaged_legacy_knowledge_agent_sources",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "accepted_logs": [
+    "identity-all.log",
+    "identity-application-adapter-race.log",
+    "runtime-source-applications.log",
+    "real-three-knowledge-agent-sources.log"
+  ],
+  "accepted_exit_codes": {
+    "identity-all.log": 0,
+    "identity-application-adapter-race.log": 0,
+    "runtime-source-applications.log": 0,
+    "real-three-knowledge-agent-sources.log": 0
+  },
+  "diagnostic_failed_logs": [
+    "diagnostic-original-managed-race-default-timeout.log",
+    "diagnostic-identity-test-field-before-correction.log",
+    "diagnostic-identity-overwritten-role-query-error.log",
+    "diagnostic-unmanaged-directory-acl-expectation.log",
+    "diagnostic-managed-agent-race.log"
+  ],
+  "pending_race_logs": [
+    "unmanaged-legacy-agent-race-pending.log"
+  ],
+  "real_runtime_accepted_roots": [
+    "TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart",
+    "TestCrossUserUnmanagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart",
+    "TestCrossUserLegacyKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart"
+  ],
+  "real_runtime_root_seconds": {
+    "TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart": 44.66,
+    "TestCrossUserUnmanagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart": 32.66,
+    "TestCrossUserLegacyKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart": 18.41
+  },
+  "real_runtime_race_states": {
+    "managed-agent-race": {
+      "status": "failed_not_accepted",
+      "accepted": false
+    },
+    "unmanaged-legacy-agent-race": {
+      "status": "verified_running",
+      "accepted": false,
+      "pid": 79696,
+      "session_id": 72312,
+      "observed_at_utc": "2026-09-14T06:57:38.135932+00:00",
+      "process": "  PID ELAPSED  %CPU STAT COMMAND\n79696   04:38 103.9 R    /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/go-build840737208/b001/integrationtest.test -test.paniconexit0 -test.timeout=10m0s -test.run=^TestCrossUser(Unmanaged|Legacy)KnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$ -test.count=1 -test.v=true\n",
+      "log": "/tmp/c05-knowledge-other-sources-final-race.log",
+      "observed_failed_root_or_race_warning": false
+    }
+  },
+  "source_manifest": "source-sha256.json",
+  "source_files": 1129,
+  "artifact_manifest": "artifact-sha256.json",
+  "identity_full_repository_accepted": true,
+  "identity_application_sdk_adapter_race_accepted": true,
+  "identity_current_resolution_failure_propagated": true,
+  "identity_selected_role_isolation_and_withdrawal_checked": true,
+  "no_authorization_cache_added": true,
+  "sdk_authorization_revision_fence_preserved": true,
+  "normal_actual_original_sha_checks": 44,
+  "normal_actual_shared_execution_steps": {
+    "managed": 7,
+    "unmanaged": 7,
+    "legacy": 6
+  },
+  "normal_original_sha_check_rounds_per_source": 4,
+  "normal_actual_original_upload_count": {
+    "managed": 1,
+    "unmanaged": 0,
+    "legacy": 0
+  },
+  "actual_upstream_distinct_reader_and_producer_acls_checked": true,
+  "actual_extraction_amount_original_document_and_citation_checked_before_delivery": true,
+  "actual_task_budget_unchanged": {
+    "steps": 12,
+    "calls": 12,
+    "output_bytes": 8192,
+    "timeout_seconds": 90
+  },
+  "actual_result_page_bytes": 256,
+  "original_managed_race_default_timeout_failed_not_accepted": true,
+  "runtime_published_module_set_lock_modified": false,
+  "runtime_bootstrap_complete_package_accepted": false,
+  "previous_artifacts_unchanged": 30,
+  "previous_acceptance_sha256": "61035763f55a7eab8618c646c35e30244b03b2d1dac6367a78316a087d9a6dba",
+  "remaining": [
+    "broader business query expression scopes",
+    "other multiple-owner old roles and mixed roots",
+    "complete historical admission and execution-source receipts",
+    "other dependency management",
+    "broader Identity subject exit linkage",
+    "published Runtime module-set synchronization",
+    "all later TODO items retained in original order"
+  ]
+}

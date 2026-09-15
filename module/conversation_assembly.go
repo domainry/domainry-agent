@@ -48,6 +48,9 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 		if options.PersonalAuthorizer == nil {
 			options.PersonalAuthorizer = host.ConversationAuthorizer()
 		}
+		if options.LibraryAuthorizer == nil {
+			options.LibraryAuthorizer, _ = host.ConversationAuthorizer().(agentsdk.KnowledgeLibraryAuthorizer)
+		}
 		if options.ExecutionAuthorizer == nil {
 			options.ExecutionAuthorizer, _ = options.PersonalAuthorizer.(agentsdk.ConversationExecutionAuthorizer)
 		}
@@ -58,6 +61,15 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 			if followUps, ok := host.(modulehost.ConversationFollowUpHost); ok {
 				options.FollowUpPublisher = followUps.ConversationFollowUpPublisher()
 			}
+		}
+		if lifecycle, ok := host.(modulehost.ConversationLifecycleHost); ok {
+			options.LifecycleExtensions = append(options.LifecycleExtensions, lifecycle.ConversationLifecycleExtensions()...)
+		}
+		if code, ok := host.(modulehost.ConversationCodeHost); ok && options.CodeRuntime == nil {
+			options.CodeRuntime = code.ConversationCodeRuntime()
+		}
+		if coding, ok := host.(modulehost.ConversationCodingHost); ok && options.CodingRuntime == nil {
+			options.CodingRuntime = coding.ConversationCodingRuntime()
 		}
 		if options.ExecutionAuthorizer == nil {
 			options.ExecutionAuthorizer, _ = host.ConversationAuthorizer().(agentsdk.ConversationExecutionAuthorizer)

@@ -1,0 +1,48 @@
+File: c05-business-union-owner-accepted-race.test
+Type: cpu
+Time: 2026-09-14 19:21:26 CST
+Duration: 164.60s, Total samples = 286.78s (174.22%)
+Showing nodes accounting for 247.67s, 86.36% of 286.78s total
+Dropped 1796 nodes (cum <= 1.43s)
+Showing top 40 nodes out of 358
+      flat  flat%   sum%        cum   cum%
+    38.93s 13.57% 13.57%     38.93s 13.57%  runtime.pthread_cond_signal
+    26.40s  9.21% 22.78%     26.40s  9.21%  __tsan::MemoryAccessRangeT
+    20.76s  7.24% 30.02%     20.76s  7.24%  __tsan_read
+    19.40s  6.76% 36.78%     19.40s  6.76%  syscall.rawsyscalln
+    17.18s  5.99% 42.77%     17.18s  5.99%  __tsan::MemoryRangeSet
+    15.16s  5.29% 48.06%     15.16s  5.29%  racecall
+     9.46s  3.30% 51.36%      9.46s  3.30%  runtime.findObject
+     9.35s  3.26% 54.62%      9.35s  3.26%  racecalladdr
+     9.23s  3.22% 57.84%     18.34s  6.40%  runtime.checkptrBase
+     8.12s  2.83% 60.67%      8.12s  2.83%  runtime.usleep
+     7.55s  2.63% 63.30%      7.55s  2.63%  runtime.madvise
+     6.66s  2.32% 65.63%      6.66s  2.32%  runtime.pthread_cond_wait
+     5.54s  1.93% 67.56%      5.54s  1.93%  __tsan_write
+     5.22s  1.82% 69.38%      5.22s  1.82%  runtime._ExternalCode
+     4.39s  1.53% 70.91%      4.39s  1.53%  __tsan_func_enter
+     3.86s  1.35% 72.25%      8.56s  2.98%  encoding/json.appendString[go.shape.string]
+     2.71s  0.94% 73.20%      2.71s  0.94%  runtime.raceread
+     2.65s  0.92% 74.12%      2.65s  0.92%  __tsan_read_pc
+     2.42s  0.84% 74.97%      7.32s  2.55%  runtime.slicecopy
+     2.41s  0.84% 75.81%     36.34s 12.67%  encoding/json.mapEncoder.encode
+     2.34s  0.82% 76.62%      3.45s  1.20%  golang.org/x/crypto/blowfish.encryptBlock
+     2.29s   0.8% 77.42%     56.65s 19.75%  encoding/json.structEncoder.encode
+     2.28s   0.8% 78.22%      2.28s   0.8%  runtime.memclrNoHeapPointers
+     2.22s  0.77% 78.99%     18.75s  6.54%  runtime.checkptrAlignment
+     2.22s  0.77% 79.76%     16.53s  5.76%  runtime.checkptrStraddles
+     2.21s  0.77% 80.54%      2.21s  0.77%  __tsan::MetaMap::FreeRange
+     1.89s  0.66% 81.19%      1.89s  0.66%  racefuncenter
+     1.50s  0.52% 81.72%      2.18s  0.76%  runtime.racewriterangepc
+     1.46s  0.51% 82.23%      1.46s  0.51%  internal/runtime/maps.(*Iter).Next
+     1.38s  0.48% 82.71%      2.22s  0.77%  runtime.racereadrangepc
+     1.29s  0.45% 83.16%     11.23s  3.92%  encoding/json.stringEncoder
+     1.25s  0.44% 83.59%      3.05s  1.06%  bytes.(*Buffer).WriteByte
+     1.23s  0.43% 84.02%      5.97s  2.08%  bytes.(*Buffer).Write
+     1.23s  0.43% 84.45%      5.26s  1.83%  runtime.checkptrArithmetic
+     1.13s  0.39% 84.85%      2.16s  0.75%  runtime.scanObjectsSmall
+     1.07s  0.37% 85.22%      2.79s  0.97%  encoding/json.isEmptyValue
+     1.06s  0.37% 85.59%      2.23s  0.78%  runtime.scanObject
+     0.79s  0.28% 85.86%      4.17s  1.45%  reflect.copyVal
+     0.75s  0.26% 86.13%      4.83s  1.68%  reflect.Value.Field
+     0.68s  0.24% 86.36%      2.71s  0.94%  bytes.(*Buffer).WriteString

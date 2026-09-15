@@ -1,0 +1,44 @@
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-membership
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-policy
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/producer-policy
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/producer-membership
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/source-document
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-during-IO
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-during-final-producer-IO
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-membership
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-policy
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/producer-policy
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/producer-membership
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/source-document
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-during-IO
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-during-final-producer-IO
+    knowledge_shared_result_read_test.go:183: withdrawn source remained readable reader-during-final-producer-IO
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch
+    knowledge_shared_result_read_test.go:120: shared original source denied agent.conversation.knowledge_access_denied
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract
+    knowledge_shared_result_read_test.go:120: shared original source denied agent.conversation.knowledge_access_denied
+--- FAIL: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights (0.00s)
+    --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-membership (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-policy (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/producer-policy (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/producer-membership (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/source-document (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-during-IO (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-during-final-producer-IO (0.00s)
+    --- FAIL: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-membership (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-policy (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/producer-policy (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/producer-membership (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/source-document (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-during-IO (0.00s)
+        --- FAIL: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-during-final-producer-IO (0.00s)
+    --- FAIL: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch (0.00s)
+    --- FAIL: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-knowledge/internal/application/knowledge	1.706s
+FAIL

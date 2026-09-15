@@ -2,11 +2,33 @@ package agent
 
 import (
 	"encoding/json"
+	"fmt"
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	"testing"
 	"time"
 )
+
+func TestConversationAgentMessageRateIsPerSenderAndReplayIsFree(t *testing.T) {
+	repo, a, d := peerFixture(t)
+	first := sdk.ConversationAgentMessageSend{ClientID: "rate-0", ToAgentID: d.ToAgentID, Content: "message 0", BriefVersion: 1}
+	written, err := repo.SendConversationAgentMessage(t.Context(), d.ID, first, "", a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := 1; i < 16; i++ {
+		_, err = repo.SendConversationAgentMessage(t.Context(), d.ID, sdk.ConversationAgentMessageSend{ClientID: fmt.Sprintf("rate-%d", i), ToAgentID: d.ToAgentID, Content: fmt.Sprintf("message %d", i), BriefVersion: 1}, "", a)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	replayed, err := repo.SendConversationAgentMessage(t.Context(), d.ID, first, "", a)
+	if err != nil || replayed.ID != written.ID {
+		t.Fatalf("idempotent replay consumed rate allowance: %+v %v", replayed, err)
+	}
+	_, err = repo.SendConversationAgentMessage(t.Context(), d.ID, sdk.ConversationAgentMessageSend{ClientID: "rate-blocked", ToAgentID: d.ToAgentID, Content: "message 17", BriefVersion: 1}, "", a)
+	requireConversationCode(t, err, "agent_message_rate")
+}
 
 func peerFixture(t *testing.T) (*ConversationStore, sdk.ConversationAuthority, sdk.ConversationDelegation) {
 	t.Helper()
@@ -205,6 +227,13 @@ func TestPeerInboxSkipsMoreThanOnePageOfPausedWork(t *testing.T) {
 		t.Fatal(err)
 	}
 	for n := 0; n < 65; n++ {
+		if n > 0 && n%15 == 0 {
+			// Keep this pagination fixture within the production one-minute
+			// sender rate while retaining every pending inbox row.
+			if _, err = repo.store.Database().ExecContext(t.Context(), "UPDATE "+conversationAgentMessageTable+" SET created_at = 0 WHERE owner_key = ? AND delegation_id = ?", conversationOwner(a), d.ID); err != nil {
+				t.Fatal(err)
+			}
+		}
 		raw, _ := json.Marshal(n)
 		_, err = repo.SendConversationAgentMessage(t.Context(), d.ID, sdk.ConversationAgentMessageSend{ClientID: "pending-" + string(raw), ToAgentID: d.ToAgentID, Content: "wait", BriefVersion: 1}, "", a)
 		if err != nil {

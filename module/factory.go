@@ -50,6 +50,11 @@ type Options struct {
 	Client                                                 *http.Client
 	ConversationURL, ConversationAPIKey, ConversationModel string
 	ConversationProviderName, ConversationProtocol         string
+	ConversationContextTokenLimit                          int
+	ConversationImageInput, ConversationStructuredOutput   bool
+	ConversationDisableProtocolContinuation                bool
+	ConversationReasoningEfforts                           []string
+	ConversationDefaultReasoningEffort                     string
 	ConversationProvider                                   agentsdk.ConversationModel
 	ConversationOptions                                    ConversationOptions
 	Knowledge                                              KnowledgeConfig
@@ -59,12 +64,13 @@ func OptionsFromEnvironment() Options {
 	id, _ := strconv.Atoi(strings.TrimSpace(os.Getenv("AGENT_HTTP_AGENT_ID")))
 	model := provider.ConversationModelConfigFromEnvironment()
 	conversation := ConversationOptions{
-		Workers:          positiveEnvironmentInteger("AGENT_CONVERSATION_WORKERS"),
+		Workers: positiveEnvironmentInteger("AGENT_CONVERSATION_WORKERS"), MaxParallelTools: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_PARALLEL_TOOLS"),
 		MaxQueuedPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_USER"), MaxQueuedPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE"),
 		MaxRunningPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_RUNNING_PER_USER"), MaxRunningPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE"),
 		RunTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_RUN_TIMEOUT"), ExternalCallTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT"),
+		MaxModelAttempts: positiveEnvironmentInteger("AGENT_CONVERSATION_MODEL_MAX_ATTEMPTS"), ModelRetryBaseDelay: positiveEnvironmentDuration("AGENT_CONVERSATION_MODEL_RETRY_BASE_DELAY"), ModelRetryMaxDelay: positiveEnvironmentDuration("AGENT_CONVERSATION_MODEL_RETRY_MAX_DELAY"),
 	}
-	return Options{AttachmentKnowledgeBindingsJSON: os.Getenv("AGENT_ATTACHMENT_KNOWLEDGE_BINDINGS"), KnowledgeDatasourcesJSON: os.Getenv("AGENT_KNOWLEDGE_DATASOURCES"), KnowledgeLibraryBindingsJSON: os.Getenv("AGENT_KNOWLEDGE_LIBRARY_BINDINGS"), ConversationEnabled: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_ENABLED")), "true"), BaseURL: os.Getenv("AGENT_HTTP_BASE_URL"), APIKey: os.Getenv("AGENT_HTTP_API_KEY"), AgentID: id, Timeout: 120 * time.Second, ConversationTimezone: os.Getenv("AGENT_CONVERSATION_TIMEZONE"), ConversationBaseURL: model.BaseURL, ConversationURL: model.URL, ConversationAPIKey: model.APIKey, ConversationModel: model.Model, ConversationProviderName: model.Provider, ConversationProtocol: model.Protocol, ConversationOptions: conversation, Knowledge: provider.KnowledgeConfigFromEnvironment()}
+	return Options{AttachmentKnowledgeBindingsJSON: os.Getenv("AGENT_ATTACHMENT_KNOWLEDGE_BINDINGS"), KnowledgeDatasourcesJSON: os.Getenv("AGENT_KNOWLEDGE_DATASOURCES"), KnowledgeLibraryBindingsJSON: os.Getenv("AGENT_KNOWLEDGE_LIBRARY_BINDINGS"), ConversationEnabled: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_ENABLED")), "true"), BaseURL: os.Getenv("AGENT_HTTP_BASE_URL"), APIKey: os.Getenv("AGENT_HTTP_API_KEY"), AgentID: id, Timeout: 120 * time.Second, ConversationTimezone: os.Getenv("AGENT_CONVERSATION_TIMEZONE"), ConversationBaseURL: model.BaseURL, ConversationURL: model.URL, ConversationAPIKey: model.APIKey, ConversationModel: model.Model, ConversationProviderName: model.Provider, ConversationProtocol: model.Protocol, ConversationContextTokenLimit: model.ContextTokenLimit, ConversationImageInput: model.ImageInput, ConversationStructuredOutput: model.StructuredOutput, ConversationDisableProtocolContinuation: model.DisableProtocolContinuation, ConversationReasoningEfforts: append([]string(nil), model.ReasoningEfforts...), ConversationDefaultReasoningEffort: model.DefaultReasoningEffort, ConversationOptions: conversation, Knowledge: provider.KnowledgeConfigFromEnvironment()}
 }
 
 func positiveEnvironmentInteger(name string) int {
@@ -132,7 +138,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	}
 	binding := newBinding(runner, store, agentsdk.DeploymentModeModule)
 	model := f.options.ConversationProvider
-	modelConfig := provider.ConversationModelConfig{Provider: f.options.ConversationProviderName, Protocol: f.options.ConversationProtocol, BaseURL: f.options.ConversationBaseURL, URL: f.options.ConversationURL, APIKey: f.options.ConversationAPIKey, Model: f.options.ConversationModel, Client: f.options.Client}
+	modelConfig := provider.ConversationModelConfig{Provider: f.options.ConversationProviderName, Protocol: f.options.ConversationProtocol, BaseURL: f.options.ConversationBaseURL, URL: f.options.ConversationURL, APIKey: f.options.ConversationAPIKey, Model: f.options.ConversationModel, ContextTokenLimit: f.options.ConversationContextTokenLimit, ImageInput: f.options.ConversationImageInput, StructuredOutput: f.options.ConversationStructuredOutput, DisableProtocolContinuation: f.options.ConversationDisableProtocolContinuation, ReasoningEfforts: append([]string(nil), f.options.ConversationReasoningEfforts...), DefaultReasoningEffort: f.options.ConversationDefaultReasoningEffort, Client: f.options.Client}
 	if model == nil && modelConfig.Configured() {
 		model, err = provider.NewConversationModel(modelConfig)
 		if err != nil {
@@ -265,6 +271,7 @@ func (b *binding) Descriptor() agentsdk.Descriptor {
 	if b.conversations != nil && b.conversations.ConversationExecutionEnabled() {
 		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationExecutionV1, agentsdk.CapabilityConversationCollaborationV1)
 		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityScheduledConversationTask)
+		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityBusinessEventConversationTask)
 	}
 	return descriptor
 }

@@ -67,7 +67,7 @@ func testPeerPersonalDeliveryReading(t *testing.T, deletions bool) {
 		{ID: "calculate", Name: "calculate", Arguments: `{"operation":"expression","expression":"0.1 + 0.2","precision":2}`},
 		{ID: "time", Name: "time_now", Arguments: `{"timezone":"Asia/Shanghai","relative_date":"tomorrow"}`},
 		{ID: "answer", Name: "ask_user", Arguments: `{"question":"这份交付采用哪个季度？"}`},
-		{ID: "memory-save", Name: "memory_save", Arguments: `{"title":"交付阅读偏好","content":"保留原始日期及出处","enabled":true,"expected_revision":0}`},
+		{ID: "memory-save", Name: "memory_save", Arguments: `{"kind":"user_preference","scope":"workspace","title":"交付阅读偏好","content":"保留原始日期及出处","enabled":true,"expected_revision":0}`},
 		{ID: "memory-search", Name: "memory_search", Arguments: `{"query":"交付阅读偏好"}`},
 		{ID: "todo-create", Name: "todo_create", Arguments: `{"items":[{"title":"核对来源日期","description":"保留原始出处","timezone":"Asia/Shanghai"}]}`},
 		{ID: "todo-list", Name: "todo_list", Arguments: `{"scope":"current_conversation"}`},

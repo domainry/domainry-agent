@@ -224,6 +224,43 @@ func TestConversationInvalidSummaryIsRecoverableWithoutLosingMessages(t *testing
 	}
 }
 
+func TestConversationModelRetryStopsAtConfiguredBound(t *testing.T) {
+	repo := conversationRepository(t)
+	var mu sync.Mutex
+	calls := 0
+	model := conversationStreamingModelFunc(func(context.Context, agentsdk.ConversationModelRequest, func(string) error) (agentsdk.ConversationModelResult, error) {
+		mu.Lock()
+		calls++
+		mu.Unlock()
+		return agentsdk.ConversationModelResult{}, &retryableExecutionError{details: agentsdk.ConversationModelFailureDetails{Retryable: true, ErrorCode: "provider_unavailable"}}
+	})
+	options := conversationOptions()
+	options.MaxModelAttempts = 3
+	options.ModelRetryBaseDelay = time.Millisecond
+	options.ModelRetryMaxDelay = 2 * time.Millisecond
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer service.Close()
+	authority := conversationAuthority()
+	conversation, err := service.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "bounded-retries"}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	run, err := service.Send(t.Context(), conversation.ID, agentsdk.ConversationSend{ClientMessageID: "one", Message: "try within the bound"}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	final := waitConversation(t, service, conversation.ID, run.ID)
+	mu.Lock()
+	actualCalls := calls
+	mu.Unlock()
+	if final.Status != "failed" || final.ErrorCode != "provider_unavailable" || actualCalls != 3 || len(final.ModelAttempts) != 3 || final.ModelAttempts[2].Status != "failed" || final.Metrics.ModelRetries != 2 {
+		t.Fatalf("retry bound was not enforced: calls=%d run=%+v", actualCalls, final)
+	}
+}
+
 func TestConversationWorkerRestartReusesFrozenInput(t *testing.T) {
 	repo := conversationRepository(t)
 	entered := make(chan agentsdk.ConversationModelRequest, 1)
@@ -354,6 +391,30 @@ func TestConversationModuleSaaSAndBrowserSurface(t *testing.T) {
 			}
 			if done := waitConversation(t, svc, c.ID, run.ID); done.Status != "completed" {
 				t.Fatalf("run %+v", done)
+			}
+			trajectoryResponse := call("GET", "/agent/conversations/"+c.ID+"/runs/"+run.ID+"/trajectory", "", a.UserID)
+			var trajectory agentsdk.ConversationTrajectory
+			if trajectoryResponse.Code != 200 || json.Unmarshal(trajectoryResponse.Body.Bytes(), &trajectory) != nil || trajectory.SHA256 == "" || len(trajectory.Requests) != 1 || len(trajectory.Responses) != 1 {
+				t.Fatalf("trajectory %d %s", trajectoryResponse.Code, trajectoryResponse.Body)
+			}
+			exported := call("GET", "/agent/conversations/"+c.ID+"/runs/"+run.ID+"/trajectory/export", "", a.UserID)
+			if exported.Code != 200 || exported.Header().Get("Content-Type") != "application/json" || exported.Header().Get("X-Content-SHA256") == "" || !json.Valid(exported.Body.Bytes()) {
+				t.Fatalf("trajectory export %d headers=%v body=%s", exported.Code, exported.Header(), exported.Body)
+			}
+			fixture := call("POST", "/agent/conversations/"+c.ID+"/runs/"+run.ID+"/trajectory/replay", `{"mode":"model_fixture"}`, a.UserID)
+			var fixtureReplay agentsdk.ConversationTrajectoryReplay
+			if fixture.Code != 200 || json.Unmarshal(fixture.Body.Bytes(), &fixtureReplay) != nil || fixtureReplay.EffectsExecuted || fixtureReplay.ConsumedRequests != 1 || len(fixtureReplay.RecordedResponses) != 1 {
+				t.Fatalf("trajectory fixture %d %s", fixture.Code, fixture.Body)
+			}
+			comparison := call("POST", "/agent/conversations/"+c.ID+"/runs/"+run.ID+"/trajectory/compare", `{"other":{"conversation_id":"`+c.ID+`","run_id":"`+run.ID+`"}}`, a.UserID)
+			var compared agentsdk.ConversationTrajectoryComparison
+			if comparison.Code != 200 || json.Unmarshal(comparison.Body.Bytes(), &compared) != nil || !compared.Equal || len(compared.Differences) != 0 {
+				t.Fatalf("trajectory comparison %d %s", comparison.Code, comparison.Body)
+			}
+			forked := call("POST", "/agent/conversations/"+c.ID+"/runs/"+run.ID+"/forks", `{"client_id":"browser-fork","title":"Alternative"}`, a.UserID)
+			var fork agentsdk.Conversation
+			if forked.Code != 200 || json.Unmarshal(forked.Body.Bytes(), &fork) != nil || fork.Fork == nil || fork.Fork.ConversationID != c.ID || fork.ActiveRunID != "" {
+				t.Fatalf("conversation fork %d %s", forked.Code, forked.Body)
 			}
 			replay := call("POST", "/agent/conversations/"+c.ID+"/messages", `{"client_message_id":"m","message":"hello"}`, a.UserID)
 			var repeated agentsdk.ConversationRun

@@ -1,0 +1,10 @@
+{
+  "compiled_frontend": true,
+  "complete": true,
+  "interval_compaction_observed": true,
+  "real_identity_http": true,
+  "real_sqlite": true,
+  "revoked_history_masked": true,
+  "tool_authorization_checks": 10,
+  "tool_invocations": 2
+}

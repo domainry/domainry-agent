@@ -1,0 +1,16 @@
+{
+  "realIdentityAndHTTP": true,
+  "originalAgreementPreview": true,
+  "previewWithoutGrant": true,
+  "acceptedOriginalUnchanged": true,
+  "explicitPublication": true,
+  "actualPublisherAudit": true,
+  "lostResponse": true,
+  "exactReloadRetry": true,
+  "singleAudit": true,
+  "shareWithdrawal": true,
+  "restorationClearsPreview": true,
+  "closeClearsPreview": true,
+  "narrowViewport": true,
+  "errors": []
+}

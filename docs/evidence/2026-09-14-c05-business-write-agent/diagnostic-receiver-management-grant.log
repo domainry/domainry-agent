@@ -1,0 +1,6 @@
+=== RUN   TestCrossUserBusinessWritesAgentConfirmationsAutomaticDeliverySharedOriginalsAndRestart
+    conversation_business_shared_write_delivery_test.go:225: browser POST /agent/conversations/conv_246570cc99517247c4e259124d1a47a3/runs/crun_4041f3547c90b444c8bcff7313616e5c/respond status=403 want=200 body={"code":"agent.conversation.collaboration_access_denied"}
+--- FAIL: TestCrossUserBusinessWritesAgentConfirmationsAutomaticDeliverySharedOriginalsAndRestart (3.88s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	4.508s
+FAIL

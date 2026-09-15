@@ -1,0 +1,14 @@
+[
+  {
+    "name": "host",
+    "inputs": 6084,
+    "changed": [],
+    "manifest_sha256": "f64a310fb038bd2ed596093514aee0d49077a0da9f3af28d537f07b9bb16d770"
+  },
+  {
+    "name": "owner",
+    "inputs": 9893,
+    "changed": [],
+    "manifest_sha256": "3e8e3f174721a6d476ed090ac0c0b83dfaadd1f9658334ef3ce0aa0d0dd2218a"
+  }
+]

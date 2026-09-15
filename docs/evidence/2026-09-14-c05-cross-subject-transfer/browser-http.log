@@ -1,0 +1,4 @@
+=== RUN   TestCrossSubjectTransferHTTPAdmitsIndependentReceiverAndKeepsHistoryAfterRestart
+--- PASS: TestCrossSubjectTransferHTTPAdmitsIndependentReceiverAndKeepsHistoryAfterRestart (11.81s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	12.984s

@@ -1,0 +1,11 @@
+=== RUN   TestSubjectErasureRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime
+    conversation_subject_erasure_dependencies_test.go:36: Admit multiple-owner-root from conv_00975955678d43a3383725fe817181f8 to agent_780fddfe761cc21b76fc1857069f8fc1
+    conversation_subject_erasure_dependencies_test.go:36: Admit multiple-owner-upstream from conv_c1dc0fd48133af072c508c32defbeb38 to agent_73904f1fc479d13d7af60271c5ae6526
+    conversation_subject_erasure_dependencies_test.go:36: Admit multiple-owner-final from conv_be364d6387bcd477bca4f048c6022c4f to agent_fd8c98adac95c9d1e72b9706e91754db
+2026/09/14 12:22:38 WARN conversation task launch failed error=agent.conversation.delegation_not_found
+2026/09/14 12:22:38 WARN conversation task launch failed error=agent.conversation.delegation_not_found
+    conversation_subject_erasure_dependencies_test.go:36: subject erasure or restart changed the exact accepted downstream owner record _agent_conversation_tasks
+--- FAIL: TestSubjectErasureRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime (33.18s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	33.857s
+FAIL

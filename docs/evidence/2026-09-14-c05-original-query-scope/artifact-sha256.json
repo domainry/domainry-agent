@@ -1,0 +1,21 @@
+{
+  "acceptance.json": "3c0977b703b28dd760dfda29716c12888141d0f691f384b909e3435ff5e86e8a",
+  "actual-agent-complex-query-normal.log": "67a8ed1bd13efe4ef6515ade687f270c2e07377736b6512dc28605e22c0c2ea1",
+  "agent-core-capabilities-todo.md.txt": "fd88ba880fdb48bfef9d06765b2a16c09b1bcd5f499f0aa515867284904e7940",
+  "commands.txt": "61c17fd255798afbfad2505764f8b945f80214a1b3066c77e6ac7526fee78c1d",
+  "conversation_business_query.go.txt": "0d02d59aa410389ac9496b8acbaab17baf7256e372e597a69535a953b1650408",
+  "conversation_business_shared_query_scope.go.txt": "ba0aa1837c788a3f04c4fa64184f21a47a3c58a47fc92dc40e976bc98515fd4a",
+  "conversation_business_shared_query_scope_test.go.txt": "f0a983b45608c31094c9a61f8159cfb758c1a9691a1cbdb3bbf053d8e655f192",
+  "conversation_business_shared_receipt_read.go.txt": "a7bb82c01192d90ee249e66c768d1fddc77e9168bf1f04504a2c2bb2341f62eb",
+  "conversation_business_shared_scope.go.txt": "125fdc86c4e77b8e9714c7d1f40e6e1414b5fdb673069fb4c3080dff760f5d52",
+  "diagnostic-before-query-coverage.log": "6de8d9ec1153e677b8614a6d247d12ddc8212a06a3a5a58a9c16fa648bcaa3ef",
+  "owner-final-normal.log": "f43950bba6a70ffd573e249cb369b03403ffaeccb89b7ceadbfdea2f4119286b",
+  "owner-final-race.log": "fea30a0c414e3ac1e952c80a9164dc6729ef25548b4a0c1f3c336f988e91d5cf",
+  "previous-artifact-sha256.json": "d75c198377cd67f4c033408062dd732d6b2827c2e82638dc4f15470eec265058",
+  "rpc-and-actual-agent-launch.json": "f056b57a281be15861ea6c6ecd68b857387e1989a46b4020747ab4c2e10ba759",
+  "rpc-and-actual-agent-unit-fixture.go.txt": "a9de0077f2480d11fec1914f65a7c1083c6046e74b5ab3fe3cc5d3b28092b9d9",
+  "seven-business-receipts-rpc.log": "6401ce23ac4c2907c5f63f61a792d40242dafeb3ff10ba835d13cf6f7ad714cc",
+  "source-final-sha256.json": "282aebca558726adb5fc6eefaa8589d98405b876110ec411b227d86b7cb0d39c",
+  "source-version-differences.json": "f422649a3df66c67c1eccdbada2a447775db894a7c657f9311f9b2c5ed8223cf",
+  "testing-2026-09-14-c05-original-query-scope.md.txt": "e57c9fd902a5589a225c77d3019c3c464ebfe472111aa586b59e8c68d0a4a971"
+}

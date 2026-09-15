@@ -1,0 +1,285 @@
+package agenthost
+
+import (
+	"encoding/hex"
+	"strings"
+	"time"
+	"unicode/utf8"
+
+	identity "github.com/domainry/domainry-identity-sdk"
+	"github.com/domainry/domainry-identity-sdk/authorization/evaluator"
+	principalmodel "github.com/domainry/domainry-runtime/runtime/domain/principal/model"
+	recordpolicy "github.com/domainry/domainry-runtime/runtime/domain/record/policy"
+)
+
+// Page totals and cursor positions describe the complete producing query,
+// not merely the saved rows. The reader's current filter must cover that scope.
+func businessReadScopeCovers(reader, producer principalmodel.Principal, object string) bool {
+	return businessReadScopeWithQuery(reader, producer, object, nil)
+}
+
+func businessReadScopeWithQuery(reader, producer principalmodel.Principal, object string, query *businessQueryScope) bool {
+	if reader.AccessBundle == nil || producer.AccessBundle == nil {
+		return false
+	}
+	now := time.Now().UTC()
+	a, err := evaluator.CompileRecordFilter(*reader.AccessBundle, identity.ResourceType(object), "read", now)
+	if err != nil || !a.Unrestricted && len(a.Allow) == 0 {
+		return false
+	}
+	b, err := evaluator.CompileRecordFilter(*producer.AccessBundle, identity.ResourceType(object), "read", now)
+	if err != nil || !b.Unrestricted && len(b.Allow) == 0 {
+		return false
+	}
+	if !a.Unrestricted {
+		if b.Unrestricted && query == nil {
+			return false
+		}
+		allowedScopes := b.Allow
+		if b.Unrestricted {
+			allowedScopes = []identity.Predicate{{}}
+		}
+		for _, allowed := range allowedScopes {
+			var narrow *identity.Predicate
+			if !b.Unrestricted {
+				narrow = &allowed
+			}
+			covered := false
+			for _, candidate := range a.Allow {
+				covered = covered || businessPredicateCoversQuery(candidate, reader, narrow, producer, query, 0)
+			}
+			if !covered {
+				return false
+			}
+		}
+	}
+	// A reader denial must be contained in a producer denial in SQL truth
+	// order: UNKNOWN also hides a row when negated. Inclusion of only TRUE
+	// denial rows would let a nullable row leak through the original total.
+	for _, denied := range a.Deny {
+		covered := false
+		for _, candidate := range b.Deny {
+			covered = covered || businessPredicateImplication(candidate, producer, denied, reader, 0, true)
+		}
+		if !covered && query != nil {
+			// An exact query exclusion may already exclude the reader's new
+			// denial. Prove NOT(denial) for the complete filter, not saved rows.
+			covered = businessPredicateCovers(identity.Predicate{Not: &denied}, reader, query.predicate, query.principal, 0)
+		}
+		if !covered {
+			return false
+		}
+	}
+	return true
+}
+
+// The SDK binds Subject/org/business claims. Generated SQL is compared only;
+// no statement is executed and no Runtime-owned scope evaluator is invented.
+func businessBoundPredicate(p identity.Predicate, principal principalmodel.Principal) (string, bool) {
+	compiled, err := evaluator.CompileSQLWithContext(evaluator.RecordFilter{Allow: []identity.Predicate{p}}, recordpolicy.RecordSDKEvaluationContext(principal), func(fact string) (string, bool) {
+		return "scope_fact_" + hex.EncodeToString([]byte(fact)), fact != ""
+	})
+	if err != nil {
+		return "", false
+	}
+	return conversationBusinessDigest(compiled), true
+}
+
+// Conservative boolean implication supports common AND/OR scope composition.
+// Unknown relational/atomic translations fail closed unless the reader is all.
+func businessPredicateCovers(broad identity.Predicate, broadPrincipal principalmodel.Principal, narrow identity.Predicate, narrowPrincipal principalmodel.Principal, depth int) bool {
+	return businessPredicateImplication(broad, broadPrincipal, narrow, narrowPrincipal, depth, false)
+}
+
+// Negation and deny policies need pointwise SQL FALSE <= UNKNOWN <= TRUE
+// containment, not just inclusion of matching rows.
+func businessPredicateImplication(broad identity.Predicate, broadPrincipal principalmodel.Principal, narrow identity.Predicate, narrowPrincipal principalmodel.Principal, depth int, preserveUnknown bool) bool {
+	if depth > 24 {
+		return false
+	}
+	a, okA := businessBoundPredicate(broad, broadPrincipal)
+	b, okB := businessBoundPredicate(narrow, narrowPrincipal)
+	if okA && okB && a == b {
+		return true
+	}
+	if !okA || !okB {
+		return false
+	}
+	if businessAtomicScopeCovers(broad, broadPrincipal, narrow, narrowPrincipal, preserveUnknown) {
+		return true
+	}
+	if broadExcluded, broadNegative := businessExcludedPredicate(broad); broadNegative {
+		if narrowExcluded, narrowNegative := businessExcludedPredicate(narrow); narrowNegative {
+			// Both predicates were validated and translated by the SDK above.
+			// Reverse SQL truth order for exclusions. A proof that only covers
+			// matching rows cannot be negated safely at nullable fields.
+			return businessPredicateImplication(narrowExcluded, narrowPrincipal, broadExcluded, broadPrincipal, depth+1, true)
+		}
+	}
+	allowFact, allow, allowOK := businessFinitePredicateSet(broad, broadPrincipal, depth)
+	valuesFact, values, valuesOK := businessFinitePredicateSet(narrow, narrowPrincipal, depth)
+	if allowOK && valuesOK && allowFact == valuesFact {
+		for value := range values {
+			if !allow[value] {
+				return false
+			}
+		}
+		return true
+	}
+	if len(narrow.Any) > 0 {
+		for _, child := range narrow.Any {
+			if !businessPredicateImplication(broad, broadPrincipal, child, narrowPrincipal, depth+1, preserveUnknown) {
+				return false
+			}
+		}
+		return true
+	}
+	if len(broad.All) > 0 {
+		for _, child := range broad.All {
+			if !businessPredicateImplication(child, broadPrincipal, narrow, narrowPrincipal, depth+1, preserveUnknown) {
+				return false
+			}
+		}
+		return true
+	}
+	for _, child := range broad.Any {
+		if businessPredicateImplication(child, broadPrincipal, narrow, narrowPrincipal, depth+1, preserveUnknown) {
+			return true
+		}
+	}
+	for _, child := range narrow.All {
+		if businessPredicateImplication(broad, broadPrincipal, child, narrowPrincipal, depth+1, preserveUnknown) {
+			return true
+		}
+	}
+	return false
+}
+
+// Only prove implications of atoms already translated by the SDK. A literal
+// prefix extension implies its shorter prefix; %/_/backslash remain literals
+// because the SDK escapes them. Do not invent a case/collation normalization.
+func businessAtomicScopeCovers(broad identity.Predicate, broadPrincipal principalmodel.Principal, narrow identity.Predicate, narrowPrincipal principalmodel.Principal, preserveUnknown bool) bool {
+	if len(broad.Path) != 0 || len(narrow.Path) != 0 {
+		return false
+	}
+	if fact, nonnull, ok := businessExistenceScope(broad, broadPrincipal); ok {
+		if other, value, ok := businessExistenceScope(narrow, narrowPrincipal); ok {
+			return fact == other && nonnull == value
+		}
+		if nonnull && narrow.Fact == fact && !preserveUnknown {
+			// SQL comparisons, including <> and NOT IN, never match a NULL
+			// fact. This is a SQL-filter containment proof, not an evaluation
+			// of a saved JSON row (where present-null and absent differ). At NULL
+			// the comparison is UNKNOWN and nonnull is FALSE, so this weaker
+			// implication must never be used beneath NOT or for a deny policy.
+			switch narrow.Operator {
+			case identity.OperatorEqual, identity.OperatorNotEqual, identity.OperatorIn, identity.OperatorNotIn, identity.OperatorPrefix:
+				return true
+			}
+		}
+	}
+	if broad.Fact == "" || broad.Fact != narrow.Fact || broad.Operator != identity.OperatorPrefix || narrow.Operator != identity.OperatorPrefix {
+		return false
+	}
+	a, errA := evaluator.ResolveValue(broad.Value, recordpolicy.RecordSDKEvaluationContext(broadPrincipal))
+	b, errB := evaluator.ResolveValue(narrow.Value, recordpolicy.RecordSDKEvaluationContext(narrowPrincipal))
+	left, leftOK := a.(string)
+	right, rightOK := b.(string)
+	// SQL drivers may truncate NUL or replace malformed Unicode. Such strings
+	// cannot gain a new implication from their Go byte prefix relationship.
+	return errA == nil && errB == nil && leftOK && rightOK && utf8.ValidString(left) && utf8.ValidString(right) && !strings.ContainsRune(left, 0) && !strings.ContainsRune(right, 0) && strings.HasPrefix(right, left)
+}
+
+func businessExistenceScope(p identity.Predicate, principal principalmodel.Principal) (string, bool, bool) {
+	negated := false
+	for depth := 0; depth <= 24; depth++ {
+		if p.Not != nil {
+			negated = !negated
+			p = *p.Not
+			continue
+		}
+		if p.Fact == "" || len(p.Path) != 0 || p.Operator != identity.OperatorExists {
+			return "", false, false
+		}
+		value, err := evaluator.ResolveValue(p.Value, recordpolicy.RecordSDKEvaluationContext(principal))
+		want, ok := value.(bool)
+		return p.Fact, want != negated, err == nil && ok
+	}
+	return "", false, false
+}
+
+// The SDK's <> and NOT IN atoms have the same SQL null semantics as NOT of
+// equality and IN. Only normalize these already-translated exclusions; nil
+// or unresolved values still fail the positive finite-set proof below.
+func businessExcludedPredicate(p identity.Predicate) (identity.Predicate, bool) {
+	if p.Not != nil {
+		return *p.Not, true
+	}
+	switch p.Operator {
+	case identity.OperatorNotEqual:
+		p.Operator = identity.OperatorEqual
+	case identity.OperatorNotIn:
+		p.Operator = identity.OperatorIn
+	default:
+		return identity.Predicate{}, false
+	}
+	return p, true
+}
+
+// A union of equal/in predicates over one fact is the same finite positive
+// scope as an in-list. Keep conjunctions structural: intersecting values by
+// JSON type could incorrectly call a SQL-coercible conjunction empty.
+func businessFinitePredicateSet(p identity.Predicate, principal principalmodel.Principal, depth int) (string, map[string]bool, bool) {
+	if depth > 24 || len(p.Path) != 0 {
+		return "", nil, false
+	}
+	if len(p.Any) == 0 {
+		values, ok := businessPredicateSet(p, principal)
+		return p.Fact, values, ok && p.Fact != ""
+	}
+	fact := ""
+	values := map[string]bool{}
+	for _, child := range p.Any {
+		childFact, childValues, ok := businessFinitePredicateSet(child, principal, depth+1)
+		if !ok || fact != "" && childFact != fact {
+			return "", nil, false
+		}
+		fact = childFact
+		for value := range childValues {
+			values[value] = true
+		}
+	}
+	return fact, values, len(values) > 0
+}
+
+func businessPredicateSet(p identity.Predicate, principal principalmodel.Principal) (map[string]bool, bool) {
+	if p.Operator != identity.OperatorEqual && p.Operator != identity.OperatorIn {
+		return nil, false
+	}
+	value, err := evaluator.ResolveValue(p.Value, recordpolicy.RecordSDKEvaluationContext(principal))
+	if err != nil || value == nil || evaluator.IsMissingValue(value) {
+		return nil, false
+	}
+	values := []any{value}
+	if p.Operator == identity.OperatorIn {
+		switch list := value.(type) {
+		case []any:
+			values = list
+		case []string:
+			values = nil
+			for _, item := range list {
+				values = append(values, item)
+			}
+		default:
+			return nil, false
+		}
+	}
+	set := map[string]bool{}
+	for _, value := range values {
+		if value == nil || evaluator.IsMissingValue(value) {
+			return nil, false
+		}
+		set[conversationBusinessDigest(value)] = true
+	}
+	return set, len(set) > 0
+}

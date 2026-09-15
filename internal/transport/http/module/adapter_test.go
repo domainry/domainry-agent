@@ -149,7 +149,7 @@ func TestSurfaceOwnsDialogStateRoutesAndUsesAuthenticatedIdentity(t *testing.T) 
 
 func TestAgentOwnsOpenAPIForEveryHTTPRoute(t *testing.T) {
 	operations := agentOpenAPIOperations()
-	if len(operations) != 94 {
+	if len(operations) != 125 {
 		t.Fatalf("Agent OpenAPI operations=%d", len(operations))
 	}
 	stream := operations["POST /agent/runs/stream"]
@@ -182,7 +182,7 @@ func TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(actions) != 107+len(agentsdk.ConversationToolActions()) || len(adapter.Routes()) != 22 {
+	if len(actions) != 138+len(agentsdk.ConversationToolActions()) || len(adapter.Routes()) != 22 {
 		t.Fatalf("actions=%d routes=%d", len(actions), len(adapter.Routes()))
 	}
 	conversation, err := NewConversationAdapter(conversationSurfaceStub{}, "runtime")
@@ -315,6 +315,70 @@ func actionRequestIdentity(actionKey string) identitysdk.RequestIdentity {
 
 // The projection check needs metadata only; invocation is covered separately.
 type conversationSurfaceStub struct{ agentsdk.ConversationService }
+
+type conversationSkillSurfaceStub struct {
+	agentsdk.ConversationService
+	agentsdk.ConversationSkillService
+	authority    agentsdk.ConversationAuthority
+	skillKey     string
+	skillVersion string
+	resourceKey  string
+	candidateID  string
+	candidate    agentsdk.ConversationImprovementCandidateCreate
+	evaluation   agentsdk.ConversationImprovementEvaluationWrite
+}
+
+func (s *conversationSkillSurfaceStub) ConversationSkill(_ context.Context, key, version string, authority agentsdk.ConversationAuthority) (agentsdk.ConversationSkillVersion, error) {
+	s.authority, s.skillKey, s.skillVersion = authority, key, version
+	return agentsdk.ConversationSkillVersion{Definition: agentsdk.SkillSchema{Key: key, Version: version, Instructions: "exact body"}}, nil
+}
+
+func (s *conversationSkillSurfaceStub) ConversationSkillResource(_ context.Context, key, version, resource string, authority agentsdk.ConversationAuthority) (agentsdk.SkillResource, error) {
+	s.authority, s.skillKey, s.skillVersion, s.resourceKey = authority, key, version, resource
+	return agentsdk.SkillResource{Key: resource, Content: "exact resource"}, nil
+}
+
+func (s *conversationSkillSurfaceStub) CreateConversationImprovementCandidate(_ context.Context, in agentsdk.ConversationImprovementCandidateCreate, authority agentsdk.ConversationAuthority) (agentsdk.ConversationImprovementCandidate, error) {
+	s.authority, s.candidate = authority, in
+	return agentsdk.ConversationImprovementCandidate{ID: "candidate-one", Kind: in.Kind, TargetKey: in.TargetKey, Version: in.Version, FeedbackIDs: in.FeedbackIDs, Proposal: in.Proposal, Reason: in.Reason}, nil
+}
+
+func (s *conversationSkillSurfaceStub) EvaluateConversationImprovementCandidate(_ context.Context, id string, in agentsdk.ConversationImprovementEvaluationWrite, authority agentsdk.ConversationAuthority) (agentsdk.ConversationImprovementCandidate, error) {
+	s.authority, s.candidateID, s.evaluation = authority, id, in
+	return agentsdk.ConversationImprovementCandidate{ID: id, Revision: in.ExpectedRevision + 1, Evaluation: &agentsdk.ConversationImprovementEvaluation{SuiteVersion: in.SuiteVersion}}, nil
+}
+
+func TestConversationSkillHTTPRoutesPreserveExactPathsBodiesAndIdentity(t *testing.T) {
+	service := &conversationSkillSurfaceStub{}
+	adapter, err := NewConversationAdapter(service, "runtime-one")
+	if err != nil {
+		t.Fatal(err)
+	}
+	identity := identitysdk.RequestIdentity{Principal: identitysdk.Principal{Known: true, WorkspaceID: "workspace-one", UserID: "user-one", RoleKey: "admin"}}
+	serve := func(method, path, body string) *httptest.ResponseRecorder {
+		request := httptest.NewRequest(method, path, strings.NewReader(body))
+		request = request.WithContext(identitysdk.WithRequestIdentity(request.Context(), identity))
+		response := httptest.NewRecorder()
+		adapter.Handler().ServeHTTP(response, request)
+		return response
+	}
+	response := serve(http.MethodGet, "/agent/skills/report/versions/2", "")
+	if response.Code != http.StatusOK || service.skillKey != "report" || service.skillVersion != "2" || !strings.Contains(response.Body.String(), "exact body") {
+		t.Fatalf("Skill response=%d body=%s key=%q version=%q", response.Code, response.Body.String(), service.skillKey, service.skillVersion)
+	}
+	response = serve(http.MethodGet, "/agent/skills/report/versions/2/resources/template", "")
+	if response.Code != http.StatusOK || service.resourceKey != "template" || !strings.Contains(response.Body.String(), "exact resource") {
+		t.Fatalf("resource response=%d body=%s resource=%q", response.Code, response.Body.String(), service.resourceKey)
+	}
+	response = serve(http.MethodPost, "/agent/improvement-candidates", `{"client_id":"create-one","kind":"skill","target_key":"report","version":"3","feedback_ids":["feedback-one"],"proposal":{"key":"report","version":"3"},"reason":"reviewed change"}`)
+	if response.Code != http.StatusOK || service.candidate.ClientID != "create-one" || service.candidate.TargetKey != "report" || len(service.candidate.FeedbackIDs) != 1 {
+		t.Fatalf("candidate response=%d body=%s input=%+v", response.Code, response.Body.String(), service.candidate)
+	}
+	response = serve(http.MethodPost, "/agent/improvement-candidates/candidate-one/evaluation", `{"client_id":"evaluate-one","expected_revision":1,"suite_version":"v01-skill","scenario_ids":["scenario-one"],"baseline_completed":0,"candidate_completed":1,"baseline_omissions":1,"candidate_omissions":0,"passed":true}`)
+	if response.Code != http.StatusOK || service.candidateID != "candidate-one" || service.evaluation.SuiteVersion != "v01-skill" || service.authority.RuntimeID != "runtime-one" || service.authority.WorkspaceID != "workspace-one" || service.authority.UserID != "user-one" {
+		t.Fatalf("evaluation response=%d body=%s candidate=%q input=%+v authority=%+v", response.Code, response.Body.String(), service.candidateID, service.evaluation, service.authority)
+	}
+}
 
 type conversationEventSurfaceStub struct{ agentsdk.ConversationService }
 

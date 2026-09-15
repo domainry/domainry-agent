@@ -1,0 +1,8 @@
+=== RUN   TestCrossSubjectTransferHTTPAdmitsIndependentReceiverAndKeepsHistoryAfterRestart
+--- PASS: TestCrossSubjectTransferHTTPAdmitsIndependentReceiverAndKeepsHistoryAfterRestart (7.06s)
+=== RUN   TestParticipantTransferHTTPKeepsActualActorOriginalSourcesAndIndependentExecution
+--- PASS: TestParticipantTransferHTTPKeepsActualActorOriginalSourcesAndIndependentExecution (9.92s)
+=== RUN   TestParticipantDependencyTransferHTTPRechecksUpstreamAudienceDuringExecution
+--- PASS: TestParticipantDependencyTransferHTTPRechecksUpstreamAudienceDuringExecution (10.34s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	28.167s

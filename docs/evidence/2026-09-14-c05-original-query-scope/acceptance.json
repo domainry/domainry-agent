@@ -1,0 +1,42 @@
+{
+  "phase": "accepted_explicit_original_query_filter_scope",
+  "c05_complete": false,
+  "todo_completed": 4,
+  "todo_total": 25,
+  "actual_record_page_subcases": 10,
+  "actual_target_relation_page_root": 1,
+  "before_failed_orm_cases": 11,
+  "owner_final_roots": 55,
+  "verified_exit_codes": {
+    "owner_normal": 0,
+    "owner_race": 0,
+    "rpc": 0,
+    "actual_agent": 0
+  },
+  "verified_sessions": {
+    "owner_normal": 69511,
+    "owner_race": 72949,
+    "rpc": 54499,
+    "actual_agent": 82532
+  },
+  "owner_normal_seconds": 1.527,
+  "owner_race_seconds": 8.343,
+  "rpc_root_seconds": 9.62,
+  "rpc_package_seconds": 10.276,
+  "actual_agent_root_seconds": 141.81,
+  "actual_agent_package_seconds": 142.499,
+  "actual_agent_original_sha_checks": 20,
+  "actual_agent_task_budget": {
+    "steps": 12,
+    "calls": 12,
+    "output_bytes": 8192,
+    "seconds": 90
+  },
+  "dependency_source_files": 4689,
+  "production_unchanged_since_rpc_and_actual_agent_compile": true,
+  "unit_version_difference": "Added metadata-only decimal database-comparison proof test after RPC/actual Agent compile; final whole owner normal/race includes it. Both source versions preserved.",
+  "prior_archive_artifacts_unchanged": 15,
+  "concrete_new_scope_branch_evidence": "Real Runtime ORM with SDK identity fixtures. Existing real Cookie/Identity/RPC/Agent chain is regression evidence; public native role model cannot configure a conditional row guardrail and this is not claimed.",
+  "query_projection": "Normalized eq/ne/in/not_in/is_null/is_not_null SDK atoms; ordered/contains filters and exact-decimal comparisons retain nonnull constraint only. Actual identities and claims unchanged; literal-only context has no grants and no IO.",
+  "remaining": "Other expression/relationship constraints, full historical admission and execution sources, multiple-owner mixed roots, dependencies, Identity exits, earlier actual professional-write race timeouts, released Runtime module-set lock synchronization."
+}

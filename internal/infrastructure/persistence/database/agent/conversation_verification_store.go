@@ -40,7 +40,13 @@ func (s *ConversationStore) verifyDelegationDelivery(ctx context.Context, db con
 	lookup := func(ref sdk.ConversationResultReference) (persistence.ConversationToolExecution, error) {
 		var record persistence.ConversationToolExecution
 		owner := a
-		if d.ExecutionSubject != nil && d.ExecutionSubject.UserID != a.UserID {
+		if d.OwnerUserID != a.UserID && participantDeliveryReading(d, a) {
+			var err error
+			owner, err = s.delegationExecutionAuthority(ctx, db, d, a)
+			if err != nil {
+				return record, err
+			}
+		} else if d.ExecutionSubject != nil && d.ExecutionSubject.UserID != a.UserID {
 			subjects, found, err := s.delegationSubjects(ctx, db, d.ID, a)
 			if err != nil {
 				return record, err
@@ -94,7 +100,7 @@ func (s *ConversationStore) verifyDelegationDelivery(ctx context.Context, db con
 func (s *ConversationStore) PreviewConversationDeliveryVerification(ctx context.Context, id string, a sdk.ConversationAuthority) (sdk.ConversationDeliveryVerification, error) {
 	var out sdk.ConversationDeliveryVerification
 	err := s.transaction(ctx, func(tx *sql.Tx) error {
-		d, err := s.conversationDelegation(ctx, tx, id, a)
+		d, _, err := s.participantDelegation(ctx, tx, id, a, "delivery_read")
 		if err != nil {
 			return err
 		}

@@ -1,0 +1,25 @@
+=== RUN   TestDelegationParticipantsHTTPKeepSenderAndExecutorIndependent
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Error: strict mode violation: getByRole('dialog', { name: 'Agent 协作', exact: true }).getByRole('button', { name: /^核对待办/ }) resolved to 2 elements:
+    1) <button class="selected">…</button> aka getByRole('button', { name: '核对待办 默认 Agent' }).first()
+    2) <button class="">…</button> aka getByRole('button', { name: '核对待办 默认 Agent' }).nth(1)
+
+Call log:
+[2m  - waiting for getByRole('dialog', { name: 'Agent 协作', exact: true }).getByRole('button', { name: /^核对待办/ })[22m
+
+    at select (/Users/tiger/Projects/domainry-agent/frontend/tests/delegation-participants.browser.mjs:23:79)
+    at /Users/tiger/Projects/domainry-agent/frontend/tests/delegation-participants.browser.mjs:31:8 {
+  log: [
+    "  - waiting for getByRole('dialog', { name: 'Agent 协作', exact: true }).getByRole('button', { name: /^核对待办/ })"
+  ]
+}
+
+Node.js v24.19.0
+    conversation_participants_test.go:304: exit status 1
+--- FAIL: TestDelegationParticipantsHTTPKeepSenderAndExecutorIndependent (7.96s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	8.472s
+FAIL

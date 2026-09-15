@@ -1,0 +1,6 @@
+=== RUN   TestResultPreviewPreservesOutcomeAndBoundsEscapedUnicode
+--- PASS: TestResultPreviewPreservesOutcomeAndBoundsEscapedUnicode (0.01s)
+=== RUN   TestResultLocatorWithoutExcerptRetainsExactOutcomeAndReadReference
+--- PASS: TestResultLocatorWithoutExcerptRetainsExactOutcomeAndReadReference (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	0.689s

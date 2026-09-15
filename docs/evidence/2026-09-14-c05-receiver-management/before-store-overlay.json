@@ -1,0 +1,5 @@
+{
+  "Replace": {
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_delegation_store.go": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-receiver-management/source-before/testdata/internal/infrastructure/persistence/database/agent/conversation_delegation_store.go"
+  }
+}

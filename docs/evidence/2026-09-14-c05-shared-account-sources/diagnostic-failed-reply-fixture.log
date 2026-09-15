@@ -1,0 +1,6 @@
+=== RUN   TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart
+    conversation_shared_failed_execution_test.go:108: fixture did not preserve the real failed operation and subsequent reply completed  1
+--- FAIL: TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart (2.06s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	2.875s
+FAIL

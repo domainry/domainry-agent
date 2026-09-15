@@ -1,0 +1,534 @@
+{
+  "agent": {
+    "delegation_role_key": "a_results_reader",
+    "owner_user_id": "admin",
+    "execution_subject": {
+      "runtime_id": "business-browser-runtime",
+      "workspace_id": "workspace-primary",
+      "user_id": "admin"
+    },
+    "id": "agent_27e546f3abdedc820391ab00016e477a",
+    "revision": 1,
+    "model_key": "default",
+    "model_identity": {
+      "provider": "fixture",
+      "protocol": "chat_completions",
+      "model": "business-web",
+      "fingerprint": "business-web-v1"
+    },
+    "profile": {
+      "instructions": "Read and submit original receipts",
+      "key": "agent_27e546f3abdedc820391ab00016e477a",
+      "version": "1",
+      "name": "Original receipt reader",
+      "tools": [
+        "delegation_source_read",
+        "delegation_get",
+        "delegation_update"
+      ],
+      "execution_limits": {}
+    },
+    "digest": "766cb2976cd08f1366d637ec393a04d998e1e2c7776e715ccf909798c465685a"
+  },
+  "id": "crun_e6d01694c5599319a452458df88c1a02",
+  "conversation_id": "conv_7ed8e76ec916fb5ecab58a1f7cee2b04",
+  "client_message_id": "background_task_7ed8e76ec916fb5ecab58a1f7cee2b04_0ef3c343a42d",
+  "status": "failed",
+  "user_seq": 3,
+  "attempt": 1,
+  "draft_bytes": 0,
+  "last_event_seq": 28,
+  "steps": [
+    {
+      "number": 0,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "mixed-old-page-0-0",
+          "name": "delegation_source_read",
+          "arguments": "{\"id\":\"delegation_5a7e71463b7805bd5ae59120d32f376c\",\"reference\":{\"conversation_id\":\"conv_4b75fefe0dec7eb79eb5f658e1905de8\",\"run_id\":\"crun_fb8d80669ed97c8cee77003dc8e4aba1\",\"step\":0,\"call_id\":\"old-role-report\",\"sha256\":\"c09bc60211c0379d73d463cc492b7db510f36f0a10ed8823470689d916243db2\"},\"max_bytes\":8192}",
+          "status": "completed",
+          "resource_id": "delegation_5a7e71463b7805bd5ae59120d32f376c",
+          "result_preview": "{\"delegation_id\":\"delegation_5a7e71463b7805bd5ae59120d32f376c\",\"reference\":{\"conversation_id\":\"conv_4b75fefe0dec7eb79eb5f658e1905de8\",\"run_id\":\"crun_fb8d80669ed97c8cee77003dc8e4aba1\",\"step\":0,\"call_id\":\"old-role-report\",\"sha256\":\"c09bc60211c0379d73d463cc492b7db510f36f0a10ed8823470689d916243db2\"},\"json_text\":\"{\\\"status\\\":\\\"completed\\\",\\\"content\\\":{\\\"operation\\\":\\\"query\\\",\\\"source_identity\\\":\\\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\\\",\\\"request_sha256\\\":\\\"19eea45c22cf9d0e2d1a7af28019a09b5e07b1fbd411c1a56a52791a4fc2c444\\\",\\\"result\\\":{\\\"summary\\\":{\\\"key\\\":\\\"customer_balances\\\",\\\"name\\\":\\\"customer_balances\\\",\\\"rows\\\":[{\\\"dimensions\\\":{\\\"balance\\\":\\\"10\\\"}},{\\\"dimensions\\\":{\\\"balance\\\":\\\"20\\\"}},{\\\"dimensions\\\":{\\\"balance\\\":\\\"30\\\"}},{\\\"dimensions\\\":{\\\"balance\\\":\\\"10\\\"}}],\\\"row_count\\\":4,\\\"source_row_count\\\":-1,\\\"execution_mode\\\":\\\"object_sql_v1\\\",\\\"result_schema\\\":[{\\\"key\\\":\\\"balance\\\",\\\"type\\\":\\\"integer\\\",\\\"kind\\\":\\\"dimension\\\"}],\\\"page_size\\\":10,\\\"truncated\\\":false,\\\"total\\\":4,\\\"total_semantics\\\":\\\"exact\\\"},\\\"source\\\":{\\\"report_key\\\":\\\"customer_balances\\\",\\\"definition_version\\\":\\\"cfa2d729c0e333f959d15c5f683d213f8bb26d0295a88110159ac2773c4d9eb6\\\",\\\"data_version\\\":\\\"11f6b58ed905265403691a022737ed85e9058896f531f01df2a6bb361e8fcf58\\\",\\\"queried_at\\\":\\\"2026-09-14T10:13:30.014091Z\\\",\\\"row_limit\\\":10,\\\"complete\\\":true,\\\"proof\\\":\\\"140a59fadd6505fd09784f8fed696f7e211e341a2ab8e0c58a650d91d809a2ad\\\",\\\"read_proof\\\":\\\"436aaba55c6df49bcc4df0d4f64316e8a1857f5aa5ebd551c1d46256afb3b12a\\\"}}}}\",\"offset\":0,\"next_offset\":1109,\"total_bytes\":1109,\"complete\":true}",
+          "result_reference": {
+            "conversation_id": "conv_7ed8e76ec916fb5ecab58a1f7cee2b04",
+            "run_id": "crun_e6d01694c5599319a452458df88c1a02",
+            "step": 0,
+            "call_id": "mixed-old-page-0-0",
+            "sha256": "2b9474796d08b9ce54932ca6307e0c8be1e8d9671ee7f8ed4463704c8f818892"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "6791964e33cfaeb7b0f3daf2785fc7c4f23194157eb5ffc6d2adef704b9aa64c",
+            "checks": 1
+          },
+          "started_at": "2026-09-14T10:18:50.571662Z",
+          "completed_at": "2026-09-14T10:18:51.114879Z",
+          "duration_ms": 543
+        }
+      ],
+      "started_at": "2026-09-14T10:18:41.510987Z",
+      "completed_at": "2026-09-14T10:18:41.656751Z",
+      "duration_ms": 145
+    },
+    {
+      "number": 1,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "mixed-old-page-1-0",
+          "name": "delegation_source_read",
+          "arguments": "{\"id\":\"delegation_5a7e71463b7805bd5ae59120d32f376c\",\"reference\":{\"conversation_id\":\"conv_c1b5459bbb945c589ed4a4828b52a999\",\"run_id\":\"crun_cc20e193bd58e2ed0c2cbac23da3a46c\",\"step\":0,\"call_id\":\"old-role-analysis\",\"sha256\":\"de860ce42c83107c76b7b05785be0cb8b3f844b7fcd5d9ec415bbe7c43a82867\"},\"max_bytes\":8192}",
+          "status": "completed",
+          "resource_id": "delegation_5a7e71463b7805bd5ae59120d32f376c",
+          "result_preview": "{\"delegation_id\":\"delegation_5a7e71463b7805bd5ae59120d32f376c\",\"reference\":{\"conversation_id\":\"conv_c1b5459bbb945c589ed4a4828b52a999\",\"run_id\":\"crun_cc20e193bd58e2ed0c2cbac23da3a46c\",\"step\":0,\"call_id\":\"old-role-analysis\",\"sha256\":\"de860ce42c83107c76b7b05785be0cb8b3f844b7fcd5d9ec415bbe7c43a82867\"},\"json_text\":\"{\\\"status\\\":\\\"completed\\\",\\\"content\\\":{\\\"operation\\\":\\\"run\\\",\\\"source_identity\\\":\\\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\\\",\\\"request_sha256\\\":\\\"c6baebdc86d143832cd870a8a5ceb812f5201d0b933080273cd7839f342e7703\\\",\\\"result\\\":{\\\"spec\\\":{\\\"dataset_key\\\":\\\"customer\\\",\\\"mode\\\":\\\"aggregate\\\",\\\"measures\\\":[{\\\"key\\\":\\\"total\\\",\\\"function\\\":\\\"sum\\\",\\\"field\\\":\\\"balance\\\"}],\\\"max_rows\\\":100},\\\"columns\\\":[{\\\"key\\\":\\\"total\\\",\\\"type\\\":\\\"integer\\\",\\\"unit\\\":\\\"unspecified\\\"}],\\\"rows\\\":[{\\\"input_counts\\\":{\\\"dataset\\\":\\\"4\\\"},\\\"non_null_counts\\\":{\\\"total\\\":\\\"4\\\"},\\\"values\\\":{\\\"total\\\":\\\"70\\\"},\\\"anomalies\\\":[],\\\"issues\\\":[]}],\\\"methods\\\":[{\\\"numerics\\\":\\\"exact_integer_or_decimal; rational_postprocessing\\\",\\\"column\\\":\\\"total\\\",\\\"method\\\":\\\"sum\\\",\\\"nulls\\\":\\\"ignore_null_inputs\\\"}],\\\"visualization\\\":{\\\"chart\\\":null,\\\"omitted_reason\\\":\\\"single_value_or_multiple_dimensions\\\"},\\\"coverage\\\":{\\\"complete\\\":true,\\\"truncated\\\":false,\\\"returned_rows\\\":1,\\\"requested_max_rows\\\":100,\\\"missing\\\":[]},\\\"references\\\":[{\\\"kind\\\":\\\"business_object\\\",\\\"id\\\":\\\"customer\\\",\\\"label\\\":\\\"Customer\\\",\\\"version\\\":\\\"55b6bc9da2c8ba82668084a60c54423e6ef09f8200693e90c6c5200aec1da27a\\\"}],\\\"source\\\":{\\\"dataset_key\\\":\\\"customer\\\",\\\"definition_version\\\":\\\"3739d784637442004d72aecfd43882313db4e461995640a8fd82fdc8c67452c6\\\",\\\"data_version\\\":\\\"ac2787163016f3aff526fc5547b70499a147b345a46f80d10d139f7ef7c48acd\\\",\\\"queried_at\\\":\\\"2026-09-14T10:13:38.942843Z\\\",\\\"input_counts\\\":{\\\"dataset\\\":\\\"4\\\"},\\\"scope\\\":\\\"current_subject_filtered_dataset\\\",\\\"complete\\\":true,\\\"proof\\\":\\\"6af0e165b461008f988ce91d88cd962b58bd1dcb6e224e09c0ce7dacf267c420\\\",\\\"read_proof\\\":\\\"b83b5691deaf1f7d35f94f6f39a502f4d0fb2db02e7e8b54f753e21b08bf7186\\\"}}}}\",\"offse",
+          "result_truncated": true,
+          "result_reference": {
+            "conversation_id": "conv_7ed8e76ec916fb5ecab58a1f7cee2b04",
+            "run_id": "crun_e6d01694c5599319a452458df88c1a02",
+            "step": 1,
+            "call_id": "mixed-old-page-1-0",
+            "sha256": "014e4efffaad8b79aa3617c703ebaff25542ce0dd81a31039202071dfbf60cb0"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "6791964e33cfaeb7b0f3daf2785fc7c4f23194157eb5ffc6d2adef704b9aa64c",
+            "checks": 1
+          },
+          "started_at": "2026-09-14T10:19:19.789048Z",
+          "completed_at": "2026-09-14T10:19:20.392932Z",
+          "duration_ms": 603
+        }
+      ],
+      "started_at": "2026-09-14T10:19:09.182559Z",
+      "completed_at": "2026-09-14T10:19:09.333485Z",
+      "duration_ms": 150
+    },
+    {
+      "number": 2,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "mixed-old-agreement",
+          "name": "delegation_get",
+          "arguments": "{\"id\":\"delegation_5a7e71463b7805bd5ae59120d32f376c\"}",
+          "status": "completed",
+          "resource_id": "delegation_5a7e71463b7805bd5ae59120d32f376c",
+          "result_preview": "{\"access\":{\"view\":true,\"receive\":true,\"manage\":true,\"communicate\":true,\"execution_read\":true,\"delivery_read\":true,\"share\":true},\"assignments\":[{\"execution_subject\":{\"runtime_id\":\"business-browser-runtime\",\"workspace_id\":\"workspace-primary\",\"user_id\":\"admin\"},\"number\":1,\"agent_id\":\"agent_27e546f3abdedc820391ab00016e477a\",\"agent_revision\":1,\"conversation_id\":\"conv_7ed8e76ec916fb5ecab58a1f7cee2b04\",\"task_id\":\"task_7ed8e76ec916fb5ecab58a1f7cee2b04\",\"agreement_revision\":1,\"reason\":\"Compare two explicitly admitted original old-role receipts\",\"actor_id\":\"admin\",\"source\":{\"conversation_id\":\"conv_ab7d971820cf61a72572c5cc174a1b9a\",\"run_id\":\"crun_c41669e15d21b9cfa63a3598481d1afc\",\"before_step\":1},\"created_at\":\"2026-09-14T10:14:11.041Z\"}],\"dependency_states\":[],\"owner_user_id\":\"admin\",\"execution_subject\":{\"runtime_id\":\"business-browser-runtime\",\"workspace_id\":\"workspace-primary\",\"user_id\":\"admin\"},\"verification\":{\"delivery_digest\":\"eb9128865c6902f500dd3ac20470afc901c5d478f7f6cff1c6ca4e8f456b33f6\",\"brief_version\":1,\"agreement_revision\":1,\"checks\":[{\"condition\":0,\"requirement\":\"Original report\",\"method\":\"program\",\"verdict\":\"met\",\"basis\":\"\u539f\u64cd\u4f5c\u56de\u6267\u53ca\u53c2\u6570\uff0f\u7ed3\u679c\u7b26\u5408\u8be5\u9879\u7ea6\u5b9a\",\"receipts\":[{\"conversation_id\":\"conv_4b75fefe0dec7eb79eb5f658e1905de8\",\"run_id\":\"crun_fb8d80669ed97c8cee77003dc8e4aba1\",\"step\":0,\"call_id\":\"old-role-report\",\"sha256\":\"c09bc60211c0379d73d463cc492b7db510f36f0a10ed8823470689d916243db2\"}]},{\"condition\":1,\"requirement\":\"Original analysis\",\"method\":\"program\",\"verdict\":\"met\",\"basis\":\"\u539f\u64cd\u4f5c\u56de\u6267\u53ca\u53c2\u6570\uff0f\u7ed3\u679c\u7b26\u5408\u8be5\u9879\u7ea6\u5b9a\",\"receipts\":[{\"conversation_id\":\"conv_c1b5459bbb945c589ed4a4828b52a999\",\"run_id\":\"crun_cc20e193bd58e2ed0c2cbac23da3a46c\",\"step\":0,\"call_id\":\"old-role-analysis\",\"sha256\":\"de860ce42c83107c76b7b05785be0cb8b3f844b7fcd5d9ec415bbe7c43a82867\"}]}],\"ready\":true,\"blockers\":[],\"actor_id\":\"admin\",\"checked_at\":\"2026-09-14T10:16:05.036991Z\"},\"assignment_number\":1,\"input_source\":{\"conversation_id\":\"conv_ab7d971820cf61a72572c5cc174a1b9a\",\"run_id\":\"crun_c41669e15d21b9cfa63a3598481d1af",
+          "result_truncated": true,
+          "result_reference": {
+            "conversation_id": "conv_7ed8e76ec916fb5ecab58a1f7cee2b04",
+            "run_id": "crun_e6d01694c5599319a452458df88c1a02",
+            "step": 2,
+            "call_id": "mixed-old-agreement",
+            "sha256": "a30a2ab71ec174339fa6a5110ce84ae08be4779a6ea778b6d855fea30b3d24d6"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "6791964e33cfaeb7b0f3daf2785fc7c4f23194157eb5ffc6d2adef704b9aa64c",
+            "checks": 1
+          },
+          "started_at": "2026-09-14T10:19:49.550954Z",
+          "completed_at": "2026-09-14T10:20:02.036712Z",
+          "duration_ms": 12485
+        }
+      ],
+      "started_at": "2026-09-14T10:19:39.564374Z",
+      "completed_at": "2026-09-14T10:19:39.708184Z",
+      "duration_ms": 143
+    },
+    {
+      "number": 3,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "write",
+          "id": "mixed-old-deliver",
+          "name": "delegation_update",
+          "arguments": "{\"id\":\"delegation_5a7e71463b7805bd5ae59120d32f376c\",\"update\":{\"action\":\"deliver\",\"delivery\":{\"conditions\":[{\"condition\":0,\"verdict\":\"met\",\"basis\":\"Read the complete unchanged original result and compared its total\",\"receipts\":[{\"conversation_id\":\"conv_4b75fefe0dec7eb79eb5f658e1905de8\",\"run_id\":\"crun_fb8d80669ed97c8cee77003dc8e4aba1\",\"step\":0,\"call_id\":\"old-role-report\",\"sha256\":\"c09bc60211c0379d73d463cc492b7db510f36f0a10ed8823470689d916243db2\"}]},{\"condition\":1,\"verdict\":\"met\",\"basis\":\"Read the complete unchanged original result and compared its total\",\"receipts\":[{\"conversation_id\":\"conv_c1b5459bbb945c589ed4a4828b52a999\",\"run_id\":\"crun_cc20e193bd58e2ed0c2cbac23da3a46c\",\"step\":0,\"call_id\":\"old-role-analysis\",\"sha256\":\"de860ce42c83107c76b7b05785be0cb8b3f844b7fcd5d9ec415bbe7c43a82867\"}]}],\"agreement_revision\":2,\"brief_version\":2,\"summary\":\"Original report and analysis both equal 70\",\"data\":{\"analysis_total\":70,\"report_total\":70},\"evidence\":[],\"unresolved\":[]},\"expected_revision\":11,\"reason\":\"Compared complete admitted original report and analysis without executing either tool\"}}",
+          "status": "completed",
+          "resource_id": "delegation_5a7e71463b7805bd5ae59120d32f376c",
+          "result_preview": "{\"access\":{\"view\":true,\"receive\":true,\"manage\":true,\"communicate\":true,\"execution_read\":true,\"delivery_read\":true,\"share\":true},\"assignments\":[{\"execution_subject\":{\"runtime_id\":\"business-browser-runtime\",\"workspace_id\":\"workspace-primary\",\"user_id\":\"admin\"},\"number\":1,\"agent_id\":\"agent_27e546f3abdedc820391ab00016e477a\",\"agent_revision\":1,\"conversation_id\":\"conv_7ed8e76ec916fb5ecab58a1f7cee2b04\",\"task_id\":\"task_7ed8e76ec916fb5ecab58a1f7cee2b04\",\"agreement_revision\":1,\"reason\":\"Compare two explicitly admitted original old-role receipts\",\"actor_id\":\"admin\",\"source\":{\"conversation_id\":\"conv_ab7d971820cf61a72572c5cc174a1b9a\",\"run_id\":\"crun_c41669e15d21b9cfa63a3598481d1afc\",\"before_step\":1},\"created_at\":\"2026-09-14T10:14:11.041Z\"}],\"dependency_states\":[],\"owner_user_id\":\"admin\",\"execution_subject\":{\"runtime_id\":\"business-browser-runtime\",\"workspace_id\":\"workspace-primary\",\"user_id\":\"admin\"},\"assignment_number\":1,\"input_source\":{\"conversation_id\":\"conv_ab7d971820cf61a72572c5cc174a1b9a\",\"run_id\":\"crun_c41669e15d21b9cfa63a3598481d1afc\",\"before_step\":1},\"dependencies\":[],\"pending_changes\":null,\"agreement_revision\":2,\"adopted_agreement_revision\":2,\"adopted_at\":\"2026-09-14T10:18:25.575223Z\",\"requirements\":{\"tools\":[\"delegation_source_read\"],\"sources\":[{\"conversation_id\":\"conv_4b75fefe0dec7eb79eb5f658e1905de8\",\"run_id\":\"crun_fb8d80669ed97c8cee77003dc8e4aba1\",\"before_step\":2},{\"conversation_id\":\"conv_c1b5459bbb945c589ed4a4828b52a999\",\"run_id\":\"crun_cc20e193bd58e2ed0c2cbac23da3a46c\",\"before_step\":2}]},\"root_conversation_id\":\"conv_ab7d971820cf61a72572c5cc174a1b9a\",\"id\":\"delegation_5a7e71463b7805bd5ae59120d32f376c\",\"from_agent_id\":\"default\",\"to_agent_id\":\"agent_27e546f3abdedc820391ab00016e477a\",\"source_conversation_id\":\"conv_ab7d971820cf61a72572c5cc174a1b9a\",\"source_run_id\":\"crun_c41669e15d21b9cfa63a3598481d1afc\",\"conversation_id\":\"conv_7ed8e76ec916fb5ecab58a1f7cee2b04\",\"task_id\":\"task_7ed8e76ec916fb5ecab58a1f7cee2b04\",\"purpose\":\"Compare two explicitly admitted original old-role receipts\",\"brief\":{\"verification_rules\":[{\"conditi",
+          "result_truncated": true,
+          "result_reference": {
+            "conversation_id": "conv_7ed8e76ec916fb5ecab58a1f7cee2b04",
+            "run_id": "crun_e6d01694c5599319a452458df88c1a02",
+            "step": 3,
+            "call_id": "mixed-old-deliver",
+            "sha256": "53c0d3b3b666d1273e06699a8779f679a4aa21a0ac3851d18e27496d872547bd"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "6791964e33cfaeb7b0f3daf2785fc7c4f23194157eb5ffc6d2adef704b9aa64c",
+            "checks": 1
+          },
+          "started_at": "2026-09-14T10:20:38.536386Z",
+          "completed_at": "2026-09-14T10:21:08.547764Z",
+          "duration_ms": 30011
+        }
+      ],
+      "started_at": "2026-09-14T10:20:26.490751Z",
+      "completed_at": "2026-09-14T10:20:26.639419Z",
+      "duration_ms": 148
+    },
+    {
+      "number": 4,
+      "attempt": 1,
+      "status": "interrupted",
+      "text": "",
+      "calls": [],
+      "duration_ms": 0
+    }
+  ],
+  "background_task": {
+    "input_source": {
+      "conversation_id": "conv_ab7d971820cf61a72572c5cc174a1b9a",
+      "run_id": "crun_c41669e15d21b9cfa63a3598481d1afc",
+      "before_step": 1
+    },
+    "agreement_revision": 2,
+    "requirements": {
+      "tools": [
+        "delegation_source_read"
+      ],
+      "sources": [
+        {
+          "conversation_id": "conv_4b75fefe0dec7eb79eb5f658e1905de8",
+          "run_id": "crun_fb8d80669ed97c8cee77003dc8e4aba1",
+          "before_step": 2
+        },
+        {
+          "conversation_id": "conv_c1b5459bbb945c589ed4a4828b52a999",
+          "run_id": "crun_cc20e193bd58e2ed0c2cbac23da3a46c",
+          "before_step": 2
+        }
+      ]
+    },
+    "delegation_id": "delegation_5a7e71463b7805bd5ae59120d32f376c",
+    "brief_version": 2,
+    "task_id": "task_7ed8e76ec916fb5ecab58a1f7cee2b04",
+    "tool_scope": [
+      {
+        "key": "delegation_source_read",
+        "version": "2",
+        "action_key": "agent.conversation_tools.delegation_source_read",
+        "definition_hash": "8e99e7880431bb63d6337c66b2ddd4534e608deb283e1ba9d9dc31e7d42c1429",
+        "authorization_revision": "3b91a79095ddea6e212f5ddebc5336a1f40bd6a8818e97786630db062d6f3b5b"
+      },
+      {
+        "key": "delegation_get",
+        "version": "1",
+        "action_key": "agent.conversation_tools.delegation_get",
+        "definition_hash": "0656674d061039291fa658c8f7bdc359fdef257193c02b8614241bc1f36d6b19",
+        "authorization_revision": "3b91a79095ddea6e212f5ddebc5336a1f40bd6a8818e97786630db062d6f3b5b"
+      },
+      {
+        "key": "delegation_update",
+        "version": "1",
+        "action_key": "agent.conversation_tools.delegation_update",
+        "definition_hash": "c3d4e7608b5cbc533eceecfae464bf6ad8b9aaea4afa1c1ae5e859fc28029c14",
+        "authorization_revision": "3b91a79095ddea6e212f5ddebc5336a1f40bd6a8818e97786630db062d6f3b5b"
+      }
+    ],
+    "budget": {
+      "max_steps": 7,
+      "max_tool_calls": 8,
+      "max_output_bytes": 8192,
+      "timeout_seconds": 180
+    }
+  },
+  "correlation_id": "crun_e6d01694c5599319a452458df88c1a02",
+  "metrics": {
+    "steps": 5,
+    "model_calls": 4,
+    "tool_calls": 4,
+    "tool_attempts": 4,
+    "authorization_checks": 4,
+    "confirmation_decisions": 0
+  },
+  "audit": [
+    {
+      "seq": 1,
+      "type": "run",
+      "status": "queued",
+      "step": 0,
+      "occurred_at": "2026-09-14T10:18:11.993616Z"
+    },
+    {
+      "seq": 2,
+      "type": "run",
+      "status": "running",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-14T10:18:12.003123Z"
+    },
+    {
+      "seq": 3,
+      "type": "step",
+      "status": "prepared",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-14T10:18:25.577372Z"
+    },
+    {
+      "seq": 4,
+      "type": "model",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "occurred_at": "2026-09-14T10:18:41.510987Z"
+    },
+    {
+      "seq": 5,
+      "type": "model",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "duration_ms": 145,
+      "occurred_at": "2026-09-14T10:18:41.656751Z"
+    },
+    {
+      "seq": 6,
+      "type": "authorization",
+      "status": "granted",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "mixed-old-page-0-0",
+      "tool": "delegation_source_read",
+      "action_key": "agent.conversation_tools.delegation_source_read",
+      "authorization_revision": "6791964e33cfaeb7b0f3daf2785fc7c4f23194157eb5ffc6d2adef704b9aa64c",
+      "occurred_at": "2026-09-14T10:18:50.56552Z"
+    },
+    {
+      "seq": 7,
+      "type": "tool",
+      "status": "started",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "mixed-old-page-0-0",
+      "tool": "delegation_source_read",
+      "occurred_at": "2026-09-14T10:18:50.571662Z"
+    },
+    {
+      "seq": 8,
+      "type": "tool",
+      "status": "completed",
+      "step": 0,
+      "attempt": 1,
+      "call_id": "mixed-old-page-0-0",
+      "tool": "delegation_source_read",
+      "duration_ms": 543,
+      "occurred_at": "2026-09-14T10:18:51.114879Z"
+    },
+    {
+      "seq": 9,
+      "type": "step",
+      "status": "prepared",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-14T10:18:52.444893Z"
+    },
+    {
+      "seq": 10,
+      "type": "model",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "occurred_at": "2026-09-14T10:19:09.182559Z"
+    },
+    {
+      "seq": 11,
+      "type": "model",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "duration_ms": 150,
+      "occurred_at": "2026-09-14T10:19:09.333485Z"
+    },
+    {
+      "seq": 12,
+      "type": "authorization",
+      "status": "granted",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "mixed-old-page-1-0",
+      "tool": "delegation_source_read",
+      "action_key": "agent.conversation_tools.delegation_source_read",
+      "authorization_revision": "6791964e33cfaeb7b0f3daf2785fc7c4f23194157eb5ffc6d2adef704b9aa64c",
+      "occurred_at": "2026-09-14T10:19:19.781357Z"
+    },
+    {
+      "seq": 13,
+      "type": "tool",
+      "status": "started",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "mixed-old-page-1-0",
+      "tool": "delegation_source_read",
+      "occurred_at": "2026-09-14T10:19:19.789048Z"
+    },
+    {
+      "seq": 14,
+      "type": "tool",
+      "status": "completed",
+      "step": 1,
+      "attempt": 1,
+      "call_id": "mixed-old-page-1-0",
+      "tool": "delegation_source_read",
+      "duration_ms": 603,
+      "occurred_at": "2026-09-14T10:19:20.392932Z"
+    },
+    {
+      "seq": 15,
+      "type": "step",
+      "status": "prepared",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-14T10:19:21.869522Z"
+    },
+    {
+      "seq": 16,
+      "type": "model",
+      "status": "started",
+      "step": 2,
+      "attempt": 1,
+      "occurred_at": "2026-09-14T10:19:39.564374Z"
+    },
+    {
+      "seq": 17,
+      "type": "model",
+      "status": "completed",
+      "step": 2,
+      "attempt": 1,
+      "duration_ms": 143,
+      "occurred_at": "2026-09-14T10:19:39.708184Z"
+    },
+    {
+      "seq": 18,
+      "type": "authorization",
+      "status": "granted",
+      "step": 2,
+      "attempt": 1,
+      "call_id": "mixed-old-agreement",
+      "tool": "delegation_get",
+      "action_key": "agent.conversation_tools.delegation_get",
+      "authorization_revision": "6791964e33cfaeb7b0f3daf2785fc7c4f23194157eb5ffc6d2adef704b9aa64c",
+      "occurred_at": "2026-09-14T10:19:49.544259Z"
+    },
+    {
+      "seq": 19,
+      "type": "tool",
+      "status": "started",
+      "step": 2,
+      "attempt": 1,
+      "call_id": "mixed-old-agreement",
+      "tool": "delegation_get",
+      "occurred_at": "2026-09-14T10:19:49.550954Z"
+    },
+    {
+      "seq": 20,
+      "type": "tool",
+      "status": "completed",
+      "step": 2,
+      "attempt": 1,
+      "call_id": "mixed-old-agreement",
+      "tool": "delegation_get",
+      "duration_ms": 12485,
+      "occurred_at": "2026-09-14T10:20:02.036712Z"
+    },
+    {
+      "seq": 21,
+      "type": "step",
+      "status": "prepared",
+      "step": 3,
+      "attempt": 1,
+      "occurred_at": "2026-09-14T10:20:03.371656Z"
+    },
+    {
+      "seq": 22,
+      "type": "model",
+      "status": "started",
+      "step": 3,
+      "attempt": 1,
+      "occurred_at": "2026-09-14T10:20:26.490751Z"
+    },
+    {
+      "seq": 23,
+      "type": "model",
+      "status": "completed",
+      "step": 3,
+      "attempt": 1,
+      "duration_ms": 148,
+      "occurred_at": "2026-09-14T10:20:26.639419Z"
+    },
+    {
+      "seq": 24,
+      "type": "authorization",
+      "status": "granted",
+      "step": 3,
+      "attempt": 1,
+      "call_id": "mixed-old-deliver",
+      "tool": "delegation_update",
+      "action_key": "agent.conversation_tools.delegation_update",
+      "authorization_revision": "6791964e33cfaeb7b0f3daf2785fc7c4f23194157eb5ffc6d2adef704b9aa64c",
+      "occurred_at": "2026-09-14T10:20:38.528679Z"
+    },
+    {
+      "seq": 25,
+      "type": "tool",
+      "status": "started",
+      "step": 3,
+      "attempt": 1,
+      "call_id": "mixed-old-deliver",
+      "tool": "delegation_update",
+      "occurred_at": "2026-09-14T10:20:38.536386Z"
+    },
+    {
+      "seq": 26,
+      "type": "tool",
+      "status": "completed",
+      "step": 3,
+      "attempt": 1,
+      "call_id": "mixed-old-deliver",
+      "tool": "delegation_update",
+      "duration_ms": 30011,
+      "occurred_at": "2026-09-14T10:21:08.547764Z"
+    },
+    {
+      "seq": 27,
+      "type": "step",
+      "status": "prepared",
+      "step": 4,
+      "attempt": 1,
+      "occurred_at": "2026-09-14T10:21:09.885115Z"
+    },
+    {
+      "seq": 28,
+      "type": "run",
+      "status": "failed",
+      "step": 0,
+      "attempt": 1,
+      "error_code": "execution_interrupted",
+      "occurred_at": "2026-09-14T10:21:12.016444Z"
+    }
+  ],
+  "audit_complete": true,
+  "started_at": "2026-09-14T10:18:12.003123Z",
+  "completed_at": "2026-09-14T10:21:12.016444Z",
+  "duration_ms": 180013,
+  "queue_duration_ms": 14,
+  "error_code": "execution_interrupted",
+  "created_at": "2026-09-14T10:18:11.989Z",
+  "updated_at": "2026-09-14T10:21:12.02942Z"
+}

@@ -1,0 +1,344 @@
+=== RUN   TestFullAgentSchemaUsesInternalSnapshotWithoutChangingAnonymousProjection
+--- PASS: TestFullAgentSchemaUsesInternalSnapshotWithoutChangingAnonymousProjection (0.00s)
+=== RUN   TestAgentExecutionIdentityRefreshesAndSeparatesInitiator
+--- PASS: TestAgentExecutionIdentityRefreshesAndSeparatesInitiator (0.00s)
+=== RUN   TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation
+=== RUN   TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation/unknown_initiator
+=== RUN   TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation/revoked_role
+=== RUN   TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation/workspace_removed
+=== RUN   TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation/service_disabled
+=== RUN   TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation/rotation_stale
+=== RUN   TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation/unknown_mode
+--- PASS: TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation (0.00s)
+    --- PASS: TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation/unknown_initiator (0.00s)
+    --- PASS: TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation/revoked_role (0.00s)
+    --- PASS: TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation/workspace_removed (0.00s)
+    --- PASS: TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation/service_disabled (0.00s)
+    --- PASS: TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation/rotation_stale (0.00s)
+    --- PASS: TestAgentExecutionIdentityFailsClosedOnRevocationAndRotation/unknown_mode (0.00s)
+=== RUN   TestAgentTaskAuthorizationIntersectsEveryCapabilityLayer
+--- PASS: TestAgentTaskAuthorizationIntersectsEveryCapabilityLayer (0.00s)
+=== RUN   TestGlobalAgentContextUsesTrustedCurrentRouteAndPrincipal
+=== RUN   TestGlobalAgentContextUsesTrustedCurrentRouteAndPrincipal/record
+=== RUN   TestGlobalAgentContextUsesTrustedCurrentRouteAndPrincipal/selection
+=== RUN   TestGlobalAgentContextUsesTrustedCurrentRouteAndPrincipal/route
+=== RUN   TestGlobalAgentContextUsesTrustedCurrentRouteAndPrincipal/object
+--- PASS: TestGlobalAgentContextUsesTrustedCurrentRouteAndPrincipal (0.00s)
+    --- PASS: TestGlobalAgentContextUsesTrustedCurrentRouteAndPrincipal/record (0.00s)
+    --- PASS: TestGlobalAgentContextUsesTrustedCurrentRouteAndPrincipal/selection (0.00s)
+    --- PASS: TestGlobalAgentContextUsesTrustedCurrentRouteAndPrincipal/route (0.00s)
+    --- PASS: TestGlobalAgentContextUsesTrustedCurrentRouteAndPrincipal/object (0.00s)
+=== RUN   TestAgentExecutionIdentityBoundaryMatrix
+--- PASS: TestAgentExecutionIdentityBoundaryMatrix (0.00s)
+=== RUN   TestAgentTaskAuthorizationBoundaryMatrix
+--- PASS: TestAgentTaskAuthorizationBoundaryMatrix (0.00s)
+=== RUN   TestGlobalAgentContextBoundaryMatrix
+=== RUN   TestGlobalAgentContextBoundaryMatrix/identity
+=== RUN   TestGlobalAgentContextBoundaryMatrix/assignment_missing
+=== RUN   TestGlobalAgentContextBoundaryMatrix/assignment_disabled
+=== RUN   TestGlobalAgentContextBoundaryMatrix/permission
+=== RUN   TestGlobalAgentContextBoundaryMatrix/route_missing
+=== RUN   TestGlobalAgentContextBoundaryMatrix/pattern
+=== RUN   TestGlobalAgentContextBoundaryMatrix/visible_object
+=== RUN   TestGlobalAgentContextBoundaryMatrix/record_object
+=== RUN   TestGlobalAgentContextBoundaryMatrix/record_service
+=== RUN   TestGlobalAgentContextBoundaryMatrix/record_error
+=== RUN   TestGlobalAgentContextBoundaryMatrix/record_denied
+=== RUN   TestGlobalAgentContextBoundaryMatrix/context_size
+--- PASS: TestGlobalAgentContextBoundaryMatrix (0.00s)
+    --- PASS: TestGlobalAgentContextBoundaryMatrix/identity (0.00s)
+    --- PASS: TestGlobalAgentContextBoundaryMatrix/assignment_missing (0.00s)
+    --- PASS: TestGlobalAgentContextBoundaryMatrix/assignment_disabled (0.00s)
+    --- PASS: TestGlobalAgentContextBoundaryMatrix/permission (0.00s)
+    --- PASS: TestGlobalAgentContextBoundaryMatrix/route_missing (0.00s)
+    --- PASS: TestGlobalAgentContextBoundaryMatrix/pattern (0.00s)
+    --- PASS: TestGlobalAgentContextBoundaryMatrix/visible_object (0.00s)
+    --- PASS: TestGlobalAgentContextBoundaryMatrix/record_object (0.00s)
+    --- PASS: TestGlobalAgentContextBoundaryMatrix/record_service (0.00s)
+    --- PASS: TestGlobalAgentContextBoundaryMatrix/record_error (0.00s)
+    --- PASS: TestGlobalAgentContextBoundaryMatrix/record_denied (0.00s)
+    --- PASS: TestGlobalAgentContextBoundaryMatrix/context_size (0.00s)
+=== RUN   TestAgentAuthorizationLookupAndCollectionHelpers
+--- PASS: TestAgentAuthorizationLookupAndCollectionHelpers (0.00s)
+=== RUN   TestAgentInteractiveAuthorizationBoundaryMatrix
+--- PASS: TestAgentInteractiveAuthorizationBoundaryMatrix (0.00s)
+=== RUN   TestAgentInteractiveAuthorizationDetectsMidRequestIdentityAndSchemaChanges
+=== RUN   TestAgentInteractiveAuthorizationDetectsMidRequestIdentityAndSchemaChanges/directory_error
+=== RUN   TestAgentInteractiveAuthorizationDetectsMidRequestIdentityAndSchemaChanges/inactive
+=== RUN   TestAgentInteractiveAuthorizationDetectsMidRequestIdentityAndSchemaChanges/workspace
+=== RUN   TestAgentInteractiveAuthorizationDetectsMidRequestIdentityAndSchemaChanges/missing
+=== RUN   TestAgentInteractiveAuthorizationDetectsMidRequestIdentityAndSchemaChanges/mismatch
+--- PASS: TestAgentInteractiveAuthorizationDetectsMidRequestIdentityAndSchemaChanges (0.00s)
+    --- PASS: TestAgentInteractiveAuthorizationDetectsMidRequestIdentityAndSchemaChanges/directory_error (0.00s)
+    --- PASS: TestAgentInteractiveAuthorizationDetectsMidRequestIdentityAndSchemaChanges/inactive (0.00s)
+    --- PASS: TestAgentInteractiveAuthorizationDetectsMidRequestIdentityAndSchemaChanges/workspace (0.00s)
+    --- PASS: TestAgentInteractiveAuthorizationDetectsMidRequestIdentityAndSchemaChanges/missing (0.00s)
+    --- PASS: TestAgentInteractiveAuthorizationDetectsMidRequestIdentityAndSchemaChanges/mismatch (0.00s)
+=== RUN   TestAgentTaskCredentialIsShortLivedAndStrictlyScoped
+--- PASS: TestAgentTaskCredentialIsShortLivedAndStrictlyScoped (0.00s)
+=== RUN   TestAgentTaskCredentialRejectsUnsafeConfigurationAndClaims
+--- PASS: TestAgentTaskCredentialRejectsUnsafeConfigurationAndClaims (0.00s)
+=== RUN   TestAgentTaskCredentialBoundaryMatrix
+=== RUN   TestAgentTaskCredentialBoundaryMatrix/user
+=== RUN   TestAgentTaskCredentialBoundaryMatrix/role
+=== RUN   TestAgentTaskCredentialBoundaryMatrix/zero_ttl
+=== RUN   TestAgentTaskCredentialBoundaryMatrix/long_ttl
+=== RUN   TestAgentTaskCredentialBoundaryMatrix/workspace
+=== RUN   TestAgentTaskCredentialBoundaryMatrix/task
+--- PASS: TestAgentTaskCredentialBoundaryMatrix (0.00s)
+    --- PASS: TestAgentTaskCredentialBoundaryMatrix/user (0.00s)
+    --- PASS: TestAgentTaskCredentialBoundaryMatrix/role (0.00s)
+    --- PASS: TestAgentTaskCredentialBoundaryMatrix/zero_ttl (0.00s)
+    --- PASS: TestAgentTaskCredentialBoundaryMatrix/long_ttl (0.00s)
+    --- PASS: TestAgentTaskCredentialBoundaryMatrix/workspace (0.00s)
+    --- PASS: TestAgentTaskCredentialBoundaryMatrix/task (0.00s)
+=== RUN   TestAgentTaskDispatchPreparesAuthorizedSDKRequest
+--- PASS: TestAgentTaskDispatchPreparesAuthorizedSDKRequest (0.00s)
+=== RUN   TestAgentTaskDispatchFailsClosedAtBoundaries
+=== RUN   TestAgentTaskDispatchFailsClosedAtBoundaries/workspace
+=== RUN   TestAgentTaskDispatchFailsClosedAtBoundaries/process
+=== RUN   TestAgentTaskDispatchFailsClosedAtBoundaries/node
+=== RUN   TestAgentTaskDispatchFailsClosedAtBoundaries/iteration
+--- PASS: TestAgentTaskDispatchFailsClosedAtBoundaries (0.00s)
+    --- PASS: TestAgentTaskDispatchFailsClosedAtBoundaries/workspace (0.00s)
+    --- PASS: TestAgentTaskDispatchFailsClosedAtBoundaries/process (0.00s)
+    --- PASS: TestAgentTaskDispatchFailsClosedAtBoundaries/node (0.00s)
+    --- PASS: TestAgentTaskDispatchFailsClosedAtBoundaries/iteration (0.00s)
+=== RUN   TestAgentTaskDispatchRequestDefaultsAndAuthorization
+--- PASS: TestAgentTaskDispatchRequestDefaultsAndAuthorization (0.00s)
+=== RUN   TestConversationExecutionAuthorizationUsesCurrentRuntimePrincipal
+--- PASS: TestConversationExecutionAuthorizationUsesCurrentRuntimePrincipal (0.01s)
+=== RUN   TestConversationBusinessActionValidatesContractConfirmationAndReconciliation
+=== RUN   TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/version
+=== RUN   TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/target
+=== RUN   TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/confirmation
+=== RUN   TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/actor
+=== RUN   TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/arguments
+=== RUN   TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/payload
+=== RUN   TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/concurrency
+=== RUN   TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/metadata
+=== RUN   TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/empty-contract
+--- PASS: TestConversationBusinessActionValidatesContractConfirmationAndReconciliation (0.02s)
+    --- PASS: TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/version (0.00s)
+    --- PASS: TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/target (0.00s)
+    --- PASS: TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/confirmation (0.00s)
+    --- PASS: TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/actor (0.00s)
+    --- PASS: TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/arguments (0.00s)
+    --- PASS: TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/payload (0.00s)
+    --- PASS: TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/concurrency (0.00s)
+    --- PASS: TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/metadata (0.00s)
+    --- PASS: TestConversationBusinessActionValidatesContractConfirmationAndReconciliation/empty-contract (0.00s)
+=== RUN   TestSharedBusinessActionCatalogUsesCurrentReceiptScopeContractAndWholePages
+--- PASS: TestSharedBusinessActionCatalogUsesCurrentReceiptScopeContractAndWholePages (0.01s)
+=== RUN   TestConversationBusinessCatalogUsesPublishedInputsAndCurrentOperationPermissions
+--- PASS: TestConversationBusinessCatalogUsesPublishedInputsAndCurrentOperationPermissions (0.00s)
+=== RUN   TestConversationBusinessSnapshotKeepsHistoricalValuesAndRechecksSavedRows
+--- PASS: TestConversationBusinessSnapshotKeepsHistoricalValuesAndRechecksSavedRows (0.01s)
+=== RUN   TestConversationBusinessSnapshotRejectsForgedProofOrEvidence
+=== RUN   TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/owner
+=== RUN   TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/signature
+=== RUN   TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/policy
+=== RUN   TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/data
+=== RUN   TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/input
+=== RUN   TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/operation
+=== RUN   TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/source
+--- PASS: TestConversationBusinessSnapshotRejectsForgedProofOrEvidence (0.01s)
+    --- PASS: TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/owner (0.00s)
+    --- PASS: TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/signature (0.00s)
+    --- PASS: TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/policy (0.00s)
+    --- PASS: TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/data (0.00s)
+    --- PASS: TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/input (0.00s)
+    --- PASS: TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/operation (0.00s)
+    --- PASS: TestConversationBusinessSnapshotRejectsForgedProofOrEvidence/source (0.00s)
+=== RUN   TestConversationBusinessSnapshotRejectsNewConditionalMaskPolicy
+--- PASS: TestConversationBusinessSnapshotRejectsNewConditionalMaskPolicy (0.01s)
+=== RUN   TestConversationBusinessSnapshotRelationsRecheckOriginAndTarget
+--- PASS: TestConversationBusinessSnapshotRelationsRecheckOriginAndTarget (0.02s)
+=== RUN   TestConversationBusinessRuntimeReadsApplyScopesMaskingAndExactIntegers
+--- PASS: TestConversationBusinessRuntimeReadsApplyScopesMaskingAndExactIntegers (0.01s)
+=== RUN   TestConversationBusinessRejectsInvalidQueriesBeforeRuntimeRead
+--- PASS: TestConversationBusinessRejectsInvalidQueriesBeforeRuntimeRead (0.01s)
+=== RUN   TestConversationBusinessCursorTraversesNullsTiesAndSelectedFields
+--- PASS: TestConversationBusinessCursorTraversesNullsTiesAndSelectedFields (0.01s)
+=== RUN   TestConversationBusinessRevalidatesCurrentIdentityAndWholeEvidence
+--- PASS: TestConversationBusinessRevalidatesCurrentIdentityAndWholeEvidence (0.01s)
+=== RUN   TestBusinessEvidenceCannotMoveBetweenIdentityIssuers
+--- PASS: TestBusinessEvidenceCannotMoveBetweenIdentityIssuers (0.01s)
+=== RUN   TestBusinessReceiptReadUsesCurrentRecordsWithoutAgentToolGrants
+--- PASS: TestBusinessReceiptReadUsesCurrentRecordsWithoutAgentToolGrants (0.01s)
+=== RUN   TestBusinessReceiptReadRechecksRelationOriginsAndFields
+--- PASS: TestBusinessReceiptReadRechecksRelationOriginsAndFields (0.01s)
+=== RUN   TestBusinessReceiptReadRechecksProcessMembershipWithoutToolGrant
+--- PASS: TestBusinessReceiptReadRechecksProcessMembershipWithoutToolGrant (0.01s)
+=== RUN   TestConversationBusinessRelationsDiscoverBothDirectionsAndReadScopedPages
+--- PASS: TestConversationBusinessRelationsDiscoverBothDirectionsAndReadScopedPages (0.01s)
+=== RUN   TestConversationBusinessRelationsRejectUnauthorizedOriginsAndCursorReuse
+--- PASS: TestConversationBusinessRelationsRejectUnauthorizedOriginsAndCursorReuse (0.02s)
+=== RUN   TestConversationBusinessRelationCatalogBoundsEmbeddedDiscovery
+--- PASS: TestConversationBusinessRelationCatalogBoundsEmbeddedDiscovery (0.01s)
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/longer_prefix
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/shorter_prefix_cannot_cover
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/different_prefix
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/case_comparison_stays_conservative
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/literal_wildcard
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/wildcard_cannot_grant_unrelated_prefix
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/literal_escape
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nul_prefix_unsupported
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/invalid_unicode_unsupported
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/missing_bound_claim
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nonnull_contains_prefix
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/null_cannot_contain_prefix
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/negated_null_is_nonnull
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nonnull_contains_inequality
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nonnull_contains_exclusion
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/other_fact_does_not_imply_nonnull
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/negated_prefixes_reverse
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/negated_reverse_denied
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/unsupported_ordered_policy
+--- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals (0.01s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/longer_prefix (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/shorter_prefix_cannot_cover (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/different_prefix (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/case_comparison_stays_conservative (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/literal_wildcard (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/wildcard_cannot_grant_unrelated_prefix (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/literal_escape (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nul_prefix_unsupported (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/invalid_unicode_unsupported (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/missing_bound_claim (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nonnull_contains_prefix (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/null_cannot_contain_prefix (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/negated_null_is_nonnull (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nonnull_contains_inequality (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nonnull_contains_exclusion (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/other_fact_does_not_imply_nonnull (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/negated_prefixes_reverse (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/negated_reverse_denied (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/unsupported_ordered_policy (0.00s)
+=== RUN   TestSharedBusinessPrefixScopePreservesReaderDenialDirection
+--- PASS: TestSharedBusinessPrefixScopePreservesReaderDenialDirection (0.01s)
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/prefix
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/literal_wildcard
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/literal_escape
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/nonnull_prefix
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/nonnull_exclusion
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/nonnull_inequality
+--- PASS: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages (0.13s)
+    --- PASS: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/prefix (0.02s)
+    --- PASS: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/literal_wildcard (0.03s)
+    --- PASS: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/literal_escape (0.02s)
+    --- PASS: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/nonnull_prefix (0.03s)
+    --- PASS: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/nonnull_exclusion (0.02s)
+    --- PASS: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/nonnull_inequality (0.02s)
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/finite_query
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/mixed_policy_and_query
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/unrestricted_producer_filtered_query
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/exact_big_integer
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/normalized_integer_string
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/query_exclusion
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/null_query
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/range_implies_nonnull
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/literal_substring_implies_nonnull
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/query_excludes_reader_denial
+--- PASS: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope (0.17s)
+    --- PASS: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/finite_query (0.02s)
+    --- PASS: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/mixed_policy_and_query (0.02s)
+    --- PASS: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/unrestricted_producer_filtered_query (0.02s)
+    --- PASS: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/exact_big_integer (0.03s)
+    --- PASS: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/normalized_integer_string (0.02s)
+    --- PASS: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/query_exclusion (0.01s)
+    --- PASS: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/null_query (0.01s)
+    --- PASS: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/range_implies_nonnull (0.02s)
+    --- PASS: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/literal_substring_implies_nonnull (0.01s)
+    --- PASS: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/query_excludes_reader_denial (0.01s)
+=== RUN   TestSharedBusinessRelatedQueryFiltersUseTargetObjectScope
+--- PASS: TestSharedBusinessRelatedQueryFiltersUseTargetObjectScope (0.03s)
+=== RUN   TestSharedBusinessQueryScopePreservesLiteralClaimsAndExactInteger
+--- PASS: TestSharedBusinessQueryScopePreservesLiteralClaimsAndExactInteger (0.02s)
+=== RUN   TestSharedBusinessQueryScopeDoesNotTreatRawDecimalAsDatabaseComparison
+--- PASS: TestSharedBusinessQueryScopeDoesNotTreatRawDecimalAsDatabaseComparison (0.01s)
+=== RUN   TestSharedBusinessSameUserOriginalRoleUsesCurrentReaderFields
+--- PASS: TestSharedBusinessSameUserOriginalRoleUsesCurrentReaderFields (0.01s)
+=== RUN   TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader
+=== RUN   TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/query_records66
+=== RUN   TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/query_records325
+=== RUN   TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/get_record72
+=== RUN   TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/business_catalog25
+=== RUN   TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/read-grant
+=== RUN   TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/record-scope
+=== RUN   TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/field
+=== RUN   TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/masked
+=== RUN   TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/producer-role
+=== RUN   TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/reader-role
+=== RUN   TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/workspace
+--- PASS: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader (0.01s)
+    --- PASS: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/query_records66 (0.00s)
+    --- PASS: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/query_records325 (0.00s)
+    --- PASS: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/get_record72 (0.00s)
+    --- PASS: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/business_catalog25 (0.00s)
+    --- PASS: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/read-grant (0.00s)
+    --- PASS: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/record-scope (0.00s)
+    --- PASS: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/field (0.00s)
+    --- PASS: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/masked (0.00s)
+    --- PASS: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/producer-role (0.00s)
+    --- PASS: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/reader-role (0.00s)
+    --- PASS: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/workspace (0.00s)
+=== RUN   TestSharedBusinessRelatedPagesRecheckReaderOriginAndOriginalCursor
+--- PASS: TestSharedBusinessRelatedPagesRecheckReaderOriginAndOriginalCursor (0.03s)
+=== RUN   TestSharedBusinessPageScopeCannotUseVisibleFirstRowToAuthorizeHiddenTotal
+--- PASS: TestSharedBusinessPageScopeCannotUseVisibleFirstRowToAuthorizeHiddenTotal (0.01s)
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_excluded_subset
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_reverse_denied
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/union_covers_set
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/union_cannot_cover_unseen_value
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_set_covers_union
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_union_covers_set
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_exclusions_widen
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_exclusions_cannot_widen_in_reverse
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_unequal_covers_exclusions
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_exclusions_cover_explicit_negation
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/explicit_negation_covers_native_exclusions
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_unequal_cannot_hide_extra_allowed_value
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/mixed_typed_conjunction_does_not_become_empty
+--- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects (0.01s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_excluded_subset (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_reverse_denied (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/union_covers_set (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/union_cannot_cover_unseen_value (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_set_covers_union (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_union_covers_set (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_exclusions_widen (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_exclusions_cannot_widen_in_reverse (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_unequal_covers_exclusions (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_exclusions_cover_explicit_negation (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/explicit_negation_covers_native_exclusions (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_unequal_cannot_hide_extra_allowed_value (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/mixed_typed_conjunction_does_not_become_empty (0.00s)
+=== RUN   TestSharedBusinessScopeCoversCommonAndOrAndKeepsReaderDenials
+--- PASS: TestSharedBusinessScopeCoversCommonAndOrAndKeepsReaderDenials (0.01s)
+=== RUN   TestSharedBusinessNegatedScopesReadOriginalORMPagesWithoutForeignCursorAuthority
+=== RUN   TestSharedBusinessNegatedScopesReadOriginalORMPagesWithoutForeignCursorAuthority/explicit_negations
+=== RUN   TestSharedBusinessNegatedScopesReadOriginalORMPagesWithoutForeignCursorAuthority/native_exclusions
+=== RUN   TestSharedBusinessNegatedScopesReadOriginalORMPagesWithoutForeignCursorAuthority/native_producer_and_explicit_reader
+=== RUN   TestSharedBusinessNegatedScopesReadOriginalORMPagesWithoutForeignCursorAuthority/explicit_producer_and_native_reader
+--- PASS: TestSharedBusinessNegatedScopesReadOriginalORMPagesWithoutForeignCursorAuthority (0.06s)
+    --- PASS: TestSharedBusinessNegatedScopesReadOriginalORMPagesWithoutForeignCursorAuthority/explicit_negations (0.01s)
+    --- PASS: TestSharedBusinessNegatedScopesReadOriginalORMPagesWithoutForeignCursorAuthority/native_exclusions (0.01s)
+    --- PASS: TestSharedBusinessNegatedScopesReadOriginalORMPagesWithoutForeignCursorAuthority/native_producer_and_explicit_reader (0.02s)
+    --- PASS: TestSharedBusinessNegatedScopesReadOriginalORMPagesWithoutForeignCursorAuthority/explicit_producer_and_native_reader (0.02s)
+=== RUN   TestConversationWorkflowHostConfirmsReconcilesAndRevalidatesChangingState
+--- PASS: TestConversationWorkflowHostConfirmsReconcilesAndRevalidatesChangingState (0.01s)
+=== RUN   TestConversationCollaborationIdentityDenialsRemainDenials
+--- PASS: TestConversationCollaborationIdentityDenialsRemainDenials (0.01s)
+=== RUN   TestConversationCollaborationUsesCurrentRoleAndActualDelegationOwner
+--- PASS: TestConversationCollaborationUsesCurrentRoleAndActualDelegationOwner (0.01s)
+=== RUN   TestConversationKnowledgeAuthorizationUsesCurrentActorAndLibraryOwnerFacts
+--- PASS: TestConversationKnowledgeAuthorizationUsesCurrentActorAndLibraryOwnerFacts (0.01s)
+=== RUN   TestConversationKnowledgeCurrentVersionedToolDefinitionsAreAuthorized
+--- PASS: TestConversationKnowledgeCurrentVersionedToolDefinitionsAreAuthorized (0.01s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/application/agenthost	1.527s

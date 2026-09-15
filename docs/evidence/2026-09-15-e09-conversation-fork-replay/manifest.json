@@ -1,0 +1,116 @@
+{
+  "date": "2026-09-15",
+  "item": "E09",
+  "files": [
+    {
+      "path": "acceptance.json",
+      "bytes": 2630,
+      "sha256": "d73bad9f589359e5c5d8554d89151eb6c7e980218179dc379efb04b648f2b635"
+    },
+    {
+      "path": "browser/conversation-trajectory-child-desktop.png",
+      "bytes": 254210,
+      "sha256": "8d3b18b435174e240eeace5dd642364e6e3d0124dff0b853843ca1b64c827d47"
+    },
+    {
+      "path": "browser/conversation-trajectory-crun_a1b249ec93ee803c91fefe2047eea70c.json",
+      "bytes": 3013,
+      "sha256": "a6c3773ba4908116ccd279a7ba3e7fef18a6f88d4d49e468d2c9513c24871e4e"
+    },
+    {
+      "path": "browser/conversation-trajectory-crun_f0df3956fed89aa2ce8ae6b450f70745.json",
+      "bytes": 3014,
+      "sha256": "0b1c3b836700dbc069e2f3d3271110674ed48e8a290eb7d1cfaf451648c993ce"
+    },
+    {
+      "path": "browser/conversation-trajectory-mobile.png",
+      "bytes": 81566,
+      "sha256": "d86b30964db62039254204d9709f2909cd6cd6d62429b8c863502f61c7461851"
+    },
+    {
+      "path": "browser/conversation-trajectory-report.json",
+      "bytes": 1242,
+      "sha256": "621d1da9308138651f6175224404f42e28d6413022c9ea6a54dbdd3d34448b96"
+    },
+    {
+      "path": "browser/conversation-trajectory-source-desktop.png",
+      "bytes": 254304,
+      "sha256": "cfd448aceb58237080ae2022499d8401922343fdd1cfb8b744bb1fe6e4181e05"
+    },
+    {
+      "path": "browser/host-conversation-trajectory.json",
+      "bytes": 203,
+      "sha256": "6974d4f310986dc5a4d54036dcaa1105007450b0878d1b2360b83e613cff7337"
+    },
+    {
+      "path": "commands.md",
+      "bytes": 1708,
+      "sha256": "26529776b4c9503d7af9f5d1b7de174a3dc10cf773b52b4ac4667d3a966a0a04"
+    },
+    {
+      "path": "deepseek/llm-replay-README.md",
+      "bytes": 13094,
+      "sha256": "ebbacf0a0926b4e3398d62220b38d59ebde6f1fbbd3243673ced23f2f7fde30f"
+    },
+    {
+      "path": "deepseek/session.md",
+      "bytes": 67046,
+      "sha256": "dfabaaf8c1dae793e1ee6752c53b50a575c5d8b1cbc86a0b824e98c4e55d665f"
+    },
+    {
+      "path": "logs/agent-core-test.log",
+      "bytes": 2605,
+      "sha256": "7e9e6d70a200923ec84f4ac4efb7c6f37c491d160ff7b1464de1e939ee6972a4"
+    },
+    {
+      "path": "logs/agent-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/agent-sdk-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/agent-sdk-go-test.log",
+      "bytes": 605,
+      "sha256": "b1efce8a80f142686d7885a5e78731ed1aa859356c138305ee3a0358597907f6"
+    },
+    {
+      "path": "logs/browser-test.log",
+      "bytes": 933,
+      "sha256": "1f9d42e8f1b4542463b6f31a33249dba2d04e82b7f1004c6d4d100e02a7052d0"
+    },
+    {
+      "path": "logs/conversation-trajectory-race.log",
+      "bytes": 243,
+      "sha256": "6c6146f59c1b3fed7821c0e21ebf42768edca6a4ba3a91c665c7bc1554fccf74"
+    },
+    {
+      "path": "logs/frontend-build.log",
+      "bytes": 32522,
+      "sha256": "cc51412fc38fc7d3b70648a37bd970f06b6c4d7d6cbc6c695622d526a866aaa4"
+    },
+    {
+      "path": "logs/frontend-test.log",
+      "bytes": 11765,
+      "sha256": "1747e96b973dd1a47cc10851676fd8a25e5a7fdcd8f92a90839f03c4601e92c5"
+    },
+    {
+      "path": "logs/integration-test.log",
+      "bytes": 61,
+      "sha256": "1d7cdb6d8f86e63564993e1bbb8e5ec8094a86b6a93f4ec79d53a66ce04e3bfa"
+    },
+    {
+      "path": "logs/web-go-test.log",
+      "bytes": 71,
+      "sha256": "60eacf85da0709ee8c4ec856753ebea2c7900fc8d051e323cddf7ef63627d348"
+    },
+    {
+      "path": "source-sha256.json",
+      "bytes": 6551,
+      "sha256": "aab971a23226aee24ba3587b9c78030c99bbbc937007152e11928196e062723b"
+    }
+  ]
+}

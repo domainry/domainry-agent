@@ -1,0 +1,17 @@
+Identity (GOWORK=/Users/tiger/Projects/domainry-agent/go.work):
+go test ./internal/application/identity -run '^TestIdentityRoleSnapshotPropagatesCurrentResolutionFailureAndKeepsRoleIsolation$' -count=1 -v
+go test ./... -count=1
+go test -race ./internal/application/identity ./internal/adapter/identitysdk -count=1
+
+Runtime (GOWORK=/tmp/runtime-work/go.work):
+go test ./runtime/application/agenthost ./runtime/bootstrap/transport -count=1
+go test ./runtime/bootstrap/integrationtest -run '^TestCrossUser(Managed|Unmanaged|Legacy)KnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$' -count=1 -v
+go test -race ./runtime/bootstrap/integrationtest -run '^TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$' -count=1 -v
+go test -race ./runtime/bootstrap/integrationtest -run '^TestCrossUser(Unmanaged|Legacy)KnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$' -count=1 -v
+
+All actual task budgets remain 12 steps / 12 calls / 8192 bytes / 90 seconds.
+All actual race commands use the unchanged default Go test timeout of 10 minutes.
+Pending race logs and specific live process observations are not successful test acceptance.
+The original managed actual race default timeout is retained as failure.
+The published Runtime module-set capability lock remains unchanged; full bootstrap package is not accepted.
+git diff --check: Agent, SDK, Knowledge, Identity, Runtime.

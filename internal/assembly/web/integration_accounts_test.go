@@ -207,6 +207,13 @@ func (f *accountFixture) open() {
 		}
 		providers.Providers = append(providers.Providers, web.Providers...)
 	}
+	if f.options.MCPTools {
+		mcp, e := connectormodule.MCPToolProviders(accountTransport{f})
+		if e != nil {
+			t.Fatal(e)
+		}
+		providers.Providers = append(providers.Providers, mcp.Providers...)
+	}
 	registry, err := connectormodule.NewFactory(connectormodule.Options{Providers: providers}).Registry()
 	if err != nil {
 		t.Fatal(err)

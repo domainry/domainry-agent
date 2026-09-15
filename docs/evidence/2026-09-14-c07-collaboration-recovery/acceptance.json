@@ -1,0 +1,62 @@
+{
+  "date": "2026-09-14",
+  "item": "C07",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 6,
+  "results": {
+    "sdk_go_test": {
+      "exit_code": 0
+    },
+    "agent_product_go_packages": {
+      "exit_code": 0,
+      "evidence_archives_excluded": true
+    },
+    "focused_race": {
+      "exit_code": 0,
+      "package": "internal/infrastructure/persistence/database/agent",
+      "seconds": 2.543
+    },
+    "frontend_tests": {
+      "passed": 84,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "frontend_build": {
+      "exit_code": 0,
+      "typescript": true,
+      "vite": true
+    },
+    "identity_http_sqlite_chrome": {
+      "exit_code": 0,
+      "go_roots": 1,
+      "seconds": 4.04,
+      "page_errors": [],
+      "viewport_widths": [
+        1360,
+        390
+      ]
+    },
+    "diff_check": {
+      "agent_exit_code": 0,
+      "sdk_exit_code": 0,
+      "bytes": 0
+    }
+  },
+  "behavior": [
+    "one work-root ledger for global delegation count, input tokens, output tokens, model duration and optional model cost",
+    "descendants and transfers inherit the same budget and cannot reset it",
+    "atomic parallel reservation followed by actual provider-usage settlement",
+    "conservative serialized-request byte upper bound before provider token usage is known",
+    "per authenticated sender and delegation communication rate limit with free idempotent replay",
+    "strict equivalent-question reply association and version-checked wakeup",
+    "operation confirmations remain independently scoped",
+    "same-Agent immutable recovery after disablement or configuration/model change",
+    "preserved contract, sources, effects, per-delegation remainder and whole-work usage",
+    "whole-work usage and recovery action visible on desktop and narrow layouts"
+  ],
+  "known_test_boundary": "Repository-root go test ./... also scans immutable partial Go source snapshots under docs/evidence. All actual product packages pass when those archives are excluded; archived evidence was not changed.",
+  "remaining": [
+    "Broader cross-Agent benefit and no-progress diagnostics remain in E05."
+  ]
+}

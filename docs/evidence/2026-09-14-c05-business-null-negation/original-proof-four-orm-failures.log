@@ -1,0 +1,17 @@
+=== RUN   TestSharedBusinessSQLNullNegationMustNotCoverOriginalORMPage
+=== RUN   TestSharedBusinessSQLNullNegationMustNotCoverOriginalORMPage/explicit_NOT
+    conversation_business_shared_null_scope_test.go:67: SQL NOT/deny coverage leaked original total containing NULL excluded from actual reader query
+=== RUN   TestSharedBusinessSQLNullNegationMustNotCoverOriginalORMPage/native_unequal
+    conversation_business_shared_null_scope_test.go:67: SQL NOT/deny coverage leaked original total containing NULL excluded from actual reader query
+=== RUN   TestSharedBusinessSQLNullNegationMustNotCoverOriginalORMPage/explicit_deny
+    conversation_business_shared_null_scope_test.go:67: SQL NOT/deny coverage leaked original total containing NULL excluded from actual reader query
+=== RUN   TestSharedBusinessSQLNullNegationMustNotCoverOriginalORMPage/native_deny
+    conversation_business_shared_null_scope_test.go:67: SQL NOT/deny coverage leaked original total containing NULL excluded from actual reader query
+--- FAIL: TestSharedBusinessSQLNullNegationMustNotCoverOriginalORMPage (0.03s)
+    --- FAIL: TestSharedBusinessSQLNullNegationMustNotCoverOriginalORMPage/explicit_NOT (0.01s)
+    --- FAIL: TestSharedBusinessSQLNullNegationMustNotCoverOriginalORMPage/native_unequal (0.01s)
+    --- FAIL: TestSharedBusinessSQLNullNegationMustNotCoverOriginalORMPage/explicit_deny (0.01s)
+    --- FAIL: TestSharedBusinessSQLNullNegationMustNotCoverOriginalORMPage/native_deny (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/application/agenthost	0.745s
+FAIL

@@ -1,0 +1,4 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+--- PASS: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (20.60s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	21.120s

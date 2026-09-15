@@ -1,0 +1,11 @@
+=== RUN   TestCrossUserBusinessAgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-catalog: 5 pages, 1269 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-query: 5 pages, 1246 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-query-next: 7 pages, 1545 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-get: 3 pages, 604 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: Exact professional execution result business-related: 5 pages, 1158 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:174: foreign cursor failed for a reason other than cursor validation agent.business_host.forbidden
+--- FAIL: TestCrossUserBusinessAgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance (62.92s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	66.143s
+FAIL

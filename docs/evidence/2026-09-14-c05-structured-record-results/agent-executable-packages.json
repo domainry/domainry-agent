@@ -1,0 +1,88 @@
+{
+  "code_packages": [
+    "github.com/domainry/domainry-agent/capability",
+    "github.com/domainry/domainry-agent/cmd/domainry-agent",
+    "github.com/domainry/domainry-agent/cmd/domainry-agent-playground",
+    "github.com/domainry/domainry-agent/cmd/domainry-agent-web",
+    "github.com/domainry/domainry-agent/definition",
+    "github.com/domainry/domainry-agent/integration",
+    "github.com/domainry/domainry-agent/internal/application",
+    "github.com/domainry/domainry-agent/internal/architecture",
+    "github.com/domainry/domainry-agent/internal/assembly/conversation",
+    "github.com/domainry/domainry-agent/internal/assembly/product",
+    "github.com/domainry/domainry-agent/internal/assembly/saas",
+    "github.com/domainry/domainry-agent/internal/assembly/web",
+    "github.com/domainry/domainry-agent/internal/capability",
+    "github.com/domainry/domainry-agent/internal/composition",
+    "github.com/domainry/domainry-agent/internal/dataaccess",
+    "github.com/domainry/domainry-agent/internal/execution",
+    "github.com/domainry/domainry-agent/internal/infrastructure/persistence",
+    "github.com/domainry/domainry-agent/internal/infrastructure/persistence/base",
+    "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent",
+    "github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql",
+    "github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres",
+    "github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite",
+    "github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost",
+    "github.com/domainry/domainry-agent/internal/infrastructure/provider",
+    "github.com/domainry/domainry-agent/internal/transport/http/module",
+    "github.com/domainry/domainry-agent/internal/transport/http/playground",
+    "github.com/domainry/domainry-agent/internal/transport/http/product",
+    "github.com/domainry/domainry-agent/internal/transport/http/web",
+    "github.com/domainry/domainry-agent/module",
+    "github.com/domainry/domainry-agent/remote",
+    "github.com/domainry/domainry-agent/server",
+    "github.com/domainry/domainry-agent/testsupport",
+    "github.com/domainry/domainry-agent/testsupport/databasetest",
+    "github.com/domainry/domainry-agent/testsupport/producttest",
+    "github.com/domainry/domainry-agent/web",
+    "github.com/domainry/domainry-agent/webhost"
+  ],
+  "historical_evidence_packages": [
+    {
+      "package": "github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-context-meter",
+      "directory": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-context-meter",
+      "reason": "immutable historical diagnostic source snapshot",
+      "list_error": null
+    },
+    {
+      "package": "github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay",
+      "directory": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay",
+      "reason": "immutable historical diagnostic source snapshot",
+      "list_error": null
+    },
+    {
+      "package": "github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/context-trace-overlay",
+      "directory": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/context-trace-overlay",
+      "reason": "immutable historical diagnostic source snapshot",
+      "list_error": {
+        "ImportStack": [],
+        "Pos": "",
+        "Err": "found packages web (conversation_collaboration_test.go) and application (conversation_execution_context.go) in /Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/context-trace-overlay"
+      }
+    },
+    {
+      "package": "github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay",
+      "directory": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay",
+      "reason": "immutable historical diagnostic source snapshot",
+      "list_error": null
+    },
+    {
+      "package": "github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay",
+      "directory": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay",
+      "reason": "immutable historical diagnostic source snapshot",
+      "list_error": null
+    },
+    {
+      "package": "github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay",
+      "directory": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay",
+      "reason": "immutable historical diagnostic source snapshot",
+      "list_error": null
+    },
+    {
+      "package": "github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay",
+      "directory": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay",
+      "reason": "immutable historical diagnostic source snapshot",
+      "list_error": null
+    }
+  ]
+}

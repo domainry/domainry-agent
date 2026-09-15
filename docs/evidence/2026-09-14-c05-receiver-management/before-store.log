@@ -1,0 +1,11 @@
+=== RUN   TestReceiverManagementUsesAdmittedDeliveryReadAndRejectsWithdrawnReplay
+    conversation_receiver_management_store_test.go:49: receiver's independent delivery read was lost {user 1 [{0x6b12eb560eb0 professional [manage view] 1}] 0x6b12eb657a10 [] false 0x6b12eb5a5c20 1 <nil> <nil> <nil> [] [] 1 0 <nil> <nil> { [] [] [] 0 0 <nil> } conv_68527771c35270af34e325c55f36588e 0x6b12eb271c80 delegation_31a2d93305726f23dfd3077c2050449a default agent_06dca111dd08c4a051b6fcad0c5cb8e9 conv_68527771c35270af34e325c55f36588e  conv_328429863c80669f913e4534a6ee28b9 task_328429863c80669f913e4534a6ee28b9 Professional review {[] 1 Review source totals Findings  [] [Compare totals] [] <nil>}  {8 8 2048 60} [] delivered 5 0x6b12eb567480  2026-09-13 23:55:14.557 +0000 UTC 2026-09-13 23:55:14.561 +0000 UTC} agent.conversation.collaboration_access_denied
+--- FAIL: TestReceiverManagementUsesAdmittedDeliveryReadAndRejectsWithdrawnReplay (0.02s)
+=== RUN   TestOrdinaryManagerCannotInheritReceiversDeliveryRead
+--- PASS: TestOrdinaryManagerCannotInheritReceiversDeliveryRead (0.01s)
+=== RUN   TestReceiverManagementAgentReviewsFromItsOwnLeasedPeerConversation
+    conversation_receiver_management_store_test.go:132: authorized peer review borrowed issuer identity or conversation {user 1 [{0x6b12eb75b4a0 professional [manage view] 1}] 0x6b12eb3007b0 [] false 0x6b12eb77f0e0 1 <nil> <nil> <nil> [] [] 1 0 <nil> <nil> { [] [] [] 0 0 <nil> } conv_7629fa6d68459e911142c4c42cd739e3 0x6b12eb62ec00 delegation_31a2d93305726f23dfd3077c2050449a default agent_06dca111dd08c4a051b6fcad0c5cb8e9 conv_7629fa6d68459e911142c4c42cd739e3  conv_328429863c80669f913e4534a6ee28b9 task_328429863c80669f913e4534a6ee28b9 Professional review {[] 1 Review source totals Findings  [] [Compare totals] [] <nil>}  {8 8 2048 60} [] delivered 5 0x6b12eb816800  2026-09-13 23:55:14.58 +0000 UTC 2026-09-13 23:55:14.581 +0000 UTC} agent.conversation.collaboration_access_denied
+--- FAIL: TestReceiverManagementAgentReviewsFromItsOwnLeasedPeerConversation (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.812s
+FAIL

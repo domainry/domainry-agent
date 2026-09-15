@@ -1,0 +1,9 @@
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/source_and_reader_guardrails
+    report_shared_negated_scope_orm_test.go:113: actual projections [{"s":{"page":1,"page_size":200,"sort":[{"field":"id","direction":"asc"}],"select_fields":["id","name"]}},null] errors <nil> backend.permission.denied
+    report_shared_negated_scope_orm_test.go:114: equivalent or broader real SDK reader scope denied original source backend.permission.denied
+--- FAIL: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection (0.01s)
+    --- FAIL: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/source_and_reader_guardrails (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/modulehost/report	0.488s
+FAIL

@@ -1,0 +1,24 @@
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/reader_revoked_before_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/producer_revoked_before_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/reader_revoked_during_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/reader_ACL_changed_during_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/reader_revoked_before_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/producer_revoked_before_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/reader_revoked_during_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/reader_ACL_changed_during_IO
+--- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence (0.01s)
+    --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/reader_revoked_before_IO (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/producer_revoked_before_IO (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/reader_revoked_during_IO (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/reader_ACL_changed_during_IO (0.00s)
+    --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/reader_revoked_before_IO (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/producer_revoked_before_IO (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/reader_revoked_during_IO (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/reader_ACL_changed_during_IO (0.00s)
+PASS
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/provider	0.429s

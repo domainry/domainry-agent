@@ -1,0 +1,9 @@
+Agent working directory: /Users/tiger/Projects/domainry-agent
+http.log (exit 0): go test ./internal/assembly/web -run '^Test(CrossUserWorkspace((MailSources|CalendarSources|WebSources|MailWriteReceipts)AutomaticDeliveryAndSharedExecution|(CalendarCreate|CalendarUpdate|MailReply)ReceiptsAutomaticDeliveryAndSharedExecution)|SharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart|PeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission)$' -count=1 -v
+write-publication-http.log (exit 0): go test ./internal/assembly/web -run '^TestCrossUserWorkspace(MailWrite|CalendarCreate|CalendarUpdate|MailReply)ReceiptsAutomaticDeliveryAndSharedExecution$' -count=1 -v
+Diagnostic profiling (exit 1): go test -race ./internal/assembly/web -run '^TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution$' -count=1 -v -cpuprofile=/tmp/c05-shared-write-race.cpu
+Diagnostic final race (exit 1): go test -race ./internal/assembly/web -run '^TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution$' -count=1 -v
+Business before proof (exit 1): go test -overlay=/tmp/c05-business-cross-reader-before-overlay.json ./internal/application -run '^TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader$' -count=1 -v
+Profile analysis: go tool pprof -top -cum -nodecount=24 /tmp/c05-shared-write-race.test /tmp/c05-shared-write-race.cpu
+The business overlay is diagnostic only; no failing source test installed in the working package.
+No execution/context budget changes. No SDK, Runtime or Tools production changes in this phase.

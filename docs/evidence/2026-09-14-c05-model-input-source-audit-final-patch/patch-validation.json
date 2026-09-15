@@ -1,0 +1,26 @@
+{
+  "patch_check_exit": 0,
+  "patch_apply_exit": 0,
+  "reconstructed_sources_match_sealed_after_files": [
+    {
+      "path": "internal/application/conversation_sources.go",
+      "sha256": "36d40cff9be838389c478eb936aa3c5b050e1c748940b5a8c60a9a4f2c42e00f"
+    },
+    {
+      "path": "internal/application/conversation_execution.go",
+      "sha256": "ad36568e6b0bee80a6de1221cf5c875a6e043a5ae14a874b19f56a5e655770bc"
+    },
+    {
+      "path": "internal/application/conversation_collaboration_tools.go",
+      "sha256": "68863c08ba8fcf3371bec600dab1603b71b4e6ecb268fb479abe2c6a3ab1dc88"
+    },
+    {
+      "path": "internal/application/conversation_model_sources.go",
+      "sha256": "30eea26768e6373a78b9b89add2cd6c2f472a29816184c6715415a0f71163fc2"
+    },
+    {
+      "path": "internal/application/conversation_model_sources_test.go",
+      "sha256": "e8d54ec765d09def45d0cf75973508de81070dc0cb2ef8d548bb2028204da99c"
+    }
+  ]
+}

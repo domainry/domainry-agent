@@ -1,0 +1,49 @@
+{
+  "date": "2026-09-14",
+  "item": "C06",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 5,
+  "results": {
+    "frontend_tests": {
+      "passed": 83,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "frontend_build": {
+      "exit_code": 0,
+      "typescript": true,
+      "vite": true
+    },
+    "diff_check": {
+      "exit_code": 0,
+      "bytes": 0
+    },
+    "identity_http_sqlite_chrome": {
+      "exit_code": 0,
+      "go_roots": 2,
+      "seconds": 59.276,
+      "page_errors": [],
+      "viewport_widths": [
+        1360,
+        390
+      ]
+    }
+  },
+  "behavior": [
+    "main conversation collaboration summary",
+    "business stage from saved condition verification",
+    "current step and waiting reason",
+    "no synthetic completion percentage",
+    "global and conversation sent/received scopes",
+    "current and historical execution subjects",
+    "actionable attention reasons",
+    "dependency, disagreement, handoff and access impacts",
+    "duplicate open-question merge",
+    "direct delegation detail targeting",
+    "poll and manual refresh recovery"
+  ],
+  "remaining": [
+    "C05 and the other TODO rows retain their recorded remaining scope"
+  ]
+}

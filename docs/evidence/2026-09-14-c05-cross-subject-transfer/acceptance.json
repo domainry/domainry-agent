@@ -1,0 +1,47 @@
+{
+  "phase_status": "accepted_cross_subject_transfer_with_explicit_original_execution_publication",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 198,
+  "source_manifest": "source-sha256.json",
+  "artifact_files": 17,
+  "artifact_manifest": "artifact-sha256.json",
+  "accepted_logs": [
+    "browser-http.log",
+    "build.log",
+    "core.log",
+    "frontend.log",
+    "http.log",
+    "owner-controls-http.log",
+    "race.log",
+    "sdk.log",
+    "store-focused.log"
+  ],
+  "real_identity": true,
+  "real_http": true,
+  "real_tool_execution": true,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "real_chrome": true,
+  "transfer_screenshots_visually_inspected": 6,
+  "public_assignment_execution_subject_added": true,
+  "private_assignment_role_proof_exposed": false,
+  "cross_subject_transfer_enabled": true,
+  "scope": [
+    "independent receiving authority admission",
+    "exact same-delegation original run publication and per-reader checks",
+    "stable issuer and immutable original assignment ledger",
+    "cumulative budget and original effect reuse",
+    "manual new-executor delivery and issuer acceptance after restart",
+    "inherited publication withdrawal stops next tool/model",
+    "owner metadata withdrawal and recipient readable indexes",
+    "390px modal bounds"
+  ],
+  "remaining": [
+    "participant full transfer/dependency management",
+    "multi-owner dependency sources",
+    "broader Identity exit/disable integration",
+    "other C05 requirements"
+  ]
+}

@@ -1,0 +1,22 @@
+=== RUN   TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission
+    conversation_delivery_write_permissions_test.go:167: real Agent/Identity/Tools/Integration/Provider HTTP: exact confirmation, effects={"mail_send":1}, saved catalog/receipt readable without send or account-write action and after restart; data/account/tool revocation hides result; no additional vendor IO
+--- PASS: TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission (8.11s)
+=== RUN   TestCrossUserWorkspaceMailSourcesAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_sources_test.go:92: POST /agent/delegations/delegation_7e5418f9a322f4b5cbf590568dac0745/decisions: status 409, want 200, body {"code":"agent.conversation.revision_conflict"}
+--- FAIL: TestCrossUserWorkspaceMailSourcesAutomaticDeliveryAndSharedExecution (16.26s)
+=== RUN   TestCrossUserWorkspaceCalendarSourcesAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_sources_test.go:96: calendar: real personal owner body remains private despite explicit participant delivery/execution scopes and original run publication
+    conversation_shared_account_sources_test.go:96: calendar: actual cross-user agent_delegate confirmation and owner worker; 5 original receipts; running payload hidden; original delivery/execution SHA and byte pages after both users' execution revocation and restart; private controls denied; reader data and workspace account revocation enforced; vendor HTTP remained 5
+--- PASS: TestCrossUserWorkspaceCalendarSourcesAutomaticDeliveryAndSharedExecution (22.22s)
+=== RUN   TestCrossUserWorkspaceWebSourcesAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_sources_test.go:100: web: actual cross-user agent_delegate confirmation and owner worker; 2 original receipts; running payload hidden; original delivery/execution SHA and byte pages after both users' execution revocation and restart; private controls denied; reader data and workspace account revocation enforced; vendor HTTP remained 2
+--- PASS: TestCrossUserWorkspaceWebSourcesAutomaticDeliveryAndSharedExecution (8.79s)
+=== RUN   TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_sources_test.go:104: POST /agent/delegations/delegation_719274ec5519adb163b0d6967a143754/execution: status 403, want 503, body {"code":"mail.write_source_changed"}
+--- FAIL: TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution (11.96s)
+=== RUN   TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart
+    conversation_shared_failed_execution_test.go:164: actual connector HTTP 503, durably started failed call and subsequent model reply; shared run retains exact state/timing while failed parameters/results/reply/control stay hidden after execution revocation and restart; no repeat vendor IO
+--- PASS: TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart (2.67s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	70.500s
+FAIL

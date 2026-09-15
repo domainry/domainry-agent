@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.test]
+runtime/bootstrap/integrationtest/conversation_subject_erasure_dependencies_test.go:95:220: stopped.Task.Terminal undefined (type *agentsdk.ConversationTaskDetail has no field or method Terminal)
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [build failed]
+FAIL

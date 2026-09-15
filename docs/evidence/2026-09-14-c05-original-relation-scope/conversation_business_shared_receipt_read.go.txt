@@ -1,0 +1,143 @@
+package agenthost
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+
+	agent "github.com/domainry/domainry-agent-sdk"
+	principalmodel "github.com/domainry/domainry-runtime/runtime/domain/principal/model"
+	recordpolicy "github.com/domainry/domainry-runtime/runtime/domain/record/policy"
+)
+
+// Producer identifies the source-owned proof/ledger. It cannot grant the reader
+// producer credentials, private history, write authority or a live cursor.
+func (h *ConversationBusinessHost) AuthorizeSharedBusinessResultRead(ctx context.Context, e agent.ConversationBusinessEvidence, a, producer agent.ConversationAuthority) error {
+	if producer == a {
+		return h.AuthorizeBusinessResultRead(ctx, e, a)
+	}
+	if !a.Known || !producer.Known || a.RuntimeID != producer.RuntimeID || a.WorkspaceID != producer.WorkspaceID || e.Version != 1 || e.Source != h.source || e.ScopeSHA256 != conversationBusinessDigest([]string{h.source, producer.RuntimeID, producer.WorkspaceID, producer.UserID}) || !json.Valid(e.Input) || !json.Valid(e.Data) {
+		return conversationBusinessError("forbidden")
+	}
+	p, err := h.principal(ctx, a)
+	if err != nil {
+		return err
+	}
+	original, err := h.principal(ctx, producer)
+	if err != nil {
+		return err
+	}
+	readerPolicy, producerPolicy := h.businessPolicyDigest(ctx, p), h.businessPolicyDigest(ctx, original)
+	switch e.Operation {
+	case "business_catalog":
+		err = h.readBusinessCatalogReceipt(ctx, e, a, producer)
+	case "query_records", "get_record", "query_related_records":
+		err = h.readSharedBusinessSnapshot(ctx, e, a, producer, p, original)
+	case "workflow_get":
+		err = h.readSharedBusinessWorkflow(ctx, e, a, producer)
+	case "invoke_action":
+		err = h.readBusinessActionReceiptForProducer(ctx, e, a, producer)
+	case "workflow_start":
+		err = h.readBusinessWorkflowStartReceiptForProducer(ctx, e, a, producer)
+	default:
+		return &agent.Error{Class: "unavailable", Code: agent.BusinessResultReadUnsupportedCode}
+	}
+	if err != nil {
+		return err
+	}
+	if err := h.unchangedReceiptReadAuthority(ctx, producer, producerPolicy); err != nil {
+		return err
+	}
+	return h.unchangedReceiptReadAuthority(ctx, a, readerPolicy)
+}
+
+func (h *ConversationBusinessHost) readSharedBusinessSnapshot(ctx context.Context, e agent.ConversationBusinessEvidence, a, producer agent.ConversationAuthority, p, original principalmodel.Principal) error {
+	// Verify the entire original signature or exact original result before
+	// allowing current reader permissions to expose any historical values.
+	if err := h.RevalidateBusiness(ctx, e, producer); err != nil {
+		return err
+	}
+	var object string
+	var saved []agent.ConversationBusinessRecord
+	switch e.Operation {
+	case "get_record":
+		var q agent.ConversationBusinessGet
+		var record agent.ConversationBusinessRecord
+		if !decodeBusinessReceipt(e.Input, &q) || !decodeBusinessReceipt(e.Data, &record) || record.ID != q.RecordID {
+			return conversationBusinessError("forbidden")
+		}
+		object, saved = q.ObjectKey, []agent.ConversationBusinessRecord{record}
+	case "query_records":
+		var q agent.ConversationBusinessQuery
+		var page agent.ConversationBusinessRecordPage
+		if !decodeBusinessReceipt(e.Input, &q) || !decodeBusinessReceipt(e.Data, &page) || page.ObjectKey != q.ObjectKey {
+			return conversationBusinessError("forbidden")
+		}
+		// The original cursor was verified with the producer above. Validate
+		// the reader's fields/filter/sort without granting that cursor for IO.
+		q.Cursor, q.Page = "", 1
+		if _, err := h.QueryBusinessRecords(ctx, q, a); err != nil {
+			return err
+		}
+		object, saved = q.ObjectKey, page.Items
+		if !h.businessReadQueryScopeCovers(ctx, p, original, object, q.Filters) {
+			return conversationBusinessError("forbidden")
+		}
+	case "query_related_records":
+		var q agent.ConversationBusinessRelatedQuery
+		var page agent.ConversationBusinessRelatedPage
+		if !decodeBusinessReceipt(e.Input, &q) || !decodeBusinessReceipt(e.Data, &page) || page.SourceObjectKey != q.ObjectKey || page.SourceRecordID != q.RecordID || page.RelationKey != q.RelationKey {
+			return conversationBusinessError("forbidden")
+		}
+		q.Cursor = ""
+		current, err := h.QueryRelatedBusinessRecords(ctx, q, a)
+		if err != nil {
+			return err
+		}
+		if current.ObjectKey != page.ObjectKey || !h.businessReadRelatedQueryScopeCovers(ctx, p, original, q, page) {
+			return conversationBusinessError("forbidden")
+		}
+		object, saved = page.ObjectKey, page.Items
+	}
+	for _, record := range saved {
+		fields := make([]string, 0, len(record.Data))
+		for field := range record.Data {
+			fields = append(fields, field)
+		}
+		current, err := h.GetBusinessRecord(ctx, agent.ConversationBusinessGet{ObjectKey: object, RecordID: record.ID, Fields: fields}, a)
+		if err != nil {
+			return err
+		}
+		for field, value := range record.Data {
+			if _, ok := current.Data[field]; !ok || recordpolicy.RecordFieldReadMaskedForPrincipal(p, object, field) || recordpolicy.RecordFieldRequiresPolicyEvaluation(p, object, field, "read") {
+				if !bytes.Equal(value, current.Data[field]) {
+					return conversationBusinessError("forbidden")
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (h *ConversationBusinessHost) readSharedBusinessWorkflow(ctx context.Context, e agent.ConversationBusinessEvidence, a, producer agent.ConversationAuthority) error {
+	if err := h.revalidateBusinessWorkflow(ctx, e, producer, true); err != nil {
+		return err
+	}
+	var q agent.ConversationWorkflowGet
+	var saved agent.ConversationWorkflowState
+	if !decodeBusinessReceipt(e.Input, &q) || !decodeBusinessReceipt(e.Data, &saved) {
+		return conversationBusinessError("forbidden")
+	}
+	// The workflow owner rechecks actual reader membership; Get also checks
+	// current linked-record policy. Original process status remains frozen.
+	current, err := h.GetBusinessWorkflow(ctx, q, a)
+	if err != nil {
+		return err
+	}
+	if saved.WorkflowKey != current.WorkflowKey || saved.ProcessID != current.ProcessID || conversationBusinessDigest(saved.Record) != conversationBusinessDigest(current.Record) {
+		return conversationBusinessError("forbidden")
+	}
+	return nil
+}
+
+var _ agent.ConversationBusinessSharedResultReadSource = (*ConversationBusinessHost)(nil)

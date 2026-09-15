@@ -1,0 +1,8 @@
+ok  	github.com/domainry/domainry-agent/internal/application	0.825s
+--- FAIL: TestRepublishAcceptedDeliveryPreservesOriginalTaskAndHistory (0.01s)
+    conversation_delivery_publication_store_test.go:67: agent.conversation.delegation_actor_invalid
+--- FAIL: TestRepublishCurrentLegacyDeliveryCreatesExplicitKnownPublisher (0.01s)
+    conversation_delivery_publication_store_test.go:127: legacy assessment or acceptance manufactured {user 0 [] 0x7d1496b11860 [] false <nil> 1 <nil> <nil> <nil> [] [] 1 1 2026-09-13 23:31:50.84382 +0000 UTC <nil> { [] [] [] 0 0 <nil> } conv_83e2763c42e68f7cd10c7fd06629ab73 0x7d14963a4180 delegation_31a2d93305726f23dfd3077c2050449a default agent_06dca111dd08c4a051b6fcad0c5cb8e9 conv_83e2763c42e68f7cd10c7fd06629ab73  conv_328429863c80669f913e4534a6ee28b9 task_328429863c80669f913e4534a6ee28b9 Professional review {[] 1 Review source totals Findings  [] [Compare totals] [] <nil>}  {8 8 2048 60} [] accepted_delivery 4 0x7d149670fb00  2026-09-13 23:31:50.843 +0000 UTC 2026-09-13 23:31:50.844 +0000 UTC} agent.conversation.delegation_actor_invalid
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	3.956s
+FAIL

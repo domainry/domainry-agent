@@ -1,0 +1,37 @@
+{
+  "steps": [
+    "completed task feedback records the exact Agent prompt and selected Skill version",
+    "compiled UI keeps summary, instructions, workflow and resource bodies separately addressable",
+    "candidate creation retains the separately loaded resource and binds exact feedback and baseline",
+    "only a passing V01 comparison publishes v2 and archives the original v1 baseline",
+    "rollback restores the first deployed version while explicitly retaining prior business effects"
+  ],
+  "javascriptErrors": [],
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "resourceFailures": [],
+  "mutations": [
+    {
+      "path": "/agent/capability-feedback",
+      "status": 200
+    },
+    {
+      "path": "/agent/improvement-candidates",
+      "status": 200
+    },
+    {
+      "path": "/agent/improvement-candidates/improvement_6d04c9ab97502756b5022c918b63a95c/evaluation",
+      "status": 200
+    },
+    {
+      "path": "/agent/improvement-candidates/improvement_6d04c9ab97502756b5022c918b63a95c/publish",
+      "status": 200
+    },
+    {
+      "path": "/agent/improvement-candidates/improvement_6d04c9ab97502756b5022c918b63a95c/rollback",
+      "status": 200
+    }
+  ],
+  "complete": true,
+  "feedbackID": "feedback_26c5b0db6835ab4f09d7646dc703d15c"
+}

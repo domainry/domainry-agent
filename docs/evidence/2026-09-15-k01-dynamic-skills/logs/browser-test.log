@@ -1,0 +1,9 @@
+=== RUN   TestDynamicSkillFeedbackPublicationRollbackBuiltBrowser
+PASS completed task feedback records the exact Agent prompt and selected Skill version
+PASS compiled UI keeps summary, instructions, workflow and resource bodies separately addressable
+PASS candidate creation retains the separately loaded resource and binds exact feedback and baseline
+PASS only a passing V01 comparison publishes v2 and archives the original v1 baseline
+PASS rollback restores the first deployed version while explicitly retaining prior business effects
+--- PASS: TestDynamicSkillFeedbackPublicationRollbackBuiltBrowser (5.79s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	6.269s

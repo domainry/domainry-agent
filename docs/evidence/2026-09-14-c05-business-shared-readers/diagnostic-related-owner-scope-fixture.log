@@ -1,0 +1,5 @@
+--- FAIL: TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart (1.59s)
+    conversation_business_shared_receipt_rpc_test.go:118: {customer customer_customer_acme reverse:order:customer {order [] 1 1 false  0x330349ad1360}} <nil>
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	8.035s
+FAIL

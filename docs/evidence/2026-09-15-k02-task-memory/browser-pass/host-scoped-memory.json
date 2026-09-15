@@ -1,0 +1,8 @@
+{
+  "compiled_frontend": true,
+  "complete": true,
+  "cross_conversation_excluded": true,
+  "real_identity_http": true,
+  "real_sqlite": true,
+  "relevant_recall": true
+}

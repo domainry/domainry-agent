@@ -1,0 +1,6 @@
+=== RUN   TestSavedSharedExecutionWrapperRestoresOnlyItsExactEarlierFlattenedSource
+    conversation_execution_tools_test.go:125: old flattened source forgot its verified execution read purpose agent.conversation.tool_access_denied
+--- FAIL: TestSavedSharedExecutionWrapperRestoresOnlyItsExactEarlierFlattenedSource (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.495s
+FAIL

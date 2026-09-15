@@ -1,0 +1,83 @@
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/context-trace-overlay
+found packages web (conversation_collaboration_test.go) and application (conversation_execution_context.go) in /Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/context-trace-overlay
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/context-trace-overlay [setup failed]
+?   	github.com/domainry/domainry-agent/capability	[no test files]
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:33:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:33:72: undefined: conversationDB
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:58:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:58:73: undefined: conversationDB
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:76:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:97:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:97:80: undefined: conversationDB
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:112:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:147:10: undefined: ConversationStore
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:147:82: undefined: conversationDB
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay/conversation_delegation_subjects_store.go:147:82: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:48:62: undefined: LibraryKnowledgeBinding
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:62:60: undefined: ConversationKnowledge
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:117:12: undefined: validateAttachmentKnowledge
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:184:70: undefined: knowledgeOptions
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:190:20: undefined: PersonalConversationHost
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:191:40: undefined: PersonalConversationHost
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:207:23: undefined: businessConversationHost
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:228:23: undefined: knowledgeConversationHost
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:280:12: undefined: activateDocumentSources
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_tasks.go:551:163: undefined: conversationCompiledTool
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay/conversation_service.go:280:12: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:11:14: undefined: conversationSourceAudit
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:17:14: undefined: conversationSourceAudit
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:18:29: undefined: conversationPublishedSourceKey
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:18:64: undefined: conversationPublishedSource
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:19:33: undefined: conversationSourceReleaseKey
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:19:66: undefined: conversationSourceRelease
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:27:9: undefined: conversationDigest
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:31:13: undefined: conversationSourceParentKey
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:32:13: undefined: conversationDeliverySourceKey
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:33:13: undefined: conversationRawExecutionSourceKey
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay/conversation_source_cache.go:33:13: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_sources.go:29:18: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_sources.go:38:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_sources.go:837:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_sources.go:841:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_sources.go:851:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_tasks.go:16:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_tasks.go:24:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_tasks.go:115:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_tasks.go:181:53: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_tasks.go:251:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay/conversation_tasks.go:251:10: too many errors
+# github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:24:24: undefined: conversationText
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:38:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:205:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:224:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:430:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:445:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:474:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:643:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:682:10: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:771:53: undefined: ConversationService
+docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay/conversation_delegations.go:24:24: too many errors
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	3.838s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-playground	[no test files]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/definition	4.270s
+?   	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-context-meter	[no test files]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/before-overlay [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/scope-trace-overlay [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-cache-disabled-overlay [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-historical-contract-lifecycle/source-denial-trace-overlay [build failed]
+FAIL	github.com/domainry/domainry-agent/docs/evidence/2026-09-14-c05-record-policy-projection/delivery-denial-trace-overlay [build failed]
+--- FAIL: TestArtifactSourcesStopAtTheGeneratingStep (0.12s)
+    conversation_artifact_tools_integration_test.go:332: source-aware artifact run failed: execution_context_exceeded 
+FAIL
+FAIL	github.com/domainry/domainry-agent/integration	99.070s
+ok  	github.com/domainry/domainry-agent/internal/application	4.050s
+ok  	github.com/domainry/domainry-agent/internal/architecture	4.233s
+ok  	github.com/domainry/domainry-agent/internal/assembly/conversation	5.153s
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	12.805s
+?   	github.com/domainry/domainry-agent/internal/assembly/saas	[no test files]

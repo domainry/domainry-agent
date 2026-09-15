@@ -1,0 +1,290 @@
+package application
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent-sdk/persistence"
+	"strings"
+)
+
+type collaborationToolHost struct {
+	agentsdk.ConversationToolHost
+	service *ConversationService
+}
+
+func collaborationTool(key string) (agentsdk.ConversationToolDefinition, bool) {
+	for _, definition := range agentsdk.ConversationCollaborationTools() {
+		if definition.Key == key {
+			return definition, true
+		}
+	}
+	return agentsdk.ConversationToolDefinition{}, false
+}
+
+func (h *collaborationToolHost) ConversationTools(ctx context.Context, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, error) {
+	out, err := h.ConversationToolHost.ConversationTools(ctx, a)
+	if err != nil {
+		return nil, err
+	}
+	for _, d := range agentsdk.ConversationCollaborationTools() {
+		auth, err := h.AuthorizeConversationTool(ctx, agentsdk.ConversationToolRequest{Authority: a, Definition: d})
+		if err != nil {
+			return nil, err
+		}
+		if auth.Granted {
+			out = append(out, d)
+		}
+	}
+	return out, nil
+}
+
+func (h *collaborationToolHost) AuthorizeConversationTool(ctx context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolAuthorization, error) {
+	definition, peer := collaborationTool(in.Definition.Key)
+	if !peer {
+		return h.ConversationToolHost.AuthorizeConversationTool(ctx, in)
+	}
+	if conversationDigest(definition) != conversationDigest(in.Definition) || h.service.options.PersonalAuthorizer == nil {
+		return agentsdk.ConversationToolAuthorization{}, nil
+	}
+	auth, err := h.service.options.PersonalAuthorizer.AuthorizeConversationTool(ctx, in)
+	if err != nil || !auth.Granted || in.Definition.Effect != "write" || auth.ConfirmationRequired {
+		return auth, err
+	}
+	if agentsdk.ConversationPeerCommunication(in.Call) {
+		return auth, nil
+	}
+	auth.ConfirmationRequired = true
+	if in.ConversationID == "" || in.RunID == "" || in.Confirmation == nil {
+		return auth, nil
+	}
+	repo, ok := h.service.repo.(persistence.ConversationInteractionRepository)
+	if !ok {
+		return auth, nil
+	}
+	record, found, err := repo.ExecutionInteraction(ctx, personalToolClaim(in), in.Step, in.Call.ID, "confirmation")
+	if err != nil {
+		return auth, err
+	}
+	i := record.Interaction
+	receipt := confirmationReceipt(i, in.Authority)
+	if found && receipt != nil && conversationDigest(receipt) == conversationDigest(in.Confirmation) && receipt.ID == in.ConfirmationID && i.DefinitionHash == conversationDigest(in.Definition) && i.ArgumentsHash == conversationDigest(in.Call.Arguments) {
+		auth.ConfirmationRequired = false
+	}
+	return auth, nil
+}
+
+func (h *collaborationToolHost) InvokeConversationTool(ctx context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {
+	if _, peer := collaborationTool(in.Definition.Key); !peer {
+		return h.ConversationToolHost.InvokeConversationTool(ctx, in)
+	}
+	ctx = context.WithValue(ctx, conversationPeerRequestKey{}, conversationPeerRequest{ConversationID: in.ConversationID, RunID: in.RunID, ToolRequest: &in})
+	clientID := "peer_" + conversationDigest(in.IdempotencyKey)[:32]
+	var result any
+	var err error
+	resourceID := ""
+	switch in.Definition.Key {
+	case "agent_list":
+		var args agentsdk.ConversationAgentMatchRequest
+		err = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		if err == nil {
+			args.ConversationID = in.ConversationID
+			var directory agentsdk.ConversationAgentPage
+			directory, err = h.service.conversationAgentDirectory(ctx, in.Authority)
+			if err == nil {
+				var match agentsdk.ConversationAgentMatchPage
+				if err = validateAgentRequirements(args.Requirements); err == nil {
+					match, err = h.service.matchConversationAgentDirectory(ctx, directory, args, in.Authority)
+				}
+				if len(match.Items) > 16 {
+					match.Items = match.Items[:16]
+					directory.Complete = false
+					visible := map[string]bool{}
+					for _, item := range match.Items {
+						visible[item.AgentID] = true
+					}
+					items := []agentsdk.ConversationAgent{}
+					for _, item := range directory.Items {
+						if visible[item.ID] {
+							items = append(items, item)
+						}
+					}
+					directory.Items = items
+				}
+				for index := range directory.Items {
+					directory.Items[index].Instructions = ""
+					directory.Items[index].Description = truncateConversationText(directory.Items[index].Description, 512)
+					if len(directory.Items[index].Tools) > 32 {
+						directory.Items[index].Tools = directory.Items[index].Tools[:32]
+						directory.Complete = false
+					}
+				}
+				directory.Tools = nil
+				directory.Definitions = nil
+				directory.Availability = match.Items
+				result = struct {
+					agentsdk.ConversationAgentPage
+					RecommendedAgentID string `json:"recommended_agent_id,omitempty"`
+					Basis              string `json:"basis"`
+					HistoryComplete    bool   `json:"history_complete"`
+				}{directory, match.RecommendedAgentID, match.Basis, match.HistoryComplete}
+			}
+		}
+
+	case "agent_delegate":
+		var args agentsdk.ConversationDelegationCreate
+		err = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		if err == nil {
+			args.ClientID, args.ConversationID = clientID, in.ConversationID
+			var d agentsdk.ConversationDelegationDetail
+			d, err = h.service.CreateConversationDelegation(ctx, args, in.Authority)
+			result, resourceID = d, d.ID
+		}
+	case "delegation_disagreement":
+		var args agentsdk.ConversationDisagreementRead
+		err = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		if err == nil {
+			result, err = h.service.ConversationDisagreementHistory(ctx, args.ID, args.DisagreementID, args.BeforeRevision, in.Authority)
+			resourceID = args.ID
+		}
+	case "delegation_get":
+		var args struct {
+			ID string `json:"id"`
+		}
+		err = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		if err == nil {
+			result, err = h.service.ConversationDelegation(ctx, args.ID, in.Authority)
+			resourceID = args.ID
+		}
+	case "delegation_source_read":
+		var args agentsdk.ConversationDelegationSourceRead
+		err = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		if err == nil {
+			result, err = h.service.readDelegationSource(ctx, in, args)
+			resourceID = args.ID
+		}
+	case "delegation_execution_publish", "delegation_executions", "delegation_execution_read", "delegation_execution_result_read":
+		result, resourceID, err = h.service.invokeDelegationExecutionTool(ctx, in, clientID)
+	case "agent_message":
+		var args agentsdk.ConversationAgentToolMessage
+		err = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		if err == nil {
+			args.Message.ClientID = clientID
+			result, err = h.service.SendConversationAgentMessage(ctx, args.ID, args.Message, in.Authority)
+			resourceID = args.ID
+		}
+	case "delegation_update":
+		var args agentsdk.ConversationDelegationToolUpdate
+		err = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		if err == nil {
+			args.Update.ClientID = clientID
+			result, err = h.service.UpdateConversationDelegation(ctx, args.ID, args.Update, in.Authority)
+			resourceID = args.ID
+		}
+	}
+	if err != nil {
+		var coded *agentsdk.Error
+		if errors.As(err, &coded) && (coded.Class == "bad_request" || coded.Class == "forbidden" || coded.Class == "not_found" || coded.Class == "conflict" || coded.Class == "rate_limited") {
+			code := strings.TrimPrefix(coded.Code, "agent.conversation.")
+			raw, _ := json.Marshal(map[string]string{"error": code})
+			return agentsdk.ConversationToolResult{Status: "failed", ErrorCode: code, Content: raw}, nil
+		}
+		return agentsdk.ConversationToolResult{}, err
+	}
+	if d, ok := result.(agentsdk.ConversationDelegationDetail); ok {
+		if len(d.Messages) > 8 {
+			d.Messages = d.Messages[len(d.Messages)-8:]
+			d.MessagesComplete = false
+		}
+		for i := range d.Messages {
+			if len(d.Messages[i].Content) > 1024 {
+				d.Messages[i].Content = truncateConversationText(d.Messages[i].Content, 1024) + " [message excerpt]"
+				d.MessagesComplete = false
+			}
+		}
+		if d.Task != nil {
+			task := *d.Task
+			task.Steps = nil
+			if len(task.Input) > 1024 {
+				task.Input = truncateConversationText(task.Input, 1024) + " [input excerpt]"
+			}
+			d.Task = &task
+		}
+		result = d
+	}
+	raw, err := json.Marshal(result)
+	completion := ""
+	if in.Definition.Key == "agent_delegate" {
+		completion = "accepted"
+	}
+	return agentsdk.ConversationToolResult{Status: "completed", Completion: completion, ResourceID: resourceID, Content: raw}, err
+}
+
+func (h *collaborationToolHost) ReconcileConversationTool(ctx context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {
+	if _, peer := collaborationTool(in.Definition.Key); !peer {
+		return h.ConversationToolHost.ReconcileConversationTool(ctx, in)
+	}
+	return h.InvokeConversationTool(ctx, in)
+}
+
+func (h *collaborationToolHost) AuthorizeConversationToolResult(ctx context.Context, in agentsdk.ConversationToolRequest, result agentsdk.ConversationToolResult) (resultErr error) {
+	deferred, tracked := ctx.Value(conversationModelSourceRecordKey{}).(*conversationModelSourceRecord)
+	tracked = tracked && deferred.s == h.service && deferred.matchesRecord(in, result)
+	if tracked {
+		deferred.checked = false
+		defer func() {
+			if resultErr != nil {
+				deferred.failure = resultErr
+			}
+		}()
+	}
+	if _, peer := collaborationTool(in.Definition.Key); peer {
+		// A model consumer cannot use this route to turn a private source into
+		// shared context. Public user reads retain their separate owner checks.
+		record := persistence.ConversationToolExecution{Step: in.Step, Call: in.Call, Definition: in.Definition, Result: &result}
+		var sourceErr error
+		if tracked && deferred.matches(ctx, in, result) {
+			sourceErr = deferred.check(ctx)
+		} else {
+			_, sourceErr = h.service.sourceAudit(in.Authority, in.ConversationID).record(ctx, agentsdk.ConversationRunReference{ConversationID: in.ConversationID, RunID: in.RunID}, record)
+		}
+		if sourceErr != nil {
+			return sourceErr
+		}
+		if result.ResourceID != "" {
+			_, err := h.service.repo.Get(ctx, in.ConversationID, in.Authority)
+			if err != nil {
+				return err
+			}
+			repo, err := h.service.collaborationRepository()
+			if err != nil {
+				return err
+			}
+			_, err = repo.ConversationDelegation(ctx, result.ResourceID, in.Authority)
+			return err
+		}
+		return nil
+	}
+	if checker, ok := h.ConversationToolHost.(agentsdk.ConversationToolResultAuthorizer); ok {
+		return checker.AuthorizeConversationToolResult(ctx, in, result)
+	}
+	return nil
+}
+
+func (h *collaborationToolHost) AuthorizeConversationInteraction(ctx context.Context, a agentsdk.ConversationAuthority, in agentsdk.ConversationInteraction) (agentsdk.ConversationToolAuthorization, error) {
+	if checker, ok := h.ConversationToolHost.(agentsdk.ConversationInteractionAuthorizer); ok {
+		return checker.AuthorizeConversationInteraction(ctx, a, in)
+	}
+	return agentsdk.ConversationToolAuthorization{}, conversationFailure("unavailable", "interaction_unavailable")
+}
+
+func truncateConversationText(value string, limit int) string {
+	if len(value) <= limit {
+		return value
+	}
+	for limit > 0 && (value[limit]&0xc0) == 0x80 {
+		limit--
+	}
+	return value[:limit]
+}

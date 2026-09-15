@@ -1,0 +1,22 @@
+=== RUN   TestParticipantManagementReturnsOnlyReceiptAndChecksCurrentRoleAndGrant
+    conversation_participant_management_test.go:37: management borrowed private ownership or depended on source reading {false <nil> <nil> false false <nil> [] [] { 0 [] <nil> [] false <nil> 0 <nil> <nil> <nil> [] [] 0 0 <nil> <nil> { [] [] [] 0 0 <nil> }  <nil>         {[] 0    [] [] [] <nil>}  {0 0 0 0} []  0 <nil>  0001-01-01 00:00:00 +0000 UTC 0001-01-01 00:00:00 +0000 UTC} false <nil> []} {false    } agent.conversation.agent_sharing_subjects_unavailable
+--- FAIL: TestParticipantManagementReturnsOnlyReceiptAndChecksCurrentRoleAndGrant (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.670s
+=== RUN   TestRepublishAcceptedDeliveryPreservesOriginalTaskAndHistory
+--- PASS: TestRepublishAcceptedDeliveryPreservesOriginalTaskAndHistory (0.02s)
+=== RUN   TestRepublishCurrentLegacyDeliveryCreatesExplicitKnownPublisher
+--- PASS: TestRepublishCurrentLegacyDeliveryCreatesExplicitKnownPublisher (0.01s)
+=== RUN   TestParticipantManagementPreservesOriginalTaskAndRejectsWithdrawnGrantReplay
+--- PASS: TestParticipantManagementPreservesOriginalTaskAndRejectsWithdrawnGrantReplay (0.01s)
+=== RUN   TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles
+=== RUN   TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/different-user
+=== RUN   TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/different-role
+=== RUN   TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/same-identity
+--- PASS: TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles (0.02s)
+    --- PASS: TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/different-user (0.01s)
+    --- PASS: TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/different-role (0.01s)
+    --- PASS: TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/same-identity (0.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	1.093s
+FAIL

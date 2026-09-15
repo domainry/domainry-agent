@@ -76,6 +76,10 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		in.TodoID = r.PathValue("todoID")
 		in.TaskID = r.PathValue("taskID")
 		in.AgentID = r.PathValue("agentID")
+		in.SkillKey = r.PathValue("skillKey")
+		in.SkillVersion = r.PathValue("skillVersion")
+		in.SkillResourceKey = r.PathValue("skillResourceKey")
+		in.CandidateID = r.PathValue("candidateID")
 		in.DelegationID = r.PathValue("delegationID")
 		in.ArtifactID = r.PathValue("artifactID")
 		in.ArtifactExportID = r.PathValue("exportID")
@@ -117,6 +121,8 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		in.ArtifactVersion = number("version")
 		in.ArtifactBefore = number("before")
 		in.AgreementBefore = number("before_revision")
+		in.PlanBefore = number("before_version")
+		in.CompletionBefore = number("before_revision")
 		in.DisagreementID = r.PathValue("disagreementID")
 		archived := false
 		if raw := q.Get("include_archived"); raw != "" {
@@ -175,6 +181,22 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			}
 		}
 		switch op {
+		case "external_agent_assignments":
+			body = &in.ExternalAgentQuery
+		case "external_agent_claim":
+			body = &in.ExternalAgentClaim
+		case "external_agent_report":
+			body = &in.ExternalAgentReport
+		case "feedback_create":
+			body = &in.CapabilityFeedback
+		case "improvements_create":
+			body = &in.ImprovementCandidate
+		case "improvements_evaluate":
+			body = &in.ImprovementEvaluation
+		case "improvements_publish":
+			body = &in.ImprovementPublish
+		case "improvements_rollback":
+			body = &in.ImprovementRollback
 		case "agents_match":
 			body = &in.AgentMatch
 		case "agents_create", "agents_update":
@@ -203,12 +225,28 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			body = &in.Update
 		case "send":
 			body = &in.Send
+		case "conversation_fork":
+			body = &in.Fork
+		case "trajectory_replay":
+			body = &in.TrajectoryReplay
+		case "trajectory_compare":
+			body = &in.TrajectoryCompare
 		case "respond":
 			body = &in.Response
 		case "result_read":
 			body = &in.ResultRead
 		case "delegations_result":
 			body = &in.DeliveryResultRead
+		case "delegations_execution_share":
+			body = &in.ExecutionShare
+		case "delegations_execution":
+			body = &in.ExecutionReference
+		case "delegations_execution_result":
+			body = &in.ResultRead
+		case "delegations_publication":
+			body = &in.DeliveryPublication
+		case "delegations_contract_publication":
+			body = &in.ContractPublication
 		case "delegations_artifact", "delegations_export":
 			body = &in.DeliveryArtifactRead
 		case "memories_write":
@@ -219,6 +257,10 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			body = &in.TodoUpdate
 		case "todos_delete":
 			body = &in.TodoDelete
+		case "tasks_update":
+			body = &in.TaskAgreementUpdate
+		case "tasks_completion_review":
+			body = &in.TaskCompletionReview
 		case "artifacts_create":
 			body = &in.ArtifactCreate
 		case "artifacts_edit":
@@ -257,6 +299,22 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		result, err := agentapplication.InvokeConversation(r.Context(), s.service, op, in)
 		if err != nil {
 			writeError(w, err)
+			return
+		}
+		if op == "trajectory_export" {
+			download, ok := result.(agentsdk.ConversationTrajectoryExport)
+			if !ok {
+				writeCode(w, 500, "agent.conversation.trajectory_export_invalid")
+				return
+			}
+			w.Header().Set("Content-Type", download.ContentType)
+			w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": download.Filename}))
+			w.Header().Set("Content-Length", strconv.Itoa(len(download.Data)))
+			w.Header().Set("X-Content-Type-Options", "nosniff")
+			w.Header().Set("Cache-Control", "private, no-store")
+			w.Header().Set("X-Content-SHA256", download.SHA256)
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write(download.Data)
 			return
 		}
 		if op == "artifacts_download" || op == "delegations_export" {

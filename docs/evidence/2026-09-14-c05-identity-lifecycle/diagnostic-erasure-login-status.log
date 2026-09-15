@@ -1,0 +1,9 @@
+=== RUN   TestSubjectErasureRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime
+    conversation_subject_erasure_dependencies_test.go:36: Admit multiple-owner-root from conv_288db651315c47b214a6bcee2b791682 to agent_780fddfe761cc21b76fc1857069f8fc1
+    conversation_subject_erasure_dependencies_test.go:36: Admit multiple-owner-upstream from conv_c1dc0fd48133af072c508c32defbeb38 to agent_73904f1fc479d13d7af60271c5ae6526
+    conversation_subject_erasure_dependencies_test.go:36: Admit multiple-owner-final from conv_be364d6387bcd477bca4f048c6022c4f to agent_fd8c98adac95c9d1e72b9706e91754db
+    conversation_subject_erasure_dependencies_test.go:36: browser POST /auth/login status=403 want=401 body={"code":"auth.invalid_credentials","error":{"code":"auth.invalid_credentials"}}
+--- FAIL: TestSubjectErasureRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime (29.57s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	32.913s
+FAIL

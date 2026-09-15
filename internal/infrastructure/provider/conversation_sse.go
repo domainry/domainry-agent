@@ -57,7 +57,10 @@ func readConversationSSE(ctx context.Context, r io.Reader, consume func(string, 
 	if err := scanner.Err(); err != nil {
 		return conversationNetworkError(err)
 	}
-	return fmt.Errorf("conversation stream ended before completion")
+	return conversationFailureWithDetails(
+		&agentsdk.Error{Class: "unavailable", Code: "agent.conversation.provider_network", Retryable: true},
+		agentsdk.ConversationModelFailureDetails{Retryable: true, ErrorCode: "provider_network"},
+	)
 }
 func (m *ConversationModel) StreamConversation(ctx context.Context, in agentsdk.ConversationModelRequest, emit func(string) error) (agentsdk.ConversationModelResult, error) {
 	if emit == nil {
@@ -100,7 +103,7 @@ func (m *ConversationModel) StreamConversation(ctx context.Context, in agentsdk.
 		}
 	})
 	if err != nil {
-		return agentsdk.ConversationModelResult{}, err
+		return agentsdk.ConversationModelResult{}, withConversationFailureUsage(err, state.usage)
 	}
 	if strings.TrimSpace(state.text.String()) == "" {
 		return agentsdk.ConversationModelResult{}, fmt.Errorf("empty conversation stream")

@@ -15,6 +15,7 @@ import (
 )
 
 type conversationRunRow struct {
+	HasRequirementsSnapshot  bool
 	Run                      agentsdk.ConversationRun
 	Authority                agentsdk.ConversationAuthority
 	Owner                    string
@@ -36,6 +37,13 @@ func scanConversationRun(row interface{ Scan(...any) error }) (conversationRunRo
 	hash := v.Run.RequestHash
 	if err = json.Unmarshal(raw, &v.Run); err != nil {
 		return v, err
+	}
+	var envelope struct {
+		BackgroundTask map[string]json.RawMessage `json:"background_task"`
+	}
+	if json.Unmarshal(raw, &envelope) == nil {
+		requirements := envelope.BackgroundTask["requirements"]
+		v.HasRequirementsSnapshot = len(requirements) > 0 && string(requirements) != "null"
 	}
 	v.Run.RequestHash = hash
 	v.Run.LastEventSeq = v.EventSeq
@@ -81,6 +89,9 @@ func (s *ConversationStore) event(ctx context.Context, tx *sql.Tx, v *conversati
 }
 func (s *ConversationStore) Enqueue(ctx context.Context, id string, in agentsdk.ConversationSend, a agentsdk.ConversationAuthority) (agentsdk.ConversationRun, error) {
 	var out agentsdk.ConversationRun
+	if len(in.Content) > 0 && !validStoredConversationContent("user", in.Message, in.Content, id, false) {
+		return out, conversationError("bad_request", "message_content_invalid")
+	}
 	err := s.transaction(ctx, func(tx *sql.Tx) error {
 		c, err := s.get(ctx, tx, id, a)
 		if err != nil {
@@ -119,12 +130,12 @@ func (s *ConversationStore) Enqueue(ctx context.Context, id string, in agentsdk.
 		if c.AgentID != "" && (in.ExecutionAgent == nil || in.ExecutionAgent.ID != c.AgentID) {
 			return conversationError("conflict", "agent_changed")
 		}
-		v := conversationRunRow{Authority: a, Run: agentsdk.ConversationRun{ID: conversationID("crun_"), Agent: in.ExecutionAgent, ConversationID: id, ClientMessageID: in.ClientMessageID, RequestHash: hash, Status: "queued", UserSeq: c.LastSeq + 1, CreatedAt: now, UpdatedAt: now}}
+		v := conversationRunRow{Authority: a, Run: agentsdk.ConversationRun{ID: conversationID("crun_"), Agent: in.ExecutionAgent, Lifecycle: in.ExecutionLifecycle, ConversationID: id, ClientMessageID: in.ClientMessageID, RequestHash: hash, Status: "queued", UserSeq: c.LastSeq + 1, CreatedAt: now, UpdatedAt: now}}
 		if in.WriteScope != nil {
 			scope := *in.WriteScope
 			v.Run.WriteScope = &scope
 		}
-		m := agentsdk.ConversationMessage{ID: conversationID("msg_"), ConversationID: id, RunID: v.Run.ID, Seq: v.Run.UserSeq, Role: "user", Content: in.Message, CreatedAt: now}
+		m := agentsdk.ConversationMessage{ID: conversationID("msg_"), ConversationID: id, RunID: v.Run.ID, Seq: v.Run.UserSeq, Role: "user", Content: in.Message, ContentBlocks: in.Content, CreatedAt: now}
 		c.LastSeq = m.Seq
 		c.ActiveRunID = v.Run.ID
 		if err = s.save(ctx, tx, c, c.Revision, a); err != nil {

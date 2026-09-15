@@ -1,0 +1,6 @@
+=== RUN   TestAgentOwnsLifecycleExecution
+--- PASS: TestAgentOwnsLifecycleExecution (0.11s)
+=== RUN   TestRuntimeProductionUsesExtractedOwnerSDKs
+--- PASS: TestRuntimeProductionUsesExtractedOwnerSDKs (0.02s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/boundary	0.520s

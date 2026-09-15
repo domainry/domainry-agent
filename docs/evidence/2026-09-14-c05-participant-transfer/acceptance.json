@@ -1,0 +1,45 @@
+{
+  "phase_status": "accepted_explicit_participant_transfer_and_original_contract_publication_preservation",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 200,
+  "source_manifest": "source-sha256.json",
+  "artifact_files": 14,
+  "artifact_manifest": "artifact-sha256.json",
+  "accepted_logs": [
+    "core.log",
+    "race.log",
+    "store.log",
+    "http.log",
+    "browser-http.log",
+    "frontend.log",
+    "build.log"
+  ],
+  "real_identity": true,
+  "real_http": true,
+  "real_tool_execution": true,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "real_chrome": true,
+  "screenshots_visually_inspected": 6,
+  "frontend_tests_passed": 79,
+  "scope": [
+    "current managing grant and publisher checks",
+    "transaction and receipt replay grant verification",
+    "actual manager distinct from receiving authority",
+    "immutable issuer/original assignment ledger and cumulative budget",
+    "existing exact original contract publication remains unchanged",
+    "minimal management response and replay",
+    "UI transfer without private task details",
+    "new executor delivery acceptance and restart",
+    "publication withdrawal stops next tool/model"
+  ],
+  "remaining": [
+    "participant full dependency management",
+    "multi-owner dependency and mixed dependency sources",
+    "other professional source sharing",
+    "broader Identity subject exit integration",
+    "other C05 requirements"
+  ]
+}

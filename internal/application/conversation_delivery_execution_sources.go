@@ -106,8 +106,15 @@ func (audit *conversationSourceAudit) deliveredOriginalExecution(ctx context.Con
 	reader := audit
 	if _, rawCollaboration := collaborationTool(original.Call.Name); rawCollaboration {
 		// Wrapping a raw collaboration receipt in tool_result_read or an
-		// execution index cannot acquire the provenance-only exception.
-		ctx, reader = audit.deliveryAudit(ctx, "")
+		// execution index cannot acquire the provenance-only exception. An
+		// immutable delivery-history entry may retain its delivery scope only for
+		// nested source-owned completed receipts; rawExecutionSource still forces
+		// task, history and collaboration content through execution permissions.
+		if deliveryHistorySource(ctx) {
+			ctx, reader = audit.rawExecutionSourceAudit(ctx)
+		} else {
+			ctx, reader = audit.deliveryAudit(ctx, "")
+		}
 	}
 	if original.State != "completed" || original.Result == nil || original.Result.Status != "completed" || original.Result.ErrorCode != "" {
 		// An unfinished/error result has no independent completed receipt.

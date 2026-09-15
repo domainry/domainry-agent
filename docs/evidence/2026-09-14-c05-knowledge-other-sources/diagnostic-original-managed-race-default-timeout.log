@@ -1,0 +1,443 @@
+=== RUN   TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart
+    conversation_knowledge_shared_delivery_test.go:361: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:361: Exact professional execution result knowledge-search: 4 pages, 890 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:361: Exact professional execution result knowledge-read: 4 pages, 920 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:361: Exact professional execution result knowledge-extract: 7 pages, 1787 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:368: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:368: Exact professional execution result knowledge-search: 4 pages, 890 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:368: Exact professional execution result knowledge-read: 4 pages, 920 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:368: Exact professional execution result knowledge-extract: 7 pages, 1787 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:374: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:374: Exact professional execution result knowledge-search: 4 pages, 890 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:374: Exact professional execution result knowledge-read: 4 pages, 920 bytes, original SHA-256 verified
+panic: test timed out after 10m0s
+	running tests:
+		TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart (10m0s)
+
+goroutine 1470569 [running]:
+testing.(*M).startAlarm.func1()
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2802 +0x498
+created by time.goFunc
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/time/sleep.go:215 +0x44
+
+goroutine 1 [chan receive, 10 minutes]:
+testing.(*T).Run(0xc001dce008, {0x1040076e5, 0x58}, 0x10731d018)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2109 +0x7dc
+testing.runTests.func1(0xc001dce008)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2585 +0x78
+testing.tRunner(0xc001dce008, 0xc0019bfa68)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2036 +0x168
+testing.runTests({0x103f82af0, 0x24}, {0x103ffb475, 0x46}, 0xc001a4d878, {0x1075b6cc0, 0x73, 0x73}, {0x100bb3f40?, 0xbb39ced7c2aacde5?, ...})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2583 +0x7a4
+testing.(*M).Run(0xc001d70d20)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2443 +0xb3c
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.TestMain(0xc001d70d20)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/test_workspace_initialization_test.go:14 +0x40
+main.main()
+	_testmain.go:276 +0x108
+
+goroutine 49 [select]:
+github.com/golang/glog.(*fileSink).flushDaemon(0x1075c89f8)
+	/Users/tiger/go/pkg/mod/github.com/golang/glog@v1.2.5/glog_file.go:380 +0x10c
+created by github.com/golang/glog.init.1 in goroutine 1
+	/Users/tiger/go/pkg/mod/github.com/golang/glog@v1.2.5/glog_file.go:188 +0x2a0
+
+goroutine 36 [runnable]:
+database/sql.(*Rows).Scan(0xc00315a140, {0xc006a32000, 0x1b, 0x1b})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:3365 +0x1f8
+github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/projection/user.scan({_, _})
+	/Users/tiger/Projects/domainry-identity/internal/infrastructure/persistence/database/identity/projection/user/store.go:666 +0x97c
+github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/projection/user.(*Store).ListWithinDataScope(0xc0054caad0, {0x1073597a0, 0xc0095f2690}, {0xc003b2cfc0, 0x11}, {0x1, {0x0, 0x0, 0x0}, {0x0, ...}})
+	/Users/tiger/Projects/domainry-identity/internal/infrastructure/persistence/database/identity/projection/user/store.go:58 +0x68c
+github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/projection/user.(*Store).List(...)
+	/Users/tiger/Projects/domainry-identity/internal/infrastructure/persistence/database/identity/projection/user/store.go:37
+github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).loadUsers(0xc004b71b80, {0x1073597a0, 0xc0095f2690}, {0xc003b2cfc0, 0x11})
+	/Users/tiger/Projects/domainry-identity/internal/infrastructure/persistence/database/identity/identity_store_sql_users.go:230 +0xcc
+github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).ListIdentityUsers(0xc004b71b80, {0x1073597a0, 0xc0095f2690}, {0xc003b2cfc0, 0x11})
+	/Users/tiger/Projects/domainry-identity/internal/infrastructure/persistence/database/identity/identity_store_sql_users.go:75 +0x4c
+github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).resolvePrincipalScopeIDs(0xc006400360, {0x1073597a0, 0xc0095f2690}, {0xc001fed7cb, 0x5}, {0x0, 0x0}, {0x0, 0x0})
+	/Users/tiger/Projects/domainry-identity/internal/domain/identity/service/identity_principal.go:332 +0x634
+github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).BuildPrincipalForRole(_, {_, _}, {_, _}, {_, _})
+	/Users/tiger/Projects/domainry-identity/internal/domain/identity/service/identity_principal.go:143 +0x23c
+github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).ResolvePrincipalForRole(_, {_, _}, {_, _}, {_, _})
+	/Users/tiger/Projects/domainry-identity/internal/domain/identity/service/identity_authorization.go:66 +0x128
+github.com/domainry/domainry-identity/internal/application/identity.(*IdentityApplicationService).ResolvePrincipalForRole(_, {_, _}, {_, _}, {_, _})
+	/Users/tiger/Projects/domainry-identity/internal/application/identity/identity_scoped_application_service.go:72 +0x124
+github.com/domainry/domainry-identity/internal/application/identity.(*IdentityEffectiveAccessApplicationService).snapshot(_, {_, _}, {_, _}, {{0xc0011a1efb, 0x5}, {0xc003b2c408, 0x11}, {{0x0, ...}, ...}, ...}, ...)
+	/Users/tiger/Projects/domainry-identity/internal/application/identity/identity_effective_access_application_service.go:177 +0x4c8
+github.com/domainry/domainry-identity/internal/application/identity.(*IdentityEffectiveAccessApplicationService).SnapshotForRole(_, {_, _}, {_, _}, {_, _}, {{0xc0011a1efb, 0x5}, {0xc003b2c408, ...}, ...})
+	/Users/tiger/Projects/domainry-identity/internal/application/identity/identity_effective_access_application_service.go:133 +0x204
+github.com/domainry/domainry-identity/internal/adapter/identitysdk.sdkPrincipalResolver.Resolve({_}, {_, _}, {{_, _}, {_, _}, _, {_, _}})
+	/Users/tiger/Projects/domainry-identity/internal/adapter/identitysdk/principal_resolver.go:58 +0x750
+github.com/domainry/domainry-identity-sdk/application.principals.Resolve({_}, {_, _}, {{_, _}, {_, _}, _, {_, _}})
+	/Users/tiger/Projects/domainry-identity-sdk/application/authorization.go:38 +0x340
+github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).principal(_, {_, _}, {_, {_, _}, {_, _}, {_, _}, ...})
+	/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_business_host.go:113 +0x390
+github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).AuthorizeConversationCollaboration(0xc0040dcfc0, {0x107359848, 0xc00191c770}, {{0x1, {0x103f4849b, 0x18}, {0xc008a59710, 0x11}, {0xc006bd730b, 0x5}, ...}, ...})
+	/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_collaboration_authorization.go:18 +0xe0
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).collaborationAuthorization(0xc007fe9508, {0x1073597a0, 0xc0095c69f0}, {0xc0054d2898, 0x1, 0xc0020c3180?}, 0xc0054d2ca8, {0x1, {0x103f4849b, 0x18}, ...})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_collaboration_authorization.go:74 +0xfb8
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).authorizeCollaboration(0xc007fe9508, {0x1073597a0, 0xc0095c69f0}, {0x103f21766, 0xe}, 0xc0054d2ca8, {0x1, {0x103f4849b, 0x18}, {0xc008a59710, ...}, ...})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_collaboration_authorization.go:203 +0xc0
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).authorizeCollaborationID(0xc007fe9508, {0x1073597a0, 0xc0095c69f0}, {0xc005b80e40, 0x2b}, {0x103f21766, 0xe}, {0x1, {0x103f4849b, 0x18}, ...})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_collaboration_authorization.go:332 +0x3b0
+github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).authorizeReleasedSourceRead(0xc005dab320, {0x1073597a0, 0xc008853c20})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_shared_sources.go:254 +0x81c
+github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).deliveryKnowledgeToolResult(_, {_, _}, {{_, _}, {_, _}, _}, {0x0, 0x0, ...})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_delivery_knowledge_sources.go:19 +0x2c0
+github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).record(_, {_, _}, {{_, _}, {_, _}, _}, {0x0, 0x0, ...})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_sources.go:464 +0xedc
+github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).run(0xc005dab320, {0x1073597a0, 0xc00703c7b0}, {{0xc006decba0, 0x25}, {0xc006decbd0, 0x25}, 0x5})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_sources.go:316 +0x524c
+github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).run(0xc0055f8a20, {0x1073597a0, 0xc00924aea0}, {{0xc006decba0, 0x25}, {0xc006decbd0, 0x25}, 0x5})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_sources.go:101 +0xf48
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).delegationExecutionResultRecord(_, {_, _}, {_, _}, {{_, _}, {_, _}, _, ...}, ...)
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_execution_sharing.go:233 +0x920
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).readDelegationExecutionResult(0xc007fe9508, {0x1073597a0, 0xc009341650}, {0xc00607c92d, 0x2b}, {{{0xc006decba0, 0x25}, {0xc006decbd0, 0x25}, 0x3, ...}, ...}, ...)
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_execution_sharing.go:202 +0x130
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).ReadConversationDelegationExecutionResult(0xc007fe9508, {0x1073597a0, 0xc009341650}, {0xc00607c92d, 0x2b}, {{{0xc006decba0, 0x25}, {0xc006decbd0, 0x25}, 0x3, ...}, ...}, ...)
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_execution_sharing.go:198 +0x364
+github.com/domainry/domainry-agent/internal/application.InvokeConversation({_, _}, {_, _}, {_, _}, {{0x0}, {0x0}, {0x0, 0x0}, ...})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_dispatch.go:71 +0x90a4
+github.com/domainry/domainry-agent/internal/transport/http/module.NewConversationAdapter.(*conversationAdapter).handle.func1({0x107353390, 0xc005fa8978}, 0xc000000640)
+	/Users/tiger/Projects/domainry-agent/internal/transport/http/module/conversation_adapter.go:267 +0x2584
+net/http.HandlerFunc.ServeHTTP(0xc008c2f720, {0x107353390, 0xc005fa8978}, 0xc000000640)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+net/http.(*ServeMux).ServeHTTP(0xc0040dd500, {0x107353390, 0xc005fa8978}, 0xc000000640)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2828 +0x1ac
+github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).registerModuleHTTPRoutes.(*HTTPRouter).moduleHTTPRouteHandler.func1({0x107353390, 0xc005fa8978}, 0xc000000640)
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/module_http_routes.go:48 +0xd8
+net/http.HandlerFunc.ServeHTTP(0xc00747c270, {0x107353390, 0xc005fa8978}, 0xc000000640)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+net/http.(*ServeMux).ServeHTTP(0xc0040dcb40, {0x107353390, 0xc005fa8978}, 0xc000000640)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2828 +0x1ac
+github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withAdmission.func6({0x107353390, 0xc005fa8978}, 0xc000000280)
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/http_capacity.go:69 +0x574
+net/http.HandlerFunc.ServeHTTP(0xc006bbb050, {0x107353390, 0xc005fa8978}, 0xc000000280)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withOperationalControls.func7({0x107353390, 0xc005fa8978}, 0xc000000280)
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/http_operational_controls.go:37 +0x2c4
+net/http.HandlerFunc.ServeHTTP(0xc006bbb080, {0x107353390, 0xc005fa8978}, 0xc000000280)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withBusinessEventPublication.func8({0x107353360, 0xc0003a3360}, 0xc000000280)
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/http_business_events.go:55 +0x16c
+net/http.HandlerFunc.ServeHTTP(0xc0005762c0, {0x107353360, 0xc0003a3360}, 0xc000000280)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withHighRiskOperationPolicy.func9({0x107353360, 0xc0003a3360}, 0xc000000280)
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/high_risk_operation_policy.go:32 +0x658
+net/http.HandlerFunc.ServeHTTP(0xc006bbb0b0, {0x107353360, 0xc0003a3360}, 0xc000000280)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withActionAuthorization.func10.1()
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/action_authorization_middleware.go:142 +0xfc
+github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withActionAuthorization.func10({0x107353360, 0xc0003a3360}, 0xc001960640)
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/action_authorization_middleware.go:164 +0x578
+net/http.HandlerFunc.ServeHTTP(0xc006bbb0e0, {0x107353360, 0xc0003a3360}, 0xc001960640)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withAuth.func11.1({0x107353360, 0xc0003a3360}, 0xc0015d92c0)
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/http_router_middleware.go:383 +0x3f8
+net/http.HandlerFunc.ServeHTTP(0xc0003a3440, {0x107353360, 0xc0003a3360}, 0xc0015d92c0)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-identity-sdk/httpmiddleware.(*Middleware).RequirePasswordChanged.func1({0x107353360, 0xc0003a3360}, 0xc0015d92c0)
+	/Users/tiger/Projects/domainry-identity-sdk/httpmiddleware/middleware.go:178 +0x158
+net/http.HandlerFunc.ServeHTTP(0xc0003a3460, {0x107353360, 0xc0003a3360}, 0xc0015d92c0)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-identity-sdk/httpmiddleware.(*Middleware).Authenticate.func1({0x107353360, 0xc0003a3360}, 0xc0015d8f00)
+	/Users/tiger/Projects/domainry-identity-sdk/httpmiddleware/middleware.go:136 +0x5ac
+net/http.HandlerFunc.ServeHTTP(0xc0003a34a0, {0x107353360, 0xc0003a3360}, 0xc0015d8f00)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withAuth.func11({0x107353360, 0xc0003a3360}, 0xc0015d8f00)
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/http_router_middleware.go:385 +0x10c0
+net/http.HandlerFunc.ServeHTTP(0xc006bbb110, {0x107353360, 0xc0003a3360}, 0xc0015d8f00)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withRuntimeAuthoringScenarioEvidence.func12({0x107353360, 0xc0003a3360}, 0xc0015d8f00)
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/runtime_authoring_scenario_evidence.go:26 +0x3bc
+net/http.HandlerFunc.ServeHTTP(0xc000576300, {0x107353360, 0xc0003a3360}, 0xc0015d8f00)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-runtime/runtime/transport/http.CORSMiddleware.func1({0x107353360, 0xc0003a3360}, 0xc0015d8f00)
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/http_router_middleware.go:262 +0x6a8
+net/http.HandlerFunc.ServeHTTP(0xc006bbb140, {0x107353360, 0xc0003a3360}, 0xc0015d8f00)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withRecovery.func13({0x107353360, 0xc0003a3360}, 0xc0015d8f00)
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/http_router_middleware.go:76 +0xa8
+net/http.HandlerFunc.ServeHTTP(0xc007f8e1c8, {0x107353360, 0xc0003a3360}, 0xc0015d8f00)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-runtime/runtime/transport/http.(*HTTPRouter).Routes.(*HTTPRouter).withMetrics.func14({0x107350a08, 0xc008b0ca00}, 0xc0015d8c80)
+	/Users/tiger/Projects/domainry-runtime/runtime/transport/http/http_router_middleware.go:105 +0x54c
+net/http.HandlerFunc.ServeHTTP(0xc000576320, {0x107350a08, 0xc008b0ca00}, 0xc0015d8c80)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-agent-sdk/browsergateway.(*boundary).forwardConversation(0xc0096ff930, {0x107350a08, 0xc008b0ca00}, 0xc0015d8b40)
+	/Users/tiger/Projects/domainry-agent-sdk/browsergateway/handler.go:179 +0x444
+net/http.HandlerFunc.ServeHTTP(0xc006ba8e20, {0x107350a08, 0xc008b0ca00}, 0xc0015d8b40)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-agent-sdk/browsergateway.NewHandler.(*boundary).authenticated.func6({0x107350a08, 0xc008b0ca00}, 0xc0089123c0)
+	/Users/tiger/Projects/domainry-agent-sdk/browsergateway/handler.go:255 +0x4b0
+net/http.HandlerFunc.ServeHTTP(0xc006bbbad0, {0x107350a08, 0xc008b0ca00}, 0xc0089123c0)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+net/http.(*ServeMux).ServeHTTP(0xc003fc6480, {0x107350a08, 0xc008b0ca00}, 0xc0089123c0)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2828 +0x1ac
+github.com/domainry/domainry-agent-sdk/browsergateway.NewHandler.func3({0x107350a08, 0xc008b0ca00}, 0xc0089123c0)
+	/Users/tiger/Projects/domainry-agent-sdk/browsergateway/handler.go:160 +0x878
+net/http.HandlerFunc.ServeHTTP(0xc006bd1740, {0x107350a08, 0xc008b0ca00}, 0xc0089123c0)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x4c
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.(*businessBrowser).call.func1()
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_web_fixture_test.go:211 +0x668
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.(*businessBrowser).call(0xc004c29020, {0x103f08711, 0x4}, {0xc0046a4190, 0x4f}, {0x1070c55e0, 0xc0095c2b40}, 0xc8)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_web_fixture_test.go:221 +0x274
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.verifyProfessionalExecutionSharingSteps.func1(0xc8)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_execution_sharing_test.go:53 +0x6ac
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart(0xc001dce248)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_knowledge_shared_delivery_test.go:374 +0x49a8
+testing.tRunner(0xc001dce248, 0x10731d018)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2036 +0x168
+created by testing.(*T).Run in goroutine 1
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2101 +0x7c0
+
+goroutine 37 [IO wait, 9 minutes]:
+internal/poll.runtime_pollWait(0x130895400, 0x72)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0xc001dc2120, 0x72, 0x0)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/internal/poll/fd_poll_runtime.go:84 +0xb8
+internal/poll.(*pollDesc).waitRead(...)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Accept(0xc001dc2100)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/internal/poll/fd_unix.go:613 +0x35c
+net.(*netFD).accept(0xc001dc2100)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/fd_unix.go:150 +0x38
+net.(*TCPListener).accept(0xc001d93180)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/tcpsock_posix.go:159 +0x40
+net.(*TCPListener).Accept(0xc001d93180)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/tcpsock.go:387 +0x68
+net/http.(*Server).Serve(0xc001a43000, {0x107351520, 0xc001d93180})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:3434 +0x404
+net/http/httptest.(*Server).goServe.func1()
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/httptest/server.go:341 +0x9c
+created by net/http/httptest.(*Server).goServe in goroutine 36
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/httptest/server.go:339 +0x98
+
+goroutine 1470460 [chan receive]:
+database/sql.(*Tx).awaitDone(0xc00684d200)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:2212 +0x4c
+created by database/sql.(*DB).beginDC in goroutine 1293256
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:1925 +0x338
+
+goroutine 1293257 [select]:
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).conversationTaskWorker(0xc007fe9508, {0x1073597d8, 0xc0071160f0}, {0x10aaa5220, 0xc003368d70})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_tasks.go:695 +0x3fc
+created by github.com/domainry/domainry-agent/internal/application.NewConversationService in goroutine 36
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:382 +0x39dc
+
+goroutine 1290143 [select, 1 minutes]:
+database/sql.(*DB).connectionOpener(0xc00731c8f0, {0x1073597d8, 0xc002458690})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:1261 +0xbc
+created by database/sql.OpenDB in goroutine 36
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:841 +0x250
+
+goroutine 1470545 [select]:
+modernc.org/sqlite.interruptOnDone.func1()
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/sqlite.go:93 +0x9c
+created by modernc.org/sqlite.interruptOnDone in goroutine 1293254
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/sqlite.go:92 +0x1d4
+
+goroutine 1293253 [select]:
+github.com/domainry/domainry-knowledge/internal/application/knowledge.(*Service).KnowledgeDocumentWorker(0xc008912a00, {0x1073597d8, 0xc007116140}, {0x10aaa5008, 0xc003368d70})
+	/Users/tiger/Projects/domainry-knowledge/internal/application/knowledge/knowledge_document_worker.go:22 +0x2f4
+created by github.com/domainry/domainry-knowledge/internal/application/knowledge.(*Service).Start.func1 in goroutine 36
+	/Users/tiger/Projects/domainry-knowledge/internal/application/knowledge/knowledge_application_service.go:50 +0x1e8
+
+goroutine 16724 [select]:
+net/http.(*persistConn).writeLoop(0xc0015d8640)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/transport.go:2652 +0x118
+created by net/http.(*Transport).dialConn in goroutine 16722
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/transport.go:1995 +0x22a0
+
+goroutine 16719 [IO wait]:
+internal/poll.runtime_pollWait(0x130895000, 0x72)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0xc00525d420, 0x72, 0x0)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/internal/poll/fd_poll_runtime.go:84 +0xb8
+internal/poll.(*pollDesc).waitRead(...)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0xc00525d400, {0xc0043a8000, 0x1000, 0x1000})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/internal/poll/fd_unix.go:165 +0x34c
+net.(*netFD).Read(0xc00525d400, {0xc0043a8000, 0x1000, 0x1000})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/fd_posix.go:68 +0x48
+net.(*conn).Read(0xc003cb8350, {0xc0043a8000, 0x1000, 0x1000})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/net.go:196 +0x88
+net/http.(*connReader).Read(0xc0051ae740, {0xc0043a8000, 0x1000, 0x1000})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:812 +0x204
+bufio.(*Reader).fill(0xc004bb0480)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/bufio/bufio.go:113 +0x210
+bufio.(*Reader).Peek(0xc004bb0480, 0x4)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/bufio/bufio.go:152 +0xac
+net/http.(*conn).serve(0xc001b666c0, {0x1073597a0, 0xc0016001e0})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2109 +0xb64
+created by net/http.(*Server).Serve in goroutine 37
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:3464 +0x5ec
+
+goroutine 1293258 [select]:
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).conversationFollowUpWorker(0xc007fe9508, {0x1073597d8, 0xc0071160f0}, {0x10aaa51d0, 0xc003368d70})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_tasks.go:663 +0x538
+created by github.com/domainry/domainry-agent/internal/application.NewConversationService in goroutine 36
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:387 +0x377c
+
+goroutine 1290489 [select, 1 minutes]:
+database/sql.(*DB).connectionOpener(0xc0055c5040, {0x1073597d8, 0xc0051ca690})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:1261 +0xbc
+created by database/sql.OpenDB in goroutine 36
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:841 +0x250
+
+goroutine 1470498 [select]:
+database/sql.(*Rows).awaitDone(0xc00315a140, {0x1073597a0, 0xc0095f2690}, {0x0, 0x0}, {0x1073597d8, 0xc00550ac30})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:3009 +0xe8
+created by database/sql.(*Rows).initContextClose in goroutine 36
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:2996 +0x1fc
+
+goroutine 16723 [IO wait]:
+internal/poll.runtime_pollWait(0x130895200, 0x72)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0xc000185320, 0x72, 0x0)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/internal/poll/fd_poll_runtime.go:84 +0xb8
+internal/poll.(*pollDesc).waitRead(...)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0xc000185300, {0xc0056c0000, 0x1000, 0x1000})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/internal/poll/fd_unix.go:165 +0x34c
+net.(*netFD).Read(0xc000185300, {0xc0056c0000, 0x1000, 0x1000})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/fd_posix.go:68 +0x48
+net.(*conn).Read(0xc003210350, {0xc0056c0000, 0x1000, 0x1000})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/net.go:196 +0x88
+net/http.(*persistConn).Read(0xc0015d8640, {0xc0056c0000, 0x1000, 0x1000})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/transport.go:2174 +0x1d0
+bufio.(*Reader).fill(0xc003bdf260)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/bufio/bufio.go:113 +0x210
+bufio.(*Reader).Peek(0xc003bdf260, 0x1)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/bufio/bufio.go:152 +0xac
+net/http.(*persistConn).readLoop(0xc0015d8640)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/transport.go:2330 +0x22c
+created by net/http.(*Transport).dialConn in goroutine 16722
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/transport.go:1994 +0x2238
+
+goroutine 1296387 [select]:
+github.com/domainry/domainry-foundation/worker.StartNamedLoop.func1()
+	/Users/tiger/go/pkg/mod/github.com/domainry/domainry-foundation@v0.1.0/worker/lifecycle.go:45 +0x1c0
+created by github.com/domainry/domainry-foundation/worker.StartNamedLoop in goroutine 1296238
+	/Users/tiger/go/pkg/mod/github.com/domainry/domainry-foundation@v0.1.0/worker/lifecycle.go:34 +0x200
+
+goroutine 1470461 [select]:
+modernc.org/sqlite.interruptOnDone.func1()
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/sqlite.go:93 +0x9c
+created by modernc.org/sqlite.interruptOnDone in goroutine 1293256
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/sqlite.go:92 +0x1d4
+
+goroutine 1296238 [select]:
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.(*Runtime).runControlledWorker(0xc00584e008, {0x1073597d8, 0xc005849a40}, {0x103f2d19f, 0x11}, 0xc00584d740, 0xc0047cc850)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/operations_control_worker.go:56 +0x238
+created by github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.(*Runtime).startControlledWorker.func1 in goroutine 36
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/operations_control_worker.go:20 +0x19c
+
+goroutine 1293254 [runnable]:
+modernc.org/sqlite/lib._sqlite3VdbeHalt(0xc0078be750, 0x155e44b28)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/lib/sqlite_g_000000000001deab.go:4236 +0x134c
+modernc.org/sqlite/lib._sqlite3VdbeExec(0xc0078be750, 0x155e44b28)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/lib/sqlite_g_0000000000000003.go:81217 +0xcaac
+modernc.org/sqlite/lib._sqlite3Step(0xc0078be750, 0x155e44b28)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/lib/sqlite_g_000000000001deab.go:3968 +0x1d8
+modernc.org/sqlite/lib.Xsqlite3_step(0xc0078be750, 0x155e44b28)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/lib/sqlite.go:11977 +0x1ac
+modernc.org/sqlite.(*conn).step(0xc0023a46c0, 0x155e44b28)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/conn.go:435 +0x4c
+modernc.org/sqlite.(*stmt).query(0xc0024bd890, {0x1073597d8, 0xc0071160f0}, {0xc0046bc8f0, 0x5, 0x5})
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/stmt.go:337 +0x288
+modernc.org/sqlite.(*conn).query(0xc0023a46c0, {0x1073597d8, 0xc0071160f0}, {0xc000146c30, 0xce}, {0xc0046bc8f0, 0x5, 0x5})
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/conn.go:1120 +0x70
+modernc.org/sqlite.(*conn).QueryContext(0xc0023a46c0, {0x1073597d8, 0xc0071160f0}, {0xc000146c30, 0xce}, {0xc0046bc8f0, 0x5, 0x5})
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/conn.go:1346 +0x64
+github.com/domainry/domainry-foundation/telemetry.(*observedConn).queryContext(0xc007484040, {0x1073597d8, 0xc0071160f0}, {0xc000146c30, 0xce}, {0xc0046bc8f0, 0x5, 0x5})
+	/Users/tiger/go/pkg/mod/github.com/domainry/domainry-foundation@v0.1.0/telemetry/sql_driver.go:217 +0xc4
+github.com/domainry/domainry-foundation/telemetry.(*observedConn).QueryContext(0xc007484040, {0x1073597d8, 0xc0071160f0}, {0xc000146c30, 0xce}, {0xc0046bc8f0, 0x5, 0x5})
+	/Users/tiger/go/pkg/mod/github.com/domainry/domainry-foundation@v0.1.0/telemetry/sql_driver.go:208 +0x90
+database/sql.ctxDriverQuery({0x1073597d8, 0xc0071160f0}, {0x131196400, 0xc007484040}, {0x0, 0x0}, {0xc000146c30, 0xce}, {0xc0046bc8f0, 0x5, ...})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/ctxutil.go:48 +0xa4
+database/sql.(*DB).queryDC.func1()
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:1786 +0x188
+database/sql.withLock({0x107346550, 0xc00748e000}, 0xc003d95658)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:3572 +0x90
+database/sql.(*DB).queryDC(0xc00731c8f0?, {0x1073597d8, 0xc0071160f0}, {0x0, 0x0}, 0xc00748e000, 0xc003ad7da0, {0xc000146c30, 0xce}, {0xc006bd5360, ...})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:1781 +0x1ec
+database/sql.(*DB).query(0xc00731c8f0, {0x1073597d8, 0xc0071160f0}, {0xc000146c30, 0xce}, {0xc006bd5360, 0x5, 0x5}, 0x1)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:1764 +0xec
+database/sql.(*DB).QueryContext.func1(0x1)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:1742 +0x8c
+database/sql.(*DB).retry(0x106ea17a0?, 0xc003d958f0)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:1576 +0x50
+database/sql.(*DB).QueryContext(0xc00731c8f0, {0x1073597d8, 0xc0071160f0}, {0xc000146c30, 0xce}, {0xc006bd5360, 0x5, 0x5})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:1741 +0xfc
+github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent.(*ConversationStore).ExpireInteractions(0xc003368d70, {0x1073597d8, 0xc0071160f0}, {0x103f4849b, 0x18}, 0x64)
+	/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_interaction_store.go:341 +0x84c
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).expireConversationInteractions(0xc007fe9508, {0x1073597d8, 0xc0071160f0}, {0x10aaa5a50, 0xc003368d70})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_interaction.go:155 +0x16c
+created by github.com/domainry/domainry-agent/internal/application.NewConversationService in goroutine 36
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:373 +0x3668
+
+goroutine 1293255 [select]:
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).worker(0xc007fe9508, {0x1073597d8, 0xc0071160f0})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:780 +0x2ec
+created by github.com/domainry/domainry-agent/internal/application.NewConversationService in goroutine 36
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:378 +0x37a0
+
+goroutine 1293256 [runnable]:
+modernc.org/sqlite/lib._sqlite3SrcListAppendFromTerm(0xc0096fe340, 0x131528070, 0x0, 0x1315282f0, 0x131528308, 0x131528320, 0x0, 0x131528338)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/lib/sqlite_g_0000000000000003.go:78273 +0x6fc
+modernc.org/sqlite/lib._yy_reduce(0xc0096fe340, 0x131528238, 0x6f, 0x0?, {0xc83cc8?, 0x196b2b8?}, 0x131528070)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/lib/sqlite_g_0000000000000003.go:102980 +0x4ddc
+modernc.org/sqlite/lib._sqlite3Parser(0xc0096fe340, 0x131528238, 0x96, {0x101aa97dc?, 0x196b3f8?})
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/lib/sqlite_g_000000000001feab.go:17640 +0x18c
+modernc.org/sqlite/lib._sqlite3RunParser(0xc0096fe340, 0x131528070, 0x155d12a58)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/lib/sqlite_g_0000000000000003.go:76362 +0xc7c
+modernc.org/sqlite/lib._sqlite3Prepare(0xc0096fe340, 0x131207828, 0x155d12a58, 0xffffffff, 0x80, 0x155d14678, 0x131528060, 0x0)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/lib/sqlite_g_0000000000000003.go:75375 +0x8f0
+modernc.org/sqlite/lib._sqlite3LockAndPrepare(0xc0096fe340, 0x131207828, 0x155d12a58, 0xffffffff, 0x80, 0x155d14678, 0x131528060, 0x0)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/lib/sqlite.go:34004 +0x22c
+modernc.org/sqlite/lib._sqlite3Reprepare(0xc0096fe340, 0x155d14678)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/lib/sqlite.go:36192 +0x194
+modernc.org/sqlite/lib.Xsqlite3_step(0xc0096fe340, 0x155d14678)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/lib/sqlite.go:11987 +0x22c
+modernc.org/sqlite.(*conn).step(0xc0023a4a80, 0x155d14678)
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/conn.go:435 +0x4c
+modernc.org/sqlite.(*stmt).query(0xc000112b70, {0x1073597d8, 0xc0071160f0}, {0xc00653c000, 0x5, 0x5})
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/stmt.go:337 +0x288
+modernc.org/sqlite.(*conn).query(0xc0023a4a80, {0x1073597d8, 0xc0071160f0}, {0xc005eaac60, 0x11a}, {0xc00653c000, 0x5, 0x5})
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/conn.go:1120 +0x70
+modernc.org/sqlite.(*conn).QueryContext(0xc0023a4a80, {0x1073597d8, 0xc0071160f0}, {0xc005eaac60, 0x11a}, {0xc00653c000, 0x5, 0x5})
+	/Users/tiger/go/pkg/mod/modernc.org/sqlite@v1.57.0/conn.go:1346 +0x64
+github.com/domainry/domainry-foundation/telemetry.(*observedConn).queryContext(0xc008a96040, {0x1073597d8, 0xc0071160f0}, {0xc005eaac60, 0x11a}, {0xc00653c000, 0x5, 0x5})
+	/Users/tiger/go/pkg/mod/github.com/domainry/domainry-foundation@v0.1.0/telemetry/sql_driver.go:217 +0xc4
+github.com/domainry/domainry-foundation/telemetry.(*observedConn).QueryContext(0xc008a96040, {0x1073597d8, 0xc0071160f0}, {0xc005eaac60, 0x11a}, {0xc00653c000, 0x5, 0x5})
+	/Users/tiger/go/pkg/mod/github.com/domainry/domainry-foundation@v0.1.0/telemetry/sql_driver.go:208 +0x90
+database/sql.ctxDriverQuery({0x1073597d8, 0xc0071160f0}, {0x131196400, 0xc008a96040}, {0x0, 0x0}, {0xc005eaac60, 0x11a}, {0xc00653c000, 0x5, ...})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/ctxutil.go:48 +0xa4
+database/sql.(*DB).queryDC.func1()
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:1786 +0x188
+database/sql.withLock({0x107346550, 0xc008a8e080}, 0xc00196c1b8)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:3572 +0x90
+database/sql.(*DB).queryDC(0xc00684d200?, {0x1073597d8, 0xc0071160f0}, {0x1073597d8, 0xc0053ba960}, 0xc008a8e080, 0xc002f77b90, {0xc005eaac60, 0x11a}, {0xc0053ba9b0, ...})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:1781 +0x1ec
+database/sql.(*Tx).QueryContext(0xc00684d200, {0x1073597d8, 0xc0071160f0}, {0xc005eaac60, 0x11a}, {0xc0053ba9b0, 0x5, 0x5})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/database/sql/sql.go:2535 +0xd8
+github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent.(*ConversationStore).Claim.func1(0xc00684d200)
+	/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_run_store.go:178 +0xdb8
+github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent.(*ConversationStore).transaction(0xc003368d70, {0x1073597d8, 0xc0071160f0}, 0xc00196d960)
+	/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_store.go:128 +0xf0
+github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent.(*ConversationStore).Claim(_, {_, _}, {_, _}, {_, _}, _)
+	/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_run_store.go:159 +0x2c8
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).worker(0xc007fe9508, {0x1073597d8, 0xc0071160f0})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:772 +0x15c
+created by github.com/domainry/domainry-agent/internal/application.NewConversationService in goroutine 36
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:378 +0x37a0
+
+goroutine 1292984 [select]:
+github.com/domainry/domainry-agent/internal/application.(*TaskExecutionService).loop(0xc003ec1580, {0x1073597d8, 0xc003368e60})
+	/Users/tiger/Projects/domainry-agent/internal/application/task_execution_service.go:225 +0x198
+created by github.com/domainry/domainry-agent/internal/application.(*TaskExecutionService).StartWorker in goroutine 36
+	/Users/tiger/Projects/domainry-agent/internal/application/task_execution_service.go:73 +0x174
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	603.026s
+FAIL

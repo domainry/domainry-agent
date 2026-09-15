@@ -1,0 +1,38 @@
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/finite_query
+    conversation_business_shared_query_scope_test.go:106: filtered reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/mixed_policy_and_query
+    conversation_business_shared_query_scope_test.go:106: filtered reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/unrestricted_producer_filtered_query
+    conversation_business_shared_query_scope_test.go:106: filtered reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/exact_big_integer
+    conversation_business_shared_query_scope_test.go:106: filtered reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/normalized_integer_string
+    conversation_business_shared_query_scope_test.go:106: filtered reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/query_exclusion
+    conversation_business_shared_query_scope_test.go:106: filtered reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/null_query
+    conversation_business_shared_query_scope_test.go:106: filtered reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/range_implies_nonnull
+    conversation_business_shared_query_scope_test.go:106: filtered reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/literal_substring_implies_nonnull
+    conversation_business_shared_query_scope_test.go:106: filtered reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/query_excludes_reader_denial
+    conversation_business_shared_query_scope_test.go:106: filtered reader denied original page runtime.conversation.business_forbidden
+--- FAIL: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope (0.07s)
+    --- FAIL: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/finite_query (0.01s)
+    --- FAIL: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/mixed_policy_and_query (0.01s)
+    --- FAIL: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/unrestricted_producer_filtered_query (0.01s)
+    --- FAIL: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/exact_big_integer (0.01s)
+    --- FAIL: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/normalized_integer_string (0.01s)
+    --- FAIL: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/query_exclusion (0.01s)
+    --- FAIL: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/null_query (0.01s)
+    --- FAIL: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/range_implies_nonnull (0.01s)
+    --- FAIL: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/literal_substring_implies_nonnull (0.01s)
+    --- FAIL: TestSharedBusinessExactQueryFiltersLimitOriginalPageScope/query_excludes_reader_denial (0.01s)
+=== RUN   TestSharedBusinessRelatedQueryFiltersUseTargetObjectScope
+    conversation_business_shared_query_scope_test.go:149: target-object filtered scope denied original related page runtime.conversation.business_forbidden
+--- FAIL: TestSharedBusinessRelatedQueryFiltersUseTargetObjectScope (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/application/agenthost	0.912s
+FAIL

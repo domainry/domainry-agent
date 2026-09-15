@@ -150,7 +150,8 @@ func (s *ConversationStore) WriteConversationAgent(ctx context.Context, id strin
 		out.Name, out.Description, out.Instructions = in.Name, in.Description, in.Instructions
 		out.DefinitionKey, out.DefinitionVersion, out.DefinitionDigest = in.DefinitionKey, in.DefinitionVersion, in.DefinitionDigest
 		out.Tools, out.SkillKeys = append([]string{}, in.Tools...), append([]string{}, in.SkillKeys...)
-		out.ModelKey, out.Enabled, out.MaxConcurrent = in.ModelKey, in.Enabled, in.MaxConcurrent
+		out.External = in.External
+		out.ModelKey, out.ReasoningEffort, out.Enabled, out.MaxConcurrent = in.ModelKey, in.ReasoningEffort, in.Enabled, in.MaxConcurrent
 		out.OwnerUserID, out.Shared = a.UserID, false
 		if in.DelegationExecution != nil {
 			switch *in.DelegationExecution {

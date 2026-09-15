@@ -1,0 +1,10 @@
+Runtime workspace (GOWORK=/tmp/runtime-work/go.work):
+go test ./runtime/application/action ./runtime/application/workflow ./runtime/application/agenthost -count=1
+go test -race ./runtime/application/action ./runtime/application/workflow ./runtime/application/agenthost -run '^(TestActionIndependentReceiptReadPreservesOwnershipAllReferencesAndNoEffects|TestWorkflowIndependentReceiptReadRequiresCurrentParticipantAndOriginalLedger|TestSharedBusinessActionCatalogUsesCurrentReceiptScopeContractAndWholePages|TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader)$' -count=1
+go test ./runtime/bootstrap/integrationtest -run '^TestCrossUserBusinessWritesAgentConfirmationsAutomaticDeliverySharedOriginalsAndRestart$' -count=1 -v
+go test ./runtime/bootstrap/integrationtest -run '^(TestCrossUserBusinessAgentToolDispatchAutomaticDeliveryOriginalPagesAndAcceptance|TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart|TestBusinessWriteReceiptReadThroughRealOwnerRPC|TestBusiness.*Independent.*Read.*)$' -count=1 -v
+
+git diff --check: Agent, Runtime.
+Nine diagnostic failed logs are preserved separately; none count as acceptance.
+Current embedded role grants are changed through the trusted ProjectRoleCatalogPublisher port; manifest preserves revocation across restart. Public versioned role-definition API absence is not bypassed with another user's role assignment.
+No new SDK protocol, migrations, frontend acceptance, external model calls or changed existing execution budgets.

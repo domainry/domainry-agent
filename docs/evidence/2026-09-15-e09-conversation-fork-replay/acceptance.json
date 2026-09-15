@@ -1,0 +1,41 @@
+{
+  "date": "2026-09-15",
+  "item": "E09",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 15,
+  "results": {
+    "agent_sdk_go_test": { "exit_code": 0 },
+    "agent_core_packages": { "count": 34, "exit_code": 0 },
+    "agent_web_package": { "exit_code": 0, "seconds": 602.134 },
+    "integration": { "exit_code": 0, "seconds": 108.757 },
+    "conversation_trajectory_race": { "exit_code": 0 },
+    "frontend_tests": { "passed": 91, "failed": 0, "exit_code": 0 },
+    "frontend_build": { "exit_code": 0, "typescript": true, "vite": true },
+    "browser": { "exit_code": 0, "seconds": 5.24, "javascript_errors": 0, "console_errors": 0, "resource_failures": 0 },
+    "diff_check": { "agent_exit_code": 0, "agent_sdk_exit_code": 0, "bytes": 0 }
+  },
+  "reference": {
+    "commit": "c291e7961a515f6d7af9304e7fd1d257929aef26",
+    "session": { "bytes": 67046, "sha256": "dfabaaf8c1dae793e1ee6752c53b50a575c5d8b1cbc86a0b824e98c4e55d665f" },
+    "llm_replay_readme": { "bytes": 13094, "sha256": "ebbacf0a0926b4e3398d62220b38d59ebde6f1fbbd3243673ced23f2f7fde30f" }
+  },
+  "behavior": [
+    "an ordinary conversation can fork only from an exact stable completed run and event boundary",
+    "the fork is a new independent peer conversation whose source reference is provenance only",
+    "the fork persists authorized historical context as inert data and waits for new user input",
+    "historical tool calls and results never execute during display fixture replay export compare or fork creation",
+    "a live rerun starts only after new input and does not reuse provider continuation state",
+    "the trajectory includes the exact model-visible request context boundary recorded response tool calls and durable results",
+    "model fixtures include complete public tool definitions and recorded responses without invoking model or tools",
+    "trajectory export is deterministic JSON with a stable content hash",
+    "trajectory comparison reports request response context tool and result hash differences",
+    "provider continuation state credentials confirmation receipts and authorization evidence are excluded",
+    "every trajectory and fork entry rechecks the conversation owner and execution source authorization",
+    "revoking a historical tool source blocks view export replay compare and fork",
+    "a rejected fork creates no child conversation",
+    "the frontend exposes trajectory detail export fixture replay compare fork and navigable provenance",
+    "real Identity HTTP SQLite and compiled Chrome flows preserve external write effects exactly once on desktop and mobile"
+  ],
+  "remaining": []
+}

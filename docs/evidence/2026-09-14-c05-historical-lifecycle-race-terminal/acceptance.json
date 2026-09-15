@@ -1,0 +1,62 @@
+{
+  "phase": "actual_runtime_legacy_lifecycle_race_terminal",
+  "c05_complete": false,
+  "todo_completed": 4,
+  "todo_total": 25,
+  "session_id": 96818,
+  "terminal_exit_code": 1,
+  "root_seconds": {
+    "manual_old_delivery": 152.01,
+    "old_agreement_republication": 339.81,
+    "full_update_restart_resume_history": 635.97
+  },
+  "root_status": {
+    "manual_old_delivery": "passed",
+    "old_agreement_republication": "passed",
+    "full_update_restart_resume_history": "failed"
+  },
+  "package_seconds": 1128.836,
+  "observation_timeout_seconds": 1200,
+  "observation_timeout_is_not_failure": true,
+  "failed_execution_id": "crun_8852f4ee349b602b88437b967df54247",
+  "failed_execution_error": "execution_interrupted",
+  "failed_execution_duration_ms": 180008,
+  "failed_execution_agreement_revision": 2,
+  "failed_execution_remaining_budget": {
+    "max_steps": 7,
+    "max_tool_calls": 8,
+    "max_output_bytes": 8192,
+    "timeout_seconds": 180
+  },
+  "completed_calls": [
+    {
+      "step": 0,
+      "tool": "delegation_source_read",
+      "duration_ms": 649
+    },
+    {
+      "step": 1,
+      "tool": "delegation_source_read",
+      "duration_ms": 1185
+    },
+    {
+      "step": 2,
+      "tool": "delegation_get",
+      "duration_ms": 18538
+    }
+  ],
+  "interrupted_step": 3,
+  "new_delivery_tool_invoked": false,
+  "previous_delivery_view": "Public view contained accepted agreement revision 1 delivery; this was not a new revision 2 delivery.",
+  "compiled_dependency_sources": 4690,
+  "compiled_production_versions_saved": 3,
+  "compiled_test_version_saved": 1,
+  "prior_failed_archive_unchanged_files": 47,
+  "prior_normal_archive_unchanged_files": 11,
+  "race_profile_available": false,
+  "limitations": [
+    "Actual Runtime/Identity/HTTP/ORM and durable ledgers; deterministic model wire and SQLite",
+    "Normal CPU sample cannot establish the cause of this separate race failure",
+    "Original 180-second execution budget unchanged; performance and full lifecycle acceptance remain outstanding"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "before_count": 9895,
+  "after_count": 9895,
+  "before_dependency_count": 1167,
+  "after_dependency_count": 1167,
+  "missing_paths": [],
+  "extra_paths": [],
+  "changed_paths": [
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/appschema_snapshot_cache_test.go",
+    "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go"
+  ]
+}

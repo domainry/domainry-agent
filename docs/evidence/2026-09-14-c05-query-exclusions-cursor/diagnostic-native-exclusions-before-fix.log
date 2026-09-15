@@ -1,0 +1,35 @@
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_excluded_subset
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_reverse_denied
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/union_covers_set
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/union_cannot_cover_unseen_value
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_set_covers_union
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_union_covers_set
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_exclusions_widen
+    conversation_business_shared_scope_test.go:82: scope coverage=false want=true
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_exclusions_cannot_widen_in_reverse
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_unequal_covers_exclusions
+    conversation_business_shared_scope_test.go:82: scope coverage=false want=true
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_exclusions_cover_explicit_negation
+    conversation_business_shared_scope_test.go:82: scope coverage=false want=true
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/explicit_negation_covers_native_exclusions
+    conversation_business_shared_scope_test.go:82: scope coverage=false want=true
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_unequal_cannot_hide_extra_allowed_value
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/mixed_typed_conjunction_does_not_become_empty
+--- FAIL: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects (0.01s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_excluded_subset (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_reverse_denied (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/union_covers_set (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/union_cannot_cover_unseen_value (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_set_covers_union (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_union_covers_set (0.00s)
+    --- FAIL: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_exclusions_widen (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_exclusions_cannot_widen_in_reverse (0.00s)
+    --- FAIL: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_unequal_covers_exclusions (0.00s)
+    --- FAIL: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_exclusions_cover_explicit_negation (0.00s)
+    --- FAIL: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/explicit_negation_covers_native_exclusions (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/native_unequal_cannot_hide_extra_allowed_value (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/mixed_typed_conjunction_does_not_become_empty (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/application/agenthost	4.529s
+FAIL

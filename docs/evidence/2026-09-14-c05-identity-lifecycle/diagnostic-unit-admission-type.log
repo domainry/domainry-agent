@@ -1,0 +1,7 @@
+# github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent [github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent.test]
+internal/infrastructure/persistence/database/agent/subject_collaboration_lifecycle_test.go:291: unknown field SourceAgentID in struct literal of type "github.com/domainry/domainry-agent-sdk/persistence".ConversationDelegationAdmission
+internal/infrastructure/persistence/database/agent/subject_collaboration_lifecycle_test.go:291: cannot use agent (variable of struct type agentsdk.ConversationAgent) as agentsdk.ConversationAgentSnapshot value in struct literal
+internal/infrastructure/persistence/database/agent/subject_collaboration_lifecycle_test.go:316:21: invalid operation: conversationJSON(task) != conversationJSON(originalTask) (slice can only be compared to nil)
+internal/infrastructure/persistence/database/agent/subject_collaboration_lifecycle_test.go:320:21: invalid operation: conversationJSON(run) != conversationJSON(originalRun) (slice can only be compared to nil)
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent [build failed]
+FAIL

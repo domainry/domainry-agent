@@ -1,0 +1,6 @@
+{
+  "Replace": {
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_execution_context.go": "/tmp/c05-peer-context-trace-overlay/conversation_execution_context.go",
+    "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_collaboration_test.go": "/tmp/c05-peer-context-trace-overlay/conversation_collaboration_test.go"
+  }
+}

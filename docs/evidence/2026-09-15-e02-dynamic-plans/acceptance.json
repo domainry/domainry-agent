@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-15",
+  "item": "E02",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 8,
+  "results": {
+    "sdk_go_test": {"exit_code": 0},
+    "agent_product_go_packages": {
+      "exit_code": 0,
+      "web_seconds": 477.288
+    },
+    "focused_race": {
+      "exit_code": 0,
+      "packages": [
+        "internal/application",
+        "internal/infrastructure/persistence/database/agent"
+      ]
+    },
+    "cross_subject_source_release": {
+      "exit_code": 0,
+      "seconds": 14.990
+    },
+    "frontend_tests": {"passed": 86, "failed": 0, "exit_code": 0},
+    "frontend_build": {"exit_code": 0, "typescript": true, "vite": true},
+    "chrome": {
+      "exit_code": 0,
+      "roots": 3,
+      "javascript_errors": [],
+      "console_errors_after_login": [],
+      "console_warnings_after_login": [],
+      "viewport_widths": [1280, 390]
+    },
+    "diff_check": {"agent_exit_code": 0, "sdk_exit_code": 0, "bytes": 0}
+  },
+  "behavior": [
+    "durable versioned plans with DAG dependencies, inputs, expected outputs, server-derived executors and states",
+    "exact requirement-field, execution evidence, historical plan, task and artifact references",
+    "background-task-only plan_update catalog with current action authorization and frozen task scope",
+    "compare-and-swap, idempotent complete-version replacement and immutable completed steps",
+    "transitive requirement-impact propagation that preserves completed evidence and reuses unaffected work",
+    "terminal runs close unfinished plan state without rewriting prior execution results",
+    "current and historical plan projections through SDK, transport and desktop UI",
+    "cross-subject immutable plan receipt reading remains separate from private conversation and plan-write authority"
+  ],
+  "remaining": [
+    "Independent program, Agent and user acceptance of completion conditions remains E03.",
+    "General source-aware context assembly remains E06."
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "date": "2026-09-15",
+  "item": "E08",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 14,
+  "results": {
+    "agent_sdk_go_test": { "exit_code": 0 },
+    "agent_core_packages": { "count": 34, "exit_code": 0 },
+    "agent_web_package": { "exit_code": 0, "seconds": 522.725 },
+    "integration": { "exit_code": 0, "seconds": 93.012 },
+    "execution_lifecycle_race": { "exit_code": 0 },
+    "frontend_tests": { "passed": 91, "failed": 0, "exit_code": 0 },
+    "frontend_build": { "exit_code": 0, "typescript": true, "vite": true },
+    "diff_check": { "agent_exit_code": 0, "agent_sdk_exit_code": 0, "bytes": 0 }
+  },
+  "reference": {
+    "url": "https://github.com/deepseek-ai/deepseek-harness/blob/c291e7961a515f6d7af9304e7fd1d257929aef26/packages/core/agent-loop/src/agent.ts",
+    "commit": "c291e7961a515f6d7af9304e7fd1d257929aef26",
+    "bytes": 24885,
+    "sha256": "bbc3c4f34076e81596af855eddb1bf66f6362278730f7c4db24ea96a990e3cb3"
+  },
+  "behavior": [
+    "public lifecycle stages cover input admission and receipt, context assembly and compaction, model request completion failure and retry, tool before and result, run finish and task finish",
+    "startup validation freezes extension key implementation version configuration version order kind failure mode and stages",
+    "ordered lifecycle manifests persist on foreground background delegated and peer-triggered runs",
+    "recovery rejects a changed lifecycle manifest",
+    "planning context compaction retry and observation compose independently in deterministic order",
+    "policy decisions are stage-scoped and can only append planning guidance lower context limits or narrow retry",
+    "observers cannot return decisions and always continue after failure",
+    "fail-closed handlers are rejected for committed input model tool and terminal stages",
+    "extension errors and panics expose only a stable lifecycle failure code",
+    "every handler receives an owned event copy and cannot mutate persisted model input tool arguments or receipts",
+    "tool before follows current authorization confirmation schema and availability checks",
+    "tool result events follow durable exact receipt storage",
+    "model request follows durable attempt admission and completion or retry events follow durable attempt state",
+    "module hosts contribute lifecycle extensions before workers start",
+    "runtime hot installation removal and persistent observer outbox delivery remain outside version one"
+  ],
+  "remaining": []
+}

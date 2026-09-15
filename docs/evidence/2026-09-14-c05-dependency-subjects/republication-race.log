@@ -1,0 +1,4 @@
+=== RUN   TestCrossOwnerContractRepublicationKeepsUpstreamPublisherAndRecipientAudience
+--- PASS: TestCrossOwnerContractRepublicationKeepsUpstreamPublisherAndRecipientAudience (0.32s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	2.560s

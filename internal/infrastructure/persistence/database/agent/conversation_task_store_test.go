@@ -3,6 +3,7 @@ package agent
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -58,6 +59,69 @@ func TestScheduledConversationTaskAcceptanceIsIdempotentOwnerScopedAndUsesExisti
 	claim, found, err := repo.Claim(t.Context(), authority.RuntimeID, "scheduled-worker", time.Minute)
 	if err != nil || !found || claim.Run.ID != launch.Run.ID {
 		t.Fatalf("scheduled claim=%+v found=%v err=%v", claim, found, err)
+	}
+}
+
+func TestBusinessEventTaskAcceptanceDeduplicatesAndCreatesImmutableWakeSuccessor(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := NewConversationStore(store)
+	authority := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user", RoleKey: "support"}
+	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{AgentID: "support-agent", ClientID: "event-conversation", Title: "Support events"}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	budget := agentsdk.ConversationTaskBudget{MaxSteps: 2, MaxToolCalls: 1, MaxOutputBytes: 1024, TimeoutSeconds: 30}
+	request := agentsdk.BusinessEventConversationTaskRequest{
+		ContractVersion: agentsdk.BusinessEventConversationTaskContractVersion,
+		Authority:       authority, ConversationID: conversation.ID, AgentID: "support-agent", Mode: "start", IdempotencyKey: "event-1:ticket-opened",
+		Source: agentsdk.ConversationBusinessEventSource{EventID: "event-1", Provider: "support", EventType: "ticket.opened", ExternalID: "ticket-42", ReceivedAt: time.Now().UTC().Truncate(time.Millisecond)},
+		Rule:   agentsdk.ConversationBusinessEventRule{Key: "ticket-opened", Revision: strings.Repeat("a", 64)},
+		Input:  agentsdk.ConversationTaskStart{Goal: "Review ticket 42", Input: `{"goal":"Review ticket 42","ticket_id":"42"}`, AllowedTools: []string{}, Budget: budget},
+	}
+	event := &agentsdk.ConversationTaskBusinessEvent{
+		Source: request.Source, Rule: request.Rule, Execution: agentsdk.ConversationBusinessEventExecutionIdentity{WorkspaceID: authority.WorkspaceID, UserID: authority.UserID, RoleKey: authority.RoleKey},
+		IdempotencyKey: request.IdempotencyKey, Mode: request.Mode, TargetAgentID: request.AgentID,
+	}
+	prepared := agentsdk.ConversationTask{Agent: &agentsdk.ConversationAgentSnapshot{ID: request.AgentID}, BusinessEvent: event, Goal: request.Input.Goal, Input: request.Input.Input, Budget: budget, SourceConversationID: conversation.ID, ToolScope: []agentsdk.ConversationTaskToolScope{}}
+	first, err := repo.AcceptBusinessEventConversationTask(t.Context(), request, prepared)
+	if err != nil || first.Replay || first.Task.BusinessEvent == nil || first.Task.BusinessEvent.Source.EventID != "event-1" {
+		t.Fatalf("event receipt=%+v err=%v", first, err)
+	}
+	replay, err := NewConversationStore(store).AcceptBusinessEventConversationTask(t.Context(), request, prepared)
+	if err != nil || !replay.Replay || replay.Task.ID != first.Task.ID {
+		t.Fatalf("event replay=%+v err=%v", replay, err)
+	}
+	changed := request
+	changed.Input.Goal = "Changed goal"
+	changedPrepared := prepared
+	changedPrepared.Goal = changed.Input.Goal
+	if _, err = repo.AcceptBusinessEventConversationTask(t.Context(), changed, changedPrepared); err == nil {
+		t.Fatal("changed event replay was accepted")
+	}
+	launch, launched, err := repo.LaunchConversationTask(t.Context(), authority.RuntimeID)
+	if err != nil || !launched || launch.Task.ID != first.Task.ID || !strings.Contains(agentsdk.ConversationTaskPrompt(launch.Task), `"event_id":"event-1"`) {
+		t.Fatalf("event launch=%+v launched=%v err=%v", launch, launched, err)
+	}
+	claim, found, err := repo.Claim(t.Context(), authority.RuntimeID, "event-worker", time.Minute)
+	if err != nil || !found || claim.Run.ID != launch.Run.ID {
+		t.Fatalf("event claim=%+v found=%v err=%v", claim, found, err)
+	}
+	wake := request
+	wake.Mode, wake.RelatedTaskID, wake.IdempotencyKey = "wake", first.Task.ID, "event-2:ticket-escalated"
+	wake.Source = agentsdk.ConversationBusinessEventSource{EventID: "event-2", Provider: "support", EventType: "ticket.escalated", ExternalID: "ticket-42:escalated", ReceivedAt: request.Source.ReceivedAt.Add(time.Second)}
+	wake.Rule = agentsdk.ConversationBusinessEventRule{Key: "ticket-escalated", Revision: strings.Repeat("b", 64)}
+	wake.Input = agentsdk.ConversationTaskStart{Goal: "Handle ticket escalation", Input: `{"goal":"Handle ticket escalation","ticket_id":"42"}`, AllowedTools: []string{}, Budget: budget}
+	wakeEvent := &agentsdk.ConversationTaskBusinessEvent{Source: wake.Source, Rule: wake.Rule, Execution: event.Execution, IdempotencyKey: wake.IdempotencyKey, Mode: wake.Mode, TargetAgentID: wake.AgentID, RelatedTaskID: wake.RelatedTaskID}
+	wakePrepared := agentsdk.ConversationTask{Agent: &agentsdk.ConversationAgentSnapshot{ID: wake.AgentID}, BusinessEvent: wakeEvent, Goal: wake.Input.Goal, Input: wake.Input.Input, Budget: budget, SourceConversationID: conversation.ID, ToolScope: []agentsdk.ConversationTaskToolScope{}}
+	if _, err = repo.AcceptBusinessEventConversationTask(t.Context(), wake, wakePrepared); err == nil {
+		t.Fatal("wake successor was accepted while related task was active")
+	}
+	if err = repo.Finish(t.Context(), claim, agentsdk.ConversationModelResult{Content: "Ticket reviewed"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	woken, err := repo.AcceptBusinessEventConversationTask(t.Context(), wake, wakePrepared)
+	if err != nil || woken.Replay || woken.Task.ID == first.Task.ID || woken.Task.BusinessEvent == nil || woken.Task.BusinessEvent.RelatedTaskID != first.Task.ID {
+		t.Fatalf("wake successor=%+v err=%v", woken, err)
 	}
 }
 

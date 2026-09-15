@@ -1,0 +1,57 @@
+{
+  "date": "2026-09-15",
+  "item": "K04",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 19,
+  "deepseek_harness_head": "0d1f50007f9bca3f52b06e1c3074fa14d5fb0720",
+  "results": {
+    "agent_code_mode_e2e": {
+      "exit_code": 0,
+      "scenarios": 4,
+      "confirmed_write_invocations": 1,
+      "unknown_write_invocations": 1,
+      "unknown_write_reconciliations": 1
+    },
+    "agent_product_packages": {
+      "all_except_web_exit_code": 0,
+      "web_full_exit_code": 1,
+      "web_failure": "package timeout after 10 minutes in unrelated knowledge document transfer test",
+      "web_compile_exit_code": 0,
+      "timed_out_test_isolated_exit_code": 0,
+      "timed_out_test_isolated_seconds": 10.32
+    },
+    "agent_sdk_full": { "exit_code": 0 },
+    "runtime_code_and_host": { "exit_code": 0 },
+    "frontend_tests": { "exit_code": 0, "tests": 92 },
+    "frontend_build": { "exit_code": 0 },
+    "diff_check": { "repositories": 3, "exit_code": 0 }
+  },
+  "behavior": [
+    "run_code is an Agent control-plane tool and the restricted Runtime has no tool host credentials database shell network filesystem clock random source or persistent kernel",
+    "each run uses a fresh empty-environment subprocess and temporary working directory",
+    "the program can call only the current step's frozen non-run_code tool bindings",
+    "every nested call re-enters current authorization schema availability confirmation budget receipt and source checks",
+    "nested calls have deterministic ids idempotency keys parent ids dispatch indexes arguments events and durable results",
+    "confirmation reruns stateless code while executing an approved nested write exactly once",
+    "unknown nested writes resume through reconciliation with the same idempotency key and are not invoked again",
+    "tool and host deadlines hard-stop code and save code_timeout as a failed receipt",
+    "cancellation preserves distinct completed not-started interrupted and uncertain nested outcomes",
+    "the UI and trajectory expose nested calls under run_code while result sharing and revocation recurse through children"
+  ],
+  "bounded": {
+    "language": "lua",
+    "source_bytes": 32768,
+    "dispatches": 64,
+    "result_bytes": 49152,
+    "outer_receipt_bytes": 65536,
+    "log_lines": 128,
+    "log_line_bytes": 2048,
+    "log_total_bytes": 8192,
+    "timeout_milliseconds": 30000
+  },
+  "remaining": [
+    "K05 image input and model capability matching is the next ordered item",
+    "typed language SDK generation presentation-mode selection and safe nested read concurrency are optional Code Mode efficiency extensions"
+  ]
+}

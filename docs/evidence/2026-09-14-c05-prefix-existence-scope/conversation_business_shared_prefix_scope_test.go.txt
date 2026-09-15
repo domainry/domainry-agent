@@ -1,0 +1,188 @@
+package agenthost
+
+import (
+	"encoding/json"
+	"slices"
+	"testing"
+
+	agent "github.com/domainry/domainry-agent-sdk"
+	identity "github.com/domainry/domainry-identity-sdk"
+	"github.com/domainry/domainry-identity-sdk/authorization/evaluator"
+	principalmodel "github.com/domainry/domainry-runtime/runtime/domain/principal/model"
+	recordmodel "github.com/domainry/domainry-runtime/runtime/domain/record/model"
+	recordpolicy "github.com/domainry/domainry-runtime/runtime/domain/record/policy"
+)
+
+func TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals(t *testing.T) {
+	h, resolver, _, producer := newConversationBusinessFixture(t)
+	principals, _ := bindSharedBusinessReader(h, resolver, producer)
+	p := principals.original
+	prefix := func(value any) identity.Predicate {
+		return identity.Predicate{Fact: "name", Operator: identity.OperatorPrefix, Value: value}
+	}
+	exists := func(value bool) identity.Predicate {
+		return identity.Predicate{Fact: "name", Operator: identity.OperatorExists, Value: value}
+	}
+	not := func(p identity.Predicate) identity.Predicate { return identity.Predicate{Not: &p} }
+	for _, tc := range []struct {
+		name          string
+		broad, narrow identity.Predicate
+		want          bool
+	}{
+		{"longer prefix", prefix("Scope"), prefix("Scope:"), true},
+		{"shorter prefix cannot cover", prefix("Scope:"), prefix("Scope"), false},
+		{"different prefix", prefix("Scope:A"), prefix("Scope:B"), false},
+		{"case comparison stays conservative", prefix("scope"), prefix("Scope:"), false},
+		{"literal wildcard", prefix("Scope%_"), prefix("Scope%_:"), true},
+		{"wildcard cannot grant unrelated prefix", prefix("Scope%"), prefix("Scope:"), false},
+		{"literal escape", prefix(`Scope\`), prefix(`Scope\:`), true},
+		{"nul prefix unsupported", prefix("Scope\x00:"), prefix("Scope\x00:A"), false},
+		{"invalid unicode unsupported", prefix("Scope\xff"), prefix("Scope\xff:A"), false},
+		{"missing bound claim", prefix("$context.unknown"), prefix("Scope:"), false},
+		{"nonnull contains prefix", exists(true), prefix("Scope:"), true},
+		{"null cannot contain prefix", exists(false), prefix("Scope:"), false},
+		{"negated null is nonnull", not(exists(false)), prefix("Scope:"), true},
+		{"nonnull contains inequality", exists(true), identity.Predicate{Fact: "name", Operator: identity.OperatorNotEqual, Value: "Hidden"}, true},
+		{"nonnull contains exclusion", exists(true), identity.Predicate{Fact: "name", Operator: identity.OperatorNotIn, Value: []string{"Hidden"}}, true},
+		{"other fact does not imply nonnull", exists(true), identity.Predicate{Fact: "id", Operator: identity.OperatorEqual, Value: "own-1"}, false},
+		{"negated prefixes reverse", not(prefix("Scope:A")), not(prefix("Scope:")), true},
+		{"negated reverse denied", not(prefix("Scope:")), not(prefix("Scope:A")), false},
+		{"unsupported ordered policy", exists(true), identity.Predicate{Fact: "name", Operator: identity.Operator("gt"), Value: 1}, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := businessPredicateCovers(tc.broad, p, tc.narrow, p, 0); got != tc.want {
+				t.Fatalf("coverage=%v want=%v", got, tc.want)
+			}
+			if !tc.want {
+				return
+			}
+			for _, value := range []string{"Scope", "Scope:Alpha", "Scope:Beta", "Scope:A", "Scope%_:Alpha", `Scope\:Alpha`, "Hidden", ""} {
+				facts := identity.ResourceFacts{"name": value}
+				ctx := recordpolicy.RecordSDKEvaluationContext(p)
+				b, err := evaluator.EvaluatePredicateWithContext(tc.broad, facts, ctx)
+				if err != nil {
+					t.Fatal(err)
+				}
+				n, err := evaluator.EvaluatePredicateWithContext(tc.narrow, facts, ctx)
+				if err != nil || n && !b {
+					t.Fatalf("SDK implication contradicted for %q: broad=%v narrow=%v err=%v", value, b, n, err)
+				}
+			}
+		})
+	}
+	if businessPredicateCovers(prefix("$subject.id"), principals.actual, prefix("$subject.id"), principals.original, 0) {
+		t.Fatal("different bound subjects acquired the same prefix")
+	}
+}
+
+func sharedBusinessReadPredicate(p principalmodel.Principal, predicate identity.Predicate) principalmodel.Principal {
+	b := *p.AccessBundle
+	b.DataPolicies = slices.Clone(b.DataPolicies)
+	for i := range b.DataPolicies {
+		if b.DataPolicies[i].Resource == "customer" && b.DataPolicies[i].Action == "read" {
+			b.DataPolicies[i].DataScopes = []identity.DataScope{identity.DataScopeOwner}
+			b.DataPolicies[i].Predicate = predicate
+		}
+	}
+	p.AccessBundle = &b
+	return p
+}
+
+func TestSharedBusinessPrefixScopePreservesReaderDenialDirection(t *testing.T) {
+	h, resolver, _, producer := newConversationBusinessFixture(t)
+	principals, _ := bindSharedBusinessReader(h, resolver, producer)
+	allow := identity.Predicate{Fact: "name", Operator: identity.OperatorPrefix, Value: "Scope:"}
+	original := sharedBusinessReadPredicate(principals.original, allow)
+	actual := sharedBusinessReadPredicate(principals.actual, allow)
+	deny := func(value string) identity.Guardrail {
+		p := identity.Predicate{Fact: "name", Operator: identity.OperatorPrefix, Value: value}
+		return identity.Guardrail{Key: "hidden-names", Resource: "customer", Action: "read", Effect: identity.EffectDeny, Predicate: &p}
+	}
+	original.AccessBundle.Guardrails = []identity.Guardrail{deny("Scope:B")}
+	actual.AccessBundle.Guardrails = []identity.Guardrail{deny("Scope:Beta")}
+	if !businessReadScopeCovers(actual, original, "customer") {
+		t.Fatal("smaller reader denial should preserve all producer-visible rows")
+	}
+	actual.AccessBundle.Guardrails = []identity.Guardrail{deny("Scope:")}
+	if businessReadScopeCovers(actual, original, "customer") {
+		t.Fatal("larger reader denial hid additional producer rows")
+	}
+}
+
+func TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages(t *testing.T) {
+	for _, tc := range []struct{ name, literal, operation string }{
+		{"prefix", "Scope:", "prefix"},
+		{"literal wildcard", "Scope%_:", "prefix"},
+		{"literal escape", `Scope\:`, "prefix"},
+		{"nonnull prefix", "Scope:", "nonnull"},
+		{"nonnull exclusion", "", "not_in"},
+		{"nonnull inequality", "", "neq"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			h, resolver, reads, producer := newConversationBusinessFixture(t)
+			enableBusinessEvidence(t, h)
+			principals, reader := bindSharedBusinessReader(h, resolver, producer)
+			for id, name := range map[string]string{"own-1": "Alpha", "own-2": "Beta"} {
+				mutateBusinessEvidenceRow(t, reads, producer, reads.object, id, func(r *recordmodel.Record) { r.Data["name"] = tc.literal + name })
+			}
+			if err := reads.repository.InsertRecord(t.Context(), producer.WorkspaceID, reads.object, recordmodel.Record{ID: "null-name", OwnerUserID: producer.UserID, Data: map[string]any{"name": nil, "amount": int64(1)}}); err != nil {
+				t.Fatal(err)
+			}
+			original := identity.Predicate{Fact: "name", Operator: identity.OperatorPrefix, Value: tc.literal}
+			broad := identity.Predicate{Fact: "name", Operator: identity.OperatorExists, Value: true}
+			if tc.operation == "prefix" {
+				broad = identity.Predicate{Fact: "name", Operator: identity.OperatorPrefix, Value: tc.literal[:len(tc.literal)-1]}
+			}
+			if tc.operation == "not_in" {
+				original.Operator, original.Value = identity.OperatorNotIn, []string{"Hidden"}
+			}
+			if tc.operation == "neq" {
+				original.Operator, original.Value = identity.OperatorNotEqual, "Hidden"
+			}
+			principals.original = sharedBusinessReadPredicate(principals.original, original)
+			principals.actual = sharedBusinessReadPredicate(principals.actual, broad)
+			q := agent.ConversationBusinessQuery{ObjectKey: "customer", Fields: []string{"name", "amount"}, PageSize: 1, Sort: []agent.ConversationBusinessSort{{Field: "name", Direction: "asc"}}}
+			first, err := h.QueryBusinessRecords(t.Context(), q, producer)
+			if err != nil || len(first.Items) != 1 || first.Items[0].ID != "own-1" || first.Total == nil || *first.Total != 2 || first.NextCursor == "" {
+				t.Fatal("original prefix/exclusion must select two nonnull rows", first, err)
+			}
+			firstEvidence := sealedBusinessEvidence(t, h, producer, "query_records", q, first)
+			q.Cursor = first.NextCursor
+			next, err := h.QueryBusinessRecords(t.Context(), q, producer)
+			if err != nil || len(next.Items) != 1 || next.Items[0].ID != "own-2" || next.Total != nil {
+				t.Fatal("original second page", next, err)
+			}
+			nextEvidence := sealedBusinessEvidence(t, h, producer, "query_records", q, next)
+			before := reads.queries
+			if _, err := h.QueryBusinessRecords(t.Context(), q, reader); err == nil || reads.queries != before {
+				t.Fatal("reader executed the producer cursor", err)
+			}
+			evidence := []agent.ConversationBusinessEvidence{firstEvidence, nextEvidence}
+			originalBytes, _ := json.Marshal(evidence)
+			for _, e := range evidence {
+				if err := h.AuthorizeSharedBusinessResultRead(t.Context(), e, reader, producer); err != nil {
+					t.Fatal("broader reader denied original page", err)
+				}
+			}
+			principals.actual = sharedBusinessReadPredicate(principals.actual, identity.Predicate{Fact: "name", Operator: identity.OperatorPrefix, Value: tc.literal + "A"})
+			if _, err := h.GetBusinessRecord(t.Context(), agent.ConversationBusinessGet{ObjectKey: "customer", RecordID: "own-1", Fields: []string{"name"}}, reader); err != nil {
+				t.Fatal("narrow reader cannot read the visible first row", err)
+			}
+			for _, e := range evidence {
+				if err := h.AuthorizeSharedBusinessResultRead(t.Context(), e, reader, producer); err == nil {
+					t.Fatal("narrow reader exposed original total/second page")
+				}
+			}
+			principals.actual = sharedBusinessReadPredicate(principals.actual, broad)
+			for _, e := range evidence {
+				if err := h.AuthorizeSharedBusinessResultRead(t.Context(), e, reader, producer); err != nil {
+					t.Fatal("restored reader cannot read original page", err)
+				}
+			}
+			afterBytes, _ := json.Marshal(evidence)
+			if string(afterBytes) != string(originalBytes) {
+				t.Fatal("reading changed original receipt bytes")
+			}
+		})
+	}
+}

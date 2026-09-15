@@ -1,0 +1,69 @@
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/native
+    conversation_model_sources_test.go:130: receipt source not fully checked exactly once 2 <nil>
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/custom-no-native-checker
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/assembled-forwarder
+    conversation_model_sources_test.go:130: receipt source not fully checked exactly once 2 <nil>
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/assembled-no-result-checker
+--- FAIL: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts (0.01s)
+    --- FAIL: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/native (0.00s)
+    --- PASS: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/custom-no-native-checker (0.00s)
+    --- FAIL: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/assembled-forwarder (0.00s)
+    --- PASS: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/assembled-no-result-checker (0.00s)
+=== RUN   TestModelSourceReceiptChecksRevocationAfterInitialTraversal
+=== RUN   TestModelSourceReceiptChecksRevocationAfterInitialTraversal/native
+    conversation_model_sources_test.go:162: pre-model current source revocation was not checked 2 agent.conversation.collaboration_access_denied
+=== RUN   TestModelSourceReceiptChecksRevocationAfterInitialTraversal/custom
+    conversation_model_sources_test.go:162: pre-model current source revocation was not checked 1 <nil>
+--- FAIL: TestModelSourceReceiptChecksRevocationAfterInitialTraversal (0.00s)
+    --- FAIL: TestModelSourceReceiptChecksRevocationAfterInitialTraversal/native (0.00s)
+    --- FAIL: TestModelSourceReceiptChecksRevocationAfterInitialTraversal/custom (0.00s)
+=== RUN   TestModelSourceReceiptRetainsOriginalTraversalValuesAndFreshCancellation
+--- PASS: TestModelSourceReceiptRetainsOriginalTraversalValuesAndFreshCancellation (0.00s)
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/changed-content
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/orphan
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/unknown-original-role
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/different-original-role
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/inherited-run
+--- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/changed-content (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/orphan (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/unknown-original-role (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/different-original-role (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/inherited-run (0.00s)
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-step
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-model-step
+    conversation_model_sources_test.go:243: incomplete or mismatched model execution accepted 1 <nil>
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-result
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-call
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-tool-result
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/uncertain-call
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-arguments
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-step
+    conversation_model_sources_test.go:243: incomplete or mismatched model execution accepted 1 <nil>
+--- FAIL: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-step (0.00s)
+    --- FAIL: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-model-step (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-result (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-call (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-tool-result (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/uncertain-call (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-arguments (0.00s)
+    --- FAIL: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-step (0.00s)
+=== RUN   TestModelSourceReceiptRechecksInheritedPrivateAttachment
+=== RUN   TestModelSourceReceiptRechecksInheritedPrivateAttachment/native
+=== RUN   TestModelSourceReceiptRechecksInheritedPrivateAttachment/custom
+--- PASS: TestModelSourceReceiptRechecksInheritedPrivateAttachment (0.00s)
+    --- PASS: TestModelSourceReceiptRechecksInheritedPrivateAttachment/native (0.00s)
+    --- PASS: TestModelSourceReceiptRechecksInheritedPrivateAttachment/custom (0.00s)
+=== RUN   TestModelSourceReceiptCustomResultPolicyCannotBeBypassed
+    conversation_model_sources_test.go:273: custom result denial bypassed 1 agent.conversation.custom_result_denied
+--- FAIL: TestModelSourceReceiptCustomResultPolicyCannotBeBypassed (0.00s)
+=== RUN   TestModelSourceReceiptPreservesNativeRechecksWithinOneResultPolicy
+    conversation_model_sources_test.go:290: an explicit second check reused the first source decision 3 agent.conversation.collaboration_access_denied
+--- FAIL: TestModelSourceReceiptPreservesNativeRechecksWithinOneResultPolicy (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.424s
+FAIL

@@ -1,0 +1,125 @@
+{
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "c05_complete": false,
+  "phase_status": "verification_incomplete_runtime_execution_timeout",
+  "logs": {
+    "before.log": {
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "negative_scenarios": 3
+    },
+    "peer-core.log": {
+      "exit_code": 0,
+      "scenarios": 3
+    },
+    "race.log": {
+      "exit_code": 0,
+      "packages": 2
+    },
+    "runtime-before.log": {
+      "exit_code": 1
+    },
+    "regression.log": {
+      "exit_code": 0,
+      "packages": 8
+    },
+    "runtime.log": {
+      "exit_code": 1,
+      "scenarios": 1,
+      "duration_seconds": 458.91,
+      "compiled_source_snapshot": "source-runtime-compiled-sha256.json",
+      "failure": "original-role revised run read both receipts and agreement, completed delivery invocation, then expired at accepted 180-second timeout before final generation/commit"
+    },
+    "regression-before.log": {
+      "exit_code": 1,
+      "packages": 8,
+      "passed_packages": 7,
+      "failed_package": "internal/assembly/web",
+      "failed_test": "TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery"
+    },
+    "web-before.log": {
+      "exit_code": 1,
+      "scenarios": 1,
+      "failure": "execution_context_exceeded"
+    },
+    "web-locator-intermediate.log": {
+      "exit_code": 0,
+      "scenarios": 1,
+      "before_final_execution_scope_change": true
+    },
+    "locator-core.log": {
+      "exit_code": 0,
+      "tests": 2
+    },
+    "runtime-source-denial.log": {
+      "exit_code": 1,
+      "diagnostic_overlay": true,
+      "failure": "report_query denied for result reader before first model call"
+    },
+    "web.log": {
+      "exit_code": 0,
+      "scenarios": 1,
+      "duration_seconds": 24.7,
+      "compiled_source_snapshot": "source-runtime-compiled-sha256.json"
+    },
+    "runtime-after-routing-before-scope.log": {
+      "exit_code": 1,
+      "failure": "tool_access_denied before first model call"
+    },
+    "runtime-scope-trace.log": {
+      "exit_code": 1,
+      "diagnostic_overlay": true,
+      "failure": "final flattened source check missing contract scope; analysis_run denied for result reader before first model call"
+    },
+    "runtime-after-scope-short-wait.log": {
+      "exit_code": 1,
+      "failure": "60-second fixture wait expired while revised run was running with original execution role and both receipt reads successful",
+      "execution_budget_changed": false
+    },
+    "source-cache-disabled.log": {
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "comparison": "only sharing of completed proofs disabled; three duplicate immutable ledger reads; raw access test passed"
+    },
+    "source-cache-application.log": {
+      "exit_code": 0,
+      "packages": 1
+    },
+    "runtime-before-source-memoization.log": {
+      "exit_code": 1,
+      "failure": "execution_interrupted at accepted 180-second timeout after both receipt reads and agreement read; delivery invocation uncertain after submission",
+      "execution_budget_changed": false
+    },
+    "web-scope-intermediate.log": {
+      "exit_code": 0,
+      "scenarios": 1,
+      "duration_seconds": 105.21,
+      "before_per_read_memoization": true
+    }
+  },
+  "source_files": 128,
+  "database": "SQLite",
+  "model": "deterministic wire fixture",
+  "frontend_changed_this_phase": false,
+  "real_browser_acceptance_this_phase": false,
+  "online_model_acceptance": false,
+  "pending": [
+    "resolve full Runtime revised legacy execution timeout after delivery submission",
+    "complete missing original agreement/history workflows",
+    "multi-owner sources/dependencies",
+    "other professional sources",
+    "broader participant scopes",
+    "full execution-detail sharing",
+    "cross-subject transfer/lifecycle",
+    "ordinary management controls on recovery UI",
+    "remaining TODO items"
+  ],
+  "final_guard": {
+    "change": "malformed private read boundary rejected instead of hashing empty bytes",
+    "normal_scope_digest_algorithm_changed": false,
+    "verified_by": "regression.log and race.log",
+    "external_scenarios_compiled_before_guard": true
+  },
+  "remaining_failure": "complete revised legacy execution within its unchanged accepted timeout; current Runtime schema/source-version projection repeatedly builds and hashes full schema snapshots"
+}

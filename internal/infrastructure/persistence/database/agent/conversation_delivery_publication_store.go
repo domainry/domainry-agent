@@ -12,7 +12,7 @@ import (
 	"github.com/domainry/domainry-orm/query"
 )
 
-func (s *ConversationStore) deliveryPublicationRecord(ctx context.Context, db conversationDB, d sdk.ConversationDelegation, revision int64) (sdk.ConversationDeliveryRecord, error) {
+func (s *ConversationStore) deliveryPublicationRecord(ctx context.Context, db conversationDB, d sdk.ConversationDelegation, revision int64, a sdk.ConversationAuthority) (sdk.ConversationDeliveryRecord, error) {
 	var out sdk.ConversationDeliveryRecord
 	if revision < 0 || revision == math.MaxInt64 {
 		return out, conversationError("bad_request", "delivery_revision_invalid")
@@ -27,7 +27,7 @@ func (s *ConversationStore) deliveryPublicationRecord(ctx context.Context, db co
 		}
 		return out, nil
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDeliveryRecordTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(d, sdk.ConversationAuthority{}))), query.Equal("delegation_id", d.ID), query.Equal("revision", revision))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDeliveryRecordTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(d, a))), query.Equal("delegation_id", d.ID), query.Equal("revision", revision))).Build()
 	if err != nil {
 		return out, err
 	}
@@ -46,13 +46,13 @@ func (s *ConversationStore) ConversationDeliveryPublicationRecord(ctx context.Co
 	if err != nil {
 		return sdk.ConversationDeliveryRecord{}, err
 	}
-	return s.deliveryPublicationRecord(ctx, s.store.Database(), d, revision)
+	return s.deliveryPublicationRecord(ctx, s.store.Database(), d, revision, a)
 }
 
 // Publication changes only relationship revision/audit and precise grants.
 // The canonical delivery, assessment, accepted status and task stay untouched.
 func (s *ConversationStore) republishDelivery(ctx context.Context, tx *sql.Tx, d sdk.ConversationDelegation, in sdk.ConversationDelegationUpdate, a sdk.ConversationAuthority) (sdk.ConversationDelegation, error) {
-	if in.Publication == nil || in.ToolRequest != nil || in.Publication.RecordDigest == "" {
+	if in.Publication == nil || in.ContractPublication != nil || in.ToolRequest != nil || in.Publication.RecordDigest == "" || in.Delivery != nil || in.Brief != nil || in.Review != nil || in.Disagreement != nil || in.Transfer != nil || in.Inspection != nil || in.StructuredInput != nil || in.Dependencies != nil || in.Participants != nil {
 		return d, conversationError("bad_request", "delivery_publication_invalid")
 	}
 	subjects, _, err := s.delegationSubjects(ctx, tx, d.ID, a)
@@ -65,7 +65,7 @@ func (s *ConversationStore) republishDelivery(ctx context.Context, tx *sql.Tx, d
 	if d.Revision != in.ExpectedRevision {
 		return d, conversationError("conflict", "revision_conflict")
 	}
-	original, err := s.deliveryPublicationRecord(ctx, tx, d, in.Publication.DeliveryRevision)
+	original, err := s.deliveryPublicationRecord(ctx, tx, d, in.Publication.DeliveryRevision, a)
 	if err != nil {
 		return d, err
 	}
@@ -87,6 +87,9 @@ func (s *ConversationStore) republishDelivery(ctx context.Context, tx *sql.Tx, d
 		refs = append(refs, *original.Verification.Source)
 	}
 	if err = s.saveSourceReleases(ctx, tx, d.ID, "delivery", a, subjects.source, refs); err != nil {
+		return d, err
+	}
+	if err = s.publishDeliveryToParticipants(ctx, tx, d, a, refs); err != nil {
 		return d, err
 	}
 	d.Revision++

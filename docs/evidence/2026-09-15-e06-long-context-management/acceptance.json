@@ -1,0 +1,82 @@
+{
+  "date": "2026-09-15",
+  "item": "E06",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 12,
+  "results": {
+    "agent_sdk_go_test": {
+      "exit_code": 0
+    },
+    "agent_core_packages": {
+      "exit_code": 0
+    },
+    "agent_web_package": {
+      "exit_code": 0,
+      "seconds": 558.744
+    },
+    "integration": {
+      "exit_code": 0,
+      "seconds": 99.274
+    },
+    "context_race": {
+      "exit_code": 0
+    },
+    "frontend_tests": {
+      "passed": 90,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "frontend_build": {
+      "exit_code": 0,
+      "typescript": true,
+      "vite": true
+    },
+    "chrome": {
+      "exit_code": 0,
+      "model_calls": 3,
+      "tool_calls": 2,
+      "peak_context_bytes": 16169,
+      "context_limit_bytes": 20480,
+      "context_compactions": 1,
+      "compacted_results": 2,
+      "compacted_intervals": 1,
+      "cache_read_input_tokens": 180,
+      "cache_creation_input_tokens": 100,
+      "source_versions": [
+        "record-v1",
+        "record-v2",
+        "record-v3"
+      ],
+      "post_revocation_source_version": "record-v4",
+      "revoked_history_masked": true,
+      "javascript_errors": [],
+      "console_errors_after_login": [],
+      "console_warnings_after_login": [],
+      "viewport_widths": [
+        1280,
+        390
+      ]
+    },
+    "diff_check": {
+      "agent_exit_code": 0,
+      "agent_sdk_exit_code": 0,
+      "bytes": 0
+    }
+  },
+  "behavior": [
+    "deployment-owned context sources freeze kind, scope, trust, refresh, order and byte budgets",
+    "task-scoped sources are not read for ordinary conversations without a task identity",
+    "step refresh carries the preceding frozen manifest and preserves a complete source version change chain",
+    "provider protocol sizing is used when available and conservative frozen-snapshot sizing remains the fallback",
+    "result bodies and older complete execution intervals compact into authorized recoverable references without losing user corrections or call/result pairing",
+    "non-shrinking compaction tiers are not persisted and unsafe overflow fails closed",
+    "stable instructions and tools are fingerprinted separately from dynamic context and actual provider cache usage is reported",
+    "current task agreements, received requirement changes and unresolved disagreements are assembled as versioned task data",
+    "historical transfers, completion conclusions and compact checkpoints are explicitly historical and do not grant authority",
+    "registered sources and stored result references are reauthorized before every model request and historical reuse",
+    "revoked historical sources mask derived replies before a later model input is assembled",
+    "public diagnostics expose bounded versions, pressure, compaction and cache counts without source content or internal hashes"
+  ],
+  "remaining": []
+}

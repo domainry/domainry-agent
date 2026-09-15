@@ -1,0 +1,98 @@
+?   	github.com/domainry/domainry-identity/capability	[no test files]
+ok  	github.com/domainry/domainry-identity/cmd/identity-server	0.987s
+ok  	github.com/domainry/domainry-identity/internal/adapter/identitysdk	2.655s
+?   	github.com/domainry/domainry-identity/internal/application/auditbinding	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/application/auth	1.812s
+ok  	github.com/domainry/domainry-identity/internal/application/authoring	2.133s
+ok  	github.com/domainry/domainry-identity/internal/application/identity	1.596s
+ok  	github.com/domainry/domainry-identity/internal/application/metadata	2.261s
+?   	github.com/domainry/domainry-identity/internal/application/portability	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/architecture	2.689s
+ok  	github.com/domainry/domainry-identity/internal/assembly	6.845s
+ok  	github.com/domainry/domainry-identity/internal/assembly/module	4.054s
+?   	github.com/domainry/domainry-identity/internal/assembly/saas	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/domain	3.837s
+ok  	github.com/domainry/domainry-identity/internal/domain/action/validation	4.494s
+?   	github.com/domainry/domainry-identity/internal/domain/auth/contract	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/domain/auth/model	4.392s
+ok  	github.com/domainry/domainry-identity/internal/domain/auth/policy	4.371s
+?   	github.com/domainry/domainry-identity/internal/domain/auth/projection	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/domain/auth/repository	4.269s
+ok  	github.com/domainry/domainry-identity/internal/domain/auth/service	5.582s
+?   	github.com/domainry/domainry-identity/internal/domain/authoring	[no test files]
+?   	github.com/domainry/domainry-identity/internal/domain/definition/model	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/domain/identity/contract	4.377s
+ok  	github.com/domainry/domainry-identity/internal/domain/identity/model	4.296s
+ok  	github.com/domainry/domainry-identity/internal/domain/identity/policy	3.317s
+ok  	github.com/domainry/domainry-identity/internal/domain/identity/projection	3.471s
+?   	github.com/domainry/domainry-identity/internal/domain/identity/repository	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/domain/identity/service	3.419s
+?   	github.com/domainry/domainry-identity/internal/domain/localization/model	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/domain/manifest/model	5.100s
+?   	github.com/domainry/domainry-identity/internal/domain/manifest/repository	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/domain/metadata/contract	5.212s
+ok  	github.com/domainry/domainry-identity/internal/domain/metadata/model	5.238s
+?   	github.com/domainry/domainry-identity/internal/domain/metadata/repository	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/domain/metadata/service	4.796s
+ok  	github.com/domainry/domainry-identity/internal/domain/metadata/validation	4.836s
+ok  	github.com/domainry/domainry-identity/internal/domain/portability	5.190s
+?   	github.com/domainry/domainry-identity/internal/domain/privacy	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/auditmodule	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/identityprovider	5.578s
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/base	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database	5.759s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/architecture	5.751s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/auth	6.525s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/connection	4.835s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/failure	4.360s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity	4.381s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/accessreview	4.476s
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/account	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/authoring	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/authorization/menu	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/authorization/permission	4.516s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/authorization/role	4.492s
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/authorization/rolerequest	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/datascope	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/entitlement	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/integrationtest	7.957s
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/lifecycle/subject	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/profilebinding	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/projection	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/projection/organizationunit	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/projection/user	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity/roleassignment	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/metadata	5.442s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/migration	5.324s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/observability	4.205s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/portability	4.374s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/schema	5.074s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/transaction	4.564s
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/workspace	4.631s
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/driver	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/mysql	4.479s
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/mysql/migration	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/mysql/primarykey	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/mysql/schema	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/postgres	4.533s
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/postgres/migration	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/postgres/primarykey	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/postgres/schema	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/persistence/sqlite	3.008s
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/sqlite/migration	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/sqlite/primarykey	[no test files]
+?   	github.com/domainry/domainry-identity/internal/infrastructure/persistence/sqlite/schema	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/infrastructure/runtimeactionusage	3.149s
+ok  	github.com/domainry/domainry-identity/internal/platform/config	3.447s
+ok  	github.com/domainry/domainry-identity/internal/platform/localization	2.066s
+?   	github.com/domainry/domainry-identity/internal/platform/localization/locales	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/platform/productbrand	2.353s
+ok  	github.com/domainry/domainry-identity/internal/transport/http/auth	2.974s
+ok  	github.com/domainry/domainry-identity/internal/transport/http/identity	3.019s
+ok  	github.com/domainry/domainry-identity/internal/transport/http/module	3.192s
+ok  	github.com/domainry/domainry-identity/internal/transport/http/portability	3.571s
+ok  	github.com/domainry/domainry-identity/internal/transport/http/remotesdk	3.778s
+?   	github.com/domainry/domainry-identity/internal/transport/http/saas	[no test files]
+ok  	github.com/domainry/domainry-identity/internal/transport/http/server	10.612s
+ok  	github.com/domainry/domainry-identity/module	14.736s
+ok  	github.com/domainry/domainry-identity/organizationunit	3.567s

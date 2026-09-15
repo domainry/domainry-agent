@@ -1,0 +1,6 @@
+{
+  "Replace": {
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_participants.go": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-participant-publication/source-before-prospective-fix/testdata/internal/application/conversation_participants.go",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_participants_store.go": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-participant-publication/source-before-prospective-fix/testdata/internal/infrastructure/persistence/database/agent/conversation_participants_store.go"
+  }
+}

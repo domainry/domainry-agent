@@ -1,0 +1,85 @@
+{
+  "phase_status": "accepted_normal_scoped_execution_wrapper_history",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "accepted_logs": [
+    "application-final-race.log",
+    "core-eight-final.log",
+    "real-product-final-normal.log",
+    "before-bounds-and-observer-full-code.log",
+    "previous-record-phase-full-code.log"
+  ],
+  "diagnostic_failed_logs": [
+    "diagnostic-product-allowlist.log",
+    "diagnostic-product-saved-source-denied.log",
+    "diagnostic-source-denial-trace.log",
+    "diagnostic-old-flattened-source.log",
+    "diagnostic-original-task-concurrent-race-timeout.log",
+    "diagnostic-direct-observer-concurrent-race-timeout.log",
+    "diagnostic-ordinary-inspector-90s-observer.log",
+    "diagnostic-original-recursive-all.log"
+  ],
+  "pending_logs": [
+    "real-product-serial-race-pending.log"
+  ],
+  "actual_identity_accounts": 2,
+  "receiving_execution_steps": 6,
+  "original_receipts": 3,
+  "actual_inspector_steps": 7,
+  "actual_inspector_tool_calls": 6,
+  "inspector_has_no_professional_record_tools": true,
+  "publication_explicitly_confirmed_through_actual_http": true,
+  "normal_sha_checks": 45,
+  "normal_original_record_sha_checks": 27,
+  "normal_saved_wrapper_sha_checks": 18,
+  "normal_fixture_version": "normal-90s-observer-launch.json",
+  "final_race_fixture_version": "final-ordinary-inspector-budget-launch.json",
+  "ordinary_inspector_service_budget_seconds": 300,
+  "ordinary_inspector_fixture_observation_seconds": 300,
+  "actual_delegated_saves": 1,
+  "sdk_fixture_saves": 2,
+  "task_budget": {
+    "steps": 12,
+    "calls": 12,
+    "output_bytes": 8192,
+    "timeout_seconds": 60
+  },
+  "write_revocation_read_revocation_restart_and_second_account_isolation_checked": true,
+  "old_step_source_snapshot_not_rewritten": true,
+  "earlier_receipt_exact_run_prefix_current_publication_current_read_and_communication_guards_checked": true,
+  "actual_product_serial_race": {
+    "accepted": false,
+    "session_id": 13421,
+    "status": "verified_running",
+    "pid": 11149,
+    "process": "11149 11121       03:29 136.8 /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/go-build850517838/b001/product.test -test.paniconexit0 -test.outputdir=/Users/tiger/Projects/domainry-agent -test.run=^TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart$ -test.count=1 -test.timeout=12m0s -test.cpuprofile=/tmp/c05-execution-wrappers-product-serial-300-cpu.pprof -test.v=true",
+    "sha_checks": 0
+  },
+  "full_code_regression": {
+    "exit_code": 0,
+    "packages": 36,
+    "version": "before final bounds guard and direct observer fixture",
+    "launch": "full-code-launch.json",
+    "differences": "source-version-differences.json"
+  },
+  "previous_record_phase_code_regression": {
+    "packages": 36,
+    "all_package_results_passed": true,
+    "launch": "record-phase-full-code-launch.json"
+  },
+  "source_manifest": "source-sha256.json",
+  "source_files": 1693,
+  "previous_artifacts_unchanged": 36,
+  "previous_acceptance_sha256": "dab247c46dab600c00aee83bde0a4759457213d056983447cc7d304a2179844a",
+  "runtime_released_module_set_lock_changed": false,
+  "remaining": [
+    "Actual shared execution wrapper Product race not accepted yet",
+    "Full C05 historical admission and execution source combinations",
+    "Broader query expressions and remaining source/dependency/Identity exit combinations",
+    "Earlier actual professional write race timeouts",
+    "Released Runtime module-set synchronization",
+    "C06 and all remaining TODO items"
+  ],
+  "created_at_utc": "2026-09-14T08:38:27.528709+00:00"
+}

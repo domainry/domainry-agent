@@ -27,6 +27,20 @@ func (h executionBindingTestHost) AuthorizeConversationTool(_ context.Context, i
 	return sdk.ConversationToolAuthorization{Granted: in.Authority.RoleKey == "professional-role"}, nil
 }
 
+func TestDelegationExecutorContextClearsCallerAgentAndTaskModel(t *testing.T) {
+	ctx := context.WithValue(t.Context(), conversationAgentContextKey{}, &sdk.ConversationAgentSnapshot{ID: "caller", ModelKey: "review"})
+	ctx = context.WithValue(ctx, conversationModelSelectionContextKey{}, &sdk.ConversationModelSelection{Key: "review"})
+	ctx = context.WithValue(ctx, conversationPeerRequestKey{}, conversationPeerRequest{ConversationID: "caller-conversation"})
+
+	ctx = delegationExecutorContext(ctx)
+	if selectedConversationAgent(ctx) != nil || selectedConversationModel(ctx) != nil {
+		t.Fatal("receiver validation inherited the caller Agent or task model")
+	}
+	if request, _ := ctx.Value(conversationPeerRequestKey{}).(conversationPeerRequest); request != (conversationPeerRequest{}) {
+		t.Fatal("receiver validation inherited the caller peer request", request)
+	}
+}
+
 func TestDelegationExecutionBindingUsesSelectedRoleWithoutChangingOrdinaryConversationIdentity(t *testing.T) {
 	for _, sameUser := range []bool{false, true} {
 		t.Run(map[bool]string{false: "different-users", true: "same-user-different-roles"}[sameUser], func(t *testing.T) {

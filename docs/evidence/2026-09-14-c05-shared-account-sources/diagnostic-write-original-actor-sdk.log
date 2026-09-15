@@ -1,0 +1,17 @@
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create
+    account_write_result_read_test.go:35: authorized workspace reader could not verify the original actor's receipt calendar.write_source_changed
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update
+    account_write_result_read_test.go:35: authorized workspace reader could not verify the original actor's receipt calendar.write_source_changed
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send
+    account_write_result_read_test.go:35: authorized workspace reader could not verify the original actor's receipt mail.write_source_changed
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply
+    account_write_result_read_test.go:35: authorized workspace reader could not verify the original actor's receipt mail.write_source_changed
+--- FAIL: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader (0.02s)
+    --- FAIL: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create (0.01s)
+    --- FAIL: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update (0.01s)
+    --- FAIL: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send (0.00s)
+    --- FAIL: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-tools/module	0.688s
+FAIL

@@ -1,0 +1,5 @@
+{
+  "Replace": {
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_source_cache.go": "/tmp/c05-source-cache-disabled-overlay/conversation_source_cache.go"
+  }
+}

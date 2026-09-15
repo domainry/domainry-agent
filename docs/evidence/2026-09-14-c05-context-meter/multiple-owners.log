@@ -1,0 +1,4 @@
+=== RUN   TestMultipleDependencyOwnersKeepIndependentOriginalPublishersAndRecipientScopes
+--- PASS: TestMultipleDependencyOwnersKeepIndependentOriginalPublishersAndRecipientScopes (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	0.455s

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "agent",
+    "inputs": 3969,
+    "changed": [],
+    "manifest_sha256": "31006997d7c615e940277ff1c53790fb8fcb6a4a63b299b086458dfeff15bb85"
+  },
+  {
+    "name": "runtime",
+    "inputs": 9890,
+    "changed": [],
+    "manifest_sha256": "1376a79b95bc10f75667a9d0c86394c62262e75d88b66a37f4a2e9846324a0ca"
+  }
+]

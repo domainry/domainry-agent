@@ -1,0 +1,21 @@
+{
+  "date": "2026-09-16",
+  "item": "K05",
+  "files": [
+    {
+      "path": "acceptance.json",
+      "bytes": 2498,
+      "sha256": "045e9f3a71235784bf79cbe9506bba335ed85b2588ab655ff7151af08ca3852e"
+    },
+    {
+      "path": "commands.md",
+      "bytes": 1890,
+      "sha256": "1e48fba03e69b48fa5313e58b0e78a7ab9cf0bbe044a62281ab7395489dc2816"
+    },
+    {
+      "path": "source-sha256.json",
+      "bytes": 4457,
+      "sha256": "d7de66c69c61917121da90d6656c076aef817f905295fd043ddd14c50ecdf944"
+    }
+  ]
+}

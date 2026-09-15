@@ -83,6 +83,11 @@ func TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedP
 	if _, err := s.sourceAudit(reader).record(t.Context(), owner, wrapper); err != nil {
 		t.Fatal("stored source page failed reauthorization", err)
 	}
+	legacy := wrapper
+	legacy.Definition, _ = sdk.ConversationDelegationSourceReadDefinition("1")
+	if _, err := s.sourceAudit(reader).record(t.Context(), owner, legacy); err != nil {
+		t.Fatal("saved version-one source page was invalidated by optional dependency reading", err)
+	}
 	// A later assignment changes the active execution role, while the old
 	// page keeps its own run authority and remains read-only evidence.
 	originalDelegation, originalExecutor := r.d, r.executor

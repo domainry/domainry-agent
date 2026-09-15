@@ -179,7 +179,39 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, attachments, attachmentCleanup, libraries, documents, datasources, parses, retired, attachmentIndex, tasks, scheduledTasks, followUps, subjects, capacity, collaboration, agreements, assignments, deliveries, disagreements, agentSharing, participants, subjectsBinding, sourceReleases}, nil
+	contractPublications, err := conversationContractPublicationMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	workBudgets, err := conversationWorkBudgetMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	taskAgreements, err := conversationTaskAgreementUpdateMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	taskPlans, err := conversationTaskPlanMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	taskCompletions, err := conversationTaskCompletionMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	forks, err := conversationForkMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	improvements, err := conversationImprovementMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	memories, err := conversationMemoryChangeMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, attachments, attachmentCleanup, libraries, documents, datasources, parses, retired, attachmentIndex, tasks, scheduledTasks, followUps, subjects, capacity, collaboration, agreements, assignments, deliveries, disagreements, agentSharing, participants, subjectsBinding, sourceReleases, contractPublications, workBudgets, taskAgreements, taskPlans, taskCompletions, forks, improvements, memories}, nil
 }
 
 func workerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {

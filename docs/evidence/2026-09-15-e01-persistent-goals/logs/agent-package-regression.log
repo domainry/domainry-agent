@@ -1,0 +1,4 @@
+ok  	github.com/domainry/domainry-agent/remote	3.398s
+ok  	github.com/domainry/domainry-agent/server	1.097s
+ok  	github.com/domainry/domainry-agent/module	1.620s
+ok  	github.com/domainry/domainry-agent/internal/capability	1.801s

@@ -1,0 +1,390 @@
+{
+  "binary": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/go-build4148105783/b821/web.test",
+  "scope": "native one-second sample of concurrent full Web regression; not Product race",
+  "entries": [
+    {
+      "offset": 265992,
+      "samples": 89,
+      "function": "runtime.(*bucket).mp",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:258"
+    },
+    {
+      "offset": 266004,
+      "samples": 84,
+      "function": "runtime.(*bucket).mp",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:261"
+    },
+    {
+      "offset": 265968,
+      "samples": 66,
+      "function": "runtime.(*bucket).mp",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:257"
+    },
+    {
+      "offset": 199708,
+      "samples": 42,
+      "function": "runtime.freeDeadSpanSPMCs",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcmark_greenteagc.go:781"
+    },
+    {
+      "offset": 203808,
+      "samples": 34,
+      "function": "runtime.scanObject",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcmark_greenteagc.go:1250"
+    },
+    {
+      "offset": 267692,
+      "samples": 30,
+      "function": "runtime.mProf_FlushLocked",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:410"
+    },
+    {
+      "offset": 267660,
+      "samples": 26,
+      "function": "runtime.mProf_FlushLocked",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:158"
+    },
+    {
+      "offset": 265980,
+      "samples": 25,
+      "function": "runtime.(*bucket).mp",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:257"
+    },
+    {
+      "offset": 266024,
+      "samples": 25,
+      "function": "runtime.(*bucket).mp",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:262"
+    },
+    {
+      "offset": 199716,
+      "samples": 23,
+      "function": "runtime.freeDeadSpanSPMCs",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcmark_greenteagc.go:782"
+    },
+    {
+      "offset": 117532,
+      "samples": 22,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:322"
+    },
+    {
+      "offset": 222432,
+      "samples": 22,
+      "function": "runtime.sweepone",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcsweep.go:359"
+    },
+    {
+      "offset": 115972,
+      "samples": 21,
+      "function": "runtime.lock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:156"
+    },
+    {
+      "offset": 199728,
+      "samples": 21,
+      "function": "runtime.freeDeadSpanSPMCs",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/internal/runtime/atomic/types.go:168"
+    },
+    {
+      "offset": 266020,
+      "samples": 21,
+      "function": "runtime.(*bucket).mp",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:262"
+    },
+    {
+      "offset": 267656,
+      "samples": 19,
+      "function": "runtime.mProf_FlushLocked",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:158"
+    },
+    {
+      "offset": 116000,
+      "samples": 18,
+      "function": "runtime.lock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:165"
+    },
+    {
+      "offset": 267668,
+      "samples": 18,
+      "function": "runtime.mProf_FlushLocked",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:158"
+    },
+    {
+      "offset": 267672,
+      "samples": 18,
+      "function": "runtime.mProf_FlushLocked",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:412"
+    },
+    {
+      "offset": 529356,
+      "samples": 16,
+      "function": "runtime.findObject",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mbitmap.go:1365"
+    },
+    {
+      "offset": 115936,
+      "samples": 15,
+      "function": "runtime.lock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:155"
+    },
+    {
+      "offset": 117216,
+      "samples": 15,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:267"
+    },
+    {
+      "offset": 117436,
+      "samples": 15,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:313"
+    },
+    {
+      "offset": 123744,
+      "samples": 13,
+      "function": "runtime.mallocgcSmallScanNoHeader",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mcache.go:143"
+    },
+    {
+      "offset": 117504,
+      "samples": 12,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:318"
+    },
+    {
+      "offset": 117556,
+      "samples": 11,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:325"
+    },
+    {
+      "offset": 116028,
+      "samples": 10,
+      "function": "runtime.lock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:166"
+    },
+    {
+      "offset": 117396,
+      "samples": 10,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:275"
+    },
+    {
+      "offset": 117404,
+      "samples": 10,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:275"
+    },
+    {
+      "offset": 267676,
+      "samples": 10,
+      "function": "runtime.mProf_FlushLocked",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:412"
+    },
+    {
+      "offset": 115964,
+      "samples": 9,
+      "function": "runtime.lock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:157"
+    },
+    {
+      "offset": 116104,
+      "samples": 9,
+      "function": "runtime.lock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:167"
+    },
+    {
+      "offset": 115948,
+      "samples": 8,
+      "function": "runtime.lock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:155"
+    },
+    {
+      "offset": 117228,
+      "samples": 8,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:267"
+    },
+    {
+      "offset": 117256,
+      "samples": 8,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:330"
+    },
+    {
+      "offset": 117524,
+      "samples": 8,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:319"
+    },
+    {
+      "offset": 222492,
+      "samples": 8,
+      "function": "runtime.sweepone",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcsweep.go:151"
+    },
+    {
+      "offset": 267608,
+      "samples": 8,
+      "function": "runtime.mProf_FlushLocked",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:155"
+    },
+    {
+      "offset": 222092,
+      "samples": 7,
+      "function": "runtime.bgsweep",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcsweep.go:214"
+    },
+    {
+      "offset": 265972,
+      "samples": 7,
+      "function": "runtime.(*bucket).mp",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:257"
+    },
+    {
+      "offset": 267628,
+      "samples": 7,
+      "function": "runtime.mProf_FlushLocked",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:156"
+    },
+    {
+      "offset": 267684,
+      "samples": 7,
+      "function": "runtime.mProf_FlushLocked",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:405"
+    },
+    {
+      "offset": 115992,
+      "samples": 6,
+      "function": "runtime.lock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:165"
+    },
+    {
+      "offset": 116156,
+      "samples": 6,
+      "function": "runtime.lock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:170"
+    },
+    {
+      "offset": 117484,
+      "samples": 6,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:756"
+    },
+    {
+      "offset": 195828,
+      "samples": 6,
+      "function": "runtime.(*spanInlineMarkBits).tryAcquire",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcmark_greenteagc.go:105"
+    },
+    {
+      "offset": 203824,
+      "samples": 6,
+      "function": "runtime.scanObject",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mbitmap.go:220"
+    },
+    {
+      "offset": 232832,
+      "samples": 6,
+      "function": "runtime.freeSomeWbufs",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcwork.go:540"
+    },
+    {
+      "offset": 317844,
+      "samples": 6,
+      "function": "runtime.goschedIfBusy",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/internal/runtime/atomic/types.go:21"
+    },
+    {
+      "offset": 1647752,
+      "samples": 5,
+      "function": "encoding/json.appendString[go.shape.string]",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/encoding/json/encode.go:1002"
+    },
+    {
+      "offset": 117264,
+      "samples": 5,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:273"
+    },
+    {
+      "offset": 117536,
+      "samples": 5,
+      "function": "runtime.unlock2",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/lock_spinbit.go:322"
+    },
+    {
+      "offset": 196436,
+      "samples": 5,
+      "function": "runtime.tryDeferToSpanScan",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcmark_greenteagc.go:290"
+    },
+    {
+      "offset": 196856,
+      "samples": 5,
+      "function": "runtime.tryDeferToSpanScan",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcmark_greenteagc.go:272"
+    },
+    {
+      "offset": 199656,
+      "samples": 5,
+      "function": "runtime.freeDeadSpanSPMCs",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/list_manual.go:70"
+    },
+    {
+      "offset": 199852,
+      "samples": 5,
+      "function": "runtime.freeDeadSpanSPMCs",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcmark_greenteagc.go:792"
+    },
+    {
+      "offset": 202216,
+      "samples": 5,
+      "function": "runtime.scanObjectsSmall",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcmark_greenteagc.go:1033"
+    },
+    {
+      "offset": 222592,
+      "samples": 5,
+      "function": "runtime.sweepone",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcsweep.go:368"
+    },
+    {
+      "offset": 222628,
+      "samples": 5,
+      "function": "runtime.sweepone",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcsweep.go:371"
+    },
+    {
+      "offset": 232896,
+      "samples": 5,
+      "function": "runtime.freeSomeWbufs",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mheap.go:1881"
+    },
+    {
+      "offset": 232932,
+      "samples": 5,
+      "function": "runtime.freeSomeWbufs",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mgcwork.go:545"
+    },
+    {
+      "offset": 265976,
+      "samples": 5,
+      "function": "runtime.(*bucket).mp",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:257"
+    },
+    {
+      "offset": 267636,
+      "samples": 5,
+      "function": "runtime.mProf_FlushLocked",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:156"
+    },
+    {
+      "offset": 267640,
+      "samples": 5,
+      "function": "runtime.mProf_FlushLocked",
+      "source": "/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/mprof.go:157"
+    }
+  ]
+}

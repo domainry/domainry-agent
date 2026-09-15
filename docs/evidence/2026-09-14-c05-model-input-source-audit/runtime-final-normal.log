@@ -1,0 +1,8 @@
+=== RUN   TestLegacyAgreementUpdateRestartResumeAndOriginalHistoryThroughRealHTTP
+    conversation_old_role_source_delivery_test.go:89: Preparing exact legacy agreement accepted_delivery 6 6
+    conversation_old_role_source_delivery_test.go:89: Real original report/analysis sources, legacy requirements recovery, exact preview, current field withdrawal, explicit actual publisher, original accepted task/delivery/history preservation, idempotency and restart verified
+    conversation_old_role_source_delivery_test.go:89: Real legacy original requirements updated, restart and original pages retained, withdrawn accepted executor rejected before mutation, exact resumed original execution role, new requirements/delivery/acceptance verified
+    conversation_old_role_source_delivery_test.go:89: Actual old report and analysis runs, immutable roots, original-role matching, model tool dispatch, bound reading-only execution, complete paginated originals, automatic exact-reference delivery, account acceptance, legacy contract required-root recovery from exact original admission call and delivery recovery from immutable actor, equivalent current reader and original page replay, publisher/original-role/field revocation and restart verified; no receiver professional execution
+--- PASS: TestLegacyAgreementUpdateRestartResumeAndOriginalHistoryThroughRealHTTP (44.50s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	45.508s

@@ -1,0 +1,42 @@
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/identical_neq
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/weaker_exclusion
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/composed_reader_exclusions
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/double_negation
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/source_and_reader_guardrails
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/identical_exists
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/identical_not_exists
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/negated_not_exists
+--- PASS: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection (0.04s)
+    --- PASS: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/identical_neq (0.01s)
+    --- PASS: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/weaker_exclusion (0.00s)
+    --- PASS: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/composed_reader_exclusions (0.00s)
+    --- PASS: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/double_negation (0.00s)
+    --- PASS: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/source_and_reader_guardrails (0.00s)
+    --- PASS: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/identical_exists (0.00s)
+    --- PASS: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/identical_not_exists (0.00s)
+    --- PASS: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/negated_not_exists (0.00s)
+=== RUN   TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees
+=== RUN   TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/SQL_unknown_cannot_become_false
+=== RUN   TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/weaker_exclusion
+=== RUN   TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/narrower_exclusion
+=== RUN   TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/not_empty_IN_includes_null
+=== RUN   TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/empty_IN_contains_no_rows
+=== RUN   TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/literal_inequality_does_not_prove_SQL_disjointness
+=== RUN   TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/source_unsupported_sibling
+=== RUN   TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/reader_unsupported_sibling
+=== RUN   TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/malformed_NOT
+=== RUN   TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/relation_existence_in_unused_branch
+--- PASS: TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees (0.00s)
+    --- PASS: TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/SQL_unknown_cannot_become_false (0.00s)
+    --- PASS: TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/weaker_exclusion (0.00s)
+    --- PASS: TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/narrower_exclusion (0.00s)
+    --- PASS: TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/not_empty_IN_includes_null (0.00s)
+    --- PASS: TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/empty_IN_contains_no_rows (0.00s)
+    --- PASS: TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/literal_inequality_does_not_prove_SQL_disjointness (0.00s)
+    --- PASS: TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/source_unsupported_sibling (0.00s)
+    --- PASS: TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/reader_unsupported_sibling (0.00s)
+    --- PASS: TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/malformed_NOT (0.00s)
+    --- PASS: TestSharedRecordScopeNegationPreservesUnknownAndValidatesWholeTrees/relation_existence_in_unused_branch (0.00s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/modulehost/report	0.836s

@@ -16,7 +16,54 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 		}
 		return tasks.StartScheduledConversationTask(ctx, r.ScheduledTask)
 	}
+	if op == "business_event_task_accept" {
+		tasks, ok := s.(agentsdk.BusinessEventConversationTaskService)
+		if !ok {
+			return nil, conversationFailure("unavailable", "business_event_tasks_unavailable")
+		}
+		return tasks.AcceptBusinessEventConversationTask(ctx, r.BusinessEventTask)
+	}
 	a := r.Authority
+	if strings.HasPrefix(op, "external_agent_") {
+		external, ok := s.(agentsdk.ConversationExternalAgentService)
+		if !ok {
+			return nil, conversationFailure("unavailable", "external_agent_unavailable")
+		}
+		switch op {
+		case "external_agent_assignments":
+			return external.ConversationExternalAgentAssignments(ctx, r.ExternalAgentQuery, a)
+		case "external_agent_claim":
+			return external.ClaimConversationExternalAgentTask(ctx, r.TaskID, r.ExternalAgentClaim, a)
+		case "external_agent_report":
+			return external.ReportConversationExternalAgentTask(ctx, r.TaskID, r.ExternalAgentReport, a)
+		}
+	}
+	if strings.HasPrefix(op, "skills_") || strings.HasPrefix(op, "improvements_") || op == "feedback_create" {
+		skills, ok := s.(agentsdk.ConversationSkillService)
+		if !ok {
+			return nil, conversationFailure("unavailable", "skills_unavailable")
+		}
+		switch op {
+		case "skills_list":
+			return skills.ConversationSkills(ctx, a)
+		case "skills_get":
+			return skills.ConversationSkill(ctx, r.SkillKey, r.SkillVersion, a)
+		case "skills_resource_get":
+			return skills.ConversationSkillResource(ctx, r.SkillKey, r.SkillVersion, r.SkillResourceKey, a)
+		case "feedback_create":
+			return skills.CreateConversationCapabilityFeedback(ctx, r.CapabilityFeedback, a)
+		case "improvements_list":
+			return skills.ConversationImprovementCandidates(ctx, a)
+		case "improvements_create":
+			return skills.CreateConversationImprovementCandidate(ctx, r.ImprovementCandidate, a)
+		case "improvements_evaluate":
+			return skills.EvaluateConversationImprovementCandidate(ctx, r.CandidateID, r.ImprovementEvaluation, a)
+		case "improvements_publish":
+			return skills.PublishConversationImprovementCandidate(ctx, r.CandidateID, r.ImprovementPublish, a)
+		case "improvements_rollback":
+			return skills.RollbackConversationImprovement(ctx, r.CandidateID, r.ImprovementRollback, a)
+		}
+	}
 	if strings.HasPrefix(op, "agents_") || strings.HasPrefix(op, "delegations_") {
 		peers, ok := s.(agentsdk.ConversationCollaborationService)
 		if !ok {
@@ -49,6 +96,51 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 				return nil, conversationFailure("unavailable", "result_read_unavailable")
 			}
 			return reader.ReadConversationDeliveryResult(ctx, r.DelegationID, r.DeliveryResultRead, a)
+		case "delegations_execution_publications":
+			owner, ok := s.(agentsdk.ConversationExecutionPublicationOwnerService)
+			if !ok {
+				return nil, conversationFailure("unavailable", "execution_publication_controls_unavailable")
+			}
+			return owner.ConversationDelegationExecutionPublications(ctx, r.DelegationID, a)
+		case "delegations_execution_share", "delegations_executions", "delegations_execution", "delegations_execution_result":
+			sharing, ok := s.(agentsdk.ConversationExecutionSharingService)
+			if !ok {
+				return nil, conversationFailure("unavailable", "execution_sharing_unavailable")
+			}
+			switch op {
+			case "delegations_execution_share":
+				return sharing.PublishConversationDelegationExecution(ctx, r.DelegationID, r.ExecutionShare, a)
+			case "delegations_executions":
+				return sharing.ConversationDelegationExecutions(ctx, r.DelegationID, a)
+			case "delegations_execution":
+				return sharing.ReadConversationDelegationExecution(ctx, r.DelegationID, r.ExecutionReference, a)
+			default:
+				return sharing.ReadConversationDelegationExecutionResult(ctx, r.DelegationID, r.ResultRead, a)
+			}
+		case "delegations_publication":
+			reader, ok := s.(agentsdk.ConversationDeliveryPublicationReader)
+			if !ok {
+				return nil, conversationFailure("unavailable", "delivery_publication_unavailable")
+			}
+			return reader.PreviewConversationDeliveryPublication(ctx, r.DelegationID, r.DeliveryPublication, a)
+		case "delegations_publications":
+			reader, ok := s.(agentsdk.ConversationDeliveryPublicationReader)
+			if !ok {
+				return nil, conversationFailure("unavailable", "delivery_publication_unavailable")
+			}
+			return reader.ConversationDeliveryPublicationCandidates(ctx, r.DelegationID, r.AgreementBefore, a)
+		case "delegations_contract_publication", "delegations_contract_candidates", "delegations_contract_publications":
+			reader, ok := s.(agentsdk.ConversationContractPublicationReader)
+			if !ok {
+				return nil, conversationFailure("unavailable", "contract_publication_unavailable")
+			}
+			if op == "delegations_contract_publication" {
+				return reader.PreviewConversationContractPublication(ctx, r.DelegationID, r.ContractPublication, a)
+			}
+			if op == "delegations_contract_candidates" {
+				return reader.ConversationContractPublicationCandidates(ctx, r.DelegationID, r.AgreementBefore, a)
+			}
+			return reader.ConversationContractPublicationHistory(ctx, r.DelegationID, r.AgreementBefore, a)
 		case "delegations_artifact", "delegations_export":
 			reader, ok := s.(agentsdk.ConversationDeliveryArtifactReader)
 			if !ok {
@@ -218,6 +310,27 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 			return tasks.ConversationTasks(ctx, r.TaskQuery, a)
 		case "tasks_get":
 			return tasks.ConversationTask(ctx, r.TaskID, a)
+		case "tasks_plans":
+			plans, ok := s.(agentsdk.ConversationTaskPlanService)
+			if !ok {
+				return nil, conversationFailure("unavailable", "plans_unavailable")
+			}
+			return plans.ConversationTaskPlans(ctx, r.TaskID, r.PlanBefore, a)
+		case "tasks_completions", "tasks_completion_review":
+			completion, ok := s.(agentsdk.ConversationTaskCompletionService)
+			if !ok {
+				return nil, conversationFailure("unavailable", "task_completion_unavailable")
+			}
+			if op == "tasks_completions" {
+				return completion.ConversationTaskCompletionHistory(ctx, r.TaskID, r.CompletionBefore, a)
+			}
+			return completion.ReviewConversationTaskCompletion(ctx, r.TaskID, r.TaskCompletionReview, a)
+		case "tasks_update":
+			agreements, ok := s.(agentsdk.ConversationTaskAgreementService)
+			if !ok {
+				return nil, conversationFailure("unavailable", "task_agreement_unavailable")
+			}
+			return agreements.UpdateConversationTaskAgreement(ctx, r.TaskID, r.TaskAgreementUpdate, a)
 		case "tasks_cancel", "tasks_resume":
 			controls, ok := s.(agentsdk.ConversationTaskControlService)
 			if !ok {
@@ -247,6 +360,23 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 		return s.Messages(ctx, r.ConversationID, r.Messages, a)
 	case "run":
 		return s.Run(ctx, r.ConversationID, r.RunID, a)
+	case "conversation_fork", "trajectory_get", "trajectory_export", "trajectory_replay", "trajectory_compare":
+		trajectories, ok := s.(agentsdk.ConversationTrajectoryService)
+		if !ok {
+			return nil, conversationFailure("unavailable", "trajectory_unavailable")
+		}
+		switch op {
+		case "conversation_fork":
+			return trajectories.ForkConversation(ctx, r.ConversationID, r.RunID, r.Fork, a)
+		case "trajectory_get":
+			return trajectories.ConversationTrajectory(ctx, r.ConversationID, r.RunID, a)
+		case "trajectory_export":
+			return trajectories.ExportConversationTrajectory(ctx, r.ConversationID, r.RunID, a)
+		case "trajectory_replay":
+			return trajectories.ReplayConversationTrajectory(ctx, r.ConversationID, r.RunID, r.TrajectoryReplay, a)
+		default:
+			return trajectories.CompareConversationTrajectories(ctx, r.ConversationID, r.RunID, r.TrajectoryCompare, a)
+		}
 	case "events":
 		return s.Events(ctx, r.ConversationID, r.RunID, r.AfterSeq, r.Limit, a)
 	case "cancel":

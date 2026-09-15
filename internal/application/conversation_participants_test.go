@@ -35,6 +35,21 @@ func (r *participantReceiptTestRepository) Get(context.Context, string, sdk.Conv
 	return sdk.Conversation{}, conversationFailure("forbidden", "private_source_withdrawn")
 }
 
+func TestExitedSubjectDelegationRemainsMetadataWithoutReadingDeletedRecords(t *testing.T) {
+	a := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "owner"}
+	d := sdk.ConversationDelegation{ID: "exited", SubjectExited: true, OwnerUserID: a.UserID, Status: "cancelled", Revision: 5, Brief: sdk.ConversationTaskBrief{Goal: "ERASED-CONTENT"}, TaskID: "erased-task", ConversationID: "erased-execution", Delivery: &sdk.ConversationDelegationDelivery{Summary: "ERASED-DELIVERY"}}
+	repo := &participantReceiptTestRepository{delegation: d}
+	s := &ConversationService{runtimeID: a.RuntimeID, repo: repo, options: ConversationOptions{CollaborationAuthorizer: sharingSubjectTestPolicy{}}}
+	out, err := s.projectConversationDelegation(t.Context(), d, a)
+	if err != nil || !out.SubjectExited || !out.ContractOmitted || out.Status != "cancelled" || out.Access == nil || !out.Access.View || out.Access.Receive || out.Access.ExecutionRead || out.Access.DeliveryRead || out.TaskID != "" || out.Task != nil || out.Delivery != nil || len(out.Messages) != 0 {
+		t.Fatal("erased subject broke safe current metadata", out, err)
+	}
+	raw, _ := json.Marshal(out)
+	if strings.Contains(string(raw), "ERASED-") {
+		t.Fatal("erased source-derived payload survived", string(raw))
+	}
+}
+
 func TestDelegationParticipantRevocationReturnsReceiptWithoutReadingWithdrawnSources(t *testing.T) {
 	a := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "owner"}
 	repo := &participantReceiptTestRepository{delegation: sdk.ConversationDelegation{
@@ -65,14 +80,14 @@ type participantRoleTestPolicy struct {
 func (p *participantRoleTestPolicy) AuthorizeConversationCollaboration(_ context.Context, in sdk.ConversationCollaborationAuthorizationRequest) (sdk.ConversationCollaborationAuthorization, error) {
 	p.request = in
 	if p.allow {
-		return sdk.ConversationCollaborationAuthorization{Allowed: []string{"communicate"}}, nil
+		return sdk.ConversationCollaborationAuthorization{Allowed: append([]string{}, in.Operations...)}, nil
 	}
 	return sdk.ConversationCollaborationAuthorization{}, nil
 }
 
 func TestDelegationParticipantIntakeKeepsTheSendersSelectedRole(t *testing.T) {
 	receiver := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "owner", RoleKey: "executor-role"}
-	repo := &participantReceiptTestRepository{delegation: sdk.ConversationDelegation{ID: "work", OwnerUserID: "owner", Participants: []sdk.ConversationDelegationParticipant{{UserID: "participant", Operations: []string{"view", "communicate"}, Revision: 3}}}}
+	repo := &participantReceiptTestRepository{delegation: sdk.ConversationDelegation{ID: "work", OwnerUserID: "owner", Participants: []sdk.ConversationDelegationParticipant{{UserID: "participant", Operations: []string{"view", "communicate"}, Revision: 3, Publisher: &receiver}}}}
 	policy := &participantRoleTestPolicy{allow: true}
 	s := &ConversationService{runtimeID: "runtime", repo: repo, options: ConversationOptions{CollaborationAuthorizer: policy}}
 	m := sdk.ConversationAgentMessage{DelegationID: "work", FromUserID: "participant", ParticipantUserID: "participant", ParticipantRoleKey: "reviewer-role", ParticipantRevision: 3}

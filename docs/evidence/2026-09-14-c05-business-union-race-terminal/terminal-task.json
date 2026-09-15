@@ -1,0 +1,289 @@
+{
+  "agent_id": "agent_d850982bf9ed9e8265c93ab4886d2ae8",
+  "delegation_id": "delegation_4e60691d14e4438aadab195c2fdf2b66",
+  "execution_conversation_id": "conv_f4f76f3f0725a1359b9e8db239959b49",
+  "id": "task_f4f76f3f0725a1359b9e8db239959b49",
+  "status": "failed",
+  "goal": "Read the current customer catalog, authorized query pages, record and related orders",
+  "allowed_tools": [
+    "business_catalog",
+    "query_records",
+    "get_record",
+    "query_related_records",
+    "delegation_get",
+    "delegation_update"
+  ],
+  "budget": {
+    "max_steps": 12,
+    "max_tool_calls": 12,
+    "max_output_bytes": 8192,
+    "timeout_seconds": 90
+  },
+  "source_conversation_id": "conv_aeac093501329bf9c96a0d2e1b46f2e7",
+  "source_run_id": "crun_886349777f3ec4aac3d3cc97565baf27",
+  "execution_run_id": "crun_96e208cfa32929465978a61ee93806f9",
+  "progress": {
+    "run_status": "failed",
+    "attempt": 1,
+    "steps": 7,
+    "tool_calls": 7,
+    "last_event_seq": 45
+  },
+  "control": {
+    "can_cancel": false,
+    "can_resume": true
+  },
+  "artifacts": [],
+  "artifacts_complete": false,
+  "artifacts_omitted": true,
+  "completion_event_id": "task_event_58a0a6e3d84936b723a92f4218f3ee90",
+  "completion_event_seq": 45,
+  "error_code": "execution_interrupted",
+  "created_at": "2026-09-14T11:35:06.487Z",
+  "updated_at": "2026-09-14T11:36:36.573Z",
+  "completed_at": "2026-09-14T11:36:36.573Z",
+  "input": "Read current customer catalog; filter by approved names, exclusions and balance range; read first and second original cursor pages, discovered record and related orders; submit all five exact receipts",
+  "steps": [
+    {
+      "number": 0,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "business-catalog",
+          "name": "business_catalog",
+          "arguments": "{\"object_key\":\"customer\"}",
+          "status": "completed",
+          "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"scope_sha256\":\"40aa7c6996a1ad6b74dfcf73b2262dde7a96bfdae83f570141f93615d5536938\",\"operation\":\"business_catalog\",\"input\":{\"object_key\":\"customer\"},\"data\":{\"items\":[{\"key\":\"customer\",\"label\":\"Customer\",\"version\":\"28fe3bb58cf9d2d5ca8b4d4e3a0cd7f871786db5d1f636a75ba0ffa531286442\",\"readable\":true,\"pagination\":\"cursor\",\"fields\":[{\"key\":\"balance\",\"label\":\"余额\",\"type\":\"integer\",\"filter_operators\":[\"eq\",\"ne\",\"in\",\"not_in\",\"is_null\",\"is_not_null\",\"gt\",\"gte\",\"lt\",\"lte\"],\"sortable\":true},{\"key\":\"name\",\"label\":\"Name\",\"type\":\"text\",\"filter_operators\":[\"eq\",\"ne\",\"in\",\"not_in\",\"is_null\",\"is_not_null\",\"contains\"],\"sortable\":true},{\"key\":\"status\",\"label\":\"状态\",\"type\":\"select\",\"filter_operators\":[\"eq\",\"ne\",\"in\",\"not_in\",\"is_null\",\"is_not_null\"],\"sortable\":true}],\"relations\":[{\"direction\":\"reverse\",\"key\":\"reverse:opportunity:customer\",\"label\":\"Opportunity / Customer\",\"object_key\":\"opportunity\"},{\"direction\":\"reverse\",\"key\":\"reverse:order:customer\",\"label\":\"订单 / customer\",\"object_key\":\"order\"},{\"direction\":\"reverse\",\"key\":\"reverse:project:customer\",\"label\":\"项目 / customer\",\"object_key\":\"project\"}]}],\"complete\":true}}",
+          "result_reference": {
+            "conversation_id": "conv_f4f76f3f0725a1359b9e8db239959b49",
+            "run_id": "crun_96e208cfa32929465978a61ee93806f9",
+            "step": 0,
+            "call_id": "business-catalog",
+            "sha256": "df4b40aa4dae45886ec4d519f95dddb908604a286b7a16c8d16aee9b7339a748"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "2eb4f57a6f669878eedc704e937c9806e45b7e009f7eec6697ee35db87fb8c32",
+            "checks": 1
+          },
+          "started_at": "2026-09-14T11:35:10.351891Z",
+          "completed_at": "2026-09-14T11:35:10.603131Z",
+          "duration_ms": 251
+        }
+      ],
+      "started_at": "2026-09-14T11:35:09.137744Z",
+      "completed_at": "2026-09-14T11:35:09.301252Z",
+      "duration_ms": 163
+    },
+    {
+      "number": 1,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "business-query",
+          "name": "query_records",
+          "arguments": "{\"object_key\":\"customer\",\"fields\":[\"name\",\"balance\"],\"filters\":[{\"field\":\"name\",\"operator\":\"in\",\"value\":[\"Alpha\",\"Beta\",\"Gamma\",\"Other\"]},{\"field\":\"name\",\"operator\":\"not_in\",\"value\":[\"Other\"]},{\"field\":\"balance\",\"operator\":\"gte\",\"value\":10},{\"field\":\"balance\",\"operator\":\"lt\",\"value\":35}],\"sort\":[{\"field\":\"name\",\"direction\":\"asc\"}],\"page_size\":1}",
+          "status": "completed",
+          "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"scope_sha256\":\"40aa7c6996a1ad6b74dfcf73b2262dde7a96bfdae83f570141f93615d5536938\",\"operation\":\"query_records\",\"input\":{\"object_key\":\"customer\",\"fields\":[\"name\",\"balance\"],\"filters\":[{\"field\":\"name\",\"operator\":\"in\",\"value\":[\"Alpha\",\"Beta\",\"Gamma\",\"Other\"]},{\"field\":\"name\",\"operator\":\"not_in\",\"value\":[\"Other\"]},{\"field\":\"balance\",\"operator\":\"gte\",\"value\":10},{\"field\":\"balance\",\"operator\":\"lt\",\"value\":35}],\"sort\":[{\"field\":\"name\",\"direction\":\"asc\"}],\"page_size\":1},\"data\":{\"object_key\":\"customer\",\"items\":[{\"id\":\"customer_customer_acme\",\"version\":\"2026-09-14T11:34:46Z\",\"data\":{\"balance\":10,\"name\":\"Alpha\"}}],\"page\":1,\"page_size\":1,\"has_next\":true,\"next_cursor\":\"eyJ2IjoxLCJzY29wZSI6IjQwYWE3YzY5OTZhMWFkNmI3NGRmY2Y3M2IyMjYyZGRlN2E5NmJmZGFlODNmNTcwMTQxZjkzNjE1ZDU1MzY5MzgiLCJxdWVyeSI6IjYzZTBkMjNkMWIyMzYyNjZkMjZhOTA0NjI5ZDJhMDUwZWVhYzBiNjhiMTgwZTkwMTE3ZmY3NmFlOGUxMGExMzYiLCJwYWdlIjoyLCJ2YWx1ZXMiOlsiQWxwaGEiLCJjdXN0b21lcl9jdXN0b21lcl9hY21lIl19\",\"total\":3},\"host_proof\":\"2:b5fac14bd15aef9f8c64fb95fb5c92bbdce9def85db2867b08181d7c34276e44:6b44ccc877f5f074d971095c06426cacdd078aae5ebc5043b419db55fd7cf478\"}",
+          "result_reference": {
+            "conversation_id": "conv_f4f76f3f0725a1359b9e8db239959b49",
+            "run_id": "crun_96e208cfa32929465978a61ee93806f9",
+            "step": 1,
+            "call_id": "business-query",
+            "sha256": "574b12adf4e91e3471b2a5d704ea9879168b3507cec87912d05ccadea1fcd35a"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "2eb4f57a6f669878eedc704e937c9806e45b7e009f7eec6697ee35db87fb8c32",
+            "checks": 1
+          },
+          "started_at": "2026-09-14T11:35:14.365663Z",
+          "completed_at": "2026-09-14T11:35:15.595391Z",
+          "duration_ms": 1229
+        }
+      ],
+      "started_at": "2026-09-14T11:35:12.828771Z",
+      "completed_at": "2026-09-14T11:35:13.017815Z",
+      "duration_ms": 189
+    },
+    {
+      "number": 2,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "business-query-next",
+          "name": "query_records",
+          "arguments": "{\"object_key\":\"customer\",\"fields\":[\"name\",\"balance\"],\"filters\":[{\"field\":\"name\",\"operator\":\"in\",\"value\":[\"Alpha\",\"Beta\",\"Gamma\",\"Other\"]},{\"field\":\"name\",\"operator\":\"not_in\",\"value\":[\"Other\"]},{\"field\":\"balance\",\"operator\":\"gte\",\"value\":10},{\"field\":\"balance\",\"operator\":\"lt\",\"value\":35}],\"sort\":[{\"field\":\"name\",\"direction\":\"asc\"}],\"page_size\":1,\"cursor\":\"eyJ2IjoxLCJzY29wZSI6IjQwYWE3YzY5OTZhMWFkNmI3NGRmY2Y3M2IyMjYyZGRlN2E5NmJmZGFlODNmNTcwMTQxZjkzNjE1ZDU1MzY5MzgiLCJxdWVyeSI6IjYzZTBkMjNkMWIyMzYyNjZkMjZhOTA0NjI5ZDJhMDUwZWVhYzBiNjhiMTgwZTkwMTE3ZmY3NmFlOGUxMGExMzYiLCJwYWdlIjoyLCJ2YWx1ZXMiOlsiQWxwaGEiLCJjdXN0b21lcl9jdXN0b21lcl9hY21lIl19\"}",
+          "status": "completed",
+          "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"scope_sha256\":\"40aa7c6996a1ad6b74dfcf73b2262dde7a96bfdae83f570141f93615d5536938\",\"operation\":\"query_records\",\"input\":{\"object_key\":\"customer\",\"fields\":[\"name\",\"balance\"],\"filters\":[{\"field\":\"name\",\"operator\":\"in\",\"value\":[\"Alpha\",\"Beta\",\"Gamma\",\"Other\"]},{\"field\":\"name\",\"operator\":\"not_in\",\"value\":[\"Other\"]},{\"field\":\"balance\",\"operator\":\"gte\",\"value\":10},{\"field\":\"balance\",\"operator\":\"lt\",\"value\":35}],\"sort\":[{\"field\":\"name\",\"direction\":\"asc\"}],\"page_size\":1,\"cursor\":\"eyJ2IjoxLCJzY29wZSI6IjQwYWE3YzY5OTZhMWFkNmI3NGRmY2Y3M2IyMjYyZGRlN2E5NmJmZGFlODNmNTcwMTQxZjkzNjE1ZDU1MzY5MzgiLCJxdWVyeSI6IjYzZTBkMjNkMWIyMzYyNjZkMjZhOTA0NjI5ZDJhMDUwZWVhYzBiNjhiMTgwZTkwMTE3ZmY3NmFlOGUxMGExMzYiLCJwYWdlIjoyLCJ2YWx1ZXMiOlsiQWxwaGEiLCJjdXN0b21lcl9jdXN0b21lcl9hY21lIl19\"},\"data\":{\"object_key\":\"customer\",\"items\":[{\"id\":\"customer_customer_browser_Beta\",\"version\":\"2026-09-14T11:34:46Z\",\"data\":{\"balance\":20,\"name\":\"Beta\"}}],\"page\":2,\"page_size\":1,\"has_next\":true,\"next_cursor\":\"eyJ2IjoxLCJzY29wZSI6IjQwYWE3YzY5OTZhMWFkNmI3NGRmY2Y3M2IyMjYyZGRlN2E5NmJmZGFlODNmNTcwMTQxZjkzNjE1ZDU1MzY5MzgiLCJxdWVyeSI6IjYzZTBkMjNkMWIyMzYyNjZkMjZhOTA0NjI5ZDJhMDUwZWVhYzBiNjhiMTgwZTkwMTE3ZmY3NmFlOGUxMGExMzYiLCJwYWdlIjozLCJ2YWx1ZXMiOlsiQmV0YSIsImN1c3RvbWVyX2N1c3RvbWVyX2Jyb3dzZXJfQmV0YSJdfQ\"},\"host_proof\":\"2:b5fac14bd15aef9f8c64fb95fb5c92bbdce9def85db2867b08181d7c34276e44:43f97c2246f3cf6a98ab75ddca2a8b2c8a42134ac5516d70eb7fc0d4472fdf25\"}",
+          "result_reference": {
+            "conversation_id": "conv_f4f76f3f0725a1359b9e8db239959b49",
+            "run_id": "crun_96e208cfa32929465978a61ee93806f9",
+            "step": 2,
+            "call_id": "business-query-next",
+            "sha256": "b1f1d46b986df82e29bddb5195fc2b5e0813cf52a69900ba744e0c3d15b5c4dd"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "2eb4f57a6f669878eedc704e937c9806e45b7e009f7eec6697ee35db87fb8c32",
+            "checks": 1
+          },
+          "started_at": "2026-09-14T11:35:22.788246Z",
+          "completed_at": "2026-09-14T11:35:24.020232Z",
+          "duration_ms": 1231
+        }
+      ],
+      "started_at": "2026-09-14T11:35:19.975385Z",
+      "completed_at": "2026-09-14T11:35:20.150076Z",
+      "duration_ms": 174
+    },
+    {
+      "number": 3,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "business-get",
+          "name": "get_record",
+          "arguments": "{\"object_key\":\"customer\",\"record_id\":\"customer_customer_acme\",\"fields\":[\"name\",\"balance\"]}",
+          "status": "completed",
+          "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"scope_sha256\":\"40aa7c6996a1ad6b74dfcf73b2262dde7a96bfdae83f570141f93615d5536938\",\"operation\":\"get_record\",\"input\":{\"object_key\":\"customer\",\"record_id\":\"customer_customer_acme\",\"fields\":[\"name\",\"balance\"]},\"data\":{\"id\":\"customer_customer_acme\",\"version\":\"2026-09-14T11:34:46Z\",\"data\":{\"balance\":10,\"name\":\"Alpha\"}},\"host_proof\":\"2:b5fac14bd15aef9f8c64fb95fb5c92bbdce9def85db2867b08181d7c34276e44:359895502e44d2ee5f042dcf8f21a16212469ad557a0784267d2f3932e93657a\"}",
+          "result_reference": {
+            "conversation_id": "conv_f4f76f3f0725a1359b9e8db239959b49",
+            "run_id": "crun_96e208cfa32929465978a61ee93806f9",
+            "step": 3,
+            "call_id": "business-get",
+            "sha256": "8ca802bf2a1ad30d07163a5c1c0d9b686e2902e578aad5da56c0373b18d6ed4c"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "2eb4f57a6f669878eedc704e937c9806e45b7e009f7eec6697ee35db87fb8c32",
+            "checks": 1
+          },
+          "started_at": "2026-09-14T11:35:36.257897Z",
+          "completed_at": "2026-09-14T11:35:37.459381Z",
+          "duration_ms": 1201
+        }
+      ],
+      "started_at": "2026-09-14T11:35:31.670449Z",
+      "completed_at": "2026-09-14T11:35:31.922311Z",
+      "duration_ms": 251
+    },
+    {
+      "number": 4,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "business-related",
+          "name": "query_related_records",
+          "arguments": "{\"object_key\":\"customer\",\"record_id\":\"customer_customer_acme\",\"relation_key\":\"reverse:order:customer\",\"fields\":[\"name\",\"amount\"],\"page_size\":1}",
+          "status": "completed",
+          "result_preview": "{\"version\":1,\"source\":\"runtime-business-v2:b76adcb3ba50170ec6416f746013fe8ddddac6327553798916234830d667b428\",\"scope_sha256\":\"40aa7c6996a1ad6b74dfcf73b2262dde7a96bfdae83f570141f93615d5536938\",\"operation\":\"query_related_records\",\"input\":{\"object_key\":\"customer\",\"record_id\":\"customer_customer_acme\",\"relation_key\":\"reverse:order:customer\",\"fields\":[\"name\",\"amount\"],\"page_size\":1},\"data\":{\"source_object_key\":\"customer\",\"source_record_id\":\"customer_customer_acme\",\"relation_key\":\"reverse:order:customer\",\"object_key\":\"order\",\"items\":[{\"id\":\"order_relation_order_a\",\"version\":\"2026-09-14T11:34:46Z\",\"data\":{\"amount\":100,\"name\":\"Order Alpha\"}}],\"page\":1,\"page_size\":1,\"has_next\":true,\"next_cursor\":\"eyJ2IjoxLCJzY29wZSI6IjQwYWE3YzY5OTZhMWFkNmI3NGRmY2Y3M2IyMjYyZGRlN2E5NmJmZGFlODNmNTcwMTQxZjkzNjE1ZDU1MzY5MzgiLCJxdWVyeSI6ImRiYmZiN2UxYjU3ZWNiODExOTJiNzdmOThjYTc5OGZjNmU1N2Q2MGYzN2NlNDg2ZDkxNzExMTVjNzI5MGM1ZDkiLCJwYWdlIjoyLCJ2YWx1ZXMiOlsib3JkZXJfcmVsYXRpb25fb3JkZXJfYSJdfQ\",\"total\":3},\"host_proof\":\"2:b5fac14bd15aef9f8c64fb95fb5c92bbdce9def85db2867b08181d7c34276e44:534e31cff4571ce004d9347b12244f7e86313451df05fb564ffcdff3b3d4b58f\"}",
+          "result_reference": {
+            "conversation_id": "conv_f4f76f3f0725a1359b9e8db239959b49",
+            "run_id": "crun_96e208cfa32929465978a61ee93806f9",
+            "step": 4,
+            "call_id": "business-related",
+            "sha256": "b191adc2fbf6d00bf2882a31eac294b18c4919a290adea53b5fa711f0d640175"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "2eb4f57a6f669878eedc704e937c9806e45b7e009f7eec6697ee35db87fb8c32",
+            "checks": 1
+          },
+          "started_at": "2026-09-14T11:35:50.734753Z",
+          "completed_at": "2026-09-14T11:35:53.04228Z",
+          "duration_ms": 2307
+        }
+      ],
+      "started_at": "2026-09-14T11:35:46.49087Z",
+      "completed_at": "2026-09-14T11:35:46.65852Z",
+      "duration_ms": 167
+    },
+    {
+      "number": 5,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "read",
+          "id": "business-agreement",
+          "name": "delegation_get",
+          "arguments": "{\"id\":\"delegation_4e60691d14e4438aadab195c2fdf2b66\"}",
+          "status": "completed",
+          "resource_id": "delegation_4e60691d14e4438aadab195c2fdf2b66",
+          "result_preview": "{\"access\":{\"view\":true,\"receive\":true,\"manage\":false,\"communicate\":true,\"execution_read\":true,\"delivery_read\":true,\"share\":false},\"assignments\":[{\"execution_subject\":{\"runtime_id\":\"business-browser-runtime\",\"workspace_id\":\"workspace-primary\",\"user_id\":\"professional_source\"},\"number\":1,\"agent_id\":\"agent_d850982bf9ed9e8265c93ab4886d2ae8\",\"agent_revision\":1,\"conversation_id\":\"conv_f4f76f3f0725a1359b9e8db239959b49\",\"task_id\":\"task_f4f76f3f0725a1359b9e8db239959b49\",\"agreement_revision\":1,\"reason\":\"Delegate authorized business reads to the configuration owner's independent identity\",\"actor_id\":\"admin\",\"source\":{\"conversation_id\":\"conv_aeac093501329bf9c96a0d2e1b46f2e7\",\"run_id\":\"crun_886349777f3ec4aac3d3cc97565baf27\",\"before_step\":1},\"created_at\":\"2026-09-14T11:35:06.487Z\"}],\"dependency_states\":[],\"owner_user_id\":\"admin\",\"execution_subject\":{\"runtime_id\":\"business-browser-runtime\",\"workspace_id\":\"workspace-primary\",\"user_id\":\"professional_source\"},\"assignment_number\":1,\"input_source\":{\"conversation_id\":\"conv_aeac093501329bf9c96a0d2e1b46f2e7\",\"run_id\":\"crun_886349777f3ec4aac3d3cc97565baf27\",\"before_step\":1},\"dependencies\":[],\"pending_changes\":null,\"agreement_revision\":1,\"adopted_agreement_revision\":1,\"adopted_at\":\"2026-09-14T11:35:08.256238Z\",\"brief_source\":{\"conversation_id\":\"conv_aeac093501329bf9c96a0d2e1b46f2e7\",\"run_id\":\"crun_886349777f3ec4aac3d3cc97565baf27\",\"before_step\":1},\"requirements\":{\"tools\":[\"business_catalog\",\"query_records\",\"get_record\",\"query_related_records\"]},\"root_conversation_id\":\"conv_aeac093501329bf9c96a0d2e1b46f2e7\",\"id\":\"delegation_4e60691d14e4438aadab195c2fdf2b66\",\"from_agent_id\":\"default\",\"to_agent_id\":\"agent_d850982bf9ed9e8265c93ab4886d2ae8\",\"source_conversation_id\":\"conv_aeac093501329bf9c96a0d2e1b46f2e7\",\"source_run_id\":\"crun_886349777f3ec4aac3d3cc97565baf27\",\"conversation_id\":\"conv_f4f76f3f0725a1359b9e8db239959b49\",\"task_id\":\"task_f4f76f3f0725a1359b9e8db239959b49\",\"purpose\":\"Delegate authorized business reads to the configuration owner's independent identity\",\"brief\":{\"verification_rules\":[{\"",
+          "result_truncated": true,
+          "result_reference": {
+            "conversation_id": "conv_f4f76f3f0725a1359b9e8db239959b49",
+            "run_id": "crun_96e208cfa32929465978a61ee93806f9",
+            "step": 5,
+            "call_id": "business-agreement",
+            "sha256": "9d159132cd8006101d0992eecf8644d7c70c5161b4868f0cc637f306256dd933"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "2eb4f57a6f669878eedc704e937c9806e45b7e009f7eec6697ee35db87fb8c32",
+            "checks": 1
+          },
+          "started_at": "2026-09-14T11:36:09.888933Z",
+          "completed_at": "2026-09-14T11:36:15.294131Z",
+          "duration_ms": 5405
+        }
+      ],
+      "started_at": "2026-09-14T11:36:04.071339Z",
+      "completed_at": "2026-09-14T11:36:04.242054Z",
+      "duration_ms": 170
+    },
+    {
+      "number": 6,
+      "attempt": 1,
+      "status": "tools",
+      "text": "",
+      "calls": [
+        {
+          "effect": "write",
+          "id": "business-deliver",
+          "name": "delegation_update",
+          "arguments": "{\"id\":\"delegation_4e60691d14e4438aadab195c2fdf2b66\",\"update\":{\"action\":\"deliver\",\"delivery\":{\"conditions\":[{\"condition\":0,\"verdict\":\"met\",\"basis\":\"Read the source-owned original business_catalog result\",\"receipts\":[{\"conversation_id\":\"conv_f4f76f3f0725a1359b9e8db239959b49\",\"run_id\":\"crun_96e208cfa32929465978a61ee93806f9\",\"step\":0,\"call_id\":\"business-catalog\",\"sha256\":\"df4b40aa4dae45886ec4d519f95dddb908604a286b7a16c8d16aee9b7339a748\"}]},{\"condition\":1,\"verdict\":\"met\",\"basis\":\"Read the source-owned original query_records result\",\"receipts\":[{\"conversation_id\":\"conv_f4f76f3f0725a1359b9e8db239959b49\",\"run_id\":\"crun_96e208cfa32929465978a61ee93806f9\",\"step\":1,\"call_id\":\"business-query\",\"sha256\":\"574b12adf4e91e3471b2a5d704ea9879168b3507cec87912d05ccadea1fcd35a\"}]},{\"condition\":2,\"verdict\":\"met\",\"basis\":\"Read the source-owned original query_records result\",\"receipts\":[{\"conversation_id\":\"conv_f4f76f3f0725a1359b9e8db239959b49\",\"run_id\":\"crun_96e208cfa32929465978a61ee93806f9\",\"step\":2,\"call_id\":\"business-query-next\",\"sha256\":\"b1f1d46b986df82e29bddb5195fc2b5e0813cf52a69900ba744e0c3d15b5c4dd\"}]},{\"condition\":3,\"verdict\":\"met\",\"basis\":\"Read the source-owned original get_record result\",\"receipts\":[{\"conversation_id\":\"conv_f4f76f3f0725a1359b9e8db239959b49\",\"run_id\":\"crun_96e208cfa32929465978a61ee93806f9\",\"step\":3,\"call_id\":\"business-get\",\"sha256\":\"8ca802bf2a1ad30d07163a5c1c0d9b686e2902e578aad5da56c0373b18d6ed4c\"}]},{\"condition\":4,\"verdict\":\"met\",\"basis\":\"Read the source-owned original query_related_records result\",\"receipts\":[{\"conversation_id\":\"conv_f4f76f3f0725a1359b9e8db239959b49\",\"run_id\":\"crun_96e208cfa32929465978a61ee93806f9\",\"step\":4,\"call_id\":\"business-related\",\"sha256\":\"b191adc2fbf6d00bf2882a31eac294b18c4919a290adea53b5fa711f0d640175\"}]}],\"agreement_revision\":1,\"brief_version\":1,\"summary\":\"Original customer and related order receipts\",\"data\":{\"business_receipts\":5},\"evidence\":[],\"unresolved\":[]},\"expected_revision\":3,\"reason\":\"Completed all declared business reads with original receipts\"}}",
+          "status": "failed",
+          "error_code": "business_unavailable",
+          "result_preview": "{\"error\":\"business_unavailable\"}",
+          "result_reference": {
+            "conversation_id": "conv_f4f76f3f0725a1359b9e8db239959b49",
+            "run_id": "crun_96e208cfa32929465978a61ee93806f9",
+            "step": 6,
+            "call_id": "business-deliver",
+            "sha256": "32641f6751cf33db873939bd7e43eeba8152017a5559b5939ae70827da441f95"
+          },
+          "authorization": {
+            "status": "granted",
+            "revision": "2eb4f57a6f669878eedc704e937c9806e45b7e009f7eec6697ee35db87fb8c32",
+            "checks": 1
+          },
+          "started_at": "2026-09-14T11:36:33.50593Z",
+          "completed_at": "2026-09-14T11:36:36.565664Z",
+          "duration_ms": 3059
+        }
+      ],
+      "started_at": "2026-09-14T11:36:27.01025Z",
+      "completed_at": "2026-09-14T11:36:27.184457Z",
+      "duration_ms": 174
+    }
+  ]
+}

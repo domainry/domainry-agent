@@ -2,7 +2,7 @@
 
 会话支持可选的 [文档检索](knowledge.md)，以及 `conversation.execution.v1` 工具执行扩展。当前 Web Module 已装配时间、计算、历史检索、原文读取、个人记忆与待办工具，以及 `ask_user` 和持久化确认 / 核查流程；工具按权限与已挂载能力开放。
 
-会话附件保留私有原文件存储、管理网页、授权下载和 PDF / DOCX / XLSX 在线预览，见[原件预览验收](testing-2026-09-11-original-preview.md)。Agent 不解析源文件、不缓存解析正文，也不通过模型工具读取或提取本地附件正文；旧实现已删除，见[移除与升级说明](document-parsing.md)。检索及知识内容读取由 Connector 提供，现有 `knowledge_extract` 只处理它返回的受权文本。会话附件的远端索引与检索接入进度以 [K07](agent-capabilities-todo.md) 为准。
+会话附件保留私有原文件存储、管理网页、授权下载和 PDF / DOCX / XLSX 在线预览，见[原件预览验收](testing-2026-09-11-original-preview.md)。除用户明确把受支持图片作为本次消息内容发送外，Agent 不自动解析源文件、不缓存解析正文，也不通过模型工具读取或提取本地附件正文；旧解析实现已删除，见[移除与升级说明](document-parsing.md)。检索及知识内容读取由 Connector 提供，现有 `knowledge_extract` 只处理它返回的受权文本。会话附件的远端索引与检索接入进度以 [K07](agent-capabilities-todo.md) 为准。
 
 Runtime 宿主已接业务目录、记录、关联、动作及流程；各项能力与验收状态以[能力清单](agent-capabilities-todo.md)及对应记录为准。纯文本模型继续兼容。
 
@@ -37,6 +37,7 @@ Migration 5 增加 `_agent_user_todos` 和 `_agent_todo_mutations`。待办按 r
 | `_agent_user_memories` | 用户显式保存的个人偏好，支持修改、停用和删除 |
 | `_agent_conversation_steps` / `_agent_conversation_tool_calls` | 冻结的模型步骤、原生续接块、工具调用与结果账本 |
 | `_agent_conversation_interactions` | 绑定 run / step / call 的等待事项、工具版本 / 参数摘要、答复和有效期 |
+| `_agent_conversation_forks` | 独立分叉的来源运行、稳定事件边界、轨迹摘要和仅供服务端装配的受权历史快照 |
 
 所有查询使用 `owner_key = SHA256(JSON([runtime_id, workspace_id, user_id]))` 隔离，子记录同时匹配 conversation ID。哈希是隔离键，不是内容加密。角色改变不清空个人会话。HTTP 身份来自宿主认证上下文，不能从 JSON 或查询参数指定其他用户。
 
@@ -84,6 +85,60 @@ Module 可用 `ConversationOptions` 覆盖四项配额；环境装配对应 `AGE
 停止当前请求不会自动调用取消订单、删除事件等业务补偿，也不会撤销已受理的 Workflow 实例。
 增加其他 Provider 时按其真实契约提供停止能力，不能把关闭 HTTP 连接或请求超时当作外部操作失败的证据。
 实现、边界和网页验收见 [B06 取消验收](testing-2026-09-10-cancellation.md)。
+
+## 图片消息
+
+消息继续保留原 `message` 文本字段，并可附加有序 `content`／`content_blocks`。浏览器只提交图片附件 ID 和 `auto`、`low` 或 `high` 清晰度；服务端从 Knowledge 的会话私有附件读取当前元数据，冻结会话、文件名、媒体类型、字节数、SHA-256 和修订。当前支持 PNG、JPEG、GIF、WebP，每条消息最多四张、每张最多 16 MiB。图片扩展名和实际媒体签名必须一致。
+
+图片字节不进入消息、模型输入、步骤、任务、分叉或轨迹的持久 JSON。每次模型调用和重试前按当前主体重新授权下载，核对冻结元数据、修订、字节数和 SHA-256，再只在内存请求中装入原件。历史恢复、摘要和会话分叉沿用相同流程；权限撤回后历史消息隐藏图片块，后续模型请求停止。委派任务保存准确来源运行引用，接收方同时需要当前来源发布、执行阅读和发布者附件权限；单独知道附件 ID 不构成访问权。
+
+模型目录必须明确声明 `image_input=true`。未声明时，包含图片的前台消息、后台任务、委派和分叉在调用提供者前拒绝。Chat Completions 使用 `image_url` 数据 URL，Messages 使用 base64 `image/source`，Responses 使用 `input_image`；三种请求均不会携带附件 ID、来源会话、文件名、摘要或修订等内部元数据。页面支持发送前预览、移除、仅图片消息和历史图片显示；跨主体共享图片只展示已授权来源说明，不生成可复用的私有下载地址。实现及验收见 [K05 图片输入](testing-2026-09-16-k05-image-input.md)。
+
+## 受限 Code Mode
+
+宿主实现 SDK 的 `ConversationCodeHost` 后，Agent 可按当前配置把固定 `run_code` 工具加入模型目录。它属于 Agent 执行控制面：SDK 定义协议，Agent 决定可见工具、授权、确认、预算、回执、恢复和公开投影，Runtime 只运行程序。业务工具及外部连接仍由 Tools／Integration／Connectors 等 owner 提供；受限进程不持有这些宿主、凭证或数据库句柄。
+
+当前 Runtime 为每次调用启动同一发行程序的隐藏 worker 命令，使用全新临时目录和空环境。Lua 只开放基础值、表、字符串和移除随机数的数学库；不开放文件、Shell、环境变量、网络、时钟、模块加载、字节码、元表修改或跨次状态。源码、日志、返回值、嵌套深度、值数量、工具次数和总运行时间均有界，超时会硬终止进程。代码必须返回一个 JSON 兼容值，可通过 `log(value)` 写入有界过程信息。
+
+`tools.<key>(arguments)` 只对应当前模型步骤已经冻结且仍可用的工具。每次调用先创建稳定的 `parent_call_id + dispatch_index` 子账本，再进入普通工具的主体和来源检查、当前目录／定义复核、参数 Schema、动作授权、精确确认、调用预算、实际执行与结果校验。页面和轨迹把子调用按顺序展示在 `run_code` 下，子调用结果不会逐项塞回模型历史；模型只收到外层的最终 JSON 与日志。
+
+等待确认或结果核查会释放 worker。继续时重新运行无状态程序，并按运行、父调用和序号重建同一个子调用 ID；已完成结果只读回执，未知写入使用同一幂等键调用 Reconcile，不再次 Invoke。用户取消会终止代码进程和当前子调用，已完成、未开始、读取中断与写入未知继续分别保存。实现及验收见 [K04 受限 Code Mode](testing-2026-09-15-k04-restricted-code-mode.md)。
+
+## 完整编码执行环境
+
+K08 与 K04 分开装配。K04 的 `run_code` 是一次性、无文件／Shell／网络的 Lua 数据处理器，用于组合本步骤已有业务工具；K08 是 Runtime 显式启用的本地编码工作区，提供 12 个固定工具：文件读取／字面搜索／带版本写入／精确编辑，PTY 打开／输入／读取／关闭，后台进程启动／读取／停止，以及 LSP 定义／引用查询。`domainry-tools` 继续拥有业务记录、日历、邮件、Web、MCP、报表和分析等可复用工具注册及适配，不持有工作区、终端、进程或语言服务；编码宿主属于部署执行基础设施。
+
+部署通过 `runtimehost.Options.AgentCodingWorkspace` 显式提供已有工作区根、固定 Shell 和按扩展名登记的语言服务命令。未配置、OS 沙箱不可用或 Agent Profile 未选择对应工具时，编码目录不发布。文件 API 使用 `os.Root` 限制相对路径和符号链接逃逸，只读取普通 UTF-8 文件；读取返回完整文件 SHA-256，写入／编辑必须提交该版本，创建使用 `missing`，过期版本拒绝。文件替换在根内落临时文件后原子改名，并保留原权限位。
+
+当前 Darwin 宿主用 `sandbox-exec` 启动固定 Shell、PTY、后台进程和 LSP：环境仅保留受控 PATH／HOME／TMPDIR／locale／TERM，禁止网络及工作区外写入。PTY 最多 8 个、后台进程最多 32 个，每项都绑定 runtime／workspace／user／conversation／run；输出保留最近 2 MiB并用字节游标分页。确认等待期间会话继续存活，运行完成、取消或服务关闭时终止整个运行范围。进程创建和终端输入等写调用用原幂等键恢复；运行时回执丢失时返回未知，不重新执行。LSP 每次查询启动部署登记的固定命令，验证 UTF-16 位置能力，发送实际 `didOpen` 内容，只归一化工作区内定义／引用位置。
+
+这些工具进入 Agent 原有链路：当前执行主体复核、准确 `agent.conversation_tools.coding_*` 动作权限、冻结 Profile、输入／输出 Schema、写操作单项或运行写范围确认、调用预算、持久回执、取消和结果重授权。Identity 权限只允许使用能力；没有持久确认或明确冻结写范围时，写文件、打开／输入终端、启动／停止进程都不会执行。处理记录把路径和版本、终端／进程 ID、命令输出、状态、退出码以及 LSP 位置显示为结构化结果。需要长期成果时，Agent 仍须通过既有 `artifact_create`／`artifact_edit` owner 保存和导出，不把工作区文件冒充成果。实现及验收见 [K08 完整编码执行环境](testing-2026-09-16-k08-coding-environment.md)。
+
+## 外部平权 Agent 协议
+
+外部进程或服务中的 Agent 以普通 `ConversationAgent` 配置进入现有目录；它与本地 Agent 使用相同的委派、要求版本、消息、交付、验收和撤权模型，不产生另一套“子 Agent”资源。配置只保存 `domainry-peer` 协议版本与协商能力，不保存远端地址、凭证、远端模型或工具。外部执行器通过当前产品公开入口并以既有 Identity 会话调用；服务端将调用身份与委派冻结的执行主体逐项核对，任务 ID、Agent ID 或用户／工作区不匹配时不能查询、认领或报告。
+
+协议 v1 提供三个操作：按 Agent 查询当前执行主体可见的待认领／运行／待停止委派，使用完整能力快照认领任务，以及按事件游标报告进度并确认已读取消息。认领生成稳定 session ID；`client_id` 提供幂等重放，改变同一请求内容会冲突。事件序号必须连续，每批最多 16 项，当前任务投影保留最近 128 项并通过 `events_complete=false` 明确较早事件已截断。事件只接受有界摘要、阶段、工具名、详情、用量和进度；它们是外部执行观察记录，不会授予本地工具、Skill、模型或业务权限。
+
+能力在 Agent 配置、委派任务和认领请求之间精确匹配，分别声明插话、取消、恢复、结构化输出和执行详情。没有插话能力时不能向运行中的外部 Agent 追加消息；没有取消或恢复能力时对应控制直接拒绝；没有结构化输出能力时不能创建带结果 Schema 的委派；没有执行详情能力时外部报告不得提交工具事件、详情或用量，页面显示“协议未提供过程详情”。最终 assistant 文本从不冒充过程轨迹。
+
+取消或暂停先把任务标记为 `stop_requested`。外部执行器必须报告 `cancelled` 并确认效果为 `none`、`known` 或 `unknown`；在此之前不能恢复。效果未知仍要求人工核查，不能直接重跑。恢复创建下一 attempt，保留原事件追溯但清空旧 session；本地 conversation worker 在所有扫描路径跳过外部任务，避免本地和外部同时执行。
+
+任务完成还要求接收方通过现有 `deliver` 动作提交与当前 brief／agreement 绑定的正式交付；带 Schema 的委派继续校验结构化数据。只有已保存交付后，外部 `completed` 事件才能完成任务；委派方随后按原验收与分歧流程接受或退回。页面读取的是同一委派详情，可看到外部认领状态、协商能力、已报告过程、消息消费、停止确认和正式交付。实现与真实双用户 HTTP、Module、SaaS、SQLite 和页面验收见 [K07 外部平权 Agent 协议验收](testing-2026-09-16-k07-external-agent-protocol.md)。
+
+公开操作：
+
+| 方法 / 路径 | 行为 |
+| --- | --- |
+| `POST /agent/external-agents/assignments/query` | 按当前执行主体和 Agent 查询受权委派 |
+| `POST /agent/external-agents/tasks/{taskID}/claim` | 精确协商能力并幂等认领 |
+| `POST /agent/external-agents/tasks/{taskID}/reports` | 按游标追加过程／终态事件并确认消息 |
+
+## 会话分叉与轨迹回放
+
+完成的普通会话运行形成稳定边界后，可读取、导出或对照它的请求、响应、上下文边界和工具轨迹，也可从该边界创建独立会话。每次操作都重新检查当前会话管理／执行读取权限、来源图、工具结果和注册上下文权限；授权撤回后，先前可读的轨迹、导出、回放、对照和分叉都会拒绝。轨迹包含实际模型可见消息、完整公开工具定义、录制响应、工具调用／结果和分项摘要，不包含 Provider 原生续接状态、凭证、确认材料或授权证据。
+
+三种模式有明确边界：`display` 只展示保存记录，`model_fixture` 返回与保存请求逐项配对的录制响应和工具结果，二者都不调用模型或工具；`live_rerun` 只创建一个没有活动运行的新会话，用户发送新输入后才执行。新会话与来源会话平权，`fork` 字段只保留来源会话、运行和事件边界用于追溯。服务端把旧工具调用和结果转成标记清楚的历史数据，并在每次装配子会话上下文时复核来源轨迹摘要；旧调用不会因分叉或继续对话自动执行。实现与验收见 [E09 会话分叉与轨迹回放](testing-2026-09-15-e09-conversation-fork-replay.md)。
 
 ## 历史上下文与压缩
 
@@ -133,6 +188,11 @@ Module 可用 `ConversationOptions` 覆盖四项配额；环境装配对应 `AGE
 | `POST /agent/conversations/{id}/messages` | 接受一条用户消息，返回 202 和 run |
 | `GET /agent/conversations/{id}/messages` | 分页获取原始消息 |
 | `GET /agent/conversations/{id}/runs/{runID}` | 查询运行状态及错误码 |
+| `POST /agent/conversations/{id}/runs/{runID}/forks` | 从完成的稳定边界创建独立会话 |
+| `GET /agent/conversations/{id}/runs/{runID}/trajectory` | 受控查看保存的请求、响应、上下文和工具轨迹 |
+| `GET /agent/conversations/{id}/runs/{runID}/trajectory/export` | 下载确定性 JSON 轨迹及内容摘要 |
+| `POST /agent/conversations/{id}/runs/{runID}/trajectory/replay` | 展示回放、录制模型夹具核对，或创建等待输入的独立分叉 |
+| `POST /agent/conversations/{id}/runs/{runID}/trajectory/compare` | 按请求、响应和工具摘要对照另一条受权轨迹 |
 | `GET /agent/conversations/{id}/runs/{runID}/events` | after_seq、limit 读取事件页 |
 | `GET /agent/conversations/{id}/runs/{runID}/events/stream` | SSE 重放和跟随已提交事件 |
 | `POST /agent/conversations/{id}/runs/{runID}/cancel` | 取消 |

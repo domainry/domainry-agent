@@ -1,0 +1,59 @@
+{
+  "recorded_at": "2026-09-14T12:43:01.986138+00:00",
+  "goal_complete": false,
+  "C05_complete": false,
+  "todo_complete": 4,
+  "todo_total": 25,
+  "runtime_packages_normal": {
+    "exit_code": 0,
+    "roots": 85
+  },
+  "runtime_packages_race": {
+    "exit_code": 0,
+    "roots": 85
+  },
+  "agent_application_normal": {
+    "exit_code": 0,
+    "roots": 141
+  },
+  "agent_application_race": {
+    "exit_code": 0,
+    "roots": 141
+  },
+  "actual_normal": {
+    "exit_code": 0,
+    "owner_rpc_seconds": 1.93,
+    "agent_scenario_seconds": 17.81,
+    "original_task_budget_seconds": 90,
+    "exact_sha_page_checks": 20
+  },
+  "actual_race": {
+    "exit_code": 0,
+    "owner_rpc_seconds": 29.92,
+    "agent_scenario_seconds": 262.37,
+    "original_task_budget_seconds": 90,
+    "automatic_delivery_completed_within_task_budget": true,
+    "account_acceptance": true,
+    "revocation_and_restart_checks": true,
+    "exact_sha_page_checks": 20
+  },
+  "performance": {
+    "prior_final_normal_agent_seconds": 61.48,
+    "final_normal_agent_seconds": 17.81,
+    "prior_race_terminal_status": "execution_interrupted_after_successful_delegation_update",
+    "final_race_terminal_status": "passed",
+    "schema_projection_hash_hotspot_present_in_final_profile": false
+  },
+  "dependency_inputs": {
+    "before": 9895,
+    "after": 9895,
+    "dependencies": 1167,
+    "missing": 0,
+    "extra": 0,
+    "changed": 2
+  },
+  "patch_reconstruction": {
+    "runtime": true,
+    "agent": true
+  }
+}

@@ -1,0 +1,35 @@
+go 1.26.0
+
+use (
+	.
+	../domainry-agent-sdk
+	../domainry-audit
+	../domainry-audit-sdk
+	../domainry-connector-sdk
+	../domainry-connectors
+	../domainry-identity
+	../domainry-identity-sdk
+	../domainry-integration
+	../domainry-integration-sdk
+	../domainry-knowledge
+	../domainry-metadata
+	../domainry-pm
+	../domainry-report
+	../domainry-report-sdk
+	../domainry-scheduler
+	../domainry-scheduler-sdk
+	../domainry-todo
+	../domainry-tools
+	../domainry-tools-sdk
+	../domainry-work
+)
+
+replace github.com/domainry/domainry-tools-sdk v0.0.0 => ../domainry-tools-sdk
+
+replace github.com/domainry/domainry-tools v0.0.0 => ../domainry-tools
+
+replace github.com/domainry/domainry-todo v0.0.0 => ../domainry-todo
+
+replace github.com/domainry/domainry-knowledge v0.0.0 => ../domainry-knowledge
+
+replace github.com/domainry/domainry-agent v0.1.6 => .

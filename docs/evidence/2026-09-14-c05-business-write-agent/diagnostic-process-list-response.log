@@ -1,0 +1,6 @@
+=== RUN   TestCrossUserBusinessWritesAgentConfirmationsAutomaticDeliverySharedOriginalsAndRestart
+    conversation_business_shared_write_delivery_test.go:161: json: cannot unmarshal array into Go value of type struct { Items []struct { ID string "json:\"id\"" } "json:\"items\"" }
+--- FAIL: TestCrossUserBusinessWritesAgentConfirmationsAutomaticDeliverySharedOriginalsAndRestart (1.42s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	2.225s
+FAIL

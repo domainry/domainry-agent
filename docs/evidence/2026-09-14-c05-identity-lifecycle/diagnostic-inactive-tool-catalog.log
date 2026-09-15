@@ -1,0 +1,9 @@
+=== RUN   TestInactiveIdentityRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime
+    conversation_inactive_identity_dependencies_test.go:50: Admit multiple-owner-root from conv_61679de4413cbacb33b8b970e37eead0 to agent_780fddfe761cc21b76fc1857069f8fc1
+    conversation_inactive_identity_dependencies_test.go:50: Admit multiple-owner-upstream from conv_c1dc0fd48133af072c508c32defbeb38 to agent_73904f1fc479d13d7af60271c5ae6526
+    conversation_inactive_identity_dependencies_test.go:50: Admit multiple-owner-final from conv_be364d6387bcd477bca4f048c6022c4f to agent_fd8c98adac95c9d1e72b9706e91754db
+    conversation_inactive_identity_dependencies_test.go:50: browser POST /agent/agents status=400 want=200 body={"code":"agent.conversation.agent_profile_invalid"}
+--- FAIL: TestInactiveIdentityRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime (29.07s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	30.340s
+FAIL

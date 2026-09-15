@@ -1,0 +1,21 @@
+{
+  "realIdentityHTTPAndChrome": true,
+  "sameAgentImmutableRecovery": true,
+  "wholeWorkBudgetVisible": true,
+  "oldConversation": "conv_eee0f7d51867b4dcae898ee4cdcc2d7e",
+  "newConversation": "conv_af7d0349e6dfd5b3094364b00a735e21",
+  "oldTask": "task_eee0f7d51867b4dcae898ee4cdcc2d7e",
+  "newTask": "task_af7d0349e6dfd5b3094364b00a735e21",
+  "submission": {
+    "expected_revision": 4,
+    "action": "transfer",
+    "reason": "The Agent configuration is repaired and ready.",
+    "transfer": {
+      "agent_id": "agent_4bb70a0a95b64ae82ce93499446bad3f",
+      "remaining_work": "Continue the preserved assignment with the repaired configuration."
+    },
+    "dependencies": [],
+    "client_id": "c3b47e02-3063-4b54-b573-a7e7e42b8244"
+  },
+  "errors": []
+}

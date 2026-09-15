@@ -1,0 +1,24 @@
+File: c05-historical-lifecycle-current.test
+Type: cpu
+Time: 2026-09-14 17:10:04 CST
+Duration: 76.40s, Total samples = 174.09s (227.88%)
+Showing nodes accounting for 174.09s, 100% of 174.09s total
+----------------------------------------------------------+-------------
+      flat  flat%   sum%        cum   cum%   calls calls% + context 	 	 
+----------------------------------------------------------+-------------
+                                            11.90s 76.77% |   github.com/domainry/domainry-runtime/runtime/bootstrap/composition.(*runtimeAssembly).reportRecordSchemaMap (inline)
+                                             3.58s 23.10% |   github.com/domainry/domainry-runtime/runtime/bootstrap/composition.(*RuntimeServices).Schema
+                                             0.02s  0.13% |   github.com/domainry/domainry-runtime/runtime/bootstrap/composition.runtimeWorkflowSchemaProvider.WorkflowSchemaSnapshot (inline)
+         0     0%     0%     15.50s  8.90%                | github.com/domainry/domainry-runtime/runtime/bootstrap/composition.(*RecordSchemaSnapshotProvider).Schema
+                                            15.50s   100% |   github.com/domainry/domainry-runtime/runtime/bootstrap/composition.newRuntimeServicesState.func1
+----------------------------------------------------------+-------------
+                                             1.77s 49.44% |   github.com/domainry/domainry-runtime/runtime/bootstrap/transport.AssembleRuntimeHTTPServer.func3 (inline)
+                                             1.76s 49.16% |   github.com/domainry/domainry-runtime/runtime/bootstrap/transport.AssembleRuntimeHTTPServer.func2 (inline)
+                                             0.05s  1.40% |   github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.newWithExtensionsUsingAllFactoriesAndStore (inline)
+         0     0%     0%      3.58s  2.06%                | github.com/domainry/domainry-runtime/runtime/bootstrap/composition.(*RuntimeServices).Schema
+                                             3.58s   100% |   github.com/domainry/domainry-runtime/runtime/bootstrap/composition.(*RecordSchemaSnapshotProvider).Schema
+----------------------------------------------------------+-------------
+                                            15.50s   100% |   github.com/domainry/domainry-runtime/runtime/bootstrap/composition.newRuntimeServicesState.func1
+         0     0%     0%     15.50s  8.90%                | github.com/domainry/domainry-runtime/runtime/bootstrap/composition.recordSchemaSnapshot
+                                            15.50s   100% |   github.com/domainry/domainry-runtime/runtime/domain/appschema/service.BuildSchemaSnapshot
+----------------------------------------------------------+-------------

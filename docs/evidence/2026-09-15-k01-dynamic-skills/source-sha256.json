@@ -1,0 +1,86 @@
+{
+  "date": "2026-09-15",
+  "item": "K01",
+  "files": [
+    {
+      "path": "../domainry-agent-sdk/definitions.go",
+      "bytes": 10381,
+      "sha256": "831d6eb899469e833cf365620f39ecbe120d01ea18cf3faf51e61ec37aeeb928"
+    },
+    {
+      "path": "../domainry-agent-sdk/conversation_skill.go",
+      "bytes": 10832,
+      "sha256": "5904f7ba6ed6a60f55d9afa2d0bc6d43814bb99625b8acb6c4e7243d261eff86"
+    },
+    {
+      "path": "../domainry-agent-sdk/conversation_http.go",
+      "bytes": 30579,
+      "sha256": "3960733dc955d7f8ad9c5993c8f301707a1c3cf750b41ac6d2613e3a12434920"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-agent-sdk/persistence/conversation_skill.go",
+      "bytes": 2253,
+      "sha256": "e94f04964ebb93bc9f8c54045f4f171eed7a2c2c7c9927446a4318ce8d761e21"
+    },
+    {
+      "path": "internal/application/conversation_skills.go",
+      "bytes": 26772,
+      "sha256": "4d9f30db1d4b52a02659cc9ac08aac0ec0aadd32391f0e6b821fb963f24bd070"
+    },
+    {
+      "path": "internal/application/conversation_tasks.go",
+      "bytes": 45408,
+      "sha256": "89227011f35b87101a0d1688bac3a088ba003bc1f686363a09a179a2f2706a50"
+    },
+    {
+      "path": "internal/application/conversation_service.go",
+      "bytes": 43386,
+      "sha256": "115dfac480f08fc74e08070c020be0b24a08697d0fa11d526a527545c5281318"
+    },
+    {
+      "path": "internal/infrastructure/persistence/database/agent/conversation_improvement_schema.go",
+      "bytes": 2590,
+      "sha256": "4de4961339f839aa9b93b564723984a1e2b0d96ce9c260a06ec1b85476354bde"
+    },
+    {
+      "path": "internal/infrastructure/persistence/database/agent/conversation_improvement_store.go",
+      "bytes": 22643,
+      "sha256": "b54fcfd3e7e654301ebb40ed11b41915f00aef30066372d958cc6888ec6c5ad8"
+    },
+    {
+      "path": "internal/transport/http/module/conversation_adapter.go",
+      "bytes": 15849,
+      "sha256": "4eb56bc1602e1f89f5798498fc0ccc354e091575110b8553adc0171f6f4da65d"
+    },
+    {
+      "path": "remote/conversation_skills.go",
+      "bytes": 3701,
+      "sha256": "79b9c988e75da2ff7053d2379debc1e1cf59de43ae20d761c76c66faff087f0b"
+    },
+    {
+      "path": "integration/conversation_skill_integration_test.go",
+      "bytes": 8933,
+      "sha256": "d921a89c92818aff4b95fac091c1782116372fa5a80a393b96da6943b12985c8"
+    },
+    {
+      "path": "internal/assembly/web/conversation_skill_browser_test.go",
+      "bytes": 8078,
+      "sha256": "2e299b008a73348896926ed496ec21870265a51e36475cacaa9ec0436bb946db"
+    },
+    {
+      "path": "frontend/src/SkillCatalog.tsx",
+      "bytes": 16628,
+      "sha256": "5ccb0c5820824583bf52b8507bfbb07f2bcbbc923abbe6d75893a56164fc2461"
+    },
+    {
+      "path": "frontend/src/index.css",
+      "bytes": 60078,
+      "sha256": "3e36f408edfaaee7a811f86b70d60dff6bb4bc2b120da3f0a732e30975ca9399"
+    },
+    {
+      "path": "frontend/tests/dynamic-skill.browser.mjs",
+      "bytes": 9284,
+      "sha256": "a135b79d824199d7f6c0349964c1f46596929e8c7acdf1e797c13461dfe5ba77"
+    }
+  ]
+}

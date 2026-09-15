@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "page_errors": [],
+  "scenarios": [
+    "real three-account UI transfer",
+    "immutable original and current assignment",
+    "issuer scoped original execution",
+    "recipient scoped original execution without private conversation control",
+    "recipient index includes original shared run",
+    "former executor retains own withdrawal control",
+    "390px modal bounds"
+  ]
+}

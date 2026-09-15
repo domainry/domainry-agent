@@ -1,0 +1,161 @@
+{
+  "date": "2026-09-15",
+  "item": "E03",
+  "files": [
+    {
+      "path": "source/agent/docs/agent-core-capabilities-todo.md",
+      "bytes": 73205,
+      "sha256": "73ea4d6eaedcb8f596b522fcb468f274169a4ef78cea92b54079468a9f527af4"
+    },
+    {
+      "path": "source/agent/docs/testing-2026-09-15-e03-completion-acceptance.md",
+      "bytes": 5761,
+      "sha256": "b48593e0b24c75617a3ad0ea18f0a147e3ffbe6597c76d132651ffa12dca06e0"
+    },
+    {
+      "path": "source/agent/frontend/src/TaskAgreement.tsx",
+      "bytes": 9583,
+      "sha256": "5c7966e040d9f57b75bc53b7493f0742855a1ebfa279f3be9c5ace8c7b6d6177"
+    },
+    {
+      "path": "source/agent/frontend/src/TaskCompletion.tsx",
+      "bytes": 9584,
+      "sha256": "0e550a540a43e1bbef395991d0a2fd8586ea7242a8cb0626d4fe386fd5d7fbfe"
+    },
+    {
+      "path": "source/agent/frontend/src/TaskDialog.tsx",
+      "bytes": 10342,
+      "sha256": "0daf2b063df18b4c431f92592f757305f07eae30e3e6d4b16dc0254821036a3e"
+    },
+    {
+      "path": "source/agent/frontend/src/errors.ts",
+      "bytes": 32022,
+      "sha256": "f7afc3e50a1eb518a1ccba6b79a5c94d0e53a09e8a6a15bb42492ae57690b4c8"
+    },
+    {
+      "path": "source/agent/frontend/src/task-state.test.ts",
+      "bytes": 5689,
+      "sha256": "f663341d1033ebf9dad544b7cc8abedac15a376885e803c4fd794d1d5c003e0c"
+    },
+    {
+      "path": "source/agent/frontend/src/task-state.ts",
+      "bytes": 8637,
+      "sha256": "79bb8fb06775edd0484acd2ffda6184756938e450a0789dd9182b0453a1af330"
+    },
+    {
+      "path": "source/agent/frontend/tests/task-completion.browser.mjs",
+      "bytes": 5673,
+      "sha256": "175ceb027183049446b40613ea7e33f1af114107a87978df25b3ede7a5bdff9e"
+    },
+    {
+      "path": "source/agent/internal/application/conversation_delivery_task_sources.go",
+      "bytes": 14307,
+      "sha256": "2aba876e4d600602ffa5f094a59c3d91462062a269baaf0adaae2c1ceb79884d"
+    },
+    {
+      "path": "source/agent/internal/application/conversation_dispatch.go",
+      "bytes": 14260,
+      "sha256": "68a8ffbb07f8f66dceaf49c44a42d62b4513ede51f4afa10a13f83368bb6f32b"
+    },
+    {
+      "path": "source/agent/internal/application/conversation_sources.go",
+      "bytes": 37062,
+      "sha256": "d825bc5f6d13bbb9939f4fb83fc4531baf3116220b258e8c8cac51496575adbc"
+    },
+    {
+      "path": "source/agent/internal/application/conversation_task_completion.go",
+      "bytes": 8825,
+      "sha256": "28967d38f5335e6a88b65905daed9ebf56e704f18eb7c23ba802e2137fa8a786"
+    },
+    {
+      "path": "source/agent/internal/application/conversation_tasks.go",
+      "bytes": 37244,
+      "sha256": "8891d60fafafd4b6cb4af0d279a5854357d04b4d0ddfb996fec00600d58a3786"
+    },
+    {
+      "path": "source/agent/internal/assembly/web/conversation_task_start_test.go",
+      "bytes": 72261,
+      "sha256": "bd9d916d1503df462ee5c0ea9abbbb02e7608b81c8b2c6d93734cdd94e6a0d82"
+    },
+    {
+      "path": "source/agent/internal/execution/verification.go",
+      "bytes": 7097,
+      "sha256": "ff5b40d04e89fd5a7f8dbe50794182a56a51113fbfa1617c9b519d8c220d9127"
+    },
+    {
+      "path": "source/agent/internal/execution/verification_test.go",
+      "bytes": 6600,
+      "sha256": "01560f968af47bacf56c270e41dc78167ae6177c318d7f96f387f5989418b090"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_schema.go",
+      "bytes": 976,
+      "sha256": "d6eadd66224e598689c23b56ec0d88b01dc90e10a337da8f64bca7a724180a52"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store.go",
+      "bytes": 21475,
+      "sha256": "eca8dd6f75df0c7d47fb7764821c6e3645d85c70a0cf3b029a99c02bdaa4b906"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_task_completion_store_test.go",
+      "bytes": 10868,
+      "sha256": "2b4f033615149a29a5a8288bacd6f54d2ab1b07a141fc7f44492be561f9a45d4"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_task_store.go",
+      "bytes": 36918,
+      "sha256": "7e292f1c2bcd4ba954d295016f4774456e61265ba3a42d6fe5c1ad93434531f0"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/schema.go",
+      "bytes": 10211,
+      "sha256": "48f1107d47afa4e49ce5ff96bd22123a746973bbab91527c1001729cf708ecf3"
+    },
+    {
+      "path": "source/agent/internal/transport/http/module/conversation_adapter.go",
+      "bytes": 14475,
+      "sha256": "4388c6b3a4bed6e6df13f1e37831f2a016ac5fbdde316cd2dcd762e91223d543"
+    },
+    {
+      "path": "source/agent/module/conversation_assembly.go",
+      "bytes": 3957,
+      "sha256": "21e4b4f7bc5650355f863cf14451af4cef037093576669f0b364721c0371d697"
+    },
+    {
+      "path": "source/agent/remote/conversation_tasks.go",
+      "bytes": 3138,
+      "sha256": "1a92c0c9204a9f3b8e071e8aa592e095eefea9be52aa5608460b2d9cb2082d53"
+    },
+    {
+      "path": "source/agent/server/authorization_actions.go",
+      "bytes": 15383,
+      "sha256": "630d43ec0b8055d2d917cf6d0a561b44b388f761e215d1697d2687dbc8228d3a"
+    },
+    {
+      "path": "source/sdk/conversation_http.go",
+      "bytes": 26618,
+      "sha256": "40199dfa11f434c208f5886b85557fa4a32e78a23b0973cd5dab1b1cc8865f12"
+    },
+    {
+      "path": "source/sdk/conversation_task.go",
+      "bytes": 34555,
+      "sha256": "7efdeb7159c4372b6bbdb45f44b598c5a0e09d337d0c8e1d247b3f0bdd3b1ccd"
+    },
+    {
+      "path": "source/sdk/conversation_task_completion.go",
+      "bytes": 8211,
+      "sha256": "8e500c3985701adf507f931dcf782c885841200b4ea31147b0dcd65c350696ed"
+    },
+    {
+      "path": "source/sdk/conversation_task_test.go",
+      "bytes": 6335,
+      "sha256": "c58c4fbe2ac2e909785d3fc5bfb5fda98272c60e2b8418fd74bf511a1f50c16b"
+    },
+    {
+      "path": "source/sdk/persistence/conversation_task.go",
+      "bytes": 4868,
+      "sha256": "d18730ab94a87d4a622d04d3685c5c45cc02297c6ae6e3e0dfc73204243668e8"
+    }
+  ]
+}

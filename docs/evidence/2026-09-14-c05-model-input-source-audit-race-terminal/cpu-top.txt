@@ -1,0 +1,58 @@
+File: c05-model-input-source-runtime-final-race.test
+Type: cpu
+Time: 2026-09-14 18:56:44 CST
+Duration: 475.41s, Total samples = 874.27s (183.90%)
+Showing nodes accounting for 773.62s, 88.49% of 874.27s total
+Dropped 2211 nodes (cum <= 4.37s)
+Showing top 50 nodes out of 312
+      flat  flat%   sum%        cum   cum%
+   299.91s 34.30% 34.30%    299.92s 34.31%  runtime.pthread_cond_signal
+   131.34s 15.02% 49.33%    131.34s 15.02%  syscall.rawsyscalln
+    73.82s  8.44% 57.77%     73.82s  8.44%  __tsan::MemoryRangeSet
+    53.84s  6.16% 63.93%     53.84s  6.16%  runtime.usleep
+    30.57s  3.50% 67.43%     30.57s  3.50%  __tsan_read
+    27.45s  3.14% 70.57%     27.45s  3.14%  runtime.pthread_cond_wait
+    22.10s  2.53% 73.09%     22.10s  2.53%  __tsan::MemoryAccessRangeT
+    21.13s  2.42% 75.51%     37.07s  4.24%  runtime.checkptrBase
+    18.19s  2.08% 77.59%     18.19s  2.08%  racecall
+    17.03s  1.95% 79.54%     17.03s  1.95%  runtime.findObject
+    14.65s  1.68% 81.21%     14.65s  1.68%  racecalladdr
+     8.03s  0.92% 82.13%      8.03s  0.92%  __tsan_write
+     7.05s  0.81% 82.94%      7.05s  0.81%  runtime.madvise
+     6.40s  0.73% 83.67%      6.40s  0.73%  runtime._ExternalCode
+     4.97s  0.57% 84.24%      4.97s  0.57%  __tsan::MetaMap::FreeRange
+     4.76s  0.54% 84.78%     34.79s  3.98%  runtime.checkptrAlignment
+        4s  0.46% 85.24%     14.85s  1.70%  runtime.checkptrArithmetic
+     3.86s  0.44% 85.68%     30.08s  3.44%  runtime.checkptrStraddles
+     2.77s  0.32% 86.00%      5.90s  0.67%  runtime.scanObject
+     2.74s  0.31% 86.31%      5.74s  0.66%  encoding/json.appendString[go.shape.string]
+     2.66s   0.3% 86.62%      8.04s  0.92%  runtime.slicecopy
+     2.65s   0.3% 86.92%      4.90s  0.56%  runtime.scanObjectsSmall
+     2.52s  0.29% 87.21%     38.44s  4.40%  encoding/json.structEncoder.encode
+     1.36s  0.16% 87.36%     13.87s  1.59%  modernc.org/sqlite/lib._sqlite3MemMalloc
+     1.19s  0.14% 87.50%     10.10s  1.16%  encoding/json.stringEncoder
+     1.17s  0.13% 87.63%      4.91s  0.56%  bytes.(*Buffer).Write
+        1s  0.11% 87.75%     14.91s  1.71%  encoding/json.mapEncoder.encode
+     0.76s 0.087% 87.84%      4.55s  0.52%  bytes.(*Buffer).WriteString
+     0.69s 0.079% 87.91%        52s  5.95%  modernc.org/sqlite/lib._yy_reduce
+     0.57s 0.065% 87.98%    129.75s 14.84%  modernc.org/sqlite/lib._sqlite3VdbeExec
+     0.55s 0.063% 88.04%      4.45s  0.51%  internal/reflectlite.Swapper.func9
+     0.43s 0.049% 88.09%     53.81s  6.15%  modernc.org/sqlite/lib._sqlite3Parser
+     0.39s 0.045% 88.14%     37.31s  4.27%  encoding/json.arrayEncoder.encode
+     0.36s 0.041% 88.18%      9.72s  1.11%  runtime.mallocgc
+     0.35s  0.04% 88.22%     14.43s  1.65%  runtime.gcDrain
+     0.26s  0.03% 88.25%     48.72s  5.57%  runtime.stealWork
+     0.22s 0.025% 88.27%     14.55s  1.66%  modernc.org/sqlite/lib._sqlite3Malloc
+     0.22s 0.025% 88.30%      4.63s  0.53%  sort.insertionSort_func
+     0.21s 0.024% 88.32%     13.69s  1.57%  modernc.org/sqlite/lib._sqlite3DbMallocRawNN
+     0.18s 0.021% 88.34%     12.37s  1.41%  modernc.org/libc.Xmalloc
+     0.17s 0.019% 88.36%     11.55s  1.32%  modernc.org/memory.(*Allocator).UintptrMalloc
+     0.17s 0.019% 88.38%      5.61s  0.64%  modernc.org/sqlite/lib._sqlite3VdbeMemSetText
+     0.16s 0.018% 88.40%     55.31s  6.33%  modernc.org/sqlite/lib._sqlite3RunParser
+     0.14s 0.016% 88.42%      5.68s  0.65%  runtime.scanSpan
+     0.13s 0.015% 88.43%     41.49s  4.75%  encoding/json.(*encodeState).reflectValue
+     0.11s 0.013% 88.44%      4.75s  0.54%  modernc.org/libc.Xfree
+     0.10s 0.011% 88.45%      4.67s  0.53%  modernc.org/sqlite.(*conn).columnText
+     0.10s 0.011% 88.47%     10.14s  1.16%  modernc.org/sqlite/lib._sqlite3ExprCodeTarget
+     0.10s 0.011% 88.48%      7.54s  0.86%  modernc.org/sqlite/lib._whereLoopAddBtree
+     0.09s  0.01% 88.49%     10.97s  1.25%  modernc.org/memory.(*Allocator).mmap

@@ -35,12 +35,13 @@ func (audit *conversationSourceAudit) deliveryBusinessToolResult(ctx context.Con
 	var evidence sdk.ConversationBusinessEvidence
 	decoder := json.NewDecoder(bytes.NewReader(record.Result.Content))
 	decoder.DisallowUnknownFields()
-	if !json.Valid(record.Result.Content) || decoder.Decode(&evidence) != nil || evidence.Version != 1 || evidence.Operation != record.Call.Name || evidence.Source != source.BusinessSourceIdentity() || evidence.ScopeSHA256 != businessEvidenceScope(evidence.Source, audit.a) || !json.Valid(evidence.Input) || !json.Valid(evidence.Data) || !json.Valid([]byte(record.Call.Arguments)) || conversationDigest(evidence.Input) != conversationDigest(json.RawMessage(record.Call.Arguments)) {
+	producer := audit.evidenceAuthority(owner)
+	if !json.Valid(record.Result.Content) || decoder.Decode(&evidence) != nil || evidence.Version != 1 || evidence.Operation != record.Call.Name || evidence.Source != source.BusinessSourceIdentity() || evidence.ScopeSHA256 != businessEvidenceScope(evidence.Source, producer) || !json.Valid(evidence.Input) || !json.Valid(evidence.Data) || !json.Valid([]byte(record.Call.Arguments)) || conversationDigest(evidence.Input) != conversationDigest(json.RawMessage(record.Call.Arguments)) {
 		return true, conversationFailure("conflict", "business_response_invalid")
 	}
 	ctx, cancel := audit.s.externalCallContext(ctx, 0)
 	defer cancel()
-	err := sdk.AuthorizeBusinessResultRead(ctx, source, evidence, audit.a)
+	err := sdk.AuthorizeSharedBusinessResultRead(ctx, source, evidence, audit.a, producer)
 	if ctx.Err() != nil {
 		return true, ctx.Err()
 	}

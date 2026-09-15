@@ -1,0 +1,36 @@
+File: c05-identity-resolution-runtime-race.test
+Type: cpu
+Time: 2026-09-14 18:13:10 CST
+Duration: 523.98s, Total samples = 968.68s (184.87%)
+Showing nodes accounting for 837.19s, 86.43% of 968.68s total
+Dropped 2314 nodes (cum <= 4.84s)
+Showing top 28 nodes out of 334
+      flat  flat%   sum%        cum   cum%
+   301.48s 31.12% 31.12%    301.50s 31.12%  runtime.pthread_cond_signal
+   134.31s 13.87% 44.99%    134.31s 13.87%  syscall.rawsyscalln
+    84.49s  8.72% 53.71%     84.49s  8.72%  __tsan::MemoryRangeSet
+    55.71s  5.75% 59.46%     55.71s  5.75%  runtime.usleep
+    34.50s  3.56% 63.02%     34.50s  3.56%  __tsan_read
+    32.78s  3.38% 66.41%     32.78s  3.38%  runtime.pthread_cond_wait
+    30.54s  3.15% 69.56%     51.78s  5.35%  runtime.checkptrBase
+    28.24s  2.92% 72.47%     28.24s  2.92%  __tsan::MemoryAccessRangeT
+    22.57s  2.33% 74.80%     22.57s  2.33%  runtime.findObject
+    21.36s  2.21% 77.01%     21.36s  2.21%  racecall
+    18.05s  1.86% 78.87%     18.05s  1.86%  racecalladdr
+     9.14s  0.94% 79.82%      9.14s  0.94%  __tsan_write
+     6.45s  0.67% 80.48%      6.45s  0.67%  __tsan::MetaMap::FreeRange
+     6.34s  0.65% 81.14%     46.74s  4.83%  runtime.checkptrAlignment
+     6.33s  0.65% 81.79%      6.33s  0.65%  runtime._ExternalCode
+     5.65s  0.58% 82.37%      5.65s  0.58%  runtime.memclrNoHeapPointers
+     5.39s  0.56% 82.93%     21.91s  2.26%  runtime.checkptrArithmetic
+     5.22s  0.54% 83.47%     40.48s  4.18%  runtime.checkptrStraddles
+     4.92s  0.51% 83.98%      4.92s  0.51%  __tsan_func_enter
+     4.86s   0.5% 84.48%      4.86s   0.5%  runtime.madvise
+     3.33s  0.34% 84.82%      6.61s  0.68%  runtime.scanObjectsSmall
+     3.14s  0.32% 85.15%      6.83s  0.71%  runtime.scanObject
+     2.88s   0.3% 85.44%      9.31s  0.96%  runtime.slicecopy
+     2.85s  0.29% 85.74%      6.33s  0.65%  encoding/json.appendString[go.shape.string]
+     2.51s  0.26% 86.00%     43.12s  4.45%  encoding/json.structEncoder.encode
+     1.49s  0.15% 86.15%     15.68s  1.62%  modernc.org/sqlite/lib._sqlite3MemMalloc
+     1.36s  0.14% 86.29%      5.55s  0.57%  bytes.(*Buffer).Write
+     1.30s  0.13% 86.43%     11.03s  1.14%  encoding/json.stringEncoder

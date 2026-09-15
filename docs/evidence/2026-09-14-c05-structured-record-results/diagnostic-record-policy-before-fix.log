@@ -1,0 +1,38 @@
+=== RUN   TestStructuredRecordResultReadUsesImmutableVersionsAndReadPermissionOnly
+=== RUN   TestStructuredRecordResultReadUsesImmutableVersionsAndReadPermissionOnly/requirements_list
+    result_read_test.go:119: current reader cannot read original result after write withdrawal tool.result_read_unsupported
+=== RUN   TestStructuredRecordResultReadUsesImmutableVersionsAndReadPermissionOnly/requirements_read
+    result_read_test.go:119: current reader cannot read original result after write withdrawal tool.result_read_unsupported
+=== RUN   TestStructuredRecordResultReadUsesImmutableVersionsAndReadPermissionOnly/requirements_save
+    result_read_test.go:119: current reader cannot read original result after write withdrawal tool.result_read_unsupported
+--- FAIL: TestStructuredRecordResultReadUsesImmutableVersionsAndReadPermissionOnly (0.00s)
+    --- FAIL: TestStructuredRecordResultReadUsesImmutableVersionsAndReadPermissionOnly/requirements_list (0.00s)
+    --- FAIL: TestStructuredRecordResultReadUsesImmutableVersionsAndReadPermissionOnly/requirements_read (0.00s)
+    --- FAIL: TestStructuredRecordResultReadUsesImmutableVersionsAndReadPermissionOnly/requirements_save (0.00s)
+=== RUN   TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults
+=== RUN   TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/foreign_reader
+=== RUN   TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/foreign_original_provider
+=== RUN   TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/foreign_workspace
+=== RUN   TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/foreign_runtime
+=== RUN   TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/changed_definition
+=== RUN   TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/changed_original_request
+=== RUN   TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/changed_original_version
+=== RUN   TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/changed_payload
+=== RUN   TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/unexpected_resource
+=== RUN   TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/unknown_original_field
+=== NAME  TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults
+    result_read_test.go:192: cancelled original lookup ignored tool.result_read_unsupported
+--- FAIL: TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults (0.00s)
+    --- PASS: TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/foreign_reader (0.00s)
+    --- PASS: TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/foreign_original_provider (0.00s)
+    --- PASS: TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/foreign_workspace (0.00s)
+    --- PASS: TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/foreign_runtime (0.00s)
+    --- PASS: TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/changed_definition (0.00s)
+    --- PASS: TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/changed_original_request (0.00s)
+    --- PASS: TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/changed_original_version (0.00s)
+    --- PASS: TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/changed_payload (0.00s)
+    --- PASS: TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/unexpected_resource (0.00s)
+    --- PASS: TestStructuredRecordResultReadRejectsForeignOwnersDefinitionsAndChangedResults/unknown_original_field (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-tools/internal/adapter/recordtools	0.391s
+FAIL

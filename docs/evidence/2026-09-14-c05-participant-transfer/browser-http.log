@@ -1,0 +1,4 @@
+=== RUN   TestParticipantTransferHTTPKeepsActualActorOriginalSourcesAndIndependentExecution
+--- PASS: TestParticipantTransferHTTPKeepsActualActorOriginalSourcesAndIndependentExecution (10.48s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	11.262s

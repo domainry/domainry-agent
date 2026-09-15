@@ -1,0 +1,12 @@
+--- FAIL: TestParticipantFirstPublicationChecksOriginalSourcesWithActualNewPublisher (0.00s)
+    conversation_participant_publishers_test.go:32: new sharing reused a retired publisher rather than checking exact original sources agent.conversation.delegation_participants_unavailable 0 map[original:[{true runtime workspace issuer old-professional}]]
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	3.500s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	4.225s
+ok  	github.com/domainry/domainry-agent/remote	4.037s
+ok  	github.com/domainry/domainry-agent/server	3.273s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	2.586s
+ok  	github.com/domainry/domainry-agent/internal/capability	2.676s
+ok  	github.com/domainry/domainry-agent-sdk	1.121s
+ok  	github.com/domainry/domainry-agent-sdk/persistence	2.120s
+FAIL

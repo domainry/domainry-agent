@@ -1,0 +1,4 @@
+=== RUN   TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart
+--- PASS: TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart (9.62s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	10.276s

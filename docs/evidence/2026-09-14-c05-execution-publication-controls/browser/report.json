@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "page_errors": [],
+  "scenarios": [
+    "owner metadata without execution reading",
+    "owner withdrawal without execution reading clears open third-user run",
+    "execution authority and independent result reading stay separate",
+    "owner withdrawal without share authority",
+    "current view withdrawal hides owner controls",
+    "restored permissions preserve explicit publication",
+    "desktop and mobile controls"
+  ]
+}

@@ -1,0 +1,6 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+    conversation_source_release_test.go:161: explicit delivery reader received wrong projection {true false <nil> <nil> false false 0x27df8ac00950 [] [] {system_administrator_user 2 [{0x27df88346820 delivery-reader [delivery_read view] 2}] 0x27df89c84cf0 [] false <nil> 0 <nil> <nil> <nil> [] [] 1 1 2026-09-14 00:13:05.25611 +0000 UTC <nil> { [] [] [] 0 0 <nil> }  <nil> delegation_a5921b5c24f5ac8737c0485651a7530d default agent_1975d94f2e0c7cdec45fccf19ece5467     Independent clock verification {[{0 receipt [] time_now [] [123 34 116 121 112 101 34 58 34 111 98 106 101 99 116 34 125] 0 }] 1 Read the actual current time Clock receipt and conclusion  [] [Read the actual current time] [] <nil>} Use the current clock and submit its immutable receipt {12 12 8192 60} [] delivered 7 <nil>  2026-09-14 00:13:05.08 +0000 UTC 2026-09-14 00:13:09.292 +0000 UTC} true <nil> []}
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (5.54s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	6.289s
+FAIL

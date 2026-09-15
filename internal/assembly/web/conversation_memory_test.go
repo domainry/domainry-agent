@@ -67,12 +67,14 @@ func personalMemoryModelFixture(t *testing.T) *httptest.Server {
 			if strings.Contains(intent, "忘记") && len(envelope.Content.Items) > 0 {
 				tool("memory_forget", "memory-change", map[string]any{"id": envelope.Content.Items[0].ID, "expected_revision": envelope.Content.Items[0].Revision})
 			} else {
-				args := map[string]any{"title": "周报格式", "content": "按项目组织，列出进展和风险", "enabled": !strings.Contains(intent, "停用"), "expected_revision": 0}
+				args := map[string]any{"kind": "user_preference", "scope": "workspace", "title": "周报格式", "content": "按项目组织，列出进展和风险", "enabled": !strings.Contains(intent, "停用"), "expected_revision": 0, "applies_to": []string{"周报"}}
 				if strings.Contains(intent, "修改") {
 					args["content"] = "每个项目先写结论，再列进展和风险"
+					args["correction_reason"] = "用户明确修改周报格式"
 				}
 				if len(envelope.Content.Items) > 0 {
 					args["id"], args["expected_revision"] = envelope.Content.Items[0].ID, envelope.Content.Items[0].Revision
+					args["kind"], args["scope"], args["applies_to"] = envelope.Content.Items[0].Kind, envelope.Content.Items[0].Scope.Kind, envelope.Content.Items[0].AppliesTo
 				}
 				tool("memory_save", "memory-change", args)
 			}

@@ -1,0 +1,6 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+    conversation_source_release_test.go:164: tool run or confirmation boundary failed delegation_execution_publish completed  false
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (8.95s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	9.430s
+FAIL

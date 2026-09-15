@@ -1,0 +1,94 @@
+{
+  "phase_status": "accepted_participant_publisher_and_exact_contract_publication",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 142,
+  "dist_files": 571,
+  "supported_participant_operations": [
+    "view",
+    "communicate"
+  ],
+  "logs": {
+    "before-valid-fixture.log": {
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "failed_tests": 2,
+      "source_manifest": "source-before-prospective-fix-sha256.json",
+      "overlay": "before-overlay.json",
+      "failures": [
+        "new sharing reused retired publisher before original-source audit",
+        "scope reduction incorrectly substituted a different granting role"
+      ]
+    },
+    "core.log": {
+      "exit_code": 0,
+      "packages": 8,
+      "source_manifest": "source-sha256.json"
+    },
+    "race.log": {
+      "exit_code": 0,
+      "packages": 2,
+      "top_level_tests": 27,
+      "source_manifest": "source-sha256.json"
+    },
+    "browser.log": {
+      "exit_code": 0,
+      "tests": 1,
+      "duration_seconds": 18.09,
+      "real_identity": true,
+      "real_http": true,
+      "real_chrome": true,
+      "page_errors": 0
+    },
+    "publisher-before-diagnostic.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "exact_source_checkpoint_retained": false
+    },
+    "contract-fixture-diagnostic.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "fixture selected agreement revision 2 while immutable proof was revision 1"
+    },
+    "core-fixture-interface-diagnostic.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "prospective-sharing fixture missing participant supersede method"
+    },
+    "race-fixture-interface-diagnostic.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "prospective-sharing fixture missing participant supersede method"
+    }
+  },
+  "model": "deterministic wire fixture",
+  "database": "SQLite",
+  "identity": "real current role permission edits",
+  "browser": "real Chrome via Playwright",
+  "frontend_changed_in_phase": false,
+  "frontend_assets": "unchanged accepted recovery-controls dist; every retained hash verified",
+  "source_manifest_scope": "previous accepted phase source set plus participant implementation and fixtures",
+  "runtime_integration_run_in_phase": false,
+  "execution_budget_changed": false,
+  "verified": [
+    "actual granting authority persisted separately from recipient role",
+    "current publisher share permission and recipient role/explicit grant intersection",
+    "unknown legacy publisher denied until explicit regrant",
+    "exact immutable contract source roots and bounded source markers",
+    "original provider permission and actual reader data checks",
+    "scope reduction preserves previous publisher without reading retired agreement",
+    "pending messages invalidated when actual granting role changes",
+    "source withdrawal hides derived agreement and private conversation IDs",
+    "new sharing missing exact agreement rolls back atomically",
+    "restart and exact request retry retain original receipts",
+    "two-user live membership removal and private execution isolation"
+  ],
+  "pending": [
+    "participant manage/execution_read/delivery_read scopes",
+    "multi-owner historical source and dependency publication",
+    "full shared execution details",
+    "cross-subject transfer and subject exit",
+    "remaining C05 professional-source automation and lifecycle acceptance"
+  ]
+}

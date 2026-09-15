@@ -1,0 +1,3 @@
+PASS task execution end remains awaiting review and renders the Agent submission, each condition, basis and blocker
+PASS user review binds the current digest and revision, evaluates every non-program condition and commits completion
+PASS completion history preserves both the original unresolved assessment and the later user acceptance

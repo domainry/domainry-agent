@@ -1,0 +1,11 @@
+All accepted commands completed with exit code 0; diagnostic logs are not acceptance.
+Agent working directory: /Users/tiger/Projects/domainry-agent
+Tools working directory: /Users/tiger/Projects/domainry-tools
+tools.log: go test ./internal/application/tool ./internal/adapter/accounttools ./module -count=1
+tools-race.log: go test -race ./internal/application/tool ./internal/adapter/accounttools ./module -run '^Test(SharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader|AccountWriteResultReadUsesOriginalLedgerWithoutExecutionOrApproval|AccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt)$' -count=1 -v
+application.log: go test ./internal/application -count=1
+http.log: go test ./internal/assembly/web -run '^Test(CrossUserWorkspace(MailSources|CalendarSources|WebSources|MailWriteReceipts)AutomaticDeliveryAndSharedExecution|SharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart|PeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission)$' -count=1 -v
+http-race.log: go test -race ./internal/assembly/web -run '^TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart$' -count=1 -v
+application-race.log: go test -race ./internal/application -count=1
+Agent and Tools git diff --check: exit code 0
+No task or context budget increase. Normal-size full mail body in new cross-user policy fixture; original large-body regression preserved.

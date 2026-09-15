@@ -73,7 +73,7 @@ export function AttachmentDialog({ conversationID, archived, onClose, onOpenLibr
   async function upload(signal: AbortSignal) {
     if (!file) return;
     if (!file.size || file.size > attachmentMaxBytes) { setError("请选择不超过 16 MiB 的非空文件。"); return; }
-    if (!attachmentAccept.split(",").some(extension => file.name.toLowerCase().endsWith(extension))) { setError("请选择 PDF、Word、Excel 或支持的文本文件。"); return; }
+    if (!attachmentAccept.split(",").some(extension => file.name.toLowerCase().endsWith(extension))) { setError("请选择图片、PDF、Word、Excel 或支持的文本文件。"); return; }
     const sha256 = await attachmentHash(await file.arrayBuffer());
     if (signal.aborted) return;
     if (pending && (pending.filename !== file.name || pending.bytes !== file.size || pending.sha256 !== sha256)) { setError(`请重新选择上次的“${pending.filename}”以重试，或先结束这次上传重试。`); return; }
@@ -117,7 +117,7 @@ export function AttachmentDialog({ conversationID, archived, onClose, onOpenLibr
   const textPreview = selected && (selected.content_type.startsWith("text/") || selected.content_type === "application/json");
   const readable = selected && ["stored", "indexing", "ready", "failed", "needs_reconcile"].includes(selected.state);
   return <Dialog open onOpenChange={open => { if (!open) onClose(); }}><DialogContent className="attachment-dialog"><DialogHeader><DialogTitle>会话附件</DialogTitle><DialogDescription>文件仅属于当前用户的这段会话。关闭窗口不删除附件；上传成功不代表已经可以检索。</DialogDescription></DialogHeader>
-    <div className="attachment-upload"><label htmlFor="attachment-file">选择附件</label><Input ref={fileInput} id="attachment-file" type="file" accept={attachmentAccept} disabled={blocked || archived} onChange={event => { setFile(event.target.files?.[0] || null); setError(""); }} /><p>PDF、Word、Excel、TXT、Markdown、CSV、TSV、JSON · 每个文件最多 16 MiB</p><Button disabled={!file || blocked || archived} onClick={() => void perform(upload)}><Upload size={16} />{busy ? "正在处理…" : pending ? "重试上传" : "上传并私有保存"}</Button>{archived && <p>会话已归档，恢复会话后可以上传。</p>}</div>
+    <div className="attachment-upload"><label htmlFor="attachment-file">选择附件</label><Input ref={fileInput} id="attachment-file" type="file" accept={attachmentAccept} disabled={blocked || archived} onChange={event => { setFile(event.target.files?.[0] || null); setError(""); }} /><p>PNG、JPEG、GIF、WebP、PDF、Word、Excel、TXT、Markdown、CSV、TSV、JSON · 每个文件最多 16 MiB</p><Button disabled={!file || blocked || archived} onClick={() => void perform(upload)}><Upload size={16} />{busy ? "正在处理…" : pending ? "重试上传" : "上传并私有保存"}</Button>{archived && <p>会话已归档，恢复会话后可以上传。</p>}</div>
     {pending && <div className="memory-operation"><p>上次上传待确认：{pending.filename}。刷新后请重新选择同一个文件重试。</p><Button variant="ghost" size="sm" disabled={blocked} onClick={() => { try { clearPending(); setNotice("已结束重试。已经传到服务器的附件仍可在下方管理。"); } catch { setError("无法清除本地重试记录。"); } }}>结束这次上传重试</Button></div>}
     {error && <p role="alert" className="error-text">{error}</p>}{notice && <p role="status" className="subtle">{notice}</p>}
     <div className="attachment-list-heading"><strong>已保存的附件</strong><Button variant="ghost" size="sm" disabled={blocked || loading} onClick={() => setRefresh(n => n + 1)}><RefreshCw size={14} />刷新列表</Button></div>

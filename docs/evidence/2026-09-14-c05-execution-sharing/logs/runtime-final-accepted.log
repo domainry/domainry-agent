@@ -1,0 +1,22 @@
+=== RUN   TestCrossUserAgentProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead
+    conversation_shared_professional_delivery_test.go:155: Exact professional execution result professional-report-catalog: 4 pages, 847 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:155: Exact professional execution result professional-report: 5 pages, 1109 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:155: Exact professional execution result professional-analysis-catalog: 4 pages, 933 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:155: Exact professional execution result professional-analysis: 7 pages, 1550 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:155: Exact professional execution result professional-report-catalog: 4 pages, 847 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:155: Exact professional execution result professional-report: 5 pages, 1109 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:155: Exact professional execution result professional-analysis-catalog: 4 pages, 933 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:155: Exact professional execution result professional-analysis: 7 pages, 1550 bytes, original SHA-256 verified
+--- PASS: TestCrossUserAgentProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead (28.75s)
+=== RUN   TestSameUserDifferentRolesProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead
+    conversation_shared_professional_delivery_test.go:159: Exact professional execution result professional-report-catalog: 4 pages, 847 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:159: Exact professional execution result professional-report: 5 pages, 1109 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:159: Exact professional execution result professional-analysis-catalog: 4 pages, 933 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:159: Exact professional execution result professional-analysis: 7 pages, 1550 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:159: Exact professional execution result professional-report-catalog: 4 pages, 847 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:159: Exact professional execution result professional-report: 5 pages, 1109 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:159: Exact professional execution result professional-analysis-catalog: 4 pages, 933 bytes, original SHA-256 verified
+    conversation_shared_professional_delivery_test.go:159: Exact professional execution result professional-analysis: 7 pages, 1550 bytes, original SHA-256 verified
+--- PASS: TestSameUserDifferentRolesProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead (29.79s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	59.173s

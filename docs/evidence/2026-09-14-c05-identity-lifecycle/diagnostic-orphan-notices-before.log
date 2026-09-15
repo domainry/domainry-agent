@@ -1,0 +1,48 @@
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+--- PASS: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.02s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+--- PASS: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+--- PASS: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+=== RUN   TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake
+    subject_collaboration_lifecycle_test.go:352: deleted delegation notice poisoned or restarted the remaining owner's message queue  false agent.conversation.delegation_not_found
+--- FAIL: TestSubjectExitSupersedesDeletedDelegationNoticesBeforeForeignWake (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.849s
+FAIL

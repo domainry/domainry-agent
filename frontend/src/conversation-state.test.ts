@@ -169,8 +169,10 @@ test("tool argument fragments stay previews and reconnect resumes Unicode byte o
   assert.throws(()=>apply("step.tool.arguments.delta",{index:0,call_id:"call",name:"calculate",offset:args.length,delta:'"expression":"0.1+0.2"}'}));
   const end='"expression":"0.1+0.2"}';
   apply("step.tool.arguments.delta",{index:0,call_id:"call",name:"calculate",offset:new TextEncoder().encode(args).length,delta:end});
-  apply("step.completed",{finish_reason:"tool_calls",calls:[{id:"call",name:"calculate",arguments:args+end}]});
+  apply("step.completed",{finish_reason:"tool_calls",calls:[{id:"call",name:"calculate",arguments:args+end}],parallel_width:2,parallel_calls:2});
   assert.equal(run.steps![0].calls[0].status,"queued");
+  assert.equal(run.steps![0].tool_execution,"parallel_read");
+  assert.equal(run.steps![0].parallel_tool_calls,2);
   apply("tool.started",{call_id:"call"});
   const reference = {conversation_id:"chat",run_id:"run",step:0,call_id:"call",sha256:"a".repeat(64)};
   apply("tool.completed",{call_id:"call",status:"completed",result_reference:reference,result_preview:'{"value":"0.30"}'});
@@ -184,6 +186,67 @@ test("tool argument fragments stay previews and reconnect resumes Unicode byte o
   assert.equal(liveStepText(run),"");
   assert.equal(run.steps![0].calls[0].status,"completed");
   assert.throws(()=>apply("step.text.delta",{step:1,attempt:1,offset:0,delta:"旧响应"}));
+});
+
+test("code-mode subcalls stream under their parent and cancellation keeps their distinct outcomes", () => {
+  let run: Run = {id:"run",conversation_id:"chat",status:"running",attempt:1,user_seq:1,draft_bytes:0,last_event_seq:0,steps:[{number:0,attempt:1,status:"tools",text:"",calls:[{id:"parent",name:"run_code",arguments:"{}",status:"running"}]}]};
+  run=applyExecutionEvent(run,{seq:1,type:"tool.queued",data:{step:0,attempt:1,parent_call_id:"parent",dispatch_index:0,call_id:"child",tool:"lookup",effect:"read"}});
+  assert.equal(run.steps![0].calls[0].subcalls?.[0].status,"queued");
+  run=applyExecutionEvent(run,{seq:2,type:"tool.started",data:{step:0,attempt:1,parent_call_id:"parent",dispatch_index:0,call_id:"child",tool:"lookup",effect:"read"}});
+  run=applyExecutionEvent(run,{seq:3,type:"tool.completed",data:{step:0,attempt:1,parent_call_id:"parent",dispatch_index:0,call_id:"child",tool:"lookup",status:"completed",result_preview:'{"count":2}'}});
+  assert.equal(run.steps![0].calls[0].subcalls?.[0].result_preview,'{"count":2}');
+  const stopped=applyExecutionEvent({...run,steps:[{...run.steps![0],calls:[{...run.steps![0].calls[0],status:"running",subcalls:[...(run.steps![0].calls[0].subcalls||[]),{id:"child-2",parent_call_id:"parent",dispatch_index:1,name:"write",arguments:"{}",status:"queued"}]}]}]},{seq:4,type:"run.cancelled",data:{attempt:1}});
+  assert.equal(stopped.steps![0].calls[0].status,"interrupted");
+  assert.deepEqual(stopped.steps![0].calls[0].subcalls?.map(call=>call.status),["completed","not_started"]);
+});
+
+test("a retried step clears stale parallel scheduling evidence", () => {
+  const run: Run = {id:"run",conversation_id:"chat",status:"running",attempt:2,user_seq:1,draft_bytes:0,last_event_seq:1,steps:[{number:0,attempt:1,status:"tools",text:"",calls:[],tool_execution:"parallel_read",parallel_tool_calls:2}]};
+  const retried = applyExecutionEvent(run,{seq:2,type:"step.attempt.started",data:{step:0,attempt:2}});
+  assert.equal(retried.steps![0].tool_execution,undefined);
+  assert.equal(retried.steps![0].parallel_tool_calls,undefined);
+  const completed = applyExecutionEvent(retried,{seq:3,type:"step.completed",data:{step:0,attempt:2,finish_reason:"stop",text:"done"}});
+  assert.equal(completed.steps![0].tool_execution,undefined);
+  assert.equal(completed.steps![0].parallel_tool_calls,undefined);
+});
+
+test("provider retry events discard failed reply and tool-step fragments",()=>{
+  let reply:Run={id:"reply",conversation_id:"chat",status:"running",attempt:1,user_seq:1,draft_text:"private partial",draft_bytes:15,last_event_seq:1};
+  reply=applyExecutionEvent(reply,{seq:2,type:"model.attempt.started",data:{step:-1,attempt:1,model_attempt:1,started_at:"2026-09-15T10:00:00Z"}});
+  assert.equal(reply.draft_text,"");
+  reply={...reply,draft_text:"failed response",draft_bytes:15};
+  reply=applyExecutionEvent(reply,{seq:3,type:"model.attempt.failed",data:{step:-1,attempt:1,model_attempt:1,error_code:"provider_network",completed_at:"2026-09-15T10:00:01Z"}});
+  reply=applyExecutionEvent(reply,{seq:4,type:"model.retry.scheduled",data:{step:-1,attempt:1,model_attempt:1,retry_at:"2026-09-15T10:00:02Z",retry_delay_ms:1000}});
+  assert.equal(reply.draft_text,"");assert.equal(reply.model_attempts?.[0].status,"retry_scheduled");
+
+  let execution:Run={id:"execution",conversation_id:"chat",status:"running",attempt:1,user_seq:1,draft_bytes:0,last_event_seq:1,steps:[{number:0,attempt:1,status:"generating",text:"failed plan",calls:[{id:"preview",name:"write",arguments:"{}",status:"receiving"}]}]};
+  execution=applyExecutionEvent(execution,{seq:2,type:"model.attempt.started",data:{step:0,attempt:1,model_attempt:1,started_at:"2026-09-15T10:00:00Z"}});
+  assert.equal(execution.steps?.[0].text,"");assert.equal(execution.steps?.[0].calls.length,0);
+  execution=applyExecutionEvent(execution,{seq:3,type:"model.attempt.failed",data:{step:0,attempt:1,model_attempt:1,error_code:"provider_rate_limited",completed_at:"2026-09-15T10:00:01Z"}});
+	const terminal=applyExecutionEvent(execution,{seq:4,type:"run.failed",data:{error_code:"provider_rate_limited"}});
+	assert.equal(terminal.steps?.[0].status,"interrupted");assert.equal(terminal.steps?.[0].last_model_error,"provider_rate_limited");
+  execution=applyExecutionEvent(execution,{seq:4,type:"model.retry.scheduled",data:{step:0,attempt:1,model_attempt:1,retry_at:"2026-09-15T10:00:02Z",retry_delay_ms:1000}});
+  assert.equal(execution.steps?.[0].status,"retry_wait");assert.equal(execution.steps?.[0].retry_delay_ms,1000);
+});
+
+test("context diagnostics retain source versions, pressure, compaction and provider cache usage", () => {
+  const run: Run = {id:"run",conversation_id:"chat",status:"running",attempt:1,user_seq:1,draft_bytes:0,last_event_seq:0};
+  const context = {
+    window: {limit_bytes: 65536,input_bytes: 49152,pressure_permille: 750,provider_serialized: true},
+    sources: [{key:"business.current",kind:"business_record",scope:"task",refresh:"step",version:"v2",order:10,updated_at:"2026-09-15T09:00:00Z"}],
+    changes: [{key:"business.current",previous_version:"v1",current_version:"v2",changed_at:"2026-09-15T09:00:00Z"}],
+    compaction: {version:1,results:2,intervals:1,before_bytes:70000,after_bytes:49000},
+  };
+  const assembled = applyExecutionEvent(run,{seq:1,type:"context.assembled",data:{attempt:1,context}});
+  assert.deepEqual(assembled.context,context);
+  const started = applyExecutionEvent(assembled,{seq:2,type:"step.started",data:{step:0,attempt:1,context}});
+  const completed = applyExecutionEvent(started,{seq:3,type:"step.completed",data:{step:0,attempt:1,finish_reason:"stop",text:"done",usage:{input_tokens:1200,input_tokens_details:{cached_tokens:800},cache_creation_input_tokens:120}}});
+  assert.deepEqual(completed.steps![0].context?.sources,context.sources);
+  assert.equal(completed.steps![0].context?.window?.pressure_permille,750);
+  assert.equal(completed.steps![0].context?.compaction?.intervals,1);
+  assert.equal(completed.steps![0].context?.cache_read_input_tokens,800);
+  assert.equal(completed.steps![0].context?.cache_creation_input_tokens,120);
+  assert.deepEqual(completed.steps![0].usage,{input_tokens:1200,input_tokens_details:{cached_tokens:800},cache_creation_input_tokens:120});
 });
 const storage = () => {
   const values = new Map<string, string>();
@@ -222,6 +285,15 @@ test("an uncertain send reuses its identity after refresh and acknowledgement cl
   assert.equal(refreshed.read("one").text, "");
   assert.equal(refreshed.read("one").pending, undefined);
   assert.equal(refreshed.read("two").text, "keep");
+});
+test("image selection is part of the logical send identity", () => {
+  const disk = storage();
+  const drafts = new DraftStore(() => disk, "image-send");
+  drafts.write("chat", "compare");
+  const first = drafts.pending("chat", "compare", false, false, false, false, "image-one");
+  assert.deepEqual(new DraftStore(() => disk, "image-send").pending("chat", "compare", false, false, false, false, "image-one"), first);
+  const changed = drafts.pending("chat", "compare", false, false, false, false, "image-two");
+  assert.notEqual(changed.id, first.id);
 });
 test("personal memory scope stays with one logical send and cannot expand on retry", () => {
   const disk = storage();

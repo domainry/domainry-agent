@@ -76,6 +76,9 @@ func TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools
 		t.Run(tc.key, func(t *testing.T) {
 			a := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "reader"}
 			definition, _ := personalResultReadDefinition(tc.key)
+			if strings.HasPrefix(tc.key, "memory_") {
+				definition, _ = sdk.PersonalConversationToolDefinition(tc.key, "1")
+			}
 			raw, _ := json.Marshal(tc.value)
 			record := persistence.ConversationToolExecution{State: "completed", Definition: definition, Call: sdk.ConversationToolCall{ID: "call", Name: tc.key, Arguments: tc.args}, Result: &sdk.ConversationToolResult{Status: "completed", ResourceID: tc.resource, Content: raw}, IdempotencyKey: "original", CreatedAt: now, UpdatedAt: now}
 			repo := &personalReceiptRepository{a: a, record: record, memories: []sdk.ConversationMemory{mem}, todos: map[string]sdk.ConversationTodo{todo.ID: todo}}

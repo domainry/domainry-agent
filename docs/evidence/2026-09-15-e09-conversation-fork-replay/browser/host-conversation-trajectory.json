@@ -1,0 +1,9 @@
+{
+  "compiled_frontend": true,
+  "complete": true,
+  "fork_context_seen": true,
+  "historical_effects_executed_by_replay": false,
+  "model_calls": 2,
+  "real_identity_http": true,
+  "real_sqlite": true
+}

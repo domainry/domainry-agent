@@ -1,0 +1,8 @@
+{
+  "sealed_at": "2026-09-14T11:00:01.664493+00:00",
+  "previous_archive": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-model-input-source-audit",
+  "previous_phase_patch": "early phase diff; omitted sticky native denial tracker and latest test expectation",
+  "final_phase_patch": "final-phase.patch",
+  "previous_after_source_snapshots_and_final_test_log": "already exact final version; unchanged",
+  "previous_archive_unchanged": true
+}

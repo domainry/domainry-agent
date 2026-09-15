@@ -35,11 +35,11 @@ func (s SubjectLifecycle) authority(workspaceID, subjectID string) (agentsdk.Con
 }
 
 var agentSubjectOwnerTables = []string{
-	conversationSourceReleaseTable, conversationAgentMessageTable, conversationAgreementTable, conversationAssignmentTable, conversationDeliveryRecordTable, conversationDisagreementTable, conversationStepSourceTable, conversationDelegationTable, conversationAgentTable, conversationCollaborationMutationTable,
+	conversationContractPublicationTable, conversationSourceReleaseTable, conversationAgentMessageTable, conversationAgreementTable, conversationAssignmentTable, conversationDeliveryRecordTable, conversationDisagreementTable, conversationStepSourceTable, conversationDelegationTable, conversationAgentTable, conversationCollaborationMutationTable,
 	"_agent_conversation_interactions", "_agent_conversation_tool_calls", "_agent_conversation_steps",
 	"_agent_conversation_events", "_agent_conversation_summaries", "_agent_conversation_messages",
 	"_agent_conversation_inputs", "_agent_conversation_runs", conversationFollowUpEventTable,
-	conversationFollowUpStateTable, conversationTaskTable, "_agent_conversations", "_agent_user_memories",
+	conversationFollowUpStateTable, conversationTaskAgreementUpdateTable, conversationTaskPlanTable, conversationTaskCompletionTable, conversationTaskTable, "_agent_conversations", conversationMemoryChangeTable, "_agent_user_memories",
 }
 
 func agentSubjectOwnerPredicate(table, owner string) query.Predicate {
@@ -50,12 +50,39 @@ func agentSubjectOwnerPredicate(table, owner string) query.Predicate {
 	return owned
 }
 
+func agentSubjectIndexedTables() map[string][]string {
+	return map[string][]string{
+		conversationDelegationSubjectTable: {"owner_key", "delegation_id", "execution_owner_key", "source_authority_json", "execution_authority_json", "created_at"},
+		conversationParticipantTable:       {"owner_key", "delegation_id", "viewer_key", "owner_user_id", "revision", "created_at"},
+		conversationAgentGrantTable:        {"owner_key", "agent_id", "viewer_key", "owner_user_id"},
+	}
+}
+
+func agentSubjectIndexPredicate(table, owner string) query.Predicate {
+	other := "viewer_key"
+	if table == conversationDelegationSubjectTable {
+		other = "execution_owner_key"
+	}
+	return query.Or(query.Equal("owner_key", owner), query.Equal(other, owner))
+}
+
 func (s SubjectLifecycle) PreviewSubject(ctx context.Context, workspaceID, subjectID string) (json.RawMessage, error) {
 	a, err := s.authority(workspaceID, subjectID)
 	if err != nil {
 		return nil, err
 	}
 	counts := map[string]int64{}
+	for table := range agentSubjectIndexedTables() {
+		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Projections(query.Project(query.CountAll())).Where(agentSubjectIndexPredicate(table, conversationOwner(a))).Build()
+		if err != nil {
+			return nil, err
+		}
+		var count int64
+		if err := s.store.Database().QueryRowContext(ctx, statement, args...).Scan(&count); err != nil {
+			return nil, err
+		}
+		counts[table] = count
+	}
 	for _, table := range agentSubjectOwnerTables {
 		statement, args, buildErr := query.NewSelectBuilder(s.store.Renderer(), table).Projections(query.Project(query.CountAll())).Where(agentSubjectOwnerPredicate(table, conversationOwner(a))).Build()
 		if buildErr != nil {
@@ -87,6 +114,24 @@ func (s SubjectLifecycle) ExportSubjectForRequest(ctx context.Context, _ string,
 		return nil, err
 	}
 	export := map[string][]json.RawMessage{}
+	for table, columns := range agentSubjectIndexedTables() {
+		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns(columns...).Where(agentSubjectIndexPredicate(table, conversationOwner(a))).Build()
+		if err != nil {
+			return nil, err
+		}
+		rows, err := s.store.Database().QueryContext(ctx, statement, args...)
+		if err != nil {
+			return nil, err
+		}
+		items, readErr := subjectIndexRecords(rows, columns)
+		rows.Close()
+		if readErr != nil {
+			return nil, readErr
+		}
+		if len(items) > 0 {
+			export[table] = items
+		}
+	}
 	for _, table := range agentSubjectOwnerTables {
 		items, readErr := s.payloads(ctx, table, agentSubjectOwnerPredicate(table, conversationOwner(a)))
 		if readErr != nil {
@@ -141,6 +186,10 @@ func (s SubjectLifecycle) EraseSubjectForRequest(ctx context.Context, requestID,
 	owner := conversationOwner(a)
 	var receipt json.RawMessage
 	err = (&ConversationStore{store: s.store}).transaction(ctx, func(tx *sql.Tx) error {
+		collaboration := &ConversationStore{store: s.store}
+		if err := collaboration.lockConversationWorkspaceCapacity(ctx, tx, a); err != nil {
+			return err
+		}
 		lookup, args, buildErr := query.NewSelectBuilder(s.store.Renderer(), agentSubjectReceiptTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("request_id", requestID))).Build()
 		if buildErr != nil {
 			return buildErr
@@ -151,6 +200,20 @@ func (s SubjectLifecycle) EraseSubjectForRequest(ctx context.Context, requestID,
 			return scanErr
 		}
 		changed := map[string]int64{}
+		if err := collaboration.eraseSubjectCollaboration(ctx, tx, a, changed); err != nil {
+			return err
+		}
+		for table := range agentSubjectIndexedTables() {
+			statement, args, err := query.NewDeleteBuilder(s.store.Renderer(), table).Where(agentSubjectIndexPredicate(table, owner)).Build()
+			if err != nil {
+				return err
+			}
+			result, err := tx.ExecContext(ctx, statement, args...)
+			if err != nil {
+				return err
+			}
+			changed[table], _ = result.RowsAffected()
+		}
 		for _, table := range agentSubjectOwnerTables {
 			statement, deleteArgs, deleteErr := query.NewDeleteBuilder(s.store.Renderer(), table).Where(agentSubjectOwnerPredicate(table, owner)).Build()
 			if deleteErr != nil {

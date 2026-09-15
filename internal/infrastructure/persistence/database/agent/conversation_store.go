@@ -29,7 +29,7 @@ type ConversationStore struct {
 func NewConversationStore(s *Store) *ConversationStore { return &ConversationStore{store: s} }
 
 func (s *ConversationStore) Ready(ctx context.Context) error {
-	for _, table := range []string{"_agent_conversations", "_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_user_memories", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationFollowUpStateTable, conversationFollowUpEventTable, attachmentTable, attachmentCleanupTable, conversationAgentTable, conversationDelegationTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDisagreementTable, conversationAgentGrantTable, conversationParticipantTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
+	for _, table := range []string{"_agent_conversations", "_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_user_memories", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", conversationForkTable, interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationTaskPlanTable, conversationTaskCompletionTable, conversationTaskAgreementUpdateTable, conversationFollowUpStateTable, conversationFollowUpEventTable, attachmentTable, attachmentCleanupTable, conversationAgentTable, conversationDelegationTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDisagreementTable, conversationAgentGrantTable, conversationParticipantTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("owner_key").Limit(1).Build()
 		if err != nil {
 			return err
@@ -39,6 +39,14 @@ func (s *ConversationStore) Ready(ctx context.Context) error {
 		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
+	}
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationWorkBudgetTable).Columns("runtime_id").Limit(1).Build()
+	if err != nil {
+		return err
+	}
+	var runtimeID string
+	if err = s.store.Database().QueryRowContext(ctx, q, args...).Scan(&runtimeID); err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return err
 	}
 	for _, table := range []string{libraryTable, libraryMemberTable} {
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("scope_key").Limit(1).Build()
@@ -350,13 +358,19 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 		if err = conversationCAS(ctx, tx, q, args, e); err != nil {
 			return err
 		}
-		for _, table := range []string{"_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_inputs", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", interactionTable} {
+		for _, table := range []string{"_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_inputs", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", conversationForkTable, interactionTable} {
 			q, args, e := query.NewDeleteBuilder(s.store.Renderer(), table).Where(conversationScope(a, id)).Build()
 			if err = conversationExec(ctx, tx, q, args, e); err != nil {
 				return err
 			}
 		}
-		q, args, e = query.NewDeleteBuilder(s.store.Renderer(), conversationTaskTable).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("source_conversation_id", id))).Build()
+		if err = s.deleteConversationTaskPlansForSource(ctx, tx, owner, id); err != nil {
+			return err
+		}
+		if err = s.deleteConversationTaskCompletionsForSource(ctx, tx, owner, id); err != nil {
+			return err
+		}
+		q, args, e = query.NewDeleteBuilder(s.store.Renderer(), conversationTaskTable).Where(query.And(query.Equal("owner_key", owner), query.Equal("source_conversation_id", id))).Build()
 		if err = conversationExec(ctx, tx, q, args, e); err != nil {
 			return err
 		}

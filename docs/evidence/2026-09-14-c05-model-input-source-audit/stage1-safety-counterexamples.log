@@ -1,0 +1,9 @@
+=== RUN   TestModelSourceReceiptCannotSubstituteAnotherServiceSourceAudit
+    conversation_model_sources_test.go:332: native host audited another service's data instead of its own 0 <nil>
+--- FAIL: TestModelSourceReceiptCannotSubstituteAnotherServiceSourceAudit (0.00s)
+=== RUN   TestModelSourceReceiptRetainsStricterNativeSourcePurpose
+    conversation_model_sources_test.go:347: postponed delivery source proof replaced the native raw communication check 2 <nil>
+--- FAIL: TestModelSourceReceiptRetainsStricterNativeSourcePurpose (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.376s
+FAIL

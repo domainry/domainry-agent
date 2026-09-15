@@ -1,0 +1,4 @@
+=== RUN   TestParticipantDependencyTransferHTTPRechecksUpstreamAudienceDuringExecution
+--- PASS: TestParticipantDependencyTransferHTTPRechecksUpstreamAudienceDuringExecution (17.65s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	20.804s

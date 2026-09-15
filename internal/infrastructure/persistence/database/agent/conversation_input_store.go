@@ -39,11 +39,20 @@ func (s *ConversationStore) ModelInput(ctx context.Context, claim agentpersisten
 		if input == nil {
 			return nil
 		}
+		if len(input.Messages) == 0 || !validStoredConversationModelMessages(input.Messages, claim.Run.ConversationID) || storedConversationModelMessagesHaveImages(input.Messages) && !input.ModelCapabilities.ImageInput {
+			return conversationError("bad_request", "model_input_invalid")
+		}
+		old := row
 		q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversation_inputs").Columns("owner_key", "conversation_id", "run_id", "payload_json").Values(conversationOwner(claim.Authority), claim.Run.ConversationID, claim.Run.ID, conversationJSON(input)).Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}
-		if err = s.saveRun(ctx, tx, row, row); err != nil {
+		if view := conversationContextView(input.ContextWindow, input.Context, nil); view != nil {
+			if err = s.event(ctx, tx, &row, "context.assembled", map[string]any{"attempt": row.Run.Attempt, "context": view}); err != nil {
+				return err
+			}
+		}
+		if err = s.saveRun(ctx, tx, row, old); err != nil {
 			return err
 		}
 		out = *input

@@ -1,0 +1,7 @@
+=== RUN   TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart
+knowledge execution identity diagnostic: actor={Known:true RuntimeID:business-browser-runtime WorkspaceID:workspace-primary UserID:admin RoleKey:headquarters_admin} host_runtime=business-browser-runtime host_workspace=workspace-primary err=runtime.conversation.business_forbidden
+    conversation_knowledge_shared_delivery_test.go:293: browser POST /agent/conversations/conv_4b92545f0696021730218e9835da92f9/messages status=403 want=202 body={"code":"agent.conversation.execution_access_denied"}
+--- FAIL: TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart (3.70s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	4.512s
+FAIL

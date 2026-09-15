@@ -1,0 +1,14 @@
+=== RUN   TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity
+=== RUN   TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity/same-identity
+    conversation_same_identity_control_test.go:124: inbox launched under the manager's identity {true runtime workspace user another-management-role} {true runtime workspace user issuer-role} <nil>
+=== RUN   TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity/legacy-manager-header
+    conversation_same_identity_control_test.go:124: inbox launched under the manager's identity {true runtime workspace user another-management-role} {true runtime workspace user issuer-role} <nil>
+=== RUN   TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity/cross-user
+    conversation_same_identity_control_test.go:93: update_brief agent.conversation.task_not_found
+--- FAIL: TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity (0.03s)
+    --- FAIL: TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity/same-identity (0.01s)
+    --- FAIL: TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity/legacy-manager-header (0.01s)
+    --- FAIL: TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity/cross-user (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.646s
+FAIL

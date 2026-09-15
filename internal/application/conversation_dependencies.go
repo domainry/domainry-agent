@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent/internal/execution"
 )
 
@@ -28,47 +29,37 @@ func (s *ConversationService) validateDependencySources(ctx context.Context, ref
 	if err := validateDependencyInputs(refs); err != nil {
 		return err
 	}
-	repo, err := s.collaborationRepository()
-	if err != nil {
-		return err
-	}
 	audit := s.sourceAudit(a, consumer)
 	seen := map[string]bool{}
 	queue := append([]sdk.ConversationDependencyInput{}, refs...)
 	for len(queue) > 0 {
 		ref := queue[0]
 		queue = queue[1:]
-		if seen[ref.DelegationID] {
+		key := conversationDigest(ref)
+		if seen[key] {
 			continue
 		}
-		seen[ref.DelegationID] = true
-		if len(seen) > 32 {
+		seen[key] = true
+		if len(seen) > 256 {
 			return conversationFailure("bad_request", "dependencies_invalid")
 		}
-		d, err := repo.ConversationDelegation(ctx, ref.DelegationID, a)
+		itemCtx, record, err := s.dependencyContractContext(ctx, ref, a)
 		if err != nil {
 			return err
 		}
-		if d.InputSource != nil && execution.DependencyUsesInput(ref.Fields) {
-			if _, err = audit.run(ctx, *d.InputSource); err != nil {
+		if record.Agreement.InputSource != nil && execution.DependencyUsesInput(ref.Fields) {
+			if _, err = audit.run(itemCtx, *record.Agreement.InputSource); err != nil {
 				return err
 			}
 		}
-		if d.BriefSource != nil {
-			if _, err = audit.run(ctx, *d.BriefSource); err != nil {
+		if record.Agreement.Source != nil {
+			if _, err = audit.run(itemCtx, *record.Agreement.Source); err != nil {
 				return err
 			}
 		}
-		for _, edge := range d.Dependencies {
-			if edge.InputSource != nil {
-				if _, err := audit.run(ctx, *edge.InputSource); err != nil {
-					return err
-				}
-			}
-			if edge.Source != nil {
-				if _, err := audit.run(ctx, *edge.Source); err != nil {
-					return err
-				}
+		for _, edge := range record.Agreement.Dependencies {
+			if _, err := audit.dependency(ctx, edge); err != nil {
+				return err
 			}
 			queue = append(queue, edge.ConversationDependencyInput)
 		}
@@ -91,31 +82,48 @@ func (s *ConversationService) ConversationAgreementHistory(ctx context.Context, 
 	}
 	audit := s.sourceAudit(a)
 	for _, item := range out.Items {
+		itemCtx := ctx
+		refs := []sdk.ConversationRunReference{}
+		if publications, ok := s.repo.(persistence.ConversationContractPublicationRepository); ok {
+			record, recordErr := publications.ConversationContractPublicationRecord(ctx, id, item.Revision, a)
+			if recordErr != nil {
+				return sdk.ConversationAgreementHistory{}, recordErr
+			}
+			refs = directContractSourceReferences(record)
+		}
+		if len(refs) > 0 {
+			itemCtx = context.WithValue(ctx, conversationPublishedSourceKey{}, conversationPublishedSource{purpose: "contract", delegationID: id, roots: refs})
+			for _, ref := range mergeConversationSources(refs) {
+				if _, err = audit.run(itemCtx, ref); err != nil {
+					return sdk.ConversationAgreementHistory{}, err
+				}
+			}
+		}
+		if item.Requirements != nil {
+			for _, ref := range item.Requirements.Sources {
+				if _, err = audit.run(itemCtx, ref); err != nil {
+					return sdk.ConversationAgreementHistory{}, err
+				}
+			}
+		}
 		if item.ChangeSource != nil {
-			if _, err = audit.run(ctx, *item.ChangeSource); err != nil {
+			if _, err = audit.run(itemCtx, *item.ChangeSource); err != nil {
 				return sdk.ConversationAgreementHistory{}, err
 			}
 		}
 		if item.InputSource != nil {
-			if _, err = audit.run(ctx, *item.InputSource); err != nil {
+			if _, err = audit.run(itemCtx, *item.InputSource); err != nil {
 				return sdk.ConversationAgreementHistory{}, err
 			}
 		}
 		if item.Source != nil {
-			if _, err = audit.run(ctx, *item.Source); err != nil {
+			if _, err = audit.run(itemCtx, *item.Source); err != nil {
 				return sdk.ConversationAgreementHistory{}, err
 			}
 		}
 		for _, edge := range item.Dependencies {
-			if edge.InputSource != nil {
-				if _, err := audit.run(ctx, *edge.InputSource); err != nil {
-					return sdk.ConversationAgreementHistory{}, err
-				}
-			}
-			if edge.Source != nil {
-				if _, err = audit.run(ctx, *edge.Source); err != nil {
-					return sdk.ConversationAgreementHistory{}, err
-				}
+			if _, err := audit.dependency(ctx, edge); err != nil {
+				return sdk.ConversationAgreementHistory{}, err
 			}
 		}
 	}
@@ -131,6 +139,12 @@ func (s *ConversationService) dependencyStates(ctx context.Context, d sdk.Conver
 	for _, edge := range d.Dependencies {
 		upstream, err := repo.ConversationDelegation(ctx, edge.DelegationID, a)
 		if err != nil {
+			return nil, dependencySourceError(err)
+		}
+		if upstream.SubjectExited {
+			return nil, conversationFailure("forbidden", "dependency_source_unavailable")
+		}
+		if err := s.authorizeCollaboration(ctx, "view", &upstream, a); err != nil {
 			return nil, err
 		}
 		state := sdk.ConversationDependencyState{DelegationID: edge.DelegationID, CurrentBriefVersion: upstream.Brief.Version, CurrentAgreementRevision: max(1, upstream.AgreementRevision), State: "current"}

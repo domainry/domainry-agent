@@ -1,0 +1,34 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   "TypeError: Cannot read properties of null (reading 'map')",
++   "TypeError: Cannot read properties of null (reading 'map')",
++   "TypeError: Cannot read properties of null (reading 'map')"
++ ]
+- []
+
+    at file:///Users/tiger/Projects/domainry-agent/frontend/tests/recovery-controls.browser.mjs:44:9 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: [
+    "TypeError: Cannot read properties of null (reading 'map')",
+    "TypeError: Cannot read properties of null (reading 'map')",
+    "TypeError: Cannot read properties of null (reading 'map')"
+  ],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+    conversation_source_release_test.go:227: exit status 1
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (24.92s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	25.426s
+FAIL

@@ -1,0 +1,234 @@
+=== RUN   TestApplicationSchemaDomainServiceOwnsSnapshotProjection
+--- PASS: TestApplicationSchemaDomainServiceOwnsSnapshotProjection (0.00s)
+=== RUN   TestMetadataErrorConstructorsPreserveKindsAndSanitizeParams
+=== RUN   TestMetadataErrorConstructorsPreserveKindsAndSanitizeParams/bad_request
+=== RUN   TestMetadataErrorConstructorsPreserveKindsAndSanitizeParams/forbidden
+=== RUN   TestMetadataErrorConstructorsPreserveKindsAndSanitizeParams/not_found
+=== RUN   TestMetadataErrorConstructorsPreserveKindsAndSanitizeParams/conflict
+--- PASS: TestMetadataErrorConstructorsPreserveKindsAndSanitizeParams (0.00s)
+    --- PASS: TestMetadataErrorConstructorsPreserveKindsAndSanitizeParams/bad_request (0.00s)
+    --- PASS: TestMetadataErrorConstructorsPreserveKindsAndSanitizeParams/forbidden (0.00s)
+    --- PASS: TestMetadataErrorConstructorsPreserveKindsAndSanitizeParams/not_found (0.00s)
+    --- PASS: TestMetadataErrorConstructorsPreserveKindsAndSanitizeParams/conflict (0.00s)
+=== RUN   TestMetadataErrorOmitsEmptyParams
+--- PASS: TestMetadataErrorOmitsEmptyParams (0.00s)
+=== RUN   TestMetadataInternalError
+--- PASS: TestMetadataInternalError (0.00s)
+=== RUN   TestWrapMetadataError
+=== RUN   TestWrapMetadataError/nil
+=== RUN   TestWrapMetadataError/application_error
+=== RUN   TestWrapMetadataError/repository_error
+--- PASS: TestWrapMetadataError (0.00s)
+    --- PASS: TestWrapMetadataError/nil (0.00s)
+    --- PASS: TestWrapMetadataError/application_error (0.00s)
+    --- PASS: TestWrapMetadataError/repository_error (0.00s)
+=== RUN   TestMetadataValueOrDefault
+--- PASS: TestMetadataValueOrDefault (0.00s)
+=== RUN   TestApplicationSchemaFacadeDoesNotDeriveGuardedWritesFromActionConfig
+--- PASS: TestApplicationSchemaFacadeDoesNotDeriveGuardedWritesFromActionConfig (0.00s)
+=== RUN   TestMetadataVisibilityRemainingCompoundOperands
+--- PASS: TestMetadataVisibilityRemainingCompoundOperands (0.00s)
+=== RUN   TestApplicationSchemaLocaleProjectsAllOwnedShapes
+--- PASS: TestApplicationSchemaLocaleProjectsAllOwnedShapes (0.00s)
+=== RUN   TestApplicationSchemaLocaleRepositoryFailuresAndEmptyValuesFallback
+--- PASS: TestApplicationSchemaLocaleRepositoryFailuresAndEmptyValuesFallback (0.00s)
+=== RUN   TestSnapshotReportPermissionAndObjectVisibilityIntersection
+--- PASS: TestSnapshotReportPermissionAndObjectVisibilityIntersection (0.00s)
+=== RUN   TestLocalizedSchemaOptionHelpersPreserveShapeAndInputs
+--- PASS: TestLocalizedSchemaOptionHelpersPreserveShapeAndInputs (0.00s)
+=== RUN   TestSnapshotVisibilityFiltersObjectsActionsReportsAndAgentRegistry
+--- PASS: TestSnapshotVisibilityFiltersObjectsActionsReportsAndAgentRegistry (0.00s)
+=== RUN   TestVisibilityPermissionAndToolHelperEdges
+--- PASS: TestVisibilityPermissionAndToolHelperEdges (0.00s)
+=== RUN   TestBuildSchemaSnapshotCanonicalizesOwnerProjection
+--- PASS: TestBuildSchemaSnapshotCanonicalizesOwnerProjection (0.00s)
+=== RUN   TestSchemaSnapshotHashCoversAllManifestDomains
+--- PASS: TestSchemaSnapshotHashCoversAllManifestDomains (0.00s)
+=== RUN   TestVisibilityWriteOnlyFieldAndExactActionKeyEdges
+--- PASS: TestVisibilityWriteOnlyFieldAndExactActionKeyEdges (0.00s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/domain/appschema/service	1.494s
+=== RUN   TestNewRuntimeServicesStateUsesGenerationAwareSchemaProvider
+--- PASS: TestNewRuntimeServicesStateUsesGenerationAwareSchemaProvider (0.00s)
+=== RUN   TestRecordSchemaSnapshotProviderBuildsColdGenerationOnceUnderConcurrency
+--- PASS: TestRecordSchemaSnapshotProviderBuildsColdGenerationOnceUnderConcurrency (0.01s)
+=== RUN   TestRecordSchemaSnapshotProviderBuildsColdProjectionOnceUnderConcurrency
+--- PASS: TestRecordSchemaSnapshotProviderBuildsColdProjectionOnceUnderConcurrency (0.00s)
+=== RUN   TestRecordSchemaSnapshotProviderReusesProjectionAcrossAccessRefresh
+--- PASS: TestRecordSchemaSnapshotProviderReusesProjectionAcrossAccessRefresh (0.00s)
+=== RUN   TestRecordSchemaSnapshotProviderReusesStableProjectionAndInvalidatesEveryMutation
+--- PASS: TestRecordSchemaSnapshotProviderReusesStableProjectionAndInvalidatesEveryMutation (0.00s)
+=== RUN   TestRecordSchemaSnapshotProviderDoesNotReuseExpiredAccessProjection
+--- PASS: TestRecordSchemaSnapshotProviderDoesNotReuseExpiredAccessProjection (0.03s)
+=== RUN   TestRecordSchemaSnapshotProviderBoundsPrincipalsAndHandlesConcurrentPublication
+--- PASS: TestRecordSchemaSnapshotProviderBoundsPrincipalsAndHandlesConcurrentPublication (0.04s)
+=== RUN   TestPipelineCompositionAllowsMissingOptionalAutomation
+--- PASS: TestPipelineCompositionAllowsMissingOptionalAutomation (0.00s)
+=== RUN   TestCompositionDeclaredConnectorPorts
+--- PASS: TestCompositionDeclaredConnectorPorts (0.00s)
+=== RUN   TestCompositionRegistriesListNonEmptyOwners
+--- PASS: TestCompositionRegistriesListNonEmptyOwners (0.00s)
+=== RUN   TestCompositionFinalNilAdapterEdges
+--- PASS: TestCompositionFinalNilAdapterEdges (0.00s)
+=== RUN   TestCompositionFinalRecordAssuranceEdges
+--- PASS: TestCompositionFinalRecordAssuranceEdges (0.00s)
+=== RUN   TestCompositionFinalSchedulerAndWorkflowSchemaEdges
+--- PASS: TestCompositionFinalSchedulerAndWorkflowSchemaEdges (0.00s)
+=== RUN   TestActionNotificationCompilerValidatesDependenciesRecipientsAndProjection
+--- PASS: TestActionNotificationCompilerValidatesDependenciesRecipientsAndProjection (0.00s)
+=== RUN   TestInteractiveWorkflowStarterBranches
+--- PASS: TestInteractiveWorkflowStarterBranches (0.00s)
+=== RUN   TestAgentWorkflowDependencyAbsentAndRetryBranches
+--- PASS: TestAgentWorkflowDependencyAbsentAndRetryBranches (0.00s)
+=== RUN   TestCompositionSmallAdaptersCoverAllDelegationBranches
+--- PASS: TestCompositionSmallAdaptersCoverAllDelegationBranches (0.00s)
+=== RUN   TestRecordInitializationAuditProjectorCoversPresentationAndFailures
+--- PASS: TestRecordInitializationAuditProjectorCoversPresentationAndFailures (0.00s)
+=== RUN   TestCompositionFinalBranchContracts
+--- PASS: TestCompositionFinalBranchContracts (0.00s)
+=== RUN   TestCompositionActionWithoutRegisteredHandlerFailsClosed
+--- PASS: TestCompositionActionWithoutRegisteredHandlerFailsClosed (0.00s)
+=== RUN   TestActionAssuranceValidatorRemainingBranches
+--- PASS: TestActionAssuranceValidatorRemainingBranches (0.00s)
+=== RUN   TestAssembledActionPipelineBindingCoversPlanFailureAndCommits
+--- PASS: TestAssembledActionPipelineBindingCoversPlanFailureAndCommits (0.00s)
+=== RUN   TestAssembledBusinessHandlerCoversRevisionAndDurableIntentFallbacks
+--- PASS: TestAssembledBusinessHandlerCoversRevisionAndDurableIntentFallbacks (0.00s)
+=== RUN   TestActionAssuranceHelpersTrimMethods
+--- PASS: TestActionAssuranceHelpersTrimMethods (0.00s)
+=== RUN   TestRecordQueryPolicyCompositionCandidateEvaluatorAvailability
+--- PASS: TestRecordQueryPolicyCompositionCandidateEvaluatorAvailability (0.00s)
+=== RUN   TestRecordTimerRuntimeAdapterTargets
+--- PASS: TestRecordTimerRuntimeAdapterTargets (0.00s)
+=== RUN   TestRecordPolicyWiringDelegatesEveryPort
+--- PASS: TestRecordPolicyWiringDelegatesEveryPort (0.00s)
+=== RUN   TestWorkflowDependencyWiringCoversCancellationLookupAndMissingOwner
+--- PASS: TestWorkflowDependencyWiringCoversCancellationLookupAndMissingOwner (0.00s)
+=== RUN   TestRuntimeFacadeNilContracts
+--- PASS: TestRuntimeFacadeNilContracts (0.00s)
+=== RUN   TestRuntimeConstructionRejectsNilContext
+--- PASS: TestRuntimeConstructionRejectsNilContext (0.00s)
+=== RUN   TestRecordApplicationDependencyClosuresUseCanonicalOwners
+--- PASS: TestRecordApplicationDependencyClosuresUseCanonicalOwners (0.00s)
+=== RUN   TestRecordDomainWiringInvokesSchemaWorkflowAndPipelinePorts
+--- PASS: TestRecordDomainWiringInvokesSchemaWorkflowAndPipelinePorts (0.00s)
+=== RUN   TestWorkflowSchemaWiringHandlesOptionalIdentityProjection
+--- PASS: TestWorkflowSchemaWiringHandlesOptionalIdentityProjection (0.00s)
+=== RUN   TestWorkflowRecordTimerModeAndFailureEdges
+--- PASS: TestWorkflowRecordTimerModeAndFailureEdges (0.00s)
+=== RUN   TestOptionalMetadataAndIntegrationCompositionFallbacks
+--- PASS: TestOptionalMetadataAndIntegrationCompositionFallbacks (0.00s)
+=== RUN   TestPipelineCompositionCoversOptionalOwnerBoundaries
+--- PASS: TestPipelineCompositionCoversOptionalOwnerBoundaries (0.00s)
+=== RUN   TestPipelineTransitionFailureWindowsBaseline
+=== RUN   TestPipelineTransitionFailureWindowsBaseline/record_failure_leaves_no_transition_state
+=== RUN   TestPipelineTransitionFailureWindowsBaseline/history_failure_rolls_back_transitioned_record
+=== RUN   TestPipelineTransitionFailureWindowsBaseline/mandatory_audit_failure_rolls_back_record_and_history
+=== RUN   TestPipelineTransitionFailureWindowsBaseline/invalid_workflow_trigger_is_rejected_before_commit
+=== RUN   TestPipelineTransitionFailureWindowsBaseline/workflow_trigger_intent_commits_with_transition
+--- PASS: TestPipelineTransitionFailureWindowsBaseline (0.01s)
+    --- PASS: TestPipelineTransitionFailureWindowsBaseline/record_failure_leaves_no_transition_state (0.00s)
+    --- PASS: TestPipelineTransitionFailureWindowsBaseline/history_failure_rolls_back_transitioned_record (0.00s)
+    --- PASS: TestPipelineTransitionFailureWindowsBaseline/mandatory_audit_failure_rolls_back_record_and_history (0.00s)
+    --- PASS: TestPipelineTransitionFailureWindowsBaseline/invalid_workflow_trigger_is_rejected_before_commit (0.00s)
+    --- PASS: TestPipelineTransitionFailureWindowsBaseline/workflow_trigger_intent_commits_with_transition (0.00s)
+=== RUN   TestRelationReadEffectScope
+=== RUN   TestRelationReadEffectScope/relation_validator_adapter_uses_the_declared_Action_read_scope
+=== RUN   TestRelationReadEffectScope/explicit_action_read_replaces_browse_scope_without_mutating_caller
+=== RUN   TestRelationReadEffectScope/ordinary_read_remains_private
+=== RUN   TestRelationReadEffectScope/undeclared_reference_does_not_inherit_authority
+=== RUN   TestRelationReadEffectScope/another_action_does_not_borrow_effect
+=== RUN   TestRelationReadEffectScope/explicit_function_deny_stays_denied
+=== RUN   TestRelationReadEffectScope/target_record_deny_remains_in_derived_bundle
+=== RUN   TestRelationReadEffectScope/invalid_source_authority_fails_closed
+=== RUN   TestRelationReadEffectScope/record_timer_system_action_receives_only_its_declared_relation_read
+=== RUN   TestRelationReadEffectScope/system_caller_without_the_source_action_capability_gains_no_read
+--- PASS: TestRelationReadEffectScope (0.00s)
+    --- PASS: TestRelationReadEffectScope/relation_validator_adapter_uses_the_declared_Action_read_scope (0.00s)
+    --- PASS: TestRelationReadEffectScope/explicit_action_read_replaces_browse_scope_without_mutating_caller (0.00s)
+    --- PASS: TestRelationReadEffectScope/ordinary_read_remains_private (0.00s)
+    --- PASS: TestRelationReadEffectScope/undeclared_reference_does_not_inherit_authority (0.00s)
+    --- PASS: TestRelationReadEffectScope/another_action_does_not_borrow_effect (0.00s)
+    --- PASS: TestRelationReadEffectScope/explicit_function_deny_stays_denied (0.00s)
+    --- PASS: TestRelationReadEffectScope/target_record_deny_remains_in_derived_bundle (0.00s)
+    --- PASS: TestRelationReadEffectScope/invalid_source_authority_fails_closed (0.00s)
+    --- PASS: TestRelationReadEffectScope/record_timer_system_action_receives_only_its_declared_relation_read (0.00s)
+    --- PASS: TestRelationReadEffectScope/system_caller_without_the_source_action_capability_gains_no_read (0.00s)
+=== RUN   TestRecordPolicyUsesCurrentObjectsWithoutBuildingWholeSchema
+--- PASS: TestRecordPolicyUsesCurrentObjectsWithoutBuildingWholeSchema (0.00s)
+=== RUN   TestReportRecordsUseCurrentObjectMetadataWithoutBuildingWholeSchema
+--- PASS: TestReportRecordsUseCurrentObjectMetadataWithoutBuildingWholeSchema (0.00s)
+=== RUN   TestRecordTimerTargetRuntimeAdapterConditions
+--- PASS: TestRecordTimerTargetRuntimeAdapterConditions (0.00s)
+=== RUN   TestRuntimeApplicationsHandlesNilAndPartiallyAssembledState
+--- PASS: TestRuntimeApplicationsHandlesNilAndPartiallyAssembledState (0.00s)
+=== RUN   TestAuditAppendHandlesNilAndConfiguredServices
+--- PASS: TestAuditAppendHandlesNilAndConfiguredServices (0.00s)
+=== RUN   TestMetadataSnapshotWatcherSupportsCanonicalAndFallbackOwners
+--- PASS: TestMetadataSnapshotWatcherSupportsCanonicalAndFallbackOwners (0.00s)
+=== RUN   TestAutomationApplicationUsesCanonicalRuntimeServiceAndOwnerBoundaries
+--- PASS: TestAutomationApplicationUsesCanonicalRuntimeServiceAndOwnerBoundaries (0.00s)
+=== RUN   TestAuthoringCapabilityHelpersCoverAbsentSchemaAndLookupFallbacks
+--- PASS: TestAuthoringCapabilityHelpersCoverAbsentSchemaAndLookupFallbacks (0.05s)
+=== RUN   TestStructuredApplicationDefinitionDispatchesAndRejectsInvalidJSON
+--- PASS: TestStructuredApplicationDefinitionDispatchesAndRejectsInvalidJSON (0.00s)
+=== RUN   TestApplicationDefinitionValidationRoutesOwnerContracts
+--- PASS: TestApplicationDefinitionValidationRoutesOwnerContracts (0.00s)
+=== RUN   TestBusinessRuntimeProjectionPropagatesOwnerFailures
+--- PASS: TestBusinessRuntimeProjectionPropagatesOwnerFailures (0.00s)
+=== RUN   TestBusinessSystemSnapshotUsesNarrowOwnerPorts
+--- PASS: TestBusinessSystemSnapshotUsesNarrowOwnerPorts (0.01s)
+=== RUN   TestMetadataProjectionReplacesRuntimeOwnedSchemaState
+--- PASS: TestMetadataProjectionReplacesRuntimeOwnedSchemaState (0.00s)
+=== RUN   TestRecordActionApplicationWiringCoversRoutingAndCoreValidationBoundaries
+--- PASS: TestRecordActionApplicationWiringCoversRoutingAndCoreValidationBoundaries (0.00s)
+=== RUN   TestBusinessReferenceProjectionSupportsOptionalPorts
+--- PASS: TestBusinessReferenceProjectionSupportsOptionalPorts (0.00s)
+=== RUN   TestRecordAdaptersRejectIncompleteComposition
+--- PASS: TestRecordAdaptersRejectIncompleteComposition (0.00s)
+=== RUN   TestRecordConsumersShareCanonicalApplicationService
+--- PASS: TestRecordConsumersShareCanonicalApplicationService (0.00s)
+=== RUN   TestRecordExportSupportsOptionalIdentityProjection
+--- PASS: TestRecordExportSupportsOptionalIdentityProjection (0.00s)
+=== RUN   TestSchemaDiscoveryPublishesIdentityProfileExtensionsAndHashesThem
+--- PASS: TestSchemaDiscoveryPublishesIdentityProfileExtensionsAndHashesThem (0.00s)
+=== RUN   TestScheduledAgentTargetResolvesCurrentIdentityAndMapsOnlyPublicContracts
+--- PASS: TestScheduledAgentTargetResolvesCurrentIdentityAndMapsOnlyPublicContracts (0.00s)
+=== RUN   TestScheduledAgentTargetPreservesExplicitFollowUpScope
+--- PASS: TestScheduledAgentTargetPreservesExplicitFollowUpScope (0.00s)
+=== RUN   TestScheduledAgentTargetRejectsStaleOwnerBeforeAgent
+=== RUN   TestScheduledAgentTargetRejectsStaleOwnerBeforeAgent/wrong_product
+=== RUN   TestScheduledAgentTargetRejectsStaleOwnerBeforeAgent/disabled_user
+=== RUN   TestScheduledAgentTargetRejectsStaleOwnerBeforeAgent/moved_workspace
+--- PASS: TestScheduledAgentTargetRejectsStaleOwnerBeforeAgent (0.00s)
+    --- PASS: TestScheduledAgentTargetRejectsStaleOwnerBeforeAgent/wrong_product (0.00s)
+    --- PASS: TestScheduledAgentTargetRejectsStaleOwnerBeforeAgent/disabled_user (0.00s)
+    --- PASS: TestScheduledAgentTargetRejectsStaleOwnerBeforeAgent/moved_workspace (0.00s)
+=== RUN   TestScheduledAgentTargetPropagatesCurrentAgentDenial
+--- PASS: TestScheduledAgentTargetPropagatesCurrentAgentDenial (0.00s)
+=== RUN   TestSignedSchedulerCallbackReauthorizesAndStartsAgentTask
+--- PASS: TestSignedSchedulerCallbackReauthorizesAndStartsAgentTask (0.00s)
+=== RUN   TestScheduledNotificationTargetReauthorizesAndPublishesNarrowIntent
+--- PASS: TestScheduledNotificationTargetReauthorizesAndPublishesNarrowIntent (0.00s)
+=== RUN   TestScheduledNotificationTargetRejectsBroadOrStalePlansBeforePublish
+=== RUN   TestScheduledNotificationTargetRejectsBroadOrStalePlansBeforePublish/wrong_operation
+=== RUN   TestScheduledNotificationTargetRejectsBroadOrStalePlansBeforePublish/broad_action
+=== RUN   TestScheduledNotificationTargetRejectsBroadOrStalePlansBeforePublish/arbitrary_event_type
+=== RUN   TestScheduledNotificationTargetRejectsBroadOrStalePlansBeforePublish/wrong_product
+=== RUN   TestScheduledNotificationTargetRejectsBroadOrStalePlansBeforePublish/disabled_user
+--- PASS: TestScheduledNotificationTargetRejectsBroadOrStalePlansBeforePublish (0.00s)
+    --- PASS: TestScheduledNotificationTargetRejectsBroadOrStalePlansBeforePublish/wrong_operation (0.00s)
+    --- PASS: TestScheduledNotificationTargetRejectsBroadOrStalePlansBeforePublish/broad_action (0.00s)
+    --- PASS: TestScheduledNotificationTargetRejectsBroadOrStalePlansBeforePublish/arbitrary_event_type (0.00s)
+    --- PASS: TestScheduledNotificationTargetRejectsBroadOrStalePlansBeforePublish/wrong_product (0.00s)
+    --- PASS: TestScheduledNotificationTargetRejectsBroadOrStalePlansBeforePublish/disabled_user (0.00s)
+=== RUN   TestSchedulerDefinitionSourceUsesMetadataBusinessPort
+--- PASS: TestSchedulerDefinitionSourceUsesMetadataBusinessPort (0.00s)
+=== RUN   TestSchedulerWiringSmallHelpers
+--- PASS: TestSchedulerWiringSmallHelpers (0.00s)
+=== RUN   TestSchedulerSDKDefinitionPreservesCalendarAndRoutesModuleHTTPThroughRuntime
+--- PASS: TestSchedulerSDKDefinitionPreservesCalendarAndRoutesModuleHTTPThroughRuntime (0.00s)
+=== RUN   TestSchedulerSDKDefinitionMapsRuntimeOwnerWithoutEmbeddingBusinessLogic
+--- PASS: TestSchedulerSDKDefinitionMapsRuntimeOwnerWithoutEmbeddingBusinessLogic (0.00s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/composition	1.712s

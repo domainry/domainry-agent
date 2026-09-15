@@ -1,0 +1,49 @@
+{
+  "date": "2026-09-15",
+  "item": "K03",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 18,
+  "results": {
+    "connector_sdk_full": { "exit_code": 0 },
+    "connectors_full": { "exit_code": 0 },
+    "integration_sdk_full": { "exit_code": 0 },
+    "integration_full": { "exit_code": 0 },
+    "tools_sdk_full": { "exit_code": 0 },
+    "tools_full": { "exit_code": 0 },
+    "agent_sdk_full": { "exit_code": 0 },
+    "agent_non_web_source_packages": { "exit_code": 0 },
+    "agent_web_package": {
+      "exit_code": 1,
+      "k03_assertion_failure": false,
+      "default_run": "package timeout after 10 minutes",
+      "extended_run": "an unrelated peer collaboration fixture exceeded its own wait limit under full-package contention"
+    },
+    "unrelated_peer_fixture_isolated": { "exit_code": 0, "seconds": 75.61 },
+    "mcp_agent_e2e": { "exit_code": 0, "seconds": 6.80, "external_effects": 1, "restart_replays": 0 },
+    "runtime_agenthost_and_transport": { "exit_code": 0 },
+    "runtime_release_lock": {
+      "exit_code": 1,
+      "known": true,
+      "reason": "existing data_exchange/report version locks and local unpublished Agent/report capability digests differ"
+    },
+    "diff_check": { "repositories": 9, "exit_code": 0 }
+  },
+  "behavior": [
+    "Integration and Connectors own MCP connection configuration protocol transport lifecycle and credentials",
+    "Tools publishes only three fixed MCP-facing Agent tools",
+    "remote descriptions titles comments examples and defaults do not enter the model context",
+    "remote tools cannot create Domainry system permissions or expand the selected tool catalog",
+    "catalog pagination is bounded to eight pages and sixty-four allowlisted tools",
+    "MCP writes always require the Agent confirmation contract",
+    "current tool authorization account revision live catalog and argument schema are checked again before the external effect",
+    "Integration records a bounded write receipt and Agent records the accepted result in its existing execution ledger",
+    "unknown writes use receipt-only reconciliation and completed writes are not replayed after restart",
+    "disabling the MCP call tool hides the saved business result while retaining its execution record"
+  ],
+  "remaining": [
+    "K04 restricted Code Mode is the next ordered item",
+    "Runtime published module-set locks remain separate release work"
+  ]
+}
+

@@ -51,7 +51,7 @@ func (s *ConversationStore) interruptConversationWrites(ctx context.Context, tx 
 		if err = s.executionWrite(ctx, tx, "_agent_conversation_tool_calls", claim, call.Step, call.Call.ID, call, false); err != nil {
 			return err
 		}
-		if err = s.event(ctx, tx, row, "tool.uncertain", map[string]any{"step": call.Step, "call_id": call.Call.ID, "tool": call.Call.Name, "status": "uncertain", "error_code": "external_result_unknown", "attempt": row.Run.Attempt}); err != nil {
+		if err = s.event(ctx, tx, row, "tool.uncertain", map[string]any{"step": call.Step, "call_id": call.Call.ID, "tool": call.Call.Name, "status": "uncertain", "error_code": "external_result_unknown", "attempt": row.Run.Attempt, "parent_call_id": call.ParentCallID, "dispatch_index": call.DispatchIndex}); err != nil {
 			return err
 		}
 	}

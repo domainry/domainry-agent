@@ -197,6 +197,20 @@ func (s LifecycleStore) conversationLifecyclePayload(ctx context.Context, owner,
 			graph[table] = items
 		}
 	}
+	plans, err := (&ConversationStore{store: s.store}).conversationTaskPlanPayloadsForSource(ctx, s.store.Database(), owner, id)
+	if err != nil {
+		return nil, err
+	}
+	if len(plans) > 0 {
+		graph[conversationTaskPlanTable] = plans
+	}
+	completions, err := (&ConversationStore{store: s.store}).conversationTaskCompletionPayloadsForSource(ctx, s.store.Database(), owner, id)
+	if err != nil {
+		return nil, err
+	}
+	if len(completions) > 0 {
+		graph[conversationTaskCompletionTable] = completions
+	}
 	return json.Marshal(graph)
 }
 
@@ -278,6 +292,12 @@ func (s LifecycleStore) deleteConversationLifecycleCandidate(ctx context.Context
 			if _, execErr = tx.ExecContext(ctx, statement, args...); execErr != nil {
 				return execErr
 			}
+		}
+		if execErr = (&ConversationStore{store: s.store}).deleteConversationTaskPlansForSource(ctx, tx, candidate.OwnerKey, candidate.ResourceID); execErr != nil {
+			return execErr
+		}
+		if execErr = (&ConversationStore{store: s.store}).deleteConversationTaskCompletionsForSource(ctx, tx, candidate.OwnerKey, candidate.ResourceID); execErr != nil {
+			return execErr
 		}
 		statement, args, buildErr = query.NewDeleteBuilder(s.store.Renderer(), conversationTaskTable).Where(query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("source_conversation_id", candidate.ResourceID))).Build()
 		if buildErr != nil {

@@ -23,6 +23,9 @@ func selectedAccountDefinitions(options Options) []sdk.Definition {
 	if options.WebTools {
 		definitions = append(definitions, toolmodule.WebDefinitions()...)
 	}
+	if options.MCPTools {
+		definitions = append(definitions, toolmodule.MCPDefinitions()...)
+	}
 	if options.CalendarWriteTools {
 		definitions = append(definitions, toolmodule.CalendarWriteDefinitions()...)
 	}
@@ -32,7 +35,7 @@ func selectedAccountDefinitions(options Options) []sdk.Definition {
 	return definitions
 }
 func configureAccountDefinitions(options *Options) error {
-	if !options.CalendarTools && !options.MailTools && !options.WebTools && !options.CalendarWriteTools && !options.MailWriteTools {
+	if !options.CalendarTools && !options.MailTools && !options.WebTools && !options.MCPTools && !options.CalendarWriteTools && !options.MailWriteTools {
 		return nil
 	}
 	definitions := selectedAccountDefinitions(*options)
@@ -50,10 +53,10 @@ func configureAccountDefinitions(options *Options) error {
 	}
 	options.ToolDefinitions = append(append([]agent.ConversationToolDefinition(nil), options.ToolDefinitions...), definitions...)
 	options.Agent.ConversationOptions.ToolDefinitions = append(append([]agent.ConversationToolDefinition(nil), options.Agent.ConversationOptions.ToolDefinitions...), definitions...)
-	if (options.CalendarWriteTools || options.MailWriteTools) && options.Agent.ConversationOptions.MaxArgumentBytes == 0 {
+	if (options.CalendarWriteTools || options.MailWriteTools || options.MCPTools) && options.Agent.ConversationOptions.MaxArgumentBytes == 0 {
 		options.Agent.ConversationOptions.MaxArgumentBytes = 1 << 20
 	}
-	if (options.CalendarWriteTools || options.MailWriteTools) && options.Agent.ConversationOptions.ContextBytes == 0 {
+	if (options.CalendarWriteTools || options.MailWriteTools || options.MCPTools) && options.Agent.ConversationOptions.ContextBytes == 0 {
 		// Keep full approved arguments in the next model step alongside the
 		// catalog, discovery evidence and receipts. The generic engine's smaller
 		// default remains appropriate for hosts without these bounded writes.
@@ -78,7 +81,7 @@ func (h *Host) bindAccountTools(options *Options) error {
 			return fmt.Errorf("account tools require Integration current-account read binding")
 		}
 		accounts, reads = accountBinding.ConnectionAccounts(), readBinding.ConnectionAccountReads()
-		if options.CalendarWriteTools || options.MailWriteTools {
+		if options.CalendarWriteTools || options.MailWriteTools || options.MCPTools {
 			writeBinding, ok := h.Integration.(integration.ConnectionAccountWritesBinding)
 			if !ok || writeBinding.ConnectionAccountWrites() == nil {
 				return fmt.Errorf("account write tools require Integration write and receipt binding")
@@ -114,7 +117,7 @@ func (h *Host) bindAccountTools(options *Options) error {
 	}
 	h.accountToolDefinitions = selectedAccountDefinitions(*options)
 	readOptions := *options
-	readOptions.CalendarWriteTools, readOptions.MailWriteTools = false, false
+	readOptions.CalendarWriteTools, readOptions.MailWriteTools, readOptions.MCPTools = false, false, false
 	keys := []string{}
 	for _, d := range selectedAccountDefinitions(readOptions) {
 		keys = append(keys, d.Key)
@@ -124,7 +127,7 @@ func (h *Host) bindAccountTools(options *Options) error {
 		return err
 	}
 	previous := options.Agent.ConversationOptions.AssembleTools
-	writeOptions := Options{CalendarWriteTools: options.CalendarWriteTools, MailWriteTools: options.MailWriteTools}
+	writeOptions := Options{CalendarWriteTools: options.CalendarWriteTools, MailWriteTools: options.MailWriteTools, MCPTools: options.MCPTools}
 	options.Agent.ConversationOptions.AssembleTools = func(base agent.ConversationToolHost) (agent.ConversationToolHost, error) {
 		// Capture the execution owner's port before another product assembler
 		// wraps the base host. The verifier never crosses into model arguments.
@@ -146,7 +149,7 @@ func (h *Host) bindAccountTools(options *Options) error {
 }
 
 func (h *Host) assembleAccountWrites(base agent.ConversationToolHost, verifier sdk.ConfirmationVerifier, options Options, accounts integration.ConnectionAccounts, reads integration.ConnectionAccountReads, writes integration.ConnectionAccountWrites) (agent.ConversationToolHost, error) {
-	if !options.CalendarWriteTools && !options.MailWriteTools {
+	if !options.CalendarWriteTools && !options.MailWriteTools && !options.MCPTools {
 		return base, nil
 	}
 	if verifier == nil {
@@ -172,6 +175,11 @@ func (h *Host) assembleAccountWrites(base agent.ConversationToolHost, verifier s
 	}
 	if options.MailWriteTools {
 		if err := bind(&toolmodule.MailWriteAdapter{Accounts: accounts, Writes: writes, Subject: h.connectionAccountSubject, Authorize: h.AuthorizeConversationTool, Confirmation: verifier}, toolmodule.MailWriteDefinitions()); err != nil {
+			return nil, err
+		}
+	}
+	if options.MCPTools {
+		if err := bind(&toolmodule.MCPAdapter{Accounts: accounts, Reads: reads, Writes: writes, Subject: h.connectionAccountSubject, Authorize: h.AuthorizeConversationTool, Confirmation: verifier}, toolmodule.MCPDefinitions()); err != nil {
 			return nil, err
 		}
 	}

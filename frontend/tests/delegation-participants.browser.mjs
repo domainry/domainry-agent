@@ -10,7 +10,9 @@ const browser=await chromium.launch({headless:true,channel:'chrome'});
 const ownerContext=await browser.newContext({viewport:{width:1360,height:1000}}),callerContext=await browser.newContext({viewport:{width:1360,height:1000}});
 const owner=await ownerContext.newPage(),caller=await callerContext.newPage();
 const errors=[];
+const rejected=[];
 for(const page of [owner,caller]){page.setDefaultTimeout(20000);page.on('pageerror',e=>errors.push(String(e)));}
+for(const page of [owner,caller])page.on('response',async response=>{if(response.status()>=400&&response.url().includes('/agent/delegations'))rejected.push({url:response.url(),status:response.status(),body:await response.text()});});
 const work=page=>page.getByRole('dialog',{name:'Agent 协作',exact:true});
 const members=()=>work(owner).getByRole('region',{name:'委派参与人',exact:true});
 const login=async(page,email,hash='')=>{
@@ -20,7 +22,7 @@ const login=async(page,email,hash='')=>{
  await page.getByRole('button',{name:'登录',exact:true}).click();
  await page.getByRole('button',{name:'Agent 协作 目录、委派与沟通',exact:true}).click();
 };
-const select=async page=>{await work(page).getByRole('button',{name:/^核对待办/}).click();};
+const select=async page=>{await work(page).getByRole('button',{name:/^核对待办 · 参与人管理/}).click();};
 const save=async reason=>{
  await members().getByLabel('参与范围调整说明',{exact:true}).fill(reason);
  await members().getByRole('button',{name:'保存参与范围',exact:true}).click();
@@ -51,6 +53,40 @@ try{
  await ownMessage.getByText(/已进入执行上下文/).waitFor();
  await ownMessage.scrollIntoViewIfNeeded();
  await owner.screenshot({path:join(output,'participant-sender-identity.png'),fullPage:true});
+ await members().getByRole('button',{name:'管理参与人',exact:true}).click();
+ await members().getByLabel('参与人 1 管理委派',{exact:true}).check();
+ await members().getByLabel('参与人 1 范围',{exact:true}).selectOption('view');
+ assert.equal(await members().getByLabel('参与人 1 管理委派',{exact:true}).isChecked(),true);
+ await members().getByLabel('参与人 1 范围',{exact:true}).selectOption('communicate');
+ await save('允许参与管理本项委派');
+ await work(caller).getByRole('button',{name:'暂停',exact:true}).waitFor();
+ assert.equal(await work(caller).getByRole('button',{name:'管理参与人',exact:true}).count(),0);
+ assert.equal(await work(caller).getByRole('button',{name:'查看实时执行与工具调用',exact:true}).count(),0);
+ await work(caller).getByRole('button',{name:'暂停',exact:true}).click();
+ await work(caller).getByLabel('原因与处理意见',{exact:true}).fill('浏览器暂停原任务');
+ await work(caller).getByRole('button',{name:'提交暂停',exact:true}).click();
+ await work(caller).getByRole('button',{name:'继续执行',exact:true}).waitFor();
+ await work(caller).getByRole('button',{name:'继续执行',exact:true}).click();
+ await work(caller).getByLabel('原因与处理意见',{exact:true}).fill('浏览器恢复原任务');
+ await work(caller).getByRole('button',{name:'提交继续执行',exact:true}).click();
+ await work(caller).getByRole('button',{name:'暂停',exact:true}).waitFor();
+ await work(owner).getByText('浏览器恢复原任务',{exact:true}).waitFor();
+ await work(owner).getByText('等待提交交付 · v1',{exact:true}).waitFor();
+ await work(caller).getByRole('button',{name:'取消委派',exact:true}).click();
+ await work(caller).getByLabel('原因与处理意见',{exact:true}).fill('失效后必须清掉的旧管理输入');
+ await members().getByRole('button',{name:'管理参与人',exact:true}).click();
+ await members().getByLabel('参与人 1 管理委派',{exact:true}).uncheck();
+ await save('撤回参与人管理范围');
+ await work(caller).getByRole('button',{name:'取消委派',exact:true}).waitFor({state:'hidden'});
+ await work(caller).getByLabel('原因与处理意见',{exact:true}).waitFor({state:'hidden'});
+ await work(caller).getByLabel('补充信息或讨论分歧',{exact:true}).waitFor();
+ await members().getByRole('button',{name:'管理参与人',exact:true}).click();
+ await members().getByLabel('参与人 1 管理委派',{exact:true}).check();
+ await save('明确恢复参与管理');
+ await work(caller).getByRole('button',{name:'暂停',exact:true}).click();
+ assert.equal(await work(caller).getByLabel('原因与处理意见',{exact:true}).inputValue(),'');
+ await work(caller).getByRole('button',{name:'收起',exact:true}).click();
+ await caller.screenshot({path:join(output,'participant-management.png'),fullPage:true});
  await caller.setViewportSize({width:390,height:844});
  await work(caller).getByRole('region',{name:'委派参与人',exact:true}).scrollIntoViewIfNeeded();
  await caller.waitForFunction(()=>{const e=document.querySelector('.collaboration-dialog');const r=e?.getBoundingClientRect();return r&&r.x>=0&&r.right<=innerWidth&&[e,...e.querySelectorAll('.peer-messages, .peer-messages li')].every(v=>v.scrollWidth<=v.clientWidth+1);});
@@ -64,6 +100,6 @@ try{
  await caller.getByRole('button',{name:'Agent 协作 目录、委派与沟通',exact:true}).click();
  await work(caller).getByText('还没有委派。可以在 Agent 目录中选择接收方，或在对话中让 Agent 发起委派。',{exact:true}).waitFor();
  assert.deepEqual(errors,[]);
- await writeFile(join(output,'participants-report.json'),JSON.stringify({passed:true,realChrome:true,realIdentityUsers:true,scenarios:['invite observer to one delegation','no private work or owner controls','upgrade to communication','actual sender label','message consumed by original worker','390px layout','remove participant clears live detail and survives reload'],errors},null,2));
-}catch(error){await owner.screenshot({path:join(output,'owner-failure.png'),fullPage:true});await caller.screenshot({path:join(output,'caller-failure.png'),fullPage:true});throw error;}
+ await writeFile(join(output,'participants-report.json'),JSON.stringify({passed:true,realChrome:true,realIdentityUsers:true,scenarios:['invite observer to one delegation','no private work or owner controls','upgrade to communication','actual sender label','message consumed by original worker','independent manage scope survives communication selection','participant pauses and resumes original task','management withdrawal closes pending form but retains communication','restored management starts with empty form','390px layout','remove participant clears live detail and survives reload'],errors},null,2));
+}catch(error){await writeFile(join(output,'failure-report.json'),JSON.stringify({error:String(error),rejected,errors,owner:await work(owner).innerText(),caller:await work(caller).innerText()},null,2));await owner.screenshot({path:join(output,'owner-failure.png'),fullPage:true});await caller.screenshot({path:join(output,'caller-failure.png'),fullPage:true});throw error;}
 finally{await browser.close();}

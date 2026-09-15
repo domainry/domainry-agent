@@ -133,6 +133,9 @@ func personalToolClaim(in agentsdk.ConversationToolRequest) persistence.Conversa
 }
 
 func (h *PersonalConversationHost) supportsPersonalTool(definition agentsdk.ConversationToolDefinition) bool {
+	if definition.Key == agentsdk.ConversationCodeToolKey || agentsdk.IsConversationCodingTool(definition.Key) {
+		return false
+	}
 	if _, peer := collaborationTool(definition.Key); peer {
 		return false
 	}
@@ -148,10 +151,28 @@ func (h *PersonalConversationHost) supportsPersonalTool(definition agentsdk.Conv
 		_, reads := h.repo.(persistence.ConversationTaskReadRepository)
 		return h.tasks != nil && reads
 	}
-	if definition.Key == "task_cancel" || definition.Key == "task_resume" {
+	if definition.Key == "task_cancel" || definition.Key == "task_resume" || definition.Key == "task_update" || definition.Key == "task_review" {
 		_, reads := h.repo.(persistence.ConversationTaskReadRepository)
 		_, controls := h.repo.(persistence.ConversationTaskControlRepository)
+		if definition.Key == "task_review" {
+			_, completions := h.repo.(persistence.ConversationTaskCompletionRepository)
+			return h.tasks != nil && reads && controls && completions && h.supportsConversationInteractions()
+		}
+		if definition.Key == "task_update" {
+			_, agreements := h.repo.(persistence.ConversationTaskAgreementRepository)
+			return h.tasks != nil && reads && agreements && h.supportsConversationInteractions()
+		}
 		return h.tasks != nil && reads && controls && h.supportsConversationInteractions()
+	}
+	if definition.Key == "plan_update" {
+		_, plans := h.repo.(persistence.ConversationTaskPlanRepository)
+		_, reads := h.repo.(persistence.ConversationTaskReadRepository)
+		return h.tasks != nil && plans && reads
+	}
+	if definition.Key == "completion_submit" {
+		_, completions := h.repo.(persistence.ConversationTaskCompletionRepository)
+		_, reads := h.repo.(persistence.ConversationTaskReadRepository)
+		return h.tasks != nil && completions && reads
 	}
 	if strings.HasPrefix(definition.Key, "artifact_") {
 		if h.artifacts == nil || h.artifacts.options.ArtifactStorage == nil {
@@ -202,6 +223,47 @@ func personalToolFailure(code string) agentsdk.ConversationToolResult {
 	return agentsdk.ConversationToolResult{Status: "failed", ErrorCode: code, Content: json.RawMessage(conversationJSONText(map[string]string{"error": code}))}
 }
 
+// conversationTaskToolView keeps the current agreement and business progress
+// ahead of optional detail so a bounded model context still sees the task's
+// outcome and current contract. HTTP task detail retains the complete steps.
+type conversationTaskToolView struct {
+	ID                    string                                     `json:"id"`
+	Status                string                                     `json:"status"`
+	Result                *agentsdk.ConversationTaskResult           `json:"result,omitempty"`
+	CompletionEventID     string                                     `json:"completion_event_id,omitempty"`
+	Brief                 *agentsdk.ConversationTaskBrief            `json:"brief,omitempty"`
+	AgreementRevision     int64                                      `json:"agreement_revision"`
+	GoalProgress          agentsdk.ConversationGoalProgress          `json:"goal_progress"`
+	Plan                  *agentsdk.ConversationPlan                 `json:"plan,omitempty"`
+	CompletionMode        string                                     `json:"completion_mode"`
+	Completion            *agentsdk.ConversationTaskCompletionRecord `json:"completion,omitempty"`
+	Waiting               *agentsdk.ConversationTaskWaiting          `json:"waiting,omitempty"`
+	ExecutionRunID        string                                     `json:"execution_run_id,omitempty"`
+	PreviousExecutionRuns []agentsdk.ConversationRunReference        `json:"previous_execution_runs,omitempty"`
+	Progress              agentsdk.ConversationTaskProgress          `json:"progress"`
+	Work                  *agentsdk.ConversationTaskWorkSummary      `json:"work,omitempty"`
+	Diagnostic            agentsdk.ConversationProgressDiagnostic    `json:"diagnostic"`
+	Artifacts             []agentsdk.ConversationArtifact            `json:"artifacts,omitempty"`
+	ErrorCode             string                                     `json:"error_code,omitempty"`
+}
+
+type conversationTaskAgreementToolInput struct {
+	ID               string                         `json:"id"`
+	ClientID         string                         `json:"client_id"`
+	ExpectedRevision int64                          `json:"expected_revision"`
+	Reason           string                         `json:"reason"`
+	Brief            agentsdk.ConversationTaskBrief `json:"brief"`
+}
+
+func compactConversationTask(task agentsdk.ConversationTaskDetail) conversationTaskToolView {
+	return conversationTaskToolView{
+		ID: task.ID, Status: task.Status, Result: task.Result, CompletionEventID: task.CompletionEventID,
+		Brief: task.Brief, AgreementRevision: task.AgreementRevision, GoalProgress: task.GoalProgress, Plan: task.Plan, CompletionMode: task.CompletionMode, Completion: task.Completion,
+		Waiting: task.Waiting, ExecutionRunID: task.ExecutionRunID, PreviousExecutionRuns: task.PreviousExecutionRuns,
+		Progress: task.Progress, Work: task.Work, Diagnostic: task.Diagnostic, Artifacts: task.Artifacts, ErrorCode: task.ErrorCode,
+	}
+}
+
 func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {
 	// Host calls remain safe when invoked directly through the SDK: no caller
 	// can bypass policy or argument validation by skipping the model engine.
@@ -223,6 +285,18 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		return h.invokeArtifactTool(ctx, in)
 	}
 	switch in.Call.Name {
+	case "plan_update":
+		plan, err := h.tasks.prepareConversationTaskPlan(ctx, in)
+		if err != nil {
+			return personalToolFailure(conversationTaskFailureCode(err)), nil
+		}
+		return h.repo.(persistence.ConversationTaskPlanRepository).ApplyConversationTaskPlanTool(ctx, in, plan)
+	case "completion_submit":
+		completion, err := h.tasks.prepareConversationTaskCompletion(ctx, in)
+		if err != nil {
+			return personalToolFailure(conversationTaskFailureCode(err)), nil
+		}
+		return h.repo.(persistence.ConversationTaskCompletionRepository).ApplyConversationTaskCompletionTool(ctx, in, completion)
 	case "task_start":
 		prepared, err := h.tasks.prepareConversationTask(ctx, in)
 		if err != nil {
@@ -242,7 +316,7 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		if err != nil {
 			return agentsdk.ConversationToolResult{}, err
 		}
-		return personalToolResult(map[string]any{"task": task})
+		return personalToolResult(map[string]any{"task": compactConversationTask(task)})
 	case "task_list":
 		var args struct {
 			Query  string `json:"query"`
@@ -279,7 +353,28 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		if err != nil {
 			return agentsdk.ConversationToolResult{}, err
 		}
-		return personalToolResult(map[string]any{"task": task})
+		return personalToolResult(map[string]any{"task": compactConversationTask(task)})
+	case "task_update":
+		var args conversationTaskAgreementToolInput
+		_ = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		task, err := h.tasks.updateConversationTaskAgreement(ctx, args.ID, agentsdk.ConversationTaskAgreementUpdate{ClientID: args.ClientID, ExpectedRevision: args.ExpectedRevision, Reason: args.Reason, Brief: args.Brief}, in.Authority, false)
+		if err != nil {
+			return agentsdk.ConversationToolResult{}, err
+		}
+		return personalToolResult(map[string]any{"task": compactConversationTask(task)})
+	case "task_review":
+		var args struct {
+			ID string `json:"id"`
+			agentsdk.ConversationTaskCompletionReviewRequest
+		}
+		_ = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		request := args.ConversationTaskCompletionReviewRequest
+		request.ToolRequest = &in
+		task, err := h.tasks.reviewConversationTaskCompletion(ctx, args.ID, request, in.Authority, false)
+		if err != nil {
+			return agentsdk.ConversationToolResult{}, err
+		}
+		return personalToolResult(map[string]any{"task": compactConversationTask(task)})
 	case "memory_save", "memory_forget", "todo_create", "todo_update", "todo_delete":
 		return h.repo.(persistence.ConversationPersonalMutationRepository).ApplyPersonalTool(ctx, in)
 	case "todo_get":
@@ -412,6 +507,7 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 	case "memory_search":
 		var args struct {
 			Query           string `json:"query"`
+			Kind            string `json:"kind"`
 			IncludeDisabled bool   `json:"include_disabled"`
 			Cursor          string `json:"cursor"`
 		}
@@ -420,11 +516,24 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		if err != nil {
 			return agentsdk.ConversationToolResult{}, err
 		}
+		conversationID, taskID := in.ConversationID, ""
+		if in.RunID != "" {
+			run, runErr := h.repo.Run(ctx, in.ConversationID, in.RunID, in.Authority)
+			if runErr != nil {
+				return agentsdk.ConversationToolResult{}, runErr
+			}
+			if run.BackgroundTask != nil {
+				taskID = run.BackgroundTask.TaskID
+			}
+		}
+		for index := range items {
+			items[index] = normalizeConversationMemory(items[index])
+		}
 		type memoryCursor struct {
 			Scope, Snapshot, Query string
 			Offset                 int
 		}
-		cursor := memoryCursor{Scope: conversationDigest([]string{in.Authority.RuntimeID, in.Authority.WorkspaceID, in.Authority.UserID}), Snapshot: conversationDigest(items), Query: conversationDigest([]any{args.Query, args.IncludeDisabled})}
+		cursor := memoryCursor{Scope: conversationDigest([]string{in.Authority.RuntimeID, in.Authority.WorkspaceID, in.Authority.UserID, conversationID, taskID}), Snapshot: conversationDigest(items), Query: conversationDigest([]any{args.Query, args.Kind, args.IncludeDisabled})}
 		if args.Cursor != "" {
 			raw, decodeErr := base64.RawURLEncoding.DecodeString(args.Cursor)
 			var previous memoryCursor
@@ -437,7 +546,7 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		complete := true
 		for index := cursor.Offset; index < len(items); index++ {
 			item := items[index]
-			if !item.Enabled && !args.IncludeDisabled || !strings.Contains(strings.ToLower(item.Title+"\n"+item.Content), strings.ToLower(args.Query)) {
+			if !memoryApplicable(item, conversationID, taskID) || !item.Enabled && !args.IncludeDisabled || args.Kind != "" && item.Kind != args.Kind || !memoryLiteralMatch(item, args.Query) {
 				continue
 			}
 			if len(conversationJSONText(found))+len(conversationJSONText(item)) > in.Definition.MaxOutputBytes-1024 {

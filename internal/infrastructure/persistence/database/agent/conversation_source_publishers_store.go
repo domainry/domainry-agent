@@ -43,11 +43,15 @@ func (s *ConversationStore) restoreLegacySourcePublishers(ctx context.Context, r
 }
 
 func (s *ConversationStore) legacyPublicationPayloads(ctx context.Context, table string, scope query.Predicate) ([][]byte, error) {
+	return s.publicationPayloads(ctx, s.store.Database(), table, scope)
+}
+
+func (s *ConversationStore) publicationPayloads(ctx context.Context, db conversationDB, table string, scope query.Predicate) ([][]byte, error) {
 	q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("payload_json").Where(scope).Limit(257).Build()
 	if err != nil {
 		return nil, err
 	}
-	rows, err := s.store.Database().QueryContext(ctx, q, args...)
+	rows, err := db.QueryContext(ctx, q, args...)
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,14 @@
+{
+  "observed_at_utc": "2026-09-14T06:58:52.309741+00:00",
+  "status": "verified_running",
+  "accepted": false,
+  "session_id": 62879,
+  "pid": 80666,
+  "process": "  PID ELAPSED  %CPU STAT COMMAND\n80666   00:54 226.7 R    /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/go-build2889681235/b001/integrationtest.test -test.paniconexit0 -test.run=^TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$ -test.timeout=20m0s -test.count=1 -test.v=true\n",
+  "command": "GOWORK=/tmp/runtime-work/go.work go test -race ./runtime/bootstrap/integrationtest -run '^TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$' -timeout=20m -count=1 -v",
+  "log": "/tmp/c05-knowledge-final-managed-race-20m.log",
+  "task_budget_changed": false,
+  "test_observation_timeout_changed_after_verified_terminal_default_timeout": true,
+  "accepted_phase_manifest": "/Users/tiger/Projects/domainry-agent/docs/evidence/2026-09-14-c05-knowledge-other-sources/source-sha256.json",
+  "accepted_phase_manifest_sha256": "c619e1bc4e96056dc4c0f6248c22046a9e1192bcabbdf090e99e135a81e1f975"
+}

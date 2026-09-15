@@ -1,0 +1,19 @@
+ok  	github.com/domainry/domainry-runtime/runtime/application/action	0.964s
+ok  	github.com/domainry/domainry-runtime/runtime/application/workflow	(cached)
+--- FAIL: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader (0.01s)
+    --- FAIL: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/query_records66 (0.00s)
+        conversation_business_shared_receipt_read_test.go:86: original result lost or replaced runtime.conversation.business_forbidden
+    --- FAIL: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/query_records325 (0.00s)
+        conversation_business_shared_receipt_read_test.go:86: original result lost or replaced runtime.conversation.business_forbidden
+    --- FAIL: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/get_record72 (0.00s)
+        conversation_business_shared_receipt_read_test.go:86: original result lost or replaced runtime.conversation.business_forbidden
+    --- FAIL: TestSharedBusinessSignedReadsKeepOriginalValuesCursorAndCurrentReader/business_catalog25 (0.00s)
+        conversation_business_shared_receipt_read_test.go:86: original result lost or replaced runtime.conversation.business_forbidden
+    conversation_business_shared_receipt_read_test.go:145: reopened original read <nil>
+--- FAIL: TestSharedBusinessRelatedPagesRecheckReaderOriginAndOriginalCursor (0.01s)
+    conversation_business_shared_receipt_read_test.go:165: original related page runtime.conversation.business_forbidden
+--- FAIL: TestSharedBusinessScopeCoversCommonAndOrAndKeepsReaderDenials (0.00s)
+    conversation_business_shared_scope_test.go:46: unrestricted reader should cover original owner scope
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/application/agenthost	1.350s
+FAIL

@@ -1,0 +1,45 @@
+{
+  "date": "2026-09-15",
+  "item": "K01",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 16,
+  "results": {
+    "agent_sdk_go_test": { "exit_code": 0, "gowork": true },
+    "agent_application": { "exit_code": 0 },
+    "k01_packages": { "exit_code": 0, "packages": 4 },
+    "frontend_tests": { "passed": 91, "failed": 0, "exit_code": 0 },
+    "frontend_build": { "exit_code": 0, "typescript": true, "vite": true },
+    "browser": {
+      "exit_code": 0,
+      "seconds": 5.79,
+      "javascript_errors": 0,
+      "console_errors": 0,
+      "console_warnings": 0,
+      "resource_failures": 0,
+      "mutations": 5,
+      "mutation_statuses": [200, 200, 200, 200, 200],
+      "model_calls": 1,
+      "active_skill_version_after_rollback": "1",
+      "candidate_versions": 2
+    },
+    "diff_check": { "agent_exit_code": 0, "agent_sdk_exit_code": 0, "bytes": 0 }
+  },
+  "behavior": [
+    "the catalog exposes summaries before exact version bodies and resources",
+    "loading a Skill body does not inject resource content and loading one resource does not repeat the full body",
+    "a Skill cannot expand the frozen Agent tool scope",
+    "foreground scheduled and delegated runs freeze exact Agent prompt and Skill versions",
+    "reading a redacted Skill detail does not mutate or erase its stored resource",
+    "task feedback binds the completed task run artifact and exact configuration versions",
+    "improvement candidates require target-matching feedback and a frozen current baseline",
+    "publication requires a passing comparison with no additional omissions or regressions",
+    "the first static configuration is archived as an immutable rollback baseline",
+    "rollback changes future configuration selection without undoing prior business effects",
+    "the compiled UI completes feedback candidate evaluation publication and rollback through real Identity HTTP SQLite and Chrome",
+    "the desktop and 390 pixel layouts have no horizontal overflow"
+  ],
+  "remaining": [
+    "the complete seven-category V01 benchmark remains tracked by V01"
+  ]
+}

@@ -1,0 +1,6 @@
+=== RUN   TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart
+    record_result_read_test.go:72: bind Agent conversation host: Agent key, version, name and bounded instructions are required
+--- FAIL: TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart (0.29s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/product	1.158s
+FAIL

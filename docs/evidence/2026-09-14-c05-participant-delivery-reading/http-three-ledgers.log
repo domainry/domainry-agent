@@ -1,0 +1,6 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+    conversation_source_release_test.go:161: POST /agent/delegations/delegation_2376d4725dca32cad62d8dc9c5dd4308/delivery-result: status 400, want 200, body {"code":"agent.conversation.result_offset_invalid"}
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (5.41s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	6.146s
+FAIL

@@ -1,0 +1,5 @@
+{
+  "compiled_inputs": 5480,
+  "changed_inputs": [],
+  "scope": "Go dependencies, package test files, embed inputs and module/workspace manifests selected by go list -deps -test -compiled; excludes later documentation edits"
+}

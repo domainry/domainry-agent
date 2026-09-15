@@ -2,7 +2,6 @@ package application
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
@@ -13,8 +12,19 @@ func (s *ConversationService) streamConversationExecutionStep(ctx context.Contex
 	if err := s.authorizeConversationClaim(ctx, claim, "model"); err != nil {
 		return agentsdk.ConversationStepResult{}, err
 	}
-	raw, err := json.Marshal(step.Input)
-	if err != nil || len(raw) > s.options.ContextBytes {
+	hydrated, err := s.hydrateConversationStepRequest(ctx, claim, step.Input)
+	if err != nil {
+		return agentsdk.ConversationStepResult{}, err
+	}
+	inputBytes, err := s.conversationStepInputBytes(ctx, hydrated)
+	if err != nil {
+		return agentsdk.ConversationStepResult{}, err
+	}
+	contextLimit := s.conversationContextLimit(ctx)
+	if step.Input.ContextWindow != nil && step.Input.ContextWindow.LimitBytes > 0 {
+		contextLimit = min(contextLimit, step.Input.ContextWindow.LimitBytes)
+	}
+	if inputBytes > contextLimit {
 		return agentsdk.ConversationStepResult{}, conversationFailure("rate_limited", "execution_context_exceeded")
 	}
 	streamCtx, cancel := s.externalCallContext(ctx, 0)
@@ -30,7 +40,7 @@ func (s *ConversationService) streamConversationExecutionStep(ctx context.Contex
 	maxText := min(step.Input.MaxOutputBytes, s.options.MaxOutputBytes)
 	maxArguments := min(step.Input.MaxArgumentBytes, s.options.MaxArgumentBytes)
 	maxCalls := min(step.Input.MaxToolCalls, s.options.MaxToolCalls)
-	result, err := s.conversationModel(ctx).(agentsdk.ConversationAgentModel).StreamConversationStep(streamCtx, step.Input, func(event agentsdk.ConversationModelEvent) error {
+	result, err := s.conversationModel(ctx).(agentsdk.ConversationAgentModel).StreamConversationStep(streamCtx, hydrated, func(event agentsdk.ConversationModelEvent) error {
 		if callbackErr != nil {
 			return callbackErr
 		}

@@ -1,0 +1,91 @@
+=== RUN   TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission
+    conversation_delivery_write_permissions_test.go:167: real Agent/Identity/Tools/Integration/Provider HTTP: exact confirmation, effects={"mail_send":1}, saved catalog/receipt readable without send or account-write action and after restart; data/account/tool revocation hides result; no additional vendor IO
+--- PASS: TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission (138.38s)
+=== RUN   TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution
+==================
+WARNING: DATA RACE
+Write at 0x00c002ba5b00 by goroutine 229254:
+  github.com/domainry/domainry-agent/internal/application.(*ConversationService).execute()
+      /Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:833 +0x720
+  github.com/domainry/domainry-agent/internal/application.(*ConversationService).worker()
+      /Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:774 +0x33c
+  github.com/domainry/domainry-agent/internal/application.NewConversationService.gowrap2()
+      /Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:378 +0x40
+
+Previous read at 0x00c002ba5b00 by goroutine 265833:
+  github.com/domainry/domainry-agent/internal/application.(*ConversationService).execute.func2()
+      /Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:811 +0x118
+
+Goroutine 229254 (running) created at:
+  github.com/domainry/domainry-agent/internal/application.NewConversationService()
+      /Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:378 +0x3760
+  github.com/domainry/domainry-agent/internal/application.NewConversationService()
+      /Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:356 +0x32cc
+  github.com/domainry/domainry-agent/internal/assembly/conversation.NewService()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/conversation/service.go:15 +0xac
+  github.com/domainry/domainry-agent/module.(*binding).openConversations()
+      /Users/tiger/Projects/domainry-agent/module/conversation_assembly.go:94 +0x218
+  github.com/domainry/domainry-agent/module.(*binding).BindConversationHost()
+      /Users/tiger/Projects/domainry-agent/module/conversation_assembly.go:26 +0x240
+  github.com/domainry/domainry-agent/internal/assembly/web.Open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go:268 +0x2ac0
+  github.com/domainry/domainry-agent/internal/assembly/web.Open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go:193 +0x1a14
+  github.com/domainry/domainry-agent/internal/assembly/web.Open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go:187 +0x18d8
+  github.com/domainry/domainry-agent/internal/assembly/web.Open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go:184 +0x18c4
+  github.com/domainry/domainry-agent/internal/assembly/web.Open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go:180 +0x18b0
+  github.com/domainry/domainry-agent/internal/assembly/web.Open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go:171 +0x16dc
+  github.com/domainry/domainry-agent/internal/assembly/web.(*accountFixture).open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/integration_accounts_test.go:219 +0x8a0
+  github.com/domainry/domainry-agent/internal/assembly/web.verifySharedAccountSources()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_shared_account_sources_test.go:143 +0x9c4
+  github.com/domainry/domainry-agent/internal/assembly/web.Open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go:184 +0x18c4
+  github.com/domainry/domainry-agent/internal/assembly/web.Open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go:180 +0x18b0
+  github.com/domainry/domainry-agent/internal/assembly/web.Open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go:171 +0x16dc
+  github.com/domainry/domainry-agent/internal/assembly/web.(*accountFixture).open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/integration_accounts_test.go:219 +0x8a0
+  github.com/domainry/domainry-agent/internal/assembly/web.newAccountWriteProductFixture()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/account_write_fixture_test.go:79 +0xa5c
+  github.com/domainry/domainry-agent/internal/assembly/web.Open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go:180 +0x18b0
+  github.com/domainry/domainry-agent/internal/assembly/web.Open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/host.go:171 +0x16dc
+  github.com/domainry/domainry-agent/internal/assembly/web.(*accountFixture).open()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/integration_accounts_test.go:219 +0x8a0
+  github.com/domainry/domainry-agent/internal/assembly/web.newAccountFixture()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/integration_accounts_test.go:180 +0x4a0
+  github.com/domainry/domainry-agent/internal/assembly/web.newAccountWriteProductFixture()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/account_write_fixture_test.go:61 +0x30
+  github.com/domainry/domainry-agent/internal/assembly/web.verifySharedAccountSources()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_shared_account_sources_test.go:124 +0x2fc
+  github.com/domainry/domainry-agent/internal/assembly/web.TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution()
+      /Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_shared_account_sources_test.go:104 +0x34
+  testing.tRunner()
+      /opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2036 +0x164
+  testing.(*T).Run.gowrap1()
+      /opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2101 +0x34
+
+Goroutine 265833 (running) created at:
+  github.com/domainry/domainry-agent/internal/application.(*ConversationService).execute()
+      /Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:805 +0x4a8
+  github.com/domainry/domainry-agent/internal/application.(*ConversationService).worker()
+      /Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:774 +0x33c
+  github.com/domainry/domainry-agent/internal/application.NewConversationService.gowrap2()
+      /Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go:378 +0x40
+==================
+    conversation_shared_account_sources_test.go:104: real source invocation never reached its running boundary {false false <nil> <nil> false false 0xc003160aa9 [{0xc002fb32c0 1 agent_e46b329f008ab08937f2c5f95c37f925 1 conv_d3492a0b6856073000aa355858898209 task_d3492a0b6856073000aa355858898209 1 Read separately authorized workspace sources system_administrator_user 0xc002fb32f0 <nil> 2026-09-14 04:57:52.501 +0000 UTC}] [] {false system_administrator_user 1 [{0xc004412140 admin [manage view] 1}] 0xc002fb3320 [] false <nil> 1 <nil> <nil> 0xc002fb3350 [] [] 1 1 2026-09-14 04:57:59.84277 +0000 UTC 0xc002fb3380 { [delegation_get delegation_update mail_write_accounts mail_send] [] [] 0 0 <nil> } conv_be8cf14f161871a286477a87c86e9333 <nil> delegation_5a38105afe5d22aeab7249777718db8c default agent_e46b329f008ab08937f2c5f95c37f925 conv_be8cf14f161871a286477a87c86e9333 crun_cc4f234e296ff85687301c74a74149b8 conv_d3492a0b6856073000aa355858898209 task_d3492a0b6856073000aa355858898209 Read separately authorized workspace sources {[{0 receipt [] mail_write_accounts [] [123 34 116 121 112 101 34 58 34 111 98 106 101 99 116 34 125] 0 } {1 receipt [] mail_send [] [123 34 116 121 112 101 34 58 34 111 98 106 101 99 116 34 125] 0 accepted}] 1 Read the original workspace mail-write sources Original source receipts  [] [Retain the original mail_write_accounts receipt Retain the original mail_send receipt] [] <nil>} Read actual sources and submit original receipts {12 12 8192 60} [] running 4 <nil>  2026-09-14 04:57:52.501 +0000 UTC 2026-09-14 04:57:59.84277 +0000 UTC} true 0xc001276960 []}
+    testing.go:1712: race detected during execution of test
+--- FAIL: TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution (90.18s)
+=== RUN   TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart
+    conversation_shared_failed_execution_test.go:164: actual connector HTTP 503, durably started failed call and subsequent model reply; shared run retains exact state/timing while failed parameters/results/reply/control stay hidden after execution revocation and restart; no repeat vendor IO
+--- PASS: TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart (43.23s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	272.450s
+FAIL

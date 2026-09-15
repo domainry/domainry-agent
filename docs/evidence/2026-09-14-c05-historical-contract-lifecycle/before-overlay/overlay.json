@@ -1,0 +1,8 @@
+{
+  "Replace": {
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_delegation_subjects_store.go": "/tmp/c05-peer-authority-before-overlay/conversation_delegation_subjects_store.go",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_peer_messages_store.go": "/tmp/c05-peer-authority-before-overlay/conversation_peer_messages_store.go",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_peer_inbox_store.go": "/tmp/c05-peer-authority-before-overlay/conversation_peer_inbox_store.go",
+    "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_dependencies_store.go": "/tmp/c05-peer-authority-before-overlay/conversation_dependencies_store.go"
+  }
+}

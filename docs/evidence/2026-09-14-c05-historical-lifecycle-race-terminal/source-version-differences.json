@@ -1,0 +1,33 @@
+{
+  "compiled_inputs": 4690,
+  "changed_inputs_at_terminal_archive": [
+    {
+      "path": "/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_business_shared_query_scope.go",
+      "compiled_sha256": "ba0aa1837c788a3f04c4fa64184f21a47a3c58a47fc92dc40e976bc98515fd4a",
+      "current_sha256": "99553bba3d623cfdb53e647437f7d902545ae83f0d94a645298569a69e430ce0"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_business_shared_receipt_read.go",
+      "compiled_sha256": "a7bb82c01192d90ee249e66c768d1fddc77e9168bf1f04504a2c2bb2341f62eb",
+      "current_sha256": "77bb2a48a29e0bfd812c921a173e5c01fbd33fb852c20d63e90eb37646e41a7d"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/record_schema_projection_test.go",
+      "compiled_sha256": "4bbf3cd3b809fc49fd65ae940afa28c49864f246f221fa8d88c85c8eca10f4ee",
+      "current_sha256": "592c35b50048592a2e70b6ee84b62c5843f04d1dcd9b7ca9cddb836a0803c81d"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-runtime/runtime/modulehost/report/report_shared_result_scope.go",
+      "compiled_sha256": "b61d9220158919564313ff22f5f7231e1793dc4d9e9c01b87104fb4c65f01b15",
+      "current_sha256": "ed49038d7b4845da7aebdf012331330c6964eabf46427525b57e841ad48037c1"
+    }
+  ],
+  "compiled_versions_saved": true,
+  "production_differences": 3,
+  "existing_test_difference": 1,
+  "added_since_compile": [
+    "runtime/application/agenthost/conversation_business_shared_relation_scope_test.go",
+    "runtime/modulehost/report/report_shared_negated_scope_orm_test.go",
+    "runtime/modulehost/report/report_shared_negation_boundary_test.go"
+  ]
+}

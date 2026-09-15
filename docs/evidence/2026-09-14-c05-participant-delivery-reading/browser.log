@@ -1,0 +1,42 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /"timezone_source":"host_default"/. Input:
+
+'{\n' +
+  '  "status": "completed",\n' +
+  '  "content": {\n' +
+  '    "date": "2026-09-14",\n' +
+  '    "now": "2026-09-14T00:18:33.751332Z",\n' +
+  '    "timezone": "UTC",\n' +
+  '    "timezone_source": "host_default",\n' +
+  '    "weekday": "Monday"\n' +
+  '  }\n' +
+  '}'
+
+    at file:///Users/tiger/Projects/domainry-agent/frontend/tests/participant-delivery.browser.mjs:32:9 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '{\n' +
+    '  "status": "completed",\n' +
+    '  "content": {\n' +
+    '    "date": "2026-09-14",\n' +
+    '    "now": "2026-09-14T00:18:33.751332Z",\n' +
+    '    "timezone": "UTC",\n' +
+    '    "timezone_source": "host_default",\n' +
+    '    "weekday": "Monday"\n' +
+    '  }\n' +
+    '}',
+  expected: /"timezone_source":"host_default"/,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+    conversation_source_release_test.go:161: exit status 1
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (10.55s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	11.285s
+FAIL

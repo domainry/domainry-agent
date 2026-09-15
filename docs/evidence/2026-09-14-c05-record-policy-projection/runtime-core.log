@@ -1,0 +1,5 @@
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/composition	1.200s
+ok  	github.com/domainry/domainry-runtime/runtime/domain/appschema/service	0.470s
+ok  	github.com/domainry/domainry-runtime/runtime/domain/record/service	0.808s
+ok  	github.com/domainry/domainry-runtime/runtime/modulehost/report	1.549s
+ok  	github.com/domainry/domainry-runtime/runtime/application/agenthost	2.083s

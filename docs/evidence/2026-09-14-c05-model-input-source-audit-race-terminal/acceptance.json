@@ -1,0 +1,69 @@
+{
+  "recorded_at": "2026-09-14T11:08:50.653312+00:00",
+  "root": "TestLegacyAgreementUpdateRestartResumeAndOriginalHistoryThroughRealHTTP",
+  "root_seconds": 475.27,
+  "package_seconds": 476.834,
+  "status": "failed",
+  "session": 26525,
+  "go_pid": 56394,
+  "test_pid": 56478,
+  "original_task_budget_seconds": 180,
+  "revised_run_duration_ms": 180006,
+  "steps": [
+    {
+      "number": 0,
+      "status": "tools",
+      "calls": [
+        {
+          "name": "delegation_source_read",
+          "status": "completed",
+          "duration_ms": 502
+        }
+      ]
+    },
+    {
+      "number": 1,
+      "status": "tools",
+      "calls": [
+        {
+          "name": "delegation_source_read",
+          "status": "completed",
+          "duration_ms": 523
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "status": "tools",
+      "calls": [
+        {
+          "name": "delegation_get",
+          "status": "completed",
+          "duration_ms": 12078
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "status": "tools",
+      "calls": [
+        {
+          "name": "delegation_update",
+          "status": "completed",
+          "duration_ms": 30007
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "status": "interrupted",
+      "calls": []
+    }
+  ],
+  "new_account_acceptance_executed": false,
+  "test_binary_sha256": "15c59d3af4f795292ee7570144da9e579fecc907ba539a7dd53866ea9f8dea27",
+  "compiled_inputs_unchanged": true,
+  "goal_complete": false,
+  "todo_complete": 4,
+  "todo_total": 25
+}

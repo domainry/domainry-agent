@@ -1,0 +1,24 @@
+=== RUN   TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_sources_test.go:111: mail-write worker at 1.679685583s: running:, 0 recorded steps
+    conversation_shared_account_sources_test.go:111: mail-write worker at 3.240844833s: waiting_confirmation::confirmation:pending, 2 recorded steps
+    conversation_shared_account_sources_test.go:111: mail-write worker at 3.773474416s: running::confirmation:approved, 2 recorded steps
+    conversation_shared_account_sources_test.go:111: mail-write: actual cross-user agent_delegate confirmation and owner worker; 2 original receipts; running payload hidden; original delivery/execution SHA and byte pages after both users' execution revocation and restart; private controls denied; reader data and workspace account revocation enforced; vendor HTTP remained 2
+--- PASS: TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution (16.24s)
+=== RUN   TestCrossUserWorkspaceCalendarCreateReceiptsAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_writes_test.go:16: calendar-create-write worker at 1.874118958s: running:, 0 recorded steps
+    conversation_shared_account_writes_test.go:16: calendar-create-write worker at 3.400319166s: waiting_confirmation::confirmation:pending, 2 recorded steps
+    conversation_shared_account_writes_test.go:16: calendar-create-write worker at 3.943316s: running::confirmation:approved, 2 recorded steps
+    conversation_shared_account_writes_test.go:16: calendar-create-write: actual cross-user agent_delegate confirmation and owner worker; 2 original receipts; running payload hidden; original delivery/execution SHA and byte pages after both users' execution revocation and restart; private controls denied; reader data and workspace account revocation enforced; vendor HTTP remained 1
+--- PASS: TestCrossUserWorkspaceCalendarCreateReceiptsAutomaticDeliveryAndSharedExecution (14.08s)
+=== RUN   TestCrossUserWorkspaceCalendarUpdateReceiptsAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_writes_test.go:20: calendar-update-write worker at 1.823220375s: running:, 0 recorded steps
+    conversation_shared_account_writes_test.go:20: calendar-update-write: actual cross-user agent_delegate confirmation and owner worker; 3 original receipts; running payload hidden; original delivery/execution SHA and byte pages after both users' execution revocation and restart; private controls denied; reader data and workspace account revocation enforced; vendor HTTP remained 3
+--- PASS: TestCrossUserWorkspaceCalendarUpdateReceiptsAutomaticDeliveryAndSharedExecution (21.02s)
+=== RUN   TestCrossUserWorkspaceMailReplyReceiptsAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_writes_test.go:24: mail-reply-write worker at 1.961957041s: running:, 0 recorded steps
+    conversation_shared_account_writes_test.go:24: mail-reply-write worker at 3.647329041s: waiting_confirmation::confirmation:pending, 2 recorded steps
+    conversation_shared_account_writes_test.go:24: mail-reply-write worker at 4.2442675s: running::confirmation:approved, 2 recorded steps
+    conversation_shared_account_writes_test.go:24: mail-reply-write: actual cross-user agent_delegate confirmation and owner worker; 2 original receipts; running payload hidden; original delivery/execution SHA and byte pages after both users' execution revocation and restart; private controls denied; reader data and workspace account revocation enforced; vendor HTTP remained 3
+--- PASS: TestCrossUserWorkspaceMailReplyReceiptsAutomaticDeliveryAndSharedExecution (15.88s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	67.947s

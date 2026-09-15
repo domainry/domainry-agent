@@ -1,0 +1,25 @@
+=== RUN   TestExecutorCanReceiveExplicitManagementWithoutLosingAdmittedAccessOnRevocation
+    conversation_participant_management_test.go:24: explicit management still excluded the receiving peer agent.conversation.collaboration_access_denied
+--- FAIL: TestExecutorCanReceiveExplicitManagementWithoutLosingAdmittedAccessOnRevocation (0.00s)
+=== RUN   TestParticipantManagementReturnsOnlyReceiptAndChecksCurrentRoleAndGrant
+    conversation_participant_management_test.go:72: management borrowed private ownership or depended on source reading {false <nil> <nil> false false <nil> [] [] { 0 [] <nil> [] false <nil> 0 <nil> <nil> <nil> [] [] 0 0 <nil> <nil> { [] [] [] 0 0 <nil> }  <nil>         {[] 0    [] [] [] <nil>}  {0 0 0 0} []  0 <nil>  0001-01-01 00:00:00 +0000 UTC 0001-01-01 00:00:00 +0000 UTC} false <nil> []} {true runtime workspace participant managing-role} agent.conversation.delegation_execution_unavailable
+--- FAIL: TestParticipantManagementReturnsOnlyReceiptAndChecksCurrentRoleAndGrant (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.665s
+=== RUN   TestParticipantManagementPreservesOriginalTaskAndRejectsWithdrawnGrantReplay
+    conversation_participant_management_store_test.go:23: participant management changed task identity or failed { 0 [] <nil> [] false <nil> 0 <nil> <nil> <nil> [] [] 0 0 <nil> <nil> { [] [] [] 0 0 <nil> }  <nil>         {[] 0    [] [] [] <nil>}  {0 0 0 0} []  0 <nil>  0001-01-01 00:00:00 +0000 UTC 0001-01-01 00:00:00 +0000 UTC} agent.conversation.delegation_not_found
+--- FAIL: TestParticipantManagementPreservesOriginalTaskAndRejectsWithdrawnGrantReplay (0.01s)
+=== RUN   TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles
+=== RUN   TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/different-user
+    conversation_participant_management_store_test.go:123: participant storage routing replaced immutable admission roles {{false    } {false    }} agent.conversation.delegation_not_found
+=== RUN   TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/different-role
+    conversation_participant_management_store_test.go:123: participant storage routing replaced immutable admission roles {{false    } {false    }} agent.conversation.delegation_not_found
+=== RUN   TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/same-identity
+    conversation_participant_management_store_test.go:123: participant storage routing replaced immutable admission roles {{false    } {false    }} agent.conversation.delegation_not_found
+--- FAIL: TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles (0.02s)
+    --- FAIL: TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/different-user (0.01s)
+    --- FAIL: TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/different-role (0.01s)
+    --- FAIL: TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/same-identity (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	1.396s
+FAIL

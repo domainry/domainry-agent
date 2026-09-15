@@ -1,0 +1,14 @@
+ok  	github.com/domainry/domainry-agent/internal/application	0.962s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	4.430s
+ok  	github.com/domainry/domainry-agent/remote	2.930s
+--- FAIL: TestAgentOwnsOpenAPIForEveryHTTPRoute (0.01s)
+    adapter_test.go:153: Agent OpenAPI operations=103
+--- FAIL: TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest (0.01s)
+    adapter_test.go:186: actions=164 routes=22
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/transport/http/module	1.981s
+--- FAIL: TestAgentCapabilityOwnsAllProductRoutesAndAuthoringValidation (0.10s)
+    binding_test.go:41: Agent operations=103 projections=15
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/capability	0.665s
+FAIL

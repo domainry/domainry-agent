@@ -26,6 +26,15 @@ type thinConversationHost struct {
 	authorizer agentsdk.ConversationToolAuthorizer
 }
 
+type lifecycleConversationHost struct {
+	thinConversationHost
+	extensions []agentsdk.ConversationLifecycleExtension
+}
+
+func (h lifecycleConversationHost) ConversationLifecycleExtensions() []agentsdk.ConversationLifecycleExtension {
+	return h.extensions
+}
+
 func (h thinConversationHost) ConversationAuthorizer() agentsdk.ConversationToolAuthorizer {
 	return h.authorizer
 }
@@ -162,6 +171,54 @@ func TestDeferredConversationModuleWithoutModelKeepsPersonalHTTPServices(t *test
 	}
 	if err := service.(agentsdk.ConversationStatusProvider).ConversationReady(t.Context()); err == nil {
 		t.Fatal("missing model declared ready")
+	}
+}
+
+func TestDeferredConversationModuleAssemblesLifecycleHostBeforeWorkersStart(t *testing.T) {
+	authority := conversationAuthority()
+	database := deferredModuleHost{newSQLiteModuleHost(t, authority.RuntimeID)}
+	finished := make(chan agentsdk.ConversationLifecycleEvent, 1)
+	observer := &lifecycleTestExtension{
+		definition: lifecycleTestDefinition("module-observer", 1, agentsdk.ConversationLifecycleKindObserver, agentsdk.ConversationLifecycleFailureContinue, agentsdk.ConversationLifecycleRunFinished),
+		handle: func(event agentsdk.ConversationLifecycleEvent) (agentsdk.ConversationLifecycleDecision, error) {
+			finished <- event
+			return agentsdk.ConversationLifecycleDecision{}, nil
+		},
+	}
+	model := conversationModelFunc(func(context.Context, agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
+		return agentsdk.ConversationModelResult{Content: "done", Model: "module-model"}, nil
+	})
+	opened, err := agentmodule.NewFactory(agentmodule.Options{ConversationProvider: model}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: authority.RuntimeID}, database)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = opened.Close(t.Context()) })
+	host := lifecycleConversationHost{thinConversationHost: thinConversationHost{authorizer: personalReadAuthorizer{}}, extensions: []agentsdk.ConversationLifecycleExtension{observer}}
+	if err = opened.(modulehost.ConversationApplicationHostBinder).BindConversationHost(host); err != nil {
+		t.Fatal(err)
+	}
+	service := opened.(agentsdk.ConversationBinding).Conversations()
+	conversation, err := service.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "module-lifecycle"}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	run, err := service.Send(t.Context(), conversation.ID, agentsdk.ConversationSend{ClientMessageID: "module-lifecycle", Message: "finish"}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if run.Lifecycle == nil || len(run.Lifecycle.Extensions) != 1 || run.Lifecycle.Extensions[0].Key != "module-observer" {
+		t.Fatalf("module lifecycle host was not frozen: %+v", run.Lifecycle)
+	}
+	if final := waitConversation(t, service, conversation.ID, run.ID); final.Status != "completed" {
+		t.Fatalf("module lifecycle run failed: %+v", final)
+	}
+	select {
+	case event := <-finished:
+		if event.RunID != run.ID || event.Stage != agentsdk.ConversationLifecycleRunFinished {
+			t.Fatalf("unexpected module lifecycle event: %+v", event)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("module lifecycle observer did not receive terminal event")
 	}
 }
 

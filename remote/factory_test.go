@@ -32,9 +32,19 @@ type runner struct {
 
 type scheduledConversationStub struct {
 	agentsdk.ConversationService
-	request    agentsdk.ScheduledConversationTaskRequest
-	authorized bool
-	calls      int
+	request            agentsdk.ScheduledConversationTaskRequest
+	authorized         bool
+	calls              int
+	businessRequest    agentsdk.BusinessEventConversationTaskRequest
+	businessAuthorized bool
+	businessCalls      int
+}
+
+func (s *scheduledConversationStub) AcceptBusinessEventConversationTask(ctx context.Context, request agentsdk.BusinessEventConversationTaskRequest) (agentsdk.BusinessEventConversationTaskReceipt, error) {
+	s.businessCalls++
+	s.businessRequest = request
+	s.businessAuthorized = agentsdk.HasAuthorizedServiceAction(ctx, agentsdk.ActionAgentBusinessEventConversationTaskAccept, agentsdk.AgentRuntimeServiceAudience)
+	return agentsdk.BusinessEventConversationTaskReceipt{Task: agentsdk.ConversationTask{ID: "event-task", Status: agentsdk.ConversationTaskStatusQueued}}, nil
 }
 
 func (s *scheduledConversationStub) StartScheduledConversationTask(ctx context.Context, request agentsdk.ScheduledConversationTaskRequest) (agentsdk.ScheduledConversationTaskReceipt, error) {
@@ -116,6 +126,9 @@ func TestSaaSScheduledTaskUsesServiceCredentialAndExactAction(t *testing.T) {
 	if !opened.Descriptor().HasCapability(agentsdk.CapabilityScheduledConversationTask) {
 		t.Fatalf("descriptor=%+v", opened.Descriptor())
 	}
+	if !opened.Descriptor().HasCapability(agentsdk.CapabilityBusinessEventConversationTask) {
+		t.Fatalf("descriptor=%+v", opened.Descriptor())
+	}
 	tasks, ok := opened.(agentsdk.ConversationBinding).Conversations().(agentsdk.ScheduledConversationTaskService)
 	if !ok {
 		t.Fatal("remote binding omitted scheduled task service")
@@ -137,6 +150,16 @@ func TestSaaSScheduledTaskUsesServiceCredentialAndExactAction(t *testing.T) {
 	request.Authority.WorkspaceID = "other"
 	if _, err = tasks.StartScheduledConversationTask(ctx, request); err == nil || conversations.calls != 1 {
 		t.Fatalf("cross-workspace request reached Agent: calls=%d err=%v", conversations.calls, err)
+	}
+	events := opened.(agentsdk.ConversationBinding).Conversations().(agentsdk.BusinessEventConversationTaskService)
+	eventRequest := agentsdk.BusinessEventConversationTaskRequest{Authority: agentsdk.ConversationAuthority{Known: true, WorkspaceID: "workspace", UserID: "user"}}
+	if _, err = events.AcceptBusinessEventConversationTask(t.Context(), eventRequest); err == nil || conversations.businessCalls != 0 {
+		t.Fatalf("missing business-event service Action reached SaaS: calls=%d err=%v", conversations.businessCalls, err)
+	}
+	eventContext := agentsdk.WithAuthorizedServiceAction(t.Context(), agentsdk.ActionAgentBusinessEventConversationTaskAccept, agentsdk.AgentRuntimeServiceAudience)
+	eventReceipt, err := events.AcceptBusinessEventConversationTask(eventContext, eventRequest)
+	if err != nil || eventReceipt.Task.ID != "event-task" || conversations.businessCalls != 1 || !conversations.businessAuthorized || conversations.businessRequest.Authority.RuntimeID != "runtime" {
+		t.Fatalf("event receipt=%+v calls=%d authorized=%t request=%+v err=%v", eventReceipt, conversations.businessCalls, conversations.businessAuthorized, conversations.businessRequest, err)
 	}
 }
 

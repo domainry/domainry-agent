@@ -1,0 +1,46 @@
+{
+  "steps": [
+    "failed task exposes inferred agreement v1 and saves the user-authored complete agreement as v2 without inventing a deadline",
+    "failed task resumes through its exact POST endpoint, re-enters the durable Run and completes at attempt 2",
+    "full page reload reads the completed resumed task and its current agreement from the server",
+    "waiting-user task requires explicit inline confirmation, cancels the exact Run and exposes the closed-interaction blocker",
+    "cancelled state and blocker survive reload and remain usable at 390px"
+  ],
+  "javascriptErrors": [],
+  "preLoginConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "snapshots": [
+    {
+      "goal": "浏览器失败恢复任务 v2",
+      "state": "completed",
+      "text": "已完成\n浏览器失败恢复任务 v2\ntask_826b81bb0e20a24cd82a96dda85959d6\n\n首次失败后由用户明确继续\n\n当前约定 v2\n约定修订 2\n目标已完成\n当前阶段：completed\n剩余 0 项 · 已完成 1 项\n目标\n用户明确\n\n浏览器失败恢复任务 v2\n\n交付物\n用户明确\n\n可核对的恢复结果\n\n使用者\n用户明确\n\n发布负责人\n\n截止时间\n未设置\n\n未设置截止时间\n\n完成条件\n用户明确\n恢复任务生成最终结果\n约束\nAgent 推断\n\n无\n\n假设\nAgent 推断\n\n无\n\n先前运行\n运行 1\n执行计划\n\n这个任务尚未建立多步骤计划；简单请求可以直接执行。\n\n进度\n2 个步骤 · 1 次工具调用 · 第 1 次处理\n可用工具\ntime_now\n预算\n3 步 · 1 次工具 · 30 秒\n更新时间\n9/15/2026, 6:54:40 AM\n任务结果\n\n失败任务已恢复完成。\n\n返回来源会话\n查看处理记录"
+    },
+    {
+      "goal": "浏览器等待取消任务",
+      "state": "cancelled",
+      "text": "已停止\n浏览器等待取消任务\ntask_e72faf0047c61a8212dd2d703b9e929a\n\n向用户询问发布渠道\n\n当前约定 v1\n约定修订 1\n目标已暂停\n当前阶段：paused\n剩余 1 项 · 已完成 0 项\n目标\nAgent 推断\n\n浏览器等待取消任务\n\n交付物\nAgent 推断\n\n浏览器等待取消任务\n\n使用者\nAgent 推断\n\nrequesting user\n\n截止时间\n未设置\n\n未设置截止时间\n\n完成条件\nAgent 推断\nThe requested result is available in the task response.\n约束\nAgent 推断\n\n无\n\n假设\nAgent 推断\n\n无\n\n修改任务约定\n执行计划\n\n这个任务尚未建立多步骤计划；简单请求可以直接执行。\n\n进度\n1 个步骤 · 1 次工具调用 · 第 1 次处理\n可用工具\nask_user\n预算\n3 步 · 1 次工具 · 30 秒\n更新时间\n9/15/2026, 6:54:41 AM\n返回来源会话\n查看处理记录\n原等待事项已关闭，无法直接继续；请重新创建任务。"
+    }
+  ],
+  "controlRequests": [
+    {
+      "path": "/agent/conversation-tasks/task_826b81bb0e20a24cd82a96dda85959d6/resume",
+      "status": 200
+    },
+    {
+      "path": "/agent/conversation-tasks/task_e72faf0047c61a8212dd2d703b9e929a/cancel",
+      "status": 200
+    }
+  ],
+  "agreementRequests": [
+    {
+      "path": "/agent/conversation-tasks/task_826b81bb0e20a24cd82a96dda85959d6/agreement",
+      "status": 200
+    }
+  ],
+  "complete": true
+}

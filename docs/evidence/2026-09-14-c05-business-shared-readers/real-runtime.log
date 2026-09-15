@@ -1,0 +1,19 @@
+=== RUN   TestBusinessIndependentReceiptReadThroughRealOwnerRPC
+--- PASS: TestBusinessIndependentReceiptReadThroughRealOwnerRPC (3.27s)
+=== RUN   TestCrossUserBusinessAgentToolDispatchAutomaticDeliveryOriginalPagesAndAcceptance
+    conversation_business_shared_delivery_test.go:205: Exact professional execution result business-catalog: 5 pages, 1269 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:205: Exact professional execution result business-query: 4 pages, 1008 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:205: Exact professional execution result business-get: 3 pages, 603 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:205: Exact professional execution result business-related: 5 pages, 1158 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:215: Exact professional execution result business-catalog: 5 pages, 1269 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:215: Exact professional execution result business-query: 4 pages, 1008 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:215: Exact professional execution result business-get: 3 pages, 603 bytes, original SHA-256 verified
+    conversation_business_shared_delivery_test.go:215: Exact professional execution result business-related: 5 pages, 1158 bytes, original SHA-256 verified
+--- PASS: TestCrossUserBusinessAgentToolDispatchAutomaticDeliveryOriginalPagesAndAcceptance (64.93s)
+=== RUN   TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart
+--- PASS: TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart (8.52s)
+=== RUN   TestBusinessWriteReceiptReadThroughRealOwnerRPC
+    conversation_business_write_receipt_read_rpc_test.go:176: Original action and workflow-start receipts remain exact after independent reading, grant revocation/restoration and restart; execution remains separately denied.
+--- PASS: TestBusinessWriteReceiptReadThroughRealOwnerRPC (2.16s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	79.518s

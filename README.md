@@ -11,6 +11,20 @@ independent of one-shot Interactive routing. See [会话接口、存储和配置
 for durable messages, explicit user memory, automatic compaction, cancellation,
 restart recovery, persisted streaming drafts and Gateway / compatible model protocols.
 The optional `conversation.execution.v1` port adds durable model/tool iterations.
+Completed stable runs also expose authorized trajectory inspection, deterministic
+JSON export, recorded-model fixture replay, hash comparison and independent
+conversation forks. Read-only replay never invokes a model or tool; a fork waits
+for new user input and treats recorded calls/results as historical data. See
+[会话分叉与轨迹回放](docs/conversations.md#会话分叉与轨迹回放).
+External processes can register as ordinary peer Agents and use the public
+`domainry-peer` v1 assignment, claim and report protocol. Exact execution identity,
+capability negotiation, ordered process events, messaging, cancellation recovery,
+structured delivery and acceptance remain in the same collaboration state machine;
+see [外部平权 Agent 协议](docs/conversations.md#外部平权-agent-协议).
+Deployments with a real coding workload can explicitly attach Runtime's restricted
+coding workspace. Agent then publishes separate file, search, edit, persistent PTY,
+background-process and LSP navigation tools through its normal authorization,
+confirmation and durable-receipt path; see [完整编码执行环境](docs/conversations.md#完整编码执行环境).
 The Identity web host wires permission-scoped time, calculation, history, memory,
 personal todo and user-question tools; see [阶段实现和验收范围](docs/testing-2026-09-10-tools.md).
 Optional [文档检索](docs/knowledge.md) exposes permission-scoped search/read

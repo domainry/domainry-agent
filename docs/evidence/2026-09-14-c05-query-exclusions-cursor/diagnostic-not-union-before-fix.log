@@ -1,0 +1,23 @@
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_excluded_subset
+    conversation_business_shared_scope_test.go:70: scope coverage=false want=true
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_reverse_denied
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/union_covers_set
+    conversation_business_shared_scope_test.go:70: scope coverage=false want=true
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/union_cannot_cover_unseen_value
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_set_covers_union
+    conversation_business_shared_scope_test.go:70: scope coverage=false want=true
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_union_covers_set
+    conversation_business_shared_scope_test.go:70: scope coverage=false want=true
+=== RUN   TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/mixed_typed_conjunction_does_not_become_empty
+--- FAIL: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects (0.12s)
+    --- FAIL: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_excluded_subset (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_reverse_denied (0.00s)
+    --- FAIL: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/union_covers_set (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/union_cannot_cover_unseen_value (0.00s)
+    --- FAIL: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_set_covers_union (0.00s)
+    --- FAIL: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/negated_union_covers_set (0.00s)
+    --- PASS: TestSharedBusinessNegatedAndUnionScopeCoverageUsesBoundSubjects/mixed_typed_conjunction_does_not_become_empty (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/application/agenthost	0.586s
+FAIL

@@ -1,0 +1,6 @@
+=== RUN   TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart
+    record_result_read_test.go:233: actual owner publication changed execution identity: publication={"reference":{"conversation_id":"conv_bf67eba8d2b35d0c34e2b36e7773e93c","run_id":"crun_764077629e60e0dded76660e41b395e0"},"publisher":{"known":true,"runtime_id":"record-runtime","workspace_id":"record-workspace","user_id":"admin","role_key":"admin"},"revision":6} owner={"known":true,"runtime_id":"record-runtime","workspace_id":"record-workspace","user_id":"admin"}
+--- FAIL: TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart (4.58s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/product	5.959s
+FAIL

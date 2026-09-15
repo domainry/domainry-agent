@@ -1,0 +1,54 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+TRACE denied op=receive actor=system_administrator_user role=system_administrator delegation=
+TRACE denied op=delivery_read actor=delivery-reader role=system_administrator delegation=delegation_03b06211ce8282e0d32a6c09e8a8ef0a
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (5.97s)
+panic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]
+[signal SIGSEGV: segmentation violation code=0x2 addr=0x168 pc=0x104b1ec08]
+
+goroutine 49 [running]:
+testing.tRunner.func1.2({0x106e27d00, 0x107276f40})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1974 +0x1a0
+testing.tRunner.func1()
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1977 +0x318
+panic({0x106e27d00?, 0x107276f40?})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/panic.go:860 +0x12c
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).authorizeCollaboration(0x1070e2018?, {0x1070e2018?, 0x776fb3877aa0?}, {0x105436630, 0x5}, 0x0, {0x1, {0x776fb399ab70, 0xe}, {0x776fb399ab80, ...}, ...})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_collaboration_authorization.go:204 +0x178
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).sourceReleaseContext(0x776fb3903508, {0x1070e2018, 0x776fb30c35f0}, {0x776fb399ab10, 0x8}, {0x776fb3bcbe60, 0x2b}, {0x1, {0x776fb399ab70, 0xe}, ...}, ...)
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_shared_sources.go:149 +0x7c4
+github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).publishedSourceContext(0x776fb47a6b88, {0x1070e2018, 0x776fb30c35f0}, {{0x776fb3411ef0, 0x25}, {0x776fb3411f20, 0x25}, 0x2})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_shared_sources.go:207 +0x58c
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).authorizedDeliveryResult(_, {_, _}, {_, _}, {0x0, {{{0x776fb3411ef0, 0x25}, {0x776fb3411f20, 0x25}, ...}, ...}}, ...)
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_delivery_result.go:86 +0xa2c
+github.com/domainry/domainry-agent/internal/application.(*ConversationService).ReadConversationDeliveryResult(0x776fb3903508, {0x1070e2018?, 0x776fb3ce2a80?}, {0x776fb2302c2d?, 0x776fb47a76d8?}, {0x0, {{{0x776fb3411ef0, 0x25}, {0x776fb3411f20, 0x25}, ...}, ...}}, ...)
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_delivery_result.go:13 +0xe4
+github.com/domainry/domainry-agent/internal/application.InvokeConversation({_, _}, {_, _}, {_, _}, {{0x0}, {0x0}, {0x0, 0x0}, ...})
+	/Users/tiger/Projects/domainry-agent/internal/application/conversation_dispatch.go:51 +0x80b4
+github.com/domainry/domainry-agent/internal/transport/http/module.NewConversationAdapter.(*conversationAdapter).handle.func1({0x1070dd248, 0x776fb3ab3980}, 0x776fb334fb80)
+	/Users/tiger/Projects/domainry-agent/internal/transport/http/module/conversation_adapter.go:267 +0x1e4c
+net/http.HandlerFunc.ServeHTTP(0x776fb3f3d500?, {0x1070dd248?, 0x776fb3ab3980?}, 0x105140d64?)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x38
+net/http.(*ServeMux).ServeHTTP(0x776fb334f540?, {0x1070dd248, 0x776fb3ab3980}, 0x776fb334fb80)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2828 +0x190
+github.com/domainry/domainry-agent-sdk/browsergateway.NewHandler.(*boundary).authenticated.func6({0x1070dd248, 0x776fb3ab3980}, 0x776fb334f540)
+	/Users/tiger/Projects/domainry-agent-sdk/browsergateway/handler.go:255 +0x374
+net/http.HandlerFunc.ServeHTTP(0x776fb381c9c0?, {0x1070dd248?, 0x776fb3ab3980?}, 0x105140404?)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x38
+net/http.(*ServeMux).ServeHTTP(0x776fb2a19980?, {0x1070dd248, 0x776fb3ab3980}, 0x776fb334f540)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2828 +0x190
+github.com/domainry/domainry-agent-sdk/browsergateway.NewHandler.func3({0x1070dd248, 0x776fb3ab3980}, 0x776fb334f540)
+	/Users/tiger/Projects/domainry-agent-sdk/browsergateway/handler.go:160 +0x584
+net/http.HandlerFunc.ServeHTTP(0x776fb334f540?, {0x1070dd248?, 0x776fb3ab3980?}, 0xf?)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/net/http/server.go:2286 +0x38
+github.com/domainry/domainry-agent/internal/assembly/web.(*browser).call(0x776fb4626390, {0x105435996, 0x4}, {0x776fb3a52870, 0x4e}, {0x776fb33dcd80, 0x102}, 0x193)
+	/Users/tiger/Projects/domainry-agent/internal/assembly/web/host_test.go:61 +0x448
+github.com/domainry/domainry-agent/internal/assembly/web.exerciseParticipantDeliveryHTTP(_, _, _, _, {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, ...})
+	/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_participant_delivery_test.go:118 +0x1440
+github.com/domainry/domainry-agent/internal/assembly/web.TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects(0x776fb30c7b08)
+	/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_source_release_test.go:161 +0x1690
+testing.tRunner(0x776fb30c7b08, 0x1070bc428)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2036 +0xc4
+created by testing.(*T).Run in goroutine 1
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2101 +0x3a8
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	6.999s
+FAIL

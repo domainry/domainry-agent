@@ -43,7 +43,15 @@ func (s *ConversationStore) ReuseConversationDelegationEffect(ctx context.Contex
 				continue
 			}
 			ref := effect.Reference
-			oldRun, err := s.runRow(ctx, tx, ref.ConversationID, ref.RunID, claim.Authority)
+			d, err := s.conversationDelegation(ctx, tx, task.DelegationID, claim.Authority)
+			if err != nil {
+				return err
+			}
+			originalAuthority, err := s.assignmentRunAuthority(ctx, tx, d, ref.ConversationID, claim.Authority)
+			if err != nil {
+				return err
+			}
+			oldRun, err := s.runRow(ctx, tx, ref.ConversationID, ref.RunID, originalAuthority)
 			if err != nil {
 				return err
 			}
@@ -51,7 +59,7 @@ func (s *ConversationStore) ReuseConversationDelegationEffect(ctx context.Contex
 				return conversationError("conflict", "delegation_handoff_changed")
 			}
 			var original persistence.ConversationToolExecution
-			exists, err := s.readExecutionTool(ctx, tx, persistence.ConversationClaim{Authority: claim.Authority, Run: oldRun.Run}, ref.Step, ref.CallID, &original)
+			exists, err := s.readExecutionTool(ctx, tx, persistence.ConversationClaim{Authority: originalAuthority, Run: oldRun.Run}, ref.Step, ref.CallID, &original)
 			if err != nil {
 				return err
 			}

@@ -1,0 +1,6 @@
+=== RUN   TestIdentityRoleSnapshotPropagatesCurrentResolutionFailureAndKeepsRoleIsolation
+    identity_effective_access_application_service_test.go:31: current role resolution failure was overwritten by a later successful resolution <nil>
+--- FAIL: TestIdentityRoleSnapshotPropagatesCurrentResolutionFailureAndKeepsRoleIsolation (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-identity/internal/application/identity	1.171s
+FAIL

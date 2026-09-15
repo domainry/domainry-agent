@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-16",
+  "item": "K06",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 21,
+  "deepseek_harness_head": "0d1f50007f9bca3f52b06e1c3074fa14d5fb0720",
+  "results": {
+    "integration_sdk_full": { "exit_code": 0 },
+    "integration_current_workspace": { "exit_code": 0 },
+    "agent_sdk_workspace_full": { "exit_code": 0 },
+    "agent_business_event_packages": { "exit_code": 0 },
+    "identity_http_sqlite_worker_chain": { "exit_code": 0 },
+    "runtime_trigger_manifest_contract": { "exit_code": 0 },
+    "frontend_tests": { "exit_code": 0, "tests": 93 },
+    "frontend_build": { "exit_code": 0 },
+    "diff_check": { "repositories": 5, "exit_code": 0 }
+  },
+  "behavior": [
+    "Integration retains webhook verification raw payload event durability lease retry dead-letter and replay ownership",
+    "manifest mappings select a finite Agent conversation mode and declared event fields and carry a stable mapping revision",
+    "Runtime resolves the mapped external subject to the current Identity principal and refuses an Agent target without it",
+    "Agent reauthorizes the exact conversation Agent model and tool scope under the current user and role",
+    "an exact event replay returns the same ordinary background task while a changed replay conflicts",
+    "wake accepts only a terminal task for the same conversation and Agent and creates an immutable successor",
+    "task projection and model prompt retain credential-free event provenance without treating it as authorization"
+  ],
+  "recovery": {
+    "max_integration_attempts": 5,
+    "retry_delays": ["1m", "5m", "15m", "1h"],
+    "dead_letter": true,
+    "manual_replay": true,
+    "agent_task_idempotency": true
+  },
+  "remaining": [
+    "K07 external Agent protocol is the next ordered item",
+    "K08 complete coding execution environment follows K07",
+    "Integration SDK and Connector SDK releases must precede standalone Integration go.mod lock updates"
+  ]
+}

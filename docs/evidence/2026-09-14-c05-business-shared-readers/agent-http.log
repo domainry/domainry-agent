@@ -1,0 +1,6 @@
+=== RUN   TestPeerBusinessDeliveryReadsWithoutProfessionalToolExecution
+--- PASS: TestPeerBusinessDeliveryReadsWithoutProfessionalToolExecution (7.51s)
+=== RUN   TestPeerBusinessWriteDeliveryReadsOriginalReceiptsWithoutExecution
+--- PASS: TestPeerBusinessWriteDeliveryReadsOriginalReceiptsWithoutExecution (5.89s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	13.860s

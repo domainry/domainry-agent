@@ -1,0 +1,141 @@
+{
+  "phase": "identity_principal_context_owner_reads",
+  "artifacts": {
+    "all-launch-inputs.json": {
+      "sha256": "0832272773b19cccbe2fc6e3366aa35751a1c0399b8cb863009d5f82884aea6f",
+      "bytes": 1108192
+    },
+    "runtime-launch-inputs.json": {
+      "sha256": "e8719de0e67fda227d63c145c951c5c0f25611e54a0d61e499e3a0cdfb907ad0",
+      "bytes": 2049557
+    },
+    "identity-all.log": {
+      "sha256": "3a350b82e404dbe12f5064639778d6d982ee2f349faea836a98d979a6be3cc3a",
+      "bytes": 9409
+    },
+    "identity-core-race.log": {
+      "sha256": "d2ff3af885e4f18dde83d0cd794eff9c517bb59a7f84b7ed8a8d256b4ad7634d",
+      "bytes": 78818
+    },
+    "original-production-counterexamples.log": {
+      "sha256": "03cef8ab3cf0bbf65eeaf6a482a5d7dccb3c89e3b321ffcd3c89fc2fd68d92a4",
+      "bytes": 6725
+    },
+    "diagnostic-initial-user-list-counter.log": {
+      "sha256": "ed159e1f5eba0a9472fcf9b04691db6d66680ae2c54a69667c8c6d6ebafc0f2a",
+      "bytes": 3567
+    },
+    "diagnostic-expiry-fixture-type.log": {
+      "sha256": "e7f67146afa0657acb1337b9e4d6a075d36ad14ede62fdcb26bd81e3bd5a9395",
+      "bytes": 392
+    },
+    "disabled-union-counterexample.log": {
+      "sha256": "76a718562a794293847a9ccf7d5b19c468b4abb3a15b433582e5595e864f1f53",
+      "bytes": 5667
+    },
+    "phase.patch": {
+      "sha256": "f1ed8ae7c90573bc6c7fb6c6ef160ac6e50715f2b7f99e697d4fe9efd71bc680",
+      "bytes": 26924
+    },
+    "failed-revised-run.json": {
+      "sha256": "8d9911f437aa35fe497e702907819148e665897c1873b24b833e926e8f1e591a",
+      "bytes": 26287
+    },
+    "actual-race-live-native-sample.txt": {
+      "sha256": "dbae8b9a45c64b03e97d1e7d6b6c3787492c0d7c5dcec1a4818986b4d98d8752",
+      "bytes": 340061
+    },
+    "actual-race-live-sample-launch.log": {
+      "sha256": "656150e4a65733f7275fbbf319147370401e9adf2a6059668ac422595360626d",
+      "bytes": 234
+    },
+    "actual-runtime-normal.log": {
+      "sha256": "34284927a41283a7394fe69c662854619244b55964c5ec1292074cd3d3b35f1e",
+      "bytes": 1459
+    },
+    "actual-runtime-race.log": {
+      "sha256": "281f0032fbca57109d6cd28443178f75bcc238655632f2bd4e4603d041d75457",
+      "bytes": 38975
+    },
+    "normal.cpu": {
+      "sha256": "65372f88085eea134c3a6b7e07616b20486777a13e7c60f9fe0e3c0e52126b9f",
+      "bytes": 207491
+    },
+    "race.cpu": {
+      "sha256": "3cdb01f61a8aa643b45e51642dcc71dcf67cbcf63e9cd8fc76b399fd36ca64d2",
+      "bytes": 828587
+    },
+    "normal-top.txt": {
+      "sha256": "7373cc38f4d5144f2268255514ff579b29fd729c0ffea9e08359740d6e995de0",
+      "bytes": 2319
+    },
+    "normal-identity.txt": {
+      "sha256": "fc0e1305572bcb81eada348bc6dc16070365dbdd97a1aaea1dd6436106883eeb",
+      "bytes": 2597
+    },
+    "race-top.txt": {
+      "sha256": "d7ab7880ae7e8d8546fd5fe02715ca83d86e23d426b0908a97cfba3bc2805564",
+      "bytes": 2193
+    },
+    "race-identity.txt": {
+      "sha256": "1e0869316afe6d0e2f375420e53faebe5f85604e819f609e482b33c22a1abbca",
+      "bytes": 3366
+    },
+    "normal-callers.txt": {
+      "sha256": "12413d9e9ea049605729359008bdb8247f4dbc6afa0eccd5d85fdef31c0a51a3",
+      "bytes": 8014
+    },
+    "race-callers.txt": {
+      "sha256": "9a1785a504ee8d549c30d5f571339d4ea67092c4b2778963517a26130c542c62",
+      "bytes": 8846
+    },
+    "source-before/internal/domain/identity/service/identity_principal.go.txt": {
+      "sha256": "36b8b3bedea58b95a68443af84e2a69903ea92d5a071540f3e5911d6126f9dd3",
+      "bytes": 20621
+    },
+    "source-before/internal/domain/identity/service/identity_authorization.go.txt": {
+      "sha256": "e59802bfd8e6b27cb45b3a10d8025636edef74b6702584b8f15deaa3f1f5a4f3",
+      "bytes": 5502
+    },
+    "source-before/internal/application/identity/identity_effective_access_application_service.go.txt": {
+      "sha256": "59c838467ed5300aa06d4b5b9230940c7558767bbb3e4fbc3335cc2b1db660c3",
+      "bytes": 13356
+    },
+    "source-before/internal/adapter/identitysdk/principal_resolver.go.txt": {
+      "sha256": "fc136c6e2d362fd95368dfc595fc035d6041bdc32688baa255861091dac82200",
+      "bytes": 8848
+    },
+    "source-after/internal/domain/identity/service/identity_principal.go.txt": {
+      "sha256": "8444f3d93c7b34346328e482be5368c16aeb602855d104286057b0b6c3d89858",
+      "bytes": 21637
+    },
+    "source-after/internal/domain/identity/service/identity_authorization.go.txt": {
+      "sha256": "46c9721520e0344969d4ff8f19f94782d83b35487be9051d108a8ab807155caa",
+      "bytes": 5750
+    },
+    "source-after/internal/domain/identity/service/identity_principal_context.go.txt": {
+      "sha256": "333c2b3ac1e82ce108c74682a650312278a99fb6294475308b34991016aead89",
+      "bytes": 1725
+    },
+    "source-after/internal/application/identity/identity_effective_access_application_service.go.txt": {
+      "sha256": "9aee4c558dcb63dd44892753fdac8ca9d9c0045f0c9a8a122bffe7d72a5b49a7",
+      "bytes": 13869
+    },
+    "source-after/internal/application/identity/identity_principal_access_resolution.go.txt": {
+      "sha256": "de870f460c1cd09f874d2c2e8a14fe76fe2a2b5eba3691ad353f9c35e60be699",
+      "bytes": 2542
+    },
+    "source-after/internal/adapter/identitysdk/principal_resolver.go.txt": {
+      "sha256": "d864da696422ce3f0e79af42d09732f3ed7880a89d56352fa41cd201296b2ede",
+      "bytes": 7551
+    },
+    "source-after/internal/adapter/identitysdk/principal_resolution_reads_test.go.txt": {
+      "sha256": "08f494a7fa24de98f04b370d2ea1fb084756584a3082ff2c35750b24ee5bad9c",
+      "bytes": 13008
+    },
+    "acceptance.json": {
+      "sha256": "58bdf5caf7df3cb88aba36414e17481ffe5eae032f1b426efd4d502d8a5dff0d",
+      "bytes": 2810
+    }
+  }
+}

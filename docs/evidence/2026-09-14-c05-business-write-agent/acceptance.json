@@ -1,0 +1,104 @@
+{
+  "phase_status": "accepted_real_agent_business_action_and_workflow_confirmation_auto_delivery_shared_originals",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_manifest": "source-sha256.json",
+  "source_files": 347,
+  "artifact_manifest": "artifact-sha256.json",
+  "artifact_files": 16,
+  "accepted_logs": [
+    "runtime-owner.log",
+    "runtime-owner-race.log",
+    "real-business-write-agent.log",
+    "existing-real-business.log"
+  ],
+  "accepted_exit_codes": {
+    "runtime-owner.log": 0,
+    "runtime-owner-race.log": 0,
+    "real-business-write-agent.log": 0,
+    "existing-real-business.log": 0
+  },
+  "diagnostic_failed_logs": [
+    "diagnostic-write-model-password-compile.log",
+    "diagnostic-process-list-response.log",
+    "diagnostic-receiver-management-grant.log",
+    "diagnostic-pre-independent-catalog-and-acceptance-rule.log",
+    "diagnostic-workflow-acceptance-rule.log",
+    "diagnostic-seven-source-read-and-acceptance-rule.log",
+    "diagnostic-role-authorization-probe-compile.log",
+    "diagnostic-public-role-definition-unavailable.log",
+    "diagnostic-workflow-metadata-read-counter.log"
+  ],
+  "real_runtime_accepted_roots": [
+    "TestCrossUserBusinessWritesAgentConfirmationsAutomaticDeliverySharedOriginalsAndRestart",
+    "TestBusinessIndependentReceiptReadThroughRealOwnerRPC",
+    "TestCrossUserBusinessAgentToolDispatchAutomaticDeliveryOriginalPagesAndAcceptance",
+    "TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart",
+    "TestBusinessWriteReceiptReadThroughRealOwnerRPC"
+  ],
+  "actual_agent_business_write_root_seconds": 109.03,
+  "actual_agent_business_write_command_seconds": 110.084,
+  "existing_real_business_command_seconds": 94.838,
+  "real_identity_users": [
+    "admin",
+    "professional_source"
+  ],
+  "real_database_and_owner_ledgers": true,
+  "actual_agent_delegate_user_confirmation": true,
+  "actual_business_tool_user_confirmations": [
+    "invoke_action",
+    "workflow_start"
+  ],
+  "initiator_private_confirmation_http_status": 404,
+  "receiver_management_is_explicit_participant_grant": true,
+  "original_confirmation_response_replays_do_not_repeat_effects": true,
+  "actual_effects": {
+    "customer_create": 1,
+    "workflow_start": 1
+  },
+  "actual_workflow_start_completion": "accepted",
+  "actual_workflow_state_after_reads_and_restart": "waiting",
+  "actual_approval_task_after_reads_and_restart": "open",
+  "actual_agent_auto_delivery_and_account_acceptance": true,
+  "actual_shared_execution_steps": 8,
+  "original_page_bytes": 256,
+  "original_result_pages": {
+    "write-action-contract": 4,
+    "write-create": 4,
+    "write-workflow-contract": 3,
+    "write-start": 3,
+    "write-progress": 3
+  },
+  "write_original_sha_checks_before_after_execution_revocation_and_restart": 15,
+  "existing_business_original_sha_checks": 8,
+  "role_grant_revocation_port": "embedded trusted ProjectRoleCatalogPublisher",
+  "admitted_producer_role_identity_preserved_on_execution_revocation": true,
+  "source_data_receipt_and_role_revocation_enforced": true,
+  "whole_catalog_page_and_current_contract_checks": true,
+  "metadata_receipt_discovery_never_queries_original_ledger": true,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "new_frontend_acceptance": false,
+  "new_sdk_protocol": false,
+  "new_persistence_structure": false,
+  "existing_execution_or_context_budgets_raised": false,
+  "new_task_budget": {
+    "max_steps": 12,
+    "max_tool_calls": 12,
+    "max_output_bytes": 8192,
+    "timeout_seconds": 90
+  },
+  "prior_professional_write_race_accepted": false,
+  "previous_phase": "2026-09-14-c05-business-shared-readers",
+  "previous_source_manifest_sha256": "7f1e0b99312185b80a7b529878004a070562d17a1fc9a90895b6351fa11dab5b",
+  "previous_artifact_manifest_sha256": "a6bd78fc36e65a9cb1b7015d1015ecb9cb535e89989984def162105eba2111b6",
+  "previous_artifact_files_verified_unchanged": 18,
+  "remaining": [
+    "Knowledge user-bound original source versus actual reader separation and actual shared auto delivery",
+    "more complete query expression scope coverage",
+    "remaining full C05 old roles, history, dependency, source and subject-exit scope",
+    "prior professional write race execution timeout remains unaccepted",
+    "all later TODO items retained in order"
+  ]
+}

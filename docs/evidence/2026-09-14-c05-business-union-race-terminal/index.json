@@ -1,0 +1,45 @@
+{
+  "phase": "C05 combined business scope actual race terminal",
+  "artifacts": {
+    "race.cpu": {
+      "sha256": "fee8b3506f9c7fe813a387983f49ef4a70cc5a888b67ce68a79a4758a74d1c7d",
+      "bytes": 397766
+    },
+    "acceptance.json": {
+      "sha256": "84d922f9b7c5e0015887ae1b6ba6b300311113f4347e4fb9dc7eff26ca4e0449",
+      "bytes": 2393
+    },
+    "terminal-task.json": {
+      "sha256": "f7b107b94de7dc5db3ede6717d15b09bbb4a6a5afba2d966e68bc4b8bf27a7f3",
+      "bytes": 21903
+    },
+    "launch-inputs.json": {
+      "sha256": "138080d24c33c6f2784bdf477beb0ebe0cd9c19d60f3df9d50a4a6002f9d97aa",
+      "bytes": 2050649
+    },
+    "observer-test.go.txt": {
+      "sha256": "23ad94a8c516f314fb2550f49c865ef84a1bc71f32dd837752ba3768b33b8e82",
+      "bytes": 21559
+    },
+    "cpu-top.txt": {
+      "sha256": "ed86899f2f096467b4739262122f4ce63dca40d729be1973dbd16534d084693e",
+      "bytes": 3761
+    },
+    "race.log": {
+      "sha256": "74c4e62ceb2914951e7e8434490557066eb9f9f504d32d02063760cda0451a50",
+      "bytes": 48605
+    },
+    "terminal-run.json": {
+      "sha256": "3d5ef2d9821199fc088a7ecb23903b098372b8f4820e6619f03b49cc922d7cd7",
+      "bytes": 35653
+    },
+    "cpu-cumulative.txt": {
+      "sha256": "f80042f852dacaaaf9c8aa8d220c5c28e74101aa3b34e4d96834bcf3331d6102",
+      "bytes": 6168
+    },
+    "input-audit.json": {
+      "sha256": "6b1d980a44682fc8700d4d3ea1fb52407a30e23d804bc9ec739dac1d2b52e66d",
+      "bytes": 38
+    }
+  }
+}

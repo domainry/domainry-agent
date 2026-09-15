@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-runtime/runtime/application/action
+runtime/application/action/action_executor_identity.go:68:119: cannot use e.principal (variable of struct type runtimeext.Principal) as principalmodel.Principal value in argument to uploadapplication.WithUploadClaimPrincipal
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [build failed]
+FAIL

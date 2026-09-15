@@ -1,0 +1,8 @@
+ok  	github.com/domainry/domainry-agent/internal/application	1.308s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	7.016s
+ok  	github.com/domainry/domainry-agent/remote	5.730s
+ok  	github.com/domainry/domainry-agent/server	2.041s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	2.887s
+ok  	github.com/domainry/domainry-agent/internal/capability	2.879s
+ok  	github.com/domainry/domainry-agent-sdk	1.397s
+ok  	github.com/domainry/domainry-agent-sdk/persistence	0.637s

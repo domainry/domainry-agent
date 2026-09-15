@@ -1,0 +1,40 @@
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/restricted
+    principal_resolution_reads_test.go:147: duplicate IO users=0 roles=2 assignments=2; want one initial read plus one fresh authorization read
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/role-id-alias
+    principal_resolution_reads_test.go:147: duplicate IO users=0 roles=2 assignments=2; want one initial read plus one fresh authorization read
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/effective
+    principal_resolution_reads_test.go:147: duplicate IO users=0 roles=2 assignments=2; want one initial read plus one fresh authorization read
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/session-display-keeps-union
+    principal_resolution_reads_test.go:147: duplicate IO users=0 roles=2 assignments=2; want one initial read plus one fresh authorization read
+--- FAIL: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection (0.16s)
+    --- FAIL: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/restricted (0.04s)
+    --- FAIL: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/role-id-alias (0.04s)
+    --- FAIL: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/effective (0.04s)
+    --- FAIL: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/session-display-keeps-union (0.04s)
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/assignment
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/user
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/role
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/permission
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/published-policy
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/users-error
+    principal_resolution_reads_test.go:191: repository error overwritten: <nil>
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/roles-error
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/assignments-error
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/cancelled
+--- FAIL: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO (0.42s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/assignment (0.04s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/user (0.05s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/role (0.06s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/permission (0.04s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/published-policy (0.04s)
+    --- FAIL: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/users-error (0.05s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/roles-error (0.04s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/assignments-error (0.04s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/cancelled (0.04s)
+=== RUN   TestSDKPrincipalResolutionNeverReusesFactsAcrossRequests
+--- PASS: TestSDKPrincipalResolutionNeverReusesFactsAcrossRequests (0.04s)
+FAIL
+FAIL	github.com/domainry/domainry-identity/internal/adapter/identitysdk	1.300s
+FAIL

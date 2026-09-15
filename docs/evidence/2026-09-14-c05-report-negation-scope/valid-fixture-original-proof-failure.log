@@ -1,0 +1,29 @@
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/identical_neq
+    report_shared_negated_scope_orm_test.go:115: equivalent or broader real SDK reader scope denied original source backend.permission.denied
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/weaker_exclusion
+    report_shared_negated_scope_orm_test.go:115: equivalent or broader real SDK reader scope denied original source backend.permission.denied
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/composed_reader_exclusions
+    report_shared_negated_scope_orm_test.go:115: equivalent or broader real SDK reader scope denied original source backend.permission.denied
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/double_negation
+    report_shared_negated_scope_orm_test.go:115: equivalent or broader real SDK reader scope denied original source backend.permission.denied
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/source_and_reader_guardrails
+    report_shared_negated_scope_orm_test.go:115: equivalent or broader real SDK reader scope denied original source backend.permission.denied
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/identical_exists
+    report_shared_negated_scope_orm_test.go:115: equivalent or broader real SDK reader scope denied original source backend.permission.denied
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/identical_not_exists
+    report_shared_negated_scope_orm_test.go:115: equivalent or broader real SDK reader scope denied original source backend.permission.denied
+=== RUN   TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/negated_not_exists
+    report_shared_negated_scope_orm_test.go:115: equivalent or broader real SDK reader scope denied original source backend.permission.denied
+--- FAIL: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection (0.05s)
+    --- FAIL: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/identical_neq (0.01s)
+    --- FAIL: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/weaker_exclusion (0.01s)
+    --- FAIL: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/composed_reader_exclusions (0.01s)
+    --- FAIL: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/double_negation (0.00s)
+    --- FAIL: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/source_and_reader_guardrails (0.00s)
+    --- FAIL: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/identical_exists (0.01s)
+    --- FAIL: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/identical_not_exists (0.01s)
+    --- FAIL: TestSharedReportSDKNegationAndNullScopesUseActualORMProjection/negated_not_exists (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/modulehost/report	0.588s
+FAIL

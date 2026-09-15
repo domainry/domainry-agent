@@ -1,0 +1,54 @@
+{
+  "runtime": [
+    {
+      "path": "runtime/bootstrap/composition/appschema_snapshot_wiring.go",
+      "sha256": "5d1295543694259023594fb25324b4c68de3c998286900c4bc0f62676f5d377a"
+    },
+    {
+      "path": "runtime/bootstrap/composition/runtime_services_appschema_projection.go",
+      "sha256": "59d7743bf562d164e302854b757b84795c003af768bac575f044b1ff78d74a8c"
+    },
+    {
+      "path": "runtime/bootstrap/composition/runtime_services_initialization.go",
+      "sha256": "ff8dd276509d989cf89a63cd59bb74be88ecef36b3aeb2737deab2701503e706"
+    },
+    {
+      "path": "runtime/bootstrap/composition/runtime_services_state.go",
+      "sha256": "7e0e22fdb2a8d83a4fad466159c85e703b2a3245f290e5ee22e4437b2980cda1"
+    },
+    {
+      "path": "runtime/bootstrap/composition/workflow_application_wiring.go",
+      "sha256": "e6c77a25b2daf947ab1a3307419d87e32a9cb76170b2b66b6ec71ef3e1f8bec4"
+    },
+    {
+      "path": "runtime/bootstrap/composition/workflow_identity_application_wiring.go",
+      "sha256": "abd54bf0f1a6ea7083572d7cfd67763d314653a90bc11262f57e0d16512b10d5"
+    },
+    {
+      "path": "runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go",
+      "sha256": "23ad94a8c516f314fb2550f49c865ef84a1bc71f32dd837752ba3768b33b8e82"
+    },
+    {
+      "path": "runtime/domain/appschema/service/appschema_i18n_remaining_test.go",
+      "sha256": "4fcb80f4bb3094d390152ac4840b8d1d61a8e87db9bcafaf9a4cf5e4088fc386"
+    },
+    {
+      "path": "runtime/domain/appschema/service/appschema_schema_i18n.go",
+      "sha256": "305bfdbdae2ad0bcd3b0d34bb9c79a37af9cc5fef833aa615861733d9f24ee46"
+    }
+  ],
+  "agent": [
+    {
+      "path": "internal/application/conversation_delegations.go",
+      "sha256": "c7ac154164260c12dfdb0bb77c90a5c7daaf8bc007047c977f08b132813156af"
+    },
+    {
+      "path": "internal/application/conversation_delivery_publication.go",
+      "sha256": "1a196f699e6157002bf6688c167e7f1f4c61b2466320cc3320d5a669ff280b72"
+    },
+    {
+      "path": "internal/application/conversation_verification.go",
+      "sha256": "26e6afbbbfb842aa2312582a32a93b857c363ca585611338bb207af88bb79ed7"
+    }
+  ]
+}

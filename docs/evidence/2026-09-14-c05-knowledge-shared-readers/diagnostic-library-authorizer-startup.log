@@ -1,0 +1,29 @@
+=== RUN   TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart
+--- FAIL: TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart (0.73s)
+panic: bind Agent application host: library retrieval requires library persistence, live authorization and at most 1000 host bindings [recovered, repanicked]
+
+goroutine 26 [running]:
+testing.tRunner.func1.2({0x104c98b60, 0x5fce3e5f5140})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1974 +0x1a0
+testing.tRunner.func1()
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:1977 +0x318
+panic({0x104c98b60?, 0x5fce3e5f5140?})
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/runtime/panic.go:860 +0x12c
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.mustCompleteRuntimeStartup(...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/startup_errors.go:5
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.newWithExtensionsUsingAllFactoriesAndStore({_, _}, {{0x0, 0x0}, {0x102464156, 0x18}, {0x0, 0x0}, {0x0, 0x0}, ...}, ...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/startup.go:456 +0x5978
+github.com/domainry/domainry-runtime/runtime/bootstrap/runtime.NewWithScheduler({_, _}, {{0x0, 0x0}, {0x102464156, 0x18}, {0x0, 0x0}, {0x0, 0x0}, ...}, ...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/runtime/startup.go:78 +0x1fc
+github.com/domainry/domainry-runtime/runtime/bootstrap.NewWithScheduler(...)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/bootstrap.go:59
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.(*businessWebFixture).open(0x5fce40972c08)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_business_web_fixture_test.go:161 +0x30c
+github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart(0x5fce40947208)
+	/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/integrationtest/conversation_knowledge_shared_delivery_test.go:219 +0x32c
+testing.tRunner(0x5fce40947208, 0x105054f78)
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2036 +0xc4
+created by testing.(*T).Run in goroutine 1
+	/opt/homebrew/Cellar/go/1.26.5/libexec/src/testing/testing.go:2101 +0x3a8
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	2.322s
+FAIL

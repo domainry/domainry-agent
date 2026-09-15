@@ -1,0 +1,16 @@
+{
+  "existing_compiled_sources_changed": [
+    {
+      "path": "/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_business_shared_query_scope.go",
+      "compiled": "ba0aa1837c788a3f04c4fa64184f21a47a3c58a47fc92dc40e976bc98515fd4a",
+      "current": "99553bba3d623cfdb53e647437f7d902545ae83f0d94a645298569a69e430ce0"
+    },
+    {
+      "path": "/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_business_shared_receipt_read.go",
+      "compiled": "a7bb82c01192d90ee249e66c768d1fddc77e9168bf1f04504a2c2bb2341f62eb",
+      "current": "77bb2a48a29e0bfd812c921a173e5c01fbd33fb852c20d63e90eb37646e41a7d"
+    }
+  ],
+  "fixture_added_after_compile": "/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_business_shared_relation_scope_test.go",
+  "later_source_evidence": "../2026-09-14-c05-original-relation-scope/source-final-sha256.json"
+}

@@ -1,0 +1,9 @@
+# github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent [github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent.test]
+internal/infrastructure/persistence/database/agent/conversation_execution_sharing_store_test.go:11:36: undefined: releasedStoreFixture
+ok  	github.com/domainry/domainry-agent/internal/application	0.479s
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent [build failed]
+ok  	github.com/domainry/domainry-agent/remote	3.368s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	1.584s
+ok  	github.com/domainry/domainry-agent/internal/capability	1.402s
+ok  	github.com/domainry/domainry-agent/server	0.702s
+FAIL

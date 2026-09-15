@@ -1,0 +1,66 @@
+{
+  "date": "2026-09-15",
+  "item": "K04",
+  "files": [
+    {
+      "path": "acceptance.json",
+      "bytes": 2645,
+      "sha256": "396566b3eb0eaad6ba70736b9235fb0da4a7f1914c438380d3ea31d9f8740684"
+    },
+    {
+      "path": "commands.md",
+      "bytes": 1758,
+      "sha256": "264e97e12d3ae1e91f7696f4b0b8430e177b8f864626c1efe483122a2ec5ca2b"
+    },
+    {
+      "path": "logs/agent-code-mode-tests.log",
+      "bytes": 59,
+      "sha256": "cb3ac7fd33e498f5c5748e7d65b69bb3cabfbb36003f8ee36657abb435e53b0b"
+    },
+    {
+      "path": "logs/agent-sdk-tests.log",
+      "bytes": 601,
+      "sha256": "676f024f459235c9a7273b00878ad8bc8f9a109c684b203581b031bcc687d72c"
+    },
+    {
+      "path": "logs/agent-tests.log",
+      "bytes": 173733,
+      "sha256": "fae9c175c5be3fa343182c94f1e94a1b5bc61618c6a6d594540787cb1af14f20"
+    },
+    {
+      "path": "logs/agent-web-compile.log",
+      "bytes": 87,
+      "sha256": "1b516fbf1199c7439f708768cd29616677fd8664f114b1ea7d4651a668476936"
+    },
+    {
+      "path": "logs/agent-web-timeout-test-isolated.log",
+      "bytes": 70,
+      "sha256": "4f628ea0fb9be43e3327d0f0c3dfad0cf587658566ef0297a61327c4f0ae78f4"
+    },
+    {
+      "path": "logs/diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/frontend-build.log",
+      "bytes": 32522,
+      "sha256": "9c55ff8c7d39f1311cbd686d0151c0fb87146a9ab40b25ffc3d71da1a1161e4a"
+    },
+    {
+      "path": "logs/frontend-tests.log",
+      "bytes": 11877,
+      "sha256": "c7d39c6d92747fef1445477befe606136104047b69672321dcd8f90cf2307198"
+    },
+    {
+      "path": "logs/runtime-tests.log",
+      "bytes": 131,
+      "sha256": "b68b2546087df2cb567aa3a251d54399c17b89901ed9deee918115a725a483e9"
+    },
+    {
+      "path": "source-sha256.json",
+      "bytes": 4116,
+      "sha256": "515f868782cfc8a67c1b1f2536de4f9915cf54a8328c823baa7e839e3d49ea90"
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "phase_status": "accepted_receiver_management_delivery_review_and_current_receipt_audit",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 149,
+  "source_manifest": "source-sha256.json",
+  "supported_participant_operations": [
+    "view",
+    "communicate",
+    "manage"
+  ],
+  "real_identity": true,
+  "real_http": true,
+  "real_tool_execution": true,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "logs": {
+    "before-store.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 1,
+      "top_level_failed_tests": 2,
+      "packages": 0,
+      "test_durations_seconds": {
+        "TestOrdinaryManagerCannotInheritReceiversDeliveryRead": 0.01
+      },
+      "overlay": "before-store-overlay.json"
+    },
+    "before-origin.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 2,
+      "top_level_failed_tests": 1,
+      "packages": 0,
+      "test_durations_seconds": {
+        "TestReceiverManagementUsesAdmittedDeliveryReadAndRejectsWithdrawnReplay": 0.01,
+        "TestOrdinaryManagerCannotInheritReceiversDeliveryRead": 0.01
+      },
+      "overlay": "before-origin-overlay.json"
+    },
+    "before-receipt.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0,
+      "overlay": "before-receipt-overlay.json"
+    },
+    "store-targeted.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 8,
+      "top_level_failed_tests": 0,
+      "packages": 1,
+      "test_durations_seconds": {
+        "TestPeerMutationLeaseAndConfirmationCannotBeForged": 0.01,
+        "TestParticipantManagementPreservesOriginalTaskAndRejectsWithdrawnGrantReplay": 0.01,
+        "TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles": 0.02,
+        "TestReceiverManagementUsesAdmittedDeliveryReadAndRejectsWithdrawnReplay": 0.01,
+        "TestOrdinaryManagerCannotInheritReceiversDeliveryRead": 0.01,
+        "TestReceiverManagementAgentReviewsFromItsOwnLeasedPeerConversation": 0.01,
+        "TestPeerVerificationReadsActualReceiptsAndCannotOverrideFailedData": 0.01,
+        "TestPeerVerificationRequiresIndependentCurrentReviewAndRetainsHistory": 0.01
+      }
+    },
+    "core-targeted.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 12,
+      "top_level_failed_tests": 0,
+      "packages": 2,
+      "test_durations_seconds": {
+        "TestManagementReceiptUsesCurrentCanonicalGrantAndRejectsExtraContent": 0.0,
+        "TestExecutorCanReceiveExplicitManagementWithoutLosingAdmittedAccessOnRevocation": 0.0,
+        "TestParticipantManagementReturnsOnlyReceiptAndChecksCurrentRoleAndGrant": 0.0,
+        "TestPeerVerificationHistoryRechecksReviewAndEveryReceiptSource": 0.0,
+        "TestPeerMutationLeaseAndConfirmationCannotBeForged": 0.01,
+        "TestParticipantManagementPreservesOriginalTaskAndRejectsWithdrawnGrantReplay": 0.01,
+        "TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles": 0.02,
+        "TestReceiverManagementUsesAdmittedDeliveryReadAndRejectsWithdrawnReplay": 0.01,
+        "TestOrdinaryManagerCannotInheritReceiversDeliveryRead": 0.01,
+        "TestReceiverManagementAgentReviewsFromItsOwnLeasedPeerConversation": 0.01,
+        "TestPeerVerificationReadsActualReceiptsAndCannotOverrideFailedData": 0.01,
+        "TestPeerVerificationRequiresIndependentCurrentReviewAndRetainsHistory": 0.01
+      }
+    },
+    "core.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 2
+    },
+    "race.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 14,
+      "top_level_failed_tests": 0,
+      "packages": 2,
+      "test_durations_seconds": {
+        "TestCollaborationDeliverySourcePurposeCannotAuthorizeRawReplay": 0.0,
+        "TestManagementReceiptUsesCurrentCanonicalGrantAndRejectsExtraContent": 0.0,
+        "TestExecutorCanReceiveExplicitManagementWithoutLosingAdmittedAccessOnRevocation": 0.0,
+        "TestParticipantManagementReturnsOnlyReceiptAndChecksCurrentRoleAndGrant": 0.0,
+        "TestPeerVerificationHistoryRechecksReviewAndEveryReceiptSource": 0.0,
+        "TestPeerMutationLeaseAndConfirmationCannotBeForged": 0.2,
+        "TestParticipantManagementPreservesOriginalTaskAndRejectsWithdrawnGrantReplay": 0.21,
+        "TestParticipantRequirementChangeInvalidatesOwnersDependentWork": 0.21,
+        "TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles": 0.57,
+        "TestReceiverManagementUsesAdmittedDeliveryReadAndRejectsWithdrawnReplay": 0.22,
+        "TestOrdinaryManagerCannotInheritReceiversDeliveryRead": 0.21,
+        "TestReceiverManagementAgentReviewsFromItsOwnLeasedPeerConversation": 0.23,
+        "TestPeerVerificationReadsActualReceiptsAndCannotOverrideFailedData": 0.25,
+        "TestPeerVerificationRequiresIndependentCurrentReviewAndRetainsHistory": 0.24
+      }
+    },
+    "http.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 1,
+      "top_level_failed_tests": 0,
+      "packages": 1,
+      "test_durations_seconds": {
+        "TestDelegationExecutionHTTPUsesConsentingReceiversRoleAndStopsAfterRevocation": 3.27
+      }
+    },
+    "http-regression.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 3,
+      "top_level_failed_tests": 0,
+      "packages": 1,
+      "test_durations_seconds": {
+        "TestDelegationExecutionHTTPUsesConsentingReceiversRoleAndStopsAfterRevocation": 3.63,
+        "TestDelegationParticipantsHTTPKeepSenderAndExecutorIndependent": 3.91,
+        "TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects": 5.33
+      }
+    },
+    "diagnostic-http-missing-reason.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "diagnostic-http-receipt.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    }
+  },
+  "before_check_note": "Direct pre-change failures. Snapshot manifests identify changed production files and relevant test files; other listed test packages are not necessarily exercised in every before check. Overlay files are provided for reproducing the current fixtures against those snapshots.",
+  "accepted": [
+    "Admitted receiver delivery reading combines with explicit management and current role policy",
+    "Ordinary manager cannot borrow receiver delivery-read responsibility",
+    "Current management grant and exact peer lease checked before replay",
+    "Agent reviews from independently owned conversation with actual actor and original execution unchanged",
+    "Management-only receipt permits exact fields and rechecks current canonical view/manage rights on every read"
+  ],
+  "pending": [
+    "Participant execution_read/delivery_read grants with complete shared execution and receipt ports/UI",
+    "Cross-subject Agent-authored contract source publication and multi-owner provenance",
+    "Complete participant dependency and transfer management",
+    "Subject exit lifecycle and remaining C05 scope"
+  ],
+  "artifact_sha256": {
+    "before-origin-overlay.json": "338218fc157b8bb443eff4cab240df89325798dbdeccb82a60da14f6c75c9262",
+    "before-origin-source-sha256.json": "6ba8c2c1e789719d3ec6eb0c881a102be95d583c8e620ad895c3a0baf336d217",
+    "before-origin.log": "468be28fd769a5570bbb682e632d97030ec07e4c975c24e07020e79d5319184b",
+    "before-receipt-overlay.json": "0800f3308a25efecfc89584e683e84dc9893c0bc6cccbb175d163cf873348066",
+    "before-receipt-source-sha256.json": "468bf3179d433c4d105d58879cf954d06c375f9cdf9004171d172f6877fd940d",
+    "before-receipt.log": "9b932a1ac533bcdb6787d3ba516b610a43a39bda3ed36e71ffcb767094423ef8",
+    "before-store-overlay.json": "ff1728c08ba86e1224002556b8372a14ee7f26256fe5893a7b70ffe43d374d6c",
+    "before-store-source-sha256.json": "e6b4d758f72b58c5d3abc5876a34093830204fca5c1ac826257fe931a9edc06c",
+    "before-store.log": "f1305ac76376feae3cc59069a74bf131ca2d06fd3fca299fc048d3a9cc6903bb",
+    "core-targeted.log": "938265893e4589ef07597d7ef2e5ebb370de150767ef3a422868a1acd6ea934e",
+    "core.log": "b7161e69db0ec4ad01c12a543b3f19b98c5260d1eb5f837eda94ddb80db5e6f6",
+    "diagnostic-http-missing-reason.log": "08e19c1a06c98c7f3e7645c474cc4fb64dc4515647b3c26b7cb6028fc7cddd50",
+    "diagnostic-http-receipt.log": "432a5df89b49ade33f8b30b00afe4df2c9f061b5441eafadc00db9528fd96b74",
+    "http-regression.log": "702fb2583ea0d0632ae39ffb2d0a8f3644d59c524dbbecf59d0e011b4f987100",
+    "http.log": "f3647e43b893f569be4c7d2f28d4bbee19bde41cc52b7254428f75243cdc0cce",
+    "race.log": "57a0fff2e9e698dc48eb1503a4eef90acaf2f2199e1e5359a7413e60310a4638",
+    "source-before/testdata/internal/application/conversation_collaboration_authorization.go": "1148c10646d4743589a7eb4ebb1457676c59d31ef055645635658f77c451880e",
+    "source-before/testdata/internal/application/conversation_delegations.go": "a4d09aec7713864327695124a8886dc663bf8af87298b9392580859475722185",
+    "source-before/testdata/internal/infrastructure/persistence/database/agent/conversation_delegation_store.go": "23f73630294e4fdef48df73fee6b8e30268cd3ab17134f3592cef30bf29d84c8",
+    "source-before-origin/testdata/internal/infrastructure/persistence/database/agent/conversation_delegation_store.go": "3dde2a53d8f89a1e720a29396d15a0629a781ce4fb46dde634dfbefcbee2ed93",
+    "source-sha256.json": "89c5d30e2273729e29d525f3f3d015a6f6f139bcccbb4bdd76502bbb4c05d6d8",
+    "store-targeted.log": "09096a358092a0b280e6c8d70a86d8ff6b65b822d7568532bbe8bfdad9da6152"
+  }
+}

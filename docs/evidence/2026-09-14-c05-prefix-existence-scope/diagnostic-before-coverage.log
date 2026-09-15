@@ -1,0 +1,71 @@
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/longer_prefix
+    conversation_business_shared_prefix_scope_test.go:54: coverage=false want=true
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/shorter_prefix_cannot_cover
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/different_prefix
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/case_comparison_stays_conservative
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/literal_wildcard
+    conversation_business_shared_prefix_scope_test.go:54: coverage=false want=true
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/wildcard_cannot_grant_unrelated_prefix
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/literal_escape
+    conversation_business_shared_prefix_scope_test.go:54: coverage=false want=true
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nul_prefix_unsupported
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/invalid_unicode_unsupported
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/missing_bound_claim
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nonnull_contains_prefix
+    conversation_business_shared_prefix_scope_test.go:54: coverage=false want=true
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/null_cannot_contain_prefix
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/negated_null_is_nonnull
+    conversation_business_shared_prefix_scope_test.go:54: coverage=false want=true
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nonnull_contains_inequality
+    conversation_business_shared_prefix_scope_test.go:54: coverage=false want=true
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nonnull_contains_exclusion
+    conversation_business_shared_prefix_scope_test.go:54: coverage=false want=true
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/other_fact_does_not_imply_nonnull
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/negated_prefixes_reverse
+    conversation_business_shared_prefix_scope_test.go:54: coverage=false want=true
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/negated_reverse_denied
+=== RUN   TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/unsupported_ordered_policy
+--- FAIL: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals (0.01s)
+    --- FAIL: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/longer_prefix (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/shorter_prefix_cannot_cover (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/different_prefix (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/case_comparison_stays_conservative (0.00s)
+    --- FAIL: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/literal_wildcard (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/wildcard_cannot_grant_unrelated_prefix (0.00s)
+    --- FAIL: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/literal_escape (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nul_prefix_unsupported (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/invalid_unicode_unsupported (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/missing_bound_claim (0.00s)
+    --- FAIL: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nonnull_contains_prefix (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/null_cannot_contain_prefix (0.00s)
+    --- FAIL: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/negated_null_is_nonnull (0.00s)
+    --- FAIL: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nonnull_contains_inequality (0.00s)
+    --- FAIL: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/nonnull_contains_exclusion (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/other_fact_does_not_imply_nonnull (0.00s)
+    --- FAIL: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/negated_prefixes_reverse (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/negated_reverse_denied (0.00s)
+    --- PASS: TestSharedBusinessPrefixAndExistenceScopeUsesBoundLiterals/unsupported_ordered_policy (0.00s)
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/prefix
+    conversation_business_shared_prefix_scope_test.go:143: broader reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/literal_wildcard
+    conversation_business_shared_prefix_scope_test.go:143: broader reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/literal_escape
+    conversation_business_shared_prefix_scope_test.go:143: broader reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/nonnull_prefix
+    conversation_business_shared_prefix_scope_test.go:143: broader reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/nonnull_exclusion
+    conversation_business_shared_prefix_scope_test.go:143: broader reader denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/nonnull_inequality
+    conversation_business_shared_prefix_scope_test.go:143: broader reader denied original page runtime.conversation.business_forbidden
+--- FAIL: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages (0.05s)
+    --- FAIL: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/prefix (0.01s)
+    --- FAIL: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/literal_wildcard (0.01s)
+    --- FAIL: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/literal_escape (0.01s)
+    --- FAIL: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/nonnull_prefix (0.01s)
+    --- FAIL: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/nonnull_exclusion (0.01s)
+    --- FAIL: TestSharedBusinessPrefixAndNonnullScopesAuthorizeOriginalORMPages/nonnull_inequality (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/application/agenthost	0.882s
+FAIL

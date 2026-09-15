@@ -1,0 +1,6 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+    conversation_source_release_test.go:161: fixture did not exercise original result pagination {{conv_0764e8019fb046bda3186902bf7d5aab crun_b7ddc000f9f4133671492cec60ef3866 0 peer-time b81dac3efe0f4264b3a3e345bc213b4bedf6767f41f2215233d7d82ee3de22f2} {"status":"completed","content":{"date":"2026-09-14","now":"2026-09-14T00:16:33.483198Z","timezone":"UTC","timezone_source":"host_default","weekday":"Monday"}} 0 159 159 true}
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (6.46s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	7.984s
+FAIL

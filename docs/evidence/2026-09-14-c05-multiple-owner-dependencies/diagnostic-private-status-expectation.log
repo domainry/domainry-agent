@@ -1,0 +1,9 @@
+=== RUN   TestMultipleOwnerProfessionalDependenciesReadOriginalsAndDeliverThroughRealRuntime
+    conversation_multiple_owner_dependencies_test.go:268: Admit multiple-owner-root from conv_5b8660a720ab77cfa93b51b306979e89 to agent_780fddfe761cc21b76fc1857069f8fc1
+    conversation_multiple_owner_dependencies_test.go:291: Admit multiple-owner-upstream from conv_c1dc0fd48133af072c508c32defbeb38 to agent_73904f1fc479d13d7af60271c5ae6526
+    conversation_multiple_owner_dependencies_test.go:301: Admit multiple-owner-final from conv_be364d6387bcd477bca4f048c6022c4f to agent_fd8c98adac95c9d1e72b9706e91754db
+    conversation_multiple_owner_dependencies_test.go:306: browser POST /agent/conversations/conv_5b8660a720ab77cfa93b51b306979e89/runs/crun_09ba28020fb34d9a312d494f75743f7f/result status=404 want=403 body={"code":"agent.conversation.not_found"}
+--- FAIL: TestMultipleOwnerProfessionalDependenciesReadOriginalsAndDeliverThroughRealRuntime (21.14s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	21.801s
+FAIL

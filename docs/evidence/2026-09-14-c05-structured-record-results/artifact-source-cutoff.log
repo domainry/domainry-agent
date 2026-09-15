@@ -1,0 +1,4 @@
+=== RUN   TestArtifactSourcesStopAtTheGeneratingStep
+--- PASS: TestArtifactSourcesStopAtTheGeneratingStep (0.32s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	1.874s

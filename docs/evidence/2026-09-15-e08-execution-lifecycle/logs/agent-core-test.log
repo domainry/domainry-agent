@@ -1,0 +1,69 @@
+package_count=34
+github.com/domainry/domainry-agent/capability
+github.com/domainry/domainry-agent/cmd/domainry-agent
+github.com/domainry/domainry-agent/cmd/domainry-agent-playground
+github.com/domainry/domainry-agent/cmd/domainry-agent-web
+github.com/domainry/domainry-agent/definition
+github.com/domainry/domainry-agent/internal/application
+github.com/domainry/domainry-agent/internal/architecture
+github.com/domainry/domainry-agent/internal/assembly/conversation
+github.com/domainry/domainry-agent/internal/assembly/product
+github.com/domainry/domainry-agent/internal/assembly/saas
+github.com/domainry/domainry-agent/internal/capability
+github.com/domainry/domainry-agent/internal/composition
+github.com/domainry/domainry-agent/internal/dataaccess
+github.com/domainry/domainry-agent/internal/execution
+github.com/domainry/domainry-agent/internal/infrastructure/persistence
+github.com/domainry/domainry-agent/internal/infrastructure/persistence/base
+github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent
+github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql
+github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres
+github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite
+github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost
+github.com/domainry/domainry-agent/internal/infrastructure/provider
+github.com/domainry/domainry-agent/internal/transport/http/module
+github.com/domainry/domainry-agent/internal/transport/http/playground
+github.com/domainry/domainry-agent/internal/transport/http/product
+github.com/domainry/domainry-agent/internal/transport/http/web
+github.com/domainry/domainry-agent/module
+github.com/domainry/domainry-agent/remote
+github.com/domainry/domainry-agent/server
+github.com/domainry/domainry-agent/testsupport
+github.com/domainry/domainry-agent/testsupport/databasetest
+github.com/domainry/domainry-agent/testsupport/producttest
+github.com/domainry/domainry-agent/web
+github.com/domainry/domainry-agent/webhost
+?   	github.com/domainry/domainry-agent/capability	[no test files]
+ok  	github.com/domainry/domainry-agent/cmd/domainry-agent	1.997s
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-playground	[no test files]
+?   	github.com/domainry/domainry-agent/cmd/domainry-agent-web	[no test files]
+ok  	github.com/domainry/domainry-agent/definition	0.255s
+ok  	github.com/domainry/domainry-agent/internal/application	0.783s
+ok  	github.com/domainry/domainry-agent/internal/architecture	0.143s
+ok  	github.com/domainry/domainry-agent/internal/assembly/conversation	0.380s
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	14.500s
+?   	github.com/domainry/domainry-agent/internal/assembly/saas	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/capability	1.703s
+?   	github.com/domainry/domainry-agent/internal/composition	[no test files]
+?   	github.com/domainry/domainry-agent/internal/dataaccess	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/execution	0.918s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence	1.716s
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/base	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	5.069s
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres	[no test files]
+?   	github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite	[no test files]
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost	1.390s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	1.085s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	1.286s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/playground	1.539s
+?   	github.com/domainry/domainry-agent/internal/transport/http/product	[no test files]
+?   	github.com/domainry/domainry-agent/internal/transport/http/web	[no test files]
+ok  	github.com/domainry/domainry-agent/module	1.593s
+ok  	github.com/domainry/domainry-agent/remote	4.337s
+ok  	github.com/domainry/domainry-agent/server	1.570s
+?   	github.com/domainry/domainry-agent/testsupport	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/databasetest	[no test files]
+?   	github.com/domainry/domainry-agent/testsupport/producttest	[no test files]
+?   	github.com/domainry/domainry-agent/web	[no test files]
+?   	github.com/domainry/domainry-agent/webhost	[no test files]

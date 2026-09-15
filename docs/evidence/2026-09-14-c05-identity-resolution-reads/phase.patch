@@ -1,0 +1,594 @@
+--- before/internal/domain/identity/service/identity_principal.go
++++ after/internal/domain/identity/service/identity_principal.go
+@@ -14,6 +14,10 @@
+ )
+ 
+ func (s *IdentityDomainService) BuildPrincipal(ctx context.Context, userID string) (identitymodel.Principal, error) {
++	return s.buildPrincipal(ctx, userID, nil)
++}
++
++func (s *IdentityDomainService) buildPrincipal(ctx context.Context, userID string, facts *IdentityPrincipalContext) (identitymodel.Principal, error) {
+ 	scoped, scopeErr := s.withWorkspacePermissions(ctx)
+ 	if scopeErr != nil {
+ 		return identitymodel.Principal{}, scopeErr
+@@ -24,12 +28,15 @@
+ 	if userID == "" {
+ 		return identitymodel.Principal{Known: false}, nil
+ 	}
+-	user, ok, err := s.userByID(ctx, userID)
++	user, ok, err := s.repo.GetIdentityUser(ctx, s.workspace, userID)
+ 	if err != nil {
+ 		return identitymodel.Principal{}, err
+ 	}
+ 	if !ok || user.Status != identitymodel.IdentityStatusActive {
+ 		return identitymodel.Principal{UserID: userID, Known: false}, nil
++	}
++	if facts != nil {
++		facts.User = user
+ 	}
+ 	now := time.Now()
+ 	organizationUnitID, organizationPath, err := s.resolveUserOrganization(ctx, user)
+@@ -65,6 +72,7 @@
+ 		activeRoleIDs[assignment.RoleID] = struct{}{}
+ 		activeAssignments = append(activeAssignments, assignment)
+ 	}
++	s.capturePrincipalContext(facts, user.ID, activeAssignments, roles)
+ 	role := identitymodel.RoleSchema{
+ 		Key:  "identity_effective",
+ 		Name: "Identity Effective",
+@@ -72,6 +80,9 @@
+ 	activeIdentityRoles := []identitymodel.IdentityRole{}
+ 	activePublishedRoles := []identitymodel.RoleSchema{}
+ 	for _, identityRole := range roles {
++		if identityRole.Status != "" && identityRole.Status != identitymodel.IdentityStatusActive {
++			continue
++		}
+ 		if _, ok := activeRoleIDs[identityRole.ID]; !ok {
+ 			continue
+ 		}
+@@ -117,6 +128,10 @@
+ }
+ 
+ func (s *IdentityDomainService) BuildPrincipalForRole(ctx context.Context, userID string, roleKey string) (identitymodel.Principal, error) {
++	return s.buildPrincipalForRole(ctx, userID, roleKey, nil)
++}
++
++func (s *IdentityDomainService) buildPrincipalForRole(ctx context.Context, userID string, roleKey string, facts *IdentityPrincipalContext) (identitymodel.Principal, error) {
+ 	scoped, scopeErr := s.withWorkspacePermissions(ctx)
+ 	if scopeErr != nil {
+ 		return identitymodel.Principal{}, scopeErr
+@@ -128,12 +143,15 @@
+ 	if userID == "" {
+ 		return identitymodel.Principal{Known: false}, nil
+ 	}
+-	user, ok, err := s.userByID(ctx, userID)
++	user, ok, err := s.repo.GetIdentityUser(ctx, s.workspace, userID)
+ 	if err != nil {
+ 		return identitymodel.Principal{}, err
+ 	}
+ 	if !ok || user.Status != identitymodel.IdentityStatusActive || roleKey == "" {
+ 		return identitymodel.Principal{UserID: userID, Known: false}, nil
++	}
++	if facts != nil {
++		facts.User = user
+ 	}
+ 	now := time.Now()
+ 	organizationUnitID, organizationPath, err := s.resolveUserOrganization(ctx, user)
+@@ -170,17 +188,24 @@
+ 	}
+ 	assigned := false
+ 	var activeAssignment identitymodel.IdentityUserRoleAssignment
++	var activeAssignments []identitymodel.IdentityUserRoleAssignment
+ 	for _, assignment := range userAssignments {
+ 		active, activeErr := s.identityRoleAssignmentActive(ctx, assignment, now)
+ 		if activeErr != nil {
+ 			return identitymodel.Principal{}, activeErr
+ 		}
+-		if assignment.RoleID == identityRole.ID && active {
++		if facts != nil && active {
++			activeAssignments = append(activeAssignments, assignment)
++		}
++		if !assigned && assignment.RoleID == identityRole.ID && active {
+ 			assigned = true
+ 			activeAssignment = assignment
+-			break
+-		}
+-	}
++			if facts == nil {
++				break
++			}
++		}
++	}
++	s.capturePrincipalContext(facts, user.ID, activeAssignments, roles)
+ 	if !assigned {
+ 		return identitymodel.Principal{UserID: user.ID, Known: false}, nil
+ 	}
+--- before/internal/domain/identity/service/identity_authorization.go
++++ after/internal/domain/identity/service/identity_authorization.go
+@@ -32,13 +32,17 @@
+ 	if err != nil {
+ 		return nil, err
+ 	}
++	roles, err := s.repo.ListIdentityRoles(ctx, s.workspace)
++	if err != nil {
++		return nil, err
++	}
++	return s.effectiveRolesFromAssignments(assignments, roles), nil
++}
++
++func (s *IdentityDomainService) effectiveRolesFromAssignments(assignments []identitymodel.IdentityUserRoleAssignment, roles []identitymodel.IdentityRole) []identitymodel.IdentityRole {
+ 	activeRoleIDs := make(map[string]struct{}, len(assignments))
+ 	for _, assignment := range assignments {
+ 		activeRoleIDs[assignment.RoleID] = struct{}{}
+-	}
+-	roles, err := s.repo.ListIdentityRoles(ctx, s.workspace)
+-	if err != nil {
+-		return nil, err
+ 	}
+ 	effective := make([]identitymodel.IdentityRole, 0, len(activeRoleIDs))
+ 	for _, role := range roles {
+@@ -56,7 +60,7 @@
+ 	sort.Slice(effective, func(left, right int) bool {
+ 		return effective[left].Key+effective[left].ID < effective[right].Key+effective[right].ID
+ 	})
+-	return effective, nil
++	return effective
+ }
+ 
+ func (s *IdentityDomainService) ResolvePrincipalForRole(ctx context.Context, userID, roleKey string) (identitymodel.Principal, error) {
+--- before/internal/application/identity/identity_effective_access_application_service.go
++++ after/internal/application/identity/identity_effective_access_application_service.go
+@@ -189,6 +189,10 @@
+ 	if err != nil {
+ 		return identitymodel.IdentityEffectiveAccessSnapshot{}, err
+ 	}
++	return s.snapshotFromPrincipalContext(workspaceContext, scoped, principal, assignments, roles, roleKey)
++}
++
++func (s *IdentityEffectiveAccessApplicationService) snapshotFromPrincipalContext(workspaceContext context.Context, scoped *IdentityApplicationService, principal identitymodel.Principal, assignments []identitymodel.IdentityUserRoleAssignment, roles []identitymodel.IdentityRole, roleKey string) (identitymodel.IdentityEffectiveAccessSnapshot, error) {
+ 	if roleKey != "" {
+ 		selected := make(map[string]bool)
+ 		for _, role := range roles {
+@@ -196,7 +200,7 @@
+ 				selected[role.ID] = true
+ 			}
+ 		}
+-		filtered := assignments[:0]
++		filtered := make([]identitymodel.IdentityUserRoleAssignment, 0, len(assignments))
+ 		for _, assignment := range assignments {
+ 			if selected[assignment.RoleID] {
+ 				filtered = append(filtered, assignment)
+--- before/internal/adapter/identitysdk/principal_resolver.go
++++ after/internal/adapter/identitysdk/principal_resolver.go
+@@ -29,34 +29,13 @@
+ 	if request.Workload != nil {
+ 		return adapter.resolveWorkflowWorkload(identityscope.WithScope(workspaceContext, scope), request, identity)
+ 	}
+-	var principal identitymodel.Principal
+-	if roleKey := strings.TrimSpace(request.RoleKey); roleKey != "" {
+-		principal, err = identity.ResolvePrincipalForRole(workspaceContext, string(request.SubjectID), roleKey)
+-	} else {
+-		principal, err = identity.ResolvePrincipal(workspaceContext, string(request.SubjectID))
+-	}
++	resolved, err := adapter.binding.access.ResolvePrincipalAccess(workspaceContext, identity.WorkspaceID(), string(request.SubjectID), request.RoleKey)
+ 	if err != nil {
+ 		return identitysdk.PrincipalResolution{}, sdkBoundaryError(err)
+ 	}
+-	if !principal.Known {
+-		return identitysdk.PrincipalResolution{}, &identitysdk.Error{StatusCode: http.StatusForbidden, Code: "identity.principal_unavailable"}
+-	}
+-	user, found, err := identity.FindUser(workspaceContext, principal.UserID)
+-	if err != nil {
+-		return identitysdk.PrincipalResolution{}, sdkBoundaryError(err)
+-	}
+-	if !found {
+-		return identitysdk.PrincipalResolution{}, &identitysdk.Error{Code: "identity.subject_not_found"}
+-	}
+-	roles, err := identity.ResolveEffectiveRoles(workspaceContext, principal.UserID)
+-	if err != nil {
+-		return identitysdk.PrincipalResolution{}, sdkBoundaryError(err)
+-	}
++	principal, user, roles := resolved.Principal, resolved.User, resolved.Roles
+ 	roleKey := principal.Role.Key
+-	var snapshot identitymodel.IdentityEffectiveAccessSnapshot
+-	if request.RoleKey != "" {
+-		snapshot, err = adapter.binding.access.SnapshotForRole(workspaceContext, principal.UserID, request.RoleKey, principal)
+-	} else {
++	if request.RoleKey == "" {
+ 		roleKey = identitypolicy.SelectDefaultRole(roles)
+ 		if request.SessionRoleKey != "" {
+ 			assigned := false
+@@ -68,15 +47,8 @@
+ 			}
+ 			roleKey = request.SessionRoleKey
+ 		}
+-		snapshot, err = adapter.binding.access.Snapshot(workspaceContext, principal.UserID, principal)
+ 	}
+-	if err != nil {
+-		return identitysdk.PrincipalResolution{}, sdkBoundaryError(err)
+-	}
+-	if !snapshot.Known || snapshot.AuthorizationRevision != principal.AuthorizationRevision {
+-		return identitysdk.PrincipalResolution{}, &identitysdk.Error{StatusCode: http.StatusConflict, Code: "identity.authorization_revision_stale"}
+-	}
+-	bundle := sdkAccessBundle(snapshot, principal, adapter.binding.clock.Now().UTC())
++	bundle := sdkAccessBundle(resolved.Snapshot, principal, adapter.binding.clock.Now().UTC())
+ 	if err := bundle.Validate(adapter.binding.clock.Now().UTC()); err != nil {
+ 		return identitysdk.PrincipalResolution{}, err
+ 	}
+--- /dev/null
++++ after/internal/domain/identity/service/identity_principal_context.go
+@@ -0,0 +1,46 @@
++package service
++
++import (
++	"context"
++	"strings"
++
++	identitymodel "github.com/domainry/domainry-identity/internal/domain/identity/model"
++)
++
++// IdentityPrincipalContext is produced by one owner-controlled resolution.
++// Its projections reuse those exact reads; it is never a cross-request cache
++// or a substitute for revalidating current authorization before returning it.
++type IdentityPrincipalContext struct {
++	Principal       identitymodel.Principal
++	User            identitymodel.IdentityUser
++	EffectiveRoles  []identitymodel.IdentityRole
++	Assignments     []identitymodel.IdentityUserRoleAssignment
++	ProjectionRoles []identitymodel.IdentityRole
++}
++
++func (s *IdentityDomainService) ResolvePrincipalContext(ctx context.Context, userID, roleKey string) (IdentityPrincipalContext, error) {
++	if err := ctx.Err(); err != nil {
++		return IdentityPrincipalContext{}, err
++	}
++	var facts IdentityPrincipalContext
++	var err error
++	if roleKey = strings.TrimSpace(roleKey); roleKey != "" {
++		facts.Principal, err = s.buildPrincipalForRole(ctx, userID, roleKey, &facts)
++	} else {
++		facts.Principal, err = s.buildPrincipal(ctx, userID, &facts)
++	}
++	return facts, err
++}
++
++func (s *IdentityDomainService) capturePrincipalContext(facts *IdentityPrincipalContext, userID string, assignments []identitymodel.IdentityUserRoleAssignment, roles []identitymodel.IdentityRole) {
++	if facts == nil {
++		return
++	}
++	for _, assignment := range assignments {
++		if strings.TrimSpace(assignment.UserID) == strings.TrimSpace(userID) {
++			facts.Assignments = append(facts.Assignments, assignment)
++		}
++	}
++	facts.ProjectionRoles = append([]identitymodel.IdentityRole(nil), roles...)
++	facts.EffectiveRoles = s.effectiveRolesFromAssignments(facts.Assignments, roles)
++}
+--- /dev/null
++++ after/internal/application/identity/identity_principal_access_resolution.go
+@@ -0,0 +1,60 @@
++package identity
++
++import (
++	"context"
++	"strings"
++
++	"github.com/domainry/domainry-foundation/apperror"
++	"github.com/domainry/domainry-foundation/requestcontext"
++	identitymodel "github.com/domainry/domainry-identity/internal/domain/identity/model"
++)
++
++type IdentityPrincipalAccessResolution struct {
++	Principal identitymodel.Principal
++	User      identitymodel.IdentityUser
++	Roles     []identitymodel.IdentityRole
++	Snapshot  identitymodel.IdentityEffectiveAccessSnapshot
++}
++
++// ResolvePrincipalAccess is the internal principal-resolution use case, not
++// the user-facing effective-access endpoint. It accepts only subject selection;
++// callers cannot supply a principal or authorization facts to skip owner reads.
++func (s *IdentityEffectiveAccessApplicationService) ResolvePrincipalAccess(ctx context.Context, workspaceID, userID, roleKey string) (IdentityPrincipalAccessResolution, error) {
++	var empty IdentityPrincipalAccessResolution
++	if s == nil || s.dependencies.Identity == nil || s.dependencies.Objects == nil {
++		return empty, internalError("resolve principal access", nil)
++	}
++	scoped, err := s.dependencies.Identity.ForWorkspace(workspaceID)
++	if err != nil {
++		return empty, err
++	}
++	ctx = requestcontext.WithWorkspaceID(ctx, workspaceID)
++	roleKey = strings.TrimSpace(roleKey)
++	facts, err := scoped.ResolvePrincipalContext(ctx, userID, roleKey)
++	if err != nil {
++		return empty, err
++	}
++	if !facts.Principal.Known {
++		return empty, &apperror.AppError{Kind: apperror.KindForbidden, Code: "identity.principal_unavailable"}
++	}
++	snapshot, err := s.snapshotFromPrincipalContext(ctx, scoped, facts.Principal, facts.Assignments, facts.ProjectionRoles, roleKey)
++	if err != nil {
++		return empty, err
++	}
++	// Keep the existing fresh revision check, now after projection IO. Do not
++	// reuse the first read for this check: revocation, expiry, eligibility and
++	// permission changes during resolution must still invalidate the result.
++	var current identitymodel.Principal
++	if roleKey != "" {
++		current, err = scoped.ResolvePrincipalForRole(ctx, facts.Principal.UserID, roleKey)
++	} else {
++		current, err = scoped.ResolvePrincipal(ctx, facts.Principal.UserID)
++	}
++	if err != nil {
++		return empty, err
++	}
++	if !current.Known || current.AuthorizationRevision != facts.Principal.AuthorizationRevision {
++		return empty, &apperror.AppError{Kind: apperror.KindConflict, Code: "identity.authorization_revision_stale"}
++	}
++	return IdentityPrincipalAccessResolution{Principal: facts.Principal, User: facts.User, Roles: facts.EffectiveRoles, Snapshot: snapshot}, nil
++}
+--- /dev/null
++++ after/internal/adapter/identitysdk/principal_resolution_reads_test.go
+@@ -0,0 +1,262 @@
++package identitysdkadapter
++
++import (
++	"context"
++	"errors"
++	"net/http"
++	"path/filepath"
++	"reflect"
++	"testing"
++	"time"
++
++	identitysdk "github.com/domainry/domainry-identity-sdk"
++	identityscope "github.com/domainry/domainry-identity-sdk/application"
++	authapplication "github.com/domainry/domainry-identity/internal/application/auth"
++	identityapplication "github.com/domainry/domainry-identity/internal/application/identity"
++	definitionmodel "github.com/domainry/domainry-identity/internal/domain/definition/model"
++	identitymodel "github.com/domainry/domainry-identity/internal/domain/identity/model"
++	database "github.com/domainry/domainry-identity/internal/infrastructure/persistence/database"
++	authpersistence "github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/auth"
++	identitypersistence "github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity"
++	"github.com/domainry/domainry-identity/internal/platform/config"
++)
++
++// Count real repository IO, and inject changes during projection IO rather
++// than replacing either the principal resolver or its authorization result.
++type resolutionReadRepository struct {
++	*identitypersistence.SQLIdentityStore
++	users, userLists, roles, assignments int
++	fail                                 string
++	err                                  error
++	duringMenus                          func(context.Context) error
++}
++
++func (r *resolutionReadRepository) ListIdentityUsers(ctx context.Context, workspace string) ([]identitymodel.IdentityUser, error) {
++	r.userLists++
++	return r.SQLIdentityStore.ListIdentityUsers(ctx, workspace)
++}
++
++type resolutionEligibility struct{ active bool }
++
++func (r *resolutionEligibility) IdentityRoleBindingActive(context.Context, string, string, string, string) (bool, error) {
++	return r.active, nil
++}
++
++func (r *resolutionReadRepository) GetIdentityUser(ctx context.Context, workspace, id string) (identitymodel.IdentityUser, bool, error) {
++	r.users++
++	if r.fail == "users" && r.users == 2 {
++		return identitymodel.IdentityUser{}, false, r.err
++	}
++	return r.SQLIdentityStore.GetIdentityUser(ctx, workspace, id)
++}
++
++func (r *resolutionReadRepository) ListIdentityRoles(ctx context.Context, workspace string) ([]identitymodel.IdentityRole, error) {
++	r.roles++
++	if r.fail == "roles" && r.roles == 2 {
++		return nil, r.err
++	}
++	return r.SQLIdentityStore.ListIdentityRoles(ctx, workspace)
++}
++
++func (r *resolutionReadRepository) ListIdentityUserRoleAssignments(ctx context.Context, workspace, id string) ([]identitymodel.IdentityUserRoleAssignment, error) {
++	r.assignments++
++	if r.fail == "assignments" && r.assignments == 2 {
++		return nil, r.err
++	}
++	return r.SQLIdentityStore.ListIdentityUserRoleAssignments(ctx, workspace, id)
++}
++
++func (r *resolutionReadRepository) ListIdentityMenus(ctx context.Context, workspace string) ([]identitymodel.IdentityMenu, error) {
++	if r.duringMenus != nil {
++		if err := r.duringMenus(ctx); err != nil {
++			return nil, err
++		}
++	}
++	return r.SQLIdentityStore.ListIdentityMenus(ctx, workspace)
++}
++
++type principalReadFixture struct {
++	repo     *resolutionReadRepository
++	identity *identityapplication.IdentityApplicationService
++	resolver sdkPrincipalResolver
++	ctx      context.Context
++	grants   []identitymodel.IdentityPermissionDefinition
++}
++
++func newPrincipalReadFixture(t *testing.T) principalReadFixture {
++	t.Helper()
++	store, err := database.OpenContext(t.Context(), config.Config{DatabaseDriver: "sqlite", DBPath: filepath.Join(t.TempDir(), "principal.db")})
++	if err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(func() { _ = store.Close() })
++	if err := store.EnsureSchema(t.Context()); err != nil {
++		t.Fatal(err)
++	}
++	sqlStore, err := identitypersistence.NewSQLIdentityStore(t.Context(), store.DB(), store.PersistenceEngine())
++	if err != nil {
++		t.Fatal(err)
++	}
++	if err := sqlStore.UpsertIdentityUser(t.Context(), "workspace-primary", identitymodel.IdentityUser{ID: "subject", Name: "Subject", Status: identitymodel.IdentityStatusActive}); err != nil {
++		t.Fatal(err)
++	}
++	for _, key := range []string{"reader", "writer"} {
++		if err := sqlStore.UpsertIdentityRole(t.Context(), "workspace-primary", identitymodel.IdentityRole{ID: key + "-id", Key: key, Label: key, Status: identitymodel.IdentityStatusActive}); err != nil {
++			t.Fatal(err)
++		}
++		if err := sqlStore.AssignIdentityUserRole(t.Context(), "workspace-primary", identitymodel.IdentityUserRoleAssignment{UserID: "subject", RoleID: key + "-id", Source: "manual", Status: "active"}); err != nil {
++			t.Fatal(err)
++		}
++	}
++	repo := &resolutionReadRepository{SQLIdentityStore: sqlStore, err: errors.New("final authorization read unavailable")}
++	grants := []identitymodel.IdentityPermissionDefinition{
++		{Key: "order.read", Resource: "order", ObjectKey: "order", Action: "read", DefinitionStatus: identitymodel.IdentityPermissionDefinitionActive, Enabled: true},
++		{Key: "order.write", Resource: "order", ObjectKey: "order", Action: "update", DefinitionStatus: identitymodel.IdentityPermissionDefinitionActive, Enabled: true},
++	}
++	identity := identityapplication.NewIdentityApplicationService(repo, grants)
++	identity.ReplaceRoleDefinitions([]identitymodel.RoleSchema{
++		{Key: "reader", Permissions: []identitymodel.RolePermission{{PermissionKey: "order.read", DataScope: identitymodel.IdentityDataScopeAll}}},
++		{Key: "writer", Permissions: []identitymodel.RolePermission{{PermissionKey: "order.write", DataScope: identitymodel.IdentityDataScopeOwner}}},
++	})
++	applications, err := authapplication.NewAuthApplicationRegistrationService(authpersistence.NewAuthStore(sqlStore), "workspace-primary")
++	if err != nil {
++		t.Fatal(err)
++	}
++	if _, err := applications.Register(t.Context(), "principal-test", nil); err != nil {
++		t.Fatal(err)
++	}
++	access := identityapplication.NewIdentityEffectiveAccessApplicationService(identityapplication.IdentityEffectiveAccessDependencies{
++		Identity: identity, Objects: func() []definitionmodel.ObjectSchema { return []definitionmodel.ObjectSchema{{Key: "order"}} },
++	})
++	ctx := identityscope.WithScope(t.Context(), identitysdk.ApplicationScope{WorkspaceID: "workspace-primary", ApplicationKey: "principal-test"})
++	return principalReadFixture{repo: repo, identity: identity, resolver: sdkPrincipalResolver{binding: &sdkBinding{identity: identity, access: access, applications: applications, clock: sdkSystemClock{}}}, ctx: ctx, grants: grants}
++}
++
++func TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection(t *testing.T) {
++	for _, selection := range []struct {
++		name, role, session string
++		permissions         []string
++	}{
++		{"restricted", "reader", "", []string{"order.read"}},
++		{"role-id-alias", "reader-id", "", []string{"order.read"}},
++		{"effective", "", "", []string{"order.read", "order.write"}},
++		{"session-display-keeps-union", "", "writer", []string{"order.read", "order.write"}},
++	} {
++		t.Run(selection.name, func(t *testing.T) {
++			f := newPrincipalReadFixture(t)
++			result, err := f.resolver.Resolve(f.ctx, identitysdk.PrincipalResolutionRequest{SubjectID: "subject", RoleKey: selection.role, SessionRoleKey: selection.session})
++			if err != nil || !reflect.DeepEqual(result.Principal.Permissions, selection.permissions) || len(result.Principal.Roles) != 2 || result.Principal.User.ID != "subject" {
++				t.Fatalf("resolution=%+v err=%v", result, err)
++			}
++			if selection.role != "" && result.Principal.RoleKey != "reader" || selection.session != "" && result.Principal.RoleKey != "writer" {
++				t.Fatalf("selected role=%s", result.Principal.RoleKey)
++			}
++			if result.AccessBundle.AuthorizationRevision == "" || result.Principal.AuthorizationRevision != string(result.AccessBundle.AuthorizationRevision) || result.AccessBundle.Validate(time.Now().UTC()) != nil {
++				t.Fatal("bundle revision or validation invalid")
++			}
++			if f.repo.users != 2 || f.repo.userLists != 2 || f.repo.roles != 2 || f.repo.assignments != 2 {
++				t.Fatalf("duplicate IO user=%d user-list=%d roles=%d assignments=%d; want one initial read plus one fresh authorization read", f.repo.users, f.repo.userLists, f.repo.roles, f.repo.assignments)
++			}
++			t.Logf("real ORM reads: user=%d user-list=%d roles=%d assignments=%d", f.repo.users, f.repo.userLists, f.repo.roles, f.repo.assignments)
++		})
++	}
++}
++
++func TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO(t *testing.T) {
++	for _, change := range []string{"assignment", "user", "role", "permission", "published-policy", "expiry", "eligibility", "users-error", "roles-error", "assignments-error", "cancelled"} {
++		t.Run(change, func(t *testing.T) {
++			f := newPrincipalReadFixture(t)
++			eligibility := &resolutionEligibility{active: true}
++			if change == "eligibility" {
++				f.identity.UseRoleBindingEligibility(eligibility)
++				if err := f.repo.RemoveIdentityUserRole(f.ctx, "workspace-primary", "subject", "reader-id"); err != nil {
++					t.Fatal(err)
++				}
++				if err := f.repo.AssignIdentityUserRole(f.ctx, "workspace-primary", identitymodel.IdentityUserRoleAssignment{UserID: "subject", RoleID: "reader-id", Source: "profile_binding", BindingKey: "member", ProfileID: "member-1", Status: "active"}); err != nil {
++					t.Fatal(err)
++				}
++			}
++			ctx, cancel := context.WithCancel(f.ctx)
++			defer cancel()
++			f.repo.duringMenus = func(ioCtx context.Context) error {
++				switch change {
++				case "assignment":
++					return f.repo.RemoveIdentityUserRole(ioCtx, "workspace-primary", "subject", "reader-id")
++				case "user":
++					return f.repo.SetIdentityUserStatus(ioCtx, "workspace-primary", "subject", identitymodel.IdentityStatusDisabled)
++				case "role":
++					return f.repo.UpsertIdentityRole(ioCtx, "workspace-primary", identitymodel.IdentityRole{ID: "reader-id", Key: "reader", Status: identitymodel.IdentityStatusDisabled})
++				case "permission":
++					f.grants[0].Enabled = false
++					f.identity.ReplacePermissionDefinitions(f.grants)
++				case "published-policy":
++					f.identity.ReplaceRoleDefinitions([]identitymodel.RoleSchema{{Key: "reader"}, {Key: "writer"}})
++				case "expiry":
++					expired := time.Now().Add(-time.Minute).UTC().Format(time.RFC3339)
++					return f.repo.AssignIdentityUserRole(ioCtx, "workspace-primary", identitymodel.IdentityUserRoleAssignment{UserID: "subject", RoleID: "reader-id", Source: "manual", Status: "active", ExpiresAt: &expired})
++				case "eligibility":
++					eligibility.active = false
++				case "users-error":
++					f.repo.fail = "users"
++				case "roles-error":
++					f.repo.fail = "roles"
++				case "assignments-error":
++					f.repo.fail = "assignments"
++				case "cancelled":
++					cancel()
++				}
++				return nil
++			}
++			_, err := f.resolver.Resolve(ctx, identitysdk.PrincipalResolutionRequest{SubjectID: "subject", RoleKey: "reader"})
++			if change == "cancelled" {
++				if !errors.Is(err, context.Canceled) {
++					t.Fatalf("cancelled error=%v", err)
++				}
++			} else if f.repo.fail != "" {
++				if !errors.Is(err, f.repo.err) {
++					t.Fatalf("repository error overwritten: %v", err)
++				}
++			} else {
++				var coded *identitysdk.Error
++				if !errors.As(err, &coded) || coded.StatusCode != http.StatusConflict || coded.Code != "identity.authorization_revision_stale" {
++					t.Fatalf("changed authorization was accepted: %v", err)
++				}
++			}
++		})
++	}
++}
++
++func TestSDKPrincipalResolutionExcludesDisabledRoleFromEffectiveUnion(t *testing.T) {
++	f := newPrincipalReadFixture(t)
++	if err := f.repo.UpsertIdentityRole(f.ctx, "workspace-primary", identitymodel.IdentityRole{ID: "writer-id", Key: "writer", Status: identitymodel.IdentityStatusDisabled}); err != nil {
++		t.Fatal(err)
++	}
++	result, err := f.resolver.Resolve(f.ctx, identitysdk.PrincipalResolutionRequest{SubjectID: "subject"})
++	if err != nil || !reflect.DeepEqual(result.Principal.Permissions, []string{"order.read"}) || len(result.Principal.Roles) != 1 {
++		t.Fatalf("disabled role entered effective authorization: result=%+v err=%v", result, err)
++	}
++}
++
++func TestSDKPrincipalResolutionNeverReusesFactsAcrossRequests(t *testing.T) {
++	f := newPrincipalReadFixture(t)
++	request := identitysdk.PrincipalResolutionRequest{SubjectID: "subject", RoleKey: "reader"}
++	if _, err := f.resolver.Resolve(f.ctx, request); err != nil {
++		t.Fatal(err)
++	}
++	if err := f.repo.RemoveIdentityUserRole(f.ctx, "workspace-primary", "subject", "reader-id"); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := f.resolver.Resolve(f.ctx, request); err == nil {
++		t.Fatal("revoked selected role reused from a previous request")
++	}
++	result, err := f.resolver.Resolve(f.ctx, identitysdk.PrincipalResolutionRequest{SubjectID: "subject"})
++	if err != nil || len(result.Principal.Roles) != 1 || !reflect.DeepEqual(result.Principal.Permissions, []string{"order.write"}) {
++		t.Fatalf("current remaining authorization=%+v err=%v", result, err)
++	}
++	if _, err := f.resolver.Resolve(f.ctx, identitysdk.PrincipalResolutionRequest{SubjectID: "subject", SessionRoleKey: "reader"}); err == nil {
++		t.Fatal("revoked bearer role restored")
++	}
++	if _, err := f.resolver.Resolve(f.ctx, identitysdk.PrincipalResolutionRequest{SubjectID: ""}); err == nil {
++		t.Fatal("empty subject became an administrator")
++	}
++}

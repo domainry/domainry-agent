@@ -1,0 +1,6 @@
+=== RUN   TestRecordPolicyUsesCurrentObjectsWithoutBuildingWholeSchema
+    record_schema_projection_test.go:27: record-only policy built and hashed the whole application schema 1
+--- FAIL: TestRecordPolicyUsesCurrentObjectsWithoutBuildingWholeSchema (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/composition	0.769s
+FAIL

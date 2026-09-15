@@ -1,0 +1,6 @@
+=== RUN   TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery
+    conversation_collaboration_test.go:338: unexpected issuer review state failed/execution_context_exceeded
+--- FAIL: TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery (47.50s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	48.277s
+FAIL

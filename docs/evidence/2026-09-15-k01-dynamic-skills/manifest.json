@@ -1,0 +1,81 @@
+{
+  "date": "2026-09-15",
+  "item": "K01",
+  "files": [
+    {
+      "path": "acceptance.json",
+      "bytes": 2088,
+      "sha256": "e6d5a587ff92461bf758a4ce5f2b15094b7deb0d21b4bf9b0b2eca2bb8476c82"
+    },
+    {
+      "path": "browser/dynamic-skill-before-rollback.png",
+      "bytes": 220955,
+      "sha256": "421137a7b992596723386b6232276e9c4c67b34f95c3d28eb97eaa792fec5cc3"
+    },
+    {
+      "path": "browser/dynamic-skill-mobile.png",
+      "bytes": 92486,
+      "sha256": "78bfd69a33f9b0c19bceb502e9e9111fc6d53bc9fd6568f15efb2a0b363cbd98"
+    },
+    {
+      "path": "browser/dynamic-skill-report.json",
+      "bytes": 1263,
+      "sha256": "6a4cf091f483bf45ab6e4a5ffc6c8531a62e3754b27d4cc270e14aa2a8c3d32d"
+    },
+    {
+      "path": "browser/host-dynamic-skill.json",
+      "bytes": 236,
+      "sha256": "c9e6ca45a3d3786b9cba80fe79b1955e842f063c39c64bd55c4ca15a07f80c00"
+    },
+    {
+      "path": "commands.md",
+      "bytes": 1333,
+      "sha256": "6c398d6f0aa198a2034b98382d3a13f2a931f1f5acb5fc218de2aa7b68378e10"
+    },
+    {
+      "path": "logs/agent-application-test.log",
+      "bytes": 68,
+      "sha256": "41b636831c4ec5da396471165e45f558acf47a1993e8933395b9a88ed0e03629"
+    },
+    {
+      "path": "logs/agent-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/agent-sdk-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/agent-sdk-go-test.log",
+      "bytes": 605,
+      "sha256": "25666b9ef17dcb3f6ab38c31845c84d109ca3838037f5f40b140ab6e0a76de2c"
+    },
+    {
+      "path": "logs/browser-test.log",
+      "bytes": 686,
+      "sha256": "b866d962f80efdff2ffbd50ab06142a95ef9aba20fd70ea2531e013bf2f091f5"
+    },
+    {
+      "path": "logs/frontend-build.log",
+      "bytes": 32521,
+      "sha256": "1c0a340fa2d8a89d70717b26de145ebd5f40d70a73259ee4c345573e8aca1fb2"
+    },
+    {
+      "path": "logs/frontend-test.log",
+      "bytes": 11767,
+      "sha256": "3a5da11a8653a6f2e4055b05ef31474fdbcb51e35f5209da09abda1f7f1aefaa"
+    },
+    {
+      "path": "logs/k01-packages-test.log",
+      "bytes": 307,
+      "sha256": "1ff87420cf57a63a814c7c7ae8846901082f966c5a4ddc768239818f4c5347ec"
+    },
+    {
+      "path": "source-sha256.json",
+      "bytes": 3004,
+      "sha256": "f7c4c508d630f3b89d20aff7fb3d837c6f96dcbe1b47287316a59edd63649c2e"
+    }
+  ]
+}

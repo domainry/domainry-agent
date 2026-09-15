@@ -1,0 +1,15 @@
+ok  	github.com/domainry/domainry-agent/internal/application	0.520s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	5.112s
+--- FAIL: TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery (23.11s)
+    conversation_collaboration_test.go:338: unexpected issuer review state failed/execution_context_exceeded
+--- FAIL: TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation (2.25s)
+    conversation_delivery_schedule_permissions_test.go:171: plan call failed schedule_create {<nil>  crun_6c3204d8b0df2a839ec2c6e6b95c97cc conv_fd41b756d9b3c98ce725919c23d773c5 schedule_create  failed 1  1  0 3 [] <nil> 0 <nil> <nil>  map[] crun_6c3204d8b0df2a839ec2c6e6b95c97cc {0 0 0 0 0 0} [{1 run queued 0 0        0 2026-09-14 03:05:42.155911 +0000 UTC} {2 run running 0 1        0 2026-09-14 03:05:42.156821 +0000 UTC} {3 run failed 0 1       execution_context_exceeded 0 2026-09-14 03:05:42.25397 +0000 UTC}] true 2026-09-14 03:05:42.156821 +0000 UTC 2026-09-14 03:05:42.25397 +0000 UTC 97 1 execution_context_exceeded 2026-09-14 03:05:42.155765 +0000 UTC 2026-09-14 03:05:42.253991 +0000 UTC}
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	460.446s
+ok  	github.com/domainry/domainry-agent/internal/capability	(cached)
+ok  	github.com/domainry/domainry-agent/remote	4.491s
+--- FAIL: TestModuleDescriptor (0.15s)
+    factory_test.go:115: Agent migrations=29
+FAIL
+FAIL	github.com/domainry/domainry-agent/module	1.327s
+FAIL

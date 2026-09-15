@@ -1,0 +1,5 @@
+{
+  "Replace": {
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_delegations.go": "/tmp/c05-delivery-view-trace-overlay/conversation_delegations.go"
+  }
+}

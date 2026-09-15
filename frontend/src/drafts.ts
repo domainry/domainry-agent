@@ -1,4 +1,4 @@
-export type PendingMessage = { id: string; text: string; memoryWrite?: boolean; todoWrite?: boolean; artifactWrite?: boolean; backgroundTaskWrite?: boolean };
+export type PendingMessage = { id: string; text: string; contentIdentity?: string; memoryWrite?: boolean; todoWrite?: boolean; artifactWrite?: boolean; backgroundTaskWrite?: boolean };
 export type Draft = { text: string; memoryWrite?: boolean; todoWrite?: boolean; artifactWrite?: boolean; backgroundTaskWrite?: boolean; pending?: PendingMessage };
 type StoragePort = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 
@@ -38,6 +38,7 @@ export class DraftStore {
             draft.pending = {
               id: parsed.pending.id,
               text: parsed.pending.text,
+              ...("contentIdentity" in parsed.pending && typeof parsed.pending.contentIdentity === "string" ? { contentIdentity: parsed.pending.contentIdentity } : {}),
               ...("backgroundTaskWrite" in parsed.pending && parsed.pending.backgroundTaskWrite === true ? { backgroundTaskWrite: true } : {}),
               ...("artifactWrite" in parsed.pending && parsed.pending.artifactWrite === true ? { artifactWrite: true } : {}),
               ...("todoWrite" in parsed.pending && parsed.pending.todoWrite === true ? { todoWrite: true } : {}),
@@ -80,12 +81,12 @@ export class DraftStore {
   writeBackgroundTaskScope(id: string, backgroundTaskWrite: boolean) {
     this.save(id, { ...this.read(id), backgroundTaskWrite });
   }
-  pending(id: string, text: string, memoryWrite = false, todoWrite = false, artifactWrite = false, backgroundTaskWrite = false): PendingMessage {
+  pending(id: string, text: string, memoryWrite = false, todoWrite = false, artifactWrite = false, backgroundTaskWrite = false, contentIdentity = ""): PendingMessage {
     const draft = this.read(id);
     const pending =
-      draft.pending?.text === text
+      draft.pending?.text === text && (draft.pending.contentIdentity || "") === contentIdentity
         ? draft.pending
-        : { id: crypto.randomUUID(), text, ...(backgroundTaskWrite ? { backgroundTaskWrite: true } : {}), ...(artifactWrite ? { artifactWrite: true } : {}), ...(todoWrite ? { todoWrite: true } : {}), ...(memoryWrite ? { memoryWrite: true } : {}) };
+        : { id: crypto.randomUUID(), text, ...(contentIdentity ? { contentIdentity } : {}), ...(backgroundTaskWrite ? { backgroundTaskWrite: true } : {}), ...(artifactWrite ? { artifactWrite: true } : {}), ...(todoWrite ? { todoWrite: true } : {}), ...(memoryWrite ? { memoryWrite: true } : {}) };
     this.save(id, { ...draft, pending });
     return pending;
   }

@@ -64,7 +64,7 @@ func (s *ConversationService) authorizeConversationRecord(ctx context.Context, c
 	if conversationDigest(definition.definition) != conversationDigest(source.Definition) {
 		return conversationFailure("conflict", "tool_changed")
 	}
-	auth, err := s.authorizeConversationTool(ctx, s.options.ToolHost, agentsdk.ConversationToolRequest{Authority: a, ConversationID: conversationID, RunID: runID, CorrelationID: runID, Step: source.Step, Call: source.Call, Definition: source.Definition})
+	auth, err := s.authorizeConversationTool(ctx, s.executionToolAuthorizer(source.Call.Name), agentsdk.ConversationToolRequest{Authority: a, ConversationID: conversationID, RunID: runID, CorrelationID: runID, Step: source.Step, Call: source.Call, Definition: source.Definition})
 	if err != nil {
 		return err
 	}
@@ -92,10 +92,13 @@ func (s *ConversationService) reauthorizeReadDependencies(ctx context.Context, o
 		return err
 	}
 	switch source.Call.Name {
+	case "plan_update":
+		_, err := s.sourceAudit(a, recipient).planToolRecord(ctx, owner, source)
+		return err
 	case "history_search", "history_read":
 		_, err := s.sourceAudit(a, recipient).record(ctx, agentsdk.ConversationRunReference{}, source)
 		return err
-	case "task_start", "task_get", "task_list", "task_cancel", "task_resume":
+	case "task_start", "task_get", "task_list", "task_cancel", "task_resume", "task_update":
 		// Task projections contain their own source input, execution and
 		// artifacts. A control grant alone cannot release those dependencies.
 		_, err := s.sourceAudit(a, recipient).taskToolRecord(ctx, owner, source)

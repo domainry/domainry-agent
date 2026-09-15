@@ -1,0 +1,6 @@
+# github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent [github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent.test]
+internal/infrastructure/persistence/database/agent/subject_collaboration_lifecycle_test.go:291: unknown field Name in struct literal of type agentsdk.ConversationAgentSnapshot
+internal/infrastructure/persistence/database/agent/subject_collaboration_lifecycle_test.go:291: agent.ConfigurationDigest undefined (type agentsdk.ConversationAgent has no field or method ConfigurationDigest)
+internal/infrastructure/persistence/database/agent/subject_collaboration_lifecycle_test.go:291: unknown field ConfigurationDigest in struct literal of type agentsdk.ConversationAgentSnapshot
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent [build failed]
+FAIL

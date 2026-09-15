@@ -1,0 +1,125 @@
+{
+  "phase_status": "accepted_real_managed_knowledge_agent_shared_original_reader_producer_separation_actual_race_verified_running",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_manifest": "source-sha256.json",
+  "source_files": 367,
+  "artifact_manifest": "artifact-sha256.json",
+  "artifact_files": 30,
+  "accepted_logs": [
+    "core-sdk-knowledge.log",
+    "provider-real-http.log",
+    "shared-ports-race.log",
+    "runtime-source-applications.log",
+    "runtime-policy-race.log",
+    "runtime-binding.log",
+    "real-knowledge-agent.log"
+  ],
+  "accepted_exit_codes": {
+    "core-sdk-knowledge.log": 0,
+    "provider-real-http.log": 0,
+    "shared-ports-race.log": 0,
+    "runtime-source-applications.log": 0,
+    "runtime-policy-race.log": 0,
+    "runtime-binding.log": 0,
+    "real-knowledge-agent.log": 0
+  },
+  "diagnostic_failed_logs": [
+    "diagnostic-agent-extraction-fixture.log",
+    "diagnostic-library-authorizer-startup.log",
+    "diagnostic-private-storage-directory.log",
+    "diagnostic-stale-reader-role-token.log",
+    "diagnostic-role-resolved-before-http.log",
+    "diagnostic-exact-stale-http-actor.log",
+    "diagnostic-body-change-catalog-still-readable.log",
+    "diagnostic-body-change-result-conflict.log",
+    "diagnostic-body-change-full-run-conflict.log",
+    "diagnostic-standalone-old-sdk-compile.log",
+    "diagnostic-extraction-field-body.log",
+    "diagnostic-extraction-field-text.log",
+    "diagnostic-late-reader-revocation-before-fix.log",
+    "diagnostic-published-module-set-contract-lock.log"
+  ],
+  "real_runtime_accepted_roots": [
+    "TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart"
+  ],
+  "real_runtime_root_and_race_seconds": {
+    "real-knowledge-agent.log": 54.85
+  },
+  "real_runtime_race_status": "verified_running",
+  "verified_live_race": {
+    "session_id": 80410,
+    "pid": 72654,
+    "observed_at_utc": "2026-09-14T06:41:17.764472+00:00",
+    "process": "  PID ELAPSED COMMAND\n72654   07:45 /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/go-build2173623974/b001/integrationtest.test -test.paniconexit0 -test.timeout=10m0s -test.run=^TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$ -test.count=1 -test.v=true\n",
+    "log": "/tmp/c05-knowledge-shared-real-race.log",
+    "race_accepted": false
+  },
+  "real_identity_users": [
+    "admin",
+    "professional_source"
+  ],
+  "real_database_document_storage_indexing_and_upstream_http": true,
+  "actual_agent_delegate_user_confirmation": true,
+  "actual_agent_tools": [
+    "knowledge_libraries",
+    "knowledge_search",
+    "knowledge_read",
+    "knowledge_extract"
+  ],
+  "actual_agent_automatic_delivery_and_account_acceptance": true,
+  "actual_shared_execution_steps": 7,
+  "original_result_page_bytes": 256,
+  "original_result_pages": {
+    "knowledge-catalog": 3,
+    "knowledge-search": 4,
+    "knowledge-read": 4,
+    "knowledge-extract": 7
+  },
+  "original_sha_checks_per_actual_run": 16,
+  "original_sha_checks_across_accepted_actual_runs": 16,
+  "sha_check_phases": [
+    "published",
+    "same_producer_role_execution_grants_withdrawn",
+    "restart",
+    "source_restored"
+  ],
+  "actual_original_upload_count": 1,
+  "original_producer_scope_citations_and_extraction_digest_preserved": true,
+  "actual_reader_remote_permission_ids_and_complete_original_json_checked": true,
+  "large_json_integer_preserved_in_provider_http_test": "9007199254740993",
+  "reader_withdrawal_during_final_producer_io_reproduced_and_fixed": true,
+  "managed_local_document_and_membership_checked_after_final_io": true,
+  "actual_download_and_producer_membership_withdrawal_http_status": 403,
+  "actual_changed_body_and_full_shared_execution_http_status": 409,
+  "unchanged_catalog_without_body_stays_readable_on_body_change": true,
+  "private_producer_conversation_http_status": 404,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "new_frontend_acceptance": false,
+  "new_sdk_wire_protocol": false,
+  "new_persistence_structure": false,
+  "existing_execution_or_context_budgets_raised": false,
+  "new_task_budget": {
+    "max_steps": 12,
+    "max_tool_calls": 12,
+    "max_output_bytes": 8192,
+    "timeout_seconds": 90
+  },
+  "runtime_bootstrap_complete_package_accepted": false,
+  "published_module_set_lock_kept_unchanged": true,
+  "prior_professional_write_race_accepted": false,
+  "previous_phase": "2026-09-14-c05-business-write-agent",
+  "previous_source_manifest_sha256": "5631a0b15f5893282f4e7e2d2bed22257da9c52c428848b7f2227777e27f47f9",
+  "previous_artifact_manifest_sha256": "6c5d2275291c03f5e4de341f5337fd7384743880dfa4d2413243341583a9c09d",
+  "previous_artifact_files_verified_unchanged": 16,
+  "remaining": [
+    "Other Knowledge source actual Agent chains, including unbound upstream and unmanaged libraries",
+    "more complete query expression scope coverage",
+    "remaining full C05 old roles, history, dependency, source and subject-exit scope",
+    "published Runtime module-set lock versus current local Agent capability release synchronization",
+    "prior professional write race execution timeout remains unaccepted",
+    "all later TODO items retained in order"
+  ]
+}

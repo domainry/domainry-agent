@@ -46,7 +46,7 @@ jobs:
       - name: Check Go formatting
         working-directory: domainry-agent
         run: |
-          unformatted="$(find . -name '*.go' -not -path './.git/*' -print0 | xargs -0 gofmt -l)"
+          unformatted="$(find . -path './docs/evidence' -prune -o -name '*.go' -not -path './.git/*' -print0 | xargs -0 gofmt -l)"
           if [ -n "$unformatted" ]; then
             printf 'gofmt required:\n%s\n' "$unformatted"
             exit 1

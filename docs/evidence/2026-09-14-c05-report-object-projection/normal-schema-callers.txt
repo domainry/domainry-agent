@@ -1,0 +1,12 @@
+File: c05-report-object-projection-runtime-normal.test
+Type: cpu
+Time: 2026-09-14 17:44:20 CST
+Duration: 64.90s, Total samples = 148.36s (228.60%)
+Showing nodes accounting for 148.36s, 100% of 148.36s total
+----------------------------------------------------------+-------------
+      flat  flat%   sum%        cum   cum%   calls calls% + context 	 	 
+----------------------------------------------------------+-------------
+                                             3.37s   100% |   github.com/domainry/domainry-runtime/runtime/bootstrap/composition.newRuntimeServicesState.func1
+         0     0%     0%      3.37s  2.27%                | github.com/domainry/domainry-runtime/runtime/bootstrap/composition.recordSchemaSnapshot
+                                             3.37s   100% |   github.com/domainry/domainry-runtime/runtime/domain/appschema/service.BuildSchemaSnapshot
+----------------------------------------------------------+-------------

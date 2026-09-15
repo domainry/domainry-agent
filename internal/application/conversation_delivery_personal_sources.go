@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"strings"
 	"time"
@@ -13,9 +14,12 @@ import (
 	"github.com/domainry/domainry-tools/timeutil"
 )
 
-func personalResultReadDefinition(key string) (sdk.ConversationToolDefinition, bool) {
+func personalResultReadDefinition(key string, version ...string) (sdk.ConversationToolDefinition, bool) {
 	switch key {
 	case "calculate", "time_now", "ask_user", "memory_search", "memory_save", "memory_forget", "todo_list", "todo_get", "todo_create", "todo_update", "todo_delete":
+		if len(version) > 0 {
+			return sdk.PersonalConversationToolDefinition(key, version[0])
+		}
 		for _, definition := range sdk.PersonalConversationTools() {
 			if definition.Key == key {
 				return definition, true
@@ -44,7 +48,7 @@ func decodePersonalReceipt(raw []byte, value any) error {
 // supplies a worker lease or an execution confirmation to a tool host.
 func (audit *conversationSourceAudit) deliveryPersonalToolResult(ctx context.Context, owner sdk.ConversationRunReference, record persistence.ConversationToolExecution) (bool, error) {
 	scope := releasedSourcePurpose(ctx)
-	definition, supported := personalResultReadDefinition(record.Call.Name)
+	definition, supported := personalResultReadDefinition(record.Call.Name, record.Definition.Version)
 	if scope == "" || !supported {
 		return false, nil
 	}
@@ -100,7 +104,7 @@ func (audit *conversationSourceAudit) attestDeliveryPersonalRecord(ctx context.C
 		return false, nil
 	} // Legacy stores retain the original policy.
 	if conversationDigest(definition) != conversationDigest(record.Definition) || record.Result == nil || record.State != "completed" || record.Result.Status != "completed" || record.Result.ErrorCode != "" {
-		return true, invalidPersonalReceipt()
+		return true, fmt.Errorf("personal receipt shape: %w", invalidPersonalReceipt())
 	}
 	if err := audit.authorizeReleasedSourceRead(ctx); err != nil {
 		return true, err
@@ -119,11 +123,11 @@ func (audit *conversationSourceAudit) attestDeliveryPersonalRecord(ctx context.C
 		return true, err
 	}
 	if original.State != "completed" || original.Result == nil || conversationDigest(original.Call) != conversationDigest(record.Call) || conversationDigest(original.Definition) != conversationDigest(record.Definition) || conversationDigest(original.Result) != conversationDigest(record.Result) || original.IdempotencyKey != record.IdempotencyKey {
-		return true, invalidPersonalReceipt()
+		return true, fmt.Errorf("personal receipt record: %w", invalidPersonalReceipt())
 	}
 	schema, err := compileConversationSchema(definition.InputSchema)
 	if err != nil || validateToolJSON(schema, []byte(record.Call.Arguments)) != nil {
-		return true, invalidPersonalReceipt()
+		return true, fmt.Errorf("personal receipt arguments: %w", invalidPersonalReceipt())
 	}
 	return true, ctx.Err()
 }
@@ -207,6 +211,7 @@ func (audit *conversationSourceAudit) readPersonalMemoryReceipt(ctx context.Cont
 		byID[item.ID] = item
 	}
 	for _, saved := range memories {
+		saved = normalizeConversationMemory(saved)
 		item, exists := byID[saved.ID]
 		if !exists || conversationDigest(item) != conversationDigest(saved) {
 			return conversationFailure("forbidden", "source_snapshot_changed")

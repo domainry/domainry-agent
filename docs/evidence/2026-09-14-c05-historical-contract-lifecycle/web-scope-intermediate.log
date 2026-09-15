@@ -1,0 +1,4 @@
+=== RUN   TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery
+--- PASS: TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery (105.21s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	105.733s

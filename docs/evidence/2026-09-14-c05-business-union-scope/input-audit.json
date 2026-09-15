@@ -1,0 +1,24 @@
+[
+  {
+    "name": "host-final",
+    "inputs": 6084,
+    "changed": []
+  },
+  {
+    "name": "owner-final",
+    "inputs": 9893,
+    "changed": []
+  },
+  {
+    "name": "owner-normal-launch",
+    "inputs": 9893,
+    "changed": [
+      {
+        "path": "/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_business_union_sql_truth_test.go",
+        "expected": "f4048a0c2dbf3bbe3284c4bbbb957d725fa548d2593ee1912b515f79a4824599",
+        "actual": "16d1fe0f79cfa07164717bce9751e1426e14e90aebf6683f21f9ecfeff8f4ce3",
+        "actual_root_compiler_input": false
+      }
+    ]
+  }
+]

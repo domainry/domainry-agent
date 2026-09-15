@@ -1,0 +1,161 @@
+{
+  "phase": "C05 local completed collaboration receipt audit before model reuse",
+  "artifacts": {
+    "acceptance.json": {
+      "sha256": "d33449b5518593dd96250b55d92af630b5812611a91268acb0e6b314efca55b4",
+      "bytes": 3378
+    },
+    "after/internal/application/conversation_collaboration_tools.go.txt": {
+      "sha256": "68863c08ba8fcf3371bec600dab1603b71b4e6ecb268fb479abe2c6a3ab1dc88",
+      "bytes": 11092
+    },
+    "after/internal/application/conversation_execution.go.txt": {
+      "sha256": "ad36568e6b0bee80a6de1221cf5c875a6e043a5ae14a874b19f56a5e655770bc",
+      "bytes": 27579
+    },
+    "after/internal/application/conversation_model_sources.go.txt": {
+      "sha256": "30eea26768e6373a78b9b89add2cd6c2f472a29816184c6715415a0f71163fc2",
+      "bytes": 5535
+    },
+    "after/internal/application/conversation_model_sources_test.go.txt": {
+      "sha256": "e8d54ec765d09def45d0cf75973508de81070dc0cb2ef8d548bb2028204da99c",
+      "bytes": 19154
+    },
+    "after/internal/application/conversation_sources.go.txt": {
+      "sha256": "36d40cff9be838389c478eb936aa3c5b050e1c748940b5a8c60a9a4f2c42e00f",
+      "bytes": 36852
+    },
+    "agent-final-launch-inputs.json": {
+      "sha256": "31006997d7c615e940277ff1c53790fb8fcb6a4a63b299b086458dfeff15bb85",
+      "bytes": 765155
+    },
+    "agent-stage1-launch-inputs.json": {
+      "sha256": "9ab74b3e65cc1ebf158d63b4dc4417184c498f4ea6913d221e81c76cd870c2b5",
+      "bytes": 765155
+    },
+    "agent-stage1-regression-race.log": {
+      "sha256": "7c4be14e97b413795b0d0db7a6e0450d4374279ffe967cca76b9974b2ec846b5",
+      "bytes": 27951
+    },
+    "application-final-race.log": {
+      "sha256": "fd2971806bdb05fbdf91ed9970ae33b68982a80fbc919fff99a832b6c4d6b770",
+      "bytes": 56419
+    },
+    "baseline-manifest.json": {
+      "sha256": "c51911a111699effa9c67a7ee0ae5111b6c29791a6147acdd8167b623e9850ad",
+      "bytes": 765
+    },
+    "before/internal/application/conversation_collaboration_tools.go.txt": {
+      "sha256": "6ab7d7a2bfcc169da1577f97de32a6cfe72f42360999d126d435d079fcad2fb5",
+      "bytes": 10622
+    },
+    "before/internal/application/conversation_execution.go.txt": {
+      "sha256": "fe1dcc894d3c02275494035301a4456c6e0ab5ffa6f2045e2a31953c911ea72f",
+      "bytes": 26901
+    },
+    "before/internal/application/conversation_service.go.txt": {
+      "sha256": "795f33d6fc13cf315653e8b62bac27d019a227a740774d28fc4b3c31cf10c1c4",
+      "bytes": 38338
+    },
+    "before/internal/application/conversation_sources.go.txt": {
+      "sha256": "0f35e21f8ecff33822abc825f6e0a4de7b1d4065df2dcd28ed439da7404abd72",
+      "bytes": 36716
+    },
+    "extra-delivery-policy-count-diagnostic.log": {
+      "sha256": "f6dcdab75d6f51cc1d5d230adec59d688dc309f3815b0daaa22083cdad1b0ab7",
+      "bytes": 56572
+    },
+    "initial-fixture-code-diagnostic.log": {
+      "sha256": "9db012f2266c5811df9ae561ef0d2db5297e22a6bb45d50691f56c84b5445af6",
+      "bytes": 5176
+    },
+    "original-counterexamples.log": {
+      "sha256": "c76236b6ac90f1db09238e3aa451f5d2132e72038327092913633678983cbd79",
+      "bytes": 6322
+    },
+    "phase.patch": {
+      "sha256": "e4b9e1ba641ee5159fb0cf53ffbdf43f256ea1352b3591d157245d00ad6e5b07",
+      "bytes": 30834
+    },
+    "runtime-final-launch-inputs.json": {
+      "sha256": "1376a79b95bc10f75667a9d0c86394c62262e75d88b66a37f4a2e9846324a0ca",
+      "bytes": 2049964
+    },
+    "runtime-final-normal-audit.txt": {
+      "sha256": "0f676f8df9a1a7bd8dada1c7cd091e0fde86c063ee2ae93309e025a422bd019d",
+      "bytes": 4086
+    },
+    "runtime-final-normal-top.txt": {
+      "sha256": "75e885cb001865b9dd17b6ebe538351dcfe4273ed29edb6b9a003dee3086790f",
+      "bytes": 2766
+    },
+    "runtime-final-normal.cpu": {
+      "sha256": "94abab22bed13f0a0c63f80b7baeb28581d246a24153f6c5f35b8b765342953f",
+      "bytes": 149842
+    },
+    "runtime-final-normal.log": {
+      "sha256": "26173ff0e40426572dcc7e37449e3c7c8395ce5deb042a12dfdc6f8b450080ce",
+      "bytes": 1459
+    },
+    "runtime-final-race-running-at-seal.log": {
+      "sha256": "2d1b25eb1048ad39d567dc187eee3523459e054a98109aae2a0326c595ef7015",
+      "bytes": 82
+    },
+    "runtime-stage3-launch-inputs.json": {
+      "sha256": "ad65b9cb91b98f841c7d1b4d0cf329eb2be620dd33aba98699502d4b9f2b410d",
+      "bytes": 2049964
+    },
+    "runtime-stage3-normal-top.txt": {
+      "sha256": "7811ec54dd30b18565489ffd91b87aa1dc76d9343f825250b88c06400178ea9d",
+      "bytes": 1640
+    },
+    "runtime-stage3-normal.cpu": {
+      "sha256": "2ee4d7e90f6370137445261dee37b2c8674a71c22df97a95550d6a6a716f9ca2",
+      "bytes": 176774
+    },
+    "runtime-stage3-normal.log": {
+      "sha256": "886abc36f8fee661f5af6542216c72ef7bc1757b432402f864dc63a2f370d4dc",
+      "bytes": 1459
+    },
+    "stage1-compiled/conversation_collaboration_tools.go.txt": {
+      "sha256": "2ab212ee24c6a8ff717497c79dbbcd7648a9610fde93477eae9206d5a4ae9b60",
+      "bytes": 10851
+    },
+    "stage1-compiled/conversation_model_sources.go.txt": {
+      "sha256": "0e4a3e86be647396d40a6fa4566b3220f37f054a74d116993cf5647b4e05dd5b",
+      "bytes": 3956
+    },
+    "stage1-compiled/conversation_model_sources_test.go.txt": {
+      "sha256": "2daf9a10f745a6ac54ed84395036796c2e69469e907a212ec37cb29b67800764",
+      "bytes": 15354
+    },
+    "stage1-safety-counterexamples.log": {
+      "sha256": "f8fe825f3e05067237e9897d07d1e810618a0deddb3b1e29210eaa6ad9988047",
+      "bytes": 618
+    },
+    "stage3-compiled/conversation_collaboration_tools.go.txt": {
+      "sha256": "193fce6ca6e000a8ec32422668b83fc8308aa5e809df332dec28358eceffeddb",
+      "bytes": 10883
+    },
+    "stage3-compiled/conversation_execution.go.txt": {
+      "sha256": "8d32169f39d51fd09d5b8da5d9c69c4e8412cba8f7a3a730bca1e7bf58da5622",
+      "bytes": 27498
+    },
+    "stage3-compiled/conversation_model_sources.go.txt": {
+      "sha256": "63d198a9b5ee4d89ba6a126fe970b197b2d5b52075e2d15a82d4214409eb47ca",
+      "bytes": 5170
+    },
+    "stage3-compiled/conversation_model_sources_test.go.txt": {
+      "sha256": "d82550e2541e33fa3776d93fa5ccfb0b6b479d17ec983e275ed5938c497c56ab",
+      "bytes": 17299
+    },
+    "stage3-discarded-denial-counterexamples.log": {
+      "sha256": "623ad07b8cf157e4c9313fc2f6ad622b8fa76183b8416fa0a1362340434f2bf2",
+      "bytes": 635
+    },
+    "web-stage1-live-sample.txt": {
+      "sha256": "c6fd67a1fa09798dafe02130fd924c8bf95fc5c5fc3205fe2541a20e71e0cd88",
+      "bytes": 284719
+    }
+  }
+}

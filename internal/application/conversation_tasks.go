@@ -2,9 +2,12 @@ package application
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"log/slog"
+	"slices"
+	"sort"
 	"strings"
 	"time"
 
@@ -17,7 +20,18 @@ func (s *ConversationService) prepareConversationTask(ctx context.Context, in ag
 	if in.Call.Name != "task_start" || json.Unmarshal([]byte(in.Call.Arguments), &start) != nil {
 		return agentsdk.ConversationTask{}, conversationFailure("bad_request", "task_start_invalid")
 	}
-	return s.prepareConversationTaskStart(ctx, start, in.Authority, in.ConversationID, in.RunID, nil)
+	task, err := s.prepareConversationTaskStart(ctx, start, in.Authority, in.ConversationID, in.RunID, nil)
+	if err != nil {
+		return task, err
+	}
+	task.InputContent, err = s.inheritedConversationRunImages(ctx, in.ConversationID, in.RunID, 0, in.Authority)
+	if err != nil {
+		return task, err
+	}
+	if err = s.requireConversationImageModel(ctx, task.InputContent); err != nil {
+		return task, err
+	}
+	return task, nil
 }
 
 func (s *ConversationService) prepareConversationTaskStart(ctx context.Context, start agentsdk.ConversationTaskStart, authority agentsdk.ConversationAuthority, conversationID, sourceRunID string, allowedActions map[string]struct{}) (agentsdk.ConversationTask, error) {
@@ -34,10 +48,43 @@ func (s *ConversationService) prepareConversationTaskStart(ctx context.Context, 
 		}
 		start.FollowUp.CompletionCondition = strings.TrimSpace(start.FollowUp.CompletionCondition)
 	}
+	brief := agentsdk.DefaultConversationTaskBrief(start.Goal)
+	completionMode := agentsdk.ConversationTaskCompletionModeLegacyResponse
+	if start.Brief != nil {
+		completionMode = agentsdk.ConversationTaskCompletionModeAssessed
+		brief = *start.Brief
+		brief.ExplicitFields = append([]string(nil), brief.ExplicitFields...)
+		brief.InferredFields = append([]string(nil), brief.InferredFields...)
+		sort.Strings(brief.ExplicitFields)
+		sort.Strings(brief.InferredFields)
+		if brief.Version != 1 || brief.Goal != start.Goal || !validConversationBrief(brief) || !conversationText(brief.Audience, 512, true) || !validConversationBriefProvenance(brief, true) {
+			return agentsdk.ConversationTask{}, conversationFailure("bad_request", "task_brief_invalid")
+		}
+		if brief.DueAt != nil {
+			due := brief.DueAt.UTC().Truncate(time.Millisecond)
+			brief.DueAt = &due
+		}
+	}
 	task := agentsdk.ConversationTask{
-		Goal: start.Goal, Input: start.Input, Budget: start.Budget, FollowUp: start.FollowUp,
+		Goal: start.Goal, Input: start.Input, Budget: start.Budget, FollowUp: start.FollowUp, Brief: &brief, AgreementRevision: 1,
+		Lifecycle:            cloneConversationLifecycleManifest(s.lifecycleManifest),
+		CompletionMode:       completionMode,
 		SourceConversationID: conversationID, SourceRunID: sourceRunID,
 		ToolScope: make([]agentsdk.ConversationTaskToolScope, 0, len(start.AllowedTools)),
+	}
+	fallbackKey, fallbackEffort := "default", ""
+	if agent := selectedConversationAgent(ctx); agent != nil {
+		fallbackKey, fallbackEffort = agent.ModelKey, agent.ReasoningEffort
+	}
+	if start.Model != nil || s.conversationModelByKey(fallbackKey) != nil {
+		selection, err := s.resolveConversationModelSelection(start.Model, fallbackKey, fallbackEffort)
+		if err != nil || selection.Identity.Fingerprint == "" {
+			if err != nil {
+				return agentsdk.ConversationTask{}, err
+			}
+			return agentsdk.ConversationTask{}, conversationFailure("bad_request", "agent_model_unavailable")
+		}
+		task.Model = selection
 	}
 	if !conversationText(agentsdk.ConversationTaskPrompt(task), s.options.MaxInputBytes, true) {
 		return agentsdk.ConversationTask{}, conversationFailure("bad_request", "task_input_exceeded")
@@ -73,7 +120,7 @@ func (s *ConversationService) prepareConversationTaskStart(ctx context.Context, 
 	}
 	seen := map[string]bool{}
 	for _, key := range start.AllowedTools {
-		if strings.HasPrefix(key, "task_") || seen[key] {
+		if strings.HasPrefix(key, "task_") || key == "plan_update" || key == "completion_submit" || seen[key] {
 			return agentsdk.ConversationTask{}, conversationFailure("bad_request", "task_scope_invalid")
 		}
 		seen[key] = true
@@ -148,12 +195,32 @@ func (s *ConversationService) StartScheduledConversationTask(ctx context.Context
 	if err := s.authorizeConversationExecution(ctx, in.ConversationID, "", "schedule", in.Authority); err != nil {
 		return agentsdk.ScheduledConversationTaskReceipt{}, err
 	}
+	conversation, err := s.repo.Get(ctx, in.ConversationID, in.Authority)
+	if err != nil {
+		return agentsdk.ScheduledConversationTaskReceipt{}, err
+	}
+	var executionAgent *agentsdk.ConversationAgentSnapshot
+	if agentID := s.conversationExecutionAgentID(conversation); agentID != "" {
+		executionAgent, err = s.freezeConversationAgent(ctx, agentID, in.Authority)
+		if err != nil {
+			return agentsdk.ScheduledConversationTaskReceipt{}, err
+		}
+		ctx, err = s.selectConversationAgent(ctx, executionAgent, in.Authority)
+		if err != nil {
+			return agentsdk.ScheduledConversationTaskReceipt{}, err
+		}
+	}
 	task, err := s.prepareConversationTaskStart(ctx, in.Input, in.Authority, in.ConversationID, in.SourceRunID, actions)
 	if err != nil {
 		return agentsdk.ScheduledConversationTaskReceipt{}, err
 	}
+	task.Agent = executionAgent
 	in.ScheduledFor = in.ScheduledFor.UTC().Truncate(time.Millisecond)
-	in.Input = agentsdk.ConversationTaskStart{Goal: task.Goal, Input: task.Input, AllowedTools: conversationTaskAllowedTools(task), Budget: task.Budget, FollowUp: task.FollowUp}
+	var requestModel *agentsdk.ConversationModelRequestSelection
+	if task.Model != nil {
+		requestModel = &agentsdk.ConversationModelRequestSelection{Key: task.Model.Key, ReasoningEffort: task.Model.ReasoningEffort}
+	}
+	in.Input = agentsdk.ConversationTaskStart{Goal: task.Goal, Input: task.Input, AllowedTools: conversationTaskAllowedTools(task), Budget: task.Budget, Model: requestModel, Brief: task.Brief, FollowUp: task.FollowUp}
 	repo, ok := s.repo.(persistence.ScheduledConversationTaskMutationRepository)
 	if !ok {
 		return agentsdk.ScheduledConversationTaskReceipt{}, conversationFailure("unavailable", "scheduled_tasks_unavailable")
@@ -163,6 +230,108 @@ func (s *ConversationService) StartScheduledConversationTask(ctx context.Context
 		s.signalConversationTasks()
 	}
 	return receipt, err
+}
+
+func (s *ConversationService) AcceptBusinessEventConversationTask(ctx context.Context, in agentsdk.BusinessEventConversationTaskRequest) (agentsdk.BusinessEventConversationTaskReceipt, error) {
+	if !agentsdk.HasAuthorizedServiceAction(ctx, agentsdk.ActionAgentBusinessEventConversationTaskAccept, agentsdk.AgentRuntimeServiceAudience) {
+		return agentsdk.BusinessEventConversationTaskReceipt{}, conversationFailure("forbidden", "business_event_task_service_action_required")
+	}
+	if in.ContractVersion != agentsdk.BusinessEventConversationTaskContractVersion || !scheduledConversationKey(in.IdempotencyKey) ||
+		!conversationKey(in.ConversationID) || !scheduledConversationKey(in.AgentID) || !scheduledConversationKey(in.Source.EventID) ||
+		!scheduledConversationKey(in.Source.Provider) || !scheduledConversationKey(in.Source.EventType) || !conversationText(in.Source.ExternalID, 1024, true) || in.Source.ReceivedAt.IsZero() ||
+		!scheduledConversationKey(in.Rule.Key) || !conversationSHA256(in.Rule.Revision) || in.Authority.RuntimeID != "" && in.Authority.RuntimeID != s.runtimeID {
+		return agentsdk.BusinessEventConversationTaskReceipt{}, conversationFailure("bad_request", "business_event_task_invalid")
+	}
+	switch in.Mode {
+	case "start":
+		if in.RelatedTaskID != "" {
+			return agentsdk.BusinessEventConversationTaskReceipt{}, conversationFailure("bad_request", "business_event_task_invalid")
+		}
+	case "wake":
+		if !conversationKey(in.RelatedTaskID) {
+			return agentsdk.BusinessEventConversationTaskReceipt{}, conversationFailure("bad_request", "business_event_task_invalid")
+		}
+	default:
+		return agentsdk.BusinessEventConversationTaskReceipt{}, conversationFailure("bad_request", "business_event_task_invalid")
+	}
+	in.Authority.RuntimeID = s.runtimeID
+	if err := s.authorize(in.Authority); err != nil {
+		return agentsdk.BusinessEventConversationTaskReceipt{}, err
+	}
+	if in.Input.FollowUp != nil {
+		return agentsdk.BusinessEventConversationTaskReceipt{}, conversationFailure("bad_request", "business_event_follow_up_invalid")
+	}
+	if in.Input.Budget == (agentsdk.ConversationTaskBudget{}) {
+		in.Input.Budget = agentsdk.ConversationTaskBudget{
+			MaxSteps: min(12, s.options.MaxSteps), MaxToolCalls: min(12, s.options.MaxToolCalls),
+			MaxOutputBytes: min(8192, s.options.MaxOutputBytes), TimeoutSeconds: int(min(5*time.Minute, s.options.RunTimeout) / time.Second),
+		}
+	}
+	if err := s.authorizeConversationExecution(ctx, in.ConversationID, "", "business_event", in.Authority); err != nil {
+		return agentsdk.BusinessEventConversationTaskReceipt{}, err
+	}
+	conversation, err := s.repo.Get(ctx, in.ConversationID, in.Authority)
+	if err != nil {
+		return agentsdk.BusinessEventConversationTaskReceipt{}, err
+	}
+	if s.conversationExecutionAgentID(conversation) != in.AgentID {
+		return agentsdk.BusinessEventConversationTaskReceipt{}, conversationFailure("conflict", "business_event_agent_mismatch")
+	}
+	executionAgent, err := s.freezeConversationAgent(ctx, in.AgentID, in.Authority)
+	if err != nil {
+		return agentsdk.BusinessEventConversationTaskReceipt{}, err
+	}
+	ctx, err = s.selectConversationAgent(ctx, executionAgent, in.Authority)
+	if err != nil {
+		return agentsdk.BusinessEventConversationTaskReceipt{}, err
+	}
+	if in.Mode == "wake" {
+		related, relatedErr := s.conversationTaskRecord(ctx, in.RelatedTaskID, in.Authority)
+		if relatedErr != nil {
+			return agentsdk.BusinessEventConversationTaskReceipt{}, relatedErr
+		}
+		if related.SourceConversationID != in.ConversationID || related.Agent == nil || related.Agent.ID != in.AgentID {
+			return agentsdk.BusinessEventConversationTaskReceipt{}, conversationFailure("conflict", "business_event_related_task_mismatch")
+		}
+		if !related.Terminal() {
+			return agentsdk.BusinessEventConversationTaskReceipt{}, conversationFailure("conflict", "business_event_related_task_active")
+		}
+	}
+	task, err := s.prepareConversationTaskStart(ctx, in.Input, in.Authority, in.ConversationID, "", nil)
+	if err != nil {
+		return agentsdk.BusinessEventConversationTaskReceipt{}, err
+	}
+	task.Agent = executionAgent
+	in.Source.ReceivedAt = in.Source.ReceivedAt.UTC().Truncate(time.Millisecond)
+	task.BusinessEvent = &agentsdk.ConversationTaskBusinessEvent{
+		Source: in.Source, Rule: in.Rule, Execution: agentsdk.ConversationBusinessEventExecutionIdentity{WorkspaceID: in.Authority.WorkspaceID, UserID: in.Authority.UserID, RoleKey: in.Authority.RoleKey}, IdempotencyKey: in.IdempotencyKey, Mode: in.Mode,
+		TargetAgentID: in.AgentID, RelatedTaskID: in.RelatedTaskID,
+	}
+	if !conversationText(agentsdk.ConversationTaskPrompt(task), s.options.MaxInputBytes, true) {
+		return agentsdk.BusinessEventConversationTaskReceipt{}, conversationFailure("bad_request", "task_input_exceeded")
+	}
+	var requestModel *agentsdk.ConversationModelRequestSelection
+	if task.Model != nil {
+		requestModel = &agentsdk.ConversationModelRequestSelection{Key: task.Model.Key, ReasoningEffort: task.Model.ReasoningEffort}
+	}
+	in.Input = agentsdk.ConversationTaskStart{Goal: task.Goal, Input: task.Input, AllowedTools: conversationTaskAllowedTools(task), Budget: task.Budget, Model: requestModel, Brief: task.Brief}
+	repo, ok := s.repo.(persistence.BusinessEventConversationTaskMutationRepository)
+	if !ok {
+		return agentsdk.BusinessEventConversationTaskReceipt{}, conversationFailure("unavailable", "business_event_tasks_unavailable")
+	}
+	receipt, err := repo.AcceptBusinessEventConversationTask(ctx, in, task)
+	if err == nil {
+		s.signalConversationTasks()
+	}
+	return receipt, err
+}
+
+func conversationSHA256(value string) bool {
+	if len(value) != 64 {
+		return false
+	}
+	decoded, err := hex.DecodeString(value)
+	return err == nil && len(decoded) == 32 && strings.ToLower(value) == value
 }
 
 func scheduledConversationKey(value string) bool {
@@ -178,6 +347,7 @@ func scheduledConversationKey(value string) bool {
 }
 
 var _ agentsdk.ScheduledConversationTaskService = (*ConversationService)(nil)
+var _ agentsdk.BusinessEventConversationTaskService = (*ConversationService)(nil)
 
 func conversationTaskFailureCode(err error) string {
 	var coded *agentsdk.Error
@@ -203,11 +373,177 @@ func conversationTaskExecutionConversation(task agentsdk.ConversationTask) strin
 }
 
 func conversationTaskProgress(run agentsdk.ConversationRun) agentsdk.ConversationTaskProgress {
-	out := agentsdk.ConversationTaskProgress{RunStatus: run.Status, Attempt: run.Attempt, Steps: len(run.Steps), LastEventSeq: run.LastEventSeq}
-	for _, step := range run.Steps {
-		out.ToolCalls += len(step.Calls)
+	out := agentsdk.ConversationTaskProgress{RunStatus: run.Status, Attempt: run.Attempt, Steps: run.Metrics.Steps, ModelCalls: run.Metrics.ModelCalls, ToolCalls: run.Metrics.ToolCalls, DurationMilliseconds: run.DurationMilliseconds, LastEventSeq: run.LastEventSeq}
+	if out.Steps == 0 {
+		out.Steps = len(run.Steps)
+	}
+	if !run.AuditComplete && out.ToolCalls == 0 {
+		for _, step := range run.Steps {
+			out.ToolCalls += len(step.Calls)
+		}
+	}
+	if input, output, known := usageTokenCounts(run.Usage); known {
+		out.InputTokens, out.OutputTokens = input, output
 	}
 	return out
+}
+
+func conversationTaskDiagnostic(task agentsdk.ConversationTask, progress agentsdk.ConversationGoalProgress, run *agentsdk.ConversationRun, allocation agentsdk.ConversationWorkAllocation, dependencies []agentsdk.ConversationDependencyState) agentsdk.ConversationProgressDiagnostic {
+	attempts := len(task.PreviousExecutionRuns)
+	if task.ExecutionRunID != "" {
+		attempts++
+	}
+	if run != nil {
+		attempts += max(0, run.Attempt-1)
+	}
+	out := agentsdk.ConversationProgressDiagnostic{
+		State: "progressing", Action: "continue", Reasons: []string{}, ExecutionAttempts: attempts,
+		AgreementRevisions: max(1, task.AgreementRevision), RepeatedToolCalls: allocation.RepeatedToolCalls,
+		VerifiedItems: len(progress.CompletedItems), RemainingItems: len(progress.RemainingItems),
+		Basis: "Server-derived from current task agreement, program verification, saved run attempts, exact tool-call fingerprints, dependency revisions and the shared work ledger.",
+	}
+	planBlocked := ""
+	if task.Plan != nil {
+		for _, step := range task.Plan.Steps {
+			switch step.Status {
+			case agentsdk.ConversationPlanStepCompleted:
+				if len(step.Evidence) > 0 || len(step.Artifacts) > 0 {
+					out.StageOutcomes++
+				}
+			case agentsdk.ConversationPlanStepSkipped:
+			default:
+				out.RemainingStages++
+			}
+			if step.Status == agentsdk.ConversationPlanStepBlocked && planBlocked == "" {
+				planBlocked = step.Blocker
+				if planBlocked == "" {
+					planBlocked = step.Title
+				}
+			}
+		}
+	}
+	for _, dependency := range dependencies {
+		if dependency.State != "current" {
+			out.OpenDependencies++
+		}
+	}
+	if progress.Status == agentsdk.ConversationGoalStatusCompleted {
+		out.State, out.Action = "completed", "none"
+		return out
+	}
+	if run != nil && run.Waiting() {
+		out.State, out.Action = "waiting", "wait"
+		out.Reasons = append(out.Reasons, "waiting_for_input_or_confirmation")
+		return out
+	}
+	if out.OpenDependencies > 0 {
+		out.State, out.Action = "blocked", "report_blocker"
+		out.Reasons = append(out.Reasons, "dependency_revision_requires_review")
+		return out
+	}
+	if planBlocked != "" {
+		out.State, out.Action = "blocked", "report_blocker"
+		out.Reasons = append(out.Reasons, "plan_blocker:"+planBlocked)
+		return out
+	}
+	if progress.Blocker != "" {
+		out.State, out.Action = "blocked", "report_blocker"
+		out.Reasons = append(out.Reasons, "blocker:"+progress.Blocker)
+		return out
+	}
+	if progress.Status == agentsdk.ConversationGoalStatusPaused {
+		out.State, out.Action = "waiting", "wait"
+		out.Reasons = append(out.Reasons, "task_paused")
+		return out
+	}
+	if allocation.RepeatedToolCalls > 0 {
+		out.Reasons = append(out.Reasons, "repeated_tool_calls")
+	}
+	if out.AgreementRevisions >= 3 {
+		out.Reasons = append(out.Reasons, "repeated_agreement_revisions")
+	}
+	if attempts >= 3 && out.VerifiedItems == 0 && out.StageOutcomes == 0 && out.RemainingItems > 0 {
+		out.Reasons = append(out.Reasons, "no_verified_progress_across_attempts")
+	}
+	if len(out.Reasons) > 0 {
+		out.State, out.Action = "watch", "adjust_strategy"
+	}
+	return out
+}
+
+func conversationTaskGoalProgress(task agentsdk.ConversationTask, run *agentsdk.ConversationRun) agentsdk.ConversationGoalProgress {
+	brief := task.Brief
+	if brief == nil {
+		value := agentsdk.DefaultConversationTaskBrief(task.Goal)
+		brief = &value
+	}
+	out := task.GoalProgress
+	if out.Revision < 1 {
+		out = agentsdk.ConversationGoalProgress{Revision: 1, CompletedItems: []string{}, RemainingItems: append([]string(nil), brief.CompletionConditions...), UpdatedAt: task.UpdatedAt}
+	}
+	if out.CompletedItems == nil {
+		out.CompletedItems = []string{}
+	}
+	if out.RemainingItems == nil {
+		out.RemainingItems = append([]string(nil), brief.CompletionConditions...)
+	}
+	out.Status, out.Phase, out.Blocker = agentsdk.ConversationGoalStatusActive, "queued", ""
+	switch task.Status {
+	case agentsdk.ConversationTaskStatusRunning:
+		out.Phase = "executing"
+	case agentsdk.ConversationTaskStatusAwaitingReview:
+		out.Status, out.Phase, out.Blocker = agentsdk.ConversationGoalStatusBlocked, "awaiting_review", "completion_review_required"
+		if task.Completion != nil {
+			out.CompletedItems, out.RemainingItems = []string{}, []string{}
+			for _, check := range task.Completion.Verification.Checks {
+				if check.Verdict == "met" && check.Method != "recipient" && check.Method != "pending" {
+					out.CompletedItems = append(out.CompletedItems, check.Requirement)
+				} else {
+					out.RemainingItems = append(out.RemainingItems, check.Requirement)
+				}
+			}
+		}
+	case agentsdk.ConversationTaskStatusCompleted:
+		out.Status, out.Phase = agentsdk.ConversationGoalStatusCompleted, "completed"
+		out.CompletedItems, out.RemainingItems = append([]string(nil), brief.CompletionConditions...), []string{}
+	case agentsdk.ConversationTaskStatusCancelled:
+		out.Status, out.Phase = agentsdk.ConversationGoalStatusPaused, "paused"
+	case agentsdk.ConversationTaskStatusFailed:
+		out.Status, out.Phase, out.Blocker = agentsdk.ConversationGoalStatusBlocked, "failed", task.ErrorCode
+		if conversationTaskBudgetError(task.ErrorCode) {
+			out.Status, out.Phase = agentsdk.ConversationGoalStatusBudgetExhausted, "budget_exhausted"
+		}
+	}
+	if run != nil && run.Waiting() && run.Interaction != nil {
+		out.Status, out.Phase, out.Blocker = agentsdk.ConversationGoalStatusBlocked, "waiting_"+run.Interaction.Kind, run.Interaction.Question
+		out.UpdatedAt = run.UpdatedAt
+	}
+	return out
+}
+
+func conversationDelegationGoalProgress(status string, progress agentsdk.ConversationGoalProgress) agentsdk.ConversationGoalProgress {
+	switch status {
+	case "awaiting_delivery":
+		progress.Status, progress.Phase, progress.Blocker = agentsdk.ConversationGoalStatusBlocked, "awaiting_delivery", "delivery_submission_required"
+	case "delivered":
+		progress.Status, progress.Phase, progress.Blocker = agentsdk.ConversationGoalStatusBlocked, "awaiting_review", "delivery_review_required"
+	case "needs_changes":
+		progress.Status, progress.Phase, progress.Blocker = agentsdk.ConversationGoalStatusBlocked, "needs_changes", "delivery_changes_required"
+	case "failed":
+		progress.Status, progress.Phase, progress.Blocker = agentsdk.ConversationGoalStatusBlocked, "failed", "delegation_failed"
+	case "paused", "cancelled":
+		progress.Status, progress.Phase, progress.Blocker = agentsdk.ConversationGoalStatusPaused, "paused", ""
+	}
+	return progress
+}
+
+func conversationTaskBudgetError(code string) bool {
+	switch code {
+	case "execution_limit", "work_budget_exhausted", "work_budget_provider_usage_exceeded", "agent.task.cost_budget_exceeded", "agent.task.tool_call_limit":
+		return true
+	default:
+		return false
+	}
 }
 
 func conversationTaskWaiting(interaction *agentsdk.ConversationInteraction) *agentsdk.ConversationTaskWaiting {
@@ -218,6 +554,29 @@ func conversationTaskWaiting(interaction *agentsdk.ConversationInteraction) *age
 }
 
 func conversationTaskControlState(task agentsdk.ConversationTask, run *agentsdk.ConversationRun) agentsdk.ConversationTaskControlState {
+	if task.ExternalExecution != nil {
+		external := task.ExternalExecution
+		control := agentsdk.ConversationTaskControlState{}
+		if task.Status == agentsdk.ConversationTaskStatusQueued || task.Status == agentsdk.ConversationTaskStatusRunning {
+			control.CanCancel = external.Capabilities.Cancellation
+			if !external.Capabilities.Cancellation {
+				control.ResumeBlocker = "external_agent_cancellation_unsupported"
+			}
+		}
+		if task.Status == agentsdk.ConversationTaskStatusCancelled {
+			switch {
+			case !external.Capabilities.Resume:
+				control.ResumeBlocker = "external_agent_resume_unsupported"
+			case !external.StopAcknowledged:
+				control.ResumeBlocker = "external_agent_stop_unconfirmed"
+			case external.EffectState == "unknown":
+				control.ResumeBlocker = "delegation_reconciliation_required"
+			default:
+				control.CanResume = true
+			}
+		}
+		return control
+	}
 	if run == nil {
 		return agentsdk.ConversationTaskControlState{
 			CanCancel: task.Status == agentsdk.ConversationTaskStatusQueued,
@@ -243,6 +602,8 @@ func conversationTaskControlState(task agentsdk.ConversationTask, run *agentsdk.
 		} else {
 			control.CanResume = true
 		}
+	case "completed":
+		control.CanResume = task.Status == agentsdk.ConversationTaskStatusAwaitingReview
 	}
 	return control
 }
@@ -282,19 +643,52 @@ func (s *ConversationService) conversationTaskArtifacts(ctx context.Context, tas
 }
 
 func (s *ConversationService) projectConversationTask(ctx context.Context, task agentsdk.ConversationTask, a agentsdk.ConversationAuthority, detail bool) (agentsdk.ConversationTaskDetail, error) {
+	brief := task.Brief
+	if brief == nil {
+		value := agentsdk.DefaultConversationTaskBrief(task.Goal)
+		brief = &value
+	}
 	summary := agentsdk.ConversationTaskSummary{
-		ID: task.ID, Status: task.Status, Goal: task.Goal, AllowedTools: conversationTaskAllowedTools(task), Budget: task.Budget,
-		SourceConversationID: task.SourceConversationID, SourceRunID: task.SourceRunID, ExecutionRunID: task.ExecutionRunID,
+		ID: task.ID, Model: task.Model, ExternalExecution: task.ExternalExecution, Status: task.Status, Goal: task.Goal, Brief: brief, AgreementRevision: max(1, task.AgreementRevision), GoalProgress: conversationTaskGoalProgress(task, nil), Plan: task.Plan, CompletionMode: task.CompletionMode, Completion: task.Completion, BusinessEvent: task.BusinessEvent, AllowedTools: conversationTaskAllowedTools(task), Budget: task.Budget,
+		SourceConversationID: task.SourceConversationID, SourceRunID: task.SourceRunID, ExecutionRunID: task.ExecutionRunID, PreviousExecutionRuns: append([]agentsdk.ConversationRunReference(nil), task.PreviousExecutionRuns...),
 		DelegationID: task.DelegationID, ExecutionConversationID: task.ExecutionConversationID,
 		Artifacts: []agentsdk.ConversationArtifact{}, ArtifactsComplete: true, CompletionEventID: task.CompletionEventID,
 		CompletionEventSeq: task.CompletionEventSeq, ErrorCode: task.ErrorCode, CreatedAt: task.CreatedAt, UpdatedAt: task.UpdatedAt, CompletedAt: task.CompletedAt,
 	}
 	summary.Control = conversationTaskControlState(task, nil)
+	if task.ExternalExecution != nil {
+		summary.Progress.Attempt = task.ExternalExecution.Attempt
+		summary.Progress.RunStatus = task.ExternalExecution.Status
+		summary.Progress.LastEventSeq = task.ExternalExecution.LastEventSeq
+		if task.ExternalExecution.ClaimedAt != nil {
+			summary.Progress.DurationMilliseconds = task.ExternalExecution.UpdatedAt.Sub(*task.ExternalExecution.ClaimedAt).Milliseconds()
+		}
+	}
 	if task.Agent != nil {
 		summary.AgentID = task.Agent.ID
+		summary.AgentRevision = task.Agent.Revision
+		summary.AgentPromptVersion = conversationAgentPromptVersion(task.Agent)
+		if len(task.Agent.Skills) > 0 {
+			summary.SkillVersions = make(map[string]string, len(task.Agent.Skills))
+			for _, skill := range task.Agent.Skills {
+				summary.SkillVersions[skill.Key] = skill.Version
+			}
+		}
 	}
 	out := agentsdk.ConversationTaskDetail{ConversationTaskSummary: summary, Input: task.Input, Steps: []agentsdk.ConversationStepView{}}
+	if detail && out.Completion != nil {
+		if completionErr := s.checkConversationTaskCompletionSources(ctx, *out.Completion, a); completionErr != nil {
+			out.Completion = nil
+			redacted := task
+			redacted.Completion = nil
+			out.GoalProgress = conversationTaskGoalProgress(redacted, nil)
+			out.AccessError = sourceAccessCode(completionErr)
+		}
+	}
 	superseded := false
+	delegationStatus := ""
+	var allocation agentsdk.ConversationWorkAllocation
+	var dependencies []agentsdk.ConversationDependencyState
 	if task.DelegationID != "" {
 		repo, err := s.collaborationRepository()
 		if err != nil {
@@ -304,14 +698,33 @@ func (s *ConversationService) projectConversationTask(ctx context.Context, task 
 		if err != nil {
 			return out, err
 		}
+		delegationStatus = d.Status
 		superseded = d.TaskID != task.ID || d.ConversationID != conversationTaskExecutionConversation(task) || max(1, task.AgreementRevision) != d.AgreementRevision || len(d.PendingChanges) > 0
+		if work, ok := s.repo.(persistence.ConversationWorkAccountingRepository); ok {
+			budget, total, workErr := work.ConversationWorkBudget(ctx, d.ID, a)
+			if workErr != nil {
+				return out, workErr
+			}
+			allocation, workErr = work.ConversationWorkAllocation(ctx, d.ID, a)
+			if workErr != nil {
+				return out, workErr
+			}
+			out.Work = &agentsdk.ConversationTaskWorkSummary{Budget: budget, TotalUsage: total, Allocation: allocation}
+		}
+		dependencies, err = s.dependencyStates(ctx, d, a)
+		if err != nil {
+			return out, err
+		}
 		if superseded {
 			out.Control = agentsdk.ConversationTaskControlState{ResumeBlocker: "delegation_superseded"}
 		}
 	}
 	if task.ExecutionRunID == "" {
+		out.GoalProgress = conversationDelegationGoalProgress(delegationStatus, out.GoalProgress)
+		out.Diagnostic = conversationTaskDiagnostic(task, out.GoalProgress, nil, allocation, dependencies)
 		return out, nil
 	}
+	out.Diagnostic = conversationTaskDiagnostic(task, out.GoalProgress, nil, allocation, dependencies)
 	run, err := s.Run(ctx, conversationTaskExecutionConversation(task), task.ExecutionRunID, a)
 	if err != nil {
 		var coded *agentsdk.Error
@@ -325,6 +738,9 @@ func (s *ConversationService) projectConversationTask(ctx context.Context, task 
 		return out, conversationFailure("conflict", "task_run_invalid")
 	}
 	out.Progress = conversationTaskProgress(run)
+	out.GoalProgress = conversationTaskGoalProgress(task, &run)
+	out.GoalProgress = conversationDelegationGoalProgress(delegationStatus, out.GoalProgress)
+	out.Diagnostic = conversationTaskDiagnostic(task, out.GoalProgress, &run, allocation, dependencies)
 	out.Control = conversationTaskControlState(task, &run)
 	if superseded {
 		out.Control = agentsdk.ConversationTaskControlState{ResumeBlocker: "delegation_superseded"}
@@ -470,12 +886,27 @@ func (s *ConversationService) cancelConversationTask(ctx context.Context, id str
 	if task.Terminal() {
 		return s.projectConversationTask(ctx, task, a, true)
 	}
-	if task.ExecutionRunID == "" {
+	if task.Status == agentsdk.ConversationTaskStatusAwaitingReview {
+		if err = s.authorizeConversationExecution(ctx, conversationTaskExecutionConversation(task), task.ExecutionRunID, "resume", a); err != nil {
+			return agentsdk.ConversationTaskDetail{}, err
+		}
+		controls, ok := s.repo.(persistence.ConversationTaskControlRepository)
+		if !ok {
+			return agentsdk.ConversationTaskDetail{}, conversationFailure("unavailable", "task_control_unavailable")
+		}
+		task, err = controls.ResumeQueuedConversationTask(ctx, id, a)
+		if err == nil {
+			s.signalConversationTasks()
+		}
+	} else if task.ExecutionRunID == "" {
 		controls, ok := s.repo.(persistence.ConversationTaskControlRepository)
 		if !ok {
 			return agentsdk.ConversationTaskDetail{}, conversationFailure("unavailable", "task_control_unavailable")
 		}
 		task, err = controls.CancelQueuedConversationTask(ctx, id, a)
+		if err == nil && task.Status == agentsdk.ConversationTaskStatusCancelled {
+			s.dispatchConversationQueuedTaskFinishedLifecycle(ctx, task, a)
+		}
 	} else {
 		_, err = s.Cancel(ctx, conversationTaskExecutionConversation(task), task.ExecutionRunID, a)
 		if err == nil {
@@ -511,7 +942,19 @@ func (s *ConversationService) resumeConversationTask(ctx context.Context, id str
 	if task.Status == agentsdk.ConversationTaskStatusCompleted {
 		return agentsdk.ConversationTaskDetail{}, conversationFailure("conflict", "task_completed")
 	}
-	if task.ExecutionRunID == "" {
+	if task.Status == agentsdk.ConversationTaskStatusAwaitingReview {
+		if err = s.authorizeConversationExecution(ctx, conversationTaskExecutionConversation(task), task.ExecutionRunID, "resume", a); err != nil {
+			return agentsdk.ConversationTaskDetail{}, err
+		}
+		controls, ok := s.repo.(persistence.ConversationTaskControlRepository)
+		if !ok {
+			return agentsdk.ConversationTaskDetail{}, conversationFailure("unavailable", "task_control_unavailable")
+		}
+		task, err = controls.ResumeQueuedConversationTask(ctx, id, a)
+		if err == nil {
+			s.signalConversationTasks()
+		}
+	} else if task.ExecutionRunID == "" {
 		if err = s.authorizeConversationExecution(ctx, task.SourceConversationID, "", "resume", a); err != nil {
 			return agentsdk.ConversationTaskDetail{}, err
 		}
@@ -549,7 +992,16 @@ var _ agentsdk.ConversationTaskControlService = (*ConversationService)(nil)
 
 func (s *ConversationService) executionCatalogForRun(ctx context.Context, claim persistence.ConversationClaim) ([]agentsdk.ConversationToolDefinition, map[string]conversationCompiledTool, error) {
 	if claim.Run.BackgroundTask == nil {
-		return s.executionCatalog(ctx, claim.Authority)
+		definitions, catalog, err := s.executionCatalog(ctx, claim.Authority)
+		if err != nil {
+			return nil, nil, err
+		}
+		definitions = slices.DeleteFunc(definitions, func(definition agentsdk.ConversationToolDefinition) bool {
+			return definition.Key == "plan_update" || definition.Key == "completion_submit"
+		})
+		delete(catalog, "plan_update")
+		delete(catalog, "completion_submit")
+		return definitions, catalog, nil
 	}
 	if len(claim.Run.BackgroundTask.Requirements.Sources) > 0 {
 		var err error
@@ -568,7 +1020,7 @@ func (s *ConversationService) executionCatalogForRun(ctx context.Context, claim 
 	if err != nil {
 		return nil, nil, err
 	}
-	allowed := make(map[string]agentsdk.ConversationTaskToolScope, len(claim.Run.BackgroundTask.ToolScope))
+	allowed := make(map[string]agentsdk.ConversationTaskToolScope, len(claim.Run.BackgroundTask.ToolScope)+1)
 	for _, scope := range claim.Run.BackgroundTask.ToolScope {
 		if strings.HasPrefix(scope.Key, "task_") || scope.Key == "" || scope.Version == "" || scope.ActionKey == "" || scope.DefinitionHash == "" {
 			return nil, nil, conversationFailure("conflict", "task_scope_invalid")
@@ -585,6 +1037,17 @@ func (s *ConversationService) executionCatalogForRun(ctx context.Context, claim 
 		}
 		allowed[scope.Key] = scope
 	}
+	if tool, exists := catalog["plan_update"]; exists {
+		allowed["plan_update"] = agentsdk.ConversationTaskToolScope{Key: tool.definition.Key, Version: tool.definition.Version, ActionKey: tool.definition.ActionKey, DefinitionHash: conversationDigest(tool.definition)}
+	}
+	if tool, exists := catalog["skill_load"]; exists {
+		allowed["skill_load"] = agentsdk.ConversationTaskToolScope{Key: tool.definition.Key, Version: tool.definition.Version, ActionKey: tool.definition.ActionKey, DefinitionHash: conversationDigest(tool.definition)}
+	}
+	if claim.Run.BackgroundTask.CompletionMode == agentsdk.ConversationTaskCompletionModeAssessed && claim.Run.BackgroundTask.DelegationID == "" && claim.Run.BackgroundTask.FollowUp == nil {
+		if tool, exists := catalog["completion_submit"]; exists {
+			allowed["completion_submit"] = agentsdk.ConversationTaskToolScope{Key: tool.definition.Key, Version: tool.definition.Version, ActionKey: tool.definition.ActionKey, DefinitionHash: conversationDigest(tool.definition)}
+		}
+	}
 	filteredDefinitions := make([]agentsdk.ConversationToolDefinition, 0, len(allowed))
 	filteredCatalog := make(map[string]conversationCompiledTool, len(allowed))
 	for _, definition := range definitions {
@@ -596,7 +1059,26 @@ func (s *ConversationService) executionCatalogForRun(ctx context.Context, claim 
 	if len(filteredDefinitions) != len(allowed) {
 		return nil, nil, conversationFailure("conflict", "task_scope_invalid")
 	}
-	return s.availableExecutionCatalog(ctx, claim.Authority, filteredDefinitions, filteredCatalog)
+	// Plan, completion and Skill loading are Agent-owned run metadata/configuration and have no external connection.
+	// Availability checks apply only to the task's selected business tools.
+	internalDefinitions := []agentsdk.ConversationToolDefinition{}
+	external := make([]agentsdk.ConversationToolDefinition, 0, len(filteredDefinitions))
+	for index := range filteredDefinitions {
+		if filteredDefinitions[index].Key == "plan_update" || filteredDefinitions[index].Key == "completion_submit" || filteredDefinitions[index].Key == "skill_load" {
+			internalDefinitions = append(internalDefinitions, filteredDefinitions[index])
+			continue
+		}
+		external = append(external, filteredDefinitions[index])
+	}
+	visible, available, err := s.availableExecutionCatalog(ctx, claim.Authority, external, filteredCatalog)
+	if err != nil {
+		return nil, nil, err
+	}
+	for _, definition := range internalDefinitions {
+		visible = append(visible, definition)
+		available[definition.Key] = catalog[definition.Key]
+	}
+	return visible, available, nil
 }
 
 func (s *ConversationService) conversationRunLimits(claim persistence.ConversationClaim) (steps, calls, output int, timeout time.Duration) {
@@ -681,7 +1163,11 @@ func (s *ConversationService) conversationTaskWorker(ctx context.Context, repo p
 		_, launched, err := repo.LaunchConversationTask(ctx, s.runtimeID)
 		if err == nil && !launched {
 			if peers, ok := s.repo.(persistence.ConversationCollaborationRepository); ok {
-				_, launched, err = peers.LaunchConversationPeerMessage(ctx, s.runtimeID)
+				if lifecycle, ok := s.repo.(persistence.ConversationPeerLifecycleRepository); ok {
+					_, launched, err = lifecycle.LaunchConversationPeerMessageWithLifecycle(ctx, s.runtimeID, cloneConversationLifecycleManifest(s.lifecycleManifest))
+				} else {
+					_, launched, err = peers.LaunchConversationPeerMessage(ctx, s.runtimeID)
+				}
 			}
 		}
 		if err == nil && launched {

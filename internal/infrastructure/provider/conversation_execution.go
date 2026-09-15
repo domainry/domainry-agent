@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"mime"
 	"regexp"
+	"slices"
 	"strings"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
@@ -18,16 +19,101 @@ var conversationFunctionName = regexp.MustCompile(`^[a-zA-Z0-9_-]{1,64}$`)
 func (m *ConversationModel) ConversationModelIdentity() agentsdk.ConversationModelIdentity {
 	// The credential and HTTP client are deliberately excluded. Credential
 	// rotation does not change the meaning of an already frozen model step.
-	raw, _ := json.Marshal([]any{m.config.Provider, m.config.Protocol, m.config.URL, m.config.Model, m.config.MaxOutputTokens, "conversation-step-v1"})
+	raw, _ := json.Marshal([]any{m.config.Provider, m.config.Protocol, m.config.URL, m.config.Model, m.config.MaxOutputTokens, m.ConversationModelCapabilities(), m.config.DefaultReasoningEffort, "conversation-step-v2"})
 	digest := sha256.Sum256(raw)
 	return agentsdk.ConversationModelIdentity{Provider: m.config.Provider, Protocol: m.config.Protocol, Model: m.config.Model, Fingerprint: hex.EncodeToString(digest[:])}
+}
+
+func (m *ConversationModel) ConversationModelCapabilities() agentsdk.ConversationModelCapabilities {
+	return agentsdk.ConversationModelCapabilities{
+		ContextTokenLimit: m.config.ContextTokenLimit, ImageInput: m.config.ImageInput,
+		StructuredOutput: m.config.StructuredOutput, ProtocolContinuation: !m.config.DisableProtocolContinuation,
+		ReasoningEfforts: append([]string(nil), m.config.ReasoningEfforts...),
+	}
+}
+
+func (m *ConversationModel) ConversationModelDefaultReasoningEffort() string {
+	return m.config.DefaultReasoningEffort
+}
+
+func validReasoningEffort(value string) bool {
+	if value == "" || len(value) > 32 {
+		return false
+	}
+	for _, r := range value {
+		if !(r >= 'a' && r <= 'z' || r >= '0' && r <= '9' || r == '_' || r == '-') {
+			return false
+		}
+	}
+	return true
+}
+
+func (m *ConversationModel) supportsReasoningEffort(value string) bool {
+	if value == "" {
+		value = m.config.DefaultReasoningEffort
+	}
+	return value == "" || slices.Contains(m.config.ReasoningEfforts, value)
+}
+
+func (m *ConversationModel) compatibleCapabilities(value agentsdk.ConversationModelCapabilities) bool {
+	if emptyConversationCapabilities(value) {
+		return true
+	}
+	want, got := m.ConversationModelCapabilities(), value
+	return want.ContextTokenLimit == got.ContextTokenLimit && want.ImageInput == got.ImageInput && want.StructuredOutput == got.StructuredOutput && want.ProtocolContinuation == got.ProtocolContinuation && slices.Equal(want.ReasoningEfforts, got.ReasoningEfforts)
+}
+
+func emptyConversationCapabilities(value agentsdk.ConversationModelCapabilities) bool {
+	return value.ContextTokenLimit == 0 && !value.ImageInput && !value.StructuredOutput && !value.ProtocolContinuation && len(value.ReasoningEfforts) == 0
+}
+
+func (m *ConversationModel) applyReasoning(payload map[string]any, requested string) {
+	if requested == "" {
+		requested = m.config.DefaultReasoningEffort
+	}
+	if requested == "" {
+		return
+	}
+	switch m.config.Protocol {
+	case ConversationProtocolChat:
+		payload["reasoning_effort"] = requested
+	case ConversationProtocolMessages:
+		payload["output_config"] = map[string]any{"effort": requested}
+	case ConversationProtocolResponses:
+		payload["reasoning"] = map[string]any{"effort": requested}
+	}
+}
+
+func (m *ConversationModel) ConversationModelMaxOutputTokens() int {
+	return m.config.MaxOutputTokens
+}
+
+func (m *ConversationModel) ConversationStepInputBytes(in agentsdk.ConversationStepRequest) (int, error) {
+	if in.ModelIdentity != m.ConversationModelIdentity() || !m.compatibleCapabilities(in.ModelCapabilities) || !m.supportsReasoningEffort(in.ReasoningEffort) {
+		return 0, &agentsdk.Error{Class: "conflict", Code: "agent.conversation.model_changed"}
+	}
+	return ConversationStepInputBytes(m.config, in)
+}
+
+// Uses the actual protocol encoder; source proofs, output schemas and policy
+// fields omitted by that encoder remain available in the execution snapshot.
+func ConversationStepInputBytes(config ConversationModelConfig, in agentsdk.ConversationStepRequest) (int, error) {
+	if config.Protocol != ConversationProtocolChat && config.Protocol != ConversationProtocolMessages && config.Protocol != ConversationProtocolResponses {
+		return 0, fmt.Errorf("unknown conversation protocol")
+	}
+	payload, err := (&ConversationModel{config: config}).stepPayload(in)
+	if err != nil {
+		return 0, err
+	}
+	raw, err := json.Marshal(payload)
+	return len(raw), err
 }
 
 func (m *ConversationModel) StreamConversationStep(ctx context.Context, in agentsdk.ConversationStepRequest, emit func(agentsdk.ConversationModelEvent) error) (agentsdk.ConversationStepResult, error) {
 	if emit == nil {
 		return agentsdk.ConversationStepResult{}, fmt.Errorf("model step callback required")
 	}
-	if in.ModelIdentity != m.ConversationModelIdentity() {
+	if in.ModelIdentity != m.ConversationModelIdentity() || !m.compatibleCapabilities(in.ModelCapabilities) || !m.supportsReasoningEffort(in.ReasoningEffort) {
 		return agentsdk.ConversationStepResult{}, &agentsdk.Error{Class: "conflict", Code: "agent.conversation.model_changed"}
 	}
 	payload, err := m.stepPayload(in)
@@ -60,9 +146,13 @@ func (m *ConversationModel) StreamConversationStep(ctx context.Context, in agent
 		}
 	})
 	if err != nil {
-		return agentsdk.ConversationStepResult{}, err
+		return agentsdk.ConversationStepResult{}, withConversationFailureUsage(err, state.usage)
 	}
-	return state.result(m.config.Protocol)
+	result, err := state.result(m.config.Protocol)
+	if err == nil && m.config.DisableProtocolContinuation {
+		result.Message.ProviderState = nil
+	}
+	return result, err
 }
 
 func (m *ConversationModel) stepPayload(in agentsdk.ConversationStepRequest) (map[string]any, error) {
@@ -70,6 +160,11 @@ func (m *ConversationModel) stepPayload(in agentsdk.ConversationStepRequest) (ma
 		return nil, err
 	}
 	payload := map[string]any{"model": m.config.Model, "stream": true}
+	m.applyReasoning(payload, in.ReasoningEffort)
+	maxOutputTokens := m.config.MaxOutputTokens
+	if in.MaxOutputTokens > 0 {
+		maxOutputTokens = min(maxOutputTokens, in.MaxOutputTokens)
+	}
 	tools := make([]any, 0, len(in.Tools))
 	for _, tool := range in.Tools {
 		fn := map[string]any{"name": tool.Key, "description": tool.Description, "parameters": tool.InputSchema}
@@ -89,9 +184,12 @@ func (m *ConversationModel) stepPayload(in agentsdk.ConversationStepRequest) (ma
 	items := make([]any, 0, len(in.Messages))
 	system := []string{}
 	for _, message := range in.Messages {
+		if err := validateModelContent(message.Role, message.Content, message.ContentBlocks, in.ModelCapabilities.ImageInput); err != nil {
+			return nil, err
+		}
 		switch m.config.Protocol {
 		case ConversationProtocolChat:
-			item := map[string]any{"role": message.Role, "content": message.Content}
+			item := map[string]any{"role": message.Role, "content": encodeModelContent(m.config.Protocol, message.Content, message.ContentBlocks)}
 			if message.ToolCallID != "" {
 				item["tool_call_id"] = message.ToolCallID
 			}
@@ -134,8 +232,12 @@ func (m *ConversationModel) stepPayload(in agentsdk.ConversationStepRequest) (ma
 				}
 				_ = json.Unmarshal(message.ProviderState, &blocks)
 			} else {
-				if message.Content != "" {
-					blocks = append(blocks, map[string]any{"type": "text", "text": message.Content})
+				if message.Content != "" || len(message.ContentBlocks) > 0 {
+					if encoded, ok := encodeModelContent(m.config.Protocol, message.Content, message.ContentBlocks).([]any); ok {
+						blocks = append(blocks, encoded...)
+					} else if message.Content != "" {
+						blocks = append(blocks, map[string]any{"type": "text", "text": message.Content})
+					}
 				}
 				for _, call := range message.ToolCalls {
 					blocks = append(blocks, map[string]any{"type": "tool_use", "id": call.ID, "name": call.Name, "input": json.RawMessage(call.Arguments)})
@@ -160,8 +262,8 @@ func (m *ConversationModel) stepPayload(in agentsdk.ConversationStepRequest) (ma
 				_ = json.Unmarshal(message.ProviderState, &output)
 				items = append(items, output...)
 			} else {
-				if message.Content != "" {
-					items = append(items, map[string]any{"role": message.Role, "content": message.Content})
+				if message.Content != "" || len(message.ContentBlocks) > 0 {
+					items = append(items, map[string]any{"role": message.Role, "content": encodeModelContent(m.config.Protocol, message.Content, message.ContentBlocks)})
 				}
 				for _, call := range message.ToolCalls {
 					items = append(items, map[string]any{"type": "function_call", "call_id": call.ID, "name": call.Name, "arguments": call.Arguments})
@@ -176,22 +278,34 @@ func (m *ConversationModel) stepPayload(in agentsdk.ConversationStepRequest) (ma
 		if m.config.Provider == ConversationProviderGateway {
 			key = "max_completion_tokens"
 		}
-		payload[key] = m.config.MaxOutputTokens
+		payload[key] = maxOutputTokens
 	case ConversationProtocolMessages:
-		payload["messages"], payload["max_tokens"] = items, m.config.MaxOutputTokens
+		payload["messages"], payload["max_tokens"] = items, maxOutputTokens
 		if len(system) > 0 {
 			payload["system"] = strings.Join(system, "\n\n")
 		}
 	case ConversationProtocolResponses:
-		payload["input"], payload["max_output_tokens"], payload["store"] = items, m.config.MaxOutputTokens, false
-		payload["include"] = []string{"reasoning.encrypted_content"}
+		payload["input"], payload["max_output_tokens"], payload["store"] = items, maxOutputTokens, false
+		if !m.config.DisableProtocolContinuation {
+			payload["include"] = []string{"reasoning.encrypted_content"}
+		}
 	}
 	return payload, nil
 }
 
 func validateStepRequest(in agentsdk.ConversationStepRequest) error {
-	if len(in.Messages) == 0 || len(in.Messages) > 4096 || len(in.Tools) > 128 || in.MaxOutputBytes < 1 || in.MaxOutputBytes > maxResponseBytes || in.MaxArgumentBytes < 1 || in.MaxArgumentBytes > maxResponseBytes || in.MaxToolCalls < 1 || in.MaxToolCalls > 64 || len(in.IdempotencyKey) > 512 {
+	if len(in.Messages) == 0 || len(in.Messages) > 4096 || len(in.Tools) > 128 || in.MaxOutputBytes < 1 || in.MaxOutputBytes > maxResponseBytes || in.MaxArgumentBytes < 1 || in.MaxArgumentBytes > maxResponseBytes || in.MaxToolCalls < 1 || in.MaxToolCalls > 64 || in.MaxParallelTools < 0 || in.MaxParallelTools > 16 || len(in.IdempotencyKey) > 512 {
 		return fmt.Errorf("invalid model step limits")
+	}
+	if in.ReasoningEffort != "" && !validReasoningEffort(in.ReasoningEffort) {
+		return fmt.Errorf("invalid reasoning effort")
+	}
+	if !emptyConversationCapabilities(in.ModelCapabilities) && !in.ModelCapabilities.ProtocolContinuation {
+		for _, message := range in.Messages {
+			if len(message.ProviderState) > 0 {
+				return fmt.Errorf("model does not support protocol continuation")
+			}
+		}
 	}
 	names := map[string]bool{}
 	for _, tool := range in.Tools {
@@ -203,7 +317,7 @@ func validateStepRequest(in agentsdk.ConversationStepRequest) error {
 	}
 	pending, seen := map[string]bool{}, map[string]bool{}
 	for _, message := range in.Messages {
-		if !validModelText(message.Content) || (len(message.ProviderState) > 0 && (message.Role != "assistant" || !json.Valid(message.ProviderState))) {
+		if validateModelContent(message.Role, message.Content, message.ContentBlocks, in.ModelCapabilities.ImageInput) != nil || (len(message.ProviderState) > 0 && (message.Role != "assistant" || !json.Valid(message.ProviderState))) {
 			return fmt.Errorf("invalid model step content")
 		}
 		if message.Role == "tool" {

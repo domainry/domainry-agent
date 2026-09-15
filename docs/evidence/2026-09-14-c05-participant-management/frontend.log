@@ -1,0 +1,22 @@
+✔ explicit historical publication belongs to the execution user with current share access (1.05625ms)
+✔ agent editor submits only write fields and preserves sharing when sharing access is absent (2.0935ms)
+✔ editing ordinary configuration preserves the saved execution role unless explicitly rebound (0.285ms)
+✔ same brief does not make an old dependency agreement acceptable (0.358583ms)
+✔ acceptance form keeps receipt evidence but does not turn recipient claims into reviewer judgments (1.608542ms)
+✔ question attention closes on reply or requirement replacement (0.130958ms)
+✔ resume preserves selected fields and pins reviewed upstream agreement (0.112875ms)
+✔ condition edits never silently associate an old check with different work (0.145208ms)
+✔ acceptance requires current resolved disagreements, including after delivery replacement or lost evidence access (0.122875ms)
+✔ collaboration controls require separate current permissions (0.325958ms)
+✔ contract recovery is source-owned and requires current manage and share (0.254709ms)
+✔ unreadable contract keeps stopping controls without adopting hidden requirements (0.162167ms)
+✔ stopping unreadable work never initializes an assessment from its unreadable brief (0.097083ms)
+✔ contract publication history remains scoped to actual issuer and executor (0.148959ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 138.0945

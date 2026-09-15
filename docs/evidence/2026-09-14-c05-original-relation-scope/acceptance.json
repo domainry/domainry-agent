@@ -1,0 +1,49 @@
+{
+  "phase": "accepted_original_relationship_constraints_in_shared_read_scope",
+  "c05_complete": false,
+  "todo_completed": 4,
+  "todo_total": 25,
+  "before_failed_orm_cases": 3,
+  "new_owner_roots": 3,
+  "owner_final_roots": 58,
+  "verified_exit_codes": {
+    "before": 1,
+    "after": 0,
+    "owner_normal": 0,
+    "owner_race": 0,
+    "seven_business_rpc": 0
+  },
+  "verified_sessions": {
+    "before": 38825,
+    "after": 80437,
+    "owner_normal": 70970,
+    "owner_race": 16077,
+    "seven_business_rpc": 11416
+  },
+  "owner_normal_seconds": 1.006,
+  "owner_race_seconds": 5.803,
+  "rpc_root_seconds": 8.88,
+  "rpc_package_seconds": 9.668,
+  "dependency_source_files": 4691,
+  "sources_unchanged_since_scope_checks_and_rpc_compile": true,
+  "scope_proof": "Host-verified reverse foreign-key equals original parent ID; authenticated complete forward singleton equals saved original target ID. Explicit query constraints and source policy retain independent SDK literal/principal binding contexts.",
+  "verified_boundaries": [
+    "original producer cursor never executes for reader",
+    "visible first child does not grant historical total/continuation",
+    "saved row current policy still checked after relationship changes",
+    "current forward parent value never substitutes for saved historical target",
+    "forged target rejected before coverage proof",
+    "empty forward page does not invent original target",
+    "original evidence bytes preserved"
+  ],
+  "new_branch_evidence": "Real Runtime RecordApplication/RecordStore/SQLite and SDK identity fixtures; not claimed as public native conditional-row-role or actual model branch acceptance.",
+  "legacy_lifecycle_checks": "Separate compiled version and archive; no legacy lifecycle/race acceptance claimed by this phase.",
+  "remaining": [
+    "more complete query policy expressions",
+    "remaining historical admission/source workflows",
+    "other professional sources and earlier actual write race timeouts",
+    "multiple-owner mixed roots and dependency management",
+    "Identity exits",
+    "released Runtime module-set lock synchronization"
+  ]
+}

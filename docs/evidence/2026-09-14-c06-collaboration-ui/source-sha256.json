@@ -1,0 +1,11 @@
+{
+  "frontend/src/App.tsx": "280666adc63e4dbd015d3c8b30a29922cf17c8cb91bb2e22324f0920e4744dd5",
+  "frontend/src/CollaborationDialog.tsx": "3c89d3d3b11e82eefabfa78b214775f05f5db56ba8e69a6a9119ba1f275915a8",
+  "frontend/src/ConversationCollaborationSummary.tsx": "c80ec8cbd7ca9fd533cd041f790c43d1dd2b3477d9db949baaa253950fadfe7e",
+  "frontend/src/collaboration-state.ts": "679f4d32a60105bb65daa91e059c7d5cfd59a2c8b6c92131de020d8537b0a726",
+  "frontend/src/collaboration-state.test.ts": "662ee553590231de3e0d040ec793b7863b932298788bb1c81f59c3ffdf05d95c",
+  "frontend/src/index.css": "2190868535f57a56b40d6a8056302b430c5ae1af8f2a2781098c9bd9da25163c",
+  "frontend/tests/collaboration.browser.mjs": "668e1e5f588728c35ea6b2f5f73c085e5d641035aac2e9300b298ea5b9c80a76",
+  "docs/agent-core-capabilities-todo.md": "292f5ac50e10f1639cbc3c8001befb7c92a0b7d81eee9e63580f852d91a2558f",
+  "docs/testing-2026-09-14-c06-collaboration-ui.md": "8c5bf51cb2c728d5428b543a1278d39879d067727586864c031efb3d4bf78e8f"
+}

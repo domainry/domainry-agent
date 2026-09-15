@@ -1,0 +1,33 @@
+{
+  "date": "2026-09-15",
+  "item": "E07",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 13,
+  "results": {
+    "agent_sdk_go_test": { "exit_code": 0 },
+    "agent_core_packages": { "count": 34, "exit_code": 0 },
+    "agent_web_package": { "exit_code": 0, "seconds": 533.856 },
+    "integration": { "exit_code": 0, "seconds": 99.131 },
+    "model_recovery_race": { "exit_code": 0 },
+    "frontend_tests": { "passed": 91, "failed": 0, "exit_code": 0 },
+    "frontend_build": { "exit_code": 0, "typescript": true, "vite": true },
+    "diff_check": { "agent_exit_code": 0, "agent_sdk_exit_code": 0, "bytes": 0 }
+  },
+  "behavior": [
+    "trusted model registry exposes bounded capability descriptors without provider credentials",
+    "Agent and task selections freeze model identity, capabilities and reasoning effort independently",
+    "identity, capability or reasoning compatibility changes reject stale work with model_changed",
+    "implicit transfer selections follow the replacement Agent while explicit task model selections remain explicit",
+    "chat completions, messages and responses encode reasoning and honor protocol continuation declarations",
+    "rate limits, timeouts, network failures, unexpected EOF and server failures have stable retry categories",
+    "Retry-After and exponential delay are bounded by host policy and the run deadline",
+    "attempt, wait, safe error and partial usage records survive worker reconstruction",
+    "one client message remains one run across model attempts",
+    "failed text and tool-call fragments are discarded before retry",
+    "completed tools are not replayed when the following model request fails or resumes",
+    "authorization, sources, model and tool compatibility are rechecked at every retry boundary",
+    "run and frontend projections expose recovery without hiding previously completed effects"
+  ],
+  "remaining": []
+}

@@ -1,0 +1,9 @@
+=== RUN   TestSubjectErasureRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime
+    conversation_subject_erasure_dependencies_test.go:36: Admit multiple-owner-root from conv_884d5fa718c43e548e132f9c38c2a36e to agent_780fddfe761cc21b76fc1857069f8fc1
+    conversation_subject_erasure_dependencies_test.go:36: Admit multiple-owner-upstream from conv_c1dc0fd48133af072c508c32defbeb38 to agent_73904f1fc479d13d7af60271c5ae6526
+    conversation_subject_erasure_dependencies_test.go:36: Admit multiple-owner-final from conv_be364d6387bcd477bca4f048c6022c4f to agent_fd8c98adac95c9d1e72b9706e91754db
+    conversation_subject_erasure_dependencies_test.go:36: erasing an upstream subject changed the accepted downstream execution {false true <nil> <nil> false false 0x5f6651bc3c60 [] [] {false dependency_reader 0 [] 0x5f664ff2ae70 [] false <nil> 0 <nil> <nil> <nil> [] [] 1 0 <nil> <nil> { [] [] [] 0 0 <nil> }  <nil> delegation_5d03dcb6425130deb9e95b577eecb2af agent_73904f1fc479d13d7af60271c5ae6526 agent_fd8c98adac95c9d1e72b9706e91754db conv_be364d6387bcd477bca4f048c6022c4f  conv_b20cc2f6d26500a0e7f1232f16733aa8   {[] 0    [] [] [] <nil>}  {0 0 0 0} [] needs_update 7 <nil>  2026-09-14 04:20:23.611 +0000 UTC 2026-09-14 04:20:47.468 +0000 UTC} false <nil> []} <nil>
+--- FAIL: TestSubjectErasureRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime (33.49s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	34.329s
+FAIL

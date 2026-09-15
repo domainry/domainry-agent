@@ -1,0 +1,18 @@
+=== RUN   TestCrossUserUnmanagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart
+    conversation_knowledge_shared_delivery_test.go:178: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:178: Exact professional execution result knowledge-search: 3 pages, 712 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:178: Exact professional execution result knowledge-read: 3 pages, 742 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:178: Exact professional execution result knowledge-extract: 7 pages, 1594 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:178: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:178: Exact professional execution result knowledge-search: 3 pages, 712 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:178: Exact professional execution result knowledge-read: 3 pages, 742 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:178: Exact professional execution result knowledge-extract: 7 pages, 1594 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:178: Exact professional execution result knowledge-catalog: 3 pages, 544 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:178: Exact professional execution result knowledge-search: 3 pages, 712 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:178: Exact professional execution result knowledge-read: 3 pages, 742 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:178: Exact professional execution result knowledge-extract: 7 pages, 1594 bytes, original SHA-256 verified
+    conversation_knowledge_shared_delivery_test.go:178: browser POST /agent/delegations/delegation_d19df25b5d69fd165fee025e8de64177/delivery-result status=200 want=403 body={"reference":{"conversation_id":"conv_6c8762beee0bf51a13880a4fe7301e1f","run_id":"crun_3cd264df81d4fee148651820010309d4","step":0,"call_id":"knowledge-catalog","sha256":"75f31b88a7834a942839ac556cd0245235eca7bb73fcb45f75e56419ab9ecd91"},"json_text":"{\"status\":\"completed\",\"content\":{\"provider\":\"agent_libraries\",\"kb_id\":\"\",\"operation\":\"libraries\",\"query\":\"{\\\"after\\\":\\\"\\\",\\\"limit\\\":0}\",\"scope_sha256\":\"7d350bc4cde399a41ed65b0992ea1022f872a9d6b56eb9e3603c3467f0cf006f\",\"data\":{\"items\":[{\"knowledge_configured\":true,\"id\":\"lib_d63dba388b4ccd02d964e621617217ca\",\"kind\":\"shared\",\"name\":\"Original amount library\",\"description\":\"\",\"owner_user_id\":\"admin\",\"role\":\"reader\",\"archived\":false,\"revision\":2,\"created_at\":\"2026-09-14T06:49:04.343Z\",\"updated_at\":\"2026-09-14T06:49:04.962Z\"}],\"complete\":true}}}","offset":0,"next_offset":544,"total_bytes":544,"complete":true}
+--- FAIL: TestCrossUserUnmanagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart (22.09s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	23.531s
+FAIL

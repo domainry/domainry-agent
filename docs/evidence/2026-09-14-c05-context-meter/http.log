@@ -1,0 +1,7 @@
+=== RUN   TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery
+--- PASS: TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery (20.08s)
+=== RUN   TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation
+    conversation_delivery_schedule_permissions_test.go:184: Seven real calls completed; current host requested 0 confirmations
+--- PASS: TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation (13.13s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	44.871s

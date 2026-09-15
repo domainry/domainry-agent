@@ -1,0 +1,50 @@
+=== RUN   TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart
+    record_result_read_test.go:329: Exact original saved execution wrapper inspection-agreement: original SHA-256 verified
+    record_result_read_test.go:329: Exact original saved execution wrapper inspection-publish: original SHA-256 verified
+    record_result_read_test.go:329: Exact original saved execution wrapper inspection-index: original SHA-256 verified
+    record_result_read_test.go:329: Exact original saved execution wrapper inspection-read: original SHA-256 verified
+    record_result_read_test.go:329: Exact original saved execution wrapper inspection-page-0: original SHA-256 verified
+    record_result_read_test.go:329: Exact original saved execution wrapper inspection-page-1: original SHA-256 verified
+    record_result_read_test.go:379: Exact original structured result record-save via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:379: Exact original structured result record-read via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:379: Exact original structured result record-list via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:379: Exact original structured result record-save via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:379: Exact original structured result record-read via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:379: Exact original structured result record-list via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:379: Exact original structured result record-save via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:379: Exact original structured result record-read via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:379: Exact original structured result record-list via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:471: Exact original structured result record-save via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:471: Exact original structured result record-read via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:471: Exact original structured result record-list via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:471: Exact original structured result record-save via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:471: Exact original structured result record-read via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:471: Exact original structured result record-list via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:471: Exact original structured result record-save via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:471: Exact original structured result record-read via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:471: Exact original structured result record-list via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:472: Exact original saved execution wrapper inspection-agreement: original SHA-256 verified
+    record_result_read_test.go:472: Exact original saved execution wrapper inspection-publish: original SHA-256 verified
+    record_result_read_test.go:472: Exact original saved execution wrapper inspection-index: original SHA-256 verified
+    record_result_read_test.go:472: Exact original saved execution wrapper inspection-read: original SHA-256 verified
+    record_result_read_test.go:472: Exact original saved execution wrapper inspection-page-0: original SHA-256 verified
+    record_result_read_test.go:472: Exact original saved execution wrapper inspection-page-1: original SHA-256 verified
+    record_result_read_test.go:498: Exact original structured result record-save via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:498: Exact original structured result record-read via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:498: Exact original structured result record-list via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:498: Exact original structured result record-save via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:498: Exact original structured result record-read via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:498: Exact original structured result record-list via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:498: Exact original structured result record-save via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:498: Exact original structured result record-read via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:498: Exact original structured result record-list via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:499: Exact original saved execution wrapper inspection-agreement: original SHA-256 verified
+    record_result_read_test.go:499: Exact original saved execution wrapper inspection-publish: original SHA-256 verified
+    record_result_read_test.go:499: Exact original saved execution wrapper inspection-index: original SHA-256 verified
+    record_result_read_test.go:499: Exact original saved execution wrapper inspection-read: original SHA-256 verified
+    record_result_read_test.go:499: Exact original saved execution wrapper inspection-page-0: original SHA-256 verified
+    record_result_read_test.go:499: Exact original saved execution wrapper inspection-page-1: original SHA-256 verified
+    record_result_read_test.go:550: Actual second Identity account has read/list rights; original personal receipts and record are denied, its own list remains empty
+--- PASS: TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart (349.19s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	351.279s

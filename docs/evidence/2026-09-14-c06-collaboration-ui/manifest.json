@@ -1,0 +1,100 @@
+{
+  "sealed_at": "2026-09-14",
+  "files": [
+    {
+      "path": "acceptance.json",
+      "bytes": 1202,
+      "sha256": "ed409710c50555d98af8131a0f6df93c737fcc20438022d45e8c6063122b79d8"
+    },
+    {
+      "path": "browser-report.json",
+      "bytes": 1291,
+      "sha256": "9bd76f7306eb6503ca075f9aa4dc20be1ed6da568bc119a9c0fd85ca429d2e3d"
+    },
+    {
+      "path": "commands.md",
+      "bytes": 1038,
+      "sha256": "beb54ba250146b66fb3c027ac2820788dc466dd0c92168cdbd5ab1cfcb97d97d"
+    },
+    {
+      "path": "logs/c06-final-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/c06-final-frontend-build.log",
+      "bytes": 32521,
+      "sha256": "855e271e0999aa9fc2d5d94cdbf1ea15b012b25d8786e25dbc65427cb743ec65"
+    },
+    {
+      "path": "logs/c06-final-frontend-test.log",
+      "bytes": 11048,
+      "sha256": "2c422b400f4277deed020032d0b9ac0682a681cf3c110e728cb8afff845333c5"
+    },
+    {
+      "path": "screenshots/peer-accepted.png",
+      "bytes": 192173,
+      "sha256": "6dacc4d3899b8ab4baa0c7467ca6b346ac457d6788de3fdeaed8ba2554823dcf"
+    },
+    {
+      "path": "screenshots/peer-inline-progress-mobile.png",
+      "bytes": 76479,
+      "sha256": "29b90441438fc3ab19dd62ef8d2a7a873aae466194daaa66fb8876ee2c7ce3c7"
+    },
+    {
+      "path": "screenshots/peer-inline-progress.png",
+      "bytes": 169407,
+      "sha256": "b6665b3d18ce03c50aa44a43e024b59f24e23cbf57d8a145a54905fb38510b96"
+    },
+    {
+      "path": "source/App.tsx",
+      "bytes": 49943,
+      "sha256": "280666adc63e4dbd015d3c8b30a29922cf17c8cb91bb2e22324f0920e4744dd5"
+    },
+    {
+      "path": "source/CollaborationDialog.tsx",
+      "bytes": 38923,
+      "sha256": "3c89d3d3b11e82eefabfa78b214775f05f5db56ba8e69a6a9119ba1f275915a8"
+    },
+    {
+      "path": "source/ConversationCollaborationSummary.tsx",
+      "bytes": 5594,
+      "sha256": "c80ec8cbd7ca9fd533cd041f790c43d1dd2b3477d9db949baaa253950fadfe7e"
+    },
+    {
+      "path": "source/agent-core-capabilities-todo.md",
+      "bytes": 68027,
+      "sha256": "292f5ac50e10f1639cbc3c8001befb7c92a0b7d81eee9e63580f852d91a2558f"
+    },
+    {
+      "path": "source/collaboration-state.test.ts",
+      "bytes": 15693,
+      "sha256": "662ee553590231de3e0d040ec793b7863b932298788bb1c81f59c3ffdf05d95c"
+    },
+    {
+      "path": "source/collaboration-state.ts",
+      "bytes": 24014,
+      "sha256": "679f4d32a60105bb65daa91e059c7d5cfd59a2c8b6c92131de020d8537b0a726"
+    },
+    {
+      "path": "source/collaboration.browser.mjs",
+      "bytes": 23346,
+      "sha256": "668e1e5f588728c35ea6b2f5f73c085e5d641035aac2e9300b298ea5b9c80a76"
+    },
+    {
+      "path": "source/index.css",
+      "bytes": 51524,
+      "sha256": "2190868535f57a56b40d6a8056302b430c5ae1af8f2a2781098c9bd9da25163c"
+    },
+    {
+      "path": "source/testing-2026-09-14-c06-collaboration-ui.md",
+      "bytes": 2242,
+      "sha256": "8c5bf51cb2c728d5428b543a1278d39879d067727586864c031efb3d4bf78e8f"
+    },
+    {
+      "path": "source-sha256.json",
+      "bytes": 994,
+      "sha256": "2932c049dd2fb58ecab8fe44ccf45e59159b5fd934b5fd5d7a12cd306fd919d4"
+    }
+  ]
+}

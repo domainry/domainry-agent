@@ -1,0 +1,63 @@
+{
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "c05_complete": false,
+  "logs": {
+    "regression.log": {
+      "packages": 8,
+      "exit_code": 0
+    },
+    "race.log": {
+      "packages": 2,
+      "exit_code": 0,
+      "original_shell_invocation_retained": false
+    },
+    "runtime.log": {
+      "scenarios": 1,
+      "exit_code": 0
+    },
+    "browser.log": {
+      "scenarios": 1,
+      "exit_code": 0
+    },
+    "frontend-tests.log": {
+      "tests": 75,
+      "exit_code": 0
+    },
+    "frontend-build.log": {
+      "exit_code": 0
+    }
+  },
+  "source_files": 118,
+  "frontend_dist_files": 571,
+  "verified": [
+    "new original requirements snapshots",
+    "immutable exact original admission receipt/call/run recovery without current metadata substitution",
+    "unknown or conflicting original requirements denied",
+    "version-only index and authorized original preview without grant",
+    "actual source owner publication, current provider/data/collaboration checks",
+    "exact canonical digest and CAS checked in transaction",
+    "original accepted task/delivery/decision/agreement/history retained",
+    "idempotent actual-publisher audit",
+    "source denial returns only authorized recovery metadata",
+    "ordinary exact-current-role sources independent of withdrawn foreign publisher, still current-data guarded",
+    "SDK HTTP Module SaaS forwarding",
+    "real original report/analysis model-tool delegation and two-root legacy recovery, field withdrawal, explicit publication, old-page reading and restart",
+    "real browser committed lost response, exact reload retry, one audit, current Share withdrawal/restoration and inspected narrow layout"
+  ],
+  "pending": [
+    "complete missing original agreement/history and historical admission workflows",
+    "multi-owner roots/dependencies",
+    "additional professional source adapters",
+    "broader participant scopes",
+    "full execution-detail sharing",
+    "cross-subject transfer/lifecycle",
+    "ordinary management controls on recovery UI",
+    "remaining TODO items"
+  ],
+  "database": "SQLite",
+  "model": "deterministic wire fixture",
+  "real_browser_acceptance": true,
+  "old_format_browser_database": false,
+  "online_model_acceptance": false
+}

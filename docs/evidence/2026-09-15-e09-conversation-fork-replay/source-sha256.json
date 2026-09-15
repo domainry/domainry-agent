@@ -1,0 +1,186 @@
+{
+  "date": "2026-09-15",
+  "item": "E09",
+  "files": [
+    {
+      "path": "agent/README.md",
+      "bytes": 17116,
+      "sha256": "18afdc4e8789c41cbaa463ceb3c8bae7be291fc49356d3373d143d2293f0602b"
+    },
+    {
+      "path": "agent/docs/agent-core-capabilities-todo.md",
+      "bytes": 81163,
+      "sha256": "d67ef2f408b7b0f1b2d5650d20b0665491e17e36eb63aa0d74881648fe355441"
+    },
+    {
+      "path": "agent/docs/conversations.md",
+      "bytes": 48073,
+      "sha256": "235072473d177ffd906ccafd4c19142fc97181add5744b235e3f4564d16d2a08"
+    },
+    {
+      "path": "agent/docs/testing-2026-09-15-e09-conversation-fork-replay.md",
+      "bytes": 6629,
+      "sha256": "5f1a4609f5d8c3e11350f29556c3be75b1c8cfac7c8096474500ad03886370ef"
+    },
+    {
+      "path": "agent/frontend/src/App.tsx",
+      "bytes": 50285,
+      "sha256": "657ebed056509a14ed4c4044e78eca157869e5f3c21c8ca94c6f322205877db1"
+    },
+    {
+      "path": "agent/frontend/src/RunDialog.tsx",
+      "bytes": 10313,
+      "sha256": "43a175214d283f3a50fd158409a01eba9d9f9158da2c16eb23996f97c245aefa"
+    },
+    {
+      "path": "agent/frontend/src/TrajectoryPanel.tsx",
+      "bytes": 8241,
+      "sha256": "86ebd30c4b6f0c2a68a99c70ab7434e1e9430df2d2a4456c38e3f785b0f37783"
+    },
+    {
+      "path": "agent/frontend/src/api.ts",
+      "bytes": 12199,
+      "sha256": "fdf14f0df3ddcffc03923cdf8b1abd07a4fa209aea1ac311ddd8334e1ceb6dab"
+    },
+    {
+      "path": "agent/frontend/src/errors.ts",
+      "bytes": 33584,
+      "sha256": "c6f31a22548aa23d6943e9ad90eff2fcb6bd2849c02650bbdfa426e38dcde15e"
+    },
+    {
+      "path": "agent/frontend/src/index.css",
+      "bytes": 59625,
+      "sha256": "dbd610d8a8e9a5a3ad94e6ed55bac65d4043abf5b214dc826baeb5a371a78a14"
+    },
+    {
+      "path": "agent/frontend/tests/conversation-trajectory.browser.mjs",
+      "bytes": 10472,
+      "sha256": "945e5fb852ea038fe57fea0b28c6812c3b5d0eeace15b8861928635dff0bca93"
+    },
+    {
+      "path": "agent/integration/conversation_integration_test.go",
+      "bytes": 21660,
+      "sha256": "477eca961f1852f7b17d45a5e2d9786ca0f006cf1f45de5016c94f43d61f1b0c"
+    },
+    {
+      "path": "agent/integration/conversation_trajectory_integration_test.go",
+      "bytes": 8827,
+      "sha256": "5e0732184997d030a8f7e751a21498dedcfc02112a2e2707c923909a882ef4b9"
+    },
+    {
+      "path": "agent/internal/application/conversation_context.go",
+      "bytes": 15758,
+      "sha256": "96c992020b30c888edff746fdc60dfc52b86203892de49f22bb890efede97f30"
+    },
+    {
+      "path": "agent/internal/application/conversation_dispatch.go",
+      "bytes": 15132,
+      "sha256": "221569f5ccf630fa84761ba8e82d3a8667dcd945e2b590b8bcd52b8ff804eac2"
+    },
+    {
+      "path": "agent/internal/application/conversation_trajectory.go",
+      "bytes": 18587,
+      "sha256": "4c56535fc23ec2c379833782421663ca435b0da39728021cdacd477635496668"
+    },
+    {
+      "path": "agent/internal/assembly/web/conversation_trajectory_browser_test.go",
+      "bytes": 6543,
+      "sha256": "4726e2c9185231f98f5df6e81af215d335cce7ae0be5ffca57b0d5d76cb2a74e"
+    },
+    {
+      "path": "agent/internal/capability/binding.go",
+      "bytes": 20609,
+      "sha256": "692b1acd5c17c9ed4cb9c320dcd0a4ee3d2195df0209efc22e42d79796b63935"
+    },
+    {
+      "path": "agent/internal/capability/binding_test.go",
+      "bytes": 8242,
+      "sha256": "b46fc9628080de2ba3d3812f5a4fecdb061b06b003e2fd7234073c53e34712aa"
+    },
+    {
+      "path": "agent/internal/infrastructure/persistence/database/agent/conversation_fork_schema.go",
+      "bytes": 858,
+      "sha256": "25acec5a19bc610792ab9813b7fd08f59f4973e362ec8b15705e9b7235b09748"
+    },
+    {
+      "path": "agent/internal/infrastructure/persistence/database/agent/conversation_fork_store.go",
+      "bytes": 6019,
+      "sha256": "51c4d3c5d18b6085b1c0b4e2e9ca2dce85ed1ec5af7502970288afb067ea9941"
+    },
+    {
+      "path": "agent/internal/infrastructure/persistence/database/agent/conversation_fork_store_test.go",
+      "bytes": 6015,
+      "sha256": "40f695e501fa3a110884deffdb099969073f87545863324c30bd7fe15f1b29df"
+    },
+    {
+      "path": "agent/internal/infrastructure/persistence/database/agent/conversation_sources_store.go",
+      "bytes": 6810,
+      "sha256": "cfff438f418f34921c421e2f5c88cee7cf44d70c2aa4c407e78554040bfeb593"
+    },
+    {
+      "path": "agent/internal/infrastructure/persistence/database/agent/conversation_store.go",
+      "bytes": 18364,
+      "sha256": "4d1c1d3e65f05fd6ef6432d970cf70084a5885de73dd1f1a912bd4a6a076506c"
+    },
+    {
+      "path": "agent/internal/infrastructure/persistence/database/agent/schema.go",
+      "bytes": 10307,
+      "sha256": "81473295c5e1fd6a93c51e8c1b2e31351c05805ba608aecaad028dfdb3256631"
+    },
+    {
+      "path": "agent/internal/transport/http/module/conversation_adapter.go",
+      "bytes": 15337,
+      "sha256": "3328d4495d21bf4f7852d07b0b6e17a3a740699c91b20ea39e5c49f7cbdf844c"
+    },
+    {
+      "path": "agent/module/factory_test.go",
+      "bytes": 6598,
+      "sha256": "29a4a8d36325efb3526fcf014315e8fad41d83d149335ffdcf7b5396b41378ce"
+    },
+    {
+      "path": "agent/remote/conversation_trajectory.go",
+      "bytes": 2253,
+      "sha256": "9abcd327cde53fa92b56334217a52309d596afd423958f8c89bbe9892bbba2bf"
+    },
+    {
+      "path": "agent/server/server_test.go",
+      "bytes": 9516,
+      "sha256": "aed449627e5e5f7879d13a0ade7ed92ec854c1f4421a5a0fdaa3c6c8d68ce657"
+    },
+    {
+      "path": "sdk/README.md",
+      "bytes": 24899,
+      "sha256": "ac5dae9e7c4c071aa8f6adf33dc62f705b4ab9731be015a2f1bf7fadb0e89f18"
+    },
+    {
+      "path": "sdk/conversation.go",
+      "bytes": 19334,
+      "sha256": "d28c0bdcbdc7869ed3c61a3271d81bc913d079ad28b9a469d5ff536c9f0c08f3"
+    },
+    {
+      "path": "sdk/conversation_http.go",
+      "bytes": 28142,
+      "sha256": "aec860a5a08ef20cff94b7911e9a078279fe5e13c532508b1b9cf44169c7778d"
+    },
+    {
+      "path": "sdk/conversation_trajectory.go",
+      "bytes": 6695,
+      "sha256": "0e1a45c801a5d76663aa8d1a4bc334fe3ecaa7b2f37c3c195bc8a670c53d533e"
+    },
+    {
+      "path": "sdk/http_adapter_test.go",
+      "bytes": 7266,
+      "sha256": "7dd25a04ad065e5aa5b307ed7730cb546210b4f5d539c55b9a81e8998b38f48d"
+    },
+    {
+      "path": "sdk/persistence/conversation_fork.go",
+      "bytes": 1219,
+      "sha256": "6d6487422ad28ad415e5fd2d362c2b5bb43eccac93923072777e36940a46f2dd"
+    },
+    {
+      "path": "sdk/persistence/conversation_sources.go",
+      "bytes": 1949,
+      "sha256": "8d2edfbed3aad48da37ac377c98c1199f5dc61f26b295988743bfebaa0dc8977"
+    }
+  ]
+}

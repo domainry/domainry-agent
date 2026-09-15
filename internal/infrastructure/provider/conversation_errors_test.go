@@ -4,11 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 )
@@ -46,6 +48,28 @@ func TestConversationHTTPFailuresAreClassifiedWithoutProviderContent(t *testing.
 		})
 	}
 }
+
+func TestConversationRetryDetails(t *testing.T) {
+	now := time.Date(2026, 9, 15, 12, 0, 0, 0, time.UTC)
+	if got := parseConversationRetryAfter("7", now); got != 7*time.Second {
+		t.Fatalf("seconds Retry-After = %v", got)
+	}
+	if got := parseConversationRetryAfter(now.Add(9*time.Second).Format(http.TimeFormat), now); got != 9*time.Second {
+		t.Fatalf("date Retry-After = %v", got)
+	}
+	for _, status := range []int{408, 429, 500, 504} {
+		var details agentsdk.ConversationModelFailureProvider
+		if err := conversationHTTPError(status, 3*time.Second); !errors.As(err, &details) || !details.ConversationModelFailureDetails().Retryable || details.ConversationModelFailureDetails().RetryAfter != 3*time.Second {
+			t.Fatalf("status %d was not retryable with Retry-After: %v", status, err)
+		}
+	}
+	for _, status := range []int{400, 401, 402, 403, 404, 422} {
+		var details agentsdk.ConversationModelFailureProvider
+		if err := conversationHTTPError(status, 3*time.Second); !errors.As(err, &details) || details.ConversationModelFailureDetails().Retryable {
+			t.Fatalf("status %d was retryable: %v", status, err)
+		}
+	}
+}
 func TestConversationNetworkFailureCategories(t *testing.T) {
 	for _, tc := range []struct {
 		err  error
@@ -58,5 +82,13 @@ func TestConversationNetworkFailureCategories(t *testing.T) {
 	}
 	if !errors.Is(conversationNetworkError(context.Canceled), context.Canceled) {
 		t.Fatal("cancellation identity lost")
+	}
+}
+
+func TestConversationUnexpectedEOFIsRetryableNetworkFailure(t *testing.T) {
+	err := conversationNetworkError(io.ErrUnexpectedEOF)
+	var details agentsdk.ConversationModelFailureProvider
+	if !errors.As(err, &details) || !details.ConversationModelFailureDetails().Retryable || details.ConversationModelFailureDetails().ErrorCode != "provider_network" {
+		t.Fatalf("unexpected EOF was not retryable: %v", err)
 	}
 }

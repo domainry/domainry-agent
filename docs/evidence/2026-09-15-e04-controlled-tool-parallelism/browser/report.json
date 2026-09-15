@@ -1,0 +1,280 @@
+{
+  "steps": [
+    "two explicitly independent reads preserve call order and expose actual bounded parallel metrics",
+    "compiled UI distinguishes run-level parallel metrics from the ordered per-step tool receipts",
+    "parallel execution evidence remains readable at 390px"
+  ],
+  "javascriptErrors": [],
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "resourceFailures": [
+    {
+      "status": 401,
+      "path": "/app/session"
+    },
+    {
+      "status": 401,
+      "path": "/auth/refresh"
+    }
+  ],
+  "mobileDialogBounds": {
+    "left": 12,
+    "right": 378,
+    "width": 366,
+    "viewport": 390,
+    "clientWidth": 390,
+    "visualWidth": 390,
+    "screenWidth": 390,
+    "mobileMedia": true,
+    "cssWidth": "366px",
+    "minWidth": "0px",
+    "maxWidth": "366px",
+    "boxSizing": "border-box"
+  },
+  "complete": true,
+  "run": {
+    "id": "crun_19a090a166c093f2e2be6290bb1b308b",
+    "conversation_id": "conv_84adbf09a0edff90ee729375740a8d50",
+    "client_message_id": "baf156aa-337a-46e5-ba75-4ee1eb85a676",
+    "status": "completed",
+    "user_seq": 1,
+    "assistant_message_id": "msg_f9ec609b0f3e76c6a4a450c8f4e39488",
+    "attempt": 1,
+    "draft_bytes": 0,
+    "last_event_seq": 16,
+    "steps": [
+      {
+        "number": 0,
+        "attempt": 1,
+        "status": "tools",
+        "text": "",
+        "calls": [
+          {
+            "effect": "read",
+            "id": "read-one",
+            "name": "parallel_fixture_read",
+            "arguments": "{\"value\":\"one\"}",
+            "status": "completed",
+            "resource_id": "one",
+            "result_preview": "{\"value\":\"one\"}",
+            "result_reference": {
+              "conversation_id": "conv_84adbf09a0edff90ee729375740a8d50",
+              "run_id": "crun_19a090a166c093f2e2be6290bb1b308b",
+              "step": 0,
+              "call_id": "read-one",
+              "sha256": "6d2664ae6a7e76eaf6b730f479c60b1993f9c4111ffa2a7079a4cd70b805e042"
+            },
+            "authorization": {
+              "status": "granted",
+              "revision": "fixture-r1",
+              "checks": 1
+            },
+            "started_at": "2026-09-15T02:01:03.039725Z",
+            "completed_at": "2026-09-15T02:01:03.066435Z",
+            "duration_ms": 26
+          },
+          {
+            "effect": "read",
+            "id": "read-two",
+            "name": "parallel_fixture_read",
+            "arguments": "{\"value\":\"two\"}",
+            "status": "completed",
+            "resource_id": "two",
+            "result_preview": "{\"value\":\"two\"}",
+            "result_reference": {
+              "conversation_id": "conv_84adbf09a0edff90ee729375740a8d50",
+              "run_id": "crun_19a090a166c093f2e2be6290bb1b308b",
+              "step": 0,
+              "call_id": "read-two",
+              "sha256": "e4a263b7cca041e5354c6169df071ef8501bd2b5114c8721d5a750d99ef95720"
+            },
+            "authorization": {
+              "status": "granted",
+              "revision": "fixture-r1",
+              "checks": 1
+            },
+            "started_at": "2026-09-15T02:01:03.040408Z",
+            "completed_at": "2026-09-15T02:01:03.06718Z",
+            "duration_ms": 26
+          }
+        ],
+        "tool_execution": "parallel_read",
+        "parallel_tool_calls": 2,
+        "started_at": "2026-09-15T02:01:02.989951Z",
+        "completed_at": "2026-09-15T02:01:02.991454Z",
+        "duration_ms": 1
+      },
+      {
+        "number": 1,
+        "attempt": 1,
+        "status": "completed",
+        "text": "两个独立读取均已完成。",
+        "calls": [],
+        "started_at": "2026-09-15T02:01:03.132653Z",
+        "completed_at": "2026-09-15T02:01:03.133653Z",
+        "duration_ms": 1
+      }
+    ],
+    "model": "parallel-fixture",
+    "correlation_id": "crun_19a090a166c093f2e2be6290bb1b308b",
+    "metrics": {
+      "steps": 2,
+      "model_calls": 2,
+      "tool_calls": 2,
+      "tool_attempts": 2,
+      "parallel_tool_batches": 1,
+      "parallel_tool_calls": 2,
+      "peak_parallel_tools": 2,
+      "authorization_checks": 2,
+      "confirmation_decisions": 0
+    },
+    "audit": [
+      {
+        "seq": 1,
+        "type": "run",
+        "status": "queued",
+        "step": 0,
+        "occurred_at": "2026-09-15T02:01:02.908549Z"
+      },
+      {
+        "seq": 2,
+        "type": "run",
+        "status": "running",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T02:01:02.909904Z"
+      },
+      {
+        "seq": 3,
+        "type": "step",
+        "status": "prepared",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T02:01:02.966657Z"
+      },
+      {
+        "seq": 4,
+        "type": "model",
+        "status": "started",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T02:01:02.989951Z"
+      },
+      {
+        "seq": 5,
+        "type": "model",
+        "status": "completed",
+        "step": 0,
+        "attempt": 1,
+        "duration_ms": 1,
+        "occurred_at": "2026-09-15T02:01:02.991454Z"
+      },
+      {
+        "seq": 6,
+        "type": "authorization",
+        "status": "granted",
+        "step": 0,
+        "attempt": 1,
+        "call_id": "read-one",
+        "tool": "parallel_fixture_read",
+        "action_key": "fixture.parallel.read",
+        "authorization_revision": "fixture-r1",
+        "occurred_at": "2026-09-15T02:01:03.023375Z"
+      },
+      {
+        "seq": 7,
+        "type": "authorization",
+        "status": "granted",
+        "step": 0,
+        "attempt": 1,
+        "call_id": "read-two",
+        "tool": "parallel_fixture_read",
+        "action_key": "fixture.parallel.read",
+        "authorization_revision": "fixture-r1",
+        "occurred_at": "2026-09-15T02:01:03.023587Z"
+      },
+      {
+        "seq": 8,
+        "type": "tool",
+        "status": "started",
+        "step": 0,
+        "attempt": 1,
+        "call_id": "read-one",
+        "tool": "parallel_fixture_read",
+        "occurred_at": "2026-09-15T02:01:03.039725Z"
+      },
+      {
+        "seq": 9,
+        "type": "tool",
+        "status": "started",
+        "step": 0,
+        "attempt": 1,
+        "call_id": "read-two",
+        "tool": "parallel_fixture_read",
+        "occurred_at": "2026-09-15T02:01:03.040408Z"
+      },
+      {
+        "seq": 10,
+        "type": "tool",
+        "status": "completed",
+        "step": 0,
+        "attempt": 1,
+        "call_id": "read-one",
+        "tool": "parallel_fixture_read",
+        "duration_ms": 26,
+        "occurred_at": "2026-09-15T02:01:03.066435Z"
+      },
+      {
+        "seq": 11,
+        "type": "tool",
+        "status": "completed",
+        "step": 0,
+        "attempt": 1,
+        "call_id": "read-two",
+        "tool": "parallel_fixture_read",
+        "duration_ms": 26,
+        "occurred_at": "2026-09-15T02:01:03.06718Z"
+      },
+      {
+        "seq": 12,
+        "type": "step",
+        "status": "prepared",
+        "step": 1,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T02:01:03.088253Z"
+      },
+      {
+        "seq": 13,
+        "type": "model",
+        "status": "started",
+        "step": 1,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T02:01:03.132653Z"
+      },
+      {
+        "seq": 14,
+        "type": "model",
+        "status": "completed",
+        "step": 1,
+        "attempt": 1,
+        "duration_ms": 1,
+        "occurred_at": "2026-09-15T02:01:03.133653Z"
+      },
+      {
+        "seq": 16,
+        "type": "run",
+        "status": "completed",
+        "step": 0,
+        "attempt": 1,
+        "occurred_at": "2026-09-15T02:01:03.160565Z"
+      }
+    ],
+    "audit_complete": true,
+    "started_at": "2026-09-15T02:01:02.909904Z",
+    "completed_at": "2026-09-15T02:01:03.160565Z",
+    "duration_ms": 250,
+    "queue_duration_ms": 1,
+    "created_at": "2026-09-15T02:01:02.908477Z",
+    "updated_at": "2026-09-15T02:01:03.160576Z"
+  }
+}

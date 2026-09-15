@@ -1,0 +1,71 @@
+{
+  "date": "2026-09-15",
+  "item": "K03",
+  "files": [
+    {
+      "path": "acceptance.json",
+      "bytes": 2418,
+      "sha256": "fe0604e3ee0e4eafc77be52d8b940e5baaab1627285ac45b33d2375e55d1188f"
+    },
+    {
+      "path": "commands.md",
+      "bytes": 2434,
+      "sha256": "9c93f464ba3c0b7aebebacf08a03d4b2abea09057886eb8b102ddc2336dd998c"
+    },
+    {
+      "path": "logs/agent-sdk-tests.log",
+      "bytes": 607,
+      "sha256": "99c0dc5c5e04c3bc2efa32940bc34d2c19239d80e8e86579f59eff3261f2bddc"
+    },
+    {
+      "path": "logs/connector-sdk-tests.log",
+      "bytes": 65,
+      "sha256": "173e82c11f6997b7c0aab9ec59700cfb749deb6ee9b73228a34c8ec9abf01843"
+    },
+    {
+      "path": "logs/connector-tests.log",
+      "bytes": 138,
+      "sha256": "55a665c5e1c4593420a9eda55b29a9ebfae77e0b961c34f9a0fdb242f18f1464"
+    },
+    {
+      "path": "logs/diff-check.log",
+      "bytes": 219,
+      "sha256": "03f5c93fc5b032ea2576abf08a187c34269ce9b8667e66d4b0fcd0a4cbe74cf1"
+    },
+    {
+      "path": "logs/integration-tests.log",
+      "bytes": 259,
+      "sha256": "707220654adb1ad07428edbe1008e0ffdcbdafcaee0eda27c59f967793f876af"
+    },
+    {
+      "path": "logs/mcp-agent-e2e.log",
+      "bytes": 208,
+      "sha256": "460e03c4d0a09335eb865dd5aa337a53c05eb745dc6e78fb337c0e66431f0993"
+    },
+    {
+      "path": "logs/runtime-release-lock-known-failure.log",
+      "bytes": 6671,
+      "sha256": "75441dace96fcfe82a17136f450db73af84815f10fa1f8dcf039ad32b3784cbd"
+    },
+    {
+      "path": "logs/runtime-tests.log",
+      "bytes": 160,
+      "sha256": "764257f955a10e14d53435e329b4aeaea68cd5762bff0d5b45f97b3600729d9b"
+    },
+    {
+      "path": "logs/tools-sdk-tests.log",
+      "bytes": 191,
+      "sha256": "b0579aded71fedfb4b1a627f89a83914e6bb90cf61cee6be16967689301cfc55"
+    },
+    {
+      "path": "logs/tools-tests.log",
+      "bytes": 217,
+      "sha256": "8d0cf94bd0f5ed8e6b1956475116bd1a592d31070f061dc400e0fc3e9ef8179e"
+    },
+    {
+      "path": "source-sha256.json",
+      "bytes": 2694,
+      "sha256": "c6dbab99518727c598e4ee503f0662a766504c56894512e8254eb69aac398e7d"
+    }
+  ]
+}

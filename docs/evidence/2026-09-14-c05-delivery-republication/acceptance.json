@@ -1,0 +1,62 @@
+{
+  "date": "2026-09-14",
+  "entry": "C05",
+  "phase": "explicit original delivery preparation and republication",
+  "c05_complete": false,
+  "completed_items": 4,
+  "total_items": 25,
+  "source_files": 98,
+  "checks": {
+    "regression.log": {
+      "packages": 8,
+      "exit_code": 0
+    },
+    "race.log": {
+      "packages": 2,
+      "exit_code": 0
+    },
+    "runtime.log": {
+      "scenarios": 1,
+      "exit_code": 0
+    },
+    "browser.log": {
+      "scenarios": 1,
+      "exit_code": 0
+    },
+    "frontend-tests.log": {
+      "tests": 73,
+      "exit_code": 0
+    },
+    "frontend-build.log": {
+      "exit_code": 0
+    }
+  },
+  "verified": [
+    "version-only historical preparation index without original content or references",
+    "current and exact immutable historical delivery selection",
+    "fresh actual execution-user, collaboration, original-provider and current-data authorization",
+    "missing private provenance ports deny preview",
+    "canonical original record digest and CAS checked again inside publication transaction",
+    "accepted original delivery/assessment/task/decision/history retained with actual-publisher audit",
+    "unknown old publication rows not rewritten",
+    "actual old-role report/analysis originals totaling 70, human acceptance, old-format manual delivery denial, explicit publication, exact original reads and restart",
+    "field/original-provider/publisher-role withdrawal and restoration",
+    "real Identity/Agent browser accepted-record selection, explicit sharing, committed response loss, reload, exact request/client-ID retry, single audit and visible publisher identity",
+    "desktop and narrow rendering, current share withdrawal, hidden preview and restoration",
+    "client-only legacy null-assessment-array DTO rendering replay"
+  ],
+  "pending": [
+    "old-contract and complete historical admission flows",
+    "multi-owner roots and dependencies",
+    "additional professional source adapters",
+    "participant management/execution/delivery scopes",
+    "complete execution-detail sharing",
+    "cross-subject transfer and subject lifecycle",
+    "C06 and all remaining TODO items"
+  ],
+  "database": "SQLite",
+  "model": "deterministic wire fixture",
+  "real_browser_acceptance": true,
+  "old_format_browser_database": false,
+  "online_model_acceptance": false
+}

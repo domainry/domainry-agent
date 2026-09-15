@@ -1,0 +1,30 @@
+{
+  "phase": "accepted_prefix_and_existence_sql_scope_coverage",
+  "c05_complete": false,
+  "todo_completed": 4,
+  "todo_total": 25,
+  "owner_root_tests": 51,
+  "new_orm_subcases": 6,
+  "before_orm_subcases_rejected": 6,
+  "owner_normal_seconds": 1.16,
+  "owner_race_seconds": 4.182,
+  "owner_verified_sessions": {
+    "normal": 32333,
+    "race": 98866
+  },
+  "actual_agent_verified_session": 94436,
+  "verified_exit_codes": {
+    "owner_normal": 0,
+    "owner_race": 0,
+    "actual_agent_normal": 0
+  },
+  "actual_agent_root_seconds": 133.59,
+  "actual_agent_package_seconds": 134.474,
+  "actual_agent_original_sha_checks": 20,
+  "actual_agent_specific_scope_strategy": "Existing original complex-filter/cursor regression; new prefix and nonnull coverage branches proven by six actual Runtime ORM cases, not a real Identity prefix-role configuration.",
+  "source_files": 4687,
+  "production_sources_unchanged_since_actual_agent_launch": true,
+  "unit_fixture_after_actual_agent_compile": "Correct missing business claim syntax from literal $business.unknown to SDK-recognized $context.unknown. Final whole-owner normal/race compile the correction. Only this test source differs; both versions recorded.",
+  "remaining_query_scope": "Still compares producer complete read policy; using exact normalized original query filters as additional constraints remains incomplete.",
+  "prior_race_archive_artifacts_unchanged": 5
+}

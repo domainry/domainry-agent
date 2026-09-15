@@ -115,8 +115,23 @@ func TestConversationWorkflowConfirmedStartRestartReconcileAndProgress(t *testin
 			}
 			return resultToolCall("workflow_get", "progress", agentsdk.ConversationWorkflowGet{WorkflowKey: "review", ProcessID: "process-1"}), nil
 		default:
-			if !strings.Contains(in.Messages[len(in.Messages)-1].Content, `"status":"waiting"`) {
-				t.Error("missing actual waiting state")
+			last := in.Messages[len(in.Messages)-1]
+			var preview struct {
+				Representation string                               `json:"representation"`
+				Reference      agentsdk.ConversationResultReference `json:"reference"`
+			}
+			if json.Unmarshal([]byte(last.Content), &preview) == nil && preview.Representation == "stored_result_preview" {
+				return resultToolCall("tool_result_read", "progress-read", agentsdk.ConversationResultRead{Reference: preview.Reference, MaxBytes: 8192}), nil
+			}
+			if last.ToolCallID == "progress-read" {
+				var readResult agentsdk.ConversationToolResult
+				var page agentsdk.ConversationResultSlice
+				var original agentsdk.ConversationToolResult
+				if json.Unmarshal([]byte(last.Content), &readResult) != nil || readResult.Status != "completed" || json.Unmarshal(readResult.Content, &page) != nil || !page.Complete || json.Unmarshal([]byte(page.JSONText), &original) != nil || !strings.Contains(string(original.Content), `"status":"waiting"`) {
+					t.Errorf("missing actual waiting state after stored result read: %s", last.Content)
+				}
+			} else if !strings.Contains(last.Content, `"status":"waiting"`) {
+				t.Errorf("missing actual waiting state: %s", last.Content)
 			}
 			return (&executionModel{}).answerResult(), nil
 		}

@@ -1,0 +1,269 @@
+{
+  "phase_status": "accepted_participant_delivery_reading_and_three_subject_provenance",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 156,
+  "source_manifest": "source-sha256.json",
+  "supported_participant_operations": [
+    "view",
+    "communicate",
+    "manage",
+    "delivery_read"
+  ],
+  "real_identity": true,
+  "real_http": true,
+  "real_tool_execution": true,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "logs": {
+    "store.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 2,
+      "top_level_failed_tests": 0,
+      "packages": 1,
+      "test_durations_seconds": {
+        "TestParticipantDeliveryRelayKeepsProviderAndPublisherAndRequiresExactDelegation": 0.02,
+        "TestParticipantDeliveryGrantPublishesFutureDeliveriesWithoutChangingExecutor": 0.01
+      }
+    },
+    "core-initial.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 2,
+      "test_durations_seconds": {}
+    },
+    "frontend-check.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 0,
+      "test_durations_seconds": {}
+    },
+    "core-final.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 3,
+      "test_durations_seconds": {}
+    },
+    "frontend.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 0,
+      "test_durations_seconds": {}
+    },
+    "build.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 0,
+      "test_durations_seconds": {}
+    },
+    "race.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 14,
+      "top_level_failed_tests": 0,
+      "packages": 2,
+      "test_durations_seconds": {
+        "TestCollaborationDeliverySourcePurposeCannotAuthorizeRawReplay": 0.0,
+        "TestManagementReceiptUsesCurrentCanonicalGrantAndRejectsExtraContent": 0.0,
+        "TestExecutorCanReceiveExplicitManagementWithoutLosingAdmittedAccessOnRevocation": 0.0,
+        "TestParticipantManagementReturnsOnlyReceiptAndChecksCurrentRoleAndGrant": 0.0,
+        "TestPeerVerificationHistoryRechecksReviewAndEveryReceiptSource": 0.0,
+        "TestParticipantDeliveryRelayKeepsProviderAndPublisherAndRequiresExactDelegation": 0.24,
+        "TestParticipantDeliveryGrantPublishesFutureDeliveriesWithoutChangingExecutor": 0.23,
+        "TestParticipantManagementPreservesOriginalTaskAndRejectsWithdrawnGrantReplay": 0.21,
+        "TestParticipantRequirementChangeInvalidatesOwnersDependentWork": 0.24,
+        "TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles": 0.65,
+        "TestReceiverManagementUsesAdmittedDeliveryReadAndRejectsWithdrawnReplay": 0.24,
+        "TestReceiverManagementAgentReviewsFromItsOwnLeasedPeerConversation": 0.26,
+        "TestPeerVerificationReadsActualReceiptsAndCannotOverrideFailedData": 0.29,
+        "TestPeerVerificationRequiresIndependentCurrentReviewAndRetainsHistory": 0.26
+      }
+    },
+    "http-regression.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 3,
+      "top_level_failed_tests": 0,
+      "packages": 1,
+      "test_durations_seconds": {
+        "TestDelegationExecutionHTTPUsesConsentingReceiversRoleAndStopsAfterRevocation": 4.16,
+        "TestDelegationParticipantsHTTPKeepSenderAndExecutorIndependent": 4.11,
+        "TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects": 7.48
+      }
+    },
+    "browser-final.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 1,
+      "top_level_failed_tests": 0,
+      "packages": 1,
+      "test_durations_seconds": {
+        "TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects": 18.82
+      }
+    },
+    "browser-layout.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 1,
+      "top_level_failed_tests": 0,
+      "packages": 1,
+      "test_durations_seconds": {
+        "TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects": 20.83
+      }
+    },
+    "runtime.log": {
+      "exit_code": 0,
+      "top_level_passed_tests": 1,
+      "top_level_failed_tests": 0,
+      "packages": 1,
+      "test_durations_seconds": {
+        "TestLegacyAgreementUpdateRestartResumeAndOriginalHistoryThroughRealHTTP": 65.59
+      }
+    },
+    "before-three-ledgers.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0,
+      "test_durations_seconds": {}
+    },
+    "http-initial.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0,
+      "test_durations_seconds": {}
+    },
+    "http-current-audience.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0,
+      "test_durations_seconds": {}
+    },
+    "http-reader-port.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0,
+      "test_durations_seconds": {}
+    },
+    "http-source-trace.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0,
+      "test_durations_seconds": {}
+    },
+    "http-three-ledgers.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0,
+      "test_durations_seconds": {}
+    },
+    "http-final.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0,
+      "test_durations_seconds": {}
+    },
+    "http-accepted.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 0,
+      "test_durations_seconds": {}
+    },
+    "browser.log": {
+      "exit_code": 1,
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0,
+      "test_durations_seconds": {}
+    }
+  },
+  "browser": {
+    "status": "passed",
+    "page_errors": [],
+    "scenarios": [
+      "actual third-user result reading",
+      "delivery history",
+      "execution detail withheld",
+      "independent grants survive communication changes",
+      "delivery withdrawal clears old result",
+      "regrant requires fresh reading",
+      "mobile width"
+    ]
+  },
+  "screenshots_visually_checked": [
+    "browser/participant-delivery.png",
+    "browser/participant-delivery-mobile.png"
+  ],
+  "pagination_limit": "Clock result is 159 bytes: first 256-byte request completes. Exact final offset and subsequent authorization are tested; nonterminal professional multi-page reading is not claimed.",
+  "before_check_note": "before-three-ledgers-overlay.json restores only the captured pre-fix conversation_sources.go. The same final HTTP fixture fails with run_not_found for the actual third reader. Earlier diagnostic failures are retained; http-accepted.log is a fixture-compilation diagnostic, not accepted execution. browser-before-layout-check screenshots predate geometry assertions.",
+  "accepted": [
+    "Independent delivery_read grant with current role and actual grant publisher checks",
+    "Same-delegation exact submitted current/history roots relay keeps original provider and actual publisher",
+    "Future delivery publication reaches current admitted readers",
+    "Actual third-user HTTP reading, revocation and private conversation/task/run isolation",
+    "Foreign historical collaboration content uses current canonical audience",
+    "Three-ledger inherited source resolves exact actual provider",
+    "Browser independent scopes, withdrawal clears old bytes, regrant requires fresh read and actual modal mobile bounds",
+    "Real Runtime legacy agreement restart and original history regression"
+  ],
+  "pending": [
+    "Participant execution_read with complete shared run/call ports and UI",
+    "Remaining professional and artifact sources through cross-subject readers",
+    "Cross-subject contract publication and multi-owner first publication",
+    "Complete participant dependency and transfer management",
+    "Subject exit lifecycle and remaining C05 scope"
+  ],
+  "artifact_sha256": {
+    "before-three-ledgers-overlay.json": "a124a205db3e922ba56c7cadcb99a26e4156c82dc323712e378d4c47b65458fb",
+    "before-three-ledgers.log": "0499dcaa5762574601c71600d57e4a8adea164dfdafdf73e8e0f3fdc6f908e5d",
+    "browser/participant-delivery-mobile.png": "4071bbe1c9bf73877b35760d0d31565cd6c999f660775d7065073bd8788d275b",
+    "browser/participant-delivery.png": "78ac0e407f8c584c91f8493f77d990c5f94edd83634652ba2ef7e6bc247bca3e",
+    "browser/report.json": "2e2bd2f96491d778e8dec9073a3fe49d44478f04758589e7ad8333b050416e03",
+    "browser-before-layout-check/participant-delivery-mobile.png": "b63c49c0aea25f06683429f216aaca699b3efbb210d0e0d1a83ab515369f9562",
+    "browser-before-layout-check/participant-delivery.png": "d4bd6f2bb152da6181c1d2ef53b65fbcc0e007f6463888268a477dca932020ce",
+    "browser-before-layout-check/report.json": "2e2bd2f96491d778e8dec9073a3fe49d44478f04758589e7ad8333b050416e03",
+    "browser-final.log": "69b6014c8629f5dfd3a4677adf5cc55011eba8b97f55e478bbfe37dcb83b912d",
+    "browser-layout.log": "d5270bbc1d043b4e541860c00dded771362cfe9bf6c52a6745d8a37726ba62d5",
+    "browser.log": "85ed9fecab16ef7fad1ef35c406d5a4b5437ae64a60f3d595daf90f9dce8ee44",
+    "build.log": "eff28c9cbc722fa9a665e9c2a894cdf9100d58b9225da6d0f264c55a80e334cf",
+    "core-final.log": "042a8adc3bfe08c068610d114b2af7cc3784a2e846e9b319457956013c530876",
+    "core-initial.log": "42fc13be8761a3189262f7e7e80fe0f7fd668a6a2f7fecc88e0d7eacafff8683",
+    "diagnostic-browser/failure.json": "3793fb448ec3cfba6a5cd0c3e43fa1cfc5c0b6bd0b12519baea6b0fb57a2d4be",
+    "frontend-check.log": "7c2489be54899ba188707bb8207580f312c01c69c850a6104fab735ed6a913d7",
+    "frontend.log": "70c0ed03a0f70f4501ef35aa27e86beb04e906a70b6b104aabd373153cab3739",
+    "http-accepted.log": "3a3c470f3e0aa2e3717fbaa3178e14dab0d90b254860d563f73f7322cef0d256",
+    "http-current-audience.log": "41cb61884b7ce5c39a0cee755092a1dcc94bde6595bb818d3bd47e86fb5b23bd",
+    "http-final.log": "673a9e5e12d132cc1b03e7649954e66ceb770c7427368115ac7a54cbffcc3b2d",
+    "http-initial.log": "0b98c3c1d743a77aae81899bf5282884c7a5406ef070baee657174b9f48da7c1",
+    "http-reader-port.log": "e74a0e0988dd44b2089fbaf54cb6be9076f15e6254d77b9657f94cea7cf99708",
+    "http-regression.log": "cc43a4f795acbc70eea8227194b140346d086c20cbc628e8af41238c9b480131",
+    "http-source-trace.log": "51d0b75c3b1729f8375248cb054da8f62b776a5d2f60b7c7a16bb553b1e926af",
+    "http-three-ledgers.log": "94f942e64c854f3451f8a1eb494e461eae987d0108ef84fae7df9d2b29464958",
+    "race.log": "53c0a02d088132613770231af66e220c8e46a165cd13d068ac5a06897781d605",
+    "runtime.log": "3fd454bb4164e51999b386daa1894dc554d54bd8e3d30bd54c97309863f9a75f",
+    "source-before/testdata/agent/frontend/src/DelegationParticipants.tsx": "5bbb9148dfc44b15992a56271b17892f68e081c8262eba6c30b232677994f9b6",
+    "source-before/testdata/agent/frontend/src/DeliveryVerification.tsx": "c25069cc28e9f8d6ff6cfb12d6dbe531091f8c4fa4ee390afb9ed909ba321a01",
+    "source-before/testdata/agent/frontend/src/collaboration-state.ts": "9c452f09a224cf68a944cdf3cb3d82bcb4afed2f539e06dd8b30685e6b4cd60e",
+    "source-before/testdata/agent/internal/application/conversation_collaboration_authorization.go": "c71f910616ff7f4e0c2609fadbabe5b3693e384f4da7adc4a0e2641f99113c8f",
+    "source-before/testdata/agent/internal/application/conversation_delegations.go": "e514ebec06ce0cb86948ea6de711d74a9d7183784ab70ca4e3356c9aa49c9d97",
+    "source-before/testdata/agent/internal/application/conversation_participants.go": "9272966245d6dcf4843bdfb68480a9b16cf2fa4f4f9adcba28c192b3cb2df57a",
+    "source-before/testdata/agent/internal/application/conversation_shared_sources.go": "8f070fbb6d2a43d34a4090f684bd935a5c8533f97c4251317fe74bb7d46af561",
+    "source-before/testdata/agent/internal/application/conversation_sources.go": "30db501057290e981c499ccbaa97554699ae8e439925919648c1462f4d860d6c",
+    "source-before/testdata/agent/internal/infrastructure/persistence/database/agent/conversation_participants_store.go": "8b87ccc171238d11ede15e87be2b3d054d8c85681f74e2fcfea48b6eca3f79d5",
+    "source-before/testdata/agent/internal/infrastructure/persistence/database/agent/conversation_source_releases_store.go": "4442a9ff7194af8e7d7560ea227236acf13907133ce8e1d5efb76f7d45b14047",
+    "source-before/testdata/agent/internal/infrastructure/persistence/database/agent/conversation_verification_store.go": "168f43b5d0a92836dfe700778e4f09ad5c57ef81f6d20a483f87f612809a76d9",
+    "source-before/testdata/sdk/conversation_participants.go": "5613283f7b76cc0d8b7db452a48c38b06490fd3e8e92d38dfea1c0fd97d4c8ad",
+    "source-before/testdata/sdk/conversation_verification.go": "e053ca0c4528e42dd1fb1633aba0b6ad51d40d42b2fdce5c81eab62447e9e92d",
+    "source-sha256.json": "586f19cfca10ef06553b2bd3f93f032940f9d642ba369d39d3352cf5d5dc84f3",
+    "store.log": "8d1a3f8eeb3b72a67bd9887dc6e7224ca21411da8b9d9c9b484be2c7c1d5a3b7"
+  }
+}

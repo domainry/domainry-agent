@@ -1,0 +1,6 @@
+=== RUN   TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart
+    conversation_knowledge_shared_delivery_test.go:293: browser POST /agent/conversations/conv_913e0e715e72b450b08ec42382ac28c2/messages status=403 want=202 body={"code":"agent.conversation.execution_access_denied"}
+--- FAIL: TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart (3.66s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	4.422s
+FAIL

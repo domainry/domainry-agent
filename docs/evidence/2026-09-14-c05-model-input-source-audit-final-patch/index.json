@@ -1,0 +1,17 @@
+{
+  "phase": "C05 complete final source patch and reconstruction proof",
+  "artifacts": {
+    "correction.json": {
+      "sha256": "ed2449b09dd76eeae7c0d212b4b9b69aa2c4180fe3c4a59004ffb25752936b54",
+      "bytes": 462
+    },
+    "final-phase.patch": {
+      "sha256": "e4b9e1ba641ee5159fb0cf53ffbdf43f256ea1352b3591d157245d00ad6e5b07",
+      "bytes": 30834
+    },
+    "patch-validation.json": {
+      "sha256": "785c934f08ed0dfa7051f4237ad43b75577a7b52468b3fe2829cda83181b5713",
+      "bytes": 932
+    }
+  }
+}

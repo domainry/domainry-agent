@@ -1,0 +1,8 @@
+=== RUN   TestMultipleOwnerProfessionalDependenciesReadOriginalsAndDeliverThroughRealRuntime
+    conversation_multiple_owner_dependencies_test.go:268: Admit multiple-owner-root from conv_eb6ec3184c04a62f973d9c1527d1ea69 to agent_780fddfe761cc21b76fc1857069f8fc1
+    conversation_multiple_owner_dependencies_test.go:291: Admit multiple-owner-upstream from conv_c1dc0fd48133af072c508c32defbeb38 to agent_73904f1fc479d13d7af60271c5ae6526
+    conversation_multiple_owner_dependencies_test.go:301: Admit multiple-owner-final from conv_be364d6387bcd477bca4f048c6022c4f to agent_fd8c98adac95c9d1e72b9706e91754db
+    conversation_multiple_owner_dependencies_test.go:393: Two actual professional owners, independent original and publication roles, explicit third audience, adopted upstream namespaces, Provider-visible own reading receipts, automatic verified delivery, original SHA/bytes, private endpoint denial, no repeated professional call, original-role/publisher-role/reader-field/audience withdrawal, account acceptance and restart verified
+--- PASS: TestMultipleOwnerProfessionalDependenciesReadOriginalsAndDeliverThroughRealRuntime (27.22s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	28.448s

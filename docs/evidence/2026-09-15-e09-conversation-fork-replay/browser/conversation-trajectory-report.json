@@ -1,0 +1,23 @@
+{
+  "steps": [
+    "source run reaches a persisted stable completed boundary",
+    "compiled UI exposes the exact saved model-visible request and response at the stable boundary",
+    "model fixture replay consumes recorded responses without invoking the model or tools",
+    "authorized export downloads deterministic structured trajectory data",
+    "trajectory comparison uses request, response and tool hashes without replaying execution",
+    "live rerun creates an independent peer conversation and waits for new input",
+    "the child starts only after user input and receives the authorized historical snapshot as inert context",
+    "fork provenance remains navigable and source/child trajectories report concrete hash differences on desktop and mobile"
+  ],
+  "javascriptErrors": [],
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "resourceFailures": [],
+  "sourceConversation": "conv_e3d29ec00cd49d8e38c3518496f93e54",
+  "sourceRun": "crun_a1b249ec93ee803c91fefe2047eea70c",
+  "childConversation": "conv_fa06412cf7cf1e100329af55fcb14ba2",
+  "childRun": "crun_4d99e6d6d2c49e5e7b9fb72d0800f5fa",
+  "exportedSha256": "79b2233295fedbbb5a1a2ee9df579a6b23f722fed9f0b1b40bdeac619fda9c2e",
+  "modelCalls": 2,
+  "forkContextSeen": true
+}

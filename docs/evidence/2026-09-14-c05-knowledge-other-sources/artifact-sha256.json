@@ -1,0 +1,23 @@
+{
+  "acceptance.json": "6c3bad25f3bb44f9113d05f957ff58d638aa85623b7128b4251d2782581879f5",
+  "agent-go.work": "8b93b0fe84081eaff29af0d9568edc5823c67ffaf10ccc25fa73b674cab1291a",
+  "archive.py": "89931a19c17def202b02a821305488a3eb1bbefa92e868b225c8ada35b874d93",
+  "commands.txt": "961a6436bfc48f2cc0e05c2a108e941b4c92b047b638e4075547c123d6ea491a",
+  "diagnostic-identity-overwritten-role-query-error.log": "79c64156f248d7c7403498f67279699e03106a65209b2c171a539b0ac8436bc3",
+  "diagnostic-identity-test-field-before-correction.log": "cbf53272943b7e2bb95c055d8ac88a58409ce12a6fdabd3081aab568a82b4910",
+  "diagnostic-managed-agent-race.log": "f41829a7e6f20ce1b33a3e181758d9818d4227af6879a43dde6e47868866473e",
+  "diagnostic-original-managed-race-default-timeout.log": "799758adb25947e9dba4d75b87044ae5409e7c4bfe1957858e5002a1426fcbd0",
+  "diagnostic-unmanaged-directory-acl-expectation.log": "01c8bc45b92ec68ee8cc39d6ba9d5ab7c8036d41c5ffb0eb95855f936c75ba1b",
+  "identity-all.log": "dd2849ff4ddceccf12d5058499a59c50dde892a48a65c7b99dd86772354245ba",
+  "identity-application-adapter-race.log": "7feb6d21296165b642fd5f314637d27e06da225c74b2b1eb5bed1f7399f7d9ec",
+  "identity-role.diff": "b36d68327f9bb93750cc37d5563b037ea97118a0cd0cb68d242f575683c84198",
+  "previous-artifact-sha256.json": "fe1c996e3dc43e1cc8dfaac9dc1773d1e2544d580a9eb680857f660d2ee807ba",
+  "previous-source-sha256.json": "8a91ac3211df937bd04feac1e9c1e856472273cb17a2f7931af37e76687e983e",
+  "race-states.json": "9c53703f3232ef483122bd08893ae9b16008adc027d62ceaee73a6baa93ef993",
+  "real-three-knowledge-agent-sources.log": "39e1695ace6693940d54433d152f76f4bd6ca49021020b3177e207478245e27c",
+  "runtime-go.work": "d4fb409eaf7b82be4e7968dd4cd90895a30dadfb875396073d301333d8b6e39c",
+  "runtime-knowledge-agent-test.go.txt": "74429a8d4f31b12732d9291c57b3efebbf0c2ee1afd72b69d708ffdf98ef6f91",
+  "runtime-source-applications.log": "4d7c23148e176e018d2865a4ae963a652a500250a8fad020ac5ca2c64b5b9f7c",
+  "source-sha256.json": "c619e1bc4e96056dc4c0f6248c22046a9e1192bcabbdf090e99e135a81e1f975",
+  "unmanaged-legacy-agent-race-pending.log": "fc069a875febdd4c7d245c7ddf975479e5e378f3fc8f04212e3c80509c6388ac"
+}

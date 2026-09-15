@@ -1,0 +1,14 @@
+# github.com/domainry/domainry-knowledge/internal/infrastructure/provider [github.com/domainry/domainry-knowledge/internal/infrastructure/provider.test]
+internal/infrastructure/provider/knowledge_shared_result_read.go:110:16: undefined: sdk.AuthorizeSharedKnowledgeResultRead
+internal/infrastructure/provider/knowledge_shared_result_read.go:117:16: undefined: sdk.AuthorizeSharedKnowledgeResultRead
+internal/infrastructure/provider/knowledge_shared_result_read.go:123:11: undefined: sdk.ConversationKnowledgeSharedResultReadSource
+internal/infrastructure/provider/knowledge_shared_result_read.go:124:11: undefined: sdk.KnowledgeSharedExtractionContentSource
+internal/infrastructure/provider/knowledge_shared_result_read_test.go:95:18: undefined: sdk.AuthorizeSharedKnowledgeResultRead
+internal/infrastructure/provider/knowledge_shared_result_read_test.go:108:26: undefined: sdk.SharedKnowledgeExtractionPassages
+internal/infrastructure/provider/knowledge_shared_result_read_test.go:123:20: undefined: sdk.AuthorizeSharedKnowledgeResultRead
+internal/infrastructure/provider/knowledge_shared_result_read_test.go:140:20: undefined: sdk.AuthorizeSharedKnowledgeResultRead
+internal/infrastructure/provider/knowledge_shared_result_read_test.go:152:18: undefined: sdk.AuthorizeSharedKnowledgeResultRead
+internal/infrastructure/provider/knowledge_shared_result_read_test.go:167:19: undefined: sdk.AuthorizeSharedKnowledgeResultRead
+internal/infrastructure/provider/knowledge_shared_result_read_test.go:167:19: too many errors
+FAIL	github.com/domainry/domainry-knowledge/internal/infrastructure/provider [build failed]
+FAIL

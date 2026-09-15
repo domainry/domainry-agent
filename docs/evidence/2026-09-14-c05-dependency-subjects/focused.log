@@ -1,0 +1,12 @@
+=== RUN   TestDependencySourceUsesOriginalAgreementPublisherAndCurrentAudience
+--- PASS: TestDependencySourceUsesOriginalAgreementPublisherAndCurrentAudience (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	0.713s
+=== RUN   TestCrossOwnerContractRepublicationKeepsUpstreamPublisherAndRecipientAudience
+--- PASS: TestCrossOwnerContractRepublicationKeepsUpstreamPublisherAndRecipientAudience (0.02s)
+=== RUN   TestCrossOwnerDependencyChangeStopsTransitiveOriginalWorkersAndPreservesRealm
+--- PASS: TestCrossOwnerDependencyChangeStopsTransitiveOriginalWorkersAndPreservesRealm (0.02s)
+=== RUN   TestParticipantDependencyTransferStoreValidatesManagerAndReceivingAudience
+--- PASS: TestParticipantDependencyTransferStoreValidatesManagerAndReceivingAudience (0.02s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.960s

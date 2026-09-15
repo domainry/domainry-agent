@@ -1,0 +1,29 @@
+{
+  "phase": "report_original_result_negation_scope",
+  "c05_complete": false,
+  "todo_completed": 4,
+  "todo_total": 25,
+  "real_orm_subcases": 8,
+  "original_proof_overlay_exit_code": 1,
+  "original_proof_overlay_failed_subcases": 8,
+  "fixed_proof_exit_code": 0,
+  "whole_owner_roots": 12,
+  "normal_exit_code": 0,
+  "race_exit_code": 0,
+  "normal_session": 63819,
+  "race_session": 65205,
+  "normal_package_seconds": 0.397,
+  "race_package_seconds": 1.916,
+  "null_row_and_foreign_workspace_verified": true,
+  "valid_narrower_sdk_queries_return_no_rows_and_shared_read_denies": true,
+  "boundary_cases": 10,
+  "compiled_dependency_inputs": 5480,
+  "compiled_inputs_unchanged_at_seal": true,
+  "prior_guardrail_fixture_error": "DataScopeAll retained owner predicate, contrary to AccessBundle.Validate; fixed to an empty predicate and validated explicitly. Narrowed reader removes all before applying predicate; denial also confirmed by a successful real empty ORM query.",
+  "proof": "Canonical whole-tree validation, SQL truth-order-preserving finite containment and NOT reversal, double negation and direct nullable-column complements; no literal inequality proof of SQL disjointness.",
+  "limitations": [
+    "Actual Runtime SQLite/ORM with SDK identity fixtures, not newly configured native role row policies or online model",
+    "Unknown/context-dependent relation expressions remain denied",
+    "Full C05 and remaining TODO scope unchanged"
+  ]
+}

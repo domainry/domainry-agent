@@ -1,0 +1,85 @@
+{
+  "phase": "C05 combined SDK-bound business read scopes",
+  "artifacts": {
+    "baseline-manifest.json": {
+      "sha256": "37d6f916bc2d2a9ecdd354469f3b934d20cc4cba0ad4d5eeaed77b3e5c588d14",
+      "bytes": 288
+    },
+    "patch-validation.json": {
+      "sha256": "431940a69c724cde9f17a7b1a93f0cca0dea4051194472d0396f2802b694efb3",
+      "bytes": 1170
+    },
+    "original-counterexamples.log": {
+      "sha256": "b8ceceae3d56866b1219da993a6706c18f8578f61db339fcb95d2874f05620fc",
+      "bytes": 2045
+    },
+    "initial-fixture-scope-diagnostic.log": {
+      "sha256": "1efb21e3259048506759046957ebaab126f5d8cca27fdbeea84c382d5da4fe92",
+      "bytes": 1445
+    },
+    "host-final-inputs.json": {
+      "sha256": "f64a310fb038bd2ed596093514aee0d49077a0da9f3af28d537f07b9bb16d770",
+      "bytes": 1214962
+    },
+    "acceptance.json": {
+      "sha256": "63ce9878430098c589f5eff6bcd75e8e8490b12d2ab58852255105020ae89aa8",
+      "bytes": 2553
+    },
+    "owner-final-inputs.json": {
+      "sha256": "3e8e3f174721a6d476ed090ac0c0b83dfaadd1f9658334ef3ce0aa0d0dd2218a",
+      "bytes": 2050649
+    },
+    "host-normal.log": {
+      "sha256": "61e8ae000bcb641a69dcdf96056cb988069e71f2a37d2e1bff8e42209f90191f",
+      "bytes": 38936
+    },
+    "original-overlay.json": {
+      "sha256": "6b04e027241b9fcf2d8f4480e96718fb31b653dd14b0c468bf372bbdb5cfbeeb",
+      "bytes": 208
+    },
+    "owner-normal-launch-inputs.json": {
+      "sha256": "18c4eea12a65027794cfff65251df5121323942ea5727c714a4b862a3a83fb0c",
+      "bytes": 2050649
+    },
+    "host-race.log": {
+      "sha256": "3f5e119d2ddfaff0fb1ff55b23f138cd87203a1de9767f29eea65e46fd69aebf",
+      "bytes": 38936
+    },
+    "owner-normal.log": {
+      "sha256": "2a726207abbcb7823813b5f71cde9b419ebec02a65335a382cac157d8957404f",
+      "bytes": 3758
+    },
+    "owner-race-RUNNING_AT_SEAL.log": {
+      "sha256": "741deba4d34e96eb1173f19fe7ecf6d95827bf05904158e3f71246f0a86596f0",
+      "bytes": 232
+    },
+    "phase.patch": {
+      "sha256": "b79d78eb918ba929a1c2c674bade10c1a9e4b440e2a197851ee6414fabef5c1a",
+      "bytes": 28260
+    },
+    "input-audit.json": {
+      "sha256": "82059d0e9a9997208146051a892a4d6730e4eca1c473fe12ff0136f6cd00bded",
+      "bytes": 605
+    },
+    "before/runtime/application/agenthost/conversation_business_shared_scope.go.txt": {
+      "sha256": "fb9b549124bfd03615ae39f0c49bdd002f5c6fcb34e8d1804d8d36ba1ae0f54e",
+      "bytes": 10950
+    },
+    "after/runtime/application/agenthost/conversation_business_shared_union_scope_test.go.txt": {
+      "sha256": "1cfae79f427f7b83cf7a3e627e59b6d766df635136b71d2cf2471156fa710ff9",
+      "bytes": 6493
+    },
+    "after/runtime/application/agenthost/conversation_business_shared_scope.go.txt": {
+      "sha256": "4a8f4fd1f52586da2e50d46dc994971caec8aceba7a3aab4d0f3d8d63c36a5f0",
+      "bytes": 11245
+    },
+    "after/runtime/application/agenthost/conversation_business_shared_union_scope.go.txt": {
+      "sha256": "da4460fe0d709b8e82dca2255c89581a1cb3ab8445829da6b70bf6cfa031bebf",
+      "bytes": 9770
+    },
+    "after/runtime/application/agenthost/conversation_business_union_sql_truth_test.go.txt": {
+      "sha256": "16d1fe0f79cfa07164717bce9751e1426e14e90aebf6683f21f9ecfeff8f4ce3",
+      "bytes": 9501
+    }
+  }
+}

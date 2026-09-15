@@ -1,0 +1,6 @@
+=== RUN   TestReportRecordsUseCurrentObjectMetadataWithoutBuildingWholeSchema
+    record_schema_projection_test.go:59: report-only source built and hashed unrelated application metadata 1
+--- FAIL: TestReportRecordsUseCurrentObjectMetadataWithoutBuildingWholeSchema (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/composition	0.773s
+FAIL

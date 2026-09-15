@@ -1,0 +1,4 @@
+=== RUN   TestDelegationExecutionHTTPUsesConsentingReceiversRoleAndStopsAfterRevocation
+--- PASS: TestDelegationExecutionHTTPUsesConsentingReceiversRoleAndStopsAfterRevocation (4.62s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	5.075s

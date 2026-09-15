@@ -1,0 +1,11 @@
+=== RUN   TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole
+    conversation_participant_publishers_test.go:21: withdrawn actual grant publisher still released the agreement <nil>
+--- FAIL: TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.686s
+=== RUN   TestParticipantGrantKeepsActualPublisherAndRepublicationEpoch
+    conversation_participant_publishers_store_test.go:17: grant omitted its actual publishing role [{<nil> participant [communicate view] 1}] <nil>
+--- FAIL: TestParticipantGrantKeepsActualPublisherAndRepublicationEpoch (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	1.033s
+FAIL

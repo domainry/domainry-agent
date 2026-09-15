@@ -1,0 +1,6 @@
+GOWORK=/tmp/runtime-work/go.work
+go test ./runtime/application/agenthost -count=1 -v
+go test -race ./runtime/application/agenthost -count=1 -v
+go test ./runtime/bootstrap/integrationtest -run '^TestCrossUserBusinessAgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance$' -count=1 -timeout=6m -v
+Diagnostic before coverage: go test ./runtime/application/agenthost -run '^TestSharedBusiness(PrefixAndExistenceScopeUsesBoundLiterals|PrefixAndNonnullScopesAuthorizeOriginalORMPages)$' -count=1 -v
+Launch source inventory from go list -deps -test -json for integrationtest and agenthost: project Go, test, embed and module files. Actual Agent launch predates the unit-only claim syntax correction; production is identical.

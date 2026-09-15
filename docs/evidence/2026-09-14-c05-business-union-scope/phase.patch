@@ -1,0 +1,666 @@
+diff --git a/runtime/application/agenthost/conversation_business_shared_scope.go b/runtime/application/agenthost/conversation_business_shared_scope.go
+index 8740f4a..907bd82 100644
+--- a/runtime/application/agenthost/conversation_business_shared_scope.go
++++ b/runtime/application/agenthost/conversation_business_shared_scope.go
+@@ -31,6 +31,13 @@ func businessReadScopeWithQuery(reader, producer principalmodel.Principal, objec
+ 	if err != nil || !b.Unrestricted && len(b.Allow) == 0 {
+ 		return false
+ 	}
++	if businessReadScopeFastCovers(reader, producer, a, b, query) {
++		return true
++	}
++	return businessCombinedReadScopeCovers(reader, producer, a, b, query)
++}
++
++func businessReadScopeFastCovers(reader, producer principalmodel.Principal, a, b evaluator.RecordFilter, query *businessQueryScope) bool {
+ 	if !a.Unrestricted {
+ 		if b.Unrestricted && query == nil {
+ 			return false
+diff --git a/runtime/application/agenthost/conversation_business_shared_union_scope.go b/runtime/application/agenthost/conversation_business_shared_union_scope.go
+new file mode 100644
+index 0000000..cc65128
+--- /dev/null
++++ b/runtime/application/agenthost/conversation_business_shared_union_scope.go
+@@ -0,0 +1,349 @@
++package agenthost
++
++import (
++	identity "github.com/domainry/domainry-identity-sdk"
++	"github.com/domainry/domainry-identity-sdk/authorization/evaluator"
++	principalmodel "github.com/domainry/domainry-runtime/runtime/domain/principal/model"
++	profilemodel "github.com/domainry/domainry-runtime/runtime/domain/profilebinding/model"
++	recordpolicy "github.com/domainry/domainry-runtime/runtime/domain/record/policy"
++)
++
++const (
++	businessScopeMaxClauses     = 64
++	businessScopeMaxAtoms       = 64
++	businessScopeMaxNodes       = 4096
++	businessScopeMaxComparisons = 4096
++)
++
++// These clauses represent SQL WHERE matches, after NOT has been pushed down
++// to atoms. They compare SDK-bound scopes; they never evaluate a saved row or
++// provide an authorization identity. Each atom retains its original context.
++type businessScopeAtom struct {
++	predicate identity.Predicate
++	principal principalmodel.Principal
++	negative  bool
++	digest    string
++}
++
++type businessScopeClauses [][]businessScopeAtom
++type businessScopeAtomKey struct {
++	digest   string
++	negative bool
++}
++type businessScopeComparison struct{ broad, narrow businessScopeAtomKey }
++type businessScopeProof struct {
++	nodes, comparisons int
++	exhausted          bool
++	compared           map[businessScopeComparison]bool
++}
++
++func businessCombinedReadScopeCovers(reader, producer principalmodel.Principal, a, b evaluator.RecordFilter, query *businessQueryScope) bool {
++	proof := &businessScopeProof{compared: map[businessScopeComparison]bool{}}
++	allowed, ok := proof.filter(a, reader)
++	if !ok {
++		return false
++	}
++	produced, ok := proof.filter(b, producer)
++	if !ok {
++		return false
++	}
++	if query != nil {
++		constraint, valid := proof.boundPredicate(query.predicate, query.principal, false)
++		if !valid {
++			return false
++		}
++		produced, ok = businessScopeConjunction(produced, constraint)
++		if !ok {
++			return false
++		}
++	}
++	for _, source := range produced {
++		covered := false
++		for _, scope := range allowed {
++			all := true
++			for _, required := range scope {
++				found := false
++				for _, actual := range source {
++					if proof.covers(required, actual) {
++						found = true
++						break
++					}
++					if proof.exhausted {
++						return false
++					}
++				}
++				if !found {
++					all = false
++					break
++				}
++			}
++			if all {
++				covered = true
++				break
++			}
++		}
++		if !covered {
++			return false
++		}
++	}
++	return true
++}
++
++func (p *businessScopeProof) covers(broad, narrow businessScopeAtom) bool {
++	if broad.digest == narrow.digest && broad.negative == narrow.negative {
++		return true
++	}
++	key := businessScopeComparison{broad: businessScopeAtomKey{broad.digest, broad.negative}, narrow: businessScopeAtomKey{narrow.digest, narrow.negative}}
++	if covered, found := p.compared[key]; found {
++		return covered
++	}
++	if p.comparisons >= businessScopeMaxComparisons {
++		p.exhausted = true
++		return false
++	}
++	p.comparisons++
++	covered := businessPredicateCovers(broad.publicPredicate(), broad.principal, narrow.publicPredicate(), narrow.principal, 0)
++	p.compared[key] = covered
++	return covered
++}
++
++func (p *businessScopeProof) filter(filter evaluator.RecordFilter, principal principalmodel.Principal) (businessScopeClauses, bool) {
++	clauses := businessScopeClauses{{}}
++	if !filter.Unrestricted {
++		clauses = nil
++		for _, allow := range filter.Allow {
++			branch, ok := p.boundPredicate(allow, principal, false)
++			if !ok {
++				return nil, false
++			}
++			clauses = append(clauses, branch...)
++			if len(clauses) > businessScopeMaxClauses {
++				return nil, false
++			}
++		}
++	}
++	// The SDK combines denials with OR then negates that complete group.
++	// De Morgan therefore requires every NOT(denial), including NULL behavior.
++	for _, deny := range filter.Deny {
++		branch, ok := p.boundPredicate(deny, principal, true)
++		if !ok {
++			return nil, false
++		}
++		clauses, ok = businessScopeConjunction(clauses, branch)
++		if !ok {
++			return nil, false
++		}
++	}
++	return clauses, true
++}
++
++func (p *businessScopeProof) boundPredicate(predicate identity.Predicate, principal principalmodel.Principal, negative bool) (businessScopeClauses, bool) {
++	if !p.bounded(predicate, 0) {
++		return nil, false
++	}
++	if _, ok := businessBoundPredicate(predicate, principal); !ok {
++		return nil, false
++	}
++	return p.predicate(predicate, principal, negative)
++}
++
++func (p *businessScopeProof) bounded(predicate identity.Predicate, depth int) bool {
++	p.nodes++
++	if depth > 24 || p.nodes > businessScopeMaxNodes {
++		return false
++	}
++	for _, child := range predicate.All {
++		if !p.bounded(child, depth+1) {
++			return false
++		}
++	}
++	for _, child := range predicate.Any {
++		if !p.bounded(child, depth+1) {
++			return false
++		}
++	}
++	return predicate.Not == nil || p.bounded(*predicate.Not, depth+1)
++}
++
++func (p *businessScopeProof) predicate(predicate identity.Predicate, principal principalmodel.Principal, negative bool) (businessScopeClauses, bool) {
++	if predicate.Not != nil {
++		return p.predicate(*predicate.Not, principal, !negative)
++	}
++	children, conjunction := predicate.All, true
++	if len(predicate.Any) > 0 {
++		children, conjunction = predicate.Any, false
++	}
++	if len(children) > 0 {
++		conjunction = conjunction != negative
++		var clauses businessScopeClauses
++		if conjunction {
++			clauses = businessScopeClauses{{}}
++		}
++		for _, child := range children {
++			branch, ok := p.predicate(child, principal, negative)
++			if !ok {
++				return nil, false
++			}
++			if conjunction {
++				clauses, ok = businessScopeConjunction(clauses, branch)
++				if !ok {
++					return nil, false
++				}
++			} else {
++				clauses = append(clauses, branch...)
++				if len(clauses) > businessScopeMaxClauses {
++					return nil, false
++				}
++			}
++		}
++		return clauses, true
++	}
++	value, err := evaluator.ResolveValue(predicate.Value, recordpolicy.RecordSDKEvaluationContext(principal))
++	if err != nil {
++		return nil, false
++	}
++	if evaluator.IsMissingValue(value) {
++		// The SDK translates a missing claim to FALSE even for native neq /
++		// not_in. Apply only an outer explicit NOT before normalizing operators.
++		if negative {
++			return businessScopeClauses{{}}, true
++		}
++		return nil, true
++	}
++	switch predicate.Operator {
++	case identity.OperatorNotEqual:
++		predicate.Operator, negative = identity.OperatorEqual, !negative
++	case identity.OperatorNotIn:
++		predicate.Operator, negative = identity.OperatorIn, !negative
++	}
++	if predicate.Operator == identity.OperatorEqual && value == nil {
++		// Both x = NULL and NOT(x = NULL) are UNKNOWN, never a WHERE match.
++		return nil, true
++	}
++	if predicate.Operator == identity.OperatorExists {
++		want, ok := value.(bool)
++		if !ok {
++			return nil, false
++		}
++		predicate.Value = true
++		negative = negative != !want
++	}
++	if predicate.Operator == identity.OperatorIn {
++		var values []any
++		switch list := value.(type) {
++		case []any:
++			values = list
++		case []string:
++			for _, item := range list {
++				values = append(values, item)
++			}
++		default:
++			return nil, false
++		}
++		if len(values) == 0 || len(values) > businessScopeMaxAtoms {
++			return nil, false
++		}
++		p.nodes += len(values)
++		if p.nodes > businessScopeMaxNodes {
++			return nil, false
++		}
++		var clauses businessScopeClauses
++		if negative {
++			clauses = businessScopeClauses{{}}
++		}
++		for _, item := range values {
++			if evaluator.IsMissingValue(item) {
++				return nil, false
++			}
++			// Bind already-resolved values through a context with no identity or
++			// grants. A literal "$subject.id" in a list must remain a literal.
++			literal := principalmodel.Principal{BusinessClaims: map[string]profilemodel.ClaimValue{"scope_literal": {Value: item}}}
++			atom := identity.Predicate{Fact: predicate.Fact, Operator: identity.OperatorEqual, Value: "$context.scope_literal"}
++			var branch businessScopeClauses
++			if item != nil {
++				var ok bool
++				branch, ok = businessScopeSingleAtom(atom, literal, negative)
++				if !ok {
++					return nil, false
++				}
++			}
++			if negative {
++				var ok bool
++				clauses, ok = businessScopeConjunction(clauses, branch)
++				if !ok {
++					return nil, false
++				}
++			} else {
++				clauses = append(clauses, branch...)
++			}
++		}
++		return clauses, true
++	}
++	return businessScopeSingleAtom(predicate, principal, negative)
++}
++
++func businessScopeSingleAtom(predicate identity.Predicate, principal principalmodel.Principal, negative bool) (businessScopeClauses, bool) {
++	digest, ok := businessBoundPredicate(predicate, principal)
++	if !ok {
++		return nil, false
++	}
++	return businessScopeClauses{{{predicate: predicate, principal: principal, negative: negative, digest: digest}}}, true
++}
++
++func (a businessScopeAtom) publicPredicate() identity.Predicate {
++	if !a.negative {
++		return a.predicate
++	}
++	p := a.predicate
++	switch p.Operator {
++	case identity.OperatorEqual:
++		p.Operator = identity.OperatorNotEqual
++	case identity.OperatorExists:
++		p.Value = false
++	default:
++		excluded := p
++		p = identity.Predicate{Not: &excluded}
++	}
++	return p
++}
++
++func businessScopeConjunction(left, right businessScopeClauses) (businessScopeClauses, bool) {
++	var out businessScopeClauses
++	for _, a := range left {
++		for _, b := range right {
++			clause := append([]businessScopeAtom(nil), a...)
++			contradiction := false
++			for _, atom := range b {
++				duplicate := false
++				for _, existing := range clause {
++					if existing.digest == atom.digest {
++						if existing.negative != atom.negative {
++							contradiction = true
++						}
++						duplicate = true
++						break
++					}
++				}
++				if contradiction {
++					break
++				}
++				if !duplicate {
++					clause = append(clause, atom)
++				}
++				if len(clause) > businessScopeMaxAtoms {
++					return nil, false
++				}
++			}
++			// Only an exact bound P AND NOT(P) has no TRUE rows. Different
++			// literal values/types may compare equal under SQL affinity/collation.
++			if contradiction {
++				continue
++			}
++			out = append(out, clause)
++			if len(out) > businessScopeMaxClauses {
++				return nil, false
++			}
++		}
++	}
++	return out, true
++}
+diff --git a/runtime/application/agenthost/conversation_business_shared_union_scope_test.go b/runtime/application/agenthost/conversation_business_shared_union_scope_test.go
+new file mode 100644
+index 0000000..318d84a
+--- /dev/null
++++ b/runtime/application/agenthost/conversation_business_shared_union_scope_test.go
+@@ -0,0 +1,126 @@
++package agenthost
++
++import (
++	"encoding/json"
++	"fmt"
++	"testing"
++
++	agent "github.com/domainry/domainry-agent-sdk"
++	identity "github.com/domainry/domainry-identity-sdk"
++	principalmodel "github.com/domainry/domainry-runtime/runtime/domain/principal/model"
++)
++
++func sharedBusinessAllowUnion(p principalmodel.Principal, predicates ...identity.Predicate) principalmodel.Principal {
++	b := *p.AccessBundle
++	b.DataPolicies = nil
++	for _, policy := range p.AccessBundle.DataPolicies {
++		if policy.Resource != "customer" || policy.Action != "read" {
++			b.DataPolicies = append(b.DataPolicies, policy)
++		}
++	}
++	for i, predicate := range predicates {
++		b.DataPolicies = append(b.DataPolicies, identity.DataPolicy{Key: fmt.Sprintf("union-read-%d", i), Resource: "customer", Action: "read", Effect: identity.EffectAllow, DataScopes: []identity.DataScope{identity.DataScopeOwner}, Predicate: predicate})
++	}
++	p.AccessBundle = &b
++	return p
++}
++
++func sharedBusinessDenyUnion(p principalmodel.Principal, predicates ...identity.Predicate) principalmodel.Principal {
++	b := *p.AccessBundle
++	b.Guardrails = nil
++	for i, predicate := range predicates {
++		b.Guardrails = append(b.Guardrails, identity.Guardrail{Key: fmt.Sprintf("union-deny-%d", i), Resource: "customer", Action: "read", Effect: identity.EffectDeny, Predicate: &predicate})
++	}
++	p.AccessBundle = &b
++	return p
++}
++
++func TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery(t *testing.T) {
++	eq := func(value string) identity.Predicate {
++		return identity.Predicate{Fact: "name", Operator: identity.OperatorEqual, Value: value}
++	}
++	set := func(values ...string) identity.Predicate {
++		return identity.Predicate{Fact: "name", Operator: identity.OperatorIn, Value: values}
++	}
++	and := func(values ...identity.Predicate) identity.Predicate { return identity.Predicate{All: values} }
++	not := func(value identity.Predicate) identity.Predicate { return identity.Predicate{Not: &value} }
++	for _, scenario := range []string{"multiple allow policies", "query partitions across conjunctions", "producer denial narrows allow", "producer denial union", "double negation and De Morgan"} {
++		t.Run(scenario, func(t *testing.T) {
++			h, resolver, reads, producer := newConversationBusinessFixture(t)
++			enableBusinessEvidence(t, h)
++			principals, reader := bindSharedBusinessReader(h, resolver, producer)
++			owner := identity.Predicate{Fact: "owner_user_id", Operator: identity.OperatorEqual, Value: producer.UserID}
++			wantTotal := int64(2)
++			switch scenario {
++			case "multiple allow policies":
++				principals.original = sharedBusinessReadPredicate(principals.original, and(owner, set("Alpha", "Beta")))
++				principals.actual = sharedBusinessAllowUnion(principals.actual, eq("Alpha"), eq("Beta"))
++			case "query partitions across conjunctions":
++				principals.actual = sharedBusinessReadPredicate(principals.actual, identity.Predicate{Any: []identity.Predicate{and(owner, eq("Alpha")), and(owner, eq("Beta"))}})
++			case "producer denial narrows allow":
++				principals.original = sharedBusinessReadPredicate(principals.original, and(owner, set("Alpha", "Beta")))
++				principals.original = sharedBusinessDenyUnion(principals.original, eq("Beta"))
++				principals.actual = sharedBusinessReadPredicate(principals.actual, and(owner, eq("Alpha")))
++				wantTotal = 1
++			case "producer denial union":
++				principals.original = sharedBusinessDenyUnion(principals.original, eq("Gamma"), eq("Delta"))
++				principals.actual = sharedBusinessDenyUnion(sharedBusinessReadPredicate(principals.actual, owner), set("Gamma", "Delta"))
++			case "double negation and De Morgan":
++				principals.original = sharedBusinessReadPredicate(principals.original, and(owner, set("Alpha", "Beta")))
++				principals.actual = sharedBusinessReadPredicate(principals.actual, and(owner, not(and(not(not(not(eq("Alpha")))), not(eq("Beta"))))))
++			}
++			q := agent.ConversationBusinessQuery{ObjectKey: "customer", Fields: []string{"name", "amount"}, PageSize: 1}
++			if scenario == "query partitions across conjunctions" {
++				q.Filters = []agent.ConversationBusinessFilter{{Field: "name", Operator: "in", Value: json.RawMessage(`["Alpha","Beta"]`)}}
++			}
++			first, err := h.QueryBusinessRecords(t.Context(), q, producer)
++			if err != nil || len(first.Items) != 1 || first.Items[0].ID != "own-1" || first.Total == nil || int64(*first.Total) != wantTotal {
++				t.Fatal("original ORM query", first, err)
++			}
++			evidence := []agent.ConversationBusinessEvidence{sealedBusinessEvidence(t, h, producer, "query_records", q, first)}
++			if wantTotal == 2 {
++				if first.NextCursor == "" {
++					t.Fatal("original second page cursor missing")
++				}
++				q.Cursor = first.NextCursor
++				next, err := h.QueryBusinessRecords(t.Context(), q, producer)
++				if err != nil || len(next.Items) != 1 || next.Items[0].ID != "own-2" || next.Total != nil {
++					t.Fatal("original second ORM page", next, err)
++				}
++				evidence = append(evidence, sealedBusinessEvidence(t, h, producer, "query_records", q, next))
++			}
++			originalBytes, _ := json.Marshal(evidence)
++			for _, e := range evidence {
++				if err := h.AuthorizeSharedBusinessResultRead(t.Context(), e, reader, producer); err != nil {
++					t.Fatal("combined reader rules denied original complete scope", err)
++				}
++			}
++			if q.Cursor != "" {
++				before := reads.queries
++				if _, err := h.QueryBusinessRecords(t.Context(), q, reader); err == nil || before != reads.queries {
++					t.Fatal("original cursor authorized reader execution", err)
++				}
++			}
++			restore := principals.actual
++			principals.actual = sharedBusinessReadPredicate(principals.actual, identity.Predicate{Fact: "id", Operator: identity.OperatorEqual, Value: "own-1"})
++			if _, err := h.GetBusinessRecord(t.Context(), agent.ConversationBusinessGet{ObjectKey: "customer", RecordID: "own-1", Fields: []string{"name"}}, reader); err != nil {
++				t.Fatal("reader lost the visible first row", err)
++			}
++			for _, e := range evidence {
++				if err := h.AuthorizeSharedBusinessResultRead(t.Context(), e, reader, producer); err == nil {
++					t.Fatal("first row visibility exposed original query scope after narrowing")
++				}
++			}
++			principals.actual = restore
++			for _, e := range evidence {
++				if err := h.AuthorizeSharedBusinessResultRead(t.Context(), e, reader, producer); err != nil {
++					t.Fatal("restored complete scope denied", err)
++				}
++			}
++			afterBytes, _ := json.Marshal(evidence)
++			if string(originalBytes) != string(afterBytes) {
++				t.Fatal("scope proof changed original evidence bytes")
++			}
++		})
++	}
++}
+diff --git a/runtime/application/agenthost/conversation_business_union_sql_truth_test.go b/runtime/application/agenthost/conversation_business_union_sql_truth_test.go
+new file mode 100644
+index 0000000..9c50f38
+--- /dev/null
++++ b/runtime/application/agenthost/conversation_business_union_sql_truth_test.go
+@@ -0,0 +1,155 @@
++package agenthost
++
++import (
++	"fmt"
++	"path/filepath"
++	"strings"
++	"testing"
++
++	identity "github.com/domainry/domainry-identity-sdk"
++	"github.com/domainry/domainry-identity-sdk/authorization/evaluator"
++	principalmodel "github.com/domainry/domainry-runtime/runtime/domain/principal/model"
++	profilemodel "github.com/domainry/domainry-runtime/runtime/domain/profilebinding/model"
++	recordpolicy "github.com/domainry/domainry-runtime/runtime/domain/record/policy"
++	database "github.com/domainry/domainry-runtime/runtime/infrastructure/persistence/database"
++	"github.com/domainry/domainry-runtime/runtime/platform/config"
++)
++
++func TestBusinessCombinedScopeProofPreservesActualSQLTruthAndBindings(t *testing.T) {
++	store, err := database.OpenContext(t.Context(), config.Config{DatabaseDriver: "sqlite", DBPath: filepath.Join(t.TempDir(), "scope.db")})
++	if err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(func() { _ = store.Close() })
++	if _, err := store.DB().ExecContext(t.Context(), `CREATE TABLE scope_rows (v TEXT COLLATE NOCASE, owner TEXT)`); err != nil {
++		t.Fatal(err)
++	}
++	for _, value := range []any{nil, "Alpha", "alpha", "Abe", "Beta", "Gamma", "1", "$subject.id", "$context.fake"} {
++		if _, err := store.DB().ExecContext(t.Context(), `INSERT INTO scope_rows (v, owner) VALUES (?, ?)`, value, "operator"); err != nil {
++			t.Fatal(err)
++		}
++	}
++	h, resolver, _, producerAuthority := newConversationBusinessFixture(t)
++	principals, _ := bindSharedBusinessReader(h, resolver, producerAuthority)
++	producer, reader := principals.original, principals.actual
++	reader.BusinessClaims = map[string]profilemodel.ClaimValue{"literal_a": {Value: "$subject.id"}, "literal_b": {Value: "$context.fake"}}
++	eq := func(value any) identity.Predicate {
++		return identity.Predicate{Fact: "v", Operator: identity.OperatorEqual, Value: value}
++	}
++	set := func(values ...any) identity.Predicate {
++		return identity.Predicate{Fact: "v", Operator: identity.OperatorIn, Value: values}
++	}
++	and := func(values ...identity.Predicate) identity.Predicate { return identity.Predicate{All: values} }
++	or := func(values ...identity.Predicate) identity.Predicate { return identity.Predicate{Any: values} }
++	not := func(value identity.Predicate) identity.Predicate { return identity.Predicate{Not: &value} }
++	missing := identity.Predicate{Fact: "v", Operator: identity.OperatorNotEqual, Value: "$context.absent"}
++	null := identity.Predicate{Fact: "v", Operator: identity.OperatorExists, Value: false}
++	owner := identity.Predicate{Fact: "owner", Operator: identity.OperatorEqual, Value: "operator"}
++	subjectOwner := identity.Predicate{Fact: "owner", Operator: identity.OperatorEqual, Value: "$subject.id"}
++	for _, tc := range []struct {
++		name             string
++		reader, producer identity.Predicate
++		query            *businessQueryScope
++		want             bool
++	}{
++		{"partitioned conjunctions", or(and(owner, eq("Alpha")), and(owner, eq("Beta"))), and(owner, set("Alpha", "Beta")), nil, true},
++		{"actual subjects stay distinct", or(and(subjectOwner, eq("Alpha")), and(subjectOwner, eq("Beta"))), and(subjectOwner, set("Alpha", "Beta")), nil, false},
++		{"NULL branch excluded by native neq", or(eq("Alpha"), identity.Predicate{Fact: "v", Operator: identity.OperatorNotEqual, Value: "Gamma"}), or(eq("Alpha"), null), nil, false},
++		{"positive IN with NULL", eq("Alpha"), set("Alpha", nil), nil, true},
++		{"reader IN with NULL cannot read NULL", set("Alpha", nil), or(eq("Alpha"), null), nil, false},
++		{"NOT IN with NULL has no matches", eq("Alpha"), identity.Predicate{Fact: "v", Operator: identity.OperatorNotIn, Value: []any{"Beta", nil}}, nil, true},
++		{"native missing neq stays FALSE", eq("Alpha"), and(owner, missing), nil, true},
++		{"reader native missing neq grants nothing", missing, eq("Alpha"), nil, false},
++		{"explicit NOT of missing neq is TRUE", not(missing), or(eq("Alpha"), null), nil, true},
++		{"SQL affinity does not make conjunction empty", eq("other"), and(eq(1), eq("1")), nil, false},
++		{"SQL collation does not make conjunction empty", eq("Beta"), and(eq("Alpha"), eq("alpha")), nil, false},
++		{"exact bound contradiction has no matches", eq("Beta"), and(eq("Alpha"), not(eq("Alpha"))), nil, true},
++		{"claim-looking list literals remain literals", or(eq("$context.literal_a"), eq("$context.literal_b")), set("$subject.id", "$context.fake"), nil, true},
++		{"claim-looking scalar is resolved for actual reader", eq("$subject.id"), set("$subject.id", "$context.fake"), nil, false},
++		{"query literals preserve producer ownership binding", or(and(owner, eq("$context.literal_a")), and(owner, eq("$context.literal_b"))), subjectOwner, &businessQueryScope{predicate: set("$subject.id", "$context.fake"), principal: principalmodel.Principal{}}, true},
++		{"query literal and producer bindings stay separate", or(and(subjectOwner, eq("$context.literal_a")), and(subjectOwner, eq("$context.literal_b"))), owner, &businessQueryScope{predicate: set("$subject.id", "$context.fake"), principal: principalmodel.Principal{}}, false},
++		{"double NOT and De Morgan", and(owner, not(and(not(not(not(eq("Alpha")))), not(eq("Beta"))))), and(owner, set("Alpha", "Beta")), nil, true},
++		{"negated prefixes keep SQL NULL behavior", not(identity.Predicate{Fact: "v", Operator: identity.OperatorPrefix, Value: "Al"}), not(identity.Predicate{Fact: "v", Operator: identity.OperatorPrefix, Value: "A"}), nil, true},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			a := evaluator.RecordFilter{Allow: []identity.Predicate{tc.reader}}
++			b := evaluator.RecordFilter{Allow: []identity.Predicate{tc.producer}}
++			if got := businessCombinedReadScopeCovers(reader, producer, a, b, tc.query); got != tc.want {
++				t.Fatalf("scope coverage=%v want=%v", got, tc.want)
++			}
++			compile := func(filter evaluator.RecordFilter, principal principalmodel.Principal) evaluator.SQLFilter {
++				compiled, err := evaluator.CompileSQLWithContext(filter, recordpolicy.RecordSDKEvaluationContext(principal), func(fact string) (string, bool) { return fact, fact == "v" || fact == "owner" })
++				if err != nil {
++					t.Fatal(err)
++				}
++				return compiled
++			}
++			source, current := compile(b, producer), compile(a, reader)
++			clauses, args := []string{source.Clause}, append([]any(nil), source.Args...)
++			if tc.query != nil {
++				query := compile(evaluator.RecordFilter{Allow: []identity.Predicate{tc.query.predicate}}, tc.query.principal)
++				clauses = append(clauses, query.Clause)
++				args = append(args, query.Args...)
++			}
++			args = append(args, current.Args...)
++			var excluded int
++			// UNKNOWN in the reader scope must count as excluded as well as
++			// FALSE. NOT(reader) alone would silently omit the NULL counterexample.
++			statement := "SELECT COUNT(*) FROM scope_rows WHERE (" + strings.Join(clauses, ") AND (") + ") AND (" + current.Clause + ") IS NOT TRUE"
++			if err := store.DB().QueryRowContext(t.Context(), statement, args...).Scan(&excluded); err != nil {
++				t.Fatal(err)
++			}
++			if tc.want && excluded != 0 || !tc.want && excluded == 0 {
++				t.Fatalf("actual SQLite excluded rows=%d coverage=%v", excluded, tc.want)
++			}
++		})
++	}
++}
++
++func TestBusinessCombinedScopeProofRejectsUntranslatableAndUnboundedTrees(t *testing.T) {
++	h, resolver, _, producer := newConversationBusinessFixture(t)
++	principals, _ := bindSharedBusinessReader(h, resolver, producer)
++	eq := identity.Predicate{Fact: "name", Operator: identity.OperatorEqual, Value: "Alpha"}
++	for _, scenario := range []string{"unsupported branch", "relation branch", "clause expansion", "deep negation", "node budget", "comparison budget"} {
++		t.Run(scenario, func(t *testing.T) {
++			predicate := eq
++			narrow := eq
++			switch scenario {
++			case "unsupported branch":
++				predicate = identity.Predicate{Any: []identity.Predicate{eq, {Fact: "name", Operator: identity.OperatorContains, Value: "A"}}}
++			case "relation branch":
++				predicate = identity.Predicate{Any: []identity.Predicate{eq, {Fact: "name", Operator: identity.OperatorEqual, Value: "Alpha", Path: []identity.RelationSegment{{Direction: identity.RelationForward, Reference: "customer", TargetResource: "customer"}}}}}
++			case "clause expansion":
++				predicate = identity.Predicate{Any: make([]identity.Predicate, businessScopeMaxClauses+1)}
++				for i := range predicate.Any {
++					predicate.Any[i] = eq
++				}
++			case "deep negation":
++				for i := 0; i < 26; i++ {
++					child := predicate
++					predicate = identity.Predicate{Not: &child}
++				}
++			case "node budget":
++				predicate = identity.Predicate{All: make([]identity.Predicate, businessScopeMaxNodes+1)}
++				for i := range predicate.All {
++					predicate.All[i] = eq
++				}
++			case "comparison budget":
++				predicate = identity.Predicate{All: make([]identity.Predicate, 64)}
++				narrow = identity.Predicate{Any: make([]identity.Predicate, 32)}
++				for i := range predicate.All {
++					predicate.All[i] = identity.Predicate{Fact: fmt.Sprintf("fact_%d", i), Operator: identity.OperatorExists, Value: true}
++				}
++				for i := range narrow.Any {
++					narrow.Any[i] = identity.Predicate{All: make([]identity.Predicate, 64)}
++					for j := range narrow.Any[i].All {
++						narrow.Any[i].All[j] = identity.Predicate{Fact: fmt.Sprintf("fact_%d", j), Operator: identity.OperatorEqual, Value: i}
++					}
++				}
++			}
++			if businessCombinedReadScopeCovers(principals.actual, principals.original, evaluator.RecordFilter{Allow: []identity.Predicate{predicate}}, evaluator.RecordFilter{Allow: []identity.Predicate{narrow}}, nil) {
++				t.Fatal("incomplete/unsupported scope proof granted reading")
++			}
++		})
++	}
++}

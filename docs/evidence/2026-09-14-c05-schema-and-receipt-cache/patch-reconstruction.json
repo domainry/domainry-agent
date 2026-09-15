@@ -1,0 +1,18 @@
+{
+  "runtime": {
+    "patch_exit_code": 0,
+    "stdout": "patching file 'runtime/bootstrap/composition/appschema_snapshot_cache_test.go'\npatching file 'runtime/bootstrap/composition/appschema_snapshot_wiring.go'\npatching file 'runtime/bootstrap/composition/runtime_services_appschema_projection.go'\npatching file 'runtime/bootstrap/composition/runtime_services_initialization.go'\npatching file 'runtime/bootstrap/composition/runtime_services_state.go'\npatching file 'runtime/bootstrap/composition/workflow_application_wiring.go'\npatching file 'runtime/bootstrap/composition/workflow_identity_application_wiring.go'\npatching file 'runtime/domain/appschema/service/appschema_i18n_remaining_test.go'\npatching file 'runtime/domain/appschema/service/appschema_schema_i18n.go'\n",
+    "stderr": "",
+    "matches_after_manifest": true,
+    "expected_files": 10,
+    "actual_files": 10
+  },
+  "agent": {
+    "patch_exit_code": 0,
+    "stdout": "patching file 'internal/application/conversation_delegations.go'\npatching file 'internal/application/conversation_delivery_publication.go'\npatching file 'internal/application/conversation_verification.go'\npatching file 'internal/application/conversation_verification_compaction_test.go'\n",
+    "stderr": "",
+    "matches_after_manifest": true,
+    "expected_files": 4,
+    "actual_files": 4
+  }
+}

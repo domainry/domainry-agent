@@ -1,0 +1,4 @@
+=== RUN   TestPeerSameAgentRecoveryHTTPAndBrowser
+--- PASS: TestPeerSameAgentRecoveryHTTPAndBrowser (4.04s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	5.020s

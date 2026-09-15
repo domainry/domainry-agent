@@ -1,0 +1,12 @@
+ok  	github.com/domainry/domainry-agent/internal/application	0.935s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	4.401s
+--- FAIL: TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery (46.00s)
+    conversation_collaboration_test.go:338: unexpected issuer review state failed/execution_context_exceeded
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	436.124s
+ok  	github.com/domainry/domainry-agent/internal/capability	0.961s
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	1.578s
+ok  	github.com/domainry/domainry-agent/remote	2.562s
+ok  	github.com/domainry/domainry-agent/server	2.593s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	1.167s
+FAIL

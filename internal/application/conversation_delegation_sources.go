@@ -67,14 +67,76 @@ func (s *ConversationService) delegationRunSourceContext(ctx context.Context, ru
 	if err != nil {
 		return ctx, err
 	}
+	return s.delegationRunContractSourceContext(ctx, d, run, reader)
+}
+
+// A saved run keeps the admitted agreement for that run. Today's assignment
+// or contract cannot replace its requirements or introduce different roots.
+func (s *ConversationService) delegationRunContractSourceContext(ctx context.Context, d sdk.ConversationDelegation, run sdk.ConversationRun, reader sdk.ConversationAuthority) (context.Context, error) {
 	owned, err := s.delegationOwnsSourceRun(ctx, d, run, reader)
 	if err != nil {
 		return ctx, err
 	}
-	if !owned || conversationDigest(task.Requirements.Sources) != conversationDigest(d.Requirements.Sources) {
-		return ctx, conversationFailure("conflict", "delegation_contract_source_unavailable")
+	if !owned {
+		return ctx, conversationFailure("forbidden", "delegation_source_not_released")
+	}
+	task := run.BackgroundTask
+	if task.AgreementRevision < 0 || task.BriefVersion < 0 {
+		return ctx, conversationFailure("forbidden", "delegation_source_not_released")
+	}
+	revision := max(1, task.AgreementRevision)
+	if revision > max(1, d.AgreementRevision) {
+		return ctx, conversationFailure("forbidden", "delegation_source_not_released")
+	}
+	if contracts, ok := s.repo.(persistence.ConversationContractPublicationRepository); ok {
+		original, err := contracts.ConversationContractPublicationRecord(ctx, d.ID, revision, reader)
+		if err != nil {
+			return ctx, err
+		}
+		dependencies, err := s.admittedContractDependencies(ctx, original.Agreement.Dependencies, reader)
+		if err != nil {
+			return ctx, err
+		}
+		frozen, err := canonicalFrozenDependencies(task.Dependencies)
+		if err != nil {
+			return ctx, err
+		}
+		if original.Agreement.Revision != revision || max(1, original.Agreement.Brief.Version) != max(1, task.BriefVersion) || conversationDigest(task.Requirements) != conversationDigest(original.Requirements) || conversationDigest(task.InputSource) != conversationDigest(original.Agreement.InputSource) || conversationDigest(frozen) != conversationDigest(dependencies) {
+			return ctx, conversationFailure("forbidden", "delegation_source_not_released")
+		}
+		return context.WithValue(ctx, conversationPublishedSourceKey{}, conversationPublishedSource{purpose: "contract", delegationID: d.ID, roots: directContractSourceReferences(original)}), nil
+	}
+	// Repositories without immutable version evidence can check the current
+	// agreement only; they cannot interpret historical roots as today's grant.
+	if revision != max(1, d.AgreementRevision) || conversationDigest(task.Requirements.Sources) != conversationDigest(d.Requirements.Sources) {
+		return ctx, conversationFailure("forbidden", "delegation_source_not_released")
 	}
 	return s.delegationContractSourceContext(ctx, d, reader)
+}
+
+func (s *ConversationService) admittedDependencySourceContext(ctx context.Context, task *sdk.ConversationTaskExecution, dependencyID string, ref sdk.ConversationRunReference, reader sdk.ConversationAuthority) (context.Context, error) {
+	if !conversationKey(dependencyID) {
+		return ctx, conversationFailure("bad_request", "dependency_invalid")
+	}
+	for _, edge := range task.Dependencies {
+		if edge.DelegationID != dependencyID {
+			continue
+		}
+		if _, err := s.sourceAudit(reader).dependency(ctx, edge); err != nil {
+			return ctx, err
+		}
+		upstreamCtx, original, err := s.dependencyContractContext(ctx, edge.ConversationDependencyInput, reader)
+		if err != nil {
+			return ctx, err
+		}
+		for _, root := range original.Requirements.Sources {
+			if sourcePrefixContains(root, ref) {
+				return upstreamCtx, nil
+			}
+		}
+		return ctx, conversationFailure("forbidden", "delegation_source_not_released")
+	}
+	return ctx, conversationFailure("forbidden", "delegation_source_not_released")
 }
 
 func (s *ConversationService) delegationSourceResult(ctx context.Context, owner sdk.ConversationRunReference, ownerAuthority, reader sdk.ConversationAuthority, args sdk.ConversationDelegationSourceRead, parent *conversationSourceAudit) (persistence.ConversationToolExecution, []sdk.ConversationRunReference, error) {
@@ -97,20 +159,24 @@ func (s *ConversationService) delegationSourceResult(ctx context.Context, owner 
 	if err != nil {
 		return empty, nil, err
 	}
-	owned, err := s.delegationOwnsSourceRun(ctx, d, run, reader)
+	ctx, err = s.delegationRunContractSourceContext(ctx, d, run, reader)
 	if err != nil {
 		return empty, nil, err
 	}
-	if !owned || conversationDigest(run.BackgroundTask.Requirements.Sources) != conversationDigest(d.Requirements.Sources) {
-		return empty, nil, conversationFailure("forbidden", "delegation_source_not_released")
-	}
 	ref := sdk.ConversationRunReference{ConversationID: args.Reference.ConversationID, RunID: args.Reference.RunID, BeforeStep: args.Reference.Step + 2}
-	matched := false
-	for _, root := range run.BackgroundTask.Requirements.Sources {
-		matched = matched || sourcePrefixContains(root, ref)
-	}
-	if !matched {
-		return empty, nil, conversationFailure("forbidden", "delegation_source_not_released")
+	if args.DependencyID != "" {
+		ctx, err = s.admittedDependencySourceContext(ctx, run.BackgroundTask, args.DependencyID, ref, reader)
+		if err != nil {
+			return empty, nil, err
+		}
+	} else {
+		matched := false
+		for _, root := range run.BackgroundTask.Requirements.Sources {
+			matched = matched || sourcePrefixContains(root, ref)
+		}
+		if !matched {
+			return empty, nil, conversationFailure("forbidden", "delegation_source_not_released")
+		}
 	}
 	subjectRepo, ok := s.repo.(persistence.ConversationDelegationExecutionRepository)
 	if !ok {
@@ -137,10 +203,7 @@ func (s *ConversationService) delegationSourceResult(ctx context.Context, owner 
 	} else if ownerAuthority != subjects.Executor {
 		return empty, nil, conversationFailure("forbidden", "execution_subject_mismatch")
 	}
-	ctx, err = s.delegationContractSourceContext(ctx, d, reader)
-	if err == nil {
-		ctx, err = s.publishedReferenceContext(ctx, ref, reader)
-	}
+	ctx, err = s.publishedReferenceContext(ctx, ref, reader)
 	if err != nil {
 		return empty, nil, err
 	}
@@ -204,7 +267,7 @@ func (s *ConversationService) readDelegationSource(ctx context.Context, in sdk.C
 		return empty, err
 	}
 	page, err := s.conversationResultSlice(args.ConversationResultRead, *record.Result)
-	return sdk.ConversationDelegationSourceSlice{DelegationID: args.ID, ConversationResultSlice: page}, err
+	return sdk.ConversationDelegationSourceSlice{DelegationID: args.ID, DependencyID: args.DependencyID, ConversationResultSlice: page}, err
 }
 
 func verifyDelegationSourcePage(args sdk.ConversationDelegationSourceRead, saved sdk.ConversationDelegationSourceSlice, result sdk.ConversationToolResult) error {
@@ -215,7 +278,7 @@ func verifyDelegationSourcePage(args sdk.ConversationDelegationSourceRead, saved
 	if args.MaxBytes == 0 {
 		args.MaxBytes = 4096
 	}
-	if saved.DelegationID != args.ID || saved.Reference != args.Reference || saved.Offset != args.Offset || args.MaxBytes < 256 || args.MaxBytes > 8192 || saved.TotalBytes != len(raw) || saved.Offset < 0 || saved.Offset > len(raw) || saved.NextOffset < saved.Offset || saved.NextOffset > min(len(raw), saved.Offset+args.MaxBytes) || saved.NextOffset == saved.Offset && !saved.Complete || saved.Complete != (saved.NextOffset == len(raw)) {
+	if saved.DelegationID != args.ID || saved.DependencyID != args.DependencyID || saved.Reference != args.Reference || saved.Offset != args.Offset || args.MaxBytes < 256 || args.MaxBytes > 8192 || saved.TotalBytes != len(raw) || saved.Offset < 0 || saved.Offset > len(raw) || saved.NextOffset < saved.Offset || saved.NextOffset > min(len(raw), saved.Offset+args.MaxBytes) || saved.NextOffset == saved.Offset && !saved.Complete || saved.Complete != (saved.NextOffset == len(raw)) {
 		return invalidPersonalReceipt()
 	}
 	if saved.Offset < len(raw) && !utf8.RuneStart(raw[saved.Offset]) || saved.NextOffset < len(raw) && !utf8.RuneStart(raw[saved.NextOffset]) || saved.JSONText != string(raw[saved.Offset:saved.NextOffset]) {
@@ -225,8 +288,8 @@ func verifyDelegationSourcePage(args sdk.ConversationDelegationSourceRead, saved
 }
 
 func (audit *conversationSourceAudit) delegationSourceToolRecord(ctx context.Context, owner sdk.ConversationRunReference, record persistence.ConversationToolExecution) ([]sdk.ConversationRunReference, error) {
-	definition, _ := collaborationTool("delegation_source_read")
-	if conversationDigest(definition) != conversationDigest(record.Definition) {
+	definition, known := sdk.ConversationDelegationSourceReadDefinition(record.Definition.Version)
+	if !known || conversationDigest(definition) != conversationDigest(record.Definition) {
 		return nil, conversationFailure("conflict", "tool_changed")
 	}
 	if err := audit.connectedTool(ctx, definition.Key); err != nil {
@@ -235,6 +298,9 @@ func (audit *conversationSourceAudit) delegationSourceToolRecord(ctx context.Con
 	var args sdk.ConversationDelegationSourceRead
 	var saved sdk.ConversationDelegationSourceSlice
 	if decodePersonalReceipt([]byte(record.Call.Arguments), &args) != nil || decodePersonalReceipt(record.Result.Content, &saved) != nil || record.Result.ResourceID != args.ID {
+		return nil, invalidPersonalReceipt()
+	}
+	if definition.Version == "1" && args.DependencyID != "" {
 		return nil, invalidPersonalReceipt()
 	}
 	original, roots, err := audit.s.delegationSourceResult(ctx, owner, audit.evidenceAuthority(owner), audit.a, args, audit)

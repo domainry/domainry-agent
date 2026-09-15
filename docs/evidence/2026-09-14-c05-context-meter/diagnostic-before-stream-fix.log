@@ -1,0 +1,9 @@
+=== RUN   TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery
+    conversation_collaboration_test.go:343: unexpected issuer review state failed/execution_context_exceeded
+--- FAIL: TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery (7.50s)
+=== RUN   TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation
+    conversation_delivery_schedule_permissions_test.go:171: plan call failed schedule_create {<nil>  crun_e6bfb0f04ba6879750340969a9ff4976 conv_983c38602a11d61addc76d8ed131d4da schedule_create  failed 1  1  0 5 [{0 1 interrupted  [] map[] 2026-09-14 03:14:09.499736 +0000 UTC <nil> 0}] <nil> 0 <nil> <nil>  map[] crun_e6bfb0f04ba6879750340969a9ff4976 {1 1 0 0 0 0} [{1 run queued 0 0        0 2026-09-14 03:14:09.258244 +0000 UTC} {2 run running 0 1        0 2026-09-14 03:14:09.258609 +0000 UTC} {3 step prepared 0 1        0 2026-09-14 03:14:09.42168 +0000 UTC} {4 model started 0 1        0 2026-09-14 03:14:09.499736 +0000 UTC} {5 run failed 0 1       execution_context_exceeded 0 2026-09-14 03:14:09.501841 +0000 UTC}] true 2026-09-14 03:14:09.258609 +0000 UTC 2026-09-14 03:14:09.501841 +0000 UTC 243 0 execution_context_exceeded 2026-09-14 03:14:09.258192 +0000 UTC 2026-09-14 03:14:09.501859 +0000 UTC}
+--- FAIL: TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation (1.98s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	9.966s
+FAIL

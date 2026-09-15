@@ -1,0 +1,7 @@
+{
+  "Replace": {
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_sources.go": "/tmp/c05-source-scope-trace-overlay/conversation_sources.go",
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_tasks.go": "/tmp/c05-source-scope-trace-overlay/conversation_tasks.go",
+    "/Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go": "/tmp/c05-source-scope-trace-overlay/conversation_service.go"
+  }
+}

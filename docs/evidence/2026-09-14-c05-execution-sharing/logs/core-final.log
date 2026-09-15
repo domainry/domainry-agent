@@ -1,0 +1,5 @@
+ok  	github.com/domainry/domainry-agent/internal/application	1.321s
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	(cached)
+ok  	github.com/domainry/domainry-agent/remote	(cached)
+ok  	github.com/domainry/domainry-agent/internal/transport/http/module	0.812s
+ok  	github.com/domainry/domainry-agent/internal/capability	0.929s

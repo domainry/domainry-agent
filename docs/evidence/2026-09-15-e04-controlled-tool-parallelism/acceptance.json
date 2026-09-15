@@ -1,0 +1,58 @@
+{
+  "date": "2026-09-15",
+  "item": "E04",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 10,
+  "results": {
+    "tools_sdk_go_test": {"exit_code": 0},
+    "tools_go_test": {"exit_code": 0},
+    "agent_sdk_go_test": {"exit_code": 0},
+    "agent_core_packages": {"exit_code": 0},
+    "agent_web_package": {"exit_code": 0, "seconds": 468.714},
+    "integration": {"exit_code": 0, "seconds": 94.918},
+    "focused_race": {
+      "exit_code": 0,
+      "packages": [
+        "internal/assembly/web",
+        "internal/infrastructure/persistence/database/agent"
+      ]
+    },
+    "frontend_tests": {"passed": 88, "failed": 0, "exit_code": 0},
+    "frontend_build": {"exit_code": 0, "typescript": true, "vite": true},
+    "chrome": {
+      "exit_code": 0,
+      "steps": 3,
+      "explicit_read_calls": 2,
+      "execution_authorization_checks": 2,
+      "host_authorization_calls_including_result_reads": 4,
+      "parallel_batches": 1,
+      "peak_parallel_tools": 2,
+      "ordered_result_projection": true,
+      "javascript_errors": [],
+      "console_errors_after_login": [],
+      "console_warnings_after_login": [],
+      "viewport_widths": [1280, 390]
+    },
+    "diff_check": {
+      "agent_exit_code": 0,
+      "agent_sdk_exit_code": 0,
+      "tools_sdk_exit_code": 0,
+      "tools_exit_code": 0,
+      "bytes": 0
+    }
+  },
+  "behavior": [
+    "only owner-declared independent reads can enter bounded tool parallelism",
+    "unknown parallelism declarations and write tools marked as independent reads are rejected",
+    "each call is authorized and validated immediately before invocation and keeps an independent receipt",
+    "results are projected back to the model in original call order regardless of completion order",
+    "batch infrastructure errors and run cancellation converge all currently executing siblings",
+    "actual started and terminal events determine parallel batch, call and peak metrics",
+    "Agent worker capacity and one-run tool parallelism remain separately measured",
+    "retry clears stale parallel step projection before a new execution strategy is selected"
+  ],
+  "remaining": [
+    "resource-conflict keys and safe write parallelism remain outside this first E04 delivery."
+  ]
+}

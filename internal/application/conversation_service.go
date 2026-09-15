@@ -24,12 +24,13 @@ import (
 type ConversationOptions struct {
 	// AgentModels is a trusted host registry. API callers select keys, never
 	// provider URLs or credentials. "default" refers to the primary model.
-	AgentModels      map[string]agentsdk.ConversationModel
-	AgentModelPrices map[string]agentsdk.ConversationModelPrice
-	AgentDefinitions []agentsdk.AgentSchema
-	KnowledgeFactory knowledge.Factory
-	Agent            *agentsdk.AgentSchema
-	Skills           []agentsdk.SkillSchema
+	AgentModels         map[string]agentsdk.ConversationModel
+	AgentModelPrices    map[string]agentsdk.ConversationModelPrice
+	AgentDefinitions    []agentsdk.AgentSchema
+	LifecycleExtensions []agentsdk.ConversationLifecycleExtension
+	KnowledgeFactory    knowledge.Factory
+	Agent               *agentsdk.AgentSchema
+	Skills              []agentsdk.SkillSchema
 	// ToolDefinitions declares optional product-owned registrations for profile validation.
 	ToolDefinitions []agentsdk.ConversationToolDefinition
 	// AssembleTools attaches product tool implementations before workers start.
@@ -41,32 +42,37 @@ type ConversationOptions struct {
 	// the engine does not depend on a settings implementation or its database.
 	BindToolPolicy func(toolsdk.Catalog, toolsdk.Availability) (toolsdk.Availability, error)
 
-	CollaborationAuthorizer                                   agentsdk.ConversationCollaborationAuthorizer
-	ExecutionAuthorizer                                       agentsdk.ConversationExecutionAuthorizer
-	DocumentStorage                                           agentsdk.KnowledgeDocumentStorage
-	DocumentPoll                                              time.Duration
-	LibraryKnowledge                                          []LibraryKnowledgeBinding
-	KnowledgeDatasources                                      agentsdk.KnowledgeDatasourceCatalog
-	LibraryAuthorizer                                         agentsdk.KnowledgeLibraryAuthorizer
-	AttachmentStorage                                         agentsdk.ConversationAttachmentStorage
-	AttachmentAuthorizer                                      agentsdk.ConversationAttachmentAuthorizer
-	AttachmentKnowledge                                       []agentsdk.ConversationAttachmentKnowledgeBinding
-	Business                                                  agentsdk.ConversationBusinessSource
-	ArtifactStorage                                           agentsdk.ConversationArtifactStorage
-	ArtifactExportTTL                                         time.Duration
-	PersonalAuthorizer                                        agentsdk.ConversationToolAuthorizer
-	ToolHost                                                  agentsdk.ConversationToolHost
-	ToolAvailability                                          agentsdk.ConversationToolAvailability
-	FollowUpPublisher                                         agentsdk.ConversationFollowUpPublisher
-	MaxSteps, MaxToolCalls, MaxArgumentBytes                  int
-	Knowledge                                                 ConversationKnowledge
-	KnowledgeBytes                                            int
-	ContextBytes, MaxInputBytes, MaxOutputBytes, SummaryBytes int
-	Workers                                                   int
-	MaxQueuedPerUser, MaxQueuedPerWorkspace                   int
-	MaxRunningPerUser, MaxRunningPerWorkspace                 int
-	Lease, Poll, RunTimeout, ExternalCallTimeout              time.Duration
-	InteractionTTL                                            time.Duration
+	CollaborationAuthorizer                                    agentsdk.ConversationCollaborationAuthorizer
+	ExecutionAuthorizer                                        agentsdk.ConversationExecutionAuthorizer
+	DocumentStorage                                            agentsdk.KnowledgeDocumentStorage
+	DocumentPoll                                               time.Duration
+	LibraryKnowledge                                           []LibraryKnowledgeBinding
+	KnowledgeDatasources                                       agentsdk.KnowledgeDatasourceCatalog
+	LibraryAuthorizer                                          agentsdk.KnowledgeLibraryAuthorizer
+	AttachmentStorage                                          agentsdk.ConversationAttachmentStorage
+	AttachmentAuthorizer                                       agentsdk.ConversationAttachmentAuthorizer
+	AttachmentKnowledge                                        []agentsdk.ConversationAttachmentKnowledgeBinding
+	Business                                                   agentsdk.ConversationBusinessSource
+	ArtifactStorage                                            agentsdk.ConversationArtifactStorage
+	ArtifactExportTTL                                          time.Duration
+	PersonalAuthorizer                                         agentsdk.ConversationToolAuthorizer
+	ToolHost                                                   agentsdk.ConversationToolHost
+	CodeRuntime                                                agentsdk.ConversationCodeRuntime
+	CodingRuntime                                              agentsdk.ConversationCodingRuntime
+	ToolAvailability                                           agentsdk.ConversationToolAvailability
+	FollowUpPublisher                                          agentsdk.ConversationFollowUpPublisher
+	MaxSteps, MaxToolCalls, MaxArgumentBytes, MaxParallelTools int
+	Knowledge                                                  ConversationKnowledge
+	KnowledgeBytes                                             int
+	ContextSources                                             []agentsdk.ConversationContextSource
+	ContextBytes, MaxInputBytes, MaxOutputBytes, SummaryBytes  int
+	Workers                                                    int
+	MaxQueuedPerUser, MaxQueuedPerWorkspace                    int
+	MaxRunningPerUser, MaxRunningPerWorkspace                  int
+	Lease, Poll, RunTimeout, ExternalCallTimeout               time.Duration
+	MaxModelAttempts                                           int
+	ModelRetryBaseDelay, ModelRetryMaxDelay                    time.Duration
+	InteractionTTL                                             time.Duration
 }
 
 type conversationActive struct {
@@ -93,6 +99,8 @@ type ConversationService struct {
 	wg                  sync.WaitGroup
 	mu                  sync.Mutex
 	active              map[string]conversationActive
+	lifecycleExtensions []conversationLifecycleBinding
+	lifecycleManifest   *agentsdk.ConversationLifecycleManifest
 }
 
 func NewConversationService(repo agentpersistence.ConversationRepository, model agentsdk.ConversationModel, runtimeID string, options ConversationOptions) (*ConversationService, error) {
@@ -144,6 +152,18 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	if options.ExternalCallTimeout == 0 {
 		options.ExternalCallTimeout = min(2*time.Minute, options.RunTimeout)
 	}
+	if options.MaxModelAttempts == 0 {
+		options.MaxModelAttempts = 3
+	}
+	if options.ModelRetryBaseDelay == 0 {
+		options.ModelRetryBaseDelay = 250 * time.Millisecond
+	}
+	if options.ModelRetryMaxDelay == 0 {
+		options.ModelRetryMaxDelay = 30 * time.Second
+	}
+	if options.MaxModelAttempts < 1 || options.MaxModelAttempts > 8 || options.ModelRetryBaseDelay < time.Millisecond || options.ModelRetryBaseDelay > time.Minute || options.ModelRetryMaxDelay < options.ModelRetryBaseDelay || options.ModelRetryMaxDelay > 5*time.Minute {
+		return nil, fmt.Errorf("invalid conversation model retry policy")
+	}
 	if options.InteractionTTL == 0 {
 		options.InteractionTTL = 24 * time.Hour
 	}
@@ -156,11 +176,17 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	if options.MaxToolCalls == 0 {
 		options.MaxToolCalls = execution.DefaultMaxToolCalls
 	}
+	if options.MaxParallelTools == 0 {
+		options.MaxParallelTools = 4
+	}
 	if options.MaxArgumentBytes == 0 {
 		options.MaxArgumentBytes = 16 * 1024
 	}
-	if options.MaxSteps < 1 || options.MaxSteps > 256 || options.MaxToolCalls < 1 || options.MaxToolCalls > 64 || options.MaxArgumentBytes < 1 || options.MaxArgumentBytes > 1024*1024 {
+	if options.MaxSteps < 1 || options.MaxSteps > 256 || options.MaxToolCalls < 1 || options.MaxToolCalls > 64 || options.MaxArgumentBytes < 1 || options.MaxArgumentBytes > 1024*1024 || options.MaxParallelTools < 1 || options.MaxParallelTools > 16 {
 		return nil, fmt.Errorf("invalid conversation execution limits")
+	}
+	if err := prepareConversationContextSources(&options); err != nil {
+		return nil, err
 	}
 	if options.ToolHost != nil {
 		if _, ok := model.(agentsdk.ConversationAgentModel); !ok {
@@ -174,6 +200,17 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 		}
 	} else if options.ToolAvailability != nil {
 		return nil, fmt.Errorf("conversation tool availability requires a tool host")
+	}
+	if options.CodeRuntime != nil {
+		if options.ToolHost == nil || options.PersonalAuthorizer == nil {
+			return nil, fmt.Errorf("conversation code Runtime requires a tool host and current action authorization")
+		}
+		if _, ok := repo.(agentpersistence.ConversationCodeExecutionRepository); !ok {
+			return nil, fmt.Errorf("conversation code Runtime requires nested execution persistence")
+		}
+	}
+	if options.CodingRuntime != nil && (options.ToolHost == nil || options.PersonalAuthorizer == nil) {
+		return nil, fmt.Errorf("conversation coding Runtime requires a tool host and current action authorization")
 	}
 	if len(options.LibraryKnowledge) > 0 || options.KnowledgeDatasources != nil {
 		if options.ToolHost == nil {
@@ -293,6 +330,11 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 		prices[key] = price
 	}
 	options.AgentModelPrices = prices
+	lifecycleExtensions, lifecycleManifest, err := prepareConversationLifecycle(options.LifecycleExtensions)
+	if err != nil {
+		return nil, err
+	}
+	options.LifecycleExtensions = append([]agentsdk.ConversationLifecycleExtension(nil), options.LifecycleExtensions...)
 	if options.AgentDefinitions != nil {
 		raw, err := json.Marshal(options.AgentDefinitions)
 		if err != nil {
@@ -332,7 +374,20 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 			return nil, err
 		}
 	}
-	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, wake: make(chan struct{}, options.Workers), taskWake: make(chan struct{}, 1), followUpWake: make(chan struct{}, 1), attachmentWake: make(chan struct{}, 1), active: map[string]conversationActive{}}
+	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, wake: make(chan struct{}, options.Workers), taskWake: make(chan struct{}, 1), followUpWake: make(chan struct{}, 1), attachmentWake: make(chan struct{}, 1), active: map[string]conversationActive{}, lifecycleExtensions: lifecycleExtensions, lifecycleManifest: lifecycleManifest}
+	if model != nil {
+		if _, err := s.conversationModelDescriptor("default"); err != nil {
+			return nil, fmt.Errorf("invalid default conversation model: %w", err)
+		}
+	}
+	for key, registered := range options.AgentModels {
+		if key == "" || key == "default" || registered == nil || strings.TrimSpace(key) != key || len(key) > 96 {
+			return nil, fmt.Errorf("invalid Agent model registration")
+		}
+		if _, err := s.conversationModelDescriptor(key); err != nil {
+			return nil, fmt.Errorf("invalid Agent model %s: %w", key, err)
+		}
+	}
 	s.documentWake = make(chan struct{}, 1)
 	s.attachmentIndexWake = make(chan struct{}, 1)
 	if personalHost != nil {
@@ -351,6 +406,9 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	}
 	if err := s.configureProfile(); err != nil {
 		return nil, err
+	}
+	if s.options.ToolHost != nil && len(s.options.Skills) > 0 {
+		s.options.ToolHost = &skillToolHost{ConversationToolHost: s.options.ToolHost, service: s}
 	}
 	if s.options.ToolHost != nil && s.options.BindToolPolicy != nil {
 		policy, err := s.options.BindToolPolicy(s.options.ToolHost, s.options.ToolAvailability)
@@ -391,6 +449,9 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 func (s *ConversationService) Close() {
 	s.cancel()
 	s.wg.Wait()
+	if closer, ok := s.options.CodingRuntime.(interface{ Close() error }); ok {
+		_ = closer.Close()
+	}
 	if s.knowledgeModule != nil {
 		s.knowledgeModule.Close()
 	}
@@ -504,8 +565,12 @@ func (s *ConversationService) Create(ctx context.Context, in agentsdk.Conversati
 		if !conversationKey(in.AgentID) {
 			return agentsdk.Conversation{}, conversationFailure("bad_request", "agent_invalid")
 		}
-		if _, err := s.freezeConversationAgent(ctx, in.AgentID, a); err != nil {
+		agent, err := s.freezeConversationAgent(ctx, in.AgentID, a)
+		if err != nil {
 			return agentsdk.Conversation{}, err
+		}
+		if agent.External != nil {
+			return agentsdk.Conversation{}, conversationFailure("bad_request", "external_agent_delegation_required")
 		}
 	}
 	return s.repo.Create(ctx, in, a)
@@ -595,7 +660,7 @@ func (s *ConversationService) Send(ctx context.Context, id string, in agentsdk.C
 	if err := s.authorize(a); err != nil {
 		return agentsdk.ConversationRun{}, err
 	}
-	if !conversationKey(in.ClientMessageID) || !conversationText(in.Message, s.options.MaxInputBytes, true) {
+	if !conversationKey(in.ClientMessageID) {
 		return agentsdk.ConversationRun{}, conversationFailure("bad_request", "message_invalid")
 	}
 	if s.model == nil {
@@ -609,18 +674,48 @@ func (s *ConversationService) Send(ctx context.Context, id string, in agentsdk.C
 	if err != nil {
 		return agentsdk.ConversationRun{}, err
 	}
-	if conversation.AgentID != "" {
-		in.ExecutionAgent, err = s.freezeConversationAgent(ctx, conversation.AgentID, a)
+	agentID := s.conversationExecutionAgentID(conversation)
+	if agentID != "" {
+		in.ExecutionAgent, err = s.freezeConversationAgent(ctx, agentID, a)
 		if err != nil {
 			return agentsdk.ConversationRun{}, err
 		}
 	}
+	ctx, err = s.selectConversationAgent(ctx, in.ExecutionAgent, a)
+	if err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
+	in, err = s.freezeConversationSendContent(ctx, id, in, a)
+	if err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
+	in.ExecutionLifecycle = cloneConversationLifecycleManifest(s.lifecycleManifest)
+	if _, err = s.dispatchConversationLifecycle(ctx, agentsdk.ConversationLifecycleEvent{
+		Stage: agentsdk.ConversationLifecycleInputAdmitting, Authority: a, ConversationID: id,
+		Input: &agentsdk.ConversationLifecycleInput{ClientMessageID: in.ClientMessageID, Message: in.Message, Content: cloneConversationContentBlocks(in.Content)},
+	}); err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
 	out, err := s.repo.Enqueue(ctx, id, in, a)
 	if err == nil {
+		s.dispatchConversationInputReceivedLifecycle(ctx, out, a, agentsdk.ConversationLifecycleInput{ClientMessageID: in.ClientMessageID, Message: in.Message, Content: cloneConversationContentBlocks(in.Content)})
 		s.signal()
 		out = s.projectConversationRun(ctx, out, a)
 	}
 	return out, err
+}
+
+func (s *ConversationService) conversationExecutionAgentID(conversation agentsdk.Conversation) string {
+	if conversation.AgentID != "" {
+		return conversation.AgentID
+	}
+	// A configured default Agent with Skills must use the same frozen snapshot
+	// for its prompt, Skill loader and later configuration checks. Legacy
+	// conversations may not have persisted "default" as their Agent ID.
+	if s.options.Agent != nil && len(s.options.Agent.SkillKeys) > 0 {
+		return "default"
+	}
+	return ""
 }
 func (s *ConversationService) Messages(ctx context.Context, id string, in agentsdk.ConversationMessageQuery, a agentsdk.ConversationAuthority) (agentsdk.ConversationMessagePage, error) {
 	if err := s.authorizeCollaborationConversation(ctx, id, "execution_read", a); err != nil {
@@ -642,6 +737,12 @@ func (s *ConversationService) Messages(ctx context.Context, id string, in agents
 		audit := s.sourceAudit(a, id)
 		for i, message := range out.Items {
 			out.Items[i].Citations = nil
+			if err := s.reauthorizeConversationMessageImages(ctx, message, a); err != nil {
+				out.Items[i].Content = unavailableHistory
+				out.Items[i].ContentBlocks = nil
+				out.Items[i].AccessError = sourceAccessCode(err)
+				continue
+			}
 			if message.Role != "assistant" || message.RunID == "" {
 				continue
 			}
@@ -715,6 +816,10 @@ func (s *ConversationService) Cancel(ctx context.Context, id, run string, a agen
 	}
 	if err == nil {
 		out = s.projectConversationRun(ctx, out, a)
+		if out.Status == "cancelled" {
+			s.closeConversationCodingScope(ctx, a, id, run)
+			s.dispatchConversationTerminalLifecycle(ctx, out, a)
+		}
 	}
 	return out, err
 }
@@ -745,16 +850,21 @@ func (s *ConversationService) Memories(ctx context.Context, a agentsdk.Conversat
 	if err := s.authorize(a); err != nil {
 		return nil, err
 	}
-	return s.repo.Memories(ctx, a)
+	items, err := s.repo.Memories(ctx, a)
+	for index := range items {
+		items[index] = normalizeConversationMemory(items[index])
+	}
+	return items, err
 }
 func (s *ConversationService) WriteMemory(ctx context.Context, in agentsdk.ConversationMemoryWrite, a agentsdk.ConversationAuthority) (agentsdk.ConversationMemory, error) {
 	if err := s.authorize(a); err != nil {
 		return agentsdk.ConversationMemory{}, err
 	}
-	if !conversationKey(in.ID) || !conversationText(in.Title, 128, true) || !conversationText(in.Content, 512, true) || in.ExpectedRevision < 0 {
-		return agentsdk.ConversationMemory{}, conversationFailure("bad_request", "memory_invalid")
+	prepared, err := s.prepareConversationMemoryWrite(ctx, in, a)
+	if err != nil {
+		return agentsdk.ConversationMemory{}, err
 	}
-	return s.repo.WriteMemory(ctx, in, a)
+	return s.repo.WriteMemory(ctx, prepared, a)
 }
 func (s *ConversationService) DeleteMemory(ctx context.Context, id string, revision int64, a agentsdk.ConversationAuthority) error {
 	if err := s.authorize(a); err != nil {
@@ -786,7 +896,13 @@ func (s *ConversationService) worker(ctx context.Context) {
 	}
 }
 func (s *ConversationService) execute(parent context.Context, claim agentpersistence.ConversationClaim) {
-	parent, selectionErr := s.selectConversationAgent(parent, claim.Run.Agent, claim.Authority)
+	selectionErr := s.selectConversationLifecycle(claim.Run.Lifecycle)
+	if selectionErr == nil {
+		parent, selectionErr = s.selectConversationAgent(parent, claim.Run.Agent, claim.Authority)
+	}
+	if selectionErr == nil && claim.Run.BackgroundTask != nil {
+		parent, selectionErr = s.selectConversationTaskModel(parent, claim.Run.BackgroundTask.Model)
+	}
 	_, _, maxOutputBytes, runTimeout := s.conversationRunLimits(claim)
 	ctx, cancel := context.WithTimeout(parent, runTimeout)
 	defer cancel()
@@ -802,23 +918,23 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 		s.mu.Unlock()
 	}()
 	heartbeatDone := make(chan struct{})
-	go func() {
+	go func(heartbeatCtx context.Context) {
 		defer close(heartbeatDone)
 		ticker := time.NewTicker(s.options.Lease / 3)
 		defer ticker.Stop()
 		for {
 			select {
-			case <-ctx.Done():
+			case <-heartbeatCtx.Done():
 				return
 			case <-ticker.C:
-				ok, err := s.repo.Heartbeat(ctx, claim, s.options.Lease)
+				ok, err := s.repo.Heartbeat(heartbeatCtx, claim, s.options.Lease)
 				if err != nil || !ok {
 					cancel()
 					return
 				}
 			}
 		}
-	}()
+	}(ctx)
 	defer func() { cancel(); <-heartbeatDone }()
 	var input agentsdk.ConversationModelRequest
 	found := false
@@ -827,12 +943,32 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 		err = selectionErr
 	}
 	if err == nil {
+		// History sources are flattened before their final input check. Keep
+		// this admitted run's exact contract scope throughout execution so
+		// those result reads retain their proof without granting tool execution.
+		ctx, err = s.delegationRunSourceContext(ctx, claim.Run, claim.Authority)
+	}
+	if err == nil {
 		input, found, err = s.repo.ModelInput(ctx, claim, nil)
 	}
 	if err == nil && !found {
-		input, err = s.buildConversationContext(ctx, claim)
+		ctx, err = s.applyConversationContextLimitLifecycle(ctx, claim)
+		if err == nil {
+			input, err = s.buildConversationContext(ctx, claim)
+		}
+		if err == nil {
+			input, err = s.applyConversationContextLifecycle(ctx, claim, input)
+		}
 		if err == nil {
 			input, _, err = s.repo.ModelInput(ctx, claim, &input)
+		}
+	}
+	if err == nil {
+		descriptor, descriptorErr := s.currentConversationModelDescriptor(ctx)
+		if descriptorErr != nil {
+			err = descriptorErr
+		} else if input.ModelIdentity != descriptor.Identity || conversationDigest(input.ModelCapabilities) != conversationDigest(descriptor.Capabilities) || input.ReasoningEffort != descriptor.DefaultReasoningEffort {
+			err = conversationFailure("conflict", "model_changed")
 		}
 	}
 	if err == nil {
@@ -842,7 +978,15 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 			_, err = s.sourceAudit(claim.Authority, claim.Run.ConversationID).sources(ctx, input.Sources)
 		}
 	}
-	if err == nil && conversationContextSize(input.Messages) > s.options.ContextBytes {
+	if err == nil && s.options.ToolHost == nil && input.Context != nil {
+		messages, messageErr := conversationStepMessages(input)
+		if messageErr != nil {
+			err = messageErr
+		} else {
+			err = s.reauthorizeConversationContextSources(ctx, claim, input.Context, messages, "reply", 0)
+		}
+	}
+	if err == nil && conversationContextSize(input.Messages) > s.conversationContextLimit(ctx) {
 		err = fmt.Errorf("frozen context exceeds current configured budget")
 	}
 	var result agentsdk.ConversationModelResult
@@ -868,6 +1012,7 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 		}
 	}
 	if parent.Err() != nil {
+		s.closeConversationCodingScope(context.WithoutCancel(parent), claim.Authority, claim.Run.ConversationID, claim.Run.ID)
 		return
 	} // release by lease expiry after graceful shutdown
 	if code == "" {
@@ -886,8 +1031,15 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 	if err := s.repo.Finish(finishCtx, claim, result, code); err != nil {
 		slog.Debug("conversation finish fenced or unavailable", "run_id", claim.Run.ID, "error", err)
 	} else {
+		s.closeConversationCodingScope(finishCtx, claim.Authority, claim.Run.ConversationID, claim.Run.ID)
 		s.signalConversationTasks()
 		s.signalConversationFollowUps()
+		finished := claim.Run
+		finished.Status, finished.ErrorCode, finished.Model, finished.Usage = "completed", code, result.Model, result.Usage
+		if code != "" {
+			finished.Status = "failed"
+		}
+		s.dispatchConversationTerminalLifecycle(finishCtx, finished, claim.Authority)
 	}
 }
 
@@ -907,13 +1059,15 @@ func conversationModelFailureCode(err error, fallback string) string {
 		switch code {
 		case "execution_access_denied", "execution_authorization_unavailable", "collaboration_access_denied", "collaboration_authorization_unavailable":
 			return code
-		case "source_access_unavailable", "source_reference_invalid", "source_read_unavailable", "source_limit_exceeded", "source_snapshot_changed":
+		case "source_access_unavailable", "source_reference_invalid", "source_read_unavailable", "source_limit_exceeded", "source_snapshot_changed", "delegation_source_not_released", "dependency_source_unavailable":
 			return code
-		case "agent_changed", "agent_disabled", "agent_snapshot_invalid", "agent_model_unavailable", "delegation_superseded", "model_changed", "execution_limit", "execution_context_exceeded", "tool_catalog_invalid", "tool_access_denied", "tool_unavailable", "tool_availability_failed", "tool_changed", "tool_confirmation_required", "tool_result_uncertain", "tool_result_invalid", "interaction_unavailable", "interaction_closed", "interaction_expired", "interaction_access_denied", "question_must_be_separate":
+		case "agent_changed", "agent_disabled", "agent_snapshot_invalid", "agent_model_unavailable", "agent_model_capabilities_invalid", "reasoning_effort_unsupported", "delegation_superseded", "model_changed", "lifecycle_changed", "lifecycle_extension_failed", "execution_limit", "execution_context_exceeded", "tool_catalog_invalid", "tool_access_denied", "tool_unavailable", "tool_availability_failed", "tool_changed", "tool_confirmation_required", "tool_result_uncertain", "tool_result_invalid", "interaction_unavailable", "interaction_closed", "interaction_expired", "interaction_access_denied", "question_must_be_separate":
 			return code
 		case "execution_reference_invalid", "execution_reference_changed", "execution_read_unavailable", "result_reference_invalid", "result_reference_changed", "result_not_found", "result_read_unavailable", "tool_call_not_found", "run_not_found":
 			return code
 		case "knowledge_access_denied", "knowledge_not_found", "knowledge_quota_exhausted", "knowledge_rate_limited", "knowledge_timeout", "knowledge_network", "knowledge_request_invalid", "knowledge_unavailable", "knowledge_failed", "knowledge_response_invalid", "knowledge_context_exceeded", "knowledge_source_changed":
+			return code
+		case "attachment_access_denied", "attachments_unavailable", "attachment_not_found", "attachment_content_not_found", "attachment_content_mismatch", "message_image_reference_invalid", "message_image_reference_changed", "message_image_source_unavailable", "model_image_input_unsupported":
 			return code
 		case "business_access_denied", "business_record_not_found", "business_request_invalid", "business_source_changed", "business_unavailable", "business_response_invalid":
 			return code

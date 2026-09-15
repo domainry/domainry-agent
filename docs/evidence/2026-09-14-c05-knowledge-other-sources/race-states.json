@@ -1,0 +1,16 @@
+{
+  "managed-agent-race": {
+    "status": "failed_not_accepted",
+    "accepted": false
+  },
+  "unmanaged-legacy-agent-race": {
+    "status": "verified_running",
+    "accepted": false,
+    "pid": 79696,
+    "session_id": 72312,
+    "observed_at_utc": "2026-09-14T06:57:38.135932+00:00",
+    "process": "  PID ELAPSED  %CPU STAT COMMAND\n79696   04:38 103.9 R    /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/go-build840737208/b001/integrationtest.test -test.paniconexit0 -test.timeout=10m0s -test.run=^TestCrossUser(Unmanaged|Legacy)KnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$ -test.count=1 -test.v=true\n",
+    "log": "/tmp/c05-knowledge-other-sources-final-race.log",
+    "observed_failed_root_or_race_warning": false
+  }
+}

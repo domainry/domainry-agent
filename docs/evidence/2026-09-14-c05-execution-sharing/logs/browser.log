@@ -1,0 +1,25 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Timeout 20000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('dialog', { name: 'Agent 协作', exact: true }).getByRole('region', { name: '委派参与人', exact: true }).getByLabel('参与范围调整说明', { exact: true }) to be hidden[22m
+[2m    44 × locator resolved to visible <textarea rows="2" required="" maxlength="4096" aria-label="参与范围调整说明">撤回查看执行，保留原沟通范围</textarea>[22m
+
+    at scope (/Users/tiger/Projects/domainry-agent/frontend/tests/execution-sharing.browser.mjs:20:607)
+    at async file:///Users/tiger/Projects/domainry-agent/frontend/tests/execution-sharing.browser.mjs:27:2 {
+  log: [
+    "  - waiting for getByRole('dialog', { name: 'Agent 协作', exact: true }).getByRole('region', { name: '委派参与人', exact: true }).getByLabel('参与范围调整说明', { exact: true }) to be hidden",
+    '    44 × locator resolved to visible <textarea rows="2" required="" maxlength="4096" aria-label="参与范围调整说明">撤回查看执行，保留原沟通范围</textarea>'
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.19.0
+    conversation_source_release_test.go:161: exit status 1
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (37.30s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	37.778s
+FAIL

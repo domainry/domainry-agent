@@ -1,0 +1,20 @@
+# github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent [github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent.test]
+internal/infrastructure/persistence/database/agent/conversation_execution_sharing_store_test.go:11:36: undefined: releasedStoreFixture
+=== RUN   TestPeerToolSchemasCompile
+--- PASS: TestPeerToolSchemasCompile (0.01s)
+=== RUN   TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads
+=== RUN   TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/reply
+=== RUN   TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/run
+=== RUN   TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/controls
+=== RUN   TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/result
+=== RUN   TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/arguments
+--- PASS: TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads (0.00s)
+    --- PASS: TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/reply (0.00s)
+    --- PASS: TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/run (0.00s)
+    --- PASS: TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/controls (0.00s)
+    --- PASS: TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/result (0.00s)
+    --- PASS: TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/arguments (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	0.655s
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent [build failed]
+FAIL

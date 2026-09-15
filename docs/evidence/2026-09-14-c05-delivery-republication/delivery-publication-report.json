@@ -1,0 +1,17 @@
+{
+  "acceptedHistory": true,
+  "previewWithoutGrant": true,
+  "explicitPublication": true,
+  "lostResponse": true,
+  "reloadRetry": true,
+  "exactRetryIdentity": true,
+  "singleAudit": true,
+  "originalRecordsUnchanged": true,
+  "actualPublisherAuditVisible": true,
+  "legacyEmptyAssessmentArrays": true,
+  "currentShareRevocation": true,
+  "restoration": true,
+  "closeClears": true,
+  "narrowViewport": true,
+  "errors": []
+}

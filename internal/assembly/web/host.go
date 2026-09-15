@@ -25,7 +25,7 @@ import (
 )
 
 type Options struct {
-	CalendarTools, MailTools, WebTools                       bool
+	CalendarTools, MailTools, WebTools, MCPTools             bool
 	CalendarWriteTools, MailWriteTools                       bool
 	ReportTools                                              bool
 	AnalysisTools                                            bool
@@ -106,7 +106,7 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 			_ = h.Close(context.Background())
 		}
 	}()
-	if options.CalendarTools || options.MailTools || options.WebTools || options.CalendarWriteTools || options.MailWriteTools {
+	if options.CalendarTools || options.MailTools || options.WebTools || options.MCPTools || options.CalendarWriteTools || options.MailWriteTools {
 		if err = h.bindAccountTools(&options); err != nil {
 			return nil, err
 		}

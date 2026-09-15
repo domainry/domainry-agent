@@ -1,0 +1,111 @@
+{
+  "phase_status": "accepted_workspace_account_sources_original_write_actor_and_heartbeat_fix",
+  "source_manifest": "source-sha256.json",
+  "source_files": 312,
+  "artifact_manifest": "artifact-sha256.json",
+  "artifact_files": 22,
+  "accepted_logs": [
+    "tools.log",
+    "tools-race.log",
+    "application.log",
+    "http.log",
+    "http-race.log",
+    "application-race.log"
+  ],
+  "accepted_exit_codes": {
+    "tools.log": 0,
+    "tools-race.log": 0,
+    "application.log": 0,
+    "http.log": 0,
+    "http-race.log": 0,
+    "application-race.log": 0
+  },
+  "root_seconds": {
+    "tools.log": {},
+    "tools-race.log": {
+      "TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader": "0.20",
+      "TestAccountWriteResultReadUsesOriginalLedgerWithoutExecutionOrApproval": "0.11",
+      "TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt": "0.31"
+    },
+    "application.log": {},
+    "http.log": {
+      "TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission": "9.77",
+      "TestCrossUserWorkspaceMailSourcesAutomaticDeliveryAndSharedExecution": "22.58",
+      "TestCrossUserWorkspaceCalendarSourcesAutomaticDeliveryAndSharedExecution": "37.55",
+      "TestCrossUserWorkspaceWebSourcesAutomaticDeliveryAndSharedExecution": "12.45",
+      "TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution": "14.55",
+      "TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart": "3.51"
+    },
+    "http-race.log": {
+      "TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart": "37.77"
+    },
+    "application-race.log": {}
+  },
+  "diagnostic_failed_logs": [
+    "diagnostic-write-original-actor-http.log",
+    "diagnostic-write-original-actor-sdk.log",
+    "diagnostic-heartbeat-race.log",
+    "diagnostic-large-body-race-budget.log",
+    "diagnostic-normal-body-race-budget.log",
+    "diagnostic-completion-and-policy-fixture.log",
+    "diagnostic-cas-and-status-fixture.log",
+    "diagnostic-sdk-field-fixture.log",
+    "diagnostic-failed-reply-fixture.log"
+  ],
+  "historical_checkpoint_logs": [
+    "checkpoint-large-body-http.log",
+    "checkpoint-large-body-write-count.log"
+  ],
+  "historical_artifacts_preserved": true,
+  "previous_phase": "2026-09-14-c05-identity-lifecycle",
+  "previous_source_manifest_sha256": "ec24d1e36bd251b872538dde2705ae52c7e0fe9619bfdb8b4e7200367000c0b5",
+  "previous_artifact_manifest_sha256": "9e89ceae982234972692add643f61614be65ed05248ee1c1d505e2a554744f48",
+  "previous_artifact_files": 23,
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "real_identity": true,
+  "real_http": true,
+  "real_integration_and_connectors": true,
+  "real_account_database_and_original_write_ledger": true,
+  "fixture_model": true,
+  "fixture_vendor": true,
+  "external_model_service_called": false,
+  "new_runtime_acceptance": false,
+  "new_frontend_acceptance": false,
+  "new_browser_acceptance": false,
+  "execution_budget_raised": false,
+  "context_budget_raised": false,
+  "new_task_budget": {
+    "max_steps": 12,
+    "max_tool_calls": 12,
+    "max_output_bytes": 8192,
+    "timeout_seconds": 60
+  },
+  "existing_write_host_argument_bytes": 1048576,
+  "existing_write_host_context_bytes": 2097152,
+  "large_body_cross_user_race_accepted": false,
+  "normal_body_cross_user_write_race_accepted": false,
+  "large_body_normal_http_and_exactly_once_checkpoint_passed": true,
+  "scope": [
+    "actual cross-user agent_delegate and owner-bound admitted worker",
+    "workspace Mail and Calendar read tools, Web search and fetch original receipts",
+    "workspace MailSend current-reader source and original-actor receipt lookup",
+    "Calendar create/update and Mail send/reply strict original actor SDK result-read",
+    "successful source reads without either user professional execution or account write permission",
+    "private personal account body rejection despite explicit publication and participant grants",
+    "durably running actual Connector business HTTP hides pending payload and controls",
+    "actual upstream 503 hides failed payload, errors, references and subsequent unverified model reply",
+    "exact original JSON and SHA/byte pages, explicit account acceptance and restart",
+    "current reader data scope, original account revoke and during-ledger-lookup withdrawal",
+    "exact vendor mail_send accepted once and no repeat vendor calls while reading",
+    "heartbeat context capture race fixed with shared cancellation and unchanged lease"
+  ],
+  "remaining": [
+    "other actual cross-owner professional writes including Calendar create/update and Mail reply",
+    "remaining historical and mixed source/provider compatibility",
+    "remaining complete multi-owner dependency management and subject-exit cases",
+    "large and normal-body cross-user MailSend race fixtures exceeded unchanged pending-boundary budget; neither accepted, cause requires investigation",
+    "all later TODO items remain in original goal scope"
+  ]
+}

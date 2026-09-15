@@ -331,11 +331,12 @@ func (s *ConversationStore) transferDisagreementResponsibilities(ctx context.Con
 		return err
 	}
 	after.Disagreements = append([]sdk.ConversationDisagreementSummary{}, after.Disagreements...)
+	record := delegationRecordAuthority(before, a)
 	for i, summary := range before.Disagreements {
 		if summary.OwnerAgentID != before.ToAgentID || summary.Status == "resolved" {
 			continue
 		}
-		value, err := s.readDisagreement(ctx, tx, before.ID, summary.ID, summary.Revision, a)
+		value, err := s.readDisagreement(ctx, tx, before.ID, summary.ID, summary.Revision, record)
 		if err != nil {
 			return err
 		}
@@ -346,7 +347,7 @@ func (s *ConversationStore) transferDisagreementResponsibilities(ctx context.Con
 		value.Reason = in.Reason
 		value.UpdatedAt = after.UpdatedAt
 		value.Sources = disagreementSources(value)
-		if err = s.saveDisagreement(ctx, tx, after.ID, value, a); err != nil {
+		if err = s.saveDisagreement(ctx, tx, after.ID, value, record); err != nil {
 			return err
 		}
 		after.Disagreements[i] = value.ConversationDisagreementSummary

@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sort"
+	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -27,15 +29,28 @@ const (
 // URL is a complete endpoint override. BaseURL supplies a configured service
 // origin for protocol routes; no external service domain is built into code.
 type ConversationModelConfig struct {
-	Provider, Protocol string
-	BaseURL            string
-	URL, APIKey, Model string
-	MaxOutputTokens    int
-	Client             *http.Client
+	Provider, Protocol          string
+	BaseURL                     string
+	URL, APIKey, Model          string
+	MaxOutputTokens             int
+	ContextTokenLimit           int
+	ImageInput                  bool
+	StructuredOutput            bool
+	DisableProtocolContinuation bool
+	ReasoningEfforts            []string
+	DefaultReasoningEffort      string
+	Client                      *http.Client
 }
 
 func ConversationModelConfigFromEnvironment() ConversationModelConfig {
-	c := ConversationModelConfig{Provider: os.Getenv("AGENT_CONVERSATION_PROVIDER"), Protocol: os.Getenv("AGENT_CONVERSATION_PROTOCOL"), BaseURL: os.Getenv("AGENT_CONVERSATION_BASE_URL"), URL: os.Getenv("AGENT_CONVERSATION_MODEL_URL"), APIKey: os.Getenv("AGENT_CONVERSATION_MODEL_API_KEY"), Model: os.Getenv("AGENT_CONVERSATION_MODEL"), MaxOutputTokens: 4096}
+	contextLimit, _ := strconv.Atoi(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_CONTEXT_TOKENS")))
+	efforts := []string{}
+	for _, value := range strings.Split(os.Getenv("AGENT_CONVERSATION_REASONING_EFFORTS"), ",") {
+		if value = strings.TrimSpace(value); value != "" {
+			efforts = append(efforts, value)
+		}
+	}
+	c := ConversationModelConfig{Provider: os.Getenv("AGENT_CONVERSATION_PROVIDER"), Protocol: os.Getenv("AGENT_CONVERSATION_PROTOCOL"), BaseURL: os.Getenv("AGENT_CONVERSATION_BASE_URL"), URL: os.Getenv("AGENT_CONVERSATION_MODEL_URL"), APIKey: os.Getenv("AGENT_CONVERSATION_MODEL_API_KEY"), Model: os.Getenv("AGENT_CONVERSATION_MODEL"), MaxOutputTokens: 4096, ContextTokenLimit: contextLimit, ImageInput: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_IMAGE_INPUT")), "true"), StructuredOutput: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_STRUCTURED_OUTPUT")), "true"), DisableProtocolContinuation: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_PROTOCOL_CONTINUATION")), "false"), ReasoningEfforts: efforts, DefaultReasoningEffort: os.Getenv("AGENT_CONVERSATION_REASONING_EFFORT")}
 	if strings.EqualFold(strings.TrimSpace(c.Provider), ConversationProviderGateway) && strings.TrimSpace(c.APIKey) == "" {
 		c.APIKey = os.Getenv("AGENT_PROVIDER_API_KEY")
 	}
@@ -54,6 +69,7 @@ func NewConversationModel(c ConversationModelConfig) (*ConversationModel, error)
 	c.BaseURL = strings.TrimRight(strings.TrimSpace(c.BaseURL), "/")
 	c.Model = strings.TrimSpace(c.Model)
 	c.APIKey = strings.TrimSpace(c.APIKey)
+	c.DefaultReasoningEffort = strings.ToLower(strings.TrimSpace(c.DefaultReasoningEffort))
 	if c.Provider == "" {
 		c.Provider = ConversationProviderCompatible
 	}
@@ -90,6 +106,22 @@ func NewConversationModel(c ConversationModelConfig) (*ConversationModel, error)
 	if c.MaxOutputTokens < 1 {
 		return nil, fmt.Errorf("invalid conversation output token limit")
 	}
+	if c.ContextTokenLimit < 0 || c.ContextTokenLimit > 100_000_000 {
+		return nil, fmt.Errorf("invalid conversation context token limit")
+	}
+	seenEfforts := map[string]bool{}
+	for index, effort := range c.ReasoningEfforts {
+		effort = strings.ToLower(strings.TrimSpace(effort))
+		if !validReasoningEffort(effort) || seenEfforts[effort] {
+			return nil, fmt.Errorf("invalid conversation reasoning efforts")
+		}
+		seenEfforts[effort] = true
+		c.ReasoningEfforts[index] = effort
+	}
+	if c.DefaultReasoningEffort != "" && !seenEfforts[c.DefaultReasoningEffort] {
+		return nil, fmt.Errorf("default reasoning effort is not declared")
+	}
+	sort.Strings(c.ReasoningEfforts)
 	if c.Client == nil {
 		c.Client = &http.Client{Timeout: 120 * time.Second}
 	}
@@ -105,14 +137,22 @@ func (m *ConversationModel) request(ctx context.Context, in agentsdk.Conversatio
 		return nil, fmt.Errorf("invalid conversation model request")
 	}
 	for _, message := range in.Messages {
-		if (message.Role != "system" && message.Role != "user" && message.Role != "assistant") || !validModelText(message.Content) {
+		if (message.Role != "system" && message.Role != "user" && message.Role != "assistant") || validateModelContent(message.Role, message.Content, message.ContentBlocks, m.config.ImageInput) != nil {
 			return nil, fmt.Errorf("invalid conversation message")
 		}
 	}
+	if (in.ModelIdentity.Fingerprint != "" && in.ModelIdentity != m.ConversationModelIdentity()) || !m.compatibleCapabilities(in.ModelCapabilities) || !m.supportsReasoningEffort(in.ReasoningEffort) {
+		return nil, &agentsdk.Error{Class: "conflict", Code: "agent.conversation.model_changed"}
+	}
 	payload := map[string]any{"model": m.config.Model, "stream": stream}
+	m.applyReasoning(payload, in.ReasoningEffort)
 	switch m.config.Protocol {
 	case ConversationProtocolChat:
-		payload["messages"] = in.Messages
+		messages := make([]any, 0, len(in.Messages))
+		for _, message := range in.Messages {
+			messages = append(messages, map[string]any{"role": message.Role, "content": encodeModelContent(m.config.Protocol, message.Content, message.ContentBlocks)})
+		}
+		payload["messages"] = messages
 		tokenKey := "max_tokens"
 		if m.config.Provider == ConversationProviderGateway {
 			tokenKey = "max_completion_tokens"
@@ -122,7 +162,7 @@ func (m *ConversationModel) request(ctx context.Context, in agentsdk.Conversatio
 			payload["stream_options"] = map[string]any{"include_usage": true}
 		}
 	case ConversationProtocolMessages:
-		messages := []agentsdk.ConversationModelMessage{}
+		messages := []any{}
 		system := []string{}
 		for _, message := range in.Messages {
 			if message.Role == "system" {
@@ -131,7 +171,7 @@ func (m *ConversationModel) request(ctx context.Context, in agentsdk.Conversatio
 				}
 				system = append(system, message.Content)
 			} else {
-				messages = append(messages, message)
+				messages = append(messages, map[string]any{"role": message.Role, "content": encodeModelContent(m.config.Protocol, message.Content, message.ContentBlocks)})
 			}
 		}
 		if len(messages) == 0 {
@@ -143,7 +183,11 @@ func (m *ConversationModel) request(ctx context.Context, in agentsdk.Conversatio
 			payload["system"] = strings.Join(system, "\n\n")
 		}
 	case ConversationProtocolResponses:
-		payload["input"] = in.Messages
+		messages := make([]any, 0, len(in.Messages))
+		for _, message := range in.Messages {
+			messages = append(messages, map[string]any{"role": message.Role, "content": encodeModelContent(m.config.Protocol, message.Content, message.ContentBlocks)})
+		}
+		payload["input"] = messages
 		payload["max_output_tokens"] = m.config.MaxOutputTokens
 		payload["store"] = false
 	}
@@ -184,8 +228,9 @@ func (m *ConversationModel) sendConversationPayload(ctx context.Context, payload
 		return nil, conversationNetworkError(err)
 	}
 	if resp.StatusCode/100 != 2 {
+		retryAfter := parseConversationRetryAfter(resp.Header.Get("Retry-After"), time.Now())
 		resp.Body.Close()
-		return nil, conversationHTTPError(resp.StatusCode)
+		return nil, conversationHTTPError(resp.StatusCode, retryAfter)
 	}
 	return resp, nil
 }

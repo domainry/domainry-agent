@@ -1,0 +1,73 @@
+File: c05-identity-resolution-runtime-race.test
+Type: cpu
+Time: 2026-09-14 18:13:10 CST
+Duration: 523.98s, Total samples = 968.68s (184.87%)
+Showing nodes accounting for 968.68s, 100% of 968.68s total
+----------------------------------------------------------+-------------
+      flat  flat%   sum%        cum   cum%   calls calls% + context 	 	 
+----------------------------------------------------------+-------------
+                                             0.77s 64.17% |   sort.partition_func
+                                             0.35s 29.17% |   sort.insertionSort_func
+                                             0.08s  6.67% |   sort.median_func
+     0.64s 0.066% 0.066%      1.20s  0.12%                | github.com/domainry/domainry-identity/internal/domain/identity/service.identityPermissionStateFingerprint.func1
+                                             0.34s 28.33% |   cmpbody
+                                             0.12s 10.00% |   racecalladdr
+                                             0.05s  4.17% |   runtime.raceread
+                                             0.03s  2.50% |   racefuncenter
+                                             0.01s  0.83% |   runtime.racefuncenter
+                                             0.01s  0.83% |   runtime.racefuncexit
+----------------------------------------------------------+-------------
+                                            21.34s 87.53% |   github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).buildPrincipalForRole
+                                             3.04s 12.47% |   github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).buildPrincipal
+     0.10s  0.01% 0.076%     24.38s  2.52%                | github.com/domainry/domainry-identity/internal/domain/identity/service.identityPermissionStateFingerprint
+                                            16.28s 66.78% |   encoding/json.Marshal
+                                             6.94s 28.47% |   sort.Slice
+                                             0.35s  1.44% |   crypto/sha256.Sum256
+                                             0.24s  0.98% |   strings.TrimSpace
+                                             0.20s  0.82% |   fmt.Sprintf
+                                             0.12s  0.49% |   runtime.makeslice
+                                             0.08s  0.33% |   runtime.checkptrAlignment
+                                             0.02s 0.082% |   runtime.convTnoptr
+                                             0.02s 0.082% |   runtime.convTslice
+                                             0.02s 0.082% |   runtime.mapIterNext
+                                             0.01s 0.041% |   racecalladdr
+----------------------------------------------------------+-------------
+                                           190.80s   100% |   github.com/domainry/domainry-identity-sdk/application.principals.Resolve
+     0.03s 0.0031% 0.079%    190.80s 19.70%                | github.com/domainry/domainry-identity/internal/adapter/identitysdk.sdkPrincipalResolver.Resolve
+                                           178.87s 93.75% |   github.com/domainry/domainry-identity/internal/application/identity.(*IdentityEffectiveAccessApplicationService).ResolvePrincipalAccess
+                                            10.38s  5.44% |   github.com/domainry/domainry-identity/internal/adapter/identitysdk.sdkProjection.scoped
+                                             0.89s  0.47% |   github.com/domainry/domainry-identity/internal/adapter/identitysdk.sdkAccessBundle
+                                             0.55s  0.29% |   github.com/domainry/domainry-identity-sdk/authorization.AccessBundle.Validate
+                                             0.03s 0.016% |   github.com/domainry/domainry-identity/internal/domain/identity/model.RolePermissionKeys
+                                             0.02s  0.01% |   runtime.growslice
+                                             0.02s  0.01% |   runtime.newobject
+                                             0.01s 0.0052% |   strings.TrimSpace
+----------------------------------------------------------+-------------
+                                            59.07s 52.06% |   github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).ResolvePrincipalForRole
+                                            54.39s 47.94% |   github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).ResolvePrincipalContext
+     0.02s 0.0021% 0.082%    113.46s 11.71%                | github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).buildPrincipalForRole
+                                            27.49s 24.23% |   github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).ListIdentityRoles
+                                            21.34s 18.81% |   github.com/domainry/domainry-identity/internal/domain/identity/service.identityPermissionStateFingerprint
+                                            20.93s 18.45% |   github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).resolvePrincipalScopeIDs
+                                            19.56s 17.24% |   github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).GetIdentityUser
+                                            16.60s 14.63% |   github.com/domainry/domainry-identity/internal/infrastructure/persistence/database/identity.(*SQLIdentityStore).ListIdentityUserRoleAssignments
+                                             2.76s  2.43% |   github.com/domainry/domainry-identity/internal/domain/identity/service.identityAuthorizationRevision
+                                             1.90s  1.67% |   github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).identityFilterExecutablePermissions
+                                             1.22s  1.08% |   github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).withWorkspacePermissions
+                                             1.04s  0.92% |   github.com/domainry/domainry-identity/internal/domain/identity/service.(*identityMutablePermissionDefinitionSource).PermissionDefinitions
+                                             0.54s  0.48% |   github.com/domainry/domainry-identity/internal/domain/identity/service.identityCanonicalizeEffectiveRole
+                                             0.03s 0.026% |   github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).capturePrincipalContext
+                                             0.02s 0.018% |   runtime.newobject
+                                             0.01s 0.0088% |   github.com/domainry/domainry-identity/internal/domain/identity/service.identityFilterGuardrailDeniedPermissions
+----------------------------------------------------------+-------------
+                                           178.87s   100% |   github.com/domainry/domainry-identity/internal/adapter/identitysdk.sdkPrincipalResolver.Resolve
+     0.01s 0.001% 0.083%    178.87s 18.47%                | github.com/domainry/domainry-identity/internal/application/identity.(*IdentityEffectiveAccessApplicationService).ResolvePrincipalAccess
+                                            61.98s 34.65% |   github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).ResolvePrincipalContext
+                                            59.11s 33.05% |   github.com/domainry/domainry-identity/internal/application/identity.(*IdentityApplicationService).ResolvePrincipalForRole
+                                            49.67s 27.77% |   github.com/domainry/domainry-identity/internal/application/identity.(*IdentityEffectiveAccessApplicationService).snapshotFromPrincipalContext
+                                             8.10s  4.53% |   github.com/domainry/domainry-identity/internal/application/identity.(*IdentityApplicationService).ResolvePrincipal
+----------------------------------------------------------+-------------
+                                            21.64s   100% |   github.com/domainry/domainry-runtime/runtime/bootstrap/composition.newRuntimeServicesState.func1
+         0     0% 0.083%     21.64s  2.23%                | github.com/domainry/domainry-runtime/runtime/bootstrap/composition.recordSchemaSnapshot
+                                            21.64s   100% |   github.com/domainry/domainry-runtime/runtime/domain/appschema/service.BuildSchemaSnapshot
+----------------------------------------------------------+-------------

@@ -1,0 +1,4 @@
+=== RUN   TestCompletionReceiptsAuditOnlyLargestPrefixPerRun
+--- PASS: TestCompletionReceiptsAuditOnlyLargestPrefixPerRun (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.434s

@@ -1,0 +1,9 @@
+=== RUN   TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_sources_test.go:108: mail-write worker at 32.716870083s: running:, 0 recorded steps
+    conversation_shared_account_sources_test.go:108: mail-write worker at 54.775338708s: waiting_confirmation::confirmation:pending, 2 recorded steps
+    conversation_shared_account_sources_test.go:108: mail-write worker at 1m1.536456916s: running::confirmation:approved, 2 recorded steps
+    conversation_shared_account_sources_test.go:108: real source invocation did not reach an observable running boundary elapsed 1m1.546588583s worker running::confirmation:approved gate_entered_unix_nanos 0
+--- FAIL: TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution (86.13s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	87.010s
+FAIL

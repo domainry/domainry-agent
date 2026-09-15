@@ -1,0 +1,30 @@
+File: product.test
+Type: cpu
+Time: 2026-09-14 16:23:21 CST
+Duration: 177.38s, Total samples = 232.59s (131.12%)
+Showing nodes accounting for 57.16s, 24.58% of 232.59s total
+Dropped 1847 nodes (cum <= 1.16s)
+Showing top 22 nodes out of 381
+      flat  flat%   sum%        cum   cum%
+     0.02s 0.0086% 0.0086%     81.04s 34.84%  database/sql.withLock
+         0     0% 0.0086%     65.63s 28.22%  github.com/domainry/domainry-agent/internal/assembly/web.(*Host).resolveConversationPrincipal
+         0     0% 0.0086%     65.63s 28.22%  github.com/domainry/domainry-identity-sdk/application.principals.Resolve
+     0.01s 0.0043% 0.013%     65.62s 28.21%  github.com/domainry/domainry-identity/internal/adapter/identitysdk.sdkPrincipalResolver.Resolve
+         0     0% 0.013%     59.98s 25.79%  runtime.systemstack
+         0     0% 0.013%     59.97s 25.78%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).worker
+         0     0% 0.013%     57.13s 24.56%  runtime.wakep
+         0     0% 0.013%     57.12s 24.56%  runtime.semawakeup
+    57.08s 24.54% 24.55%     57.08s 24.54%  runtime.pthread_cond_signal
+         0     0% 24.55%     57.05s 24.53%  runtime.notewakeup
+         0     0% 24.55%     57.02s 24.52%  runtime.startm
+     0.01s 0.0043% 24.56%     56.49s 24.29%  database/sql.(*DB).queryDC
+         0     0% 24.56%     56.44s 24.27%  database/sql.(*DB).queryDC.func1
+         0     0% 24.56%     56.43s 24.26%  database/sql.ctxDriverQuery
+         0     0% 24.56%     56.43s 24.26%  modernc.org/sqlite.(*conn).QueryContext
+         0     0% 24.56%     56.43s 24.26%  modernc.org/sqlite.(*conn).query
+         0     0% 24.56%     46.64s 20.05%  github.com/domainry/domainry-agent/internal/assembly/web.(*Host).AuthorizeConversationTool
+     0.01s 0.0043% 24.56%     46.46s 19.98%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).run
+         0     0% 24.56%     45.13s 19.40%  github.com/domainry/domainry-agent/internal/assembly/web.(*Host).authorizeConversationAction
+     0.01s 0.0043% 24.57%     45.11s 19.39%  modernc.org/sqlite/lib.Xsqlite3_step
+         0     0% 24.57%     44.97s 19.33%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).record
+     0.02s 0.0086% 24.58%     44.11s 18.96%  modernc.org/sqlite.(*conn).step

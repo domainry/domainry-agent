@@ -1,0 +1,4 @@
+=== RUN   TestExecutionPublicationFromStoppedAgentCannotPublishOrWithdraw
+--- PASS: TestExecutionPublicationFromStoppedAgentCannotPublishOrWithdraw (0.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.416s

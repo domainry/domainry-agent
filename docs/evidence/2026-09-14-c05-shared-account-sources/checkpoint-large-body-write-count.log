@@ -1,0 +1,5 @@
+=== RUN   TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_sources_test.go:106: mail-write: actual cross-user agent_delegate confirmation and owner worker; 2 original receipts; running payload hidden; original delivery/execution SHA and byte pages after both users' execution revocation and restart; private controls denied; reader data and workspace account revocation enforced; vendor HTTP remained 2
+--- PASS: TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution (16.81s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	17.564s

@@ -1,0 +1,16 @@
+{
+  "steps": [
+    "task detail renders the current durable plan with executor, requirement fields, outcomes and exact evidence links",
+    "version selector reads the immutable first plan instead of rewriting it with current status",
+    "evidence link opens the exact persisted execution run and tool call"
+  ],
+  "javascriptErrors": [],
+  "preLoginConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "complete": true
+}

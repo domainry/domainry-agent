@@ -1,0 +1,18 @@
+[
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_sources.go",
+    "sha256": "0f35e21f8ecff33822abc825f6e0a4de7b1d4065df2dcd28ed439da7404abd72"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_execution.go",
+    "sha256": "fe1dcc894d3c02275494035301a4456c6e0ab5ffa6f2045e2a31953c911ea72f"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_service.go",
+    "sha256": "795f33d6fc13cf315653e8b62bac27d019a227a740774d28fc4b3c31cf10c1c4"
+  },
+  {
+    "path": "/Users/tiger/Projects/domainry-agent/internal/application/conversation_collaboration_tools.go",
+    "sha256": "6ab7d7a2bfcc169da1577f97de32a6cfe72f42360999d126d435d079fcad2fb5"
+  }
+]

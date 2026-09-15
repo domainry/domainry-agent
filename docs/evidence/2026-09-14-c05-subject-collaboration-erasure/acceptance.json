@@ -1,0 +1,36 @@
+{
+  "phase_status": "accepted_agent_owner_subject_erasure_collaboration_cleanup",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 186,
+  "source_manifest": "source-sha256.json",
+  "artifact_files": 11,
+  "artifact_manifest": "artifact-sha256.json",
+  "accepted_logs": [
+    "core.log",
+    "sdk.log",
+    "race.log",
+    "pending-inbox.log",
+    "http-browser.log",
+    "build.log",
+    "frontend.log"
+  ],
+  "browser_report": "browser/report.json",
+  "visually_inspected": [
+    "browser/subject-exited.png",
+    "browser/subject-exited-mobile.png"
+  ],
+  "real_identity": true,
+  "real_http": true,
+  "real_tool_execution": true,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "scope": "Agent owner subject data erasure; counterpart tasks, grants, pending messages, declared dependencies and retained metadata",
+  "remaining": [
+    "Identity disable/offboarding orchestration",
+    "cross-subject transfer",
+    "multi-owner dependency routing",
+    "other C05 requirements"
+  ]
+}

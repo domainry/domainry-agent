@@ -256,3 +256,58 @@ func TestPersonalMemoryStrictRevisionsAndDeleteReceipts(t *testing.T) {
 		t.Fatal("memory not deleted")
 	}
 }
+
+func TestPersonalMemoryChangesRetainSourceCorrectionAndDeleteTombstone(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := NewConversationStore(store)
+	a := conversationTestAuthority()
+	now := time.Date(2026, 9, 15, 12, 0, 0, 0, time.UTC)
+	created, err := repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{
+		ID: "project:runtime", Kind: agentsdk.ConversationMemoryKindProjectFact, Title: "Runtime", Content: "使用 SQLite",
+		Enabled: true, Scope: agentsdk.ConversationMemoryScope{Kind: agentsdk.ConversationMemoryScopeConversation, ConversationID: "conversation-a"},
+		AppliesTo: []string{"存储", "SQLite"}, Source: &agentsdk.ConversationMemorySource{Kind: "manual", ConversationID: "conversation-a", MessageID: "message-a", CapturedAt: now}, Uncertainty: "仅确认开发环境",
+	}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	replayed, err := repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{
+		ID: "project:runtime", Kind: agentsdk.ConversationMemoryKindProjectFact, Title: "Runtime", Content: "使用 SQLite",
+		Enabled: true, Scope: agentsdk.ConversationMemoryScope{Kind: agentsdk.ConversationMemoryScopeConversation, ConversationID: "conversation-a"},
+		AppliesTo: []string{"存储", "SQLite"}, Source: &agentsdk.ConversationMemorySource{Kind: "manual", ConversationID: "conversation-a", MessageID: "message-a", CapturedAt: now.Add(time.Minute)}, Uncertainty: "仅确认开发环境",
+	}, a)
+	if err != nil || replayed.Revision != created.Revision || !replayed.UpdatedAt.Equal(created.UpdatedAt) {
+		t.Fatalf("direct write retry was not idempotent: %+v %v", replayed, err)
+	}
+	updated, err := repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{
+		ID: created.ID, Kind: created.Kind, Title: created.Title, Content: "生产使用 PostgreSQL", Enabled: true, Scope: created.Scope,
+		AppliesTo: created.AppliesTo, Source: created.Source, Uncertainty: "生产配置仍待部署核对", CorrectionReason: "旧内容只描述开发环境", ExpectedRevision: created.Revision,
+	}, a)
+	if err != nil || updated.Revision != 2 || updated.Correction == nil || updated.Correction.PreviousRevision != 1 || updated.Correction.Reason != "旧内容只描述开发环境" || updated.Source == nil || updated.Source.MessageID != "message-a" {
+		t.Fatalf("correction was not retained: %+v %v", updated, err)
+	}
+	if err = repo.DeleteMemory(t.Context(), updated.ID, updated.Revision, a); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := store.Database().QueryContext(t.Context(), `SELECT revision, operation, payload_json FROM _agent_memory_changes WHERE owner_key = ? AND memory_id = ? ORDER BY revision`, conversationOwner(a), created.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rows.Close()
+	operations := []string{}
+	for rows.Next() {
+		var revision int64
+		var operation string
+		var raw []byte
+		if err = rows.Scan(&revision, &operation, &raw); err != nil {
+			t.Fatal(err)
+		}
+		var memory agentsdk.ConversationMemory
+		if json.Unmarshal(raw, &memory) != nil || memory.Revision != revision {
+			t.Fatalf("invalid change payload revision=%d payload=%s", revision, raw)
+		}
+		operations = append(operations, operation)
+	}
+	if err = rows.Err(); err != nil || strings.Join(operations, ",") != "create,update,delete" {
+		t.Fatalf("memory history=%v error=%v", operations, err)
+	}
+}

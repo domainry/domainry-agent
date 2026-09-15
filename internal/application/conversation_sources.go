@@ -27,11 +27,12 @@ type conversationSourceAudit struct {
 	collaboration  map[string]agentsdk.ConversationCollaborationAccess
 	s              *ConversationService
 	a              agentsdk.ConversationAuthority
-	cache          map[agentsdk.ConversationRunReference]sourceAuditEntry
+	cache          map[string]sourceAuditEntry
 	reading        map[agentsdk.ConversationRunReference]bool
 	records        map[string]bool
 	conversationID string                          // model consumer; empty only for explicit user reads
 	evidenceOwner  *agentsdk.ConversationAuthority // immutable ledger routing only
+	modelRecords   *conversationModelSourceRecords
 }
 
 func (s *ConversationService) sourceAudit(a agentsdk.ConversationAuthority, conversationID ...string) *conversationSourceAudit {
@@ -39,7 +40,7 @@ func (s *ConversationService) sourceAudit(a agentsdk.ConversationAuthority, conv
 	if len(conversationID) > 0 {
 		consumer = conversationID[0]
 	}
-	return &conversationSourceAudit{collaboration: map[string]agentsdk.ConversationCollaborationAccess{}, s: s, a: a, conversationID: consumer, cache: map[agentsdk.ConversationRunReference]sourceAuditEntry{}, reading: map[agentsdk.ConversationRunReference]bool{}, records: map[string]bool{}}
+	return &conversationSourceAudit{collaboration: map[string]agentsdk.ConversationCollaborationAccess{}, s: s, a: a, conversationID: consumer, cache: map[string]sourceAuditEntry{}, reading: map[agentsdk.ConversationRunReference]bool{}, records: map[string]bool{}}
 }
 
 func mergeConversationSources(groups ...[]agentsdk.ConversationRunReference) []agentsdk.ConversationRunReference {
@@ -83,6 +84,32 @@ func (audit *conversationSourceAudit) sources(ctx context.Context, sources *agen
 	return roots, nil
 }
 
+func sameConversationPrincipal(a, b agentsdk.ConversationAuthority) bool {
+	return a.Known && b.Known && a.RuntimeID == b.RuntimeID && a.WorkspaceID == b.WorkspaceID && a.UserID == b.UserID
+}
+
+func (audit *conversationSourceAudit) authorizeRegisteredContexts(ctx context.Context, snapshot persistence.ConversationSourceSnapshot) error {
+	if !sameConversationPrincipal(snapshot.Authority, audit.a) {
+		return nil
+	}
+	claim := persistence.ConversationClaim{Authority: audit.a, Run: snapshot.Run}
+	if snapshot.Input != nil && snapshot.Input.Context != nil {
+		messages, err := conversationStepMessages(*snapshot.Input)
+		if err != nil {
+			return err
+		}
+		if _, err = audit.s.authorizeRegisteredConversationContextSources(ctx, claim, snapshot.Input.Context, messages, "reply", 0); err != nil {
+			return err
+		}
+	}
+	for _, step := range snapshot.StepContexts {
+		if _, err := audit.s.authorizeRegisteredConversationContextSources(ctx, claim, step.Context, step.Messages, "step", step.Step); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.ConversationRunReference) (roots []agentsdk.ConversationRunReference, err error) {
 	if ref.BeforeStep < 0 || ref.BeforeStep > 257 {
 		return nil, conversationFailure("unavailable", "source_reference_invalid")
@@ -96,13 +123,16 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 			if err := audit.authorizeReleasedSourceRead(ctx); err != nil {
 				return nil, err
 			}
-			child := audit.s.sourceAudit(audit.a, audit.conversationID)
+			child := audit.childSourceAudit()
 			child.evidenceOwner = &producer
-			child.reading, child.records = audit.reading, audit.records
 			return child.run(ctx, ref)
 		}
 	}
-	if saved, ok := audit.cache[ref]; ok {
+	cacheKey, err := audit.sourceCacheKey(ctx, ref)
+	if err != nil {
+		return nil, err
+	}
+	if saved, ok := audit.cache[cacheKey]; ok {
 		return saved.roots, saved.err
 	}
 	if audit.reading[ref] {
@@ -112,7 +142,7 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 		return nil, conversationFailure("unavailable", "source_limit_exceeded")
 	}
 	audit.reading[ref] = true
-	defer func() { delete(audit.reading, ref); audit.cache[ref] = sourceAuditEntry{roots, err} }()
+	defer func() { delete(audit.reading, ref); audit.cache[cacheKey] = sourceAuditEntry{roots, err} }()
 	repo, ok := audit.s.repo.(persistence.ConversationSourceRepository)
 	if !ok {
 		return nil, conversationFailure("unavailable", "source_read_unavailable")
@@ -131,13 +161,26 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 			}
 		}
 		if audit.evidenceOwner != nil && *audit.evidenceOwner != audit.a && errors.As(err, &coded) && coded.Class == "not_found" {
+			// Inherited provenance can cross more than two participating
+			// users. Prefer this reader's exact existing publication instead
+			// of assuming every different ledger belongs to the reader.
+			releaseCtx, found, releaseErr := audit.publishedSourceContext(ctx, ref)
+			if releaseErr != nil {
+				return nil, releaseErr
+			}
+			if found {
+				producer := releasedEvidenceAuthority(releaseCtx, ref, audit.a)
+				delete(audit.reading, ref)
+				child := audit.childSourceAudit()
+				child.evidenceOwner = &producer
+				return child.run(releaseCtx, ref)
+			}
 			// Inherited provenance can return to the reader's own conversation.
 			// Keep the immutable ledgers separate rather than substituting the
 			// producer for all participants in the source graph.
 			delete(audit.reading, ref)
-			child := audit.s.sourceAudit(audit.a, audit.conversationID)
+			child := audit.childSourceAudit()
 			child.evidenceOwner = &audit.a
-			child.reading, child.records = audit.reading, audit.records
 			return child.run(ctx, ref)
 		}
 		return nil, err
@@ -185,10 +228,15 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 			ctx = releaseCtx
 		}
 		delete(audit.reading, ref)
-		child := audit.s.sourceAudit(audit.a, audit.conversationID)
+		child := audit.childSourceAudit()
 		child.evidenceOwner = &original
-		child.reading, child.records = audit.reading, audit.records
 		return child.run(ctx, ref)
+	}
+	if err = audit.authorizeRegisteredContexts(ctx, snapshot); err != nil {
+		return nil, err
+	}
+	if err = audit.s.reauthorizeSnapshotImages(ctx, snapshot); err != nil {
+		return nil, err
 	}
 	ctx = context.WithValue(ctx, conversationSourceParentKey{}, audit.evidenceAuthority(ref))
 	if snapshot.Run.BackgroundTask != nil {
@@ -219,20 +267,11 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 			roots = mergeConversationSources(roots, part)
 		}
 		for _, edge := range snapshot.Run.BackgroundTask.Dependencies {
-			if edge.InputSource != nil {
-				part, err := audit.run(ctx, *edge.InputSource)
-				if err != nil {
-					return nil, err
-				}
-				roots = mergeConversationSources(roots, part)
+			part, err := audit.dependency(ctx, edge)
+			if err != nil {
+				return nil, err
 			}
-			if edge.Source != nil {
-				part, err := audit.run(ctx, *edge.Source)
-				if err != nil {
-					return nil, err
-				}
-				roots = mergeConversationSources(roots, part)
-			}
+			roots = mergeConversationSources(roots, part)
 		}
 		for _, required := range snapshot.Run.BackgroundTask.Requirements.Sources {
 			part, err := audit.run(ctx, required)
@@ -250,6 +289,13 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 			// Earlier inputs/calls of this same prefix are checked below. Recursing
 			// into that prefix again would turn a legitimate prior receipt into a cycle.
 			if source.ConversationID == ref.ConversationID && source.RunID == ref.RunID && source.BeforeStep > 0 && (ref.BeforeStep == 0 || source.BeforeStep <= ref.BeforeStep) {
+				continue
+			}
+			if handled, part, e := audit.earlierScopedSource(ctx, ref, snapshot, item.Step, source); handled {
+				if e != nil {
+					return nil, e
+				}
+				roots = mergeConversationSources(roots, part)
 				continue
 			}
 			part, e := audit.run(ctx, source)
@@ -305,6 +351,9 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 	}
 	for _, call := range snapshot.Calls {
 		if ref.BeforeStep > 0 && call.Step+1 >= ref.BeforeStep {
+			continue
+		}
+		if audit.deferModelSourceRecord(ctx, ref, snapshot.Authority, call) {
 			continue
 		}
 		part, e := audit.record(ctx, ref, call)
@@ -434,8 +483,14 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 	}
 	audit.records[key] = true
 	defer delete(audit.records, key)
+	if executionCollaborationTool(record.Call.Name) {
+		return audit.executionToolRecord(ctx, owner, record)
+	}
 	if record.Call.Name == "delegation_source_read" {
 		return audit.delegationSourceToolRecord(ctx, owner, record)
+	}
+	if record.Call.Name == "plan_update" {
+		return audit.planToolRecord(ctx, owner, record)
 	}
 	if handled, roots, err := audit.deliveryArtifactToolResult(ctx, owner, record); handled {
 		return roots, err
@@ -581,8 +636,10 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
 	}
 	switch record.Call.Name {
-	case "task_start", "task_get", "task_list", "task_cancel", "task_resume":
+	case "task_start", "task_get", "task_list", "task_cancel", "task_resume", "task_update", "task_review":
 		return audit.taskToolRecord(ctx, owner, record)
+	case "completion_submit":
+		return audit.taskCompletionToolRecord(ctx, owner, record)
 	case "agent_message":
 		var message agentsdk.ConversationAgentMessage
 		if json.Unmarshal(record.Result.Content, &message) != nil {
@@ -627,6 +684,8 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 		}
 		refs := []agentsdk.ConversationRunReference{}
 		deliveryRefs := []agentsdk.ConversationRunReference{}
+		executionRefs := []agentsdk.ConversationRunReference{}
+		var roots []agentsdk.ConversationRunReference
 		for _, issue := range d.Disagreements {
 			deliveryRefs = append(deliveryRefs, issue.Sources...)
 		}
@@ -666,15 +725,14 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 			refs = append(refs, *d.InputSource)
 		}
 		for _, edge := range d.Dependencies {
-			if edge.InputSource != nil {
-				refs = append(refs, *edge.InputSource)
+			part, err := audit.dependency(ctx, edge)
+			if err != nil {
+				return nil, err
 			}
-			if edge.Source != nil {
-				refs = append(refs, *edge.Source)
-			}
+			roots = mergeConversationSources(roots, part)
 		}
 		if d.Task != nil && d.Task.Result != nil && d.Task.ExecutionRunID != "" {
-			refs = append(refs, agentsdk.ConversationRunReference{ConversationID: d.ConversationID, RunID: d.Task.ExecutionRunID})
+			executionRefs = append(executionRefs, agentsdk.ConversationRunReference{ConversationID: d.ConversationID, RunID: d.Task.ExecutionRunID})
 		}
 		if d.Delivery != nil {
 			deliveryRefs = append(deliveryRefs, d.Delivery.Evidence...)
@@ -689,7 +747,6 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 				refs = append(refs, *message.Source)
 			}
 		}
-		var roots []agentsdk.ConversationRunReference
 		for _, ref := range refs {
 			if ref.ConversationID == owner.ConversationID && ref.RunID == owner.RunID {
 				ref.BeforeStep = record.Step + 1
@@ -699,6 +756,23 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 				return nil, err
 			}
 			roots = mergeConversationSources(roots, part)
+		}
+		for _, ref := range executionRefs {
+			if ref.ConversationID == owner.ConversationID && ref.RunID == owner.RunID {
+				ref.BeforeStep = record.Step + 1
+			}
+			executionCtx := ctx
+			if _, ok := audit.s.repo.(persistence.ConversationSourceAuthorityRepository); ok && !readCollaborationSource {
+				// The saved task projection already passed the raw execution
+				// permission above. Keep that data-reading purpose for its exact
+				// original run. A different original role still needs a matching
+				// explicit execution publication; ownership cannot introduce it.
+				executionCtx = deliverySourceContext(ctx, d.ID)
+				executionCtx = context.WithValue(executionCtx, conversationPublishedSourceKey{}, conversationPublishedSource{purpose: "execution", delegationID: d.ID, roots: []agentsdk.ConversationRunReference{ref}})
+			}
+			if _, err := audit.childSourceAudit().run(executionCtx, ref); err != nil {
+				return nil, err
+			}
 		}
 
 		deliveryCtx, deliveryAudit := audit.deliveryAudit(ctx, d.ID)
@@ -712,7 +786,13 @@ func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk
 			}
 			roots = mergeConversationSources(roots, part)
 		}
-		return roots, nil
+		// Preserve the typed wrapper so later history/model reads repeat
+		// each field's current permission and exact publication purpose.
+		// Flattened original runs would lose the distinction above.
+		if len(executionRefs) == 0 && len(deliveryRefs) == 0 {
+			return roots, nil
+		}
+		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
 	case "history_search":
 		var page agentsdk.ConversationHistorySearchResult
 		if json.Unmarshal(record.Result.Content, &page) != nil {
@@ -848,7 +928,7 @@ func (s *ConversationService) checkRunSources(ctx context.Context, ref agentsdk.
 }
 
 func (s *ConversationService) projectConversationRun(ctx context.Context, run agentsdk.ConversationRun, a agentsdk.ConversationAuthority) agentsdk.ConversationRun {
-	if run.DraftText == "" && len(run.Steps) == 0 && run.Interaction == nil {
+	if run.DraftText == "" && len(run.Steps) == 0 && run.Interaction == nil && run.Context == nil {
 		return run
 	}
 	if _, ok := s.repo.(persistence.ConversationSourceRepository); !ok {
@@ -861,6 +941,7 @@ func (s *ConversationService) projectConversationRun(ctx context.Context, run ag
 		run.DraftText = ""
 		run.DraftBytes = 0
 		run.Steps = nil
+		run.Context = nil
 		run.Interaction = nil
 		run.Audit = nil
 		run.AuditComplete = false

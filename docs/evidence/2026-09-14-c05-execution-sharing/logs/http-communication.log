@@ -1,0 +1,6 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+    conversation_source_release_test.go:161: POST /agent/delegations/delegation_233c3251a4534e5ad913e98196964c21/execution: status 403, want 200, body {"code":"agent.conversation.collaboration_access_denied"}
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (6.90s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	8.052s
+FAIL

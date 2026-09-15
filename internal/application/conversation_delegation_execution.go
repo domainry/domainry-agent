@@ -30,7 +30,8 @@ func (s *ConversationService) prepareAgentExecutionBinding(ctx context.Context, 
 // selected profile. The issuer's provenance remains on the admission request.
 func delegationExecutorContext(ctx context.Context) context.Context {
 	ctx = context.WithValue(ctx, conversationPeerRequestKey{}, conversationPeerRequest{})
-	return context.WithValue(ctx, conversationAgentContextKey{}, (*sdk.ConversationAgentSnapshot)(nil))
+	ctx = context.WithValue(ctx, conversationAgentContextKey{}, (*sdk.ConversationAgentSnapshot)(nil))
+	return context.WithValue(ctx, conversationModelSelectionContextKey{}, (*sdk.ConversationModelSelection)(nil))
 }
 
 func bindDelegationSnapshot(snapshot *sdk.ConversationAgentSnapshot, a sdk.ConversationAuthority) {
@@ -122,6 +123,55 @@ func (s *ConversationService) authorizeDelegationExecutionBinding(ctx context.Co
 	}
 	if resolved != executor || current.Digest != snapshot.Digest {
 		return conversationFailure("conflict", "agent_changed")
+	}
+	return nil
+}
+
+func (s *ConversationService) authorizeDelegationResume(ctx context.Context, d sdk.ConversationDelegation, actor sdk.ConversationAuthority) error {
+	task, err := s.delegationTaskRecord(ctx, d, actor)
+	if err != nil {
+		return err
+	}
+	executionCtx := delegationExecutorContext(ctx)
+	subjects, ok := s.repo.(persistence.ConversationDelegationExecutionRepository)
+	if !ok {
+		if task.Agent != nil && task.Agent.DelegationRoleKey != "" {
+			return conversationFailure("unavailable", "delegation_execution_unavailable")
+		}
+		return s.authorizeCollaboration(executionCtx, "receive", &d, actor)
+	}
+	authorities, err := subjects.ConversationDelegationAuthorities(ctx, d.ID, actor)
+	if err != nil {
+		return err
+	}
+	executor := authorities.Executor
+	if err = s.authorizeCollaboration(executionCtx, "receive", &d, executor); err != nil {
+		return err
+	}
+	if err = s.authorizeDelegationExecutionBinding(executionCtx, d, task.Agent, executor); err != nil {
+		return err
+	}
+	if executionCtx, err = s.selectConversationAgent(executionCtx, task.Agent, executor); err != nil {
+		return err
+	}
+	sourceCtx, err := s.delegationContractSourceContext(executionCtx, d, executor)
+	if err != nil {
+		return err
+	}
+	roots := d.Requirements.Sources
+	if scope, ok := sourceCtx.Value(conversationPublishedSourceKey{}).(conversationPublishedSource); ok {
+		roots = scope.roots
+	}
+	for _, ref := range mergeConversationSources(roots) {
+		if err = s.checkRunSources(sourceCtx, ref, executor); err != nil {
+			return err
+		}
+	}
+	audit := s.sourceAudit(executor, d.ConversationID)
+	for _, edge := range d.Dependencies {
+		if _, err := audit.dependency(executionCtx, edge); err != nil {
+			return err
+		}
 	}
 	return nil
 }

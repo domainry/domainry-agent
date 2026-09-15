@@ -1,0 +1,16 @@
+=== RUN   TestSharedBusinessReverseRelationBoundsOriginalPageScope
+=== RUN   TestSharedBusinessReverseRelationBoundsOriginalPageScope/relationship_only
+    conversation_business_shared_relation_scope_test.go:45: reader of the exact relationship denied original page runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessReverseRelationBoundsOriginalPageScope/relationship_and_explicit_filter
+    conversation_business_shared_relation_scope_test.go:45: reader of the exact relationship denied original page runtime.conversation.business_forbidden
+--- FAIL: TestSharedBusinessReverseRelationBoundsOriginalPageScope (0.03s)
+    --- FAIL: TestSharedBusinessReverseRelationBoundsOriginalPageScope/relationship_only (0.02s)
+    --- FAIL: TestSharedBusinessReverseRelationBoundsOriginalPageScope/relationship_and_explicit_filter (0.01s)
+=== RUN   TestSharedBusinessForwardRelationUsesAuthenticatedHistoricalTarget
+    conversation_business_shared_relation_scope_test.go:87: reader of the exact forward target denied original result runtime.conversation.business_forbidden
+--- FAIL: TestSharedBusinessForwardRelationUsesAuthenticatedHistoricalTarget (0.01s)
+=== RUN   TestSharedBusinessEmptyForwardResultCannotGuessOriginalTarget
+--- PASS: TestSharedBusinessEmptyForwardResultCannotGuessOriginalTarget (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/application/agenthost	0.797s
+FAIL

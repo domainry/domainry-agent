@@ -1,0 +1,17 @@
+{
+  "acceptance.json": "74bfd6596e2586f275d1f0fd8d5adea91212d56357f5e9a99341390aa574e30b",
+  "actual-agent-complex-query-normal.log": "00194b9995b19b2c1282766705d6bbffdde7d89a0be97d41bcd66688f9840845",
+  "actual-agent-source-launch.json": "6157d5138d4597ada0c4d22ad9208adabb9fd7d97b446117d6ef63cb7d2b581b",
+  "actual-agent-unit-fixture-version.go.txt": "d0973a40d834fa3cbdd3cdc7025078e04c3c09e2f051bf55785e9ee5228e9d1f",
+  "agent-core-capabilities-todo.md.txt": "7130b0442c38acc323b90b70ab1c5422d16cd1ac41f2c65c3dbbc154b6bc0b79",
+  "commands.txt": "be9ca922af8c8ca883438f836fbf48e2991dc9e50511cd70dc0d2d88916a9f73",
+  "conversation_business_shared_prefix_scope_test.go.txt": "13ff7513ece46324150cb4948416f1b671b2e92fded0c35f5115275ccdb86a5d",
+  "conversation_business_shared_scope.go.txt": "a2b4ebaf838004ae23242b301505e948aac27222c497d7ed95decb73a69da6eb",
+  "diagnostic-before-coverage.log": "7e9cca05565134fc101041acb16378aeaea061b33ea43f118f9f39e509a138e8",
+  "owner-final-normal.log": "0b575bcd8e6ebc905d88868e2ca59cc83e0f3ce238e355e8ff981021bd16d4f6",
+  "owner-final-race.log": "de011308420316d3c5a33b936948789b0679cac38ae83c96977d77341ba837f9",
+  "previous-artifact-sha256.json": "c91f0866d78879aa99520f373c2b45512ea712bcd38fcaa10736644aaec76dc8",
+  "source-final-sha256.json": "b2cb648637021f773bcfe392f978ad651a660c98aa620f1af9a91bda058d79d1",
+  "source-version-differences.json": "8a99a3d86f6c129c4fd82dbfc4e0b99d24977aead1f79b7388cd6099d4ec0b37",
+  "testing-2026-09-14-c05-prefix-existence-scope.md.txt": "41189f08b5fdf5580d6245435d8644691117b2879a0c79dd6001ec747b596b93"
+}

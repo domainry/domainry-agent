@@ -24,7 +24,20 @@ func (c *conversationClient) StartScheduledConversationTask(ctx context.Context,
 	return out, err
 }
 
+func (c *conversationClient) AcceptBusinessEventConversationTask(ctx context.Context, in agentsdk.BusinessEventConversationTaskRequest) (agentsdk.BusinessEventConversationTaskReceipt, error) {
+	var out agentsdk.BusinessEventConversationTaskReceipt
+	if !agentsdk.HasAuthorizedServiceAction(ctx, agentsdk.ActionAgentBusinessEventConversationTaskAccept, agentsdk.AgentRuntimeServiceAudience) {
+		return out, &agentsdk.Error{Class: "forbidden", Code: "agent.conversation.business_event_task_service_action_required"}
+	}
+	if in.Authority.RuntimeID == "" {
+		in.Authority.RuntimeID = c.runtimeID
+	}
+	err := c.call(ctx, "business_event_task_accept", agentsdk.ConversationRPCRequest{Authority: in.Authority, BusinessEventTask: in}, &out)
+	return out, err
+}
+
 var _ agentsdk.ScheduledConversationTaskService = (*conversationClient)(nil)
+var _ agentsdk.BusinessEventConversationTaskService = (*conversationClient)(nil)
 
 func (c *conversationClient) call(ctx context.Context, op string, in agentsdk.ConversationRPCRequest, out any) error {
 	if in.Authority.RuntimeID != c.runtimeID {

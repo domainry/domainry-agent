@@ -1,0 +1,45 @@
+File: c05-model-input-source-runtime-final-normal.test
+Type: cpu
+Time: 2026-09-14 18:55:24 CST
+Duration: 44.68s, Total samples = 101.30s (226.72%)
+Active filters:
+   focus=conversationSourceAudit|reauthorizeExecutionInputs|ResolvePrincipalAccess|…
+Showing nodes accounting for 15.32s, 15.12% of 101.30s total
+Dropped 489 nodes (cum <= 0.51s)
+Showing top 35 nodes out of 398
+      flat  flat%   sum%        cum   cum%
+         0     0%     0%     17.33s 17.11%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).run
+         0     0%     0%     15.90s 15.70%  database/sql.withLock
+    15.28s 15.08% 15.08%     15.28s 15.08%  syscall.rawsyscalln
+         0     0% 15.08%     15.28s 15.08%  syscall.syscalln
+         0     0% 15.08%     14.65s 14.46%  github.com/domainry/domainry-identity-sdk/application.principals.Resolve
+     0.01s 0.0099% 15.09%     14.65s 14.46%  github.com/domainry/domainry-identity/internal/adapter/identitysdk.sdkPrincipalResolver.Resolve
+         0     0% 15.09%     14.65s 14.46%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).principal
+         0     0% 15.09%     14.39s 14.21%  syscall.syscall
+         0     0% 15.09%     14.24s 14.06%  golang.org/x/sys/unix.FcntlFlock (inline)
+         0     0% 15.09%     14.24s 14.06%  golang.org/x/sys/unix.fcntl
+         0     0% 15.09%     14.24s 14.06%  modernc.org/libc.Xfcntl
+         0     0% 15.09%     14.24s 14.06%  modernc.org/libc.Xfcntl64
+         0     0% 15.09%     14.24s 14.06%  modernc.org/sqlite/lib._sqlite3OsShmLock (inline)
+         0     0% 15.09%     14.24s 14.06%  modernc.org/sqlite/lib._unixShmLock
+         0     0% 15.09%     14.24s 14.06%  modernc.org/sqlite/lib._unixShmSystemLock
+         0     0% 15.09%     13.95s 13.77%  modernc.org/sqlite/lib.Xsqlite3_step
+         0     0% 15.09%     13.93s 13.75%  modernc.org/sqlite/lib._sqlite3Step
+     0.03s  0.03% 15.12%     13.93s 13.75%  modernc.org/sqlite/lib._sqlite3VdbeExec
+         0     0% 15.12%     13.83s 13.65%  modernc.org/sqlite.(*conn).step
+         0     0% 15.12%     13.34s 13.17%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).record
+         0     0% 15.12%     12.95s 12.78%  github.com/domainry/domainry-identity/internal/application/identity.(*IdentityEffectiveAccessApplicationService).ResolvePrincipalAccess
+         0     0% 15.12%     10.69s 10.55%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).projectConversationDelegationContent
+         0     0% 15.12%     10.40s 10.27%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).projectConversationDelegation
+         0     0% 15.12%     10.03s  9.90%  github.com/domainry/domainry-agent/internal/application.InvokeConversation
+         0     0% 15.12%      9.71s  9.59%  github.com/domainry/domainry-agent/internal/transport/http/module.NewConversationAdapter.(*conversationAdapter).handle.func1
+         0     0% 15.12%      9.17s  9.05%  net/http.HandlerFunc.ServeHTTP
+         0     0% 15.12%      8.86s  8.75%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).collaborationAuthorization
+         0     0% 15.12%      8.85s  8.74%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).AuthorizeConversationCollaboration
+         0     0% 15.12%      8.75s  8.64%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).authorizeCollaboration
+         0     0% 15.12%      8.69s  8.58%  net/http.(*ServeMux).ServeHTTP
+         0     0% 15.12%      8.64s  8.53%  database/sql.(*DB).queryDC
+         0     0% 15.12%      8.62s  8.51%  database/sql.(*DB).queryDC.func1
+         0     0% 15.12%      8.61s  8.50%  database/sql.ctxDriverQuery
+         0     0% 15.12%      8.61s  8.50%  github.com/domainry/domainry-foundation/telemetry.(*observedConn).QueryContext
+         0     0% 15.12%      8.61s  8.50%  github.com/domainry/domainry-foundation/telemetry.(*observedConn).queryContext

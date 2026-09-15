@@ -1,0 +1,5 @@
+{
+  "Replace": {
+    "/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_business_shared_scope.go": "/tmp/c05-business-null-negation-original-scope.go.txt"
+  }
+}

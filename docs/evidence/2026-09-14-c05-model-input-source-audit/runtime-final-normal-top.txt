@@ -1,0 +1,43 @@
+File: c05-model-input-source-runtime-final-normal.test
+Type: cpu
+Time: 2026-09-14 18:55:24 CST
+Duration: 44.68s, Total samples = 101.30s (226.72%)
+Showing nodes accounting for 91.19s, 90.02% of 101.30s total
+Dropped 1384 nodes (cum <= 0.51s)
+Showing top 35 nodes out of 336
+      flat  flat%   sum%        cum   cum%
+    31.67s 31.26% 31.26%     31.68s 31.27%  runtime.pthread_cond_signal
+    17.02s 16.80% 48.07%     17.02s 16.80%  syscall.rawsyscalln
+    15.37s 15.17% 63.24%     15.37s 15.17%  runtime.usleep
+     5.46s  5.39% 68.63%      5.46s  5.39%  runtime.pthread_kill
+     4.18s  4.13% 72.75%      4.18s  4.13%  runtime.pthread_cond_wait
+     2.83s  2.79% 75.55%      2.83s  2.79%  runtime.madvise
+     2.72s  2.69% 78.23%      4.81s  4.75%  runtime.scanObjectsSmall
+     2.50s  2.47% 80.70%      2.50s  2.47%  runtime.(*bucket).mp
+     2.40s  2.37% 83.07%      4.83s  4.77%  runtime.scanObject
+     2.23s  2.20% 85.27%      2.81s  2.77%  runtime.tryDeferToSpanScan
+     0.97s  0.96% 86.23%      1.15s  1.14%  runtime.findObject
+     0.77s  0.76% 86.99%      0.77s  0.76%  runtime.memmove
+     0.53s  0.52% 87.51%      0.82s  0.81%  runtime.unlock2
+     0.52s  0.51% 88.03%      0.60s  0.59%  encoding/json.appendString[go.shape.string]
+     0.26s  0.26% 88.28%      2.90s  2.86%  runtime.mProf_FlushLocked
+     0.25s  0.25% 88.53%      7.01s  6.92%  runtime.lock2
+     0.22s  0.22% 88.75%      2.51s  2.48%  encoding/json.structEncoder.encode
+     0.21s  0.21% 88.95%      0.70s  0.69%  runtime.freeDeadSpanSPMCs
+     0.15s  0.15% 89.10%      8.99s  8.87%  runtime.stealWork
+     0.11s  0.11% 89.21%      1.13s  1.12%  runtime.mallocgcSmallScanNoHeader
+     0.11s  0.11% 89.32%      0.55s  0.54%  runtime.mapassign
+     0.10s 0.099% 89.42%     13.36s 13.19%  runtime.gcDrain
+     0.09s 0.089% 89.51%      1.81s  1.79%  runtime.mallocgc
+     0.08s 0.079% 89.59%      5.47s  5.40%  runtime.scanSpan
+     0.07s 0.069% 89.65%      1.06s  1.05%  runtime.freeSomeWbufs
+     0.07s 0.069% 89.72%      0.87s  0.86%  runtime.mProf_Malloc
+     0.06s 0.059% 89.78%      8.75s  8.64%  runtime.runqgrab
+     0.05s 0.049% 89.83%     15.61s 15.41%  modernc.org/sqlite/lib._sqlite3VdbeExec
+     0.04s 0.039% 89.87%      1.49s  1.47%  encoding/json.mapEncoder.encode
+     0.04s 0.039% 89.91%      2.61s  2.58%  runtime.bgsweep
+     0.03s  0.03% 89.94%     13.87s 13.69%  runtime.findRunnable
+     0.02s  0.02% 89.96%      0.67s  0.66%  encoding/json.stringEncoder
+     0.02s  0.02% 89.98%      0.90s  0.89%  github.com/domainry/domainry-identity/internal/domain/identity/service.identityPermissionStateFingerprint
+     0.02s  0.02% 90.00%      1.01s     1%  modernc.org/sqlite/lib._sqlite3Parser
+     0.02s  0.02% 90.02%      0.97s  0.96%  modernc.org/sqlite/lib._yy_reduce

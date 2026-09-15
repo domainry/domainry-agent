@@ -1,0 +1,62 @@
+{
+  "runtime": [
+    {
+      "path": "runtime/bootstrap/composition/appschema_snapshot_cache_test.go",
+      "sha256": "2944bcf3f3c0d80a10ee29aa20c1cb2614560487f4c3bd387cd6b803dd20b623"
+    },
+    {
+      "path": "runtime/bootstrap/composition/appschema_snapshot_wiring.go",
+      "sha256": "55e24a89fc6ecb2cf5f617846950477dccc64e3de36720c33d5bfcf1ef731788"
+    },
+    {
+      "path": "runtime/bootstrap/composition/runtime_services_appschema_projection.go",
+      "sha256": "766ac53d68c65ebe76eb11cb78a9fb913d0c11a1a2b01427eee0a21d7cd4ca7b"
+    },
+    {
+      "path": "runtime/bootstrap/composition/runtime_services_initialization.go",
+      "sha256": "7849e007bfe83b700608b9de6ed828e75b51ac5548824bdd00e04c639f16b327"
+    },
+    {
+      "path": "runtime/bootstrap/composition/runtime_services_state.go",
+      "sha256": "5a50d3ef5d2abf452cf4dbb3dcd9b293fc2f182b8fd27d2f5b729e582bbb984c"
+    },
+    {
+      "path": "runtime/bootstrap/composition/workflow_application_wiring.go",
+      "sha256": "602bd223648504391ca07326b0279a988c82f59259f4c3c864072d76fb8b394a"
+    },
+    {
+      "path": "runtime/bootstrap/composition/workflow_identity_application_wiring.go",
+      "sha256": "195fd8b63d79699b9defdba9a2ea378c66a3ee4bc8fb54d743568dc1ce8e8234"
+    },
+    {
+      "path": "runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go",
+      "sha256": "23ad94a8c516f314fb2550f49c865ef84a1bc71f32dd837752ba3768b33b8e82"
+    },
+    {
+      "path": "runtime/domain/appschema/service/appschema_i18n_remaining_test.go",
+      "sha256": "4e7ae154d510dc0f6e3fce25eea7fc1e4b2b908e5ef40e540ed864178cd589e5"
+    },
+    {
+      "path": "runtime/domain/appschema/service/appschema_schema_i18n.go",
+      "sha256": "70b8c17f32b5efed2af0601cc3e0c9828f0acd520b3afefa2c44bae2102f8a1d"
+    }
+  ],
+  "agent": [
+    {
+      "path": "internal/application/conversation_delegations.go",
+      "sha256": "d5f65139b5d9b3e1fedd65795dfae4cb120cb06d11a55ae5e68d968ebb5b5447"
+    },
+    {
+      "path": "internal/application/conversation_delivery_publication.go",
+      "sha256": "9bd66134f19395ad297c01dd4a06c7684d6087f651141a46773ef3c8e38d2b96"
+    },
+    {
+      "path": "internal/application/conversation_verification.go",
+      "sha256": "b67c22a224ccebb26e1a247c85ba28c1de84c5362df906149505f480b8f27f59"
+    },
+    {
+      "path": "internal/application/conversation_verification_compaction_test.go",
+      "sha256": "d1da282bfa0c01326a7cfd3961d116d7f3f6cb2c3e4767db24814f67910234be"
+    }
+  ]
+}

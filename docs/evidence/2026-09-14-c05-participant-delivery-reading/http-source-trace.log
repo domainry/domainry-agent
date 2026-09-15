@@ -1,0 +1,6 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+    conversation_source_release_test.go:161: source diagnostic source conv_e2528267007a1affe585997608616ab1/crun_843e418b9fb59754562f18a121711534/2 reader=delivery-reader ledger=delivery-reader: source conv_e2528267007a1affe585997608616ab1/crun_843e418b9fb59754562f18a121711534/2 reader=delivery-reader ledger=admin: source conv_d3c7590d8395346dee5dbfbc8cc4561c/crun_ce8b61016380e96c71de040e03306def/1 reader=delivery-reader ledger=admin: source conv_d3c7590d8395346dee5dbfbc8cc4561c/crun_ce8b61016380e96c71de040e03306def/1 reader=delivery-reader ledger=delivery-reader: agent.conversation.run_not_found
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (5.52s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	6.266s
+FAIL

@@ -1,0 +1,4 @@
+=== RUN   TestExecutionPublicationOwnerMetadataRequiresOnlyViewAndRejectsForeignProofs
+--- PASS: TestExecutionPublicationOwnerMetadataRequiresOnlyViewAndRejectsForeignProofs (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	0.737s

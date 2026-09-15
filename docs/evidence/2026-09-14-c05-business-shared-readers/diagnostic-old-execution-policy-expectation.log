@@ -1,0 +1,7 @@
+ok  	github.com/domainry/domainry-runtime/runtime/application/action	1.220s
+ok  	github.com/domainry/domainry-runtime/runtime/application/workflow	0.759s
+--- FAIL: TestBusinessReceiptReadUsesCurrentRecordsWithoutAgentToolGrants (0.01s)
+    conversation_business_receipt_read_test.go:84: changed-policy read substituted new value
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/application/agenthost	1.762s
+FAIL

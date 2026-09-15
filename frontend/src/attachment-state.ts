@@ -3,7 +3,7 @@ import { ApiError } from "./errors.ts";
 import { sessionFetch, sessionScope } from "./session.ts";
 
 export const attachmentMaxBytes = 16 * 1024 * 1024;
-export const attachmentAccept = ".pdf,.doc,.docx,.xls,.xlsx,.txt,.md,.csv,.tsv,.json";
+export const attachmentAccept = ".pdf,.doc,.docx,.xls,.xlsx,.txt,.md,.csv,.tsv,.json,.png,.jpg,.jpeg,.gif,.webp";
 export type Attachment = { id: string; conversation_id: string; filename: string; content_type: string; bytes: number; sha256: string; visibility: string; state: "uploading" | "stored" | "indexing" | "ready" | "failed" | "needs_reconcile" | "deleting" | "deleted"; revision: number; error_code?: string; index_status?: string; indexing?: { requested: boolean; can_start: boolean; can_check: boolean; max_bytes?: number; reason?: string; last_check_revision?: number }; updated_at: string };
 export type AttachmentPage = { items: Attachment[]; next_after?: string; complete: boolean };
 // Apply one mutation response only within the current server cursor window.

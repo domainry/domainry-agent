@@ -1,0 +1,8 @@
+=== RUN   TestScopedMemoryBuiltBrowser
+PASS saving from an original message records project-fact type, conversation scope, topics, uncertainty and exact source
+PASS an explicit correction keeps its previous revision and is recalled for a relevant request in the same conversation
+PASS a conversation-scoped project fact is excluded from another conversation automatically
+PASS compiled mobile UI shows provenance and correction metadata and deletion removes the active memory
+--- PASS: TestScopedMemoryBuiltBrowser (9.82s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	10.284s

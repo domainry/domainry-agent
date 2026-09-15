@@ -1,0 +1,66 @@
+{
+  "recorded_at": "2026-09-14T11:23:38.750302+00:00",
+  "goal_complete": false,
+  "C05_complete": false,
+  "todo_complete": 4,
+  "todo_total": 25,
+  "host_normal": {
+    "exit_code": 0,
+    "roots": 62,
+    "subcases": 151
+  },
+  "host_race": {
+    "exit_code": 0,
+    "roots": 62,
+    "subcases": 151
+  },
+  "new_tests": {
+    "roots": 3,
+    "subcases": 29
+  },
+  "original_overlay_counterexamples": {
+    "exit_code": 1,
+    "scenarios": 5,
+    "classification": "capability gaps, not data leaks"
+  },
+  "owner_normal": {
+    "exit_code": 0,
+    "roots": 2,
+    "RPC_seconds": 3.61,
+    "Agent_complex_seconds": 133.5,
+    "original_SHA_checks": 20,
+    "original_task_budget_seconds": 90,
+    "new_arbitrary_Identity_policy_configuration_verified": false
+  },
+  "owner_race": {
+    "status": "running_at_seal",
+    "session": 93542,
+    "processes": [
+      {
+        "pid": 66800,
+        "ppid": 19556,
+        "elapsed": "02:20",
+        "cpu_percent": "0.0",
+        "command": "go test -race ./runtime/bootstrap/integrationtest -run ^(TestBusinessIndependentReceiptReadThroughRealOwnerRPC|TestCrossUserBusinessAgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance)$ -count=1 -v -timeout=30m -cpuprofile=/tmp/c05-business-union-owner-accepted-race.cpu -o /tmp/c05-business-union-owner-accepted-race.test"
+      },
+      {
+        "pid": 66849,
+        "ppid": 66800,
+        "elapsed": "02:13",
+        "cpu_percent": "197.2",
+        "command": "/var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/go-build90702327/b001/integrationtest.test -test.paniconexit0 -test.outputdir=/Users/tiger/Projects/domainry-runtime -test.run=^(TestBusinessIndependentReceiptReadThroughRealOwnerRPC|TestCrossUserBusinessAgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance)$ -test.count=1 -test.v=true -test.timeout=30m0s -test.cpuprofile=/tmp/c05-business-union-owner-accepted-race.cpu"
+      }
+    ],
+    "original_task_budget_seconds": 90,
+    "Go_observation_timeout": "30m",
+    "first_RPC_root_seconds": 48.88,
+    "command": "GOWORK=/tmp/runtime-work/go.work go test -race ./runtime/bootstrap/integrationtest -run ^(TestBusinessIndependentReceiptReadThroughRealOwnerRPC|TestCrossUserBusinessAgentComplexFiltersOriginalCursorAutomaticDeliveryAndAcceptance)$ -count=1 -v -timeout=30m -cpuprofile=/tmp/c05-business-union-owner-accepted-race.cpu -o /tmp/c05-business-union-owner-accepted-race.test"
+  },
+  "limits": {
+    "clauses": 64,
+    "atoms_per_clause": 64,
+    "nodes": 4096,
+    "depth": 24,
+    "uncached_comparisons": 4096
+  }
+}

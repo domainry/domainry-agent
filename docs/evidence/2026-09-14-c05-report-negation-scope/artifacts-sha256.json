@@ -1,0 +1,15 @@
+{
+  "acceptance.json": "4b7a0e229ba97c13b88c2167d1305375f160f1d3fb473604003e9d16fb87cbca",
+  "invalid-all-fixture-diagnostic.log": "60d92e0045da94965a61c89579afd2b8660c4f741aaa9240a3b48440bfa5a24b",
+  "original-proof-overlay.json": "fcaa5da4df35af342b2c5c1edfa765ba8c67631433127db5ee1f9989bffc8859",
+  "report-owner-normal.log": "2a1a80aa85f7388452aa128e8746a493dabdf1a0e4ac2f655409e26333edd66f",
+  "report-owner-race.log": "b4fd26f79ab346da578a47c45c83190a2ddcaa22f5e00481d0e2467eea36355f",
+  "report_shared_negated_scope_orm_test.go.final.txt": "b7a494d6842ee7b2bcc7828240c3f9f74eb9136347da7e53e4b42c596db7bb2c",
+  "report_shared_negation_boundary_test.go.final.txt": "8543a240acfe3530829d1f592985f1cbc3aa61f6d1a873966909cb62ce142e3d",
+  "report_shared_result_scope.go.final.txt": "ed49038d7b4845da7aebdf012331330c6964eabf46427525b57e841ad48037c1",
+  "report_shared_result_scope.go.original.txt": "b61d9220158919564313ff22f5f7231e1793dc4d9e9c01b87104fb4c65f01b15",
+  "source-compiled-sha256.json": "a231c0e1ca9a054f38680dbc06e92e1f3b237a162f0e1ffddf96728e1c6d25c5",
+  "source-final-check.json": "8cc743fdd88a2b638c3b1cff1ef6d43a03b721cf9b1cd75fccc278d98c57fe29",
+  "valid-fixture-fixed-proof.log": "fda0314ae4ef4e0c7f7e68c0f26552fa26f722f18fabafc898891a67c9e3d930",
+  "valid-fixture-original-proof-failure.log": "08cf167926be657636163598f560a55a518362698f17294463fa569b653d4bf8"
+}

@@ -1,0 +1,23 @@
+{
+  "phase": "accepted_actual_product_execution_wrapper_race",
+  "session_id": 13421,
+  "verified_terminal_exit_code": 0,
+  "package_seconds": 351.279,
+  "root_seconds": 349.19,
+  "sha_checks": 45,
+  "structured_result_checks": 27,
+  "saved_wrapper_checks": 18,
+  "prior_artifacts_verified": 44,
+  "source_go_and_module_files_unchanged_since_launch": true,
+  "task_budget": {
+    "steps": 12,
+    "calls": 12,
+    "output_bytes": 8192,
+    "seconds": 60
+  },
+  "ordinary_inspector_observation_seconds": 300,
+  "c05_complete": false,
+  "todo_completed": 4,
+  "todo_total": 25,
+  "command": "GOWORK=/Users/tiger/Projects/domainry-agent/go.work go test -race ./internal/assembly/product -run '^TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart$' -count=1 -timeout=12m -cpuprofile=/tmp/c05-execution-wrappers-product-serial-300-cpu.pprof -o=/tmp/c05-execution-wrappers-product-serial-300.test -v"
+}

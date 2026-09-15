@@ -1,0 +1,8 @@
+ok  	github.com/domainry/domainry-runtime/runtime/application/action	0.648s
+--- FAIL: TestWorkflowIndependentReceiptReadRequiresCurrentParticipantAndOriginalLedger (0.00s)
+    --- FAIL: TestWorkflowIndependentReceiptReadRequiresCurrentParticipantAndOriginalLedger/shared-original-ledger-and-actual-participant (0.00s)
+        workflow_agent_receipt_read_test.go:111: workflow metadata required run permission or queried original ledger { 0 order.approve Order approve map[] map[] map[] map[] 0x6c80196b90a0 <nil> <nil> [{source   text [] false <nil> map[]} {order   text [] false <nil> map[]}] true  [] <nil> map[] 0  0x6c801960aec0} <nil> 10
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/application/workflow	1.316s
+ok  	github.com/domainry/domainry-runtime/runtime/application/agenthost	0.999s
+FAIL

@@ -1,0 +1,62 @@
+=== RUN   TestDeliveryPublicationPreviewAndCommitRecheckCanonicalHistoryAndCurrentSources
+--- PASS: TestDeliveryPublicationPreviewAndCommitRecheckCanonicalHistoryAndCurrentSources (0.00s)
+=== RUN   TestSourceReleaseUsesProducerOnlyForImmutableEvidenceAndKeepsActualDataReader
+--- PASS: TestSourceReleaseUsesProducerOnlyForImmutableEvidenceAndKeepsActualDataReader (0.01s)
+=== RUN   TestSourceReleasePersistentPublisherRoleRecheckedSeparatelyFromOriginalProof
+--- PASS: TestSourceReleasePersistentPublisherRoleRecheckedSeparatelyFromOriginalProof (0.00s)
+=== RUN   TestPublishedSourceContextUsesExactPublicationPurposeAndActualRole
+--- PASS: TestPublishedSourceContextUsesExactPublicationPurposeAndActualRole (0.00s)
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/unassigned-role
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-user
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-workspace
+--- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope (0.00s)
+    --- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/unassigned-role (0.00s)
+    --- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-user (0.00s)
+    --- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-workspace (0.00s)
+=== RUN   TestSourceReleaseFirstSharingOfMixedOldRoleRootsUsesEachImmutableAuthority
+--- PASS: TestSourceReleaseFirstSharingOfMixedOldRoleRootsUsesEachImmutableAuthority (0.00s)
+=== RUN   TestSourceReleaseCurrentRoleRootCanFirstShareInheritedOldRoleWithoutGrantingRawScope
+--- PASS: TestSourceReleaseCurrentRoleRootCanFirstShareInheritedOldRoleWithoutGrantingRawScope (0.00s)
+=== RUN   TestSourceReleasePrefixCannotExpandToUnpublishedRunOrSteps
+--- PASS: TestSourceReleasePrefixCannotExpandToUnpublishedRunOrSteps (0.00s)
+=== RUN   TestSourceReleaseSameUserDifferentRolesPreservesOriginalProofAndCurrentReader
+--- PASS: TestSourceReleaseSameUserDifferentRolesPreservesOriginalProofAndCurrentReader (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.474s
+=== RUN   TestRepublishAcceptedDeliveryPreservesOriginalTaskAndHistory
+--- PASS: TestRepublishAcceptedDeliveryPreservesOriginalTaskAndHistory (0.50s)
+=== RUN   TestRepublishCurrentLegacyDeliveryCreatesExplicitKnownPublisher
+--- PASS: TestRepublishCurrentLegacyDeliveryCreatesExplicitKnownPublisher (0.48s)
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/actual
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/current-metadata-changed
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/undeclared
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/other-delegation
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/incomplete
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/wrong-step
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/other-operation
+=== RUN   TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/manual-history
+--- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall (3.04s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/actual (0.34s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/current-metadata-changed (0.33s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/undeclared (0.38s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/other-delegation (0.45s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/incomplete (0.34s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/wrong-step (0.34s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/other-operation (0.41s)
+    --- PASS: TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall/manual-history (0.45s)
+=== RUN   TestSourceReleasesPersistOnlyExplicitReferencesAndBoundedPrefixes
+--- PASS: TestSourceReleasesPersistOnlyExplicitReferencesAndBoundedPrefixes (0.39s)
+=== RUN   TestSourceReleaseTransactionRollsBackWhenOriginRunIsNotOwnedByPublisher
+--- PASS: TestSourceReleaseTransactionRollsBackWhenOriginRunIsNotOwnedByPublisher (0.37s)
+=== RUN   TestSourceReleasesSameIdentityDelegationWithoutSubjectRowPublishesOriginalOldRole
+--- PASS: TestSourceReleasesSameIdentityDelegationWithoutSubjectRowPublishesOriginalOldRole (0.28s)
+=== RUN   TestSourceReleaseAdmissionPublishesRequiredMixedOldRootsAndRollsBackUnknownRoots
+--- PASS: TestSourceReleaseAdmissionPublishesRequiredMixedOldRootsAndRollsBackUnknownRoots (0.29s)
+=== RUN   TestSourceReleasesSameUserDifferentRolesPersistOriginalExecutionProvenance
+--- PASS: TestSourceReleasesSameUserDifferentRolesPersistOriginalExecutionProvenance (0.27s)
+=== RUN   TestSourceReleasesUseImmutableRunRoleWhenPublisherAndReaderUseAnotherRole
+--- PASS: TestSourceReleasesUseImmutableRunRoleWhenPublisherAndReaderUseAnotherRole (0.25s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	7.732s

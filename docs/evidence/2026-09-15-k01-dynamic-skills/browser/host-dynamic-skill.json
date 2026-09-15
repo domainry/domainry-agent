@@ -1,0 +1,10 @@
+{
+  "active_skill_version": "1",
+  "candidate_versions": 2,
+  "compiled_frontend": true,
+  "complete": true,
+  "model_calls": 1,
+  "real_identity_http": true,
+  "real_sqlite": true,
+  "task_id": "task_cbeccaec4eb0458a9a53e67e541a2ee2"
+}

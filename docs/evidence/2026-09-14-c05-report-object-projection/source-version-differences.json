@@ -1,0 +1,13 @@
+{
+  "enumerated_dependency_inputs": 9819,
+  "changed_inputs_at_archive": [
+    {
+      "path": "/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_business_shared_scope.go",
+      "compiled_sha256": "125fdc86c4e77b8e9714c7d1f40e6e1414b5fdb673069fb4c3080dff760f5d52",
+      "current_sha256": "fb9b549124bfd03615ae39f0c49bdd002f5c6fcb34e8d1804d8d36ba1ae0f54e"
+    }
+  ],
+  "compiled_changed_file_preserved": true,
+  "new_business_null_fixture_not_part_of_runtime_compile": true,
+  "conservative_dependency_test_file_superset": true
+}

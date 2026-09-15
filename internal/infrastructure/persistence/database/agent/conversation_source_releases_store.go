@@ -26,7 +26,11 @@ func (s *ConversationStore) saveSourceReleases(ctx context.Context, tx *sql.Tx, 
 		if conversationAuthority(original) != nil || conversationOwner(original) != conversationOwner(producer) {
 			return conversationError("forbidden", "execution_subject_mismatch")
 		}
-		if original == reader {
+		// Delivery submissions record their actual publisher even when the
+		// original provider and recipient have the same selected role. A later
+		// role still needs this proof and current sharing/read authorization;
+		// ordinary exact-role access does not depend on the publication.
+		if original == reader && purpose != "delivery" {
 			continue
 		}
 		publisher := producer
@@ -67,7 +71,20 @@ func (s *ConversationStore) saveDelegationContractReleases(ctx context.Context, 
 	if conversationOwner(a) != conversationOwner(subjects.source) {
 		return conversationError("forbidden", "execution_subject_mismatch")
 	}
-	return s.saveSourceReleases(ctx, tx, d.ID, "contract", a, subjects.execution, refs)
+	if err := s.saveSourceReleases(ctx, tx, d.ID, "contract", a, subjects.execution, refs); err != nil {
+		return err
+	}
+	for _, grant := range d.Participants {
+		if grant.Revision < 1 {
+			continue
+		}
+		reader := a
+		reader.UserID, reader.RoleKey = grant.UserID, ""
+		if err := s.saveSourceReleases(ctx, tx, d.ID, "contract", a, reader, refs); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (s *ConversationStore) saveDelegationDeliveryReleases(ctx context.Context, tx *sql.Tx, d sdk.ConversationDelegation, a sdk.ConversationAuthority) error {
@@ -90,7 +107,10 @@ func (s *ConversationStore) saveDelegationDeliveryReleases(ctx context.Context, 
 	if d.Verification != nil && d.Verification.Source != nil && d.Verification.ActorID == subjects.execution.UserID {
 		refs = append(refs, *d.Verification.Source)
 	}
-	return s.saveSourceReleases(ctx, tx, d.ID, "delivery", a, subjects.source, refs)
+	if err := s.saveSourceReleases(ctx, tx, d.ID, "delivery", a, subjects.source, refs); err != nil {
+		return err
+	}
+	return s.publishDeliveryToParticipants(ctx, tx, d, a, refs)
 }
 
 func (s *ConversationStore) ConversationSourceReleases(ctx context.Context, ref sdk.ConversationRunReference, a sdk.ConversationAuthority) ([]persistence.ConversationSourceRelease, error) {

@@ -1,0 +1,32 @@
+=== RUN   TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart
+    record_result_read_test.go:295: Exact original structured result record-save via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:295: Exact original structured result record-read via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:295: Exact original structured result record-list via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:295: Exact original structured result record-save via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:295: Exact original structured result record-read via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:295: Exact original structured result record-list via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:295: Exact original structured result record-save via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:295: Exact original structured result record-read via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:295: Exact original structured result record-list via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:387: Exact original structured result record-save via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:387: Exact original structured result record-read via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:387: Exact original structured result record-list via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:387: Exact original structured result record-save via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:387: Exact original structured result record-read via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:387: Exact original structured result record-list via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:387: Exact original structured result record-save via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:387: Exact original structured result record-read via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:387: Exact original structured result record-list via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:412: Exact original structured result record-save via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:412: Exact original structured result record-read via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:412: Exact original structured result record-list via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:412: Exact original structured result record-save via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:412: Exact original structured result record-read via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:412: Exact original structured result record-list via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:412: Exact original structured result record-save via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:412: Exact original structured result record-read via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:412: Exact original structured result record-list via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:463: Actual second Identity account has read/list rights; original personal receipts and record are denied, its own list remains empty
+--- PASS: TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart (158.63s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/product	160.721s

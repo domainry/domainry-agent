@@ -1,0 +1,5 @@
+--- FAIL: TestSameIdentityDeliveryPersistsOwnRolePublisherForLaterReaders (0.02s)
+    conversation_source_releases_store_test.go:125: submitted own-role verifier source has no exact publisher proof [] <nil>
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.430s
+FAIL

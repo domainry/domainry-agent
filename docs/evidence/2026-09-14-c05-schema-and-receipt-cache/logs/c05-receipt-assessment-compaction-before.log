@@ -1,0 +1,6 @@
+=== RUN   TestCompletionReceiptsAuditOnlyLargestPrefixPerRun
+    conversation_verification_compaction_test.go:85: assessment groups audited 4 prefixes, want 2: [{ConversationID:conversation-a RunID:run-a BeforeStep:2} {ConversationID:conversation-a RunID:run-a BeforeStep:3} {ConversationID:conversation-b RunID:run-b BeforeStep:4} {ConversationID:conversation-a RunID:run-a BeforeStep:6}]
+--- FAIL: TestCompletionReceiptsAuditOnlyLargestPrefixPerRun (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.653s
+FAIL

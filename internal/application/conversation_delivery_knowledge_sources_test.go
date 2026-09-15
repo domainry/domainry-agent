@@ -12,9 +12,85 @@ import (
 
 type deliveryKnowledgeSource struct {
 	extractionSourceFixture
-	a      sdk.ConversationAuthority
-	denied bool
-	reads  int
+	a        sdk.ConversationAuthority
+	producer sdk.ConversationAuthority
+	denied   bool
+	reads    int
+}
+
+func (s *deliveryKnowledgeSource) AuthorizeSharedKnowledgeResultRead(ctx context.Context, saved sdk.ConversationKnowledgeResult, reader, producer sdk.ConversationAuthority) error {
+	if producer != s.producer {
+		return conversationFailure("forbidden", "knowledge_access_denied")
+	}
+	return s.AuthorizeKnowledgeResultRead(ctx, saved, reader)
+}
+func (s *deliveryKnowledgeSource) SharedKnowledgeExtractionPassages(ctx context.Context, saved sdk.ConversationKnowledgeResult, reader, producer sdk.ConversationAuthority) ([]sdk.KnowledgeDocumentPassage, error) {
+	if err := s.AuthorizeSharedKnowledgeResultRead(ctx, saved, reader, producer); err != nil {
+		return nil, err
+	}
+	return s.KnowledgeExtractionPassages(ctx, saved, reader)
+}
+
+func TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader(t *testing.T) {
+	for _, key := range []string{"knowledge_libraries", "knowledge_search", "knowledge_read", "knowledge_extract"} {
+		t.Run(key, func(t *testing.T) {
+			reader := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "reader", RoleKey: "read-only"}
+			producer := reader
+			producer.UserID, producer.RoleKey = "producer", "professional"
+			source := &deliveryKnowledgeSource{a: reader, producer: producer, extractionSourceFixture: extractionSourceFixture{current: sdk.ConversationKnowledgeResult{Provider: "fixture", Operation: "fetch", DocumentID: "doc", ScopeSHA256: "original-producer-proof", Data: json.RawMessage(`{"text":"金额：123.45"}`)}}}
+			args := map[string]any{"doc_id": "doc"}
+			if key == "knowledge_libraries" {
+				source.current.Operation, source.current.DocumentID, source.current.Query = "libraries", "", `{"after":"","limit":0}`
+				args = map[string]any{}
+			}
+			if key == "knowledge_search" {
+				source.current.Operation, source.current.DocumentID, source.current.Query = "search", "", "金额"
+				args = map[string]any{"query": "金额"}
+			}
+			raw, _ := json.Marshal(source.current)
+			if key == "knowledge_extract" {
+				plan := sdk.KnowledgeExtractionArguments{DocumentID: "doc", KnowledgeExtractionPlan: sdk.KnowledgeExtractionPlan{Fields: []sdk.KnowledgeExtractionField{{KnowledgeExtractionColumn: sdk.KnowledgeExtractionColumn{Key: "amount", Type: "decimal", Required: true}, Pattern: `金额：([0-9.]+)`}}}}
+				body, _ := json.Marshal(plan)
+				_ = json.Unmarshal(body, &args)
+				result, err := buildKnowledgeExtraction(t.Context(), plan, source.current, []sdk.KnowledgeDocumentPassage{{DocumentID: "doc", Title: "来源", Content: "金额：123.45"}})
+				if err != nil {
+					t.Fatal(err)
+				}
+				raw, _ = json.Marshal(result)
+			}
+			body, _ := json.Marshal(args)
+			definition, _ := knowledgeTool(key)
+			record := persistence.ConversationToolExecution{State: "completed", Definition: definition, Call: sdk.ConversationToolCall{ID: "original", Name: key, Arguments: string(body)}, Result: &sdk.ConversationToolResult{Status: "completed", Content: raw}}
+			s := &ConversationService{runtimeID: "runtime", repo: privatePeerSources{}, options: ConversationOptions{Knowledge: source, CollaborationAuthorizer: fixedCollaborationTestPolicy{"view", "delivery_read"}}}
+			audit := s.sourceAudit(reader)
+			audit.evidenceOwner = &producer
+			owner := sdk.ConversationRunReference{ConversationID: "producer-conversation", RunID: "original-run"}
+			ctx := deliverySourceContext(t.Context(), "released")
+			if handled, err := audit.deliveryKnowledgeToolResult(ctx, owner, record); !handled || err != nil {
+				t.Fatal("original provider substituted by current reader", handled, err)
+			}
+			source.denied = true
+			if handled, err := audit.deliveryKnowledgeToolResult(ctx, owner, record); !handled || err == nil {
+				t.Fatal("source denial fell back to execution", handled, err)
+			}
+			source.denied = false
+			wrong := producer
+			wrong.RoleKey = "wrong-role"
+			audit.evidenceOwner = &wrong
+			if _, err := audit.deliveryKnowledgeToolResult(ctx, owner, record); err == nil {
+				t.Fatal("original role substituted")
+			}
+			audit.evidenceOwner = &producer
+			bad := *record.Result
+			bad.Content = json.RawMessage(strings.Replace(string(raw), "123.45", "999.99", 1))
+			record.Result = &bad
+			if key != "knowledge_libraries" {
+				if _, err := audit.deliveryKnowledgeToolResult(ctx, owner, record); err == nil {
+					t.Fatal("original content or extraction tampering accepted")
+				}
+			}
+		})
+	}
 }
 
 func (s *deliveryKnowledgeSource) Search(context.Context, string, sdk.ConversationAuthority) (json.RawMessage, error) {

@@ -1,0 +1,5 @@
+=== RUN   TestMixedOldRoleSourceToolDispatchReadAndAutomaticDelivery
+    conversation_old_role_automatic_delivery_test.go:156: Actual old report and analysis runs, immutable roots, original-role matching, model tool dispatch, bound reading-only execution, complete paginated originals, automatic exact-reference delivery, account acceptance, legacy contract required-root recovery from exact original admission call and delivery recovery from immutable actor, equivalent current reader and original page replay, publisher/original-role/field revocation and restart verified; no receiver professional execution
+--- PASS: TestMixedOldRoleSourceToolDispatchReadAndAutomaticDelivery (21.89s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	22.554s

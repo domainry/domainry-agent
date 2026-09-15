@@ -1,0 +1,20 @@
+=== RUN   TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery
+=== RUN   TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery/multiple_allow_policies
+    conversation_business_shared_union_scope_test.go:95: combined reader rules denied original complete scope runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery/query_partitions_across_conjunctions
+    conversation_business_shared_union_scope_test.go:95: combined reader rules denied original complete scope runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery/producer_denial_narrows_allow
+    conversation_business_shared_union_scope_test.go:95: combined reader rules denied original complete scope runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery/producer_denial_union
+    conversation_business_shared_union_scope_test.go:95: combined reader rules denied original complete scope runtime.conversation.business_forbidden
+=== RUN   TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery/double_negation_and_De_Morgan
+    conversation_business_shared_union_scope_test.go:95: combined reader rules denied original complete scope runtime.conversation.business_forbidden
+--- FAIL: TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery (0.03s)
+    --- FAIL: TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery/multiple_allow_policies (0.01s)
+    --- FAIL: TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery/query_partitions_across_conjunctions (0.01s)
+    --- FAIL: TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery/producer_denial_narrows_allow (0.01s)
+    --- FAIL: TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery/producer_denial_union (0.01s)
+    --- FAIL: TestSharedBusinessCombinedRulesCoverCompleteOriginalORMQuery/double_negation_and_De_Morgan (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/application/agenthost	0.495s
+FAIL

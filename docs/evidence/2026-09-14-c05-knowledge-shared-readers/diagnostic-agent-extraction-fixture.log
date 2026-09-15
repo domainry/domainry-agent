@@ -1,0 +1,17 @@
+--- FAIL: TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader (0.01s)
+    --- FAIL: TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_extract (0.00s)
+        conversation_delivery_knowledge_sources_test.go:70: original provider substituted by current reader true agent.conversation.extraction_result_invalid
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.886s
+ok  	github.com/domainry/domainry-agent-sdk	1.228s
+?   	github.com/domainry/domainry-agent-sdk/browsergateway	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/businessrpc	1.829s
+?   	github.com/domainry/domainry-agent-sdk/contracttest	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/lifecycle	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/modulehost	[no test files]
+ok  	github.com/domainry/domainry-agent-sdk/persistence	2.281s
+?   	github.com/domainry/domainry-agent-sdk/saashost	[no test files]
+?   	github.com/domainry/domainry-agent-sdk/state	[no test files]
+ok  	github.com/domainry/domainry-knowledge/internal/application/knowledge	1.340s
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/provider	1.919s
+FAIL

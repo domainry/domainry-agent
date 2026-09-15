@@ -6,10 +6,10 @@ export function MemoryOperationPreview({ tool, argumentsText, onReady }: { tool:
   const [memory, setMemory] = useState<Memory | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(tool === "memory_forget");
-  let args: Partial<Memory> & { expected_revision?: number } = {};
+  let args: { id?: string; kind?: string; title?: string; content?: string; enabled?: boolean; scope?: string; applies_to?: string[]; uncertainty?: string; correction_reason?: string; expected_revision?: number } = {};
   try { args = JSON.parse(argumentsText); } catch { /* The executor validates the frozen arguments. */ }
   const id = args.id;
-  const ready = tool === "memory_save" ? typeof args.title === "string" && !!args.title && typeof args.content === "string" && !!args.content
+  const ready = tool === "memory_save" ? typeof args.title === "string" && !!args.title && typeof args.content === "string" && !!args.content && !!args.kind && !!args.scope
     : !loading && !error && !!memory && memory.revision === args.expected_revision;
   useEffect(() => { onReady?.(ready); }, [ready, onReady]);
   useEffect(() => {
@@ -24,7 +24,7 @@ export function MemoryOperationPreview({ tool, argumentsText, onReady }: { tool:
   }, [tool, id]);
   if (tool === "memory_save") return <div className="memory-operation">
     <strong>{args.id ? "更新个人记忆" : "新增个人记忆"}：{args.title}</strong>
-    <p>{args.content}</p><small className="subtle">保存后{args.enabled ? "启用" : "停用"}此记忆。</small>
+    <p>{args.content}</p><small className="subtle">类型 {args.kind} · 范围 {args.scope} · 保存后{args.enabled ? "启用" : "停用"}此记忆{args.applies_to?.length ? ` · 适用于 ${args.applies_to.join("、")}` : ""}{args.uncertainty ? ` · 限制：${args.uncertainty}` : ""}{args.correction_reason ? ` · 修正原因：${args.correction_reason}` : ""}。</small>
   </div>;
   return <div className="memory-operation">
     <strong>删除个人记忆{memory ? `：${memory.title}` : ""}</strong>

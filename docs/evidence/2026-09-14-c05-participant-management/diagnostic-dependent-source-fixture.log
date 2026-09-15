@@ -1,0 +1,6 @@
+=== RUN   TestParticipantRequirementChangeInvalidatesOwnersDependentWork
+    conversation_participant_management_store_test.go:75: agent.conversation.delegation_invalid
+--- FAIL: TestParticipantRequirementChangeInvalidatesOwnersDependentWork (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.667s
+FAIL

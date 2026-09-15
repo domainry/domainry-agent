@@ -1,7 +1,25 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { agentWriteInput, delegationActions, delegationNeedsAttention, deliveryIsCurrent, initialDeliveryReview, withCompletionConditions, reviewedDependencies, disagreementsBlock, type Delegation, type PeerAgent } from './collaboration-state.ts';
+import { canReadContractPublicationHistory, canRepublishContract, canRepublishDelivery, agentWriteInput, delegationActions, delegationAttentionReasons, delegationBusinessStage, delegationConditionProgress, delegationCurrentActivity, delegationInScope, delegationNeedsAttention, delegationOpenQuestions, deliveryIsCurrent, initialDeliveryReview, withCompletionConditions, reviewedDependencies, disagreementsBlock, type Delegation, type PeerAgent } from './collaboration-state.ts';
 const work = { access:{view:true,manage:true,execution_read:true,delivery_read:true,communicate:true,receive:true,share:true}, id:'d',status:'delivered',brief:{version:1},agreement_revision:2,delivery:{brief_version:1,agreement_revision:1},task:{status:'completed'},messages:[] } as unknown as Delegation;
+test('subject exit cannot offer resume or republication from retained metadata',()=>{
+ const exited={...work,subject_exited:true,contract_omitted:true,owner_user_id:'issuer',status:'cancelled'};
+ assert.deepEqual(delegationActions(exited),[]);
+ assert.equal(delegationNeedsAttention(exited),false);
+ assert.equal(canRepublishContract(exited,'issuer',true),false);
+ assert.equal(canReadContractPublicationHistory(exited,'issuer'),false);
+});
+test('explicit historical publication belongs to the execution user with current share access',()=>{
+ const history={...work,status:'accepted_delivery',owner_user_id:'issuer',execution_subject:{runtime_id:'r',workspace_id:'w',user_id:'executor',role_key:'bound'},delivery:undefined};
+ assert.equal(canRepublishDelivery(history,'executor',true),true);
+ assert.equal(canRepublishDelivery(history,'issuer',true),false);
+ assert.equal(canRepublishDelivery(history,'participant',true),false);
+ assert.equal(canRepublishDelivery(history,'executor',false),false);
+ assert.equal(canRepublishDelivery({...history,access:{...history.access!,receive:false}},'executor',true),false);
+ assert.equal(canRepublishDelivery({...history,access:{...history.access!,delivery_read:false}},'executor',true),false);
+ assert.equal(canRepublishDelivery({...work,owner_user_id:'owner'},'owner',true),true);
+ assert.equal(canRepublishDelivery({...work,owner_user_id:'owner'},'other',true),false);
+});
 test('agent editor submits only write fields and preserves sharing when sharing access is absent',()=>{
  const response={id:'peer',owner_user_id:'owner',shared:false,shared_with_user_ids:['recipient'],revision:3,created_at:'server timestamp',updated_at:'server timestamp',definition_version:'v1',definition_digest:'server digest',name:'Review',description:'Review work',instructions:'Use current permissions',tools:['time_now'],skill_keys:[],model_key:'default',enabled:true,max_concurrent:1};
  const write=agentWriteInput(response as PeerAgent,true);
@@ -79,4 +97,103 @@ test('collaboration controls require separate current permissions',()=>{
  assert.ok(delegationActions(manager).includes('pause'));
  assert.equal(delegationActions(manager).includes('accept_delivery'),false);
  assert.equal(delegationActions(manager).includes('review_delivery'),false);
+});
+
+test('management can transfer finished shared work without private task details',()=>{
+ const shared={...work,task:undefined,status:'awaiting_delivery',access:{...work.access!,view:true,manage:true,execution_read:false}} as Delegation;
+ assert.equal(delegationActions(shared).includes('transfer'),true);
+ assert.equal(delegationActions({...shared,status:'running'}).includes('transfer'),false);
+ assert.equal(delegationActions({...shared,access:{...shared.access!,manage:false}}).includes('transfer'),false);
+ assert.equal(delegationActions({...shared,contract_omitted:true}).includes('transfer'),false);
+});
+
+test('changed or disabled Agent offers immutable recovery instead of retrying the stale task',()=>{
+ for(const error_code of ['agent_changed','agent_disabled','model_changed']){
+  const failed={...work,status:'failed',task:{status:'failed',error_code}} as Delegation;
+  const actions=delegationActions(failed);
+  assert.equal(actions.includes('recover'),true,error_code);
+  assert.equal(actions.includes('resume'),false,error_code);
+  assert.equal(actions.includes('transfer'),true,error_code);
+ }
+ assert.equal(delegationActions({...work,status:'failed',task:{status:'failed',error_code:'provider_failed'}} as Delegation).includes('resume'),true);
+});
+
+test('contract recovery is source-owned and requires current manage and share',()=>{
+ const old={...work,contract_omitted:true,status:'accepted_delivery',owner_user_id:'issuer',execution_subject:{runtime_id:'r',workspace_id:'w',user_id:'executor'}};
+ assert.equal(canRepublishContract(old,'issuer',true),true);
+ assert.equal(canRepublishContract(old,'executor',true),false);
+ assert.equal(canRepublishContract(old,'participant',true),false);
+ assert.equal(canRepublishContract(old,'issuer',false),false);
+ assert.equal(canRepublishContract({...old,access:{...old.access!,manage:false}},'issuer',true),false);
+ assert.equal(canRepublishContract({...old,access:{...old.access!,view:false}},'issuer',true),false);
+ assert.equal(delegationNeedsAttention(old),true);
+});
+
+test('unreadable contract keeps stopping controls without adopting hidden requirements',()=>{
+ const omitted={...work,contract_omitted:true,status:'running'};
+ assert.deepEqual(delegationActions(omitted),['pause','cancel']);
+ assert.deepEqual(delegationActions({...omitted,status:'paused'}),['cancel']);
+ assert.deepEqual(delegationActions({...omitted,status:'needs_update'}),['cancel']);
+ for(const status of ['cancelled','rejected','accepted_delivery'])assert.deepEqual(delegationActions({...omitted,status}),[]);
+ assert.deepEqual(delegationActions({...omitted,access:{...omitted.access!,manage:false}}),[]);
+ assert.deepEqual(delegationActions({...omitted,access:{...omitted.access!,view:false}}),[]);
+});
+
+test('stopping unreadable work never initializes an assessment from its unreadable brief',()=>{
+ const omitted={...work,contract_omitted:true,brief:{version:0,completion_conditions:null}} as unknown as Delegation;
+ assert.deepEqual(initialDeliveryReview(omitted),[]);
+});
+test('contract publication history remains scoped to actual issuer and executor',()=>{
+ const old={...work,owner_user_id:'issuer',execution_subject:{runtime_id:'r',workspace_id:'w',user_id:'executor'}};
+ assert.equal(canReadContractPublicationHistory(old,'issuer'),true);
+ assert.equal(canReadContractPublicationHistory(old,'executor'),true);
+ assert.equal(canReadContractPublicationHistory(old,'participant'),false);
+ assert.equal(canReadContractPublicationHistory({...old,access:{...old.access!,view:false}},'issuer'),false);
+ assert.equal(canReadContractPublicationHistory({...work,owner_user_id:'issuer'},'other'),false);
+});
+
+test('global sent and received scopes use actual ownership instead of the current conversation',()=>{
+ const d={...work,owner_user_id:'issuer',execution_subject:{runtime_id:'r',workspace_id:'w',user_id:'executor'},source_conversation_id:'source',conversation_id:'receiver'} as Delegation;
+ assert.equal(delegationInScope(d,'sent','other','issuer'),true);
+ assert.equal(delegationInScope(d,'sent','source','executor'),false);
+ assert.equal(delegationInScope(d,'received','other','executor'),true);
+ assert.equal(delegationInScope(d,'current_sent','source','issuer'),true);
+ assert.equal(delegationInScope(d,'current_received','receiver','executor'),true);
+ assert.equal(delegationInScope(d,'current','unrelated','issuer'),false);
+ const transferred={...d,execution_subject:{runtime_id:'r',workspace_id:'w',user_id:'next'},conversation_id:'next-conversation',assignments:[{number:1,agent_id:'target',agent_revision:1,conversation_id:'receiver',task_id:'task',agreement_revision:1,reason:'first',actor_id:'issuer',created_at:'',execution_subject:{runtime_id:'r',workspace_id:'w',user_id:'executor'}}]} as Delegation;
+ assert.equal(delegationInScope(transferred,'received','other','executor'),true);
+ assert.equal(delegationInScope(transferred,'current_received','receiver','executor'),true);
+});
+
+test('attention belongs to the user who can perform the next action',()=>{
+ const waiting={...work,status:'running',owner_user_id:'issuer',execution_subject:{runtime_id:'r',workspace_id:'w',user_id:'executor'},task:{...work.task!,waiting:{kind:'confirmation'}},messages:[]} as unknown as Delegation;
+ assert.deepEqual(delegationAttentionReasons(waiting,'issuer'),[]);
+ assert.deepEqual(delegationAttentionReasons(waiting,'executor'),['待确认操作']);
+ const delivered={...waiting,status:'delivered',task:undefined,verification:{checks:[]}} as unknown as Delegation;
+ assert.deepEqual(delegationAttentionReasons(delivered,'issuer'),['交付待验收']);
+ assert.deepEqual(delegationAttentionReasons(delivered,'executor'),['交付待验收']);
+});
+
+test('open questions are merged while completion evidence stays itemized',()=>{
+ const question={id:'q',kind:'question',to_agent_id:'source',brief_version:1,agreement_revision:2,content:' Which period? ',created_at:''} as Delegation['messages'][number];
+ const d={...work,owner_user_id:'issuer',from_agent_id:'source',to_agent_id:'target',brief:{version:1,completion_conditions:['Check period','Check amount']},messages:[question,{...question,id:'q2',content:'Which   period?'}],verification:{checks:[{condition:0,verdict:'met',basis:'receipt',method:'program'}]}} as unknown as Delegation;
+ assert.deepEqual(delegationOpenQuestions(d),[{content:'Which period?',count:2}]);
+ assert.deepEqual(delegationConditionProgress(d),[
+  {requirement:'Check period',verdict:'met',basis:'receipt',method:'program'},
+  {requirement:'Check amount',verdict:'unknown',basis:'',method:''},
+ ]);
+ assert.match(delegationBusinessStage({...d,status:'delivered'}),/1\/2/);
+});
+
+test('current activity reports the live step without treating call counts as completion',()=>{
+ const d={...work,status:'running',task:{...work.task!,status:'running',steps:[{number:2,attempt:1,status:'generating',text:'',calls:[{id:'call',name:'report_query',arguments:'{}',status:'running'}]}]}} as unknown as Delegation;
+ assert.equal(delegationCurrentActivity(d),'当前步骤 3 · report_query · 执行中');
+ assert.equal(delegationCurrentActivity({...d,task:{...d.task!,waiting:{kind:'reconciliation',question:'请核对是否已受理'}} as never}),'等待处理：请核对是否已受理');
+});
+
+test('external activity exposes reported progress and says when the protocol has no details',()=>{
+ const base={...work,status:'running',task:{...work.task!,status:'running',external_execution:{status:'running',details_available:false,events:[]}}} as unknown as Delegation;
+ assert.equal(delegationCurrentActivity(base),'外部 Agent 正在执行；该协议未提供过程详情');
+ const reported={...base,task:{...base.task!,external_execution:{...base.task!.external_execution!,details_available:true,events:[{seq:1,attempt:1,kind:'progress',phase:'checking',summary:'核对金额',created_at:''}]}}} as Delegation;
+ assert.equal(delegationCurrentActivity(reported),'checking · 核对金额');
 });

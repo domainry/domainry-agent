@@ -1,0 +1,8 @@
+=== RUN   TestSharedSourceTraversalIsMemoizedOnlyWithinOneRead
+    conversation_source_cache_test.go:22: shared proof traversed repeatedly in one read map[original:[{true runtime workspace issuer old-professional} {true runtime workspace issuer old-professional} {true runtime workspace issuer old-professional}]]
+--- FAIL: TestSharedSourceTraversalIsMemoizedOnlyWithinOneRead (0.00s)
+=== RUN   TestSourceMemoCannotAuthorizeRawCollaborationAfterDeliveryProjection
+--- PASS: TestSourceMemoCannotAuthorizeRawCollaborationAfterDeliveryProjection (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.657s
+FAIL

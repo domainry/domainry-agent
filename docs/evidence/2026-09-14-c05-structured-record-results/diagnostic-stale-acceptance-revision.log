@@ -1,0 +1,9 @@
+=== RUN   TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart
+    record_result_read_test.go:246: Exact original structured result record-save: 2 pages, original SHA-256 verified
+    record_result_read_test.go:246: Exact original structured result record-read: 2 pages, original SHA-256 verified
+    record_result_read_test.go:246: Exact original structured result record-list: 2 pages, original SHA-256 verified
+    record_result_read_test.go:247: POST /agent/delegations/delegation_c8b06c8837aa845037a216468fb56116/decisions: 409 {"code":"agent.conversation.revision_conflict"}
+--- FAIL: TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart (3.90s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/product	7.021s
+FAIL

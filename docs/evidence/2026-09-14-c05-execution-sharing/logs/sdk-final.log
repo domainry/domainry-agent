@@ -1,0 +1,5 @@
+--- FAIL: TestAgentHTTPAdapterContractOwnsCompleteRouteCatalog (0.01s)
+    http_adapter_test.go:54: Agent HTTP contract=domainry-agent-http-adapter-v1 owner=agent routes=103 operations=103
+FAIL
+FAIL	github.com/domainry/domainry-agent-sdk	0.893s
+FAIL

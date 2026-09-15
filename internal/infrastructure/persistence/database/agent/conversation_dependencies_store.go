@@ -37,7 +37,7 @@ func (s *ConversationStore) freezeTaskDependencies(ctx context.Context, tx *sql.
 			return nil, conversationError("bad_request", "dependencies_invalid")
 		}
 		seen[ref.DelegationID] = true
-		upstream, err := s.conversationDelegation(ctx, tx, ref.DelegationID, a)
+		upstream, err := s.dependencyDelegation(ctx, tx, ref.DelegationID, a)
 		if err != nil {
 			return nil, err
 		}
@@ -81,7 +81,7 @@ func (s *ConversationStore) freezeTaskDependencies(ctx context.Context, tx *sql.
 			if len(visited) > 32 {
 				return nil, conversationError("conflict", "dependency_cycle")
 			}
-			next, err := s.conversationDelegation(ctx, tx, edge.DelegationID, a)
+			next, err := s.dependencyDelegation(ctx, tx, edge.DelegationID, a)
 			if err != nil {
 				return nil, err
 			}
@@ -93,7 +93,17 @@ func (s *ConversationStore) freezeTaskDependencies(ctx context.Context, tx *sql.
 }
 
 func (s *ConversationStore) saveAgreementRevision(ctx context.Context, tx *sql.Tx, d sdk.ConversationDelegation, fields []string, reason string, actor *sdk.ConversationToolRequest, a sdk.ConversationAuthority) error {
+	return s.saveAgreementRevisionSnapshot(ctx, tx, d, fields, reason, actor, a, true)
+}
+
+func (s *ConversationStore) saveAgreementRevisionSnapshot(ctx context.Context, tx *sql.Tx, d sdk.ConversationDelegation, fields []string, reason string, actor *sdk.ConversationToolRequest, a sdk.ConversationAuthority, originalRequirements bool) error {
 	entry := sdk.ConversationAgreementRevision{StructuredInput: d.StructuredInput, InputSource: d.InputSource, Revision: d.AgreementRevision, Brief: d.Brief, Dependencies: d.Dependencies, ChangedFields: fields, Reason: reason, Source: d.BriefSource, CreatedAt: time.Now().UTC()}
+	// Recording an already existing legacy agreement does not prove its
+	// original admission requirements. New admissions and changed versions do.
+	if originalRequirements {
+		requirements := d.Requirements
+		entry.Requirements = &requirements
+	}
 	if actor == nil {
 		entry.FromUserID = a.UserID
 	} else {
@@ -156,36 +166,11 @@ func (s *ConversationStore) ConversationAgreementHistory(ctx context.Context, id
 }
 
 func (s *ConversationStore) propagateRequirementChange(ctx context.Context, tx *sql.Tx, origin sdk.ConversationDelegation, fields []string, a sdk.ConversationAuthority) error {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDelegationTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("root_conversation_id", origin.RootConversationID))).OrderBy(query.Ascending("delegation_id")).Build()
+	// This is system invalidation within the already authorized goal. Record
+	// ownership routes the graph; notices retain the actual changing actor.
+	items, err := s.dependencyGoalDelegations(ctx, tx, origin.RootConversationID, a)
 	if err != nil {
 		return err
-	}
-	rows, err := tx.QueryContext(ctx, q, args...)
-	if err != nil {
-		return err
-	}
-	items := []sdk.ConversationDelegation{}
-	for rows.Next() {
-		var raw []byte
-		var d sdk.ConversationDelegation
-		if err = rows.Scan(&raw); err != nil {
-			break
-		}
-		if err = json.Unmarshal(raw, &d); err != nil {
-			break
-		}
-		normalizeAgreement(&d)
-		items = append(items, d)
-	}
-	if e := rows.Err(); err == nil {
-		err = e
-	}
-	rows.Close()
-	if err != nil {
-		return err
-	}
-	if len(items) > 32 {
-		return conversationError("conflict", "delegation_limit")
 	}
 	changed := map[string]bool{origin.ID: true}
 	queue := []string{origin.ID}
@@ -210,7 +195,7 @@ func (s *ConversationStore) propagateRequirementChange(ctx context.Context, tx *
 				if err != nil {
 					return err
 				}
-				if conversationHash(values) != edge.Digest || len(fields) == 1 && fields[0] == "dependencies" {
+				if origin.SubjectExited || conversationHash(values) != edge.Digest || len(fields) == 1 && fields[0] == "dependencies" {
 					affected = true
 					break
 				}
@@ -234,7 +219,7 @@ func (s *ConversationStore) propagateRequirementChange(ctx context.Context, tx *
 			d.Revision++
 			d.Status = "needs_update"
 			d.UpdatedAt = origin.UpdatedAt
-			if err = s.saveConversationDelegation(ctx, tx, *d, previous, a); err != nil {
+			if err = s.saveConversationDelegation(ctx, tx, *d, previous, delegationRecordAuthority(*d, a)); err != nil {
 				return err
 			}
 			if err = s.controlDelegationTask(ctx, tx, *d, "invalidate_dependencies", a); err != nil {
@@ -249,7 +234,11 @@ func (s *ConversationStore) propagateRequirementChange(ctx context.Context, tx *
 }
 
 func (s *ConversationStore) requirementChangeNotices(ctx context.Context, tx *sql.Tx, d sdk.ConversationDelegation, change sdk.ConversationRequirementChange, source *sdk.ConversationRunReference, a sdk.ConversationAuthority) error {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", d.TaskID))).Build()
+	executor, err := s.delegationExecutionAuthority(ctx, tx, d, a)
+	if err != nil {
+		return err
+	}
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(executor)), query.Equal("task_id", d.TaskID))).Build()
 	if err != nil {
 		return err
 	}
@@ -262,7 +251,7 @@ func (s *ConversationStore) requirementChangeNotices(ctx context.Context, tx *sq
 		snapshot            *sdk.ConversationAgentSnapshot
 	}{{d.ConversationID, d.ToAgentID, task.task.Agent}, {d.SourceConversationID, d.FromAgentID, d.SourceAgent}} {
 		message := sdk.ConversationAgentMessage{ID: "amsg_" + conversationHash([]string{change.ID, target.conversation})[:32], DelegationID: d.ID, ToAgentID: target.agent, ConversationID: target.conversation, Kind: "requirements_changed", DeliveryMode: "next_step", Content: "The task agreement or a declared requirement dependency changed. Old execution has stopped. Review the recorded change, refresh dependency versions and explicitly resume before submitting a new delivery. This is not new user authorization.", BriefVersion: d.Brief.Version, AgreementRevision: d.AgreementRevision, Change: &change, Source: source, CreatedAt: change.CreatedAt}
-		if err = s.insertConversationPeerNotice(ctx, tx, message, target.snapshot, a); err != nil {
+		if err = s.insertConversationPeerNotice(ctx, tx, message, target.snapshot, a, d); err != nil {
 			return err
 		}
 	}
@@ -276,7 +265,7 @@ func (s *ConversationStore) flattenTaskDependencies(ctx context.Context, tx *sql
 	for len(queue) > 0 {
 		edge := queue[0]
 		queue = queue[1:]
-		key := conversationHash([]any{edge.DelegationID, edge.Fields})
+		key := conversationHash([]any{edge.DelegationID, append([]string{}, edge.Fields...)})
 		if seen[key] {
 			continue
 		}
@@ -285,7 +274,7 @@ func (s *ConversationStore) flattenTaskDependencies(ctx context.Context, tx *sql
 			return nil, conversationError("bad_request", "dependencies_invalid")
 		}
 		out = append(out, edge)
-		d, err := s.conversationDelegation(ctx, tx, edge.DelegationID, a)
+		d, err := s.dependencyDelegation(ctx, tx, edge.DelegationID, a)
 		if err != nil {
 			return nil, err
 		}
@@ -300,7 +289,7 @@ func (s *ConversationStore) resumeDependencyReferences(ctx context.Context, tx *
 	}
 	refs := []sdk.ConversationDependencyInput{}
 	for _, edge := range d.Dependencies {
-		upstream, err := s.conversationDelegation(ctx, tx, edge.DelegationID, a)
+		upstream, err := s.dependencyDelegation(ctx, tx, edge.DelegationID, a)
 		if err != nil {
 			return nil, err
 		}

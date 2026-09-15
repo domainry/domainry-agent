@@ -1,0 +1,11 @@
+=== RUN   TestParticipantFirstPublicationChecksOriginalSourcesWithActualNewPublisher
+    conversation_participant_publishers_test.go:39: new sharing reused a retired publisher rather than checking exact original sources agent.conversation.collaboration_access_denied 0 map[]
+--- FAIL: TestParticipantFirstPublicationChecksOriginalSourcesWithActualNewPublisher (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.647s
+=== RUN   TestParticipantPublicationUsesExactContractRootsAndAllowsRevocationWithoutOldSources
+    conversation_participant_publishers_store_test.go:90: revocation depended on retired original data {user 2 [{0x2673ee06e370 participant [view] 2}] 0x2673ee20f290 [] false <nil> 1 <nil> <nil> <nil> [] [] 1 0 <nil> <nil> {original-review [] [] [{conv_e390752d28de19f3a5124ef28eeea954 crun_306103a353d0b3e8453db454fd2581b5 1}] 0 0 <nil> } conv_5da85a1251312d152a0e3d05c78b57ab 0x2673ee15ea80 delegation_31a2d93305726f23dfd3077c2050449a default agent_06dca111dd08c4a051b6fcad0c5cb8e9 conv_5da85a1251312d152a0e3d05c78b57ab  conv_328429863c80669f913e4534a6ee28b9 task_328429863c80669f913e4534a6ee28b9 Professional review {[] 1 Review source totals Findings  [] [Compare totals] [] <nil>}  {8 8 2048 60} [] accepted 3 <nil>  2026-09-13 23:22:50.625 +0000 UTC 2026-09-13 23:22:50.626 +0000 UTC} <nil>
+--- FAIL: TestParticipantPublicationUsesExactContractRootsAndAllowsRevocationWithoutOldSources (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.824s
+FAIL

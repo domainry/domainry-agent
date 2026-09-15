@@ -1,0 +1,6 @@
+=== RUN   TestManagementReceiptUsesCurrentCanonicalGrantAndRejectsExtraContent
+    conversation_management_receipt_test.go:19: safe original receipt could not use current canonical grant agent.conversation.collaboration_access_denied
+--- FAIL: TestManagementReceiptUsesCurrentCanonicalGrantAndRejectsExtraContent (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.650s
+FAIL

@@ -185,6 +185,7 @@ func conversationOptionsFromEnvironment() (agentapplication.ConversationOptions,
 		{"AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE", &options.MaxQueuedPerWorkspace},
 		{"AGENT_CONVERSATION_MAX_RUNNING_PER_USER", &options.MaxRunningPerUser},
 		{"AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE", &options.MaxRunningPerWorkspace},
+		{"AGENT_CONVERSATION_MODEL_MAX_ATTEMPTS", &options.MaxModelAttempts},
 	}
 	for _, item := range integers {
 		raw := strings.TrimSpace(os.Getenv(item.name))
@@ -203,6 +204,8 @@ func conversationOptionsFromEnvironment() (agentapplication.ConversationOptions,
 	}{
 		{"AGENT_CONVERSATION_RUN_TIMEOUT", &options.RunTimeout},
 		{"AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT", &options.ExternalCallTimeout},
+		{"AGENT_CONVERSATION_MODEL_RETRY_BASE_DELAY", &options.ModelRetryBaseDelay},
+		{"AGENT_CONVERSATION_MODEL_RETRY_MAX_DELAY", &options.ModelRetryMaxDelay},
 	}
 	for _, item := range durations {
 		raw := strings.TrimSpace(os.Getenv(item.name))

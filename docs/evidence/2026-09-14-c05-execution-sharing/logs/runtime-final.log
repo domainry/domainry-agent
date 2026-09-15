@@ -1,0 +1,8 @@
+=== RUN   TestCrossUserAgentProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead
+--- PASS: TestCrossUserAgentProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead (35.60s)
+=== RUN   TestSameUserDifferentRolesProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead
+    conversation_shared_professional_delivery_test.go:159: shared professional run id=crun_c1646a71ef7357832ce3cc9575e0aa30 status=completed steps=7 ordinary_steps=1 error=
+--- FAIL: TestSameUserDifferentRolesProfessionalDispatchAutomaticDeliveryAndCurrentSourceRead (11.69s)
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	47.926s
+FAIL

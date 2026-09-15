@@ -1,0 +1,10 @@
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/chat_completions
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/messages
+=== RUN   TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/responses
+--- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession (0.01s)
+    --- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/chat_completions (0.00s)
+    --- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/messages (0.00s)
+    --- PASS: TestConversationExecutionProtocolsContinueToolsWithoutProviderSession/responses (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/provider	13.962s

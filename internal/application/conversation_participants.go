@@ -18,6 +18,23 @@ func participantOperations(d sdk.ConversationDelegation, user string) []string {
 	return nil
 }
 
+func (s *ConversationService) authorizeParticipantPublisher(ctx context.Context, d sdk.ConversationDelegation, reader sdk.ConversationAuthority) error {
+	for _, grant := range d.Participants {
+		if grant.UserID != reader.UserID || grant.Revision < 1 {
+			continue
+		}
+		publisher := grant.Publisher
+		if !sdk.ParticipantPublisherVerified(grant, d.OwnerUserID, reader) {
+			return conversationFailure("forbidden", "participant_publisher_unverified")
+		}
+		if err := s.validateAgentSharingSubjects(ctx, reader, []string{publisher.UserID}); err != nil {
+			return err
+		}
+		return s.authorizeCollaboration(delegationExecutorContext(ctx), "share", nil, *publisher)
+	}
+	return conversationFailure("forbidden", "collaboration_access_denied")
+}
+
 func (s *ConversationService) authorizePendingParticipantMessage(ctx context.Context, m sdk.ConversationAgentMessage, receiver sdk.ConversationAuthority) error {
 	if m.ParticipantUserID == "" {
 		if m.SenderUserID == "" {
@@ -95,6 +112,57 @@ func (s *ConversationService) updateDelegationParticipants(ctx context.Context, 
 	if err := s.validateAgentSharingSubjects(ctx, a, users); err != nil {
 		return out, err
 	}
+	deliveryChecked := false
+	for _, input := range *in.Participants {
+		if slices.Contains(input.Operations, "execution_read") && sdk.ParticipantGrantNeedsPublication(d, input, a) {
+			if err := s.authorizeCollaboration(ctx, "execution_read", &d, a); err != nil {
+				return sdk.ConversationDelegationDetail{}, err
+			}
+			if repo, ok := s.repo.(persistence.ConversationExecutionSharingRepository); ok {
+				releases, err := repo.ConversationDelegationExecutions(ctx, d.ID, a)
+				if err != nil {
+					return sdk.ConversationDelegationDetail{}, err
+				}
+				for _, release := range releases {
+					if _, err := s.executionPublicationContext(ctx, d.ID, release, a); err != nil {
+						return sdk.ConversationDelegationDetail{}, err
+					}
+				}
+			} else {
+				return sdk.ConversationDelegationDetail{}, conversationFailure("unavailable", "execution_sharing_unavailable")
+			}
+		}
+		if !deliveryChecked && slices.Contains(input.Operations, "delivery_read") && sdk.ParticipantGrantNeedsPublication(d, input, a) {
+			if err := s.authorizeParticipantDeliverySharing(ctx, d, a); err != nil {
+				return out, err
+			}
+			deliveryChecked = true
+		}
+	}
+	for _, input := range *in.Participants {
+		if !sdk.ParticipantGrantNeedsPublication(d, input, a) {
+			continue
+		}
+		contractCtx, err := s.delegationContractSourceContext(ctx, d, a)
+		if err != nil {
+			return out, err
+		}
+		roots := d.Requirements.Sources
+		if scope, ok := contractCtx.Value(conversationPublishedSourceKey{}).(conversationPublishedSource); ok {
+			roots = scope.roots
+		}
+		publicationCtx, err := s.sourceReleaseContext(ctx, "contract", d.ID, a, a, roots)
+		if err != nil {
+			return out, err
+		}
+		audit := s.sourceAudit(a)
+		for _, ref := range mergeConversationSources(roots) {
+			if _, err := audit.run(publicationCtx, ref); err != nil {
+				return out, err
+			}
+		}
+		break
+	}
 	peer, _ := ctx.Value(conversationPeerRequestKey{}).(conversationPeerRequest)
 	if peer.ConversationID != "" && peer.ConversationID != d.SourceConversationID {
 		return out, conversationFailure("forbidden", "delegation_actor_invalid")
@@ -108,8 +176,8 @@ func (s *ConversationService) updateDelegationParticipants(ctx context.Context, 
 	if err != nil {
 		return out, err
 	}
-	// Saving or revoking membership does not require reading the owner's
-	// execution sources. A separate detail read applies its own current policy.
+	// Reducing membership remains independent of reading old execution data.
+	// New sharing is checked before saving; the receipt contains no source text.
 	return sdk.ConversationDelegationDetail{ParticipantsOnly: true, MessagesComplete: false, Messages: []sdk.ConversationAgentMessage{}, ConversationDelegation: sdk.ConversationDelegation{
 		ID: updated.ID, OwnerUserID: updated.OwnerUserID, Revision: updated.Revision, UpdatedAt: updated.UpdatedAt,
 		ParticipantsRevision: updated.ParticipantsRevision, Participants: updated.Participants,
@@ -123,22 +191,43 @@ func (s *ConversationService) projectParticipantDelegation(ctx context.Context, 
 	}
 	// A participant grant releases the task agreement, not the owner's raw
 	// conversations. Derived input still requires its current source policy.
-	for _, ref := range []*sdk.ConversationRunReference{d.BriefSource, d.InputSource} {
-		if ref != nil {
-			if err := s.checkRunSources(ctx, *ref, a); err != nil {
-				return out, conversationFailure("forbidden", "delegation_contract_source_unavailable")
-			}
+	contractCtx, err := s.delegationContractSourceContext(ctx, d, a)
+	if err != nil {
+		return out, err
+	}
+	roots := d.Requirements.Sources
+	if scope, ok := contractCtx.Value(conversationPublishedSourceKey{}).(conversationPublishedSource); ok {
+		roots = scope.roots
+	}
+	audit := s.sourceAudit(a)
+	for _, ref := range mergeConversationSources(roots) {
+		if _, err := audit.run(contractCtx, ref); err != nil {
+			return out, err
 		}
+	}
+	for _, edge := range d.Dependencies {
+		if _, err := audit.dependency(ctx, edge); err != nil {
+			return out, err
+		}
+	}
+	states, err := s.dependencyStates(ctx, d, a)
+	if err != nil {
+		return out, err
 	}
 	out = sdk.ConversationDelegationDetail{Access: &access, MessagesComplete: true, Messages: []sdk.ConversationAgentMessage{}, ConversationDelegation: sdk.ConversationDelegation{
 		OwnerUserID: d.OwnerUserID, ExecutionSubject: d.ExecutionSubject, ParticipantsRevision: d.ParticipantsRevision,
-		ID: d.ID, FromAgentID: d.FromAgentID, ToAgentID: d.ToAgentID, Purpose: d.Purpose, Brief: d.Brief, Input: d.Input, StructuredInput: d.StructuredInput, OutputSchema: d.OutputSchema,
-		Budget: d.Budget, Status: d.Status, Revision: d.Revision, AgreementRevision: d.AgreementRevision, AdoptedAgreementRevision: d.AdoptedAgreementRevision, AdoptedAt: d.AdoptedAt, CreatedAt: d.CreatedAt, UpdatedAt: d.UpdatedAt,
+		ID: d.ID, RootConversationID: d.RootConversationID, FromAgentID: d.FromAgentID, ToAgentID: d.ToAgentID, Purpose: d.Purpose, Brief: d.Brief, Input: d.Input, StructuredInput: d.StructuredInput, OutputSchema: d.OutputSchema,
+		Dependencies: d.Dependencies, PendingChanges: d.PendingChanges,
+		Budget: d.Budget, WorkBudget: d.WorkBudget, WorkUsage: d.WorkUsage, Status: d.Status, Revision: d.Revision, AgreementRevision: d.AgreementRevision, AdoptedAgreementRevision: d.AdoptedAgreementRevision, AdoptedAt: d.AdoptedAt, CreatedAt: d.CreatedAt, UpdatedAt: d.UpdatedAt,
 	}}
+	out.DependencyStates = states
 	for _, p := range d.Participants {
 		if p.UserID == a.UserID {
 			out.Participants = []sdk.ConversationDelegationParticipant{p}
 		}
+	}
+	if err := s.projectParticipantDelivery(ctx, d, a, &out); err != nil {
+		return out, err
 	}
 	if access.Communicate {
 		repo, err := s.collaborationRepository()

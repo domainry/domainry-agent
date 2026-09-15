@@ -1,0 +1,57 @@
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/native
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/custom-no-native-checker
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/assembled-forwarder
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/assembled-no-result-checker
+--- PASS: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts (0.01s)
+    --- PASS: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/native (0.00s)
+    --- PASS: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/custom-no-native-checker (0.00s)
+    --- PASS: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/assembled-forwarder (0.00s)
+    --- PASS: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/assembled-no-result-checker (0.00s)
+=== RUN   TestModelSourceReceiptChecksRevocationAfterInitialTraversal
+=== RUN   TestModelSourceReceiptChecksRevocationAfterInitialTraversal/native
+=== RUN   TestModelSourceReceiptChecksRevocationAfterInitialTraversal/custom
+--- PASS: TestModelSourceReceiptChecksRevocationAfterInitialTraversal (0.00s)
+    --- PASS: TestModelSourceReceiptChecksRevocationAfterInitialTraversal/native (0.00s)
+    --- PASS: TestModelSourceReceiptChecksRevocationAfterInitialTraversal/custom (0.00s)
+=== RUN   TestModelSourceReceiptRetainsOriginalTraversalValuesAndFreshCancellation
+--- PASS: TestModelSourceReceiptRetainsOriginalTraversalValuesAndFreshCancellation (0.00s)
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/changed-content
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/orphan
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/unknown-original-role
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/different-original-role
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/inherited-run
+--- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/changed-content (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/orphan (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/unknown-original-role (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/different-original-role (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/inherited-run (0.00s)
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-step
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-result
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-call
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-tool-result
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/uncertain-call
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-arguments
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-step
+--- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-step (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-result (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-call (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-tool-result (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/uncertain-call (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-arguments (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-step (0.00s)
+=== RUN   TestModelSourceReceiptRechecksInheritedPrivateAttachment
+=== RUN   TestModelSourceReceiptRechecksInheritedPrivateAttachment/native
+    conversation_model_sources_test.go:260: nested private attachment reached model input agent.conversation.attachment_conversation_mismatch
+=== RUN   TestModelSourceReceiptRechecksInheritedPrivateAttachment/custom
+    conversation_model_sources_test.go:260: nested private attachment reached model input agent.conversation.attachment_conversation_mismatch
+--- FAIL: TestModelSourceReceiptRechecksInheritedPrivateAttachment (0.00s)
+    --- FAIL: TestModelSourceReceiptRechecksInheritedPrivateAttachment/native (0.00s)
+    --- FAIL: TestModelSourceReceiptRechecksInheritedPrivateAttachment/custom (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	1.115s
+FAIL

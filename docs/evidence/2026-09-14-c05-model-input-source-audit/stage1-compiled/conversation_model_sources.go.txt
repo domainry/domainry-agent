@@ -1,0 +1,89 @@
+package application
+
+import (
+	"context"
+
+	sdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent-sdk/persistence"
+)
+
+type conversationModelSourceRecords struct {
+	owner     sdk.ConversationRunReference
+	authority sdk.ConversationAuthority
+	hashes    map[string]bool
+	pending   map[string]*conversationModelSourceRecord
+}
+
+type conversationModelSourceRecord struct {
+	s       *ConversationService
+	owner   sdk.ConversationRunReference
+	a       sdk.ConversationAuthority
+	record  persistence.ConversationToolExecution
+	values  context.Context
+	checked bool
+}
+
+type conversationModelSourceRecordKey struct{}
+
+// Preserve the original traversal's values while using the current caller's
+// cancellation and deadline for the postponed check.
+type conversationModelSourceContext struct {
+	context.Context
+	values context.Context
+}
+
+func (c conversationModelSourceContext) Value(key any) any { return c.values.Value(key) }
+
+func (record *conversationModelSourceRecord) check(ctx context.Context) error {
+	ctx = conversationModelSourceContext{Context: ctx, values: record.values}
+	ctx, cancel := record.s.sourceAccessContext(ctx)
+	defer cancel()
+	_, err := record.s.sourceAudit(record.a, record.owner.ConversationID).record(ctx, record.owner, record.record)
+	if err == nil {
+		record.checked = true
+	}
+	return err
+}
+
+func (record *conversationModelSourceRecord) matches(in sdk.ConversationToolRequest, result sdk.ConversationToolResult) bool {
+	return record.a == in.Authority && record.owner.ConversationID == in.ConversationID && record.owner.RunID == in.RunID && conversationRecordHash(record.record) == conversationRecordHash(persistence.ConversationToolExecution{Step: in.Step, Call: in.Call, Definition: in.Definition, State: "completed", Result: &result})
+}
+
+// Postpone only exact completed local collaboration receipts. Every pending
+// entry must be fully checked after ordinary tool/result authorization. A
+// custom host that omits the native checker gets the same full source check
+// through the mandatory fallback; no host capability is assumed.
+func (s *ConversationService) checkModelRunSources(ctx context.Context, owner sdk.ConversationRunReference, a sdk.ConversationAuthority, records []persistence.ConversationToolExecution) (map[string]*conversationModelSourceRecord, error) {
+	if _, ok := s.repo.(persistence.ConversationSourceRepository); !ok {
+		return nil, nil
+	}
+	ctx, cancel := s.sourceAccessContext(ctx)
+	defer cancel()
+	hashes := map[string]bool{}
+	for _, record := range records {
+		definition, known := collaborationTool(record.Call.Name)
+		if known && record.State == "completed" && record.Result != nil && record.Result.Status == "completed" && conversationDigest(definition) == conversationDigest(record.Definition) {
+			hashes[conversationRecordHash(record)] = true
+		}
+	}
+	audit := s.sourceAudit(a, owner.ConversationID)
+	audit.modelRecords = &conversationModelSourceRecords{owner: owner, authority: a, hashes: hashes, pending: map[string]*conversationModelSourceRecord{}}
+	_, err := audit.run(ctx, owner)
+	return audit.modelRecords.pending, err
+}
+
+func (audit *conversationSourceAudit) deferModelSourceRecord(ctx context.Context, owner sdk.ConversationRunReference, original sdk.ConversationAuthority, record persistence.ConversationToolExecution) bool {
+	deferred := audit.modelRecords
+	// Inherited runs, bounded prefixes, unknown original roles and child
+	// ledger routing keep their full traversal. Child audits never inherit
+	// this marker, including re-entry into the same original run.
+	if deferred == nil || owner.BeforeStep != 0 || owner != deferred.owner || original != deferred.authority || !original.Known || audit.evidenceOwner != nil {
+		return false
+	}
+	hash := conversationRecordHash(record)
+	if !deferred.hashes[hash] {
+		return false
+	}
+	deferred.pending[hash] = &conversationModelSourceRecord{s: audit.s, owner: owner, a: original, record: record, values: ctx}
+	return true
+}

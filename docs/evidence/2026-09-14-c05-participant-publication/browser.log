@@ -1,0 +1,4 @@
+=== RUN   TestDelegationParticipantsHTTPKeepSenderAndExecutorIndependent
+--- PASS: TestDelegationParticipantsHTTPKeepSenderAndExecutorIndependent (18.09s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	20.685s

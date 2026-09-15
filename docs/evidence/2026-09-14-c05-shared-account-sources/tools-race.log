@@ -1,0 +1,108 @@
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/reader_scope
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/personal_account
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/unknown_producer
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/wrong_runtime
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/wrong_workspace
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/wrong_actor
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/withdraw_during_lookup
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/reader_scope
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/personal_account
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/unknown_producer
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/wrong_runtime
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/wrong_workspace
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/wrong_actor
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/withdraw_during_lookup
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/reader_scope
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/personal_account
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/unknown_producer
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/wrong_runtime
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/wrong_workspace
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/wrong_actor
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/withdraw_during_lookup
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/reader_scope
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/personal_account
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/unknown_producer
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/wrong_runtime
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/wrong_workspace
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/wrong_actor
+=== RUN   TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/withdraw_during_lookup
+--- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader (0.20s)
+    --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create (0.06s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/reader_scope (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/personal_account (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/unknown_producer (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/wrong_runtime (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/wrong_workspace (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/wrong_actor (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_create/withdraw_during_lookup (0.00s)
+    --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update (0.06s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/reader_scope (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/personal_account (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/unknown_producer (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/wrong_runtime (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/wrong_workspace (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/wrong_actor (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/calendar_event_update/withdraw_during_lookup (0.00s)
+    --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send (0.04s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/reader_scope (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/personal_account (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/unknown_producer (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/wrong_runtime (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/wrong_workspace (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/wrong_actor (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_send/withdraw_during_lookup (0.00s)
+    --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply (0.04s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/reader_scope (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/personal_account (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/unknown_producer (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/wrong_runtime (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/wrong_workspace (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/wrong_actor (0.00s)
+        --- PASS: TestSharedAccountWriteResultReadUsesOriginalActorAfterCheckingCurrentReader/mail_reply/withdraw_during_lookup (0.00s)
+=== RUN   TestAccountWriteResultReadUsesOriginalLedgerWithoutExecutionOrApproval
+=== RUN   TestAccountWriteResultReadUsesOriginalLedgerWithoutExecutionOrApproval/calendar_event_create
+=== RUN   TestAccountWriteResultReadUsesOriginalLedgerWithoutExecutionOrApproval/calendar_event_update
+=== RUN   TestAccountWriteResultReadUsesOriginalLedgerWithoutExecutionOrApproval/mail_send
+=== RUN   TestAccountWriteResultReadUsesOriginalLedgerWithoutExecutionOrApproval/mail_reply
+--- PASS: TestAccountWriteResultReadUsesOriginalLedgerWithoutExecutionOrApproval (0.11s)
+    --- PASS: TestAccountWriteResultReadUsesOriginalLedgerWithoutExecutionOrApproval/calendar_event_create (0.03s)
+    --- PASS: TestAccountWriteResultReadUsesOriginalLedgerWithoutExecutionOrApproval/calendar_event_update (0.03s)
+    --- PASS: TestAccountWriteResultReadUsesOriginalLedgerWithoutExecutionOrApproval/mail_send (0.02s)
+    --- PASS: TestAccountWriteResultReadUsesOriginalLedgerWithoutExecutionOrApproval/mail_reply (0.03s)
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/id
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/payload
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/actor
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/workspace
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/resource
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/timestamp
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/body
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/account
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/operation
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/unknown
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/missing
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/failed
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/receipt
+=== RUN   TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/cancelled
+--- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt (0.31s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/id (0.02s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/payload (0.02s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/actor (0.02s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/workspace (0.02s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/resource (0.02s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/timestamp (0.02s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/body (0.02s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/account (0.02s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/operation (0.03s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/unknown (0.03s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/missing (0.02s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/failed (0.02s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/receipt (0.02s)
+    --- PASS: TestAccountWriteResultReadRejectsChangedOriginalAndUnknownReceipt/cancelled (0.02s)
+PASS
+ok  	github.com/domainry/domainry-tools/module	2.051s

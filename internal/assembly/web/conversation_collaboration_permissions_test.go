@@ -116,6 +116,13 @@ func TestPeerCollaborationPermissionsRecheckCurrentRoleAcrossEntrypoints(t *test
 		if d.Status == "delivered" && d.Task != nil && d.Task.Status == "completed" {
 			break
 		}
+		if d.Status == "failed" && d.Task != nil {
+			var failedRun sdk.ConversationRun
+			if d.Task.ExecutionRunID != "" {
+				_ = json.Unmarshal(b.call("GET", "/agent/conversations/"+d.ConversationID+"/runs/"+d.Task.ExecutionRunID, "", 200).Body.Bytes(), &failedRun)
+			}
+			t.Fatalf("fixture failed: task=%+v run=%+v", *d.Task, failedRun)
+		}
 		if time.Now().After(deadline) {
 			t.Fatalf("fixture did not deliver: %+v", d)
 		}

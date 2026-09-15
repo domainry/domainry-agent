@@ -1,0 +1,60 @@
+{
+  "phase_status": "accepted_record_projection_and_delivery_publisher_lifecycle",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 132,
+  "execution_budget_changed": false,
+  "logs": {
+    "before.log": {
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "failure": "record-only query builds full application snapshot"
+    },
+    "runtime-core.log": {
+      "exit_code": 0,
+      "packages": 5
+    },
+    "race.log": {
+      "exit_code": 0,
+      "packages": 3
+    },
+    "runtime.log": {
+      "exit_code": 0,
+      "tests": 1,
+      "duration_seconds": 63.5,
+      "original_budget_timeout_seconds": 180
+    },
+    "runtime-before-delivery-publisher.log": {
+      "exit_code": 1,
+      "duration_seconds": 209.28,
+      "new_run_status": "completed",
+      "new_run_duration_ms": 22164,
+      "failure": "later reader lacks own-role delivery publisher proof"
+    },
+    "runtime-delivery-denial-trace.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "source_publisher_unverified",
+      "overlay_only_trace": true
+    },
+    "delivery-publisher-before.log": {
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "failure": "submitted own-role verifier source has no exact publisher proof"
+    },
+    "agent-core.log": {
+      "exit_code": 0,
+      "packages": 8
+    },
+    "agent-race.log": {
+      "exit_code": 0,
+      "packages": 2,
+      "selected_tests": true
+    }
+  },
+  "database": "SQLite",
+  "model": "deterministic wire fixture",
+  "frontend_changed_this_phase": false,
+  "pending": "complete C05 remaining source/participant/execution/transfer/lifecycle/UI scopes"
+}

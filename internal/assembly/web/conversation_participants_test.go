@@ -122,6 +122,27 @@ func TestDelegationParticipantsHTTPKeepSenderAndExecutorIndependent(t *testing.T
 	if shared.OwnerUserID != "admin" || shared.Access == nil || !shared.Access.View || !shared.Access.Communicate || shared.Access.Manage || shared.Access.Receive || shared.Access.ExecutionRead || shared.Access.DeliveryRead || shared.Access.Share || shared.Task != nil || shared.Delivery != nil || shared.SourceAgent != nil || shared.ConversationID != "" || shared.SourceConversationID != "" || shared.TaskID != "" || len(shared.Participants) != 1 || shared.Participants[0].UserID != user {
 		t.Fatal("participant scope exposed private work or management", shared)
 	}
+	if shared.Participants[0].Publisher == nil || shared.Participants[0].Publisher.UserID != "admin" || shared.Participants[0].Publisher.RoleKey == "" || shared.Participants[0].Publisher.RuntimeID != options.RuntimeID || shared.Participants[0].Publisher.WorkspaceID != options.WorkspaceID {
+		t.Fatal("HTTP participant grant lost its actual authorizing identity", shared.Participants)
+	}
+	mutateTestRolePermissions(t, host, owner, func(previous []identity.ProjectRolePermission) []identity.ProjectRolePermission {
+		out := []identity.ProjectRolePermission{}
+		for _, p := range previous {
+			if p.PermissionKey != sdk.ConversationCollaborationPermission("share").Key {
+				out = append(out, p)
+			}
+		}
+		return out
+	})
+	participant.call("GET", path, "", 403)
+	if got := participant.call("GET", "/agent/delegations", "", 200).Body.String(); strings.Contains(got, d.ID) {
+		t.Fatal("withdrawn publisher still exposed its delegation in the directory", got)
+	}
+	read(owner)
+	grantCollaborationPermissions(t, host, owner)
+	if restored := read(participant); restored.Participants[0].Revision != shared.Participants[0].Revision || *restored.Participants[0].Publisher != *shared.Participants[0].Publisher {
+		t.Fatal("role restoration replaced the recorded publisher or grant epoch", restored)
+	}
 	list := participant.call("GET", "/agent/delegations", "", 200).Body.String()
 	if !strings.Contains(list, d.ID) || strings.Contains(list, "EXECUTION-OWNER-PRIVATE-TODO") {
 		t.Fatal("participant list scope", list)
@@ -129,6 +150,42 @@ func TestDelegationParticipantsHTTPKeepSenderAndExecutorIndependent(t *testing.T
 	participant.call("GET", "/agent/conversations/"+d.ConversationID, "", 404)
 	participant.call("POST", path+"/decisions", accountJSON(sdk.ConversationDelegationUpdate{ClientID: "take-control", ExpectedRevision: shared.Revision, Action: "cancel", Reason: "not granted"}), 403)
 	participant.call("POST", path+"/decisions", accountJSON(sdk.ConversationDelegationUpdate{ClientID: "take-members", ExpectedRevision: shared.Revision, Action: "set_participants", Reason: "not owner", Participants: &members}), 403)
+	management := []sdk.ConversationDelegationParticipantInput{{UserID: user, Operations: []string{"view", "communicate", "manage"}}}
+	setMembers("grant-management", management)
+	managed := read(participant)
+	if managed.Access == nil || !managed.Access.Manage || managed.Access.ExecutionRead || managed.Access.DeliveryRead || managed.Task != nil || managed.ConversationID != "" {
+		t.Fatal("management scope included private execution or delivery", managed)
+	}
+	mutateTestRolePermissions(t, host, owner, func(previous []identity.ProjectRolePermission) []identity.ProjectRolePermission {
+		out := []identity.ProjectRolePermission{}
+		for _, p := range previous {
+			if p.PermissionKey != sdk.ConversationCollaborationPermission("manage").Key {
+				out = append(out, p)
+			}
+		}
+		return out
+	}, user)
+	participant.call("POST", path+"/decisions", accountJSON(sdk.ConversationDelegationUpdate{ClientID: "denied-current-management", ExpectedRevision: managed.Revision, Action: "pause", Reason: "Current role has no management"}), 403)
+	if after := read(owner); after.Revision != managed.Revision {
+		t.Fatal("withdrawn role changed delegation revision", after)
+	}
+	setParticipantRole(true, true)
+	paused := accountDecode[sdk.ConversationDelegationDetail](t, participant.call("POST", path+"/decisions", accountJSON(sdk.ConversationDelegationUpdate{ClientID: "participant-pause", ExpectedRevision: managed.Revision, Action: "pause", Reason: "Pause original task"}), 200))
+	if !paused.ManagementOnly || paused.Status != "paused" || paused.Task != nil || paused.Delivery != nil || paused.TaskID != "" || paused.ConversationID != "" || paused.SourceConversationID != "" || paused.Brief.Goal != "" || len(paused.Messages) != 0 {
+		t.Fatal("participant management receipt exposed private content", paused)
+	}
+	participant.call("POST", path+"/decisions", accountJSON(sdk.ConversationDelegationUpdate{ClientID: "stale-management", ExpectedRevision: managed.Revision, Action: "cancel", Reason: "Stale original version"}), 409)
+	resumed := accountDecode[sdk.ConversationDelegationDetail](t, participant.call("POST", path+"/decisions", accountJSON(sdk.ConversationDelegationUpdate{ClientID: "participant-resume", ExpectedRevision: paused.Revision, Action: "resume", Reason: "Resume original task"}), 200))
+	if !resumed.ManagementOnly || resumed.Status != "accepted" || resumed.ConversationID != "" {
+		t.Fatal("participant resume lost its narrow receipt", resumed)
+	}
+	wait(func(current sdk.ConversationDelegationDetail) bool {
+		return current.Task != nil && current.Task.Status == "completed"
+	})
+	setMembers("withdraw-management", members)
+	shared = read(participant)
+	participant.call("POST", path+"/decisions", accountJSON(sdk.ConversationDelegationUpdate{ClientID: "participant-pause", ExpectedRevision: managed.Revision, Action: "pause", Reason: "Pause original task"}), 403)
+	participant.call("GET", "/agent/conversations/"+d.ConversationID, "", 404)
 	messageInput := sdk.ConversationAgentMessageSend{ClientID: "participant-input", ToAgentID: d.ToAgentID, Content: "PARTICIPANT-EXPLICIT-MESSAGE", BriefVersion: d.Brief.Version, AgreementRevision: d.AgreementRevision}
 	message := accountDecode[sdk.ConversationAgentMessage](t, participant.call("POST", path+"/messages", accountJSON(messageInput), 200))
 	if message.FromUserID != user || message.ParticipantUserID != user || message.ParticipantRevision == 0 || message.ConversationID != "" {
@@ -223,7 +280,29 @@ func TestDelegationParticipantsHTTPKeepSenderAndExecutorIndependent(t *testing.T
 	participant.login("system_administrator@example.com", changed)
 	participant.call("GET", path, "", 404)
 	if os.Getenv("AGENT_PARTICIPANTS_BROWSER") == "1" {
-		verifyDelegationParticipantsBrowser(t, host, options, user, conversation.ID)
+		uiSource := accountDecode[sdk.Conversation](t, owner.call("POST", "/agent/conversations", accountJSON(sdk.ConversationCreate{ClientID: "participant-management-browser-source", Title: "参与人管理核对"}), 200))
+		uiInput := input
+		uiInput.ClientID, uiInput.ConversationID = "participant-management-browser-work", uiSource.ID
+		uiInput.Brief.Goal = "核对待办 · 参与人管理"
+		var uiDetail sdk.ConversationDelegationDetail
+		if err := unmarshalPeerDetail(owner.call("POST", "/agent/delegations", accountJSON(uiInput), 200).Body.Bytes(), &uiDetail); err != nil {
+			t.Fatal(err)
+		}
+		completed := false
+		for deadline := time.Now().Add(90 * time.Second); time.Now().Before(deadline); {
+			if err := unmarshalPeerDetail(owner.call("GET", "/agent/delegations/"+uiDetail.ID, "", 200).Body.Bytes(), &uiDetail); err != nil {
+				t.Fatal(err)
+			}
+			if uiDetail.Task != nil && uiDetail.Task.Status == "completed" {
+				completed = true
+				break
+			}
+			time.Sleep(20 * time.Millisecond)
+		}
+		if !completed {
+			t.Fatal("fresh participant browser task did not complete", uiDetail)
+		}
+		verifyDelegationParticipantsBrowser(t, host, options, user, uiSource.ID)
 		participant.call("GET", path, "", 404)
 	}
 }

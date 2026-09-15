@@ -1,0 +1,82 @@
+{
+  "failed_revised_run_id": "crun_e6d01694c5599319a452458df88c1a02",
+  "failed_revised_error_code": "execution_interrupted",
+  "failed_revised_duration_ms": 180013,
+  "revised_budget": {
+    "max_steps": 7,
+    "max_tool_calls": 8,
+    "max_output_bytes": 8192,
+    "timeout_seconds": 180
+  },
+  "delivery_call_status": "completed",
+  "delivery_call_duration_ms": 30011,
+  "new_delivery_effect_recorded": true,
+  "new_account_acceptance_not_executed": true,
+  "phase": "identity_principal_context_owner_reads",
+  "created_at": "2026-09-14T10:22:33.179296+00:00",
+  "c05_complete": false,
+  "todo_completed": 4,
+  "todo_total": 25,
+  "identity_all_tested_packages": 59,
+  "identity_core_race_roots": 189,
+  "original_production_failed_subcases": 14,
+  "original_orm_reads": {
+    "user_by_id": 1,
+    "user_list": 4,
+    "roles": 4,
+    "assignments": 4
+  },
+  "current_orm_reads": {
+    "user_by_id": 2,
+    "user_list": 2,
+    "roles": 2,
+    "assignments": 2
+  },
+  "fresh_authorization_reads_retained": true,
+  "fresh_check_after_projection_io": true,
+  "disabled_projection_role_excluded_from_effective_grants": true,
+  "normal_runtime": {
+    "root_status": "PASS",
+    "root_seconds": 55.9,
+    "package_seconds": 56.861
+  },
+  "race_runtime": {
+    "root_status": "FAIL",
+    "root_seconds": 523.88,
+    "package_seconds": 525.483
+  },
+  "original_task_budget_seconds": 180,
+  "dependency_inputs": {
+    "all": 5482,
+    "runtime": 9888
+  },
+  "launch_inputs_unchanged_at_seal": true,
+  "profiles": {
+    "normal": {
+      "duration_seconds": 56.06,
+      "total_cpu_seconds": 127.29
+    },
+    "race": {
+      "duration_seconds": 523.98,
+      "total_cpu_seconds": 968.68
+    }
+  },
+  "profiled_binaries": {
+    "normal": {
+      "path": "/tmp/c05-identity-resolution-runtime-normal.test",
+      "sha256": "156db14d56607f0fafa5b24fb7f8f502223478a3c9c71f9e1083d3c56198cbcf"
+    },
+    "race": {
+      "path": "/tmp/c05-identity-resolution-runtime-race.test",
+      "sha256": "1ae6dbfaccaf6f68b76c707932ba0991a89090b2c8351d156069406e37911377"
+    }
+  },
+  "limitations": [
+    "Actual Runtime/Identity/HTTP/ORM with SQLite and deterministic model wire; no new online model or browser acceptance",
+    "Independent normal/race samples and prior source versions are not a controlled benchmark; cumulative CPU overlaps and is not wall time",
+    "Both current principal reads retained; projections reuse only the first operation-local owner facts",
+    "Dependent package test files in input inventories are a conservative superset of actual compiler inputs",
+    "Actual lifecycle race still fails at 180 seconds after the new delivery effect; account acceptance is not executed",
+    "Full C05 professional expression/history/multi-owner/dependency/exit and released lock work remains outstanding"
+  ]
+}

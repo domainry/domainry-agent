@@ -1,0 +1,92 @@
+{
+  "phase_status": "accepted_current_identity_disable_restore_and_runtime_lifecycle_cross_owner_erasure",
+  "source_manifest": "source-sha256.json",
+  "source_files": 272,
+  "artifact_manifest": "artifact-sha256.json",
+  "artifact_files": 23,
+  "accepted_logs": [
+    "core.log",
+    "race.log",
+    "http.log",
+    "runtime.log",
+    "runtime-boundary.log"
+  ],
+  "diagnostic_failed_logs": [
+    "diagnostic-inactive-tool-catalog.log",
+    "diagnostic-inactive-conversation-client.log",
+    "diagnostic-erasure-task-type.log",
+    "diagnostic-erasure-fixture-owner.log",
+    "diagnostic-erasure-login-status.log",
+    "diagnostic-erasure-page-scope.log",
+    "diagnostic-erasure-current-state.log",
+    "diagnostic-runtime-terminal-task-rewrite.log",
+    "diagnostic-unit-admission-type.log",
+    "diagnostic-unit-snapshot-type.log",
+    "diagnostic-unit-terminal-task-rewrite.log",
+    "diagnostic-orphan-fixture-audience.log",
+    "diagnostic-orphan-notices-before.log"
+  ],
+  "historical_artifacts": {
+    "2026-09-14-c05-multiple-owner-dependencies": {
+      "source_manifest_sha256": "5fc6f276c411a29d6bcc1c74e01d9444e009308bd0fc0587dfe4eab35cae9330",
+      "artifact_manifest_sha256": "cfa8e34341a86e2154fb7a30c70b64ad6b216c84a6fcab6a818f84a9bbbef071",
+      "artifact_files": 23
+    },
+    "2026-09-14-c05-context-meter": {
+      "source_manifest_sha256": "b8936e8e279307551e736ddca8f1b994f57efe52c48857c06547c3ec9c005271",
+      "artifact_manifest_sha256": "694fdbad71203a0aa4c92dbe95d6a12dadd9bdfcdcd1d5930ace69e6db6b6b7a",
+      "artifact_files": 15
+    }
+  },
+  "historical_artifacts_preserved": true,
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "real_identity": true,
+  "real_runtime": true,
+  "real_http": true,
+  "real_professional_report_and_analysis": true,
+  "real_lifecycle_http_and_owner_erasure": true,
+  "real_data_exchange_factory_for_erasure": true,
+  "fixture_model": true,
+  "fixture_verification_reference": true,
+  "external_model_service_called": false,
+  "new_frontend_acceptance": false,
+  "new_browser_acceptance": false,
+  "default_context_bytes": 65536,
+  "context_budget_raised": false,
+  "execution_budget_raised": false,
+  "runtime_root_seconds": {
+    "TestInactiveIdentityRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime": "37.06",
+    "TestMultipleOwnerProfessionalDependenciesReadOriginalsAndDeliverThroughRealRuntime": "29.50",
+    "TestMixedOldRoleSourceToolDispatchReadAndAutomaticDelivery": "24.80",
+    "TestLegacyAgreementUpdateRestartResumeAndOriginalHistoryThroughRealHTTP": "78.53",
+    "TestSubjectErasureRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime": "38.66"
+  },
+  "runtime_orphan_launch_warning": false,
+  "scope": [
+    "two independent professional source owners and a third receiving account",
+    "actual Identity producer/publisher and receiving account disable and explicit restore/login",
+    "matching and direct delegation admission reject disabled receiving identity",
+    "in-flight model tool response stopped by current execution identity before successful invocation",
+    "actual Runtime Lifecycle request, fixture verification reference, source-owner preview and independent account approval",
+    "actual Identity and Agent subject erasure and admitted counterpart cancellation",
+    "erased account login and shared Agent directory deny",
+    "deleted agreement makes the admitted complete dependency graph unverifiable and both wrapped pages deny",
+    "unaffected private original report remains exactly readable by its own account",
+    "current affected downstream delivery needs update, retains precise invalidation origin and hides unavailable contents",
+    "governed owner export proves original task/run bytes and delivery/verification history are preserved across deletion and restart",
+    "dependency invalidation preserves completed and failed task outcomes and completion timestamps",
+    "all invalidations precede notice cleanup within the original subject-erasure transaction",
+    "deleted delegation notices cannot poison remaining-owner wake queue or block independent admission and launch",
+    "current mixed old-role delivery and full legacy update/restart/resume/history Runtime regressions",
+    "eight complete Agent core packages, targeted HTTP and race, Runtime source-owner boundaries"
+  ],
+  "remaining": [
+    "remaining C05 professional source and multi-owner combinations",
+    "remaining historical admission compatibility combinations",
+    "remaining execution source and incomplete call policies",
+    "remaining complete dependency management scenarios and broader deployment/subject-exit combinations",
+    "all subsequent TODO items remain in the original goal scope"
+  ]
+}

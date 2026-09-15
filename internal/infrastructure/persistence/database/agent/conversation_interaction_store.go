@@ -79,22 +79,39 @@ func (s *ConversationStore) WaitExecution(ctx context.Context, claim persistence
 			return conversationError("conflict", "step_incomplete")
 		}
 		var call agentsdk.ConversationToolCall
-		for _, candidate := range step.Result.Message.ToolCalls {
+		var nested *persistence.ConversationToolExecution
+		selectedIndex := -1
+		for index, candidate := range step.Result.Message.ToolCalls {
 			if candidate.ID == wait.CallID {
-				call = candidate
+				selectedIndex = index
 				break
 			}
-			var previous persistence.ConversationToolExecution
-			found, err = s.readExecutionTool(ctx, tx, claim, wait.Step, candidate.ID, &previous)
-			if err != nil {
-				return err
-			}
-			if !found || previous.State != "completed" {
-				return conversationError("conflict", "previous_tool_incomplete")
+		}
+		if selectedIndex >= 0 {
+			call = step.Result.Message.ToolCalls[selectedIndex]
+			for index := 0; index < selectedIndex; index++ {
+				candidate := step.Result.Message.ToolCalls[index]
+				var previous persistence.ConversationToolExecution
+				found, err = s.readExecutionTool(ctx, tx, claim, wait.Step, candidate.ID, &previous)
+				if err != nil {
+					return err
+				}
+				if !found || previous.State != "completed" {
+					return conversationError("conflict", "previous_tool_incomplete")
+				}
 			}
 		}
 		if call.ID == "" {
-			return conversationError("not_found", "tool_call_not_found")
+			var child persistence.ConversationToolExecution
+			found, err = s.readExecutionTool(ctx, tx, claim, wait.Step, wait.CallID, &child)
+			if err != nil {
+				return err
+			}
+			if !found || child.ParentCallID == "" {
+				return conversationError("not_found", "tool_call_not_found")
+			}
+			call = child.Call
+			nested = &child
 		}
 		var definition agentsdk.ConversationToolDefinition
 		for _, candidate := range step.Input.Tools {
@@ -106,9 +123,12 @@ func (s *ConversationStore) WaitExecution(ctx context.Context, claim persistence
 		if definition.Key == "" {
 			return conversationError("conflict", "tool_definition_missing")
 		}
-		operations, err := frozenConfirmationOperations(step, wait)
-		if err != nil {
-			return err
+		operations := []agentsdk.ConversationInteractionOperation{}
+		if nested == nil {
+			operations, err = frozenConfirmationOperations(step, wait)
+			if err != nil {
+				return err
+			}
 		}
 		var execution persistence.ConversationToolExecution
 		exists, err := s.readExecutionTool(ctx, tx, claim, wait.Step, call.ID, &execution)
@@ -119,7 +139,7 @@ func (s *ConversationStore) WaitExecution(ctx context.Context, claim persistence
 			if !exists || execution.State != "uncertain" {
 				return conversationError("conflict", "interaction_invalid")
 			}
-		} else if exists {
+		} else if exists && (nested == nil || execution.State != "queued") {
 			return conversationError("conflict", "tool_already_started")
 		}
 		record, found, err := s.readInteraction(ctx, tx, claim, wait.Step, call.ID, wait.Kind)
@@ -153,7 +173,11 @@ func (s *ConversationStore) WaitExecution(ctx context.Context, claim persistence
 		v.Run.ErrorCode = ""
 		v.Owner, v.Expires = "", 0
 		v.Fence++
-		if err = s.event(ctx, tx, &v, "tool.waiting", map[string]any{"step": wait.Step, "call_id": call.ID, "status": v.Run.Status, "effect": definition.Effect, "attempt": v.Run.Attempt}); err != nil {
+		parentCallID, dispatchIndex := "", 0
+		if nested != nil {
+			parentCallID, dispatchIndex = nested.ParentCallID, nested.DispatchIndex
+		}
+		if err = s.event(ctx, tx, &v, "tool.waiting", map[string]any{"step": wait.Step, "call_id": call.ID, "status": v.Run.Status, "effect": definition.Effect, "attempt": v.Run.Attempt, "parent_call_id": parentCallID, "dispatch_index": dispatchIndex}); err != nil {
 			return err
 		}
 		if err = s.event(ctx, tx, &v, "run."+v.Run.Status, map[string]any{"interaction": record.Interaction, "attempt": v.Run.Attempt}); err != nil {

@@ -1,0 +1,5 @@
+# github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest.test]
+runtime/bootstrap/integrationtest/conversation_business_shared_write_delivery_test.go:360:47: f.identity.Authorization().ResolveAndEvaluate undefined (type "github.com/domainry/domainry-identity-sdk".Authorization has no field or method ResolveAndEvaluate)
+runtime/bootstrap/integrationtest/conversation_business_shared_write_delivery_test.go:360:79: undefined: agentPrincipalRequest
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest [build failed]
+FAIL

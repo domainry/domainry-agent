@@ -1,0 +1,5 @@
+--- FAIL: TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart (4.21s)
+    conversation_business_shared_receipt_rpc_test.go:189: current reader record withdrawal bypassed workflow_start
+FAIL
+FAIL	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	11.002s
+FAIL

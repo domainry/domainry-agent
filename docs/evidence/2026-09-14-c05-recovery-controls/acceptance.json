@@ -1,0 +1,48 @@
+{
+  "phase_status": "accepted_unreadable_contract_stopping_controls",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 134,
+  "dist_files": 571,
+  "logs": {
+    "before.log": {
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "failure": "hidden requirement actions offered and omitted null-brief assessment initialization throws",
+      "failed_tests": 2
+    },
+    "frontend.log": {
+      "exit_code": 0,
+      "tests": 77
+    },
+    "build.log": {
+      "exit_code": 0
+    },
+    "browser-before-final-refresh.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "test inspected cancel button before refreshed cancelled view arrived"
+    },
+    "browser.log": {
+      "exit_code": 0,
+      "tests": 1,
+      "duration_seconds": 25.02,
+      "real_identity": true,
+      "real_http": true,
+      "real_chrome": true,
+      "page_errors": 0
+    },
+    "browser-before-null-brief.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "three real browser null completion-condition errors on stopping control clicks"
+    }
+  },
+  "model": "deterministic wire fixture",
+  "database": "SQLite",
+  "identity": "real current role permission edits",
+  "browser": "real Chrome via Playwright",
+  "execution_budget_changed": false,
+  "pending": "C05 remaining multi-owner source/participant/execution/transfer/lifecycle scopes"
+}

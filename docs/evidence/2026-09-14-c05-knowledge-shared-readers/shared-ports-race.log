@@ -1,0 +1,108 @@
+=== RUN   TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader
+=== RUN   TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_libraries
+=== RUN   TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_search
+=== RUN   TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_read
+=== RUN   TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_extract
+--- PASS: TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader (0.10s)
+    --- PASS: TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_libraries (0.01s)
+    --- PASS: TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_search (0.01s)
+    --- PASS: TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_read (0.02s)
+    --- PASS: TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_extract (0.05s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	1.563s
+=== RUN   TestSharedKnowledgeReadPreservesAuthorityAndPrivateSourceBoundary
+--- PASS: TestSharedKnowledgeReadPreservesAuthorityAndPrivateSourceBoundary (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent-sdk	2.109s
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-membership
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-policy
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/producer-policy
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/producer-membership
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/source-document
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-during-IO
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-during-final-producer-IO
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-membership
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-policy
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/producer-policy
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/producer-membership
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/source-document
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-during-IO
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-during-final-producer-IO
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/reader-membership
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/reader-policy
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/producer-policy
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/producer-membership
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/source-document
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/reader-during-IO
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/reader-during-final-producer-IO
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/reader-membership
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/reader-policy
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/producer-policy
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/producer-membership
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/source-document
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/reader-during-IO
+=== RUN   TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/reader-during-final-producer-IO
+--- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights (0.01s)
+    --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-membership (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-policy (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/producer-policy (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/producer-membership (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/source-document (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-during-IO (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/libraries/reader-during-final-producer-IO (0.00s)
+    --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-membership (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-policy (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/producer-policy (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/producer-membership (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/source-document (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-during-IO (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/search/reader-during-final-producer-IO (0.00s)
+    --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/reader-membership (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/reader-policy (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/producer-policy (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/producer-membership (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/source-document (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/reader-during-IO (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/fetch/reader-during-final-producer-IO (0.00s)
+    --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/reader-membership (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/reader-policy (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/producer-policy (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/producer-membership (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/source-document (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/reader-during-IO (0.00s)
+        --- PASS: TestSharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights/extract/reader-during-final-producer-IO (0.00s)
+PASS
+ok  	github.com/domainry/domainry-knowledge/internal/application/knowledge	2.526s
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/reader_revoked_before_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/producer_revoked_before_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/reader_revoked_during_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/reader_ACL_changed_during_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/reader_revoked_before_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/producer_revoked_before_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/reader_revoked_during_IO
+=== RUN   TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/reader_ACL_changed_during_IO
+--- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence (0.03s)
+    --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search (0.01s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/reader_revoked_before_IO (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/producer_revoked_before_IO (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/reader_revoked_during_IO (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/search/reader_ACL_changed_during_IO (0.00s)
+    --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch (0.01s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/reader_revoked_before_IO (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/producer_revoked_before_IO (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/reader_revoked_during_IO (0.00s)
+        --- PASS: TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence/fetch/reader_ACL_changed_during_IO (0.00s)
+PASS
+ok  	github.com/domainry/domainry-knowledge/internal/infrastructure/provider	3.045s

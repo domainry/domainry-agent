@@ -1,0 +1,6 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+    conversation_source_release_test.go:164: POST /agent/conversations/conv_a3db2f531568a62ff1df963208f52840/runs/crun_0db9cbbef54ab5b03d421c1036e34e1f/result: status 400, want 200, body {"code":"agent.conversation.result_offset_invalid"}
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (9.61s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	10.371s
+FAIL

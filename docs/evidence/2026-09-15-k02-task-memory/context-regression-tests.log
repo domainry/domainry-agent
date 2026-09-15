@@ -1,0 +1,24 @@
+=== RUN   TestConversationWorkflowConfirmedStartRestartReconcileAndProgress
+--- PASS: TestConversationWorkflowConfirmedStartRestartReconcileAndProgress (0.24s)
+=== RUN   TestConversationListedOperationsAreExactAndDurable
+=== RUN   TestConversationListedOperationsAreExactAndDurable/restart_and_new_call
+=== RUN   TestConversationListedOperationsAreExactAndDurable/single_call_only
+=== RUN   TestConversationListedOperationsAreExactAndDurable/denied_before_approval
+=== RUN   TestConversationListedOperationsAreExactAndDurable/denied_after_approval
+=== RUN   TestConversationListedOperationsAreExactAndDurable/contract_changed
+=== RUN   TestConversationListedOperationsAreExactAndDurable/reject
+=== RUN   TestConversationListedOperationsAreExactAndDurable/cross_user
+=== RUN   TestConversationListedOperationsAreExactAndDurable/incomplete_parameters
+--- PASS: TestConversationListedOperationsAreExactAndDurable (2.31s)
+    --- PASS: TestConversationListedOperationsAreExactAndDurable/restart_and_new_call (0.61s)
+    --- PASS: TestConversationListedOperationsAreExactAndDurable/single_call_only (0.61s)
+    --- PASS: TestConversationListedOperationsAreExactAndDurable/denied_before_approval (0.12s)
+    --- PASS: TestConversationListedOperationsAreExactAndDurable/denied_after_approval (0.59s)
+    --- PASS: TestConversationListedOperationsAreExactAndDurable/contract_changed (0.08s)
+    --- PASS: TestConversationListedOperationsAreExactAndDurable/reject (0.08s)
+    --- PASS: TestConversationListedOperationsAreExactAndDurable/cross_user (0.08s)
+    --- PASS: TestConversationListedOperationsAreExactAndDurable/incomplete_parameters (0.15s)
+=== RUN   TestConversationListedOperationScopeOverSaaS
+--- PASS: TestConversationListedOperationScopeOverSaaS (0.46s)
+PASS
+ok  	github.com/domainry/domainry-agent/integration	3.401s

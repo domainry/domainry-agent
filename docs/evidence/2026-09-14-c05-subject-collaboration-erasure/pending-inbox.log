@@ -1,0 +1,4 @@
+=== RUN   TestIssuerSubjectExitStopsForeignWorkerAndKeepsCounterpartPrivateData
+--- PASS: TestIssuerSubjectExitStopsForeignWorkerAndKeepsCounterpartPrivateData (0.26s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	2.017s

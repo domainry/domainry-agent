@@ -1,0 +1,19 @@
+=== RUN   TestCrossUserBusinessWritesAgentConfirmationsAutomaticDeliverySharedOriginalsAndRestart
+    conversation_business_shared_write_delivery_test.go:377: Exact professional execution result write-action-contract: 4 pages, 818 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:377: Exact professional execution result write-create: 4 pages, 879 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:377: Exact professional execution result write-workflow-contract: 3 pages, 729 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:377: Exact professional execution result write-start: 3 pages, 705 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:377: Exact professional execution result write-progress: 3 pages, 738 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:410: Exact professional execution result write-action-contract: 4 pages, 818 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:410: Exact professional execution result write-create: 4 pages, 879 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:410: Exact professional execution result write-workflow-contract: 3 pages, 729 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:410: Exact professional execution result write-start: 3 pages, 705 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:410: Exact professional execution result write-progress: 3 pages, 738 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:417: Exact professional execution result write-action-contract: 4 pages, 818 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:417: Exact professional execution result write-create: 4 pages, 879 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:417: Exact professional execution result write-workflow-contract: 3 pages, 729 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:417: Exact professional execution result write-start: 3 pages, 705 bytes, original SHA-256 verified
+    conversation_business_shared_write_delivery_test.go:417: Exact professional execution result write-progress: 3 pages, 738 bytes, original SHA-256 verified
+--- PASS: TestCrossUserBusinessWritesAgentConfirmationsAutomaticDeliverySharedOriginalsAndRestart (109.03s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	110.084s

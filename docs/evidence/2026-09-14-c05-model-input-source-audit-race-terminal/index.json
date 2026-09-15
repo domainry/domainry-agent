@@ -1,0 +1,33 @@
+{
+  "phase": "C05 model-input audit actual race terminal",
+  "artifacts": {
+    "runtime-race.cpu": {
+      "sha256": "1ebb15b94b9134bd87bb272b7d3f04c573e36d697016dac291bcd95a53ce456b",
+      "bytes": 692001
+    },
+    "acceptance.json": {
+      "sha256": "4c5fd61b3989d42abeaf0036c063895b2589eac78598989b5472ec90bda52643",
+      "bytes": 1517
+    },
+    "cpu-top.txt": {
+      "sha256": "988cf1a31618813c4a3a56a2e23bbc5451c7c99e8d6c17cdaee72f71024514fc",
+      "bytes": 3921
+    },
+    "runtime-race.log": {
+      "sha256": "70838b58986d45401f6c5d5bbbc315a42c40fb57dad9b2958c081184694a6886",
+      "bytes": 36218
+    },
+    "failed-revised-run.json": {
+      "sha256": "9a205bf1a6bc8ae48a2a7b9e3ec549b37be7a7d8e57e48b436692d5e4b158141",
+      "bytes": 26184
+    },
+    "cpu-cumulative.txt": {
+      "sha256": "babb0dcbc2036b3dfb63195c8a8efeee2acfde6a37ea931f2e432a64c548743a",
+      "bytes": 5302
+    },
+    "input-audit.json": {
+      "sha256": "52e946e77ced7506c03ce12cf2e6597b5bba9bfd6faf26aafea98b1df25b496b",
+      "bytes": 323
+    }
+  }
+}

@@ -1,0 +1,24 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+1 !== 0
+
+    at file:///Users/tiger/Projects/domainry-agent/frontend/tests/recovery-controls.browser.mjs:43:172 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+    conversation_source_release_test.go:227: exit status 1
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (25.24s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	25.744s
+FAIL

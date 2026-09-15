@@ -1,0 +1,5 @@
+=== RUN   TestLegacyManualMixedOldRoleDeliveryExplicitRepublishingThroughRealHTTP
+    conversation_old_role_source_delivery_test.go:81: Actual manual old report/analysis originals, accepted unknown-publisher history, version-only index, independent current-source preview, preview without grant, forged/stale data denial, explicit canonical publication, exact retry, unchanged delivery/assessment/history, publication-role revocation and restart verified
+--- PASS: TestLegacyManualMixedOldRoleDeliveryExplicitRepublishingThroughRealHTTP (86.21s)
+PASS
+ok  	github.com/domainry/domainry-runtime/runtime/bootstrap/integrationtest	86.938s

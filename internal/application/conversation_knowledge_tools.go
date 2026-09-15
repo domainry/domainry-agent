@@ -14,10 +14,11 @@ import (
 // Compose knowledge with the existing host; business/personal implementations
 // and their authorization remain owned by that host.
 type knowledgeConversationHost struct {
-	base       agentsdk.ConversationToolHost
-	authorizer agentsdk.ConversationToolAuthorizer
-	source     agentsdk.ConversationKnowledgeSource
-	repo       persistence.ConversationRepository
+	base           agentsdk.ConversationToolHost
+	authorizer     agentsdk.ConversationToolAuthorizer
+	source         agentsdk.ConversationKnowledgeSource
+	resultProducer *agentsdk.ConversationAuthority
+	repo           persistence.ConversationRepository
 }
 
 func knowledgeTool(key string) (agentsdk.ConversationToolDefinition, bool) {
@@ -175,6 +176,9 @@ func (h *knowledgeConversationHost) AuthorizeConversationToolResult(ctx context.
 
 func (h *knowledgeConversationHost) revalidateKnowledgeResult(ctx context.Context, saved agentsdk.ConversationKnowledgeResult, a agentsdk.ConversationAuthority, resultRead bool) error {
 	if resultRead {
+		if h.resultProducer != nil {
+			return agentsdk.AuthorizeSharedKnowledgeResultRead(ctx, h.source, saved, a, *h.resultProducer)
+		}
 		return agentsdk.AuthorizeKnowledgeResultRead(ctx, h.source, saved, a)
 	}
 	return h.source.RevalidateKnowledge(ctx, saved, a)

@@ -1,0 +1,38 @@
+=== RUN   TestAssignmentAuthorityKeepsCrossSubjectOriginalLedgerAndPrivateDTO
+--- PASS: TestAssignmentAuthorityKeepsCrossSubjectOriginalLedgerAndPrivateDTO (0.01s)
+=== RUN   TestAssignmentAuthorityEnrichesLegacyProofWithoutChangingHistory
+--- PASS: TestAssignmentAuthorityEnrichesLegacyProofWithoutChangingHistory (0.01s)
+=== RUN   TestAssignmentAuthorityRejectsForgedRoutingBeforeHandoff
+=== RUN   TestAssignmentAuthorityRejectsForgedRoutingBeforeHandoff/role
+=== RUN   TestAssignmentAuthorityRejectsForgedRoutingBeforeHandoff/workspace
+=== RUN   TestAssignmentAuthorityRejectsForgedRoutingBeforeHandoff/task
+--- PASS: TestAssignmentAuthorityRejectsForgedRoutingBeforeHandoff (0.01s)
+    --- PASS: TestAssignmentAuthorityRejectsForgedRoutingBeforeHandoff/role (0.00s)
+    --- PASS: TestAssignmentAuthorityRejectsForgedRoutingBeforeHandoff/workspace (0.00s)
+    --- PASS: TestAssignmentAuthorityRejectsForgedRoutingBeforeHandoff/task (0.00s)
+=== RUN   TestPeerTransferPreservesHistoryBudgetAndReusesCompletedEffects
+--- PASS: TestPeerTransferPreservesHistoryBudgetAndReusesCompletedEffects (0.01s)
+=== RUN   TestPeerTransferRejectsUnknownEffectsAndConcurrentRequirementChange
+--- PASS: TestPeerTransferRejectsUnknownEffectsAndConcurrentRequirementChange (0.01s)
+=== RUN   TestPeerTransferLegacyAssignmentUsesOriginalProvenance
+=== RUN   TestPeerTransferLegacyAssignmentUsesOriginalProvenance/original_available
+=== RUN   TestPeerTransferLegacyAssignmentUsesOriginalProvenance/original_missing
+--- PASS: TestPeerTransferLegacyAssignmentUsesOriginalProvenance (0.01s)
+    --- PASS: TestPeerTransferLegacyAssignmentUsesOriginalProvenance/original_available (0.01s)
+    --- PASS: TestPeerTransferLegacyAssignmentUsesOriginalProvenance/original_missing (0.01s)
+=== RUN   TestPeerTransferAgreementDecisionRetainsItsOwnSource
+--- PASS: TestPeerTransferAgreementDecisionRetainsItsOwnSource (0.01s)
+=== RUN   TestCrossSubjectTransferRequiresExactPublicationAndKeepsOriginalEffects
+--- PASS: TestCrossSubjectTransferRequiresExactPublicationAndKeepsOriginalEffects (0.01s)
+=== RUN   TestCrossSubjectTransferRejectsChangedOrCallerChosenExecutionIdentity
+=== RUN   TestCrossSubjectTransferRejectsChangedOrCallerChosenExecutionIdentity/user
+=== RUN   TestCrossSubjectTransferRejectsChangedOrCallerChosenExecutionIdentity/role
+=== RUN   TestCrossSubjectTransferRejectsChangedOrCallerChosenExecutionIdentity/workspace
+=== RUN   TestCrossSubjectTransferRejectsChangedOrCallerChosenExecutionIdentity/unbound
+--- PASS: TestCrossSubjectTransferRejectsChangedOrCallerChosenExecutionIdentity (0.01s)
+    --- PASS: TestCrossSubjectTransferRejectsChangedOrCallerChosenExecutionIdentity/user (0.00s)
+    --- PASS: TestCrossSubjectTransferRejectsChangedOrCallerChosenExecutionIdentity/role (0.00s)
+    --- PASS: TestCrossSubjectTransferRejectsChangedOrCallerChosenExecutionIdentity/workspace (0.00s)
+    --- PASS: TestCrossSubjectTransferRejectsChangedOrCallerChosenExecutionIdentity/unbound (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.971s

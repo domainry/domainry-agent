@@ -1,0 +1,238 @@
+{
+  "created_at": "2026-09-14T12:43:01.986406+00:00",
+  "immutable": true,
+  "files": [
+    {
+      "path": "acceptance.json",
+      "sha256": "9bd27263ea9391b25de41a78baf2e4483599417c89f7a4a044b4cbf52778060b"
+    },
+    {
+      "path": "after/agent/internal/application/conversation_delegations.go",
+      "sha256": "d5f65139b5d9b3e1fedd65795dfae4cb120cb06d11a55ae5e68d968ebb5b5447"
+    },
+    {
+      "path": "after/agent/internal/application/conversation_delivery_publication.go",
+      "sha256": "9bd66134f19395ad297c01dd4a06c7684d6087f651141a46773ef3c8e38d2b96"
+    },
+    {
+      "path": "after/agent/internal/application/conversation_verification.go",
+      "sha256": "b67c22a224ccebb26e1a247c85ba28c1de84c5362df906149505f480b8f27f59"
+    },
+    {
+      "path": "after/agent/internal/application/conversation_verification_compaction_test.go",
+      "sha256": "d1da282bfa0c01326a7cfd3961d116d7f3f6cb2c3e4767db24814f67910234be"
+    },
+    {
+      "path": "after/runtime/runtime/bootstrap/composition/appschema_snapshot_cache_test.go",
+      "sha256": "2944bcf3f3c0d80a10ee29aa20c1cb2614560487f4c3bd387cd6b803dd20b623"
+    },
+    {
+      "path": "after/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go",
+      "sha256": "55e24a89fc6ecb2cf5f617846950477dccc64e3de36720c33d5bfcf1ef731788"
+    },
+    {
+      "path": "after/runtime/runtime/bootstrap/composition/runtime_services_appschema_projection.go",
+      "sha256": "766ac53d68c65ebe76eb11cb78a9fb913d0c11a1a2b01427eee0a21d7cd4ca7b"
+    },
+    {
+      "path": "after/runtime/runtime/bootstrap/composition/runtime_services_initialization.go",
+      "sha256": "7849e007bfe83b700608b9de6ed828e75b51ac5548824bdd00e04c639f16b327"
+    },
+    {
+      "path": "after/runtime/runtime/bootstrap/composition/runtime_services_state.go",
+      "sha256": "5a50d3ef5d2abf452cf4dbb3dcd9b293fc2f182b8fd27d2f5b729e582bbb984c"
+    },
+    {
+      "path": "after/runtime/runtime/bootstrap/composition/workflow_application_wiring.go",
+      "sha256": "602bd223648504391ca07326b0279a988c82f59259f4c3c864072d76fb8b394a"
+    },
+    {
+      "path": "after/runtime/runtime/bootstrap/composition/workflow_identity_application_wiring.go",
+      "sha256": "195fd8b63d79699b9defdba9a2ea378c66a3ee4bc8fb54d743568dc1ce8e8234"
+    },
+    {
+      "path": "after/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go",
+      "sha256": "23ad94a8c516f314fb2550f49c865ef84a1bc71f32dd837752ba3768b33b8e82"
+    },
+    {
+      "path": "after/runtime/runtime/domain/appschema/service/appschema_i18n_remaining_test.go",
+      "sha256": "4e7ae154d510dc0f6e3fce25eea7fc1e4b2b908e5ef40e540ed864178cd589e5"
+    },
+    {
+      "path": "after/runtime/runtime/domain/appschema/service/appschema_schema_i18n.go",
+      "sha256": "70b8c17f32b5efed2af0601cc3e0c9828f0acd520b3afefa2c44bae2102f8a1d"
+    },
+    {
+      "path": "after-manifest.json",
+      "sha256": "7e56d520e42845e4e491d6a670e31ce589f5ea39f73f8b7ea13bdb1bbb67ba87"
+    },
+    {
+      "path": "agent.patch",
+      "sha256": "6afea5e85ddd8076fbf445dab4646b26ee750071c3caca32ce5eefc8e691329c"
+    },
+    {
+      "path": "before/agent/internal/application/conversation_delegations.go",
+      "sha256": "c7ac154164260c12dfdb0bb77c90a5c7daaf8bc007047c977f08b132813156af"
+    },
+    {
+      "path": "before/agent/internal/application/conversation_delivery_publication.go",
+      "sha256": "1a196f699e6157002bf6688c167e7f1f4c61b2466320cc3320d5a669ff280b72"
+    },
+    {
+      "path": "before/agent/internal/application/conversation_verification.go",
+      "sha256": "26e6afbbbfb842aa2312582a32a93b857c363ca585611338bb207af88bb79ed7"
+    },
+    {
+      "path": "before/runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go",
+      "sha256": "5d1295543694259023594fb25324b4c68de3c998286900c4bc0f62676f5d377a"
+    },
+    {
+      "path": "before/runtime/runtime/bootstrap/composition/runtime_services_appschema_projection.go",
+      "sha256": "59d7743bf562d164e302854b757b84795c003af768bac575f044b1ff78d74a8c"
+    },
+    {
+      "path": "before/runtime/runtime/bootstrap/composition/runtime_services_initialization.go",
+      "sha256": "ff8dd276509d989cf89a63cd59bb74be88ecef36b3aeb2737deab2701503e706"
+    },
+    {
+      "path": "before/runtime/runtime/bootstrap/composition/runtime_services_state.go",
+      "sha256": "7e0e22fdb2a8d83a4fad466159c85e703b2a3245f290e5ee22e4437b2980cda1"
+    },
+    {
+      "path": "before/runtime/runtime/bootstrap/composition/workflow_application_wiring.go",
+      "sha256": "e6c77a25b2daf947ab1a3307419d87e32a9cb76170b2b66b6ec71ef3e1f8bec4"
+    },
+    {
+      "path": "before/runtime/runtime/bootstrap/composition/workflow_identity_application_wiring.go",
+      "sha256": "abd54bf0f1a6ea7083572d7cfd67763d314653a90bc11262f57e0d16512b10d5"
+    },
+    {
+      "path": "before/runtime/runtime/bootstrap/integrationtest/conversation_business_shared_delivery_test.go",
+      "sha256": "23ad94a8c516f314fb2550f49c865ef84a1bc71f32dd837752ba3768b33b8e82"
+    },
+    {
+      "path": "before/runtime/runtime/domain/appschema/service/appschema_i18n_remaining_test.go",
+      "sha256": "4fcb80f4bb3094d390152ac4840b8d1d61a8e87db9bcafaf9a4cf5e4088fc386"
+    },
+    {
+      "path": "before/runtime/runtime/domain/appschema/service/appschema_schema_i18n.go",
+      "sha256": "305bfdbdae2ad0bcd3b0d34bb9c79a37af9cc5fef833aa615861733d9f24ee46"
+    },
+    {
+      "path": "before-manifest.json",
+      "sha256": "ff973746123911bd4e674bdce6bb8a6540e69d5fbfd51d0a0beb7d3a2fd53e10"
+    },
+    {
+      "path": "commands.md",
+      "sha256": "3e732da392e874d5c30f521cb62f85c3a5eaadb7f965742bbab93a726b39bbd8"
+    },
+    {
+      "path": "inputs/c05-schema-and-assessment-compaction-final-inputs.json",
+      "sha256": "a13295e5fb4c2ab5762a60469a8943b4593b4d7cd049c5fa853f574f324dad6a"
+    },
+    {
+      "path": "inputs/c05-schema-projection-singleflight-final-inputs.json",
+      "sha256": "71ff9a4a8db98e92e213c887b2e7c0de633596430fb45eb8d7e0a5ff54a7af36"
+    },
+    {
+      "path": "inputs/input-audit.json",
+      "sha256": "9c1eb65d8647ceebffde53865a37064fae5f418f42ab9b8b2a97a2ca1e4e8dc4"
+    },
+    {
+      "path": "logs/c05-receipt-assessment-compaction-before.log",
+      "sha256": "09bb27e91c0d05a0e323ab11c07078de7a9f9b04c50c108ae4c544d24ea6a1b9"
+    },
+    {
+      "path": "logs/c05-receipt-assessment-compaction-package-normal.log",
+      "sha256": "dcc30f730e7204b7748c83c898380f968a6a410d7a67a3c5df81a4ff3e67d2fd"
+    },
+    {
+      "path": "logs/c05-receipt-assessment-compaction-package-race.log",
+      "sha256": "b9b693166a48994e92eb6ac3eab1640f0ace9a4b6e758177ce99c80919c4db6b"
+    },
+    {
+      "path": "logs/c05-receipt-assessment-compaction-targeted-race.log",
+      "sha256": "937fe1b7854ec2c8bbe0a944534ac4a41322c924505238fc0b451f7caa2980eb"
+    },
+    {
+      "path": "logs/c05-receipt-assessment-compaction-targeted.log",
+      "sha256": "9d72f0242c532093f8a7242ff4d03d749f9c1b397c490b29fb71cad40611cad4"
+    },
+    {
+      "path": "logs/c05-receipt-prefix-compaction-before.log",
+      "sha256": "4f015163eaf79825eaa06a1569dcdabf6c0010ac83717bf18a3010758a6b5242"
+    },
+    {
+      "path": "logs/c05-receipt-prefix-compaction-targeted-race.log",
+      "sha256": "7c18a450cf31f2a33791917eb53b58d23ff4b503f0583a9a92df3e671860caa8"
+    },
+    {
+      "path": "logs/c05-receipt-prefix-compaction-targeted.log",
+      "sha256": "8c1b756cbcd78fa526b0e10f8e115641428f125de68c074339b6f0023831d05b"
+    },
+    {
+      "path": "logs/c05-schema-and-assessment-compaction-final-race.log",
+      "sha256": "d0d6b98b5d833f59be386abc1e033e9c40314834fd5e647aad341c45e8c4bdb7"
+    },
+    {
+      "path": "logs/c05-schema-and-receipt-compaction-final-race.log",
+      "sha256": "93430458948afec7ad84abf7d06ed7bde796097ab58b2a2f06674b1b280133e6"
+    },
+    {
+      "path": "logs/c05-schema-projection-cache-final-race.log",
+      "sha256": "78e424852406168c935ba9b9fd6805a7223e3e97397b93ffb72fe7e5ea6160e5"
+    },
+    {
+      "path": "logs/c05-schema-projection-cache-owner-race.log",
+      "sha256": "59ef31064b2dcbc6193489556db74be7a9dd1af70752f7c2e1c67f2772d1fe6b"
+    },
+    {
+      "path": "logs/c05-schema-projection-singleflight-final-normal.log",
+      "sha256": "7f642bc6033b5430b80b650d0d0c519bd7b2d73322cb8e8c95ccc491f3dc622c"
+    },
+    {
+      "path": "logs/c05-schema-projection-singleflight-final-race.log",
+      "sha256": "36b28a09a7308d24638a53fe879144c274e816399d2dfda90cf375b82b6361a8"
+    },
+    {
+      "path": "logs/c05-schema-projection-singleflight-packages-final-normal.log",
+      "sha256": "be8cccb87beb8aa0c223809e56e31250011d3d52ed6111c4201559cab5da095a"
+    },
+    {
+      "path": "logs/c05-schema-projection-singleflight-packages-final-race.log",
+      "sha256": "af9f66d420c4ac24bfcf535b851135af16dfd9e6644b326d513138f5890dcc02"
+    },
+    {
+      "path": "logs/c05-schema-projection-singleflight-targeted-race.log",
+      "sha256": "73edf63d15d9687133cfb92b8d4bd028ec44ac95c4600acd16f73d6b804a2de7"
+    },
+    {
+      "path": "logs/c05-schema-projection-singleflight-targeted.log",
+      "sha256": "d7acbd53d156b84d31b11c607b9bfbcd1594b3e7559d4c335d6edb2bd6724e24"
+    },
+    {
+      "path": "patch-reconstruction.json",
+      "sha256": "fe49f6ef0de36e983450003e2f3d10e5df3cd60ef0f2c97de3f3df97a0cc6cbd"
+    },
+    {
+      "path": "profiles/c05-schema-and-assessment-compaction-final-race.cpu",
+      "sha256": "bea261ed72577dd6d66dc6ef780ec930af75721529a9a6711f938346715e200f"
+    },
+    {
+      "path": "profiles/c05-schema-and-assessment-compaction-final-race.pprof-cum.txt",
+      "sha256": "846fdc8b92bc4d9d3d7469efb2bd7f46db6982c1b2077588df1eb0f892378f3e"
+    },
+    {
+      "path": "profiles/c05-schema-projection-singleflight-final-race.cpu",
+      "sha256": "9f51f97ed8befd2405b47cabb948537d8b086350d6a85e431a25e34ae8fb2856"
+    },
+    {
+      "path": "profiles/c05-schema-projection-singleflight-final-race.pprof-cum.txt",
+      "sha256": "6610026ff763a2eea1a6f759704402a21f13921fdeb0ef86b9db18de0fb64446"
+    },
+    {
+      "path": "runtime.patch",
+      "sha256": "ad97287ef28ade270b26687c7bf4cdb0737fcfa64bfba7be3a5268a3499c2282"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "recorded_at": "2026-09-14T11:38:46.139564+00:00",
+  "exit_code": 1,
+  "RPC_root": {
+    "status": "passed",
+    "seconds": 50.46
+  },
+  "Agent_root": {
+    "status": "failed",
+    "seconds": 134.55
+  },
+  "package_seconds": 186.542,
+  "original_task_budget_seconds": 90,
+  "outer_observation_seconds": 300,
+  "run_status": "failed",
+  "run_duration_ms": 90059,
+  "steps": [
+    {
+      "number": 0,
+      "status": "tools",
+      "calls": [
+        {
+          "name": "business_catalog",
+          "status": "completed",
+          "duration_ms": 251,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "number": 1,
+      "status": "tools",
+      "calls": [
+        {
+          "name": "query_records",
+          "status": "completed",
+          "duration_ms": 1229,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "status": "tools",
+      "calls": [
+        {
+          "name": "query_records",
+          "status": "completed",
+          "duration_ms": 1231,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "status": "tools",
+      "calls": [
+        {
+          "name": "get_record",
+          "status": "completed",
+          "duration_ms": 1201,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "status": "tools",
+      "calls": [
+        {
+          "name": "query_related_records",
+          "status": "completed",
+          "duration_ms": 2307,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "status": "tools",
+      "calls": [
+        {
+          "name": "delegation_get",
+          "status": "completed",
+          "duration_ms": 5405,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "status": "tools",
+      "calls": [
+        {
+          "name": "delegation_update",
+          "status": "failed",
+          "duration_ms": 3059,
+          "error_code": "business_unavailable"
+        }
+      ]
+    }
+  ],
+  "delivery_call_status": "failed",
+  "delivery_verified": false,
+  "account_acceptance_verified": false,
+  "task_budget_failure_proven": true,
+  "process_terminal": true,
+  "inputs": 9893,
+  "inputs_changed": 0,
+  "test_binary_sha256": "1957c47fa422e8a3bb7fe05d3fa16293f66b91926dd049826154631cb98fc486",
+  "C05_complete": false,
+  "todo_complete": 4,
+  "todo_total": 25
+}

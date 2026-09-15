@@ -1,0 +1,18 @@
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/verified_own_shared_execution
+    conversation_shared_sources_test.go:30: verified source reading scope was lost or manufactured  <nil>
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/raw_collaboration_receipt
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/different_delegation_scope
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/prospective_execution_publication
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/prospective_contract
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/message_is_not_execution_publication
+--- FAIL: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope (0.00s)
+    --- FAIL: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/verified_own_shared_execution (0.00s)
+    --- PASS: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/raw_collaboration_receipt (0.00s)
+    --- PASS: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/different_delegation_scope (0.00s)
+    --- PASS: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/prospective_execution_publication (0.00s)
+    --- PASS: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/prospective_contract (0.00s)
+    --- PASS: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/message_is_not_execution_publication (0.00s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/application	0.538s
+FAIL

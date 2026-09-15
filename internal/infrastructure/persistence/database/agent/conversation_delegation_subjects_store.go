@@ -95,9 +95,9 @@ func delegationMessageScope(d sdk.ConversationDelegation, a sdk.ConversationAuth
 }
 
 func (s *ConversationStore) delegationMessageAuthority(ctx context.Context, db conversationDB, d sdk.ConversationDelegation, conversationID string, fallback sdk.ConversationAuthority) (sdk.ConversationAuthority, error) {
-	subjects, found, err := s.delegationSubjects(ctx, db, d.ID, delegationRecordAuthority(d, fallback))
-	if err != nil || !found {
-		return fallback, err
+	subjects, err := s.delegationAuthorities(ctx, db, d, delegationRecordAuthority(d, fallback))
+	if err != nil {
+		return sdk.ConversationAuthority{}, err
 	}
 	switch conversationID {
 	case d.SourceConversationID:
@@ -145,24 +145,28 @@ func (s *ConversationStore) executionDelegations(ctx context.Context, a sdk.Conv
 }
 
 func (s *ConversationStore) delegationExecutionAuthority(ctx context.Context, db conversationDB, d sdk.ConversationDelegation, a sdk.ConversationAuthority) (sdk.ConversationAuthority, error) {
-	subjects, found, err := s.delegationSubjects(ctx, db, d.ID, a)
-	if err != nil || !found {
-		return a, err
-	}
-	return subjects.execution, nil
+	subjects, err := s.delegationAuthorities(ctx, db, d, delegationRecordAuthority(d, a))
+	return subjects.execution, err
 }
 
 func (s *ConversationStore) ConversationDelegationAuthorities(ctx context.Context, id string, a sdk.ConversationAuthority) (persistence.ConversationDelegationAuthorities, error) {
 	if err := conversationAuthority(a); err != nil {
 		return persistence.ConversationDelegationAuthorities{}, err
 	}
-	d, err := s.conversationDelegation(ctx, s.store.Database(), id, a)
+	d, _, err := s.participantDelegation(ctx, s.store.Database(), id, a, "manage")
 	if err != nil {
 		return persistence.ConversationDelegationAuthorities{}, err
 	}
-	subjects, found, err := s.delegationSubjects(ctx, s.store.Database(), id, a)
+	subjects, err := s.delegationAuthorities(ctx, s.store.Database(), d, delegationRecordAuthority(d, a))
+	return persistence.ConversationDelegationAuthorities{Issuer: subjects.source, Executor: subjects.execution}, err
+}
+
+// Resolve immutable admission identities inside the caller's transaction as
+// well as on reads. A notice's routing header is never execution authority.
+func (s *ConversationStore) delegationAuthorities(ctx context.Context, db conversationDB, d sdk.ConversationDelegation, a sdk.ConversationAuthority) (conversationDelegationSubjects, error) {
+	subjects, found, err := s.delegationSubjects(ctx, db, d.ID, a)
 	if err != nil {
-		return persistence.ConversationDelegationAuthorities{}, err
+		return conversationDelegationSubjects{}, err
 	}
 	if !found {
 		// Same-identity/legacy assignments have no separate subject mapping.
@@ -170,32 +174,32 @@ func (s *ConversationStore) ConversationDelegationAuthorities(ctx context.Contex
 		// not become the original executor or publisher by virtue of ownership.
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(d, a))), query.Equal("task_id", d.TaskID))).Build()
 		if err != nil {
-			return persistence.ConversationDelegationAuthorities{}, err
+			return conversationDelegationSubjects{}, err
 		}
-		row, err := scanConversationTask(s.store.Database().QueryRowContext(ctx, q, args...))
+		row, err := scanConversationTask(db.QueryRowContext(ctx, q, args...))
 		if err != nil {
-			return persistence.ConversationDelegationAuthorities{}, err
+			return conversationDelegationSubjects{}, err
 		}
-		if row.task.DelegationID != id || conversationAuthority(row.authority) != nil || conversationOwner(row.authority) != conversationOwner(a) {
-			return persistence.ConversationDelegationAuthorities{}, conversationError("forbidden", "execution_subject_mismatch")
+		if row.task.DelegationID != d.ID || row.task.ExecutionConversationID != d.ConversationID || conversationAuthority(row.authority) != nil || conversationOwner(row.authority) != conversationOwner(a) {
+			return conversationDelegationSubjects{}, conversationError("forbidden", "execution_subject_mismatch")
 		}
 		subjects.source, subjects.execution = row.authority, row.authority
 		if d.SourceRunID != "" {
-			run, err := s.runRow(ctx, s.store.Database(), d.SourceConversationID, d.SourceRunID, subjects.source)
+			run, err := s.runRow(ctx, db, d.SourceConversationID, d.SourceRunID, subjects.source)
 			if err != nil {
-				return persistence.ConversationDelegationAuthorities{}, err
+				return conversationDelegationSubjects{}, err
 			}
 			if conversationAuthority(run.Authority) != nil || conversationOwner(run.Authority) != conversationOwner(subjects.source) {
-				return persistence.ConversationDelegationAuthorities{}, conversationError("forbidden", "execution_subject_mismatch")
+				return conversationDelegationSubjects{}, conversationError("forbidden", "execution_subject_mismatch")
 			}
 			subjects.source = run.Authority
 		}
 	}
-	return persistence.ConversationDelegationAuthorities{Issuer: subjects.source, Executor: subjects.execution}, err
+	return subjects, nil
 }
 
 func (s *ConversationStore) ConversationDelegationTask(ctx context.Context, id string, a sdk.ConversationAuthority) (sdk.ConversationTask, error) {
-	d, err := s.conversationDelegation(ctx, s.store.Database(), id, a)
+	d, _, err := s.participantDelegation(ctx, s.store.Database(), id, a, "manage")
 	if err != nil {
 		return sdk.ConversationTask{}, err
 	}

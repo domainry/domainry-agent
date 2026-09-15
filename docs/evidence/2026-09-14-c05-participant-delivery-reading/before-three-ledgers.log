@@ -1,0 +1,6 @@
+=== RUN   TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects
+    conversation_source_release_test.go:161: POST /agent/delegations/delegation_29ca17a05d07029221813a25ce848210/delivery-result: status 404, want 200, body {"code":"agent.conversation.run_not_found"}
+--- FAIL: TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects (6.45s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	6.956s
+FAIL

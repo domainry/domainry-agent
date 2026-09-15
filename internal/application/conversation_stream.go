@@ -10,9 +10,47 @@ import (
 )
 
 func (s *ConversationService) generateConversationReply(ctx context.Context, claim agentpersistence.ConversationClaim, input agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
-	if err := s.authorizeConversationClaim(ctx, claim, "model"); err != nil {
-		return agentsdk.ConversationModelResult{}, err
+	for {
+		if err := s.authorizeConversationClaim(ctx, claim, "model"); err != nil {
+			return agentsdk.ConversationModelResult{}, err
+		}
+		hydrated, err := s.hydrateConversationModelRequest(ctx, claim, input)
+		if err != nil {
+			return agentsdk.ConversationModelResult{}, err
+		}
+		attempt, err := s.beginConversationModelAttempt(ctx, claim, -1)
+		if err != nil {
+			return agentsdk.ConversationModelResult{}, err
+		}
+		if err = s.dispatchConversationModelRequestLifecycle(ctx, claim, attempt, &input, nil); err != nil {
+			_, _, recordErr := s.failConversationModelAttempt(ctx, claim, attempt, err)
+			if recordErr != nil {
+				return agentsdk.ConversationModelResult{}, recordErr
+			}
+			return agentsdk.ConversationModelResult{}, err
+		}
+		result, err := s.generateConversationReplyAttempt(ctx, claim, hydrated)
+		if err == nil {
+			if completeErr := s.completeConversationModelAttempt(ctx, claim, attempt, result.Usage); completeErr != nil {
+				return agentsdk.ConversationModelResult{}, completeErr
+			}
+			s.dispatchConversationModelCompletedLifecycle(ctx, claim, attempt, result.Model, result.Usage)
+			return result, nil
+		}
+		retryAt, retry, recordErr := s.failConversationModelAttempt(ctx, claim, attempt, err)
+		if recordErr != nil {
+			return agentsdk.ConversationModelResult{}, recordErr
+		}
+		if !retry {
+			return agentsdk.ConversationModelResult{}, err
+		}
+		if waitErr := s.waitConversationModelRetry(ctx, retryAt); waitErr != nil {
+			return agentsdk.ConversationModelResult{}, waitErr
+		}
 	}
+}
+
+func (s *ConversationService) generateConversationReplyAttempt(ctx context.Context, claim agentpersistence.ConversationClaim, input agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
 	streamer, ok := s.conversationModel(ctx).(agentsdk.ConversationStreamingModel)
 	if !ok {
 		modelCtx, cancel := s.externalCallContext(ctx, 0)

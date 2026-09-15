@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "page_errors": [],
+  "scenarios": [
+    "real subject erasure persisted over host restart",
+    "retained delegated work has explicit exit state",
+    "deleted private tool content absent",
+    "no resume, execution inspection or republication controls",
+    "desktop and mobile modal bounds",
+    "browser reload retains exit metadata"
+  ]
+}

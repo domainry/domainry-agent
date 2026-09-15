@@ -60,6 +60,54 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 		} else if !errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
+		stepPredicate := predicate
+		if ref.BeforeStep > 0 {
+			stepPredicate = query.And(stepPredicate, query.LessThan("step_no", ref.BeforeStep))
+		}
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_steps").Columns("step_no", "payload_json").Where(stepPredicate).OrderBy(query.Ascending("step_no")).Limit(257).Build()
+		if err != nil {
+			return err
+		}
+		stepRows, err := tx.QueryContext(ctx, q, args...)
+		if err != nil {
+			return err
+		}
+		defer stepRows.Close()
+		for stepRows.Next() {
+			var number int
+			var step persistence.ConversationExecutionStep
+			if len(out.Steps) >= 256 {
+				return conversationError("unavailable", "source_limit_exceeded")
+			}
+			if err = stepRows.Scan(&number, &raw); err != nil {
+				return err
+			}
+			if err = json.Unmarshal(raw, &step); err != nil {
+				return err
+			}
+			out.Steps = append(out.Steps, step)
+			if step.Input.Context != nil {
+				out.StepContexts = append(out.StepContexts, persistence.ConversationStepContext{Step: number, Context: step.Input.Context, Messages: step.Input.Messages})
+			}
+		}
+		if err = stepRows.Err(); err != nil {
+			return err
+		}
+		stepRows.Close()
+		if row.Run.AssistantMessageID != "" {
+			q, args, err = query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_messages").Columns("payload_json").Where(query.And(conversationScope(a, ref.ConversationID), query.Equal("message_id", row.Run.AssistantMessageID), query.Equal("run_id", ref.RunID))).Build()
+			if err != nil {
+				return err
+			}
+			var message agentsdk.ConversationMessage
+			if err = tx.QueryRowContext(ctx, q, args...).Scan(&raw); err != nil {
+				return err
+			}
+			if err = json.Unmarshal(raw, &message); err != nil {
+				return err
+			}
+			out.FinalMessage = &message
+		}
 		q, args, err = query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_tool_calls").Columns("payload_json").Where(predicate).OrderBy(query.Ascending("step_no"), query.Ascending("call_key")).Limit(65).Build()
 		if err != nil {
 			return err
@@ -136,6 +184,9 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 		}
 		return sources.Err()
 	})
+	if err == nil {
+		err = s.projectConversationRunAudit(ctx, &out.Run, a)
+	}
 	return out, err
 }
 

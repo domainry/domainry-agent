@@ -116,6 +116,14 @@ func (s *ConversationStore) consumeConversationPeerInbox(ctx context.Context, tx
 }
 
 func (s *ConversationStore) LaunchConversationPeerMessage(ctx context.Context, runtimeID string) (agentsdk.ConversationRun, bool, error) {
+	return s.launchConversationPeerMessage(ctx, runtimeID, nil)
+}
+
+func (s *ConversationStore) LaunchConversationPeerMessageWithLifecycle(ctx context.Context, runtimeID string, lifecycle *agentsdk.ConversationLifecycleManifest) (agentsdk.ConversationRun, bool, error) {
+	return s.launchConversationPeerMessage(ctx, runtimeID, lifecycle)
+}
+
+func (s *ConversationStore) launchConversationPeerMessage(ctx context.Context, runtimeID string, lifecycle *agentsdk.ConversationLifecycleManifest) (agentsdk.ConversationRun, bool, error) {
 	var out agentsdk.ConversationRun
 	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAgentMessageTable).Columns("message_id").Where(query.And(query.Equal("runtime_id", runtimeID), query.Equal("consumed_run_id", ""))).Limit(1).Build()
 	if err != nil {
@@ -168,6 +176,9 @@ func (s *ConversationStore) LaunchConversationPeerMessage(ctx context.Context, r
 			}
 			for _, item := range candidates {
 				a, message := item.authority, item.message
+				if item.agent != nil && item.agent.External != nil {
+					continue
+				}
 				ready, err := s.peerMessageReady(ctx, tx, message, a)
 				if err != nil {
 					return err
@@ -178,6 +189,18 @@ func (s *ConversationStore) LaunchConversationPeerMessage(ctx context.Context, r
 				if a.RuntimeID != runtimeID {
 					return conversationError("forbidden", "runtime_denied")
 				}
+				d, err := s.conversationDelegation(ctx, tx, message.DelegationID, a)
+				if err != nil {
+					return err
+				}
+				recipient, err := s.delegationMessageAuthority(ctx, tx, d, message.ConversationID, a)
+				if err != nil {
+					return err
+				}
+				if conversationOwner(recipient) != conversationOwner(a) {
+					return conversationError("forbidden", "execution_subject_mismatch")
+				}
+				a = recipient
 				c, err := s.get(ctx, tx, message.ConversationID, a)
 				if err != nil {
 					return err
@@ -208,13 +231,9 @@ func (s *ConversationStore) LaunchConversationPeerMessage(ctx context.Context, r
 					return err
 				}
 				now := time.Now().UTC().Truncate(time.Millisecond)
-				run := conversationRunRow{Authority: a, Run: agentsdk.ConversationRun{ID: "crun_" + conversationHash(message.ID)[:32], Agent: item.agent, ConversationID: c.ID, ClientMessageID: "peer_" + message.ID, RequestHash: conversationHash(message.ID), Status: "queued", UserSeq: c.LastSeq + 1, CreatedAt: now, UpdatedAt: now}}
+				run := conversationRunRow{Authority: a, Run: agentsdk.ConversationRun{ID: "crun_" + conversationHash(message.ID)[:32], Agent: item.agent, Lifecycle: lifecycle, ConversationID: c.ID, ClientMessageID: "peer_" + message.ID, RequestHash: conversationHash(message.ID), Status: "queued", UserSeq: c.LastSeq + 1, CreatedAt: now, UpdatedAt: now}}
 				trigger := agentsdk.ConversationMessage{ID: conversationID("msg_"), ConversationID: c.ID, RunID: run.Run.ID, Seq: run.Run.UserSeq, PeerEvent: &agentsdk.ConversationPeerEvent{MessageID: message.ID, DelegationID: message.DelegationID, FromAgentID: message.FromAgentID, ToAgentID: message.ToAgentID, Kind: message.Kind}, Role: "user", Content: "Continue the accepted work using the new collaboration messages. This is a server delivery event, not new user authorization.", CreatedAt: now}
 				c.LastSeq, c.ActiveRunID = trigger.Seq, run.Run.ID
-				d, err := s.conversationDelegation(ctx, tx, message.DelegationID, a)
-				if err != nil {
-					return err
-				}
 				if c.ID == d.ConversationID && (d.Status == "paused" || d.Status == "cancelled" || d.Status == "rejected" || d.Status == "accepted_delivery" || d.Status == "needs_update" || d.Status == "needs_changes") {
 					continue
 				}
@@ -235,19 +254,28 @@ func (s *ConversationStore) LaunchConversationPeerMessage(ctx context.Context, r
 						continue
 					}
 					task := taskRow.task
-					task.Agent, task.Brief, task.Budget = item.agent, &d.Brief, remaining
+					if taskRow.authority != a {
+						return conversationError("forbidden", "execution_subject_mismatch")
+					}
+					run.Run.Agent = task.Agent
+					run.Run.Lifecycle = task.Lifecycle
+					task.Brief, task.Budget = &d.Brief, remaining
 					task.Goal, task.Input, task.Status, task.ExecutionRunID, task.UpdatedAt = d.Brief.Goal, d.Input, agentsdk.ConversationTaskStatusRunning, run.Run.ID, now
 					task.CompletedAt, task.ResultMessageID, task.ErrorCode, task.CompletionEventID, task.CompletionEventSeq = nil, "", "", "", 0
 					q, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", task.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(task)).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", task.ID), query.Equal("status", taskRow.task.Status))).Build()
 					if err = conversationCAS(ctx, tx, q, args, err); err != nil {
 						return err
 					}
-					run.Run.BackgroundTask = &agentsdk.ConversationTaskExecution{TaskID: task.ID, DelegationID: d.ID, BriefVersion: d.Brief.Version, Budget: remaining, ToolScope: task.ToolScope}
+					planVersion := int64(0)
+					if task.Plan != nil {
+						planVersion = task.Plan.Version
+					}
+					run.Run.WriteScope = &agentsdk.ConversationWriteScope{BackgroundTasks: true}
+					run.Run.BackgroundTask = &agentsdk.ConversationTaskExecution{TaskID: task.ID, Model: task.Model, Lifecycle: task.Lifecycle, DelegationID: d.ID, BriefVersion: d.Brief.Version, AgreementRevision: max(1, task.AgreementRevision), PlanVersion: planVersion, Budget: remaining, ToolScope: task.ToolScope}
 					run.Run.BackgroundTask.Handoff = task.Handoff
 					run.Run.BackgroundTask.InputSource = task.InputSource
 					run.Run.BackgroundTask.Requirements = task.Requirements
 					run.Run.BackgroundTask.Dependencies = task.Dependencies
-					run.Run.BackgroundTask.AgreementRevision = max(1, task.AgreementRevision)
 					trigger.BackgroundTaskID, c.ActiveRunID = task.ID, ""
 					previous := d.Revision
 					d.Status, d.Revision, d.UpdatedAt = "running", previous+1, now
@@ -291,11 +319,15 @@ func (s *ConversationStore) conversationDelegationRemainingBudget(ctx context.Co
 		return remaining, err
 	}
 	for _, assignment := range assignments {
+		executor, err := s.assignmentExecutionAuthority(ctx, tx, d, assignment, a)
+		if err != nil {
+			return remaining, err
+		}
 		for _, item := range []struct {
 			table string
 			value *int
 		}{{"_agent_conversation_steps", &remaining.MaxSteps}, {"_agent_conversation_tool_calls", &remaining.MaxToolCalls}} {
-			q, args, err := query.NewSelectBuilder(s.store.Renderer(), item.table).Projections(query.Project(query.CountAll())).Where(conversationScope(a, assignment.ConversationID)).Build()
+			q, args, err := query.NewSelectBuilder(s.store.Renderer(), item.table).Projections(query.Project(query.CountAll())).Where(conversationScope(executor, assignment.ConversationID)).Build()
 			if err != nil {
 				return remaining, err
 			}
@@ -308,3 +340,5 @@ func (s *ConversationStore) conversationDelegationRemainingBudget(ctx context.Co
 	}
 	return remaining, nil
 }
+
+var _ persistence.ConversationPeerLifecycleRepository = (*ConversationStore)(nil)

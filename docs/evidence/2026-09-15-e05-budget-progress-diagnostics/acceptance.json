@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-15",
+  "item": "E05",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 11,
+  "results": {
+    "agent_sdk_go_test": {"exit_code": 0},
+    "agent_core_packages": {"exit_code": 0},
+    "agent_web_package": {"exit_code": 0, "seconds": 506.330},
+    "integration": {"exit_code": 0, "seconds": 93.529},
+    "budget_persistence_race": {"exit_code": 0, "seconds": 3.185},
+    "frontend_tests": {"passed": 89, "failed": 0, "exit_code": 0},
+    "frontend_build": {"exit_code": 0, "typescript": true, "vite": true},
+    "chrome": {
+      "exit_code": 0,
+      "model_calls": 7,
+      "tool_calls": 6,
+      "input_tokens": 700,
+      "output_tokens": 140,
+      "model_cost": 0.001960,
+      "currency": "CNY",
+      "execution_and_business_progress_separated": true,
+      "delegation_and_root_usage_separated": true,
+      "delivery_requires_acceptance": true,
+      "javascript_errors": [],
+      "console_errors_after_login": [],
+      "console_warnings_after_login": [],
+      "viewport_widths": [1280, 390]
+    },
+    "diff_check": {
+      "agent_exit_code": 0,
+      "agent_sdk_exit_code": 0,
+      "bytes": 0
+    }
+  },
+  "behavior": [
+    "root work usage and stable delegation allocation are accounted separately without resetting on transfer",
+    "concurrent Agent reservations are serialized against one shared work budget",
+    "a provider-started request counts one model call and preserves bounded actual duration when completion is unknown",
+    "unknown token usage, price, or mixed currency is represented as uncertain instead of fabricated exact cost",
+    "repeated tool calls use tool name and canonical argument fingerprints without retaining raw arguments in diagnostics",
+    "task diagnostics distinguish execution activity from verified conditions, evidence-backed stage outcomes, and open dependencies",
+    "waiting, concrete blockers, and repeated no-progress attempts select wait, report_blocker, or adjust_strategy",
+    "completed execution and delivered output do not imply business completion before current delivery acceptance",
+    "agent matching history requires exact configuration revision, digest, model, and task type",
+    "acceptance and coordination influence ranking only after three reviewed deliveries"
+  ],
+  "remaining": []
+}

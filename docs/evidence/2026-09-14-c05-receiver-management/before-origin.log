@@ -1,0 +1,10 @@
+=== RUN   TestReceiverManagementUsesAdmittedDeliveryReadAndRejectsWithdrawnReplay
+--- PASS: TestReceiverManagementUsesAdmittedDeliveryReadAndRejectsWithdrawnReplay (0.01s)
+=== RUN   TestOrdinaryManagerCannotInheritReceiversDeliveryRead
+--- PASS: TestOrdinaryManagerCannotInheritReceiversDeliveryRead (0.01s)
+=== RUN   TestReceiverManagementAgentReviewsFromItsOwnLeasedPeerConversation
+    conversation_receiver_management_store_test.go:132: authorized peer review borrowed issuer identity or conversation {user 1 [{0x5e56891daaa0 professional [manage view] 1}] 0x5e5689232d20 [] false 0x5e568925e5a0 1 <nil> <nil> <nil> [] [] 1 0 <nil> <nil> { [] [] [] 0 0 <nil> } conv_d17c96addd0af112f16778cf644396f3 0x5e5688c5d200 delegation_31a2d93305726f23dfd3077c2050449a default agent_06dca111dd08c4a051b6fcad0c5cb8e9 conv_d17c96addd0af112f16778cf644396f3  conv_328429863c80669f913e4534a6ee28b9 task_328429863c80669f913e4534a6ee28b9 Professional review {[] 1 Review source totals Findings  [] [Compare totals] [] <nil>}  {8 8 2048 60} [] delivered 5 0x5e568924e500  2026-09-13 23:55:28.364 +0000 UTC 2026-09-13 23:55:28.366 +0000 UTC} agent.conversation.delegation_actor_invalid
+--- FAIL: TestReceiverManagementAgentReviewsFromItsOwnLeasedPeerConversation (0.01s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.449s
+FAIL

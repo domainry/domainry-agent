@@ -1,0 +1,38 @@
+{
+  "duration_seconds": 1,
+  "mapped_pc_count": 1102,
+  "method": "macOS sample, symbolized with go tool addr2line while the owned test binary was present",
+  "timing_or_benchmark_claim": false,
+  "observed_frames": [
+    {
+      "function": "RecordSchemaSnapshotProvider.Schema",
+      "file": "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go",
+      "line": 25
+    },
+    {
+      "function": "recordSchemaSnapshot",
+      "file": "/Users/tiger/Projects/domainry-runtime/runtime/bootstrap/composition/appschema_snapshot_wiring.go",
+      "line": 47
+    },
+    {
+      "function": "SchemaSnapshotHash",
+      "file": "/Users/tiger/Projects/domainry-runtime/runtime/domain/appschema/service/appschema_schema_snapshot_build.go",
+      "line": 16
+    },
+    {
+      "function": "ReadReportAnalysisSourceVersion",
+      "file": "/Users/tiger/Projects/domainry-runtime/runtime/modulehost/report/report_analysis_sources.go",
+      "line": 146
+    },
+    {
+      "function": "ReadReportSourceVersion",
+      "file": "/Users/tiger/Projects/domainry-runtime/runtime/modulehost/report/report_module_host.go",
+      "line": 161
+    },
+    {
+      "function": "AuthorizeSharedReportResultRead",
+      "file": "/Users/tiger/Projects/domainry-runtime/runtime/application/agenthost/conversation_business_shared_result_read.go",
+      "line": 33
+    }
+  ]
+}

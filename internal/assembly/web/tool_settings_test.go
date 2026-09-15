@@ -52,7 +52,7 @@ func newToolSettingsFixture(t *testing.T) *accountFixture {
 		if last.Role == "tool" {
 			write(map[string]any{"content": "已执行计算：" + last.Content}, "stop")
 		} else if strings.Contains(last.Content, "保存记忆") && memory {
-			write(map[string]any{"tool_calls": []any{map[string]any{"index": 0, "id": "settings-memory", "type": "function", "function": map[string]any{"name": "memory_save", "arguments": `{"title":"F01 settings","content":"Keep this isolated test memory","enabled":true,"expected_revision":0}`}}}}, "tool_calls")
+			write(map[string]any{"tool_calls": []any{map[string]any{"index": 0, "id": "settings-memory", "type": "function", "function": map[string]any{"name": "memory_save", "arguments": `{"kind":"user_preference","scope":"workspace","title":"F01 settings","content":"Keep this isolated test memory","enabled":true,"expected_revision":0}`}}}}, "tool_calls")
 		} else if strings.Contains(last.Content, "计算") && calculate {
 			write(map[string]any{"tool_calls": []any{map[string]any{"index": 0, "id": "settings-calculation", "type": "function", "function": map[string]any{"name": "calculate", "arguments": `{"operation":"expression","expression":"0.1+0.2","unit":"CNY"}`}}}}, "tool_calls")
 		} else {

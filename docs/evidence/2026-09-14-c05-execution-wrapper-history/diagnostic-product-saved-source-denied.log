@@ -1,0 +1,30 @@
+=== RUN   TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart
+    record_result_read_test.go:320: Exact original saved execution wrapper inspection-agreement: original SHA-256 verified
+    record_result_read_test.go:320: Exact original saved execution wrapper inspection-publish: original SHA-256 verified
+    record_result_read_test.go:320: Exact original saved execution wrapper inspection-index: original SHA-256 verified
+    record_result_read_test.go:320: Exact original saved execution wrapper inspection-read: original SHA-256 verified
+    record_result_read_test.go:320: Exact original saved execution wrapper inspection-page-0: original SHA-256 verified
+    record_result_read_test.go:320: Exact original saved execution wrapper inspection-page-1: original SHA-256 verified
+    record_result_read_test.go:370: Exact original structured result record-save via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:370: Exact original structured result record-read via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:370: Exact original structured result record-list via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:370: Exact original structured result record-save via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:370: Exact original structured result record-read via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:370: Exact original structured result record-list via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:370: Exact original structured result record-save via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:370: Exact original structured result record-read via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:370: Exact original structured result record-list via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:462: Exact original structured result record-save via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:462: Exact original structured result record-read via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:462: Exact original structured result record-list via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:462: Exact original structured result record-save via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:462: Exact original structured result record-read via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:462: Exact original structured result record-list via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:462: Exact original structured result record-save via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:462: Exact original structured result record-read via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:462: Exact original structured result record-list via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:463: saved shared execution wrapper ignored current source rights {"agent":{"owner_user_id":"admin","execution_subject":{"runtime_id":"record-runtime","workspace_id":"record-workspace","user_id":"admin"},"id":"agent_dafa0f8e31880422a60d6a91af22b376","revision":1,"model_key":"record-inspector","model_identity":{"provider":"fixture","protocol":"chat_completions","model":"record-inspector","fingerprint":"record-inspector-v1"},"profile":{"instructions":"Publish and inspect the exact original shared execution through actual collaboration tools; retain its original result pages.","key":"agent_dafa0f8e31880422a60d6a91af22b376","version":"1","name":"Shared execution reader","tools":["delegation_get","delegation_execution_publish","delegation_executions","delegation_execution_read","delegation_execution_result_read"],"execution_limits":{}},"digest":"96b66ff44e1ffa0a0945c96a7753ff967395d2e18ddfb22c1b8b9c62f0890b35"},"access_error":"source_access_unavailable","id":"crun_e76f1a61e765dd3b826d41e4492da07d","conversation_id":"conv_42a6bce96856b3efb3171c0d0ea22b5f","client_message_id":"record-inspection","status":"completed","user_seq":1,"assistant_message_id":"msg_5d2eddc327073708020ac43d35f74c81","attempt":2,"draft_bytes":0,"last_event_seq":50,"last_input_seq":2,"correlation_id":"crun_e76f1a61e765dd3b826d41e4492da07d","metrics":{"steps":0,"model_calls":0,"tool_calls":0,"tool_attempts":0,"authorization_checks":0,"confirmation_decisions":0},"audit_complete":false,"started_at":"2026-09-14T07:57:57.022606Z","completed_at":"2026-09-14T07:58:09.628817Z","duration_ms":12606,"queue_duration_ms":1,"created_at":"2026-09-14T07:57:57.021324Z","updated_at":"2026-09-14T07:58:09.628834Z"}
+--- FAIL: TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart (26.76s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/product	28.503s
+FAIL

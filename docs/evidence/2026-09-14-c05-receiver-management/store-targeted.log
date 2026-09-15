@@ -1,0 +1,24 @@
+=== RUN   TestPeerMutationLeaseAndConfirmationCannotBeForged
+--- PASS: TestPeerMutationLeaseAndConfirmationCannotBeForged (0.01s)
+=== RUN   TestParticipantManagementPreservesOriginalTaskAndRejectsWithdrawnGrantReplay
+--- PASS: TestParticipantManagementPreservesOriginalTaskAndRejectsWithdrawnGrantReplay (0.01s)
+=== RUN   TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles
+=== RUN   TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/different-user
+=== RUN   TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/different-role
+=== RUN   TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/same-identity
+--- PASS: TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles (0.02s)
+    --- PASS: TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/different-user (0.01s)
+    --- PASS: TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/different-role (0.01s)
+    --- PASS: TestParticipantManagementRoutesMappedAndUnmappedOriginalExecutionRoles/same-identity (0.01s)
+=== RUN   TestReceiverManagementUsesAdmittedDeliveryReadAndRejectsWithdrawnReplay
+--- PASS: TestReceiverManagementUsesAdmittedDeliveryReadAndRejectsWithdrawnReplay (0.01s)
+=== RUN   TestOrdinaryManagerCannotInheritReceiversDeliveryRead
+--- PASS: TestOrdinaryManagerCannotInheritReceiversDeliveryRead (0.01s)
+=== RUN   TestReceiverManagementAgentReviewsFromItsOwnLeasedPeerConversation
+--- PASS: TestReceiverManagementAgentReviewsFromItsOwnLeasedPeerConversation (0.01s)
+=== RUN   TestPeerVerificationReadsActualReceiptsAndCannotOverrideFailedData
+--- PASS: TestPeerVerificationReadsActualReceiptsAndCannotOverrideFailedData (0.01s)
+=== RUN   TestPeerVerificationRequiresIndependentCurrentReviewAndRetainsHistory
+--- PASS: TestPeerVerificationRequiresIndependentCurrentReviewAndRetainsHistory (0.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.507s

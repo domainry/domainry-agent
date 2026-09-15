@@ -1,0 +1,33 @@
+{
+  "phase": "business_original_page_null_negation",
+  "c05_complete": false,
+  "todo_completed": 4,
+  "todo_total": 25,
+  "actual_orm_cases": 4,
+  "original_proof_exit_code": 1,
+  "original_proof_failed_cases": 4,
+  "original_proof_session": 74396,
+  "owner_roots": 59,
+  "normal_exit_code": 0,
+  "race_exit_code": 0,
+  "normal_session": 95705,
+  "race_session": 70348,
+  "normal_package_seconds": 0.988,
+  "race_package_seconds": 6.689,
+  "real_rpc_exit_code": 0,
+  "real_rpc_session": 4649,
+  "real_rpc_types": 7,
+  "real_rpc_root_seconds": 8.88,
+  "real_rpc_package_seconds": 9.52,
+  "enumerated_dependency_inputs": 6018,
+  "inputs_unchanged_at_seal": true,
+  "real_sql_null_hidden_but_visible_first_row_readable": true,
+  "original_total_and_cursor_rejected_when_null_hidden": true,
+  "restored_full_reader_reads_original_unchanged_evidence": true,
+  "proof": "SQL truth order is required recursively beneath explicit/native NOT and for deny policy coverage. Positive nonnull containment remains available only for matching-row implication. No caller authority or source values are changed.",
+  "limitations": [
+    "Actual SQLite/ORM with SDK identity fixtures proves these negation/deny predicates; native role configuration has not gained arbitrary predicate authoring",
+    "Seven real Runtime/Identity RPC owners verify existing role policies and restart, not the new predicate configuration",
+    "C05 and full TODO retain scope"
+  ]
+}

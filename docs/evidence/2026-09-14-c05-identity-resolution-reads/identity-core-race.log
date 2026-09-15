@@ -1,0 +1,960 @@
+=== RUN   TestIdentityListAssignableRolesUsesExactScopedTargetReads
+--- PASS: TestIdentityListAssignableRolesUsesExactScopedTargetReads (0.00s)
+=== RUN   TestIdentityAuthorizationRejectsCancelledContextBeforeRepositoryAccess
+--- PASS: TestIdentityAuthorizationRejectsCancelledContextBeforeRepositoryAccess (0.00s)
+=== RUN   TestIdentityPrincipalWithoutRolesHasNoImplicitManagementScope
+--- PASS: TestIdentityPrincipalWithoutRolesHasNoImplicitManagementScope (0.00s)
+=== RUN   TestIdentityActorUsesPermissionDataScopeForRoleAssignmentTarget
+--- PASS: TestIdentityActorUsesPermissionDataScopeForRoleAssignmentTarget (0.00s)
+=== RUN   TestIdentityAuthorizationContextBoundaryAndDelegation
+--- PASS: TestIdentityAuthorizationContextBoundaryAndDelegation (0.00s)
+=== RUN   TestIdentityPrincipalResolutionNeverDefaultsAnEmptySubjectToAdmin
+--- PASS: TestIdentityPrincipalResolutionNeverDefaultsAnEmptySubjectToAdmin (0.00s)
+=== RUN   TestValidateUserConfigurationContractMatrix
+--- PASS: TestValidateUserConfigurationContractMatrix (0.00s)
+=== RUN   TestValidateUserConfigurationReferencesAndFailures
+--- PASS: TestValidateUserConfigurationReferencesAndFailures (0.00s)
+=== RUN   TestValidateUserConfigurationRequiresActiveSupportOrganization
+--- PASS: TestValidateUserConfigurationRequiresActiveSupportOrganization (0.00s)
+=== RUN   TestIdentityConfigurationHelperEdges
+--- PASS: TestIdentityConfigurationHelperEdges (0.00s)
+=== RUN   TestIdentityConfigurationAssignmentExpiryAndErrorHelpers
+=== RUN   TestIdentityConfigurationAssignmentExpiryAndErrorHelpers/valid_times_and_enums
+=== RUN   TestIdentityConfigurationAssignmentExpiryAndErrorHelpers/invalid_time
+=== RUN   TestIdentityConfigurationAssignmentExpiryAndErrorHelpers/invalid_source
+=== RUN   TestIdentityConfigurationAssignmentExpiryAndErrorHelpers/invalid_status
+--- PASS: TestIdentityConfigurationAssignmentExpiryAndErrorHelpers (0.00s)
+    --- PASS: TestIdentityConfigurationAssignmentExpiryAndErrorHelpers/valid_times_and_enums (0.00s)
+    --- PASS: TestIdentityConfigurationAssignmentExpiryAndErrorHelpers/invalid_time (0.00s)
+    --- PASS: TestIdentityConfigurationAssignmentExpiryAndErrorHelpers/invalid_source (0.00s)
+    --- PASS: TestIdentityConfigurationAssignmentExpiryAndErrorHelpers/invalid_status (0.00s)
+=== RUN   TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix
+=== RUN   TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/nil
+=== RUN   TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/blank
+=== RUN   TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/self
+=== RUN   TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/missing
+=== RUN   TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/valid
+=== RUN   TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/cycle
+=== RUN   TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/broken
+--- PASS: TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix (0.00s)
+    --- PASS: TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/nil (0.00s)
+    --- PASS: TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/blank (0.00s)
+    --- PASS: TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/self (0.00s)
+    --- PASS: TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/missing (0.00s)
+    --- PASS: TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/valid (0.00s)
+    --- PASS: TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/cycle (0.00s)
+    --- PASS: TestValidateOrganizationUnitConfigurationContractAndHierarchyMatrix/broken (0.00s)
+=== RUN   TestResolveProjectionDisplayNamesUsesStorageIDPredicates
+--- PASS: TestResolveProjectionDisplayNamesUsesStorageIDPredicates (0.00s)
+=== RUN   TestIdentityDomainConstructionAndPermissionCatalogEdges
+--- PASS: TestIdentityDomainConstructionAndPermissionCatalogEdges (0.00s)
+=== RUN   TestIdentityListAndEffectiveMenuFailureWindows
+=== RUN   TestIdentityListAndEffectiveMenuFailureWindows/role_assignments
+=== RUN   TestIdentityListAndEffectiveMenuFailureWindows/roles
+=== RUN   TestIdentityListAndEffectiveMenuFailureWindows/menus
+=== RUN   TestIdentityListAndEffectiveMenuFailureWindows/menu_assignments
+--- PASS: TestIdentityListAndEffectiveMenuFailureWindows (0.00s)
+    --- PASS: TestIdentityListAndEffectiveMenuFailureWindows/role_assignments (0.00s)
+    --- PASS: TestIdentityListAndEffectiveMenuFailureWindows/roles (0.00s)
+    --- PASS: TestIdentityListAndEffectiveMenuFailureWindows/menus (0.00s)
+    --- PASS: TestIdentityListAndEffectiveMenuFailureWindows/menu_assignments (0.00s)
+=== RUN   TestIdentityEffectiveMenusVisibilityParentAndSortEdges
+--- PASS: TestIdentityEffectiveMenusVisibilityParentAndSortEdges (0.00s)
+=== RUN   TestIdentityEffectiveMenusOrdersCyclicLeftoversOnce
+--- PASS: TestIdentityEffectiveMenusOrdersCyclicLeftoversOnce (0.00s)
+=== RUN   TestPrepareEntitlementBatchValidatesFinalConflictsAndTreatsWorkspaceCapabilityAsOrdinaryGrant
+--- PASS: TestPrepareEntitlementBatchValidatesFinalConflictsAndTreatsWorkspaceCapabilityAsOrdinaryGrant (0.00s)
+=== RUN   TestPrepareEntitlementBatchEnforcesGrantCeilingAndSelfGrant
+--- PASS: TestPrepareEntitlementBatchEnforcesGrantCeilingAndSelfGrant (0.00s)
+=== RUN   TestPrepareEntitlementBatchRejectsActorShapeEmptyInputAndRepositoryFailures
+=== RUN   TestPrepareEntitlementBatchRejectsActorShapeEmptyInputAndRepositoryFailures/blank-user
+=== RUN   TestPrepareEntitlementBatchRejectsActorShapeEmptyInputAndRepositoryFailures/unknown
+--- PASS: TestPrepareEntitlementBatchRejectsActorShapeEmptyInputAndRepositoryFailures (0.00s)
+    --- PASS: TestPrepareEntitlementBatchRejectsActorShapeEmptyInputAndRepositoryFailures/blank-user (0.00s)
+    --- PASS: TestPrepareEntitlementBatchRejectsActorShapeEmptyInputAndRepositoryFailures/unknown (0.00s)
+=== RUN   TestPrepareEntitlementBatchRejectsInvalidItemsMissingRolesAndOperations
+=== RUN   TestPrepareEntitlementBatchRejectsInvalidItemsMissingRolesAndOperations/blank-user
+=== RUN   TestPrepareEntitlementBatchRejectsInvalidItemsMissingRolesAndOperations/blank-role
+=== RUN   TestPrepareEntitlementBatchRejectsInvalidItemsMissingRolesAndOperations/duplicate
+=== RUN   TestPrepareEntitlementBatchRejectsInvalidItemsMissingRolesAndOperations/missing-role
+=== RUN   TestPrepareEntitlementBatchRejectsInvalidItemsMissingRolesAndOperations/unknown-operation
+--- PASS: TestPrepareEntitlementBatchRejectsInvalidItemsMissingRolesAndOperations (0.00s)
+    --- PASS: TestPrepareEntitlementBatchRejectsInvalidItemsMissingRolesAndOperations/blank-user (0.00s)
+    --- PASS: TestPrepareEntitlementBatchRejectsInvalidItemsMissingRolesAndOperations/blank-role (0.00s)
+    --- PASS: TestPrepareEntitlementBatchRejectsInvalidItemsMissingRolesAndOperations/duplicate (0.00s)
+    --- PASS: TestPrepareEntitlementBatchRejectsInvalidItemsMissingRolesAndOperations/missing-role (0.00s)
+    --- PASS: TestPrepareEntitlementBatchRejectsInvalidItemsMissingRolesAndOperations/unknown-operation (0.00s)
+=== RUN   TestPrepareEntitlementBatchRejectsSystemManagedMissingAndInactiveRevocations
+--- PASS: TestPrepareEntitlementBatchRejectsSystemManagedMissingAndInactiveRevocations (0.00s)
+=== RUN   TestIdentityEntitlementGrantCeilingAndFinalStateRemainingOutcomes
+--- PASS: TestIdentityEntitlementGrantCeilingAndFinalStateRemainingOutcomes (0.00s)
+=== RUN   TestUpsertOrganizationUnitBuildsHierarchy
+--- PASS: TestUpsertOrganizationUnitBuildsHierarchy (0.00s)
+=== RUN   TestUpsertOrganizationUnitOwnsDerivedHierarchyFactsAndReparentsSubtree
+--- PASS: TestUpsertOrganizationUnitOwnsDerivedHierarchyFactsAndReparentsSubtree (0.00s)
+=== RUN   TestUpsertOrganizationUnitRollsBackWholeDerivedSubtree
+--- PASS: TestUpsertOrganizationUnitRollsBackWholeDerivedSubtree (0.00s)
+=== RUN   TestUpsertUserStoresPrimaryOrganizationAndPersonnelFields
+--- PASS: TestUpsertUserStoresPrimaryOrganizationAndPersonnelFields (0.00s)
+=== RUN   TestUpsertUserBuildsAndReparentsReportingSubtree
+--- PASS: TestUpsertUserBuildsAndReparentsReportingSubtree (0.00s)
+=== RUN   TestUpsertUserRejectsReportingCycle
+--- PASS: TestUpsertUserRejectsReportingCycle (0.00s)
+=== RUN   TestUpsertOrganizationUnitRechecksChangedRepositorySnapshot
+=== RUN   TestUpsertOrganizationUnitRechecksChangedRepositorySnapshot/parent_removed
+=== RUN   TestUpsertOrganizationUnitRechecksChangedRepositorySnapshot/cycle_introduced
+=== RUN   TestUpsertOrganizationUnitRechecksChangedRepositorySnapshot/duplicate_name_introduced
+--- PASS: TestUpsertOrganizationUnitRechecksChangedRepositorySnapshot (0.00s)
+    --- PASS: TestUpsertOrganizationUnitRechecksChangedRepositorySnapshot/parent_removed (0.00s)
+    --- PASS: TestUpsertOrganizationUnitRechecksChangedRepositorySnapshot/cycle_introduced (0.00s)
+    --- PASS: TestUpsertOrganizationUnitRechecksChangedRepositorySnapshot/duplicate_name_introduced (0.00s)
+=== RUN   TestUpsertUserRechecksAccountEmailAndUsesSingleAccountWrite
+--- PASS: TestUpsertUserRechecksAccountEmailAndUsesSingleAccountWrite (0.00s)
+=== RUN   TestPublishedRoleAuthorizationReadsUsePublishedRoleSchema
+--- PASS: TestPublishedRoleAuthorizationReadsUsePublishedRoleSchema (0.00s)
+=== RUN   TestIdentityRoleAuthorizationListDelegates
+--- PASS: TestIdentityRoleAuthorizationListDelegates (0.00s)
+=== RUN   TestIdentityUpsertMenuValidationAndPersistenceEdges
+=== RUN   TestIdentityUpsertMenuValidationAndPersistenceEdges/empty
+=== RUN   TestIdentityUpsertMenuValidationAndPersistenceEdges/list
+=== RUN   TestIdentityUpsertMenuValidationAndPersistenceEdges/duplicate-key
+=== RUN   TestIdentityUpsertMenuValidationAndPersistenceEdges/self-parent
+=== RUN   TestIdentityUpsertMenuValidationAndPersistenceEdges/missing-parent
+=== RUN   TestIdentityUpsertMenuValidationAndPersistenceEdges/cycle
+=== RUN   TestIdentityUpsertMenuValidationAndPersistenceEdges/broken-ancestor
+=== RUN   TestIdentityUpsertMenuValidationAndPersistenceEdges/write
+--- PASS: TestIdentityUpsertMenuValidationAndPersistenceEdges (0.00s)
+    --- PASS: TestIdentityUpsertMenuValidationAndPersistenceEdges/empty (0.00s)
+    --- PASS: TestIdentityUpsertMenuValidationAndPersistenceEdges/list (0.00s)
+    --- PASS: TestIdentityUpsertMenuValidationAndPersistenceEdges/duplicate-key (0.00s)
+    --- PASS: TestIdentityUpsertMenuValidationAndPersistenceEdges/self-parent (0.00s)
+    --- PASS: TestIdentityUpsertMenuValidationAndPersistenceEdges/missing-parent (0.00s)
+    --- PASS: TestIdentityUpsertMenuValidationAndPersistenceEdges/cycle (0.00s)
+    --- PASS: TestIdentityUpsertMenuValidationAndPersistenceEdges/broken-ancestor (0.00s)
+    --- PASS: TestIdentityUpsertMenuValidationAndPersistenceEdges/write (0.00s)
+=== RUN   TestIdentityMenuParentNoLongerCarriesProductSurface
+--- PASS: TestIdentityMenuParentNoLongerCarriesProductSurface (0.00s)
+=== RUN   TestIdentityRemoveAndAssignMenusEdges
+=== RUN   TestIdentityRemoveAndAssignMenusEdges/remove-list
+=== RUN   TestIdentityRemoveAndAssignMenusEdges/remove-missing
+=== RUN   TestIdentityRemoveAndAssignMenusEdges/remove-non-atomic
+=== RUN   TestIdentityRemoveAndAssignMenusEdges/assign-role-read
+=== RUN   TestIdentityRemoveAndAssignMenusEdges/assign-role-missing
+=== RUN   TestIdentityRemoveAndAssignMenusEdges/assign-menu-list
+=== RUN   TestIdentityRemoveAndAssignMenusEdges/assign-unknown
+=== RUN   TestIdentityRemoveAndAssignMenusEdges/assign-write
+--- PASS: TestIdentityRemoveAndAssignMenusEdges (0.00s)
+    --- PASS: TestIdentityRemoveAndAssignMenusEdges/remove-list (0.00s)
+    --- PASS: TestIdentityRemoveAndAssignMenusEdges/remove-missing (0.00s)
+    --- PASS: TestIdentityRemoveAndAssignMenusEdges/remove-non-atomic (0.00s)
+    --- PASS: TestIdentityRemoveAndAssignMenusEdges/assign-role-read (0.00s)
+    --- PASS: TestIdentityRemoveAndAssignMenusEdges/assign-role-missing (0.00s)
+    --- PASS: TestIdentityRemoveAndAssignMenusEdges/assign-menu-list (0.00s)
+    --- PASS: TestIdentityRemoveAndAssignMenusEdges/assign-unknown (0.00s)
+    --- PASS: TestIdentityRemoveAndAssignMenusEdges/assign-write (0.00s)
+=== RUN   TestIdentityPrincipalDomainServiceUsesRolesAndDefaultResolver
+--- PASS: TestIdentityPrincipalDomainServiceUsesRolesAndDefaultResolver (0.00s)
+=== RUN   TestIdentityPrincipalDomainServiceFailsClosedAndSupportsAlternateRole
+--- PASS: TestIdentityPrincipalDomainServiceFailsClosedAndSupportsAlternateRole (0.00s)
+=== RUN   TestIdentityTreeScopeIDsIncludesRootAndAllDescendantsDeterministically
+--- PASS: TestIdentityTreeScopeIDsIncludesRootAndAllDescendantsDeterministically (0.00s)
+=== RUN   TestResolvePrincipalScopeIDsDerivesActiveSupportOrganizationSubtree
+--- PASS: TestResolvePrincipalScopeIDsDerivesActiveSupportOrganizationSubtree (0.00s)
+=== RUN   TestBuildPrincipalDeduplicatesIdenticalReferencesAcrossRoles
+--- PASS: TestBuildPrincipalDeduplicatesIdenticalReferencesAcrossRoles (0.00s)
+=== RUN   TestEffectiveRoleReferenceDeduplicationPreservesConflicts
+--- PASS: TestEffectiveRoleReferenceDeduplicationPreservesConflicts (0.00s)
+=== RUN   TestIdentityCreateRoleRequestNormalizesAndDeduplicatesRoles
+--- PASS: TestIdentityCreateRoleRequestNormalizesAndDeduplicatesRoles (0.00s)
+=== RUN   TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles
+=== RUN   TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles/missing_user
+=== RUN   TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles/unknown_user
+=== RUN   TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles/disabled_user
+=== RUN   TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles/unknown_role
+=== RUN   TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles/privileged_role
+=== RUN   TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles/no_roles
+--- PASS: TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles (0.00s)
+    --- PASS: TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles/missing_user (0.00s)
+    --- PASS: TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles/unknown_user (0.00s)
+    --- PASS: TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles/disabled_user (0.00s)
+    --- PASS: TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles/unknown_role (0.00s)
+    --- PASS: TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles/privileged_role (0.00s)
+    --- PASS: TestIdentityCreateRoleRequestRejectsInvalidUsersAndRoles/no_roles (0.00s)
+=== RUN   TestIdentityApproveRoleRequestAssignsEveryRoleAndRecordsReview
+--- PASS: TestIdentityApproveRoleRequestAssignsEveryRoleAndRecordsReview (0.00s)
+=== RUN   TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer
+=== RUN   TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer/target_self_approval
+=== RUN   TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer/maker_checker
+=== RUN   TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer/missing_reviewer_principal
+=== RUN   TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer/wrong_reviewer_principal
+=== RUN   TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer/grant_ceiling
+=== RUN   TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer/approved
+--- PASS: TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer (0.00s)
+    --- PASS: TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer/target_self_approval (0.00s)
+    --- PASS: TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer/maker_checker (0.00s)
+    --- PASS: TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer/missing_reviewer_principal (0.00s)
+    --- PASS: TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer/wrong_reviewer_principal (0.00s)
+    --- PASS: TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer/grant_ceiling (0.00s)
+    --- PASS: TestIdentityApproveHighRiskRoleRequestRequiresIndependentAuthorizedReviewer/approved (0.00s)
+=== RUN   TestIdentityApproveRoleRequestRejectsConflictingRolesWithinOneRequest
+--- PASS: TestIdentityApproveRoleRequestRejectsConflictingRolesWithinOneRequest (0.00s)
+=== RUN   TestIdentityApproveRoleRequestFailures
+=== RUN   TestIdentityApproveRoleRequestFailures/missing
+=== RUN   TestIdentityApproveRoleRequestFailures/not_pending
+=== RUN   TestIdentityApproveRoleRequestFailures/assignment_fails
+--- PASS: TestIdentityApproveRoleRequestFailures (0.00s)
+    --- PASS: TestIdentityApproveRoleRequestFailures/missing (0.00s)
+    --- PASS: TestIdentityApproveRoleRequestFailures/not_pending (0.00s)
+    --- PASS: TestIdentityApproveRoleRequestFailures/assignment_fails (0.00s)
+=== RUN   TestIdentityRejectRoleRequest
+--- PASS: TestIdentityRejectRoleRequest (0.00s)
+=== RUN   TestIdentityRoleRequestLookupAndList
+--- PASS: TestIdentityRoleRequestLookupAndList (0.00s)
+=== RUN   TestReconcileSystemManagedBusinessRolesPersistsOnlyMatchingPublishedRole
+--- PASS: TestReconcileSystemManagedBusinessRolesPersistsOnlyMatchingPublishedRole (0.00s)
+=== RUN   TestUpsertUserWithRolesRejectsForgedRequestOrganizationScope
+--- PASS: TestUpsertUserWithRolesRejectsForgedRequestOrganizationScope (0.00s)
+=== RUN   TestSystemManagedBusinessRoleReconciliationPersistsInSQLite
+--- PASS: TestSystemManagedBusinessRoleReconciliationPersistsInSQLite (0.53s)
+PASS
+ok  	github.com/domainry/domainry-identity/internal/domain/identity/service	2.002s
+=== RUN   TestWithStandaloneIdentityRoleDefinitionsProvidesAdminAuthorityAndHonorsOverrides
+--- PASS: TestWithStandaloneIdentityRoleDefinitionsProvidesAdminAuthorityAndHonorsOverrides (0.00s)
+=== RUN   TestGeneratedIdentityAdminSeedKeepsGovernanceAuditMenuAssigned
+--- PASS: TestGeneratedIdentityAdminSeedKeepsGovernanceAuditMenuAssigned (0.00s)
+=== RUN   TestGeneratedIdentityOrganizationAdministratorMenusMatchItsOwnedPermissions
+--- PASS: TestGeneratedIdentityOrganizationAdministratorMenusMatchItsOwnedPermissions (0.00s)
+=== RUN   TestAccessReviewCreatesPrioritizedPeriodicQueueAndAuditsDecisionsOnce
+--- PASS: TestAccessReviewCreatesPrioritizedPeriodicQueueAndAuditsDecisionsOnce (0.00s)
+=== RUN   TestAccessReviewDecisionTreatsWorkspaceCapabilityAsOrdinaryExactGrantAndValidatesShape
+--- PASS: TestAccessReviewDecisionTreatsWorkspaceCapabilityAsOrdinaryExactGrantAndValidatesShape (0.00s)
+=== RUN   TestAccessReviewRoleReductionMustBeARealPermissionAndRiskReduction
+--- PASS: TestAccessReviewRoleReductionMustBeARealPermissionAndRiskReduction (0.00s)
+=== RUN   TestAccessReviewPriorityIncludesRiskAndNeverUsedEvidence
+--- PASS: TestAccessReviewPriorityIncludesRiskAndNeverUsedEvidence (0.00s)
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/privileged
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/normal_fresh_used
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/normal_stale_used
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/invalid_last_used
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/fresh_never_used
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/invalid_created
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/ordinary
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/revoked
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/future_valid_from
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/past_valid_from
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/invalid_valid_from
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/past_valid_until
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/future_valid_until
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/invalid_valid_until
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/past_expires_at
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/future_expires_at
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/blank_expires_at_falls_back
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/missing_current
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/missing_replacement
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/permission_removed
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/risk_reduced
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/risk_expanded
+=== RUN   TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/permission_expanded
+--- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/privileged (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/normal_fresh_used (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/normal_stale_used (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/invalid_last_used (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/fresh_never_used (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/invalid_created (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/ordinary (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/revoked (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/future_valid_from (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/past_valid_from (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/invalid_valid_from (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/past_valid_until (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/future_valid_until (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/invalid_valid_until (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/past_expires_at (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/future_expires_at (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/blank_expires_at_falls_back (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/missing_current (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/missing_replacement (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/permission_removed (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/risk_reduced (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/risk_expanded (0.00s)
+    --- PASS: TestAccessReviewPriorityAssignmentAndReductionEdgeOutcomes/permission_expanded (0.00s)
+=== RUN   TestAccessReviewCreateValidationAndDependencyFailures
+=== RUN   TestAccessReviewCreateValidationAndDependencyFailures/blank_id
+=== RUN   TestAccessReviewCreateValidationAndDependencyFailures/invalid_start
+=== RUN   TestAccessReviewCreateValidationAndDependencyFailures/invalid_end
+=== RUN   TestAccessReviewCreateValidationAndDependencyFailures/invalid_due
+=== RUN   TestAccessReviewCreateValidationAndDependencyFailures/reversed_period
+=== RUN   TestAccessReviewCreateValidationAndDependencyFailures/due_before_end
+=== RUN   TestAccessReviewCreateValidationAndDependencyFailures/roles
+=== RUN   TestAccessReviewCreateValidationAndDependencyFailures/assignments
+=== RUN   TestAccessReviewCreateValidationAndDependencyFailures/create
+--- PASS: TestAccessReviewCreateValidationAndDependencyFailures (0.00s)
+    --- PASS: TestAccessReviewCreateValidationAndDependencyFailures/blank_id (0.00s)
+    --- PASS: TestAccessReviewCreateValidationAndDependencyFailures/invalid_start (0.00s)
+    --- PASS: TestAccessReviewCreateValidationAndDependencyFailures/invalid_end (0.00s)
+    --- PASS: TestAccessReviewCreateValidationAndDependencyFailures/invalid_due (0.00s)
+    --- PASS: TestAccessReviewCreateValidationAndDependencyFailures/reversed_period (0.00s)
+    --- PASS: TestAccessReviewCreateValidationAndDependencyFailures/due_before_end (0.00s)
+    --- PASS: TestAccessReviewCreateValidationAndDependencyFailures/roles (0.00s)
+    --- PASS: TestAccessReviewCreateValidationAndDependencyFailures/assignments (0.00s)
+    --- PASS: TestAccessReviewCreateValidationAndDependencyFailures/create (0.00s)
+=== RUN   TestAccessReviewListScopeAndDecisionEdgeOutcomes
+--- PASS: TestAccessReviewListScopeAndDecisionEdgeOutcomes (0.00s)
+=== RUN   TestAccessReviewScopeDefaults
+--- PASS: TestAccessReviewScopeDefaults (0.00s)
+=== RUN   TestStandaloneAuthorizationSliceRegistryOwnsCompleteRouteAndPermissionMatrix
+--- PASS: TestStandaloneAuthorizationSliceRegistryOwnsCompleteRouteAndPermissionMatrix (0.01s)
+=== RUN   TestIdentityActionRegistryRejectsDuplicateActionsAndMismatchedPermission
+--- PASS: TestIdentityActionRegistryRejectsDuplicateActionsAndMismatchedPermission (0.00s)
+=== RUN   TestIdentityActionAuthorizationUsesOnlySameKeyDatabaseBackedGrant
+--- PASS: TestIdentityActionAuthorizationUsesOnlySameKeyDatabaseBackedGrant (0.01s)
+=== RUN   TestIdentityAuthoringProjectionResolvesEveryOperationFromCanonicalActions
+--- PASS: TestIdentityAuthoringProjectionResolvesEveryOperationFromCanonicalActions (0.01s)
+=== RUN   TestIdentityAuthoringProjectionKeepsCRUDAndMetadataOperationsIndependent
+--- PASS: TestIdentityAuthoringProjectionKeepsCRUDAndMetadataOperationsIndependent (0.01s)
+=== RUN   TestIdentityAuthoringProjectionRejectsRouteOutsideCanonicalMatrix
+--- PASS: TestIdentityAuthoringProjectionRejectsRouteOutsideCanonicalMatrix (0.01s)
+=== RUN   TestIdentityRoleSnapshotPropagatesCurrentResolutionFailureAndKeepsRoleIsolation
+--- PASS: TestIdentityRoleSnapshotPropagatesCurrentResolutionFailureAndKeepsRoleIsolation (0.00s)
+=== RUN   TestIdentityEffectiveAccessSnapshotAndExplainPublishStableGrantSources
+--- PASS: TestIdentityEffectiveAccessSnapshotAndExplainPublishStableGrantSources (0.00s)
+=== RUN   TestIdentityEffectiveAccessExplainResolvesNamespacedPermissionAndGrantSource
+--- PASS: TestIdentityEffectiveAccessExplainResolvesNamespacedPermissionAndGrantSource (0.00s)
+=== RUN   TestIdentityEffectiveAccessRejectsCrossUserReaderWithoutGovernancePermission
+--- PASS: TestIdentityEffectiveAccessRejectsCrossUserReaderWithoutGovernancePermission (0.00s)
+=== RUN   TestIdentityEffectiveAccessGovernanceSurfacesAndPreview
+--- PASS: TestIdentityEffectiveAccessGovernanceSurfacesAndPreview (0.00s)
+=== RUN   TestIdentityEffectiveAccessPropagatesRepositoryFailures
+--- PASS: TestIdentityEffectiveAccessPropagatesRepositoryFailures (0.00s)
+=== RUN   TestApplyEntitlementBatchValidatesThenPersistsAndReplaysReceipt
+--- PASS: TestApplyEntitlementBatchValidatesThenPersistsAndReplaysReceipt (0.00s)
+=== RUN   TestApplyEntitlementBatchRejectsInvalidBoundariesAndPropagatesFailures
+--- PASS: TestApplyEntitlementBatchRejectsInvalidBoundariesAndPropagatesFailures (0.00s)
+=== RUN   TestIdentityGovernanceValidationReportsEveryReferenceShape
+--- PASS: TestIdentityGovernanceValidationReportsEveryReferenceShape (0.00s)
+=== RUN   TestIdentityGovernanceValidationAcceptsCanonicalConfiguration
+--- PASS: TestIdentityGovernanceValidationAcceptsCanonicalConfiguration (0.00s)
+=== RUN   TestIdentityOwnerAuthoringExamplesUseRealGovernanceValidator
+--- PASS: TestIdentityOwnerAuthoringExamplesUseRealGovernanceValidator (0.00s)
+=== RUN   TestIdentityGovernanceValidationIncludesConfigurationSections
+--- PASS: TestIdentityGovernanceValidationIncludesConfigurationSections (0.00s)
+=== RUN   TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure
+=== RUN   TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/users
+=== RUN   TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/organizationUnits
+=== RUN   TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/assignment_user
+=== RUN   TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/assignment_role
+=== RUN   TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/role_reference
+=== RUN   TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/menu
+=== RUN   TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/menu_references
+--- PASS: TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure (0.00s)
+    --- PASS: TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/users (0.00s)
+    --- PASS: TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/organizationUnits (0.00s)
+    --- PASS: TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/assignment_user (0.00s)
+    --- PASS: TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/assignment_role (0.00s)
+    --- PASS: TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/role_reference (0.00s)
+    --- PASS: TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/menu (0.00s)
+    --- PASS: TestIdentityGovernanceValidationPropagatesEveryConfigurationReadFailure/menu_references (0.00s)
+=== RUN   TestIdentityGovernanceConvenienceValidatorsReturnFirstStructuredError
+=== RUN   TestIdentityGovernanceConvenienceValidatorsReturnFirstStructuredError/permissions
+=== RUN   TestIdentityGovernanceConvenienceValidatorsReturnFirstStructuredError/fields
+=== RUN   TestIdentityGovernanceConvenienceValidatorsReturnFirstStructuredError/menus
+=== RUN   TestIdentityGovernanceConvenienceValidatorsReturnFirstStructuredError/menu
+=== RUN   TestIdentityGovernanceConvenienceValidatorsReturnFirstStructuredError/role
+--- PASS: TestIdentityGovernanceConvenienceValidatorsReturnFirstStructuredError (0.00s)
+    --- PASS: TestIdentityGovernanceConvenienceValidatorsReturnFirstStructuredError/permissions (0.00s)
+    --- PASS: TestIdentityGovernanceConvenienceValidatorsReturnFirstStructuredError/fields (0.00s)
+    --- PASS: TestIdentityGovernanceConvenienceValidatorsReturnFirstStructuredError/menus (0.00s)
+    --- PASS: TestIdentityGovernanceConvenienceValidatorsReturnFirstStructuredError/menu (0.00s)
+    --- PASS: TestIdentityGovernanceConvenienceValidatorsReturnFirstStructuredError/role (0.00s)
+=== RUN   TestIdentityGovernanceMenuParentEdges
+=== RUN   TestIdentityGovernanceMenuParentEdges/self
+=== RUN   TestIdentityGovernanceMenuParentEdges/missing
+=== RUN   TestIdentityGovernanceMenuParentEdges/id_fallback
+=== RUN   TestIdentityGovernanceMenuParentEdges/key_fallback
+--- PASS: TestIdentityGovernanceMenuParentEdges (0.00s)
+    --- PASS: TestIdentityGovernanceMenuParentEdges/self (0.00s)
+    --- PASS: TestIdentityGovernanceMenuParentEdges/missing (0.00s)
+    --- PASS: TestIdentityGovernanceMenuParentEdges/id_fallback (0.00s)
+    --- PASS: TestIdentityGovernanceMenuParentEdges/key_fallback (0.00s)
+=== RUN   TestIdentityGovernanceRoleValidationPropagatesRepositoryFailure
+--- PASS: TestIdentityGovernanceRoleValidationPropagatesRepositoryFailure (0.00s)
+=== RUN   TestIdentityGovernanceRejectsMissingDependenciesAfterAuthorization
+=== RUN   TestIdentityGovernanceRejectsMissingDependenciesAfterAuthorization/nil_service
+=== RUN   TestIdentityGovernanceRejectsMissingDependenciesAfterAuthorization/nil_repository
+=== RUN   TestIdentityGovernanceRejectsMissingDependenciesAfterAuthorization/nil_objects
+--- PASS: TestIdentityGovernanceRejectsMissingDependenciesAfterAuthorization (0.00s)
+    --- PASS: TestIdentityGovernanceRejectsMissingDependenciesAfterAuthorization/nil_service (0.00s)
+    --- PASS: TestIdentityGovernanceRejectsMissingDependenciesAfterAuthorization/nil_repository (0.00s)
+    --- PASS: TestIdentityGovernanceRejectsMissingDependenciesAfterAuthorization/nil_objects (0.00s)
+=== RUN   TestIdentityGovernancePermissionValidationFailsClosedWithoutCatalog
+--- PASS: TestIdentityGovernancePermissionValidationFailsClosedWithoutCatalog (0.00s)
+=== RUN   TestIdentityGovernancePermissionValidationUsesCurrentDefinitionState
+--- PASS: TestIdentityGovernancePermissionValidationUsesCurrentDefinitionState (0.00s)
+=== RUN   TestHandlerDeliveryResolvesOnlyPublishedActiveBindingForExactUser
+=== RUN   TestHandlerDeliveryResolvesOnlyPublishedActiveBindingForExactUser/invalid_version
+=== RUN   TestHandlerDeliveryResolvesOnlyPublishedActiveBindingForExactUser/unpublished_binding
+=== RUN   TestHandlerDeliveryResolvesOnlyPublishedActiveBindingForExactUser/different_user
+=== RUN   TestHandlerDeliveryResolvesOnlyPublishedActiveBindingForExactUser/inactive
+--- PASS: TestHandlerDeliveryResolvesOnlyPublishedActiveBindingForExactUser (0.00s)
+    --- PASS: TestHandlerDeliveryResolvesOnlyPublishedActiveBindingForExactUser/invalid_version (0.00s)
+    --- PASS: TestHandlerDeliveryResolvesOnlyPublishedActiveBindingForExactUser/unpublished_binding (0.00s)
+    --- PASS: TestHandlerDeliveryResolvesOnlyPublishedActiveBindingForExactUser/different_user (0.00s)
+    --- PASS: TestHandlerDeliveryResolvesOnlyPublishedActiveBindingForExactUser/inactive (0.00s)
+=== RUN   TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes
+=== RUN   TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes/all
+=== RUN   TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes/org
+=== RUN   TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes/org_move_denied
+=== RUN   TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes/org_child
+=== RUN   TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes/target_org
+=== RUN   TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes/target_org_denied
+--- PASS: TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes (0.00s)
+    --- PASS: TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes/all (0.00s)
+    --- PASS: TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes/org (0.00s)
+    --- PASS: TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes/org_move_denied (0.00s)
+    --- PASS: TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes/org_child (0.00s)
+    --- PASS: TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes/target_org (0.00s)
+    --- PASS: TestHandlerDeliveryPurposePermissionPreservesCanonicalOrganizationScopes/target_org_denied (0.00s)
+=== RUN   TestHandlerDeliveryPurposePermissionDoesNotAliasGenericCRUD
+--- PASS: TestHandlerDeliveryPurposePermissionDoesNotAliasGenericCRUD (0.00s)
+=== RUN   TestOrganizationUnitDeliveryScopesOnlyPersistedParent
+=== RUN   TestOrganizationUnitDeliveryScopesOnlyPersistedParent/all
+=== RUN   TestOrganizationUnitDeliveryScopesOnlyPersistedParent/org
+=== RUN   TestOrganizationUnitDeliveryScopesOnlyPersistedParent/org_denied
+=== RUN   TestOrganizationUnitDeliveryScopesOnlyPersistedParent/org_child
+=== RUN   TestOrganizationUnitDeliveryScopesOnlyPersistedParent/target_org
+=== RUN   TestOrganizationUnitDeliveryScopesOnlyPersistedParent/target_denied
+--- PASS: TestOrganizationUnitDeliveryScopesOnlyPersistedParent (0.00s)
+    --- PASS: TestOrganizationUnitDeliveryScopesOnlyPersistedParent/all (0.00s)
+    --- PASS: TestOrganizationUnitDeliveryScopesOnlyPersistedParent/org (0.00s)
+    --- PASS: TestOrganizationUnitDeliveryScopesOnlyPersistedParent/org_denied (0.00s)
+    --- PASS: TestOrganizationUnitDeliveryScopesOnlyPersistedParent/org_child (0.00s)
+    --- PASS: TestOrganizationUnitDeliveryScopesOnlyPersistedParent/target_org (0.00s)
+    --- PASS: TestOrganizationUnitDeliveryScopesOnlyPersistedParent/target_denied (0.00s)
+=== RUN   TestOrganizationUnitDeliveryPermissionDoesNotAliasManagementOrStoreDelivery
+--- PASS: TestOrganizationUnitDeliveryPermissionDoesNotAliasManagementOrStoreDelivery (0.00s)
+=== RUN   TestOrganizationUnitDeliveryCreateValidationRejectsRootAndMutationFields
+--- PASS: TestOrganizationUnitDeliveryCreateValidationRejectsRootAndMutationFields (0.00s)
+=== RUN   TestOrganizationUnitDeliveryAuthorizationFailsClosed
+=== RUN   TestOrganizationUnitDeliveryAuthorizationFailsClosed/application_audience
+=== RUN   TestOrganizationUnitDeliveryAuthorizationFailsClosed/actor
+=== RUN   TestOrganizationUnitDeliveryAuthorizationFailsClosed/authorization_revision
+--- PASS: TestOrganizationUnitDeliveryAuthorizationFailsClosed (0.00s)
+    --- PASS: TestOrganizationUnitDeliveryAuthorizationFailsClosed/application_audience (0.00s)
+    --- PASS: TestOrganizationUnitDeliveryAuthorizationFailsClosed/actor (0.00s)
+    --- PASS: TestOrganizationUnitDeliveryAuthorizationFailsClosed/authorization_revision (0.00s)
+=== RUN   TestPermissionDefinitionAndSnapshotHashesAreCanonical
+--- PASS: TestPermissionDefinitionAndSnapshotHashesAreCanonical (0.00s)
+=== RUN   TestRolePermissionSelectionsRequireCurrentSelectableDefinitions
+--- PASS: TestRolePermissionSelectionsRequireCurrentSelectableDefinitions (0.00s)
+=== RUN   TestPermissionReconcileEmitsStableReceiptLogWithGeneratedRequestID
+--- PASS: TestPermissionReconcileEmitsStableReceiptLogWithGeneratedRequestID (0.02s)
+=== RUN   TestPermissionCatalogReconcilesExternalOwnerAndEnablementChangesSharedSnapshot
+--- PASS: TestPermissionCatalogReconcilesExternalOwnerAndEnablementChangesSharedSnapshot (0.01s)
+=== RUN   TestPermissionCatalogMarksLocalRegistryUsageAvailable
+--- PASS: TestPermissionCatalogMarksLocalRegistryUsageAvailable (0.02s)
+=== RUN   TestPermissionCatalogQueriesExternalActionUsageWithoutPersistingIt
+--- PASS: TestPermissionCatalogQueriesExternalActionUsageWithoutPersistingIt (0.01s)
+=== RUN   TestPermissionCatalogProtectsOnlyPermissionRecoveryActionFromAdministrativeDisable
+--- PASS: TestPermissionCatalogProtectsOnlyPermissionRecoveryActionFromAdministrativeDisable (0.01s)
+=== RUN   TestRolePermissionPublishRequiresOnlyItsExactAction
+--- PASS: TestRolePermissionPublishRequiresOnlyItsExactAction (0.01s)
+=== RUN   TestRoleCreateIsFailClosedForDataAuthority
+--- PASS: TestRoleCreateIsFailClosedForDataAuthority (0.01s)
+=== RUN   TestRoleGovernanceDetailComposesPublishedAuthorities
+--- PASS: TestRoleGovernanceDetailComposesPublishedAuthorities (0.00s)
+=== RUN   TestRoleGovernanceDetailRejectsUnknownRoleAndMissingWorkspace
+--- PASS: TestRoleGovernanceDetailRejectsUnknownRoleAndMissingWorkspace (0.00s)
+=== RUN   TestRoleGovernanceDetailPropagatesProjectionFailures
+=== RUN   TestRoleGovernanceDetailPropagatesProjectionFailures/role_lookup
+=== RUN   TestRoleGovernanceDetailPropagatesProjectionFailures/permissions
+=== RUN   TestRoleGovernanceDetailPropagatesProjectionFailures/field_permissions
+=== RUN   TestRoleGovernanceDetailPropagatesProjectionFailures/role_menus
+=== RUN   TestRoleGovernanceDetailPropagatesProjectionFailures/menus
+=== RUN   TestRoleGovernanceDetailPropagatesProjectionFailures/members
+--- PASS: TestRoleGovernanceDetailPropagatesProjectionFailures (0.00s)
+    --- PASS: TestRoleGovernanceDetailPropagatesProjectionFailures/role_lookup (0.00s)
+    --- PASS: TestRoleGovernanceDetailPropagatesProjectionFailures/permissions (0.00s)
+    --- PASS: TestRoleGovernanceDetailPropagatesProjectionFailures/field_permissions (0.00s)
+    --- PASS: TestRoleGovernanceDetailPropagatesProjectionFailures/role_menus (0.00s)
+    --- PASS: TestRoleGovernanceDetailPropagatesProjectionFailures/menus (0.00s)
+    --- PASS: TestRoleGovernanceDetailPropagatesProjectionFailures/members (0.00s)
+=== RUN   TestRoleGovernanceDetailFiltersIgnoreBlankAndUnknownKeys
+--- PASS: TestRoleGovernanceDetailFiltersIgnoreBlankAndUnknownKeys (0.00s)
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/list_menus
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/effective_menus
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/resolve_principal
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/resolve_principal_for_role
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/resolve_permissions
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/resolve_menus
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/find_user
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/find_organizationUnit
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/projection_users
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/projection_roles
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/projection_assignments
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/list_organizationUnits
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/upsert_organizationUnit
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/list_users
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/search_users
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/user_by_id
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/user_by_login
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/upsert_user
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/remove_user
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/set_user_status
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/enable_user
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/list_roles
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/search_roles
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/active_roles
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/assign_user_role
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/upsert_user_with_roles
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/remove_user_role
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/remove_user_role_governed
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/list_user_assignments
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/search_user_assignments
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/assignable_roles
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/requestable_roles
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/create_role_request
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/list_role_requests
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/approve_role_request
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/reject_role_request
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/role_by_id
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/list_role_permissions
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/list_role_fields
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/upsert_menu
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/remove_menu
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/set_role_menus
+=== RUN   TestIdentityScopedMethodsRejectMissingWorkspace/list_role_menus
+--- PASS: TestIdentityScopedMethodsRejectMissingWorkspace (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/list_menus (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/effective_menus (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/resolve_principal (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/resolve_principal_for_role (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/resolve_permissions (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/resolve_menus (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/find_user (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/find_organizationUnit (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/projection_users (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/projection_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/projection_assignments (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/list_organizationUnits (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/upsert_organizationUnit (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/list_users (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/search_users (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/user_by_id (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/user_by_login (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/upsert_user (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/remove_user (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/set_user_status (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/enable_user (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/list_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/search_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/active_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/assign_user_role (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/upsert_user_with_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/remove_user_role (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/remove_user_role_governed (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/list_user_assignments (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/search_user_assignments (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/assignable_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/requestable_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/create_role_request (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/list_role_requests (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/approve_role_request (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/reject_role_request (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/role_by_id (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/list_role_permissions (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/list_role_fields (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/upsert_menu (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/remove_menu (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/set_role_menus (0.00s)
+    --- PASS: TestIdentityScopedMethodsRejectMissingWorkspace/list_role_menus (0.00s)
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/list_menus
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/effective_menus
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/resolve_principal
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/resolve_principal_for_role
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/resolve_permissions
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/resolve_menus
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/find_user
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/find_organizationUnit
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/projection_users
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/projection_roles
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/projection_assignments
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/list_organizationUnits
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/upsert_organizationUnit
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/list_users
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/search_users
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/user_by_id
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/user_by_login
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/upsert_user
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/remove_user
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/set_user_status
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/enable_user
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/list_roles
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/search_roles
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/active_roles
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/assign_user_role
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/upsert_user_with_roles
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/remove_user_role
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/remove_user_role_governed
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/list_user_assignments
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/search_user_assignments
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/assignable_roles
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/requestable_roles
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/create_role_request
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/list_role_requests
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/approve_role_request
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/reject_role_request
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/role_by_id
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/list_role_permissions
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/list_role_fields
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/upsert_menu
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/remove_menu
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/set_role_menus
+=== RUN   TestIdentityScopedMethodsDelegateWithinWorkspace/list_role_menus
+--- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/list_menus (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/effective_menus (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/resolve_principal (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/resolve_principal_for_role (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/resolve_permissions (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/resolve_menus (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/find_user (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/find_organizationUnit (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/projection_users (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/projection_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/projection_assignments (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/list_organizationUnits (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/upsert_organizationUnit (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/list_users (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/search_users (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/user_by_id (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/user_by_login (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/upsert_user (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/remove_user (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/set_user_status (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/enable_user (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/list_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/search_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/active_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/assign_user_role (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/upsert_user_with_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/remove_user_role (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/remove_user_role_governed (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/list_user_assignments (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/search_user_assignments (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/assignable_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/requestable_roles (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/create_role_request (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/list_role_requests (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/approve_role_request (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/reject_role_request (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/role_by_id (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/list_role_permissions (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/list_role_fields (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/upsert_menu (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/remove_menu (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/set_role_menus (0.00s)
+    --- PASS: TestIdentityScopedMethodsDelegateWithinWorkspace/list_role_menus (0.00s)
+=== RUN   TestDisableUserOwnsAccountSecurityOrchestration
+--- PASS: TestDisableUserOwnsAccountSecurityOrchestration (0.00s)
+=== RUN   TestDisableUserRejectsMissingScopeOrSessionRevokerAndPropagatesFailure
+--- PASS: TestDisableUserRejectsMissingScopeOrSessionRevokerAndPropagatesFailure (0.00s)
+=== RUN   TestIdentityScopedImpactAndAccountDisableFailureEdges
+--- PASS: TestIdentityScopedImpactAndAccountDisableFailureEdges (0.00s)
+=== RUN   TestUserDeletionImpactAggregatesEveryCrossDomainBlocker
+--- PASS: TestUserDeletionImpactAggregatesEveryCrossDomainBlocker (0.00s)
+=== RUN   TestUserDisableImpactIncludesEveryIdentityAndEntitlementProjection
+--- PASS: TestUserDisableImpactIncludesEveryIdentityAndEntitlementProjection (0.00s)
+=== RUN   TestUserDeletionInspectionUsesIdentityLocalDefaultAndPropagatesInjectedFailure
+--- PASS: TestUserDeletionInspectionUsesIdentityLocalDefaultAndPropagatesInjectedFailure (0.00s)
+=== RUN   TestAssignUserRoleGovernedCoversRiskAndGrantCeilingPolicies
+--- PASS: TestAssignUserRoleGovernedCoversRiskAndGrantCeilingPolicies (0.00s)
+=== RUN   TestValidateRoleMenusCoversRoleMenuAndRoutePolicies
+--- PASS: TestValidateRoleMenusCoversRoleMenuAndRoutePolicies (0.00s)
+=== RUN   TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes
+=== RUN   TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes/all
+=== RUN   TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes/org
+=== RUN   TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes/org_denied
+=== RUN   TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes/org_child
+=== RUN   TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes/target_org
+=== RUN   TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes/target_org_denied
+--- PASS: TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes (0.00s)
+    --- PASS: TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes/all (0.00s)
+    --- PASS: TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes/org (0.00s)
+    --- PASS: TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes/org_denied (0.00s)
+    --- PASS: TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes/org_child (0.00s)
+    --- PASS: TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes/target_org (0.00s)
+    --- PASS: TestStoreOrganizationPurposePermissionUsesCanonicalHierarchyScopes/target_org_denied (0.00s)
+=== RUN   TestStoreOrganizationPurposePermissionDoesNotAliasGenericOrganizationCRUD
+--- PASS: TestStoreOrganizationPurposePermissionDoesNotAliasGenericOrganizationCRUD (0.00s)
+=== RUN   TestStoreOrganizationPageSizeUsesDefaultAndEnforcesMaximum
+--- PASS: TestStoreOrganizationPageSizeUsesDefaultAndEnforcesMaximum (0.00s)
+=== RUN   TestStoreOrganizationCursorIsOpaqueStrictAndRoundTrips
+--- PASS: TestStoreOrganizationCursorIsOpaqueStrictAndRoundTrips (0.00s)
+=== RUN   TestSearchUserProjectionProjectsRolesSecurityAndIdentityBadges
+--- PASS: TestSearchUserProjectionProjectsRolesSecurityAndIdentityBadges (0.00s)
+=== RUN   TestSearchUserProjectionFailureBoundaries
+--- PASS: TestSearchUserProjectionFailureBoundaries (0.00s)
+=== RUN   TestSearchUserProjectionWithoutBusinessProfiles
+--- PASS: TestSearchUserProjectionWithoutBusinessProfiles (0.00s)
+=== RUN   TestSearchUserProjectionBatchUsesFactsCapabilityAndValidatesReader
+--- PASS: TestSearchUserProjectionBatchUsesFactsCapabilityAndValidatesReader (0.00s)
+=== RUN   TestIdentityApplicationAuthorizesWorkspaceBeforeRepositoryAccess
+--- PASS: TestIdentityApplicationAuthorizesWorkspaceBeforeRepositoryAccess (0.00s)
+=== RUN   TestWorkspaceIdentityUsageUsesTrustedKeysetCatalogAndGroupedCounts
+--- PASS: TestWorkspaceIdentityUsageUsesTrustedKeysetCatalogAndGroupedCounts (0.00s)
+=== RUN   TestWorkspaceIdentityUsageResolveCountsOnlyExactAuthoritySelectedWorkspace
+--- PASS: TestWorkspaceIdentityUsageResolveCountsOnlyExactAuthoritySelectedWorkspace (0.00s)
+=== RUN   TestWorkspaceIdentityUsageResolveRejectsUntrustedOrInactiveExactScopeBeforeCounting
+=== RUN   TestWorkspaceIdentityUsageResolveRejectsUntrustedOrInactiveExactScopeBeforeCounting/unknown
+=== RUN   TestWorkspaceIdentityUsageResolveRejectsUntrustedOrInactiveExactScopeBeforeCounting/unauthorized
+=== RUN   TestWorkspaceIdentityUsageResolveRejectsUntrustedOrInactiveExactScopeBeforeCounting/inactive
+--- PASS: TestWorkspaceIdentityUsageResolveRejectsUntrustedOrInactiveExactScopeBeforeCounting (0.00s)
+    --- PASS: TestWorkspaceIdentityUsageResolveRejectsUntrustedOrInactiveExactScopeBeforeCounting/unknown (0.00s)
+    --- PASS: TestWorkspaceIdentityUsageResolveRejectsUntrustedOrInactiveExactScopeBeforeCounting/unauthorized (0.00s)
+    --- PASS: TestWorkspaceIdentityUsageResolveRejectsUntrustedOrInactiveExactScopeBeforeCounting/inactive (0.00s)
+=== RUN   TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery
+=== RUN   TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery/inactive
+=== RUN   TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery/unknown_status
+=== RUN   TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery/unauthorized
+=== RUN   TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery/unknown_Workspace
+=== RUN   TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery/blank_id
+=== RUN   TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery/unordered
+--- PASS: TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery (0.00s)
+    --- PASS: TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery/inactive (0.00s)
+    --- PASS: TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery/unknown_status (0.00s)
+    --- PASS: TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery/unauthorized (0.00s)
+    --- PASS: TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery/unknown_Workspace (0.00s)
+    --- PASS: TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery/blank_id (0.00s)
+    --- PASS: TestWorkspaceIdentityUsageRejectsUntrustedCatalogEntriesBeforeQuery/unordered (0.00s)
+=== RUN   TestWorkspaceIdentityUsageFailsClosedForAuthorityLimitsAndAggregateDimensions
+=== RUN   TestWorkspaceIdentityUsageFailsClosedForAuthorityLimitsAndAggregateDimensions/unknownactiveworkspace-a
+=== RUN   TestWorkspaceIdentityUsageFailsClosedForAuthorityLimitsAndAggregateDimensions/humanpendingworkspace-a
+--- PASS: TestWorkspaceIdentityUsageFailsClosedForAuthorityLimitsAndAggregateDimensions (0.00s)
+    --- PASS: TestWorkspaceIdentityUsageFailsClosedForAuthorityLimitsAndAggregateDimensions/unknownactiveworkspace-a (0.00s)
+    --- PASS: TestWorkspaceIdentityUsageFailsClosedForAuthorityLimitsAndAggregateDimensions/humanpendingworkspace-a (0.00s)
+=== RUN   TestWorkspaceIdentityUsageRequiresCurrentContractVersionAndHash
+--- PASS: TestWorkspaceIdentityUsageRequiresCurrentContractVersionAndHash (0.00s)
+=== RUN   TestWorkspaceIdentityUsageAuditFailureReturnsNoResultAndReadsAreNotReplayCached
+--- PASS: TestWorkspaceIdentityUsageAuditFailureReturnsNoResultAndReadsAreNotReplayCached (0.00s)
+=== RUN   TestWorkspaceIdentityUsageCursorCannotMixAuthorizationOrCatalogRevisions
+--- PASS: TestWorkspaceIdentityUsageCursorCannotMixAuthorizationOrCatalogRevisions (0.00s)
+=== RUN   TestWorkspaceIdentityUsageCursorRestartKeySemanticsFailClosed
+--- PASS: TestWorkspaceIdentityUsageCursorRestartKeySemanticsFailClosed (0.00s)
+=== RUN   TestWorkspaceIdentityUsageRepositoryFailureHasAuthorityAttemptAuditButNoSuccessAudit
+--- PASS: TestWorkspaceIdentityUsageRepositoryFailureHasAuthorityAttemptAuditButNoSuccessAudit (0.00s)
+=== RUN   TestWorkspaceIdentityUsageActiveRoleRepositoryFailureHasNoSuccessAudit
+--- PASS: TestWorkspaceIdentityUsageActiveRoleRepositoryFailureHasNoSuccessAudit (0.00s)
+=== RUN   TestApplyWorkspaceIdentityUsageGroupsRejectsOutOfPageWorkspace
+--- PASS: TestApplyWorkspaceIdentityUsageGroupsRejectsOutOfPageWorkspace (0.00s)
+=== RUN   TestRetireRemovedPlatformIdentityMenusDeletesLegacyTree
+--- PASS: TestRetireRemovedPlatformIdentityMenusDeletesLegacyTree (0.44s)
+=== RUN   TestManifestIdentitySeedIncludesProjectNavigation
+--- PASS: TestManifestIdentitySeedIncludesProjectNavigation (0.00s)
+=== RUN   TestManifestIdentitySeedBuildsOrganizationHierarchyAndBootstrapUsers
+--- PASS: TestManifestIdentitySeedBuildsOrganizationHierarchyAndBootstrapUsers (0.00s)
+=== RUN   TestManifestIdentitySeedDoesNotInferPlatformMenusFromBusinessPermissions
+--- PASS: TestManifestIdentitySeedDoesNotInferPlatformMenusFromBusinessPermissions (0.00s)
+=== RUN   TestManifestIdentitySeedMaterializesOneDefaultUserForEveryDeclaredRole
+--- PASS: TestManifestIdentitySeedMaterializesOneDefaultUserForEveryDeclaredRole (0.00s)
+=== RUN   TestManifestIdentitySeedDoesNotExpandWorkspaceCapabilityIntoPlatformMenus
+--- PASS: TestManifestIdentitySeedDoesNotExpandWorkspaceCapabilityIntoPlatformMenus (0.00s)
+=== RUN   TestGeneratedIdentityMenusDoNotPublishBusinessDataOperationsInManagement
+--- PASS: TestGeneratedIdentityMenusDoNotPublishBusinessDataOperationsInManagement (0.00s)
+=== RUN   TestGeneratedIdentityMenusDeclareValidParentChains
+--- PASS: TestGeneratedIdentityMenusDeclareValidParentChains (0.00s)
+=== RUN   TestGeneratedSeedLoginNamesAvoidGlobalDuplicatesAndSurviveResync
+--- PASS: TestGeneratedSeedLoginNamesAvoidGlobalDuplicatesAndSurviveResync (0.00s)
+=== RUN   TestSyncManifestIdentityProfileBindingsCreatesActiveBindingIntent
+--- PASS: TestSyncManifestIdentityProfileBindingsCreatesActiveBindingIntent (0.00s)
+=== RUN   TestSyncManifestIdentityProfileBindingsAcceptsMatchingActiveBinding
+--- PASS: TestSyncManifestIdentityProfileBindingsAcceptsMatchingActiveBinding (0.00s)
+=== RUN   TestProfileBindingClaimDerivesIdentityFromPrincipalAndVerifiesServerFacts
+=== RUN   TestProfileBindingClaimDerivesIdentityFromPrincipalAndVerifiesServerFacts/email
+=== RUN   TestProfileBindingClaimDerivesIdentityFromPrincipalAndVerifiesServerFacts/phone
+=== RUN   TestProfileBindingClaimDerivesIdentityFromPrincipalAndVerifiesServerFacts/external
+--- PASS: TestProfileBindingClaimDerivesIdentityFromPrincipalAndVerifiesServerFacts (0.00s)
+    --- PASS: TestProfileBindingClaimDerivesIdentityFromPrincipalAndVerifiesServerFacts/email (0.00s)
+    --- PASS: TestProfileBindingClaimDerivesIdentityFromPrincipalAndVerifiesServerFacts/phone (0.00s)
+    --- PASS: TestProfileBindingClaimDerivesIdentityFromPrincipalAndVerifiesServerFacts/external (0.00s)
+=== RUN   TestProfileBindingActivationCommandsRejectInactiveOrBlacklistedProfile
+--- PASS: TestProfileBindingActivationCommandsRejectInactiveOrBlacklistedProfile (0.00s)
+=== RUN   TestProfileBindingClaimRejectsUntrustedOrMismatchedProof
+=== RUN   TestProfileBindingClaimRejectsUntrustedOrMismatchedProof/unknown_proof
+=== RUN   TestProfileBindingClaimRejectsUntrustedOrMismatchedProof/profile_mismatch
+=== RUN   TestProfileBindingClaimRejectsUntrustedOrMismatchedProof/account_mismatch
+=== RUN   TestProfileBindingClaimRejectsUntrustedOrMismatchedProof/inactive_account
+=== RUN   TestProfileBindingClaimRejectsUntrustedOrMismatchedProof/external_denied
+--- PASS: TestProfileBindingClaimRejectsUntrustedOrMismatchedProof (0.00s)
+    --- PASS: TestProfileBindingClaimRejectsUntrustedOrMismatchedProof/unknown_proof (0.00s)
+    --- PASS: TestProfileBindingClaimRejectsUntrustedOrMismatchedProof/profile_mismatch (0.00s)
+    --- PASS: TestProfileBindingClaimRejectsUntrustedOrMismatchedProof/account_mismatch (0.00s)
+    --- PASS: TestProfileBindingClaimRejectsUntrustedOrMismatchedProof/inactive_account (0.00s)
+    --- PASS: TestProfileBindingClaimRejectsUntrustedOrMismatchedProof/external_denied (0.00s)
+=== RUN   TestProfileBindingManagedCommandPolicyAndTransitions
+=== RUN   TestProfileBindingManagedCommandPolicyAndTransitions/invite
+=== RUN   TestProfileBindingManagedCommandPolicyAndTransitions/bind
+=== RUN   TestProfileBindingManagedCommandPolicyAndTransitions/rebind
+=== RUN   TestProfileBindingManagedCommandPolicyAndTransitions/unlink
+=== RUN   TestProfileBindingManagedCommandPolicyAndTransitions/invite_bound
+=== RUN   TestProfileBindingManagedCommandPolicyAndTransitions/bind_bound
+=== RUN   TestProfileBindingManagedCommandPolicyAndTransitions/rebind_reason
+=== RUN   TestProfileBindingManagedCommandPolicyAndTransitions/rebind_unchanged
+=== RUN   TestProfileBindingManagedCommandPolicyAndTransitions/unlink_empty
+--- PASS: TestProfileBindingManagedCommandPolicyAndTransitions (0.00s)
+    --- PASS: TestProfileBindingManagedCommandPolicyAndTransitions/invite (0.00s)
+    --- PASS: TestProfileBindingManagedCommandPolicyAndTransitions/bind (0.00s)
+    --- PASS: TestProfileBindingManagedCommandPolicyAndTransitions/rebind (0.00s)
+    --- PASS: TestProfileBindingManagedCommandPolicyAndTransitions/unlink (0.00s)
+    --- PASS: TestProfileBindingManagedCommandPolicyAndTransitions/invite_bound (0.00s)
+    --- PASS: TestProfileBindingManagedCommandPolicyAndTransitions/bind_bound (0.00s)
+    --- PASS: TestProfileBindingManagedCommandPolicyAndTransitions/rebind_reason (0.00s)
+    --- PASS: TestProfileBindingManagedCommandPolicyAndTransitions/rebind_unchanged (0.00s)
+    --- PASS: TestProfileBindingManagedCommandPolicyAndTransitions/unlink_empty (0.00s)
+=== RUN   TestProfileBindingAtomicDeliveryAcceptsOnlyItsValidatedProspectiveTarget
+--- PASS: TestProfileBindingAtomicDeliveryAcceptsOnlyItsValidatedProspectiveTarget (0.00s)
+=== RUN   TestProfileBindingAtomicDeliveryAcceptsOnlyExactEmbeddedStagedProfile
+--- PASS: TestProfileBindingAtomicDeliveryAcceptsOnlyExactEmbeddedStagedProfile (0.00s)
+=== RUN   TestProfileBindingReplayStillRequiresCurrentPurposePermission
+--- PASS: TestProfileBindingReplayStillRequiresCurrentPurposePermission (0.00s)
+=== RUN   TestProfileBindingApplicationBoundaryFailures
+=== RUN   TestProfileBindingApplicationBoundaryFailures/unknown_principal
+=== RUN   TestProfileBindingApplicationBoundaryFailures/invalid_operation
+=== RUN   TestProfileBindingApplicationBoundaryFailures/permission
+=== RUN   TestProfileBindingApplicationBoundaryFailures/invalid_command
+=== RUN   TestProfileBindingApplicationBoundaryFailures/definition
+=== RUN   TestProfileBindingApplicationBoundaryFailures/repository
+=== RUN   TestProfileBindingApplicationBoundaryFailures/record_missing
+--- PASS: TestProfileBindingApplicationBoundaryFailures (0.00s)
+    --- PASS: TestProfileBindingApplicationBoundaryFailures/unknown_principal (0.00s)
+    --- PASS: TestProfileBindingApplicationBoundaryFailures/invalid_operation (0.00s)
+    --- PASS: TestProfileBindingApplicationBoundaryFailures/permission (0.00s)
+    --- PASS: TestProfileBindingApplicationBoundaryFailures/invalid_command (0.00s)
+    --- PASS: TestProfileBindingApplicationBoundaryFailures/definition (0.00s)
+    --- PASS: TestProfileBindingApplicationBoundaryFailures/repository (0.00s)
+    --- PASS: TestProfileBindingApplicationBoundaryFailures/record_missing (0.00s)
+=== RUN   TestProfileBindingReadIsLimitedToManagerOrBoundIdentity
+=== RUN   TestProfileBindingReadIsLimitedToManagerOrBoundIdentity/bound_identity
+=== RUN   TestProfileBindingReadIsLimitedToManagerOrBoundIdentity/manager
+=== RUN   TestProfileBindingReadIsLimitedToManagerOrBoundIdentity/another_exact_Permission_is_not_an_alias
+=== RUN   TestProfileBindingReadIsLimitedToManagerOrBoundIdentity/different_identity
+=== RUN   TestProfileBindingReadIsLimitedToManagerOrBoundIdentity/unknown
+--- PASS: TestProfileBindingReadIsLimitedToManagerOrBoundIdentity (0.00s)
+    --- PASS: TestProfileBindingReadIsLimitedToManagerOrBoundIdentity/bound_identity (0.00s)
+    --- PASS: TestProfileBindingReadIsLimitedToManagerOrBoundIdentity/manager (0.00s)
+    --- PASS: TestProfileBindingReadIsLimitedToManagerOrBoundIdentity/another_exact_Permission_is_not_an_alias (0.00s)
+    --- PASS: TestProfileBindingReadIsLimitedToManagerOrBoundIdentity/different_identity (0.00s)
+    --- PASS: TestProfileBindingReadIsLimitedToManagerOrBoundIdentity/unknown (0.00s)
+=== RUN   TestProfileBindingHighRiskRebindRequiresApprovalAndRevokesOldSessions
+--- PASS: TestProfileBindingHighRiskRebindRequiresApprovalAndRevokesOldSessions (0.00s)
+=== RUN   TestProfileBindingSupportNormalizesMembershipAndUniqueValues
+--- PASS: TestProfileBindingSupportNormalizesMembershipAndUniqueValues (0.00s)
+=== RUN   TestProfileBindingExecuteCoversInputSystemRoleReceiptAndMutationFailures
+--- PASS: TestProfileBindingExecuteCoversInputSystemRoleReceiptAndMutationFailures (0.00s)
+=== RUN   TestProfileBindingCommandValidationCoversIndependentLifecycleConditions
+--- PASS: TestProfileBindingCommandValidationCoversIndependentLifecycleConditions (0.00s)
+=== RUN   TestProfileBindingBusinessActiveAndIdentityValidationEdges
+--- PASS: TestProfileBindingBusinessActiveAndIdentityValidationEdges (0.00s)
+=== RUN   TestProfileBindingClaimVerificationAndDefinitionDependencyEdges
+--- PASS: TestProfileBindingClaimVerificationAndDefinitionDependencyEdges (0.00s)
+PASS
+ok  	github.com/domainry/domainry-identity/internal/application/identity	2.092s
+=== RUN   TestSDKBoundaryNormalizesDomainErrors
+--- PASS: TestSDKBoundaryNormalizesDomainErrors (0.00s)
+=== RUN   TestNewBindingRejectsIncompleteNamedDependencies
+--- PASS: TestNewBindingRejectsIncompleteNamedDependencies (0.00s)
+=== RUN   TestSDKScopePredicateCoversPublishedIdentityScopes
+--- PASS: TestSDKScopePredicateCoversPublishedIdentityScopes (0.00s)
+=== RUN   TestSDKAccessBundleDoesNotInventDataAccessFromFunctionGrant
+--- PASS: TestSDKAccessBundleDoesNotInventDataAccessFromFunctionGrant (0.00s)
+=== RUN   TestSDKAccessBundleDeduplicatesScopedFunctionGrantsAndPreservesDataPolicies
+--- PASS: TestSDKAccessBundleDeduplicatesScopedFunctionGrantsAndPreservesDataPolicies (0.00s)
+=== RUN   TestSDKAccessBundlePreservesTenantScope
+--- PASS: TestSDKAccessBundlePreservesTenantScope (0.00s)
+=== RUN   TestSDKAccessBundlePreservesCompleteV4PolicySemantics
+--- PASS: TestSDKAccessBundlePreservesCompleteV4PolicySemantics (0.00s)
+=== RUN   TestSDKAccessBundleOmitsUnrestrictedAllFieldsExportRule
+--- PASS: TestSDKAccessBundleOmitsUnrestrictedAllFieldsExportRule (0.00s)
+=== RUN   TestSDKAccessBundleFreezesSupportOrganizationScopeAndFailsClosed
+--- PASS: TestSDKAccessBundleFreezesSupportOrganizationScopeAndFailsClosed (0.00s)
+=== RUN   TestSDKAccessBundleUnionsPrimaryAndSupportOrganizationScopes
+--- PASS: TestSDKAccessBundleUnionsPrimaryAndSupportOrganizationScopes (0.00s)
+=== RUN   TestSDKAccessBundleAuthorizesOnlyExactPermissionGrant
+--- PASS: TestSDKAccessBundleAuthorizesOnlyExactPermissionGrant (0.00s)
+=== RUN   TestFunctionGrantRemainsExact
+--- PASS: TestFunctionGrantRemainsExact (0.00s)
+=== RUN   TestIdentityCapabilityBindingTracksOwnerAuthoringDomain
+--- PASS: TestIdentityCapabilityBindingTracksOwnerAuthoringDomain (0.18s)
+=== RUN   TestIdentityCapabilityModuleAndHTTPParity
+=== RUN   TestIdentityCapabilityModuleAndHTTPParity/valid_role
+=== RUN   TestIdentityCapabilityModuleAndHTTPParity/invalid_role
+--- PASS: TestIdentityCapabilityModuleAndHTTPParity (0.31s)
+    --- PASS: TestIdentityCapabilityModuleAndHTTPParity/valid_role (0.00s)
+    --- PASS: TestIdentityCapabilityModuleAndHTTPParity/invalid_role (0.00s)
+=== RUN   TestIdentityCapabilityValidatorUsesOwnerSchema
+--- PASS: TestIdentityCapabilityValidatorUsesOwnerSchema (0.09s)
+=== RUN   TestIdentityCapabilityValidatorAcceptsProtectedInstallationAdministratorExtension
+--- PASS: TestIdentityCapabilityValidatorAcceptsProtectedInstallationAdministratorExtension (0.09s)
+=== RUN   TestIdentityCapabilityValidatorRejectsInvalidPlatformRoleExtensions
+=== RUN   TestIdentityCapabilityValidatorRejectsInvalidPlatformRoleExtensions/marker_must_be_true
+=== RUN   TestIdentityCapabilityValidatorRejectsInvalidPlatformRoleExtensions/only_installation_administrator
+=== RUN   TestIdentityCapabilityValidatorRejectsInvalidPlatformRoleExtensions/identity_policy_is_immutable
+--- PASS: TestIdentityCapabilityValidatorRejectsInvalidPlatformRoleExtensions (0.10s)
+    --- PASS: TestIdentityCapabilityValidatorRejectsInvalidPlatformRoleExtensions/marker_must_be_true (0.00s)
+    --- PASS: TestIdentityCapabilityValidatorRejectsInvalidPlatformRoleExtensions/only_installation_administrator (0.00s)
+    --- PASS: TestIdentityCapabilityValidatorRejectsInvalidPlatformRoleExtensions/identity_policy_is_immutable (0.00s)
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/restricted
+    principal_resolution_reads_test.go:160: real ORM reads: user=2 user-list=2 roles=2 assignments=2
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/role-id-alias
+    principal_resolution_reads_test.go:160: real ORM reads: user=2 user-list=2 roles=2 assignments=2
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/effective
+    principal_resolution_reads_test.go:160: real ORM reads: user=2 user-list=2 roles=2 assignments=2
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/session-display-keeps-union
+    principal_resolution_reads_test.go:160: real ORM reads: user=2 user-list=2 roles=2 assignments=2
+--- PASS: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection (1.98s)
+    --- PASS: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/restricted (0.50s)
+    --- PASS: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/role-id-alias (0.50s)
+    --- PASS: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/effective (0.50s)
+    --- PASS: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/session-display-keeps-union (0.48s)
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/assignment
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/user
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/role
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/permission
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/published-policy
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/expiry
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/eligibility
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/users-error
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/roles-error
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/assignments-error
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/cancelled
+--- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO (5.21s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/assignment (0.50s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/user (0.49s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/role (0.47s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/permission (0.47s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/published-policy (0.47s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/expiry (0.45s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/eligibility (0.45s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/users-error (0.45s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/roles-error (0.45s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/assignments-error (0.51s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/cancelled (0.50s)
+=== RUN   TestSDKPrincipalResolutionExcludesDisabledRoleFromEffectiveUnion
+--- PASS: TestSDKPrincipalResolutionExcludesDisabledRoleFromEffectiveUnion (0.48s)
+=== RUN   TestSDKPrincipalResolutionNeverReusesFactsAcrossRequests
+--- PASS: TestSDKPrincipalResolutionNeverReusesFactsAcrossRequests (0.48s)
+=== RUN   TestSDKMutationFenceFailsClosedForFrozenAndUnavailableWorkspaces
+=== RUN   TestSDKMutationFenceFailsClosedForFrozenAndUnavailableWorkspaces/frozen
+=== RUN   TestSDKMutationFenceFailsClosedForFrozenAndUnavailableWorkspaces/unavailable
+--- PASS: TestSDKMutationFenceFailsClosedForFrozenAndUnavailableWorkspaces (0.00s)
+    --- PASS: TestSDKMutationFenceFailsClosedForFrozenAndUnavailableWorkspaces/frozen (0.00s)
+    --- PASS: TestSDKMutationFenceFailsClosedForFrozenAndUnavailableWorkspaces/unavailable (0.00s)
+=== RUN   TestFederatedLoginFenceResolvesOnlyTheOpaqueStatesWorkspace
+--- PASS: TestFederatedLoginFenceResolvesOnlyTheOpaqueStatesWorkspace (0.00s)
+PASS
+ok  	github.com/domainry/domainry-identity/internal/adapter/identitysdk	10.865s

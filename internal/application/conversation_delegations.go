@@ -3,9 +3,12 @@ package application
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent/internal/execution"
+	"math"
+	"slices"
 	"strings"
 	"time"
 )
@@ -31,7 +34,39 @@ func validConversationBrief(in agentsdk.ConversationTaskBrief) bool {
 		}
 	}
 	raw, err := json.Marshal(in)
-	return err == nil && len(raw) <= 8192 && (in.DueAt == nil || !in.DueAt.IsZero())
+	return err == nil && len(raw) <= 8192 && (in.DueAt == nil || !in.DueAt.IsZero()) && validConversationBriefProvenance(in, false)
+}
+
+func validConversationBriefProvenance(in agentsdk.ConversationTaskBrief, required bool) bool {
+	allowed := map[string]bool{"goal": true, "deliverable": true, "audience": true, "constraints": true, "completion_conditions": true, "assumptions": true, "due_at": true}
+	seen := map[string]bool{}
+	for _, fields := range [][]string{in.ExplicitFields, in.InferredFields} {
+		for _, field := range fields {
+			if !allowed[field] || seen[field] {
+				return false
+			}
+			seen[field] = true
+		}
+	}
+	if len(seen) == 0 {
+		return !required
+	}
+	for _, field := range []string{"goal", "deliverable", "audience", "constraints", "completion_conditions", "assumptions"} {
+		if !seen[field] {
+			return false
+		}
+	}
+	return in.DueAt == nil || seen["due_at"]
+}
+
+func validConversationWorkBudget(value agentsdk.ConversationWorkBudget) bool {
+	if value.MaxInputTokens < 1 || value.MaxInputTokens > 1_000_000_000 || value.MaxOutputTokens < 1 || value.MaxOutputTokens > 100_000_000 || value.MaxDurationSeconds < 1 || value.MaxDurationSeconds > 30*24*60*60 {
+		return false
+	}
+	if value.MaxModelCost == nil {
+		return value.Currency == ""
+	}
+	return *value.MaxModelCost > 0 && !math.IsNaN(*value.MaxModelCost) && !math.IsInf(*value.MaxModelCost, 0) && len(value.Currency) > 0 && len(value.Currency) <= 16
 }
 
 func (s *ConversationService) CreateConversationDelegation(ctx context.Context, in agentsdk.ConversationDelegationCreate, a agentsdk.ConversationAuthority) (agentsdk.ConversationDelegationDetail, error) {
@@ -77,6 +112,12 @@ func (s *ConversationService) CreateConversationDelegation(ctx context.Context, 
 	source, err := s.repo.Get(ctx, in.ConversationID, a)
 	if err != nil {
 		return out, err
+	}
+	if in.WorkBudget != nil && !validConversationWorkBudget(*in.WorkBudget) {
+		return out, conversationFailure("bad_request", "work_budget_invalid")
+	}
+	if source.DelegationID == "" && in.WorkBudget == nil {
+		in.WorkBudget = &agentsdk.ConversationWorkBudget{MaxInputTokens: 16 * 1024 * 1024, MaxOutputTokens: 1024 * 1024, MaxDurationSeconds: 6 * 60 * 60}
 	}
 	if source.DelegationID != "" {
 		repo, err := s.collaborationRepository()
@@ -124,6 +165,9 @@ func (s *ConversationService) CreateConversationDelegation(ctx context.Context, 
 	}
 	if err := s.authorizeCollaboration(delegationExecutorContext(ctx), "receive", &agentsdk.ConversationDelegation{OwnerUserID: a.UserID, FromAgentID: from, ToAgentID: agent.ID, ExecutionSubject: executionSubject(executor)}, executor); err != nil {
 		return out, err
+	}
+	if agent.External != nil && len(in.OutputSchema) > 0 && !agent.External.Capabilities.StructuredOutput {
+		return out, conversationFailure("conflict", "external_agent_structured_output_unsupported")
 	}
 	sourceAgent, err := s.freezeConversationAgent(ctx, from, a)
 	if err != nil {
@@ -173,15 +217,29 @@ func (s *ConversationService) CreateConversationDelegation(ctx context.Context, 
 		// as an execution resource owned by the recipient.
 		authorizationConversation, authorizationRun = "", ""
 	}
-	task, err := s.prepareConversationTaskStart(targetCtx, agentsdk.ConversationTaskStart{Goal: in.Brief.Goal, Input: in.Input, AllowedTools: allowed, Budget: in.Budget}, executor, authorizationConversation, authorizationRun, nil)
+	task, err := s.prepareConversationTaskStart(targetCtx, agentsdk.ConversationTaskStart{Goal: in.Brief.Goal, Input: in.Input, AllowedTools: allowed, Budget: in.Budget, Model: in.Model}, executor, authorizationConversation, authorizationRun, nil)
 	if err != nil {
 		return out, err
 	}
 	task.SourceConversationID, task.SourceRunID = source.ID, peer.RunID
+	sourceBeforeStep := 0
+	if peer.ToolRequest != nil {
+		sourceBeforeStep = peer.ToolRequest.Step + 1
+	}
+	task.InputContent, err = s.inheritedConversationRunImages(ctx, source.ID, peer.RunID, sourceBeforeStep, a)
+	if err != nil {
+		return out, err
+	}
+	if err = s.requireConversationImageModel(targetCtx, task.InputContent); err != nil {
+		return out, err
+	}
 	task.Brief = &in.Brief
 	task.StructuredInput = in.StructuredInput
 	task.MaxInputBytes = s.options.MaxInputBytes
 	task.Requirements = in.Requirements
+	if agent.External != nil {
+		task.ExternalExecution = &agentsdk.ConversationExternalAgentExecution{Protocol: agent.External.Protocol, Version: agent.External.Version, Status: "waiting_claim", Capabilities: agent.External.Capabilities, Attempt: 1, Events: []agentsdk.ConversationExternalAgentEvent{}, EventsComplete: true, DetailsAvailable: agent.External.Capabilities.ExecutionDetails}
+	}
 	if !conversationText(agentsdk.ConversationTaskPrompt(task), s.options.MaxInputBytes, true) {
 		return out, conversationFailure("bad_request", "task_input_exceeded")
 	}
@@ -202,6 +260,50 @@ func (s *ConversationService) CreateConversationDelegation(ctx context.Context, 
 }
 
 func (s *ConversationService) projectConversationDelegation(ctx context.Context, d agentsdk.ConversationDelegation, a agentsdk.ConversationAuthority) (agentsdk.ConversationDelegationDetail, error) {
+	if repo, ok := s.repo.(persistence.ConversationWorkBudgetRepository); ok {
+		budget, usage, err := repo.ConversationWorkBudget(ctx, d.ID, a)
+		if err == nil {
+			d.WorkBudget, d.WorkUsage = &budget, &usage
+		} else {
+			var coded *agentsdk.Error
+			if !errors.As(err, &coded) || coded.Class != "not_found" {
+				return agentsdk.ConversationDelegationDetail{}, err
+			}
+		}
+	}
+	if d.SubjectExited {
+		return s.projectUnavailableDelegation(ctx, d, a)
+	}
+	out, err := s.projectConversationDelegationContent(ctx, d, a)
+	if err == nil || !collaborationDenied(err) {
+		return out, err
+	}
+	// A source denial must leave a recovery route for a currently authorized
+	// viewer. No source-derived text, tasks, messages or deliveries survive.
+	return s.projectUnavailableDelegation(ctx, d, a)
+}
+
+func (s *ConversationService) projectUnavailableDelegation(ctx context.Context, d agentsdk.ConversationDelegation, a agentsdk.ConversationAuthority) (agentsdk.ConversationDelegationDetail, error) {
+	access, accessErr := s.collaborationAccess(ctx, d, a)
+	if accessErr != nil {
+		return agentsdk.ConversationDelegationDetail{}, accessErr
+	}
+	if !access.View {
+		return agentsdk.ConversationDelegationDetail{}, conversationFailure("forbidden", "collaboration_access_denied")
+	}
+	if d.SubjectExited {
+		access.Receive, access.ExecutionRead, access.DeliveryRead = false, false, false
+	}
+	sourceConversationID, conversationID := d.SourceConversationID, d.ConversationID
+	if d.OwnerUserID != "" && d.OwnerUserID != a.UserID && !delegationExecutor(d, a) {
+		sourceConversationID, conversationID = "", ""
+	}
+	return agentsdk.ConversationDelegationDetail{ContractOmitted: true, Access: &access, Messages: []agentsdk.ConversationAgentMessage{}, ConversationDelegation: agentsdk.ConversationDelegation{
+		ID: d.ID, SubjectExited: d.SubjectExited, OwnerUserID: d.OwnerUserID, ExecutionSubject: d.ExecutionSubject, FromAgentID: d.FromAgentID, ToAgentID: d.ToAgentID, SourceConversationID: sourceConversationID, ConversationID: conversationID, Status: d.Status, Revision: d.Revision, AgreementRevision: d.AgreementRevision, WorkBudget: d.WorkBudget, WorkUsage: d.WorkUsage, CreatedAt: d.CreatedAt, UpdatedAt: d.UpdatedAt,
+	}}, nil
+}
+
+func (s *ConversationService) projectConversationDelegationContent(ctx context.Context, d agentsdk.ConversationDelegation, a agentsdk.ConversationAuthority) (agentsdk.ConversationDelegationDetail, error) {
 	access, accessErr := s.collaborationAccess(ctx, d, a)
 	if accessErr != nil {
 		return agentsdk.ConversationDelegationDetail{}, accessErr
@@ -229,6 +331,16 @@ func (s *ConversationService) projectConversationDelegation(ctx context.Context,
 	contractCtx, contractErr := s.delegationContractSourceContext(ctx, d, a)
 	if contractErr != nil {
 		return agentsdk.ConversationDelegationDetail{}, contractErr
+	}
+	contractAudit := s.sourceAudit(a)
+	contractRoots := d.Requirements.Sources
+	if scope, ok := contractCtx.Value(conversationPublishedSourceKey{}).(conversationPublishedSource); ok {
+		contractRoots = scope.roots
+	}
+	for _, ref := range mergeConversationSources(contractRoots) {
+		if _, err := contractAudit.run(contractCtx, ref); err != nil {
+			return agentsdk.ConversationDelegationDetail{}, err
+		}
 	}
 	projectDisagreementVerification(&d)
 	if err := s.projectDisagreements(deliveryCtx, &d, a, ""); err != nil {
@@ -279,11 +391,8 @@ func (s *ConversationService) projectConversationDelegation(ctx context.Context,
 				}
 			}
 			if item.PreviousDelivery != nil {
-				for _, assessment := range item.PreviousDelivery.Conditions {
-					if err = s.checkCompletionReceipts(deliveryCtx, assessment.Receipts, a, ""); err != nil {
-						item.PreviousDelivery = nil
-						break
-					}
+				if err = s.checkCompletionReceipts(deliveryCtx, conditionAssessmentReceipts(item.PreviousDelivery.Conditions), a, ""); err != nil {
+					item.PreviousDelivery = nil
 				}
 			}
 			if item.PreviousDelivery != nil {
@@ -308,15 +417,8 @@ func (s *ConversationService) projectConversationDelegation(ctx context.Context,
 		}
 	}
 	for _, edge := range d.Dependencies {
-		if edge.InputSource != nil {
-			if _, err := audit.run(ctx, *edge.InputSource); err != nil {
-				return agentsdk.ConversationDelegationDetail{}, err
-			}
-		}
-		if edge.Source != nil {
-			if _, err := audit.run(ctx, *edge.Source); err != nil {
-				return agentsdk.ConversationDelegationDetail{}, err
-			}
+		if _, err := audit.dependency(ctx, edge); err != nil {
+			return agentsdk.ConversationDelegationDetail{}, err
 		}
 	}
 	var dependencyErr error
@@ -375,12 +477,9 @@ func (s *ConversationService) projectConversationDelegation(ctx context.Context,
 		}
 	}
 	if d.Delivery != nil {
-		for _, assessment := range d.Delivery.Conditions {
-			if err := s.checkCompletionReceipts(deliveryCtx, assessment.Receipts, a, ""); err != nil {
-				out.Delivery = nil
-				out.Verification = nil
-				break
-			}
+		if err := s.checkCompletionReceipts(deliveryCtx, conditionAssessmentReceipts(d.Delivery.Conditions), a, ""); err != nil {
+			out.Delivery = nil
+			out.Verification = nil
 		}
 		for _, ref := range d.Delivery.Evidence {
 			if err = s.checkRunSources(deliveryCtx, ref, a); err != nil {
@@ -445,11 +544,23 @@ func (s *ConversationService) UpdateConversationDelegation(ctx context.Context, 
 	if in.Participants != nil && in.Action != "set_participants" {
 		return out, conversationFailure("bad_request", "delegation_participants_invalid")
 	}
+	if in.Publication != nil && in.Action != "republish_delivery" {
+		return out, conversationFailure("bad_request", "delivery_publication_invalid")
+	}
+	if in.ContractPublication != nil && in.Action != "republish_contract" {
+		return out, conversationFailure("bad_request", "contract_publication_invalid")
+	}
 	if !conversationKey(in.ClientID) || in.ExpectedRevision < 1 || !conversationText(in.Reason, 4096, true) || in.Brief != nil && !validConversationBrief(*in.Brief) {
 		return out, conversationFailure("bad_request", "delegation_update_invalid")
 	}
 	if err := validateConversationStructuredInput(in.StructuredInput); err != nil {
 		return out, err
+	}
+	if in.Action == "republish_contract" {
+		return s.republishConversationContract(ctx, id, in, a)
+	}
+	if in.Action == "republish_delivery" {
+		return s.republishConversationDelivery(ctx, id, in, a)
 	}
 	if in.Dependencies != nil {
 		if err := validateDependencyInputs(*in.Dependencies); err != nil {
@@ -486,6 +597,29 @@ func (s *ConversationService) UpdateConversationDelegation(ctx context.Context, 
 			return out, err
 		}
 	}
+	participantManager := d.OwnerUserID != "" && d.OwnerUserID != a.UserID && slices.Contains(participantOperations(d, a.UserID), "manage")
+	if !participantManager && (in.Action == "pause" || in.Action == "cancel" || in.Action == "resume") {
+		task, taskErr := s.delegationTaskRecord(ctx, d, a)
+		if taskErr != nil {
+			return out, taskErr
+		}
+		if task.ExternalExecution != nil {
+			if (in.Action == "pause" || in.Action == "cancel") && !task.ExternalExecution.Capabilities.Cancellation {
+				return out, conversationFailure("conflict", "external_agent_cancellation_unsupported")
+			}
+			if in.Action == "resume" {
+				if !task.ExternalExecution.Capabilities.Resume {
+					return out, conversationFailure("conflict", "external_agent_resume_unsupported")
+				}
+				if !task.ExternalExecution.StopAcknowledged {
+					return out, conversationFailure("conflict", "external_agent_stop_unconfirmed")
+				}
+				if task.ExternalExecution.EffectState == "unknown" {
+					return out, conversationFailure("conflict", "delegation_reconciliation_required")
+				}
+			}
+		}
+	}
 	if in.Action == "update_input" {
 		if in.StructuredInput == nil {
 			return out, conversationFailure("bad_request", "structured_input_invalid")
@@ -510,7 +644,11 @@ func (s *ConversationService) UpdateConversationDelegation(ctx context.Context, 
 		if in.Action != "accept_delivery" && in.Action != "review_delivery" {
 			return out, conversationFailure("bad_request", "completion_assessment_invalid")
 		}
-		if err = s.checkCompletionAssessments(ctx, d.Brief, in.Review.Conditions, a, peer.ConversationID); err != nil {
+		reviewCtx, sourceErr := s.delegationDeliverySourceContext(ctx, d, a)
+		if sourceErr != nil {
+			return out, sourceErr
+		}
+		if err = s.checkCompletionAssessments(reviewCtx, d.Brief, in.Review.Conditions, a, peer.ConversationID); err != nil {
 			return out, err
 		}
 	}
@@ -528,7 +666,7 @@ func (s *ConversationService) UpdateConversationDelegation(ctx context.Context, 
 			if peer.ConversationID != d.ConversationID {
 				return out, conversationFailure("forbidden", "delegation_actor_invalid")
 			}
-		} else if peer.ConversationID != d.SourceConversationID {
+		} else if !participantManager && peer.ConversationID != d.SourceConversationID {
 			return out, conversationFailure("forbidden", "delegation_actor_invalid")
 		}
 	}
@@ -579,13 +717,28 @@ func (s *ConversationService) UpdateConversationDelegation(ctx context.Context, 
 			return out, conversationFailure("conflict", "delegation_still_running")
 		}
 	}
+	if in.Action == "resume" {
+		if err = s.authorizeDelegationResume(ctx, d, a); err != nil {
+			return out, err
+		}
+	}
+
 	d, err = repo.UpdateConversationDelegation(ctx, id, in, a)
 	if err != nil {
 		return out, err
 	}
 
 	s.signalConversationTasks()
+	if participantManager {
+		return delegationManagementReceipt(d), nil
+	}
 	return s.projectConversationDelegation(ctx, d, a)
+}
+
+func delegationManagementReceipt(d agentsdk.ConversationDelegation) agentsdk.ConversationDelegationDetail {
+	return agentsdk.ConversationDelegationDetail{ManagementOnly: true, Messages: []agentsdk.ConversationAgentMessage{}, ConversationDelegation: agentsdk.ConversationDelegation{
+		ID: d.ID, OwnerUserID: d.OwnerUserID, Status: d.Status, Revision: d.Revision, Decision: d.Decision, UpdatedAt: d.UpdatedAt,
+	}}
 }
 
 func (s *ConversationService) validateConversationDelivery(ctx context.Context, d agentsdk.ConversationDelegation, delivery *agentsdk.ConversationDelegationDelivery, a agentsdk.ConversationAuthority) error {
@@ -699,6 +852,9 @@ func (s *ConversationService) SendConversationAgentMessage(ctx context.Context, 
 			return out, err
 		}
 		in.ExecutionAgent = task.Agent
+		if task.ExternalExecution != nil && task.Status == agentsdk.ConversationTaskStatusRunning && !task.ExternalExecution.Capabilities.Steering {
+			return out, conversationFailure("conflict", "external_agent_steering_unsupported")
+		}
 	} else if in.ToAgentID == d.FromAgentID {
 		in.ExecutionAgent = d.SourceAgent
 	}

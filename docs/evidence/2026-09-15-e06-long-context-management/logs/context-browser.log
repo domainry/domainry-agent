@@ -1,0 +1,8 @@
+=== RUN   TestLongContextManagementBuiltBrowser
+PASS registered project, business and file context stays ordered, refreshes by version and reports exact provider pressure and cache use
+PASS compiled UI exposes bounded source versions, change history, compaction and provider cache diagnostics without source content or hashes
+PASS revoking the old source removes the derived historical reply while a newly authorized source version can continue
+PASS context diagnostics remain readable at 390px after source refresh and revocation
+--- PASS: TestLongContextManagementBuiltBrowser (7.89s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	8.537s

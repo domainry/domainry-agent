@@ -1,0 +1,211 @@
+{
+  "date": "2026-09-14",
+  "item": "C07",
+  "files": [
+    {
+      "path": "acceptance.json",
+      "bytes": 2137,
+      "sha256": "03e012dbdad0b97ca2bb2135be5a61bc1d08625dfb6493d35cf6477cdbdc2132"
+    },
+    {
+      "path": "browser-report.json",
+      "bytes": 758,
+      "sha256": "b61b83ab1b1b8886cdb9efeb167412e574a4a7d820daa07dab3feb950f402828"
+    },
+    {
+      "path": "commands.md",
+      "bytes": 1971,
+      "sha256": "07330c3e70e56f381b36201a09503d7e5d43ace34228d17c1f00986c8f2c4cc4"
+    },
+    {
+      "path": "logs/agent-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/agent-focused-race.log",
+      "bytes": 98,
+      "sha256": "50ace08a23d492b03666dd656edb3baa86d8f58fc7f9ac3bc192b71fcdfb0a0d"
+    },
+    {
+      "path": "logs/agent-product-go-test.log",
+      "bytes": 2637,
+      "sha256": "65c27d1f0ae4bfb5eef6d082baf772e4977d3052e98097770376c1c7717d6005"
+    },
+    {
+      "path": "logs/agent-recovery-browser.log",
+      "bytes": 182,
+      "sha256": "8e7e965d4c83af303e3f51befa520f5263fdc8513ba84022fbd3dda819fbbffa"
+    },
+    {
+      "path": "logs/frontend-build.log",
+      "bytes": 32521,
+      "sha256": "888c4b46adcdf850eceaaa0cce14a5c82da4b4465eeaf8beceb5f6de42605a47"
+    },
+    {
+      "path": "logs/frontend-test.log",
+      "bytes": 11181,
+      "sha256": "1f245314785e34b650cd9db31015ec5e62afdfc32755b49641eca1fa10348694"
+    },
+    {
+      "path": "logs/sdk-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/sdk-go-test.log",
+      "bytes": 605,
+      "sha256": "a4e80776c62705684f66b00e574c993696c78131eb939d36e2ff6e90b22bfb92"
+    },
+    {
+      "path": "screenshots/agent-recovery-budget-desktop.png",
+      "bytes": 194113,
+      "sha256": "0f0c11ee8529bc1edfce6acc02ebb1d8d7f90e4b602f08272ac58a993384c639"
+    },
+    {
+      "path": "screenshots/agent-recovery-desktop.png",
+      "bytes": 222208,
+      "sha256": "fce0c95ba5a26c1848cd4d6c4b874bfb97b714393a80ac63ec0c81608c3bdb39"
+    },
+    {
+      "path": "screenshots/agent-recovery-form-desktop.png",
+      "bytes": 183601,
+      "sha256": "82e5f4e81acdb28646e19bf58c1584b5fcfc749cc5fd8eb5aba53f88fde6832b"
+    },
+    {
+      "path": "screenshots/agent-recovery-mobile.png",
+      "bytes": 96782,
+      "sha256": "753411b17be04b562637d0b24ef33644382edc3c89b9b1b532d018d8b7296aa2"
+    },
+    {
+      "path": "source/agent/docs/agent-core-capabilities-todo.md",
+      "bytes": 69395,
+      "sha256": "d1e8e3dd5688bc8201e4c569ff1522bcd315288030d5176340e508df88e6c898"
+    },
+    {
+      "path": "source/agent/docs/testing-2026-09-14-c07-collaboration-recovery.md",
+      "bytes": 3929,
+      "sha256": "90a3d04c1c3caf6dbf2f9ab9bec69c6201c4ee44b303fc5f543eb304e627ca9a"
+    },
+    {
+      "path": "source/agent/frontend/src/CollaborationDialog.tsx",
+      "bytes": 41736,
+      "sha256": "d398803e24c7659e3b5f446bcae3ab5e638c2442e0ca0ed85455d5d8d0788b3a"
+    },
+    {
+      "path": "source/agent/frontend/src/collaboration-state.test.ts",
+      "bytes": 16347,
+      "sha256": "69d38ab827b3111db9cf755031bb14003011615488566fc8cba5664e69826ea1"
+    },
+    {
+      "path": "source/agent/frontend/src/collaboration-state.ts",
+      "bytes": 24628,
+      "sha256": "5a9804e0dcdccecefed800e8fe5af9167ade2519e5a9a205fb129e390f5fbea2"
+    },
+    {
+      "path": "source/agent/frontend/src/errors.ts",
+      "bytes": 30300,
+      "sha256": "f6437c70b7c66ab150ecb53f68fae9317e78c92b83c211e5f14879f61d11564f"
+    },
+    {
+      "path": "source/agent/frontend/tests/agent-recovery.browser.mjs",
+      "bytes": 4553,
+      "sha256": "1bd57c0a305f504e05e29b1d164f6dbaa1412a71ca664c6c6daa3f0aa9d18690"
+    },
+    {
+      "path": "source/agent/internal/application/conversation_execution.go",
+      "bytes": 29457,
+      "sha256": "01e60d31b2fb88aceb7315b0db8f99a5a20b3f77b3aa9501f08c1ba9cc1d486d"
+    },
+    {
+      "path": "source/agent/internal/application/conversation_transfer.go",
+      "bytes": 9074,
+      "sha256": "a31c36311ec87d556736931d020631db33b2deac99e2b8bc96cd0fca38962f62"
+    },
+    {
+      "path": "source/agent/internal/assembly/web/conversation_agent_recovery_browser_test.go",
+      "bytes": 7251,
+      "sha256": "f2710ba019ffb384d64aac071a63c018660ff7364b720f67e5d83a696ec402f1"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_dependencies_store_test.go",
+      "bytes": 21157,
+      "sha256": "acaf862bbde3aa596865b8b735a49bb4b8404879be2d648e9dcc0e1368d2fd04"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_execution_store.go",
+      "bytes": 18361,
+      "sha256": "31a7a59518891139474f7322ccde9331d163155e234091f0d4c9c9bc4cca80d6"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_peer_delivery_store.go",
+      "bytes": 7718,
+      "sha256": "e519197c635703a8a993d35ced1d7fdbdd6ea1035ad248fa72528df564815c27"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_peer_messages_store.go",
+      "bytes": 10643,
+      "sha256": "874dd2b4dd648f96d6feffa16d3e2937b39a4b4eaebd42b6f9d9c2d5414f3301"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_transfer_store.go",
+      "bytes": 13184,
+      "sha256": "31959963ce0e645a43a8e521a944c1a719423a4fdc7835e3bdf73b2046aa138b"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_transfer_store_test.go",
+      "bytes": 15714,
+      "sha256": "3dddebdb4a8ef5b15ef059661255763b8a8db83710e3a49fe5d079722cafe7c2"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_work_budget_schema.go",
+      "bytes": 859,
+      "sha256": "7c67a8d16c08b47dc60786b05206ffc2830ac8845b3f90d7deb3d0c1383b5293"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_work_budget_store.go",
+      "bytes": 16606,
+      "sha256": "212dda9b5bf58e32ebb8edc1c6235b28cca47627553d2bf6b20dc19ef3407d5f"
+    },
+    {
+      "path": "source/agent/internal/infrastructure/persistence/database/agent/conversation_work_budget_store_test.go",
+      "bytes": 6445,
+      "sha256": "8dc821d83266b8fb68266b4cd695176e24af2bb0e0cbe6f8b75a031e82bc6b9e"
+    },
+    {
+      "path": "source/agent/module/factory_test.go",
+      "bytes": 6604,
+      "sha256": "74529b0ab66c5d262da7b6983dc6386c46cdfd262d4f68bc055e64502d19958d"
+    },
+    {
+      "path": "source/sdk/conversation_collaboration.go",
+      "bytes": 19081,
+      "sha256": "7543343cfabea46ceec23da6bf2f1517e787e35d62a1a372ffc8a2b47f7b5d1a"
+    },
+    {
+      "path": "source/sdk/conversation_collaboration_tools.go",
+      "bytes": 17981,
+      "sha256": "ada8dd3fd7c858054391bb4996fb68a3d9acae500094b9716753e90f4b265d56"
+    },
+    {
+      "path": "source/sdk/conversation_execution.go",
+      "bytes": 9299,
+      "sha256": "975e536c92e4ae1178e00984b87fbb5971f5c932e578f351ea7318308056a001"
+    },
+    {
+      "path": "source/sdk/conversation_task.go",
+      "bytes": 25154,
+      "sha256": "800cf376028c73ef906f27460e2b97fb6b7430aea36f187f382940397792d7f8"
+    },
+    {
+      "path": "source/sdk/persistence/conversation_execution.go",
+      "bytes": 5178,
+      "sha256": "77346dc2274b365240381563e09a42b7dbf06c23180a8ec2fb817c6f938dc307"
+    },
+    {
+      "path": "source-sha256.json",
+      "bytes": 3349,
+      "sha256": "90604f86eee9f7003aedd1eadb5a3413110be927abc3dd891e5458ce44cfac01"
+    }
+  ]
+}

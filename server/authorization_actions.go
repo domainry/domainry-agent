@@ -61,6 +61,7 @@ func SaaSAuthorizationActions() ([]actioncontract.ActionDefinition, error) {
 		{actionAgentSaaSCapabilityCategory, "GET " + modulecapability.CategoriesPath + "{key}", "agent.saas.capability", "Agent capability protocol", "Read capability category", read, low, "not_applicable"},
 		{actionAgentSaaSCapabilityValidation, "POST " + modulecapability.ValidationPath, "agent.saas.capability", "Agent capability protocol", "Validate capability candidate", read, low, "not_applicable"},
 		{agentsdk.ActionAgentScheduledConversationTaskStart, "POST /agent/v1/conversations/scheduled_task_start", "agent.saas.conversations", "Agent persistent conversations", "Accept scheduled background task", write, medium, "request_contract"},
+		{agentsdk.ActionAgentBusinessEventConversationTaskAccept, "POST /agent/v1/conversations/business_event_task_accept", "agent.saas.conversations", "Agent persistent conversations", "Accept verified business-event task", write, medium, "request_contract"},
 
 		{agentSaaSRepositoryActionPrefix + "definitions.sync", "POST /agent/v1/definitions/sync", "agent.saas.repository.definitions", "Agent definition repository", "Synchronize definitions", write, high, "request_contract"},
 		{agentSaaSRepositoryActionPrefix + "definitions.snapshot", "POST /agent/v1/definitions/snapshot", "agent.saas.repository.definitions", "Agent definition repository", "Read definition snapshot", read, low, "not_applicable"},
@@ -93,12 +94,20 @@ func SaaSAuthorizationActions() ([]actioncontract.ActionDefinition, error) {
 		{agentSaaSRepositoryActionPrefix + "lifecycle.delete", "POST /agent/v1/lifecycle/executions/delete", "agent.saas.repository.lifecycle", "Agent lifecycle repository", "Delete lifecycle execution", write, high, "request_contract"},
 	}
 
+	conversationActions, err := agentsdk.AgentAuthorizationActions()
+	if err != nil {
+		return nil, err
+	}
+	conversationEffects := map[string]actioncontract.EffectClass{}
+	for _, action := range conversationActions {
+		conversationEffects[action.Key] = action.EffectClass
+	}
 	for _, d := range agentsdk.ConversationHTTPDefinitions() {
 		if d.Operation == "stream" {
 			continue
 		}
 		effect, risk := write, medium
-		if strings.HasPrefix(d.Pattern, "GET ") {
+		if conversationEffects[agentsdk.ConversationActionPrefix+d.Operation] == read {
 			effect, risk = read, low
 		}
 		specs = append(specs, saasHTTPActionSpec{conversationSaaSActionPrefix + d.Operation, "POST /agent/v1/conversations/" + d.Operation, "agent.saas.conversations", "Agent persistent conversations", d.Operation, effect, risk, "request_contract"})

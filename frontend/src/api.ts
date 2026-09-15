@@ -1,11 +1,12 @@
 import { ApiError } from "./errors.ts";
 import { sessionFetch, sessionScope } from "./session.ts";
-import { applyExecutionEvent, executionEventNames, type ExecutionEvent, type StepView } from "./execution-state.ts";
+import { applyExecutionEvent, executionEventNames, type ContextView, type ExecutionEvent, type StepView } from "./execution-state.ts";
 import { applyInteractionEvent, interactionEventNames, waiting, type Interaction } from "./interaction-state.ts";
 import type { Citation } from "./knowledge-state.ts";
 import type { ExecutionSubject } from "./collaboration-state.ts";
 export type ConversationRecord = {
   agent_id?: string; delegation_id?: string;
+	fork?: { conversation_id: string; run_id: string; boundary_event_seq: number; created_at: string };
   id: string;
   title: string;
   archived: boolean;
@@ -22,11 +23,15 @@ export type MessageRecord = {
 	access_error?: string;
 	background_task_id?: string;
   id: string;
+	conversation_id: string;
   run_id: string;
   seq: number;
   role: "user" | "assistant";
   content: string;
+	content_blocks?: ContentBlock[];
 };
+export type ImageReference = { source?: RunReference; attachment_id: string; conversation_id: string; filename: string; content_type: string; bytes: number; sha256: string; revision: number; detail?: "auto" | "low" | "high" };
+export type ContentBlock = { type: "text"; text: string } | { type: "image"; image: ImageReference };
 export type Run = {
 	agent?: {id:string;revision:number;owner_user_id?:string;execution_subject?:ExecutionSubject};
 	access_error?: string;
@@ -43,8 +48,10 @@ export type Run = {
   interaction?: Interaction;
   model?: string;
   usage?: Record<string, unknown>;
+  model_attempts?: {step:number;run_attempt:number;number:number;status:string;error_code?:string;retry_at?:string;retry_delay_ms?:number;usage?:Record<string,unknown>;started_at:string;completed_at?:string}[];
+  context?: ContextView;
   correlation_id?: string;
-  metrics?: { steps: number; model_calls: number; tool_calls: number; tool_attempts: number; authorization_checks: number; confirmation_decisions: number };
+  metrics?: { steps: number; model_calls: number; model_retries:number; tool_calls: number; tool_attempts: number; parallel_tool_batches: number; parallel_tool_calls: number; peak_parallel_tools: number; authorization_checks: number; confirmation_decisions: number; context_compactions: number; compacted_results: number; compacted_intervals: number; peak_context_bytes: number; context_limit_bytes: number; cache_read_input_tokens: number; cache_creation_input_tokens: number };
   audit?: RunAuditEvent[];
   audit_complete?: boolean;
   started_at?: string;
@@ -58,10 +65,12 @@ export type Run = {
 };
 export type RunAuditEvent = {
   seq: number;
-  type: "run" | "step" | "model" | "tool" | "authorization" | "confirmation" | "interaction";
+  type: "run" | "context" | "step" | "model" | "tool" | "authorization" | "confirmation" | "interaction";
   status: string;
   step: number;
   attempt?: number;
+  model_attempt?:number;
+  retry_delay_ms?:number;
   call_id?: string;
   tool?: string;
   action_key?: string;
@@ -72,12 +81,31 @@ export type RunAuditEvent = {
   duration_ms?: number;
   occurred_at: string;
 };
+export type RunReference = { conversation_id: string; run_id: string; before_step?: number };
+export type TrajectoryMessage = { role: string; content: string; content_blocks?: ContentBlock[]; tool_calls?: { id: string; name: string; arguments: string }[]; tool_call_id?: string; is_error?: boolean };
+export type TrajectoryToolDefinition = { definition: { key: string; version: string; description: string; input_schema: unknown; output_schema: unknown; action_key: string; effect: string; idempotency: string; parallelism?: string; timeout_ms: number; max_output_bytes: number }; sha256: string };
+export type TrajectoryRequest = { index: number; step: number; purpose: string; model: { provider: string; protocol: string; model: string; fingerprint: string }; reasoning_effort?: string; messages: TrajectoryMessage[]; tools?: TrajectoryToolDefinition[]; context?: ContextView; sha256: string };
+export type TrajectoryResponse = { request_index: number; step: number; finish_reason: string; model?: string; message: TrajectoryMessage; usage?: Record<string, unknown>; sha256: string };
+export type TrajectoryTool = { step: number; call: { id: string; name: string; arguments: string }; definition: TrajectoryToolDefinition; state: string; result?: { completion?: string; status: string; content?: unknown; error_code?: string; resource_id?: string }; sha256: string };
+export type ConversationTrajectory = { version: number; mode: "display"; source: RunReference; boundary_event_seq: number; run_status: string; requests: TrajectoryRequest[]; responses: TrajectoryResponse[]; tools: TrajectoryTool[]; sha256: string; recorded_at: string };
+export type TrajectoryReplay = { mode: "display" | "model_fixture" | "live_rerun"; source: RunReference; trajectory_sha256: string; consumed_requests: number; recorded_responses?: TrajectoryResponse[]; recorded_tools?: TrajectoryTool[]; effects_executed: boolean; ready_for_input?: boolean; fork?: ConversationRecord };
+export type TrajectoryComparison = { left: RunReference; right: RunReference; left_sha256: string; right_sha256: string; equal: boolean; differences: { kind: string; index: number; left_sha256?: string; right_sha256?: string }[] };
+export type MemoryKind = "user_preference" | "project_fact" | "task_context";
+export type MemoryScopeKind = "workspace" | "conversation" | "task";
 export type Memory = {
   id: string;
+  kind: MemoryKind;
   title: string;
   content: string;
   enabled: boolean;
+  scope: { kind: MemoryScopeKind; conversation_id?: string; task_id?: string };
+  applies_to: string[];
+  source?: { kind: string; conversation_id?: string; message_id?: string; run_id?: string; task_id?: string; artifact_id?: string; artifact_version?: number; feedback_id?: string; captured_at: string };
+  correction?: { previous_revision: number; reason: string };
+  uncertainty?: string;
   revision: number;
+  created_at: string;
+  updated_at: string;
 };
 export type MessagePage = { items: MessageRecord[]; next_before_seq?: number };
 export type ConversationPage = {
@@ -130,6 +158,35 @@ export const conversationPath = (id: string) =>
   `/agent/conversations/${encodeURIComponent(id)}`;
 export const runPath = (id: string, runId: string) =>
   `${conversationPath(id)}/runs/${encodeURIComponent(runId)}`;
+export const trajectoryPath = (id: string, runId: string) => `${runPath(id, runId)}/trajectory`;
+
+export async function exportConversationTrajectory(id: string, runId: string, signal?: AbortSignal) {
+  let response: Response;
+  try {
+    response = await sessionFetch(`${trajectoryPath(id, runId)}/export`, { credentials: "same-origin", signal });
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("network_error");
+  }
+  if (!response.ok) {
+    let code = "request_failed";
+    try {
+      const value = await response.json() as { code?: string };
+      if (value.code) code = value.code;
+    } catch { /* use the generic code */ }
+    throw new ApiError(code, response.status);
+  }
+  const disposition = response.headers.get("Content-Disposition") || "";
+  const encoded = disposition.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
+  const quoted = disposition.match(/filename="([^"]+)"/i)?.[1];
+  const plain = disposition.match(/filename=([^;]+)/i)?.[1]?.trim().replace(/^"|"$/g, "");
+  return {
+    blob: await response.blob(),
+    filename: encoded ? decodeURIComponent(encoded) : quoted || plain || `conversation-trajectory-${runId}.json`,
+    sha256: response.headers.get("X-Content-SHA256") || "",
+  };
+}
 
 // The server owns the stream. Reconnect from a persisted run snapshot; never
 // repeat the message POST when an EventSource connection ends.

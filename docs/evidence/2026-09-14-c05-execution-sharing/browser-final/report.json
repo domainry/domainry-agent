@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "page_errors": [],
+  "scenarios": [
+    "actual third-user shared tool parameters and results",
+    "inspection cannot confirm or resume",
+    "executor withdraw clears open run",
+    "executor explicitly reshares original run",
+    "participant grant withdraw clears open run",
+    "independent communication/delivery scopes",
+    "restored grant fresh reading",
+    "mobile modal bounds"
+  ]
+}

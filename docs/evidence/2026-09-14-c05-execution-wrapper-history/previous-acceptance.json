@@ -1,0 +1,92 @@
+{
+  "phase_status": "accepted_structured_record_read_policy_and_actual_personal_agent_delivery",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "accepted_logs": [
+    "tools-all.log",
+    "tools-result-policy-race.log",
+    "agent-application-race.log",
+    "real-product-normal.log",
+    "artifact-source-cutoff.log",
+    "real-product-race.log"
+  ],
+  "accepted_exit_codes": {
+    "tools-all.log": 0,
+    "tools-result-policy-race.log": 0,
+    "agent-application-race.log": 0,
+    "real-product-normal.log": 0,
+    "artifact-source-cutoff.log": 0,
+    "real-product-race.log": 0
+  },
+  "diagnostic_failed_logs": [
+    "diagnostic-record-policy-before-fix.log",
+    "diagnostic-product-profile-required-fields.log",
+    "diagnostic-stale-acceptance-revision.log",
+    "diagnostic-session-selected-role.log",
+    "diagnostic-own-execution-scope.log",
+    "diagnostic-own-scope-unit-before-fix.log",
+    "diagnostic-combined-observer-race.log"
+  ],
+  "pending_logs": [
+    "recursive-all-running-with-diagnostics.log"
+  ],
+  "actual_identity_accounts": 2,
+  "actual_independent_agent_execution_steps": 6,
+  "actual_original_receipts": 3,
+  "actual_normal_sha_checks": 27,
+  "actual_page_paths": [
+    "current delivery",
+    "exact original historical delivery",
+    "explicitly shared execution"
+  ],
+  "actual_delegated_save_effects": 1,
+  "sdk_fixture_save_effects": 2,
+  "actual_task_budget": {
+    "steps": 12,
+    "calls": 12,
+    "output_bytes": 8192,
+    "timeout_seconds": 60
+  },
+  "actual_write_revocation_read_revocation_restart_and_owner_isolation_checked": true,
+  "shared_execution_published_by_actual_owner_http_not_agent_tool_in_this_fixture": true,
+  "real_product_race": {
+    "status": "accepted",
+    "sha_checks": 27
+  },
+  "agent_executable_code_regression": {
+    "status": "not_started",
+    "accepted": false
+  },
+  "recursive_go_test_all_accepted": false,
+  "recursive_go_test_all": {
+    "status": "verified_running_with_setup_and_integration_failures",
+    "accepted": false,
+    "pid": 93415,
+    "session_id": 34284,
+    "process": "  PID ELAPSED  %CPU STAT ARGS\n93415   08:33   0.0 Ss   go test ./... -count=1\n"
+  },
+  "historical_evidence_snapshots_not_rewritten": true,
+  "original_effect_version_cursor_and_large_integer_preserved": true,
+  "reader_withdrawal_during_original_receipt_io_unit_checked": true,
+  "single_host_migration_ledger_checked": true,
+  "source_manifest": "source-sha256.json",
+  "source_files": 1691,
+  "artifact_manifest": "artifact-sha256.json",
+  "previous_artifacts_unchanged": 23,
+  "previous_acceptance_sha256": "7fba111f996efcd4ee3ec1de9d728cee51230df6fad8407b3ac974b371bf5748",
+  "record_personal_ownership_not_cross_user_shared": true,
+  "runtime_published_module_set_lock_modified": false,
+  "runtime_bootstrap_complete_package_accepted": false,
+  "observed_at_utc": "2026-09-14T07:52:34.487334+00:00",
+  "remaining": [
+    "broader business query expression scopes",
+    "other multiple-owner old roles and mixed roots",
+    "complete historical admission and execution-source receipts",
+    "other dependency management",
+    "broader Identity subject exit linkage",
+    "published Runtime module-set synchronization",
+    "earlier actual professional write race timeouts",
+    "all later TODO items retained in original order"
+  ]
+}

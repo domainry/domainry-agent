@@ -1,0 +1,31 @@
+{
+  "phase_status": "accepted_per_assignment_original_execution_authority_foundation",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 191,
+  "source_manifest": "source-sha256.json",
+  "artifact_files": 6,
+  "artifact_manifest": "artifact-sha256.json",
+  "accepted_logs": [
+    "core.log",
+    "focused.log",
+    "race.log",
+    "http.log",
+    "tools-http.log"
+  ],
+  "scope": "private original assignment authority, legacy enrichment, per-assignment budget/handoff/effect reuse and historical contract queries",
+  "public_assignment_dto_changed": false,
+  "cross_subject_transfer_enabled": false,
+  "real_identity": true,
+  "real_http": true,
+  "real_tool_execution": true,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "new_browser_run": false,
+  "remaining": [
+    "cross-subject transfer admission and subject binding updates",
+    "explicit handoff publication and reader checks",
+    "other C05 requirements"
+  ]
+}

@@ -1,0 +1,10 @@
+=== RUN   TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity
+=== RUN   TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity/same-identity
+=== RUN   TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity/legacy-manager-header
+=== RUN   TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity/cross-user
+--- PASS: TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity (0.03s)
+    --- PASS: TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity/same-identity (0.02s)
+    --- PASS: TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity/legacy-manager-header (0.01s)
+    --- PASS: TestDelegationRequirementInboxLaunchPreservesAcceptedExecutionIdentity/cross-user (0.01s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	0.736s

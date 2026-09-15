@@ -1,0 +1,138 @@
+{
+  "phase_status": "accepted_participant_management_controls_and_original_goal_routing",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 145,
+  "dist_files": 571,
+  "supported_participant_operations": [
+    "view",
+    "communicate",
+    "manage"
+  ],
+  "logs": {
+    "before-control.log": {
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "top_level_failed_tests": 4,
+      "source_manifest": "source-before-control-sha256.json",
+      "overlay": "before-control-overlay.json"
+    },
+    "before-propagation.log": {
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "top_level_failed_tests": 1,
+      "source_manifest": "source-before-propagation-sha256.json",
+      "overlay": "before-propagation-overlay.json"
+    },
+    "core.log": {
+      "exit_code": 0,
+      "packages": 8,
+      "source_manifest": "source-before-unique-browser-fixture-sha256.json"
+    },
+    "race.log": {
+      "exit_code": 0,
+      "packages": 2,
+      "top_level_tests": 37,
+      "source_manifest": "source-before-unique-browser-fixture-sha256.json"
+    },
+    "frontend.log": {
+      "exit_code": 0,
+      "tests": 14
+    },
+    "build.log": {
+      "exit_code": 0,
+      "vite_build_seconds": 8.44
+    },
+    "runtime.log": {
+      "exit_code": 0,
+      "tests": 1,
+      "duration_seconds": 67.41,
+      "real_runtime": true,
+      "real_identity": true,
+      "real_http": true,
+      "source_manifest": "source-before-unique-browser-fixture-sha256.json"
+    },
+    "browser.log": {
+      "exit_code": 0,
+      "tests": 1,
+      "duration_seconds": 30.03,
+      "real_identity": true,
+      "real_http": true,
+      "real_chrome": true,
+      "page_errors": 0,
+      "source_manifest": "source-sha256.json"
+    },
+    "diagnostic-syntax.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "initial missing block brace and slices import"
+    },
+    "diagnostic-republish-compatibility.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "original receiver republishing incorrectly denied before restored exception"
+    },
+    "diagnostic-subject-validator-fixture.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "test host policy omitted explicit current membership validator"
+    },
+    "diagnostic-dependent-source-fixture.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "dependency fixture omitted task source conversation"
+    },
+    "diagnostic-notice-routing.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "dependency notice used actor ownership instead of canonical record"
+    },
+    "diagnostic-browser-duplicate-title.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "two owner rows had identical task goal"
+    },
+    "diagnostic-browser-stale-membership.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "membership save opened before owner received current resumed task version"
+    },
+    "diagnostic-browser-status-label.log": {
+      "exit_code": 1,
+      "diagnostic_only": true,
+      "failure": "test used abbreviated status label; recorded exact UI showed waiting-for-delivery and zero rejected requests"
+    }
+  },
+  "model": "deterministic wire fixture",
+  "database": "SQLite",
+  "source_manifest_scope": "previous accepted phase source set plus management fixtures and UI",
+  "changes_after_core_race_runtime_and_before_checks": [
+    "frontend/tests/delegation-participants.browser.mjs",
+    "internal/assembly/web/conversation_participants_test.go"
+  ],
+  "changes_after_checks_are_test_only": true,
+  "production_changed_after_checks": false,
+  "execution_budget_changed": false,
+  "browser_fixture": "separate fresh original-budget delegation; original HTTP fixture retained and still inaccessible after participant removal",
+  "verified": [
+    "current publisher/current actor/explicit management grant intersection",
+    "transaction current membership and revision checked before mutation replay",
+    "mapped and unmapped original task execution identities retained",
+    "manager cannot become receiving/delivery principal or read raw private execution",
+    "narrow management-only write receipt",
+    "participant declared-goal change invalidates and stops owner dependent work without granting private child access",
+    "explicit additional receiver management and independent admitted scopes on withdrawal",
+    "original Runtime legacy contract/restart/resume/new-delivery/acceptance lifecycle regression",
+    "independent UI management scope and live stale form clearing/restoration"
+  ],
+  "pending": [
+    "participant execution_read/delivery_read scopes and full shared execution",
+    "cross-subject Agent-authored contract source publication",
+    "full participant dependency and transfer management paths",
+    "receiver management review/acceptance scope and tool-origin path",
+    "current management-decision projection and source audit",
+    "multi-owner legacy source/dependency publication",
+    "subject exit and remaining C05 source/lifecycle acceptance"
+  ]
+}

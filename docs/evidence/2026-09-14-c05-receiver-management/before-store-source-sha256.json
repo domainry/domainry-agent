@@ -1,0 +1,6 @@
+{
+  "/Users/tiger/Projects/domainry-agent/internal/application/conversation_management_receipt_test.go": "95bf6975716bf92cb5329d43893142fe6193290ef05fbc3a080b24303aec6414",
+  "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_receiver_management_store_test.go": "76389c58a41606e7d29e814afc072a86da12e22c8daf8645525d9344ef7f4006",
+  "/Users/tiger/Projects/domainry-agent/internal/assembly/web/conversation_delegation_execution_test.go": "3ef782e36dcbfc1665eb8c36b3cc0979fa90d35dfdb25b51939aa8035cb8d107",
+  "/Users/tiger/Projects/domainry-agent/internal/infrastructure/persistence/database/agent/conversation_delegation_store.go": "23f73630294e4fdef48df73fee6b8e30268cd3ab17134f3592cef30bf29d84c8"
+}

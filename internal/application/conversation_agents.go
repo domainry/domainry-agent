@@ -9,6 +9,7 @@ import (
 	"github.com/domainry/domainry-agent/definition"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 type conversationAgentContextKey struct{}
@@ -46,6 +47,9 @@ func (s *ConversationService) collaborationRepository() (persistence.Conversatio
 }
 
 func (s *ConversationService) conversationModel(ctx context.Context) agentsdk.ConversationModel {
+	if selection := selectedConversationModel(ctx); selection != nil {
+		return s.conversationModelByKey(selection.Key)
+	}
 	if agent := selectedConversationAgent(ctx); agent != nil && agent.ModelKey != "default" {
 		return s.options.AgentModels[agent.ModelKey]
 	}
@@ -66,6 +70,9 @@ func (s *ConversationService) defaultConversationAgent(ctx context.Context, a ag
 		for _, d := range definitions {
 			agent.Tools = append(agent.Tools, d.Key)
 		}
+	}
+	if descriptor, err := s.conversationModelDescriptor("default"); err == nil {
+		agent.ReasoningEffort = descriptor.DefaultReasoningEffort
 	}
 	return agent, nil
 }
@@ -96,7 +103,7 @@ func (s *ConversationService) ConversationAgents(ctx context.Context, a agentsdk
 }
 
 func (s *ConversationService) conversationAgentDirectory(ctx context.Context, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgentPage, error) {
-	out := agentsdk.ConversationAgentPage{Items: []agentsdk.ConversationAgent{}, Tools: []agentsdk.ConversationToolDefinition{}, Models: []string{"default"}, Complete: true}
+	out := agentsdk.ConversationAgentPage{Items: []agentsdk.ConversationAgent{}, Tools: []agentsdk.ConversationToolDefinition{}, Models: []string{"default"}, ModelCatalog: []agentsdk.ConversationModelDescriptor{}, Complete: true}
 	if err := s.authorizeCollaboration(ctx, "discover", nil, a); err != nil {
 		return out, err
 	}
@@ -137,11 +144,22 @@ func (s *ConversationService) conversationAgentDirectory(ctx context.Context, a 
 		}
 	}
 	sort.Strings(out.Models)
+	for _, key := range out.Models {
+		descriptor, descriptorErr := s.conversationModelDescriptor(key)
+		if descriptorErr != nil {
+			return out, descriptorErr
+		}
+		out.ModelCatalog = append(out.ModelCatalog, descriptor)
+	}
 	for _, d := range s.options.AgentDefinitions {
 		out.Definitions = append(out.Definitions, agentsdk.ConversationAgentDefinition{Key: d.Key, Version: d.Version, Name: d.Name, Description: d.Description, Instructions: d.Instructions, Tools: append([]string{}, d.Tools...), SkillKeys: append([]string{}, d.SkillKeys...)})
 	}
-	for _, skill := range s.options.Skills {
-		out.Skills = append(out.Skills, agentsdk.ConversationSkillSummary{Key: skill.Key, Version: skill.Version, Name: skill.Name, Description: skill.Description, AllowedTools: append([]string{}, skill.AllowedTools...)})
+	skills, err := s.effectiveConversationSkills(ctx, a, a.UserID)
+	if err != nil {
+		return out, err
+	}
+	for _, skill := range skills {
+		out.Skills = append(out.Skills, agentsdk.ConversationSkillSummaryFor(skill))
 	}
 	return out, err
 }
@@ -172,11 +190,28 @@ func (s *ConversationService) WriteConversationAgent(ctx context.Context, id str
 	if id == "default" || id != "" && !conversationKey(id) || !conversationKey(in.ClientID) || !conversationText(in.Name, 128, true) || !conversationText(in.Description, 2048, false) || !conversationText(in.Instructions, 32768, true) || in.MaxConcurrent < 1 || in.MaxConcurrent > 32 || len(in.Tools) > 128 || len(in.SkillKeys) > 32 || in.ExpectedRevision < 0 {
 		return out, conversationFailure("bad_request", "agent_invalid")
 	}
-	if in.ModelKey == "" {
+	if in.External != nil {
+		if in.External.Protocol != agentsdk.ConversationExternalAgentProtocolV1 || in.External.Version != "1" || in.DefinitionKey != "" || len(in.Tools) != 0 || len(in.SkillKeys) != 0 || in.ModelKey != "" || in.ReasoningEffort != "" {
+			return out, conversationFailure("bad_request", "external_agent_invalid")
+		}
+	} else if in.ModelKey == "" {
 		in.ModelKey = "default"
 	}
-	if in.ModelKey != "default" && s.options.AgentModels[in.ModelKey] == nil {
+	if in.External == nil && in.ModelKey != "default" && s.options.AgentModels[in.ModelKey] == nil {
 		return out, conversationFailure("bad_request", "agent_model_unavailable")
+	}
+	if in.External == nil {
+		descriptor, err := s.conversationModelDescriptor(in.ModelKey)
+		if err != nil {
+			return out, err
+		}
+		in.ReasoningEffort = strings.ToLower(strings.TrimSpace(in.ReasoningEffort))
+		if in.ReasoningEffort == "" {
+			in.ReasoningEffort = descriptor.DefaultReasoningEffort
+		}
+		if in.ReasoningEffort != "" && (!validConversationReasoningEffort(in.ReasoningEffort) || !conversationModelDescriptorSupports(descriptor, in.ReasoningEffort)) {
+			return out, conversationFailure("bad_request", "reasoning_effort_unsupported")
+		}
 	}
 	catalog, _, err := s.registeredExecutionCatalog(context.WithValue(ctx, conversationAgentCatalogKey{}, true), a)
 	if err != nil {
@@ -187,7 +222,11 @@ func (s *ConversationService) WriteConversationAgent(ctx context.Context, id str
 		keys = append(keys, d.Key)
 	}
 	spec := agentsdk.AgentSchema{Key: "configured", Version: "1", Name: in.Name, Instructions: in.Instructions, Tools: in.Tools, SkillKeys: in.SkillKeys}
-	if _, err = definition.CompileProfile(spec, s.options.Skills, keys); err != nil {
+	skills, err := s.effectiveConversationSkills(ctx, a, a.UserID)
+	if err != nil {
+		return out, err
+	}
+	if _, err = definition.CompileProfile(spec, skills, keys); err != nil {
 		return out, conversationFailure("bad_request", "agent_profile_invalid")
 	}
 	repo, err := s.collaborationRepository()
@@ -212,15 +251,19 @@ func (s *ConversationService) freezeConversationAgent(ctx context.Context, id st
 			return nil, conversationFailure("conflict", "agent_definition_changed")
 		}
 	}
-	snapshot := &agentsdk.ConversationAgentSnapshot{ID: agent.ID, Revision: agent.Revision, ModelKey: agent.ModelKey, Profile: agentsdk.AgentSchema{Key: agent.ID, Version: strconv.FormatInt(agent.Revision, 10), Name: agent.Name, Description: agent.Description, Instructions: agent.Instructions, Tools: append([]string{}, agent.Tools...), SkillKeys: append([]string{}, agent.SkillKeys...)}}
+	snapshot := &agentsdk.ConversationAgentSnapshot{ID: agent.ID, Revision: agent.Revision, ModelKey: agent.ModelKey, ReasoningEffort: agent.ReasoningEffort, External: agent.External, Profile: agentsdk.AgentSchema{Key: agent.ID, Version: strconv.FormatInt(agent.Revision, 10), Name: agent.Name, Description: agent.Description, Instructions: agent.Instructions, Tools: append([]string{}, agent.Tools...), SkillKeys: append([]string{}, agent.SkillKeys...)}}
 	snapshot.OwnerUserID = agent.OwnerUserID
 	if snapshot.OwnerUserID == "" {
 		snapshot.OwnerUserID = a.UserID
 	}
 	snapshot.ExecutionSubject = executionSubject(a)
+	skills, err := s.effectiveConversationSkills(ctx, a, snapshot.OwnerUserID)
+	if err != nil {
+		return nil, err
+	}
 	for _, key := range agent.SkillKeys {
 		found := false
-		for _, skill := range s.options.Skills {
+		for _, skill := range skills {
 			if skill.Key == key {
 				snapshot.Skills = append(snapshot.Skills, skill)
 				found = true
@@ -231,12 +274,21 @@ func (s *ConversationService) freezeConversationAgent(ctx context.Context, id st
 			return nil, conversationFailure("conflict", "agent_profile_changed")
 		}
 	}
+	if err := s.applyConversationPromptConfiguration(ctx, a, snapshot); err != nil {
+		return nil, err
+	}
 	if agent.ID == "default" && s.options.Agent != nil {
 		snapshot.Profile.Version = s.options.Agent.Version
 		snapshot.Profile.ExecutionLimits = s.options.Agent.ExecutionLimits
 	}
 	if capabilityDefinition != nil {
 		snapshot.Profile.ExecutionLimits = capabilityDefinition.ExecutionLimits
+	}
+	if agent.External != nil {
+		snapshot.ModelIdentity = agentsdk.ConversationModelIdentity{Provider: "external_agent", Protocol: agent.External.Protocol, Model: agent.ID, Fingerprint: conversationDigest(*agent.External)}
+		snapshot.ModelCapabilities = agentsdk.ConversationModelCapabilities{StructuredOutput: agent.External.Capabilities.StructuredOutput, ProtocolContinuation: agent.External.Capabilities.Resume}
+		snapshot.Digest = conversationDigest(*snapshot)
+		return snapshot, nil
 	}
 	model := s.model
 	if agent.ModelKey != "default" {
@@ -247,6 +299,17 @@ func (s *ConversationService) freezeConversationAgent(ctx context.Context, id st
 		return nil, conversationFailure("unavailable", "agent_model_unavailable")
 	}
 	snapshot.ModelIdentity = agentModel.ConversationModelIdentity()
+	descriptor, err := s.conversationModelDescriptor(agent.ModelKey)
+	if err != nil {
+		return nil, err
+	}
+	if snapshot.ReasoningEffort == "" {
+		snapshot.ReasoningEffort = descriptor.DefaultReasoningEffort
+	}
+	if !conversationModelDescriptorSupports(descriptor, snapshot.ReasoningEffort) {
+		return nil, conversationFailure("conflict", "model_changed")
+	}
+	snapshot.ModelCapabilities = descriptor.Capabilities
 	snapshot.Digest = conversationDigest(*snapshot)
 	return snapshot, nil
 }
@@ -309,8 +372,15 @@ func (s *ConversationService) selectConversationAgent(ctx context.Context, snaps
 		return ctx, conversationFailure("conflict", "agent_changed")
 	}
 	ctx = context.WithValue(ctx, conversationAgentContextKey{}, snapshot)
-	model, ok := s.conversationModel(ctx).(agentsdk.ConversationAgentModel)
-	if !ok || model.ConversationModelIdentity() != snapshot.ModelIdentity {
+	// Validate the Agent's own frozen model independently from a task-level
+	// model selection already carried by the execution context. The task model
+	// is applied after the Agent snapshot and must survive this recheck.
+	if snapshot.External != nil {
+		return context.WithValue(ctx, conversationAgentContextKey{}, snapshot), nil
+	}
+	model, ok := s.conversationModelByKey(snapshot.ModelKey).(agentsdk.ConversationAgentModel)
+	descriptor, descriptorErr := s.conversationModelDescriptor(snapshot.ModelKey)
+	if !ok || descriptorErr != nil || model.ConversationModelIdentity() != snapshot.ModelIdentity || conversationDigest(descriptor.Capabilities) != conversationDigest(snapshot.ModelCapabilities) || !conversationModelDescriptorSupports(descriptor, snapshot.ReasoningEffort) {
 		return ctx, conversationFailure("conflict", "model_changed")
 	}
 	return ctx, nil

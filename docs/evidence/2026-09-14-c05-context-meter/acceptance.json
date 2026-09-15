@@ -1,0 +1,64 @@
+{
+  "accepted_logs": [
+    "core.log",
+    "sdk.log",
+    "race.log",
+    "protocol-wire.log",
+    "http.log",
+    "focused.log",
+    "provider-race.log",
+    "multiple-owners.log",
+    "multiple-owners-race.log",
+    "web-full.log"
+  ],
+  "artifact_files": 15,
+  "artifact_manifest": "artifact-sha256.json",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "context_budget_raised": false,
+  "default_context_bytes": 65536,
+  "diagnostic_failed_logs": [
+    "diagnostic-before-fix.log",
+    "diagnostic-before-stream-fix.log"
+  ],
+  "execution_budgets_raised": false,
+  "external_model_service_called": false,
+  "fixture_model": true,
+  "full_web_package_seconds": 419.421,
+  "new_chrome_acceptance": false,
+  "new_runtime_acceptance": false,
+  "phase_status": "accepted_actual_provider_input_sizing_and_independent_dependency_owner_checks",
+  "previous_phase_source_manifest_sha256": "4775308ef96214221da45124fe8ae4445994da7046f9cd6f023d31265e604bfb",
+  "protocols_with_exact_http_body_length_checks": [
+    "chat_completions",
+    "messages",
+    "responses"
+  ],
+  "real_http": true,
+  "real_identity": true,
+  "real_tool_execution": true,
+  "remaining": [
+    "multi owner mixed professional dependency sources and remaining dependency management scenarios",
+    "other professional cross subject sources and automatic delivery",
+    "full legacy admission and historical sharing",
+    "multi owner old role first publication and mixed roots",
+    "remaining execution source policies",
+    "broader Identity subject exit integration",
+    "remaining C05 and all subsequent TODO items"
+  ],
+  "scope": [
+    "same provider encoder for input sizing and streaming",
+    "first and continued stateless protocol requests match actual HTTP bytes",
+    "frozen source and policy metadata preserved",
+    "invalid sizing protocol payload and frozen identity deny without network calls",
+    "conservative fallback for models without optional input sizing port",
+    "eight complete core packages and SDK root package",
+    "full assembly/web package with default browser gating",
+    "actual cross subject delivery and seven schedule receipts after write revocation",
+    "multiple dependency owners preserve original proof identities separate publisher roles and receiving audiences",
+    "downstream republication does not take over upstream roots"
+  ],
+  "source_files": 211,
+  "source_manifest": "source-sha256.json",
+  "total_todo_items": 25
+}

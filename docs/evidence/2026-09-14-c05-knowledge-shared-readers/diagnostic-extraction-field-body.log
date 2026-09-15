@@ -1,0 +1,4 @@
+# github.com/domainry/domainry-knowledge/internal/infrastructure/provider [github.com/domainry/domainry-knowledge/internal/infrastructure/provider.test]
+../domainry-knowledge/internal/infrastructure/provider/knowledge_shared_result_read_test.go:109:91: passages[0].Body undefined (type agentsdk.KnowledgeDocumentPassage has no field or method Body)
+FAIL	github.com/domainry/domainry-knowledge/internal/infrastructure/provider [build failed]
+FAIL

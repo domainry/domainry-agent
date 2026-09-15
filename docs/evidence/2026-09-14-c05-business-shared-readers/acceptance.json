@@ -1,0 +1,106 @@
+{
+  "phase_status": "accepted_shared_business_original_producer_and_actual_reader_ports_with_real_read_dispatch_delivery",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_manifest": "source-sha256.json",
+  "source_files": 341,
+  "artifact_manifest": "artifact-sha256.json",
+  "artifact_files": 18,
+  "accepted_logs": [
+    "agent-sdk.log",
+    "runtime.log",
+    "agent-http.log",
+    "agent-sdk-race.log",
+    "runtime-race.log",
+    "real-runtime.log"
+  ],
+  "accepted_exit_codes": {
+    "agent-sdk.log": 0,
+    "runtime.log": 0,
+    "agent-http.log": 0,
+    "agent-sdk-race.log": 0,
+    "runtime-race.log": 0,
+    "real-runtime.log": 0
+  },
+  "diagnostic_failed_logs": [
+    "diagnostic-rpc-descriptor-pin.log",
+    "diagnostic-old-execution-policy-expectation.log",
+    "diagnostic-invalid-all-scope-fixture.log",
+    "diagnostic-catalog-proof-header.log",
+    "diagnostic-related-owner-scope-fixture.log",
+    "diagnostic-unlinked-process-expectation.log"
+  ],
+  "real_runtime_accepted_roots": [
+    "TestBusinessIndependentReceiptReadThroughRealOwnerRPC",
+    "TestBusinessWriteReceiptReadThroughRealOwnerRPC",
+    "TestCrossUserBusinessOriginalReceiptsThroughRealOwnerRPCAndRestart",
+    "TestCrossUserBusinessAgentToolDispatchAutomaticDeliveryOriginalPagesAndAcceptance"
+  ],
+  "real_runtime_root_seconds": 79.518,
+  "real_identity": true,
+  "real_http": true,
+  "real_database_and_owner_ledgers": true,
+  "native_business_shared_operations": [
+    "business_catalog",
+    "query_records",
+    "get_record",
+    "query_related_records",
+    "workflow_get",
+    "invoke_action",
+    "workflow_start"
+  ],
+  "actual_agent_dispatch_auto_delivery_operations": [
+    "business_catalog",
+    "query_records",
+    "get_record",
+    "query_related_records"
+  ],
+  "actual_shared_execution_steps": 7,
+  "original_page_bytes": 256,
+  "original_result_pages": {
+    "business-catalog": 5,
+    "business-query": 4,
+    "business-get": 3,
+    "business-related": 5
+  },
+  "original_sha_before_and_after_restart_checks": 8,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "rpc_write_confirmation_fixture_is_not_agent_tool_approval_acceptance": true,
+  "same_user_different_role_current_reader_unit_acceptance": true,
+  "business_evidence_json_version": 1,
+  "new_read_signature_versions": [
+    "2",
+    "workflow2"
+  ],
+  "old_signature_versions_preserved": [
+    "1",
+    "workflow1"
+  ],
+  "new_business_rpc_contract_sha256": "6ebaf08f3e601aeb81ddaffd70aed9906ef8177ce41d78292f5bd878b18448cd",
+  "read_signature_is_independent_of_execution_write_export_grants": true,
+  "unsupported_expression_containment_fails_closed": true,
+  "no_sql_executed_by_shared_scope_comparison": true,
+  "new_frontend_acceptance": false,
+  "existing_execution_or_context_budgets_raised": false,
+  "new_read_task_budget": {
+    "max_steps": 12,
+    "max_tool_calls": 12,
+    "max_output_bytes": 8192,
+    "timeout_seconds": 90
+  },
+  "prior_professional_write_race_accepted": false,
+  "previous_phase": "2026-09-14-c05-professional-writes",
+  "previous_source_manifest_sha256": "4e9a1b8be2c117b10b42948d876dea639e5e44e26dfcc0731d4cd4de9a8a1bc5",
+  "previous_artifact_manifest_sha256": "fbc38f6340bd08c7dcec82de90be4da4ad68c4944d6fa6b7b8cc74d74f35d88c",
+  "previous_artifact_files_verified_unchanged": 14,
+  "remaining": [
+    "real Agent action/workflow source sharing and automatic delivery",
+    "more complete query expression scope coverage",
+    "Knowledge user-bound original source versus actual reader separation",
+    "remaining full C05 old roles, history, dependency, source and subject-exit scope",
+    "prior professional write race execution timeout remains unaccepted",
+    "all later TODO items retained in order"
+  ]
+}

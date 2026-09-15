@@ -1,0 +1,370 @@
+{
+  "phase_status": "accepted_explicit_execution_sharing_and_current_reader_policy",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 170,
+  "source_manifest": "source-sha256.json",
+  "supported_participant_operations": [
+    "view",
+    "communicate",
+    "manage",
+    "delivery_read",
+    "execution_read"
+  ],
+  "real_identity": true,
+  "real_http": true,
+  "real_tool_execution": true,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "accepted_logs": [
+    "core-final-accepted.log",
+    "sdk-final-accepted.log",
+    "frontend-final.log",
+    "build-final.log",
+    "race-final.log",
+    "store-live.log",
+    "http-final.log",
+    "browser-accepted.log",
+    "runtime-final-accepted.log",
+    "saas.log",
+    "server-saas.log"
+  ],
+  "logs": {
+    "before-late-grant.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "browser-accepted.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 1,
+      "top_level_failed_tests": 0,
+      "packages": 1
+    },
+    "browser-final.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 1,
+      "top_level_failed_tests": 0,
+      "packages": 1
+    },
+    "browser.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "build-final.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 0
+    },
+    "build.log": {
+      "observed_terminal": "diagnostic",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 0
+    },
+    "core-accepted.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 5
+    },
+    "core-complete.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 6
+    },
+    "core-final-accepted.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 6
+    },
+    "core-final.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 5
+    },
+    "core.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 3,
+      "packages": 3
+    },
+    "frontend-final.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 0
+    },
+    "http-category.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "http-communication-trace.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "http-communication.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "http-final.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 3,
+      "top_level_failed_tests": 0,
+      "packages": 1
+    },
+    "http-provenance.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "http-regression.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 3,
+      "top_level_failed_tests": 0,
+      "packages": 1
+    },
+    "http-scopes.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 1,
+      "top_level_failed_tests": 0,
+      "packages": 1
+    },
+    "http-trace-fixed.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "http-trace.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "http.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "initial.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 2
+    },
+    "ports.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 4
+    },
+    "race-final.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 11,
+      "top_level_failed_tests": 0,
+      "packages": 2
+    },
+    "race.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 10,
+      "top_level_failed_tests": 0,
+      "packages": 2
+    },
+    "runtime-accepted.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 2,
+      "top_level_failed_tests": 0,
+      "packages": 1
+    },
+    "runtime-final-accepted.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 2,
+      "top_level_failed_tests": 0,
+      "packages": 1
+    },
+    "runtime-final.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 1,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "runtime.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 1,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "saas.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 1,
+      "top_level_failed_tests": 0,
+      "packages": 1
+    },
+    "sdk-complete.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 1
+    },
+    "sdk-final-accepted.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 1
+    },
+    "sdk-final.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "sdk.log": {
+      "observed_terminal": "failed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 1,
+      "packages": 0
+    },
+    "server-saas.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 0,
+      "top_level_failed_tests": 0,
+      "packages": 2
+    },
+    "store-live.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 3,
+      "top_level_failed_tests": 0,
+      "packages": 1
+    },
+    "store.log": {
+      "observed_terminal": "passed",
+      "top_level_passed_tests": 2,
+      "top_level_failed_tests": 0,
+      "packages": 1
+    }
+  },
+  "browser": {
+    "status": "passed",
+    "page_errors": [],
+    "scenarios": [
+      "actual third-user shared tool parameters and results",
+      "inspection cannot confirm or resume",
+      "executor withdraw clears open run",
+      "executor explicitly reshares original run",
+      "participant grant withdraw clears open run",
+      "independent communication/delivery scopes",
+      "restored grant fresh reading",
+      "mobile modal bounds"
+    ]
+  },
+  "screenshots_visually_checked": [
+    "browser-accepted/shared-execution.png",
+    "browser-accepted/shared-execution-mobile.png"
+  ],
+  "accepted": [
+    "Current Identity collaboration permission intersected with exact delegation audience; actual participant grant publisher and original execution source publisher/provider rechecked.",
+    "Actual execution owner explicitly publishes exact admitted run; existing source release ledger persists immutable provider and actual publisher.",
+    "Standing readers and late grants receive exact held publication; withdrawal removes execution purpose only; old idempotent receipt does not republish.",
+    "Actual third-user Clock full five-step execution only with all inherited communication/delivery source scopes; private control ports remain denied.",
+    "Unproved pending/failed payloads and generated replies redacted; failed result pages denied.",
+    "Actual executor withdrawal remains possible after losing execution_read (HTTP); frontend index/run invalidation polls every two seconds.",
+    "Cross-user and same-user different-role actual Runtime professional seven-step execution; four original results paged at 256 bytes through 4/5/4/7 pages, original SHA-256 verified, restart and current row/field/provider withdrawal tested.",
+    "Live run publication and later ledger progress verified in real database store test."
+  ],
+  "pending": [
+    "Agent builtin execution publication/read tools.",
+    "Live execution HTTP timeline and independent pending/failed argument policy.",
+    "Opaque owner withdrawal UI when execution_read is lost.",
+    "Remaining cross-subject professional/artifact and multiple-owner source cases.",
+    "Full participant dependency/transfer management and subject exit lifecycle."
+  ],
+  "validation_notes": [
+    "http-final.log covers three HTTP roots before the final payload sanitizer; browser-accepted.log reruns the extended source root and eight Chrome scenarios against the final production code.",
+    "Other diagnostics are preserved; trace runs used temporary overlay, not production debug output.",
+    "Before-late-grant overlay supplies old participant store implementation to the current fixture and fails as expected; it is a negative regression check.",
+    "Pre-change source snapshots include a later server authorization capture; earlier phases remain immutable historical evidence."
+  ],
+  "artifact_sha256": {
+    "before-late-grant-overlay.json": "ad8b9709fa451801330de3a5521ea77e152565c69d7848b0fecf028428596466",
+    "browser/failure.json": "9d61d6f3cb3dff035e66766517e7001e46fa7e84d07782f4d32694fe337c3780",
+    "browser/shared-execution.png": "40b0ef7156c9843a8debd4a086e8d37a9e20735063a9b80a281a3661835806fb",
+    "browser-accepted/report.json": "f0bf38e457cbc1026d94e016cbbf6a32327a1cc38a84caf2228aac3db66c9afe",
+    "browser-accepted/shared-execution-mobile.png": "e78f5a204519b1979e7bcecfae380067284dae5aab3df4895f738989489d9a3d",
+    "browser-accepted/shared-execution.png": "48b6ce1a45cf970e4cb37947906e2cded60ca46e242951db5ee6d346a1ae7b04",
+    "browser-final/report.json": "f0bf38e457cbc1026d94e016cbbf6a32327a1cc38a84caf2228aac3db66c9afe",
+    "browser-final/shared-execution-mobile.png": "2080e33d9eb12b13371ca79fb12d87a39d5bc58aa165119e58632c41891e36ff",
+    "browser-final/shared-execution.png": "8fa15fc7e787f15acde17ae639805f5086b21d2959563dd6d8fb996708ac0f3e",
+    "logs/before-late-grant.log": "de2c5453a79526239f831117d4a23b754b1a9a90da882001c4b9d6c3c5559f0e",
+    "logs/browser-accepted.log": "7c01c5719f97528ead354cb839c59b6ee3042ef1c62bd164cce7bf667142b9a7",
+    "logs/browser-final.log": "522324a64c3ab7536b93e9f5de91ac8472243450fd3bc3b50226eee3ae78067b",
+    "logs/browser.log": "b2db279d86941d63eb023078a920e70635bde0b034cfd657cd8111d1c18fbcc3",
+    "logs/build-final.log": "d323f16434fe6f647fdcf5386f4676859e1fc40fba2400bacb798fb8dc3f61d0",
+    "logs/build.log": "5fa3e1b3f9f2a34832eebac073f33168d65eb13268d7a8f5535e73a98e46a9a7",
+    "logs/core-accepted.log": "0d80a34b6d2470af88d7e3c40ed134afd8cdfac05b72a89d2827cccbed4b714f",
+    "logs/core-complete.log": "b8ee6718d8cd7f4a0cef7b9c56f580a141a1e90bcf68d0c0d68fdef68d8cd2ec",
+    "logs/core-final-accepted.log": "3fec420c4aa64ecd8b4d105796bca7a2fb1e31ca0caf25dacf9b96c93ddccbc9",
+    "logs/core-final.log": "f1959b2d7b3dd1f8aa2798a85c28cab162b97a34d9aed0d11e154e1169683d4c",
+    "logs/core.log": "c3fe2bae9052fcb37ba0be33f618672e988f7c28ba32be53a87a0061d2562e11",
+    "logs/frontend-final.log": "1fe30276a74264c077ac455d7d77527dad6d45facf41705b203fe3382736ffeb",
+    "logs/http-category.log": "ead76b28f3a72349fbcf7854e2a2bc23de917eac837057aa8909de0a951f1218",
+    "logs/http-communication-trace.log": "3756e3632d56b2488d0fe8394ff484a822e555779a613ffefc1827854dc3490f",
+    "logs/http-communication.log": "c1934ad7d6fc8c3f24d1cbd434e635101cd638bfb2d40200dd8e1ab966994da0",
+    "logs/http-final.log": "f586b7f891112eb7e09985693f79c5066d57660b019d71e67fafe5d7486beb36",
+    "logs/http-provenance.log": "7a4f7192558d45e4c5459befbc9862167058215c192782e29d84499451272c8a",
+    "logs/http-regression.log": "267abe8c164137a894c6fa4cba86e63079ed4f304e921f2aa627c9d9c6804528",
+    "logs/http-scopes.log": "b58cbc1a3c1a64111a8d095a6a20ffdb4f27c106653f1af44a4cd27c53a4ffa5",
+    "logs/http-trace-fixed.log": "b36b8008f14f7f9733b949f8dfdf27ff7e1bdfeb872029d4c33362fe0e00ee84",
+    "logs/http-trace.log": "d58db4700a953c15c98de4ec03e7f467930c73a486e10b009f32b60180539e98",
+    "logs/http.log": "604a08ed465dbeb3ba5083d788ff7dfe8d009f9780363585d7a3032a4fffb45e",
+    "logs/initial.log": "7d681917c4b3e2778b25bbfe93ff4c84118c4dfbcc43b790ed785e20ff8e8750",
+    "logs/ports.log": "6683ba04785123021fe497066895ff0099dcbb9b733647151fd50fcc068821c2",
+    "logs/race-final.log": "5be1529fade149f8fdfc969b446d64e9eb1973a3a1fdb2c37e943feaf45c4926",
+    "logs/race.log": "2da31faec6180bcf6ad95a8ecc0843e2e00694061189f3e12ad60877829777d5",
+    "logs/runtime-accepted.log": "ad43ff575f312967a9db183503c6672a245c667c2342e5a0288f1e75712a5fe0",
+    "logs/runtime-final-accepted.log": "5b6bbc4bda02abcefe2436030d9e22afd57639a9dafd2da8400225bfc1d95326",
+    "logs/runtime-final.log": "39e077fcde476e0693bdcd4a34aef09e45402be6ef13d218cbb63bb80f0428e0",
+    "logs/runtime.log": "f723b8cd188b7f6f48294605fa5384a1775326314d0121fbe46660e137286ad0",
+    "logs/saas.log": "067e18a5e84d2fa2af632ce266e44aa79a8ce5c1d159087969a3dcdd4f29ceba",
+    "logs/sdk-complete.log": "143510304da1b7b5f6d598f46c14062261ee0e9c5b18e6ff6251629862854231",
+    "logs/sdk-final-accepted.log": "bb97e6a90e6f05a84d577694323db1df120472903b84787600498b96e98e3b7f",
+    "logs/sdk-final.log": "8f6740582dda6388aec96d66a5c6e927e4bed1ab51b26a87500a7ec4f2bf13ed",
+    "logs/sdk.log": "95d30085dca3ac5ef34b36cb9455d6374a83928ab065fddf11504ef47f938bd0",
+    "logs/server-saas.log": "576836bc392d04a38460d090a3eef09c0fa18b39b791c2cb40992b829e5c86a0",
+    "logs/store-live.log": "0eacaab995a7100971766e76cc34a322ce5b4f5628fc57991025d3766565aa3d",
+    "logs/store.log": "a086958aa5b20bb53164580296f6cf08e9034c1af629f45e7d3e0bce383a0f3e",
+    "source-before/testdata/agent/frontend/src/CollaborationDialog.tsx": "5225ae8d291de8f17e6aa836c27fcee1357f62f7495a77c6369dd8650f4e95e3",
+    "source-before/testdata/agent/frontend/src/DelegationParticipants.tsx": "a5545336e49a351922c36d7d2c32c17d5fdd74ca45405bd89fa3f62a3dbd12da",
+    "source-before/testdata/agent/frontend/src/ExecutionActivity.tsx": "df761ac0fedc1ad5a81ca40dc09fe25864c2cba668d5736b14935d0d6ea02a34",
+    "source-before/testdata/agent/frontend/src/RunDialog.tsx": "23d103a532d9279bd7cdff0bb4f4166ea18fadb843cb358d6f06444c4acf591c",
+    "source-before/testdata/agent/frontend/src/collaboration-state.ts": "6bba81dabcf70215c56a66ed72bdac058fce9ea0055fbe2117f1addf650cb384",
+    "source-before/testdata/agent/internal/application/conversation_dispatch.go": "62241b3faf2eea474f836d33bb90609df50e58b836e13bd391c3b5f8dd354398",
+    "source-before/testdata/agent/internal/application/conversation_participants.go": "d456a40bbc3015b28ef77f28046bc4d27d777e96972da4d1e92a9bad82bd1010",
+    "source-before/testdata/agent/internal/application/conversation_shared_sources.go": "0999d17c3b961e50fac4d97f36d9b6fa1526d2e68fcaa97937ebfb799f20a5bd",
+    "source-before/testdata/agent/internal/infrastructure/persistence/database/agent/conversation_participant_delivery_store.go": "073d6333b22bd4e67fd87cbdbd94337d306270fbc607caa59305fcf2be863407",
+    "source-before/testdata/agent/internal/infrastructure/persistence/database/agent/conversation_participants_store.go": "6275605f776b8923c677446e9078a4e4c4208a98af0756a300d251e0ae378e96",
+    "source-before/testdata/agent/internal/transport/http/module/conversation_adapter.go": "cedc7d7e71c7db54fdbdd21037033027f9c9ef58630cf3372f0b05c5305a8062",
+    "source-before/testdata/agent/server/authorization_actions.go": "2d17168872fb92e8bfdc65acf8346abfa7d129664da18c277476f0323f354fd8",
+    "source-before/testdata/runtime/runtime/bootstrap/integrationtest/conversation_shared_professional_delivery_test.go": "9d4efa78763e6649f643906ffbbe5b210711f8d416e464caf650b88bcdbe45a9",
+    "source-before/testdata/sdk/conversation_http.go": "bb047adbc398f128e56ea1be6a46050cc58044be9c5d26b83d16e2653690f6ba",
+    "source-before/testdata/sdk/conversation_participants.go": "922bb5ad74016047c9bc694a236e8805591b4c9ef25d1c64fcea9097734e96c8",
+    "source-before/testdata/sdk/persistence/conversation_collaboration.go": "61714c7d90bdee19f39eaf793d17bdfc8f768f65865e66f7be1ec2fd78a02bcb",
+    "source-sha256.json": "a9b30e583ac4df7454084a614b590f81c6ac86bcb8e5854102782d61ed38a643"
+  }
+}

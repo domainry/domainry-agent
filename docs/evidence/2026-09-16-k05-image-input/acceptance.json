@@ -1,0 +1,53 @@
+{
+  "date": "2026-09-16",
+  "item": "K05",
+  "status": "accepted",
+  "checklist_total": 25,
+  "accepted_total": 20,
+  "deepseek_harness_head": "0d1f50007f9bca3f52b06e1c3074fa14d5fb0720",
+  "results": {
+    "direct_image_and_restart_integration": { "exit_code": 0 },
+    "provider_protocols": {
+      "exit_code": 0,
+      "protocols": ["chat_completions", "messages", "responses"],
+      "internal_reference_leaks": 0
+    },
+    "cross_subject_delegation": {
+      "exit_code": 0,
+      "seconds": 26.84,
+      "accounts": 3,
+      "image_bytes_verified": true,
+      "revocation_verified": true,
+      "restart_verified": true
+    },
+    "agent_product_packages": { "exit_code": 0, "integration_seconds": 113.237 },
+    "agent_sdk_workspace_full": { "exit_code": 0 },
+    "knowledge_attachment_application": { "exit_code": 0 },
+    "frontend_tests": { "exit_code": 0, "tests": 93 },
+    "frontend_build": { "exit_code": 0 },
+    "diff_check": { "repositories": 3, "exit_code": 0 }
+  },
+  "behavior": [
+    "legacy text messages retain their original wire form while ordered text and image blocks are additive",
+    "the browser uploads private images idempotently and submits only attachment id and requested detail",
+    "Agent freezes image identity while image bytes never enter persistent JSON",
+    "every model attempt reauthorizes downloads and verifies metadata revision size and sha256 before hydrating bytes",
+    "models without an explicit image_input capability are rejected before provider invocation",
+    "chat messages and responses protocols receive their native image block forms without internal attachment metadata",
+    "history summaries forks and delegated tasks retain durable references and recheck access after restart",
+    "delegated images require the exact released source run plus the producer current attachment permission",
+    "revocation hides previously readable image blocks and stops later model use"
+  ],
+  "bounded": {
+    "image_types": ["image/png", "image/jpeg", "image/gif", "image/webp"],
+    "images_per_message": 4,
+    "image_bytes": 16777216,
+    "content_blocks_per_message": 16,
+    "details": ["auto", "low", "high"]
+  },
+  "remaining": [
+    "K06 business event triggered Agent is the next ordered item",
+    "automatic downsampling tool-result images audio and video require separate product scenarios",
+    "coordinated repository tags must be published before Agent SDK can consume the same-batch Tools SDK contracts without go.work"
+  ]
+}

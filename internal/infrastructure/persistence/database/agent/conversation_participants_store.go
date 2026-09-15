@@ -7,6 +7,7 @@ import (
 	"errors"
 	"slices"
 	"sort"
+	"strings"
 	"time"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
@@ -21,6 +22,11 @@ func delegationParticipant(d sdk.ConversationDelegation, user, operation string)
 		}
 	}
 	return sdk.ConversationDelegationParticipant{}, false
+}
+
+func participantManagement(d sdk.ConversationDelegation, a sdk.ConversationAuthority) bool {
+	grant, found := delegationParticipant(d, a.UserID, "manage")
+	return found && sdk.ParticipantPublisherVerified(grant, d.OwnerUserID, a)
 }
 
 // Resolve the physical record owner only after an explicit indexed grant.
@@ -122,6 +128,9 @@ func (s *ConversationStore) SetConversationDelegationParticipants(ctx context.Co
 		if err := conversationAuthority(a); err != nil {
 			return err
 		}
+		if len(*in.Participants) > 0 && (a.RoleKey == "" || len(a.RoleKey) > 255 || strings.TrimSpace(a.RoleKey) != a.RoleKey || strings.ContainsAny(a.RoleKey, "\x00\r\n\t")) {
+			return conversationError("bad_request", "participant_publisher_required")
+		}
 		if err := s.validatePeerMutation(ctx, tx, in.ToolRequest, a); err != nil {
 			return err
 		}
@@ -143,11 +152,45 @@ func (s *ConversationStore) SetConversationDelegationParticipants(ctx context.Co
 		out.ParticipantsRevision++
 		grants := []sdk.ConversationDelegationParticipant{}
 		for _, input := range *in.Participants {
+			publicationNeeded := sdk.ParticipantGrantNeedsPublication(out, input, a)
+			if publicationNeeded {
+				contract, err := s.contractPublicationRecord(ctx, tx, out, max(1, out.AgreementRevision), a)
+				if err != nil {
+					return err
+				}
+				reader := a
+				reader.UserID, reader.RoleKey = input.UserID, ""
+				if err := s.saveSourceReleases(ctx, tx, out.ID, "contract", a, reader, contract.SourceReferences()); err != nil {
+					return err
+				}
+				if slices.Contains(input.Operations, "delivery_read") {
+					if err := s.shareParticipantDeliveryHistory(ctx, tx, out, a, reader); err != nil {
+						return err
+					}
+				}
+				if slices.Contains(input.Operations, "execution_read") {
+					releases, err := s.executionPublications(ctx, tx, out, a)
+					if err != nil {
+						return err
+					}
+					for _, release := range releases {
+						if err := s.shareParticipantPublishedRoots(ctx, tx, out, "execution", a, reader, []sdk.ConversationRunReference{release.Reference}); err != nil {
+							return err
+						}
+					}
+				}
+			}
 			operations := append([]string{}, input.Operations...)
 			sort.Strings(operations)
-			grant := sdk.ConversationDelegationParticipant{UserID: input.UserID, Operations: operations, Revision: out.ParticipantsRevision}
-			if old, ok := delegationParticipant(out, input.UserID, "view"); ok && slices.Equal(old.Operations, operations) {
-				grant.Revision = old.Revision
+			publisher := a
+			grant := sdk.ConversationDelegationParticipant{UserID: input.UserID, Operations: operations, Revision: out.ParticipantsRevision, Publisher: &publisher}
+			if old, ok := delegationParticipant(out, input.UserID, "view"); ok && !publicationNeeded {
+				// Reducing scope revokes access without republishing the retained
+				// agreement under a different role or guessing a legacy publisher.
+				grant.Publisher = old.Publisher
+				if slices.Equal(old.Operations, operations) {
+					grant.Revision = old.Revision
+				}
 			}
 			grants = append(grants, grant)
 		}

@@ -1,0 +1,18 @@
+=== RUN   TestCrossUserWorkspaceMailSourcesAutomaticDeliveryAndSharedExecution
+    conversation_tools_test.go:216: Identity PUT: 400 {"code":"backend.identity.permission_not_found","error":{"code":"backend.identity.permission_not_found","params":{"permission":"integration.connection_accounts.write"}},"params":{"permission":"integration.connection_accounts.write"}}
+--- FAIL: TestCrossUserWorkspaceMailSourcesAutomaticDeliveryAndSharedExecution (1.31s)
+=== RUN   TestCrossUserWorkspaceCalendarSourcesAutomaticDeliveryAndSharedExecution
+    conversation_tools_test.go:216: Identity PUT: 400 {"code":"backend.identity.permission_not_found","error":{"code":"backend.identity.permission_not_found","params":{"permission":"integration.connection_accounts.write"}},"params":{"permission":"integration.connection_accounts.write"}}
+--- FAIL: TestCrossUserWorkspaceCalendarSourcesAutomaticDeliveryAndSharedExecution (1.30s)
+=== RUN   TestCrossUserWorkspaceWebSourcesAutomaticDeliveryAndSharedExecution
+    conversation_tools_test.go:216: Identity PUT: 400 {"code":"backend.identity.permission_not_found","error":{"code":"backend.identity.permission_not_found","params":{"permission":"integration.connection_accounts.write"}},"params":{"permission":"integration.connection_accounts.write"}}
+--- FAIL: TestCrossUserWorkspaceWebSourcesAutomaticDeliveryAndSharedExecution (1.30s)
+=== RUN   TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_sources_test.go:104: POST /agent/delegations/delegation_121b4d1b0272447129cc72f17b4c8efb/decisions: status 409, want 200, body {"code":"agent.conversation.completion_conditions_unmet"}
+--- FAIL: TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution (9.15s)
+=== RUN   TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart
+    conversation_tools_test.go:216: Identity PUT: 400 {"code":"backend.identity.permission_not_found","error":{"code":"backend.identity.permission_not_found","params":{"permission":"integration.connection_accounts.write"}},"params":{"permission":"integration.connection_accounts.write"}}
+--- FAIL: TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart (1.33s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	14.845s
+FAIL

@@ -1,0 +1,6 @@
+=== RUN   TestDelegationExecutionHTTPUsesConsentingReceiversRoleAndStopsAfterRevocation
+    conversation_delegation_execution_test.go:194: POST /agent/delegations/delegation_408f45e77a00fce6ba81ff6b8bf9943c/decisions: status 400, want 200, body {"code":"agent.conversation.delegation_update_invalid"}
+--- FAIL: TestDelegationExecutionHTTPUsesConsentingReceiversRoleAndStopsAfterRevocation (1.62s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/web	2.362s
+FAIL

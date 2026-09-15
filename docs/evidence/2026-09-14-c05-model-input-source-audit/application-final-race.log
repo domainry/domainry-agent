@@ -1,0 +1,640 @@
+=== RUN   TestTaskOperationsRequireTheCurrentExactAction
+--- PASS: TestTaskOperationsRequireTheCurrentExactAction (0.00s)
+=== RUN   TestDiagnosticsRequiresItsCurrentExactAction
+--- PASS: TestDiagnosticsRequiresItsCurrentExactAction (0.00s)
+=== RUN   TestTaskExecutionRequiresTheCurrentServiceAction
+--- PASS: TestTaskExecutionRequiresTheCurrentServiceAction (0.00s)
+=== RUN   TestPeerDiscoveryRanksReadyPeersAndRechecksPermissions
+--- PASS: TestPeerDiscoveryRanksReadyPeersAndRechecksPermissions (0.02s)
+=== RUN   TestPeerDiscoveryDoesNotSharePrivateSourcesOrTreatUnknownCostAsFree
+--- PASS: TestPeerDiscoveryDoesNotSharePrivateSourcesOrTreatUnknownCostAsFree (0.02s)
+=== RUN   TestPeerDiscoveryHistoryKeepsModelRevisionAndTaskTypeSeparate
+--- PASS: TestPeerDiscoveryHistoryKeepsModelRevisionAndTaskTypeSeparate (0.00s)
+=== RUN   TestPeerDiscoveryModelDirectoryIsBoundedAndExplicitlyPartial
+--- PASS: TestPeerDiscoveryModelDirectoryIsBoundedAndExplicitlyPartial (0.01s)
+=== RUN   TestPeerDiscoveryToolSchemaAcceptsRequirementsAndRejectsAuthority
+--- PASS: TestPeerDiscoveryToolSchemaAcceptsRequirementsAndRejectsAuthority (0.00s)
+=== RUN   TestAgentSharingDirectoryDistinguishesDeniedMembershipFromUnavailablePolicy
+--- PASS: TestAgentSharingDirectoryDistinguishesDeniedMembershipFromUnavailablePolicy (0.00s)
+=== RUN   TestAgentSnapshotBindsActualCallerWithoutTakingConfigurationOwnerAuthority
+--- PASS: TestAgentSnapshotBindsActualCallerWithoutTakingConfigurationOwnerAuthority (0.00s)
+=== RUN   TestAnalysisToolPublicContractFitsConversationEngine
+--- PASS: TestAnalysisToolPublicContractFitsConversationEngine (0.01s)
+=== RUN   TestArgumentFeedbackLocatesRealArtifactEditSchemaFailure
+--- PASS: TestArgumentFeedbackLocatesRealArtifactEditSchemaFailure (0.01s)
+=== RUN   TestArgumentFeedbackBoundsManyErrorsAndRejectsInvalidJSON
+--- PASS: TestArgumentFeedbackBoundsManyErrorsAndRejectsInvalidJSON (0.00s)
+=== RUN   TestArtifactToolSchemasKeepAuthorityAndStorageHostOwned
+--- PASS: TestArtifactToolSchemasKeepAuthorityAndStorageHostOwned (0.01s)
+=== RUN   TestArtifactReadPagesPreserveUTF8AndExplicitWideTableProjection
+--- PASS: TestArtifactReadPagesPreserveUTF8AndExplicitWideTableProjection (0.01s)
+=== RUN   TestAttachmentReceiptRejectsTamperingAndStaysScoped
+--- PASS: TestAttachmentReceiptRejectsTamperingAndStaysScoped (0.01s)
+=== RUN   TestConversationCalculationDecimalAndCalendarSemantics
+=== RUN   TestConversationCalculationDecimalAndCalendarSemantics/decimal_addition
+=== RUN   TestConversationCalculationDecimalAndCalendarSemantics/exact_large_integer
+=== RUN   TestConversationCalculationDecimalAndCalendarSemantics/precedence_and_percent
+=== RUN   TestConversationCalculationDecimalAndCalendarSemantics/bankers_tie_down
+=== RUN   TestConversationCalculationDecimalAndCalendarSemantics/bankers_tie_up
+=== RUN   TestConversationCalculationDecimalAndCalendarSemantics/negative_half_up
+=== RUN   TestConversationCalculationDecimalAndCalendarSemantics/truncate_toward_zero
+=== RUN   TestConversationCalculationDecimalAndCalendarSemantics/mean_exact
+=== RUN   TestConversationCalculationDecimalAndCalendarSemantics/leap_day
+=== RUN   TestConversationCalculationDecimalAndCalendarSemantics/DST_instants
+--- PASS: TestConversationCalculationDecimalAndCalendarSemantics (0.00s)
+    --- PASS: TestConversationCalculationDecimalAndCalendarSemantics/decimal_addition (0.00s)
+    --- PASS: TestConversationCalculationDecimalAndCalendarSemantics/exact_large_integer (0.00s)
+    --- PASS: TestConversationCalculationDecimalAndCalendarSemantics/precedence_and_percent (0.00s)
+    --- PASS: TestConversationCalculationDecimalAndCalendarSemantics/bankers_tie_down (0.00s)
+    --- PASS: TestConversationCalculationDecimalAndCalendarSemantics/bankers_tie_up (0.00s)
+    --- PASS: TestConversationCalculationDecimalAndCalendarSemantics/negative_half_up (0.00s)
+    --- PASS: TestConversationCalculationDecimalAndCalendarSemantics/truncate_toward_zero (0.00s)
+    --- PASS: TestConversationCalculationDecimalAndCalendarSemantics/mean_exact (0.00s)
+    --- PASS: TestConversationCalculationDecimalAndCalendarSemantics/leap_day (0.00s)
+    --- PASS: TestConversationCalculationDecimalAndCalendarSemantics/DST_instants (0.00s)
+=== RUN   TestConversationCalculationRejectsCodeAmbiguityAndUnboundedInputs
+--- PASS: TestConversationCalculationRejectsCodeAmbiguityAndUnboundedInputs (0.00s)
+=== RUN   TestCollaborationRequiresAnExplicitCurrentHostPolicy
+--- PASS: TestCollaborationRequiresAnExplicitCurrentHostPolicy (0.00s)
+=== RUN   TestCollaborationDeliverySourcePurposeCannotAuthorizeRawReplay
+--- PASS: TestCollaborationDeliverySourcePurposeCannotAuthorizeRawReplay (0.00s)
+=== RUN   TestCollaborationInboxRequiresCommunicationButServerStateNoticesDoNot
+--- PASS: TestCollaborationInboxRequiresCommunicationButServerStateNoticesDoNot (0.00s)
+=== RUN   TestPeerToolSchemasCompile
+--- PASS: TestPeerToolSchemasCompile (0.03s)
+=== RUN   TestConversationSummaryFenceCompatibilityKeepsStrictValidation
+--- PASS: TestConversationSummaryFenceCompatibilityKeepsStrictValidation (0.00s)
+=== RUN   TestExactCurrentRoleSourceReadSurvivesAnotherPublicationWithdrawal
+--- PASS: TestExactCurrentRoleSourceReadSurvivesAnotherPublicationWithdrawal (0.00s)
+=== RUN   TestContractPublicationIndexPreviewAndCommitUseOriginalAndRecheckCurrentPermission
+--- PASS: TestContractPublicationIndexPreviewAndCommitUseOriginalAndRecheckCurrentPermission (0.00s)
+=== RUN   TestContractSourceDenialKeepsOnlyAuthorizedRecoveryMetadata
+--- PASS: TestContractSourceDenialKeepsOnlyAuthorizedRecoveryMetadata (0.00s)
+=== RUN   TestDelegationExecutionBindingUsesSelectedRoleWithoutChangingOrdinaryConversationIdentity
+=== RUN   TestDelegationExecutionBindingUsesSelectedRoleWithoutChangingOrdinaryConversationIdentity/different-users
+=== RUN   TestDelegationExecutionBindingUsesSelectedRoleWithoutChangingOrdinaryConversationIdentity/same-user-different-roles
+--- PASS: TestDelegationExecutionBindingUsesSelectedRoleWithoutChangingOrdinaryConversationIdentity (0.00s)
+    --- PASS: TestDelegationExecutionBindingUsesSelectedRoleWithoutChangingOrdinaryConversationIdentity/different-users (0.00s)
+    --- PASS: TestDelegationExecutionBindingUsesSelectedRoleWithoutChangingOrdinaryConversationIdentity/same-user-different-roles (0.00s)
+=== RUN   TestDelegationDiscoveryUsesReceiverToolGrants
+--- PASS: TestDelegationDiscoveryUsesReceiverToolGrants (0.01s)
+=== RUN   TestDelegationExecutorRelationshipDoesNotGrantIssuerManagement
+--- PASS: TestDelegationExecutorRelationshipDoesNotGrantIssuerManagement (0.00s)
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/unlisted_run
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/prefix
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_delegation
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_execution
+=== RUN   TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_role
+--- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages (0.02s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/unlisted_run (0.00s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/prefix (0.00s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_delegation (0.00s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_execution (0.00s)
+    --- PASS: TestDelegationSourceReadsAdmittedOriginalWithoutExecutionAndRechecksNestedPages/wrong_role (0.00s)
+=== RUN   TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions
+=== RUN   TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_create
+=== RUN   TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_edit
+=== RUN   TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_export
+=== RUN   TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_read
+=== RUN   TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_list
+=== RUN   TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_versions
+--- PASS: TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions (0.04s)
+    --- PASS: TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_create (0.01s)
+    --- PASS: TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_edit (0.01s)
+    --- PASS: TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_export (0.01s)
+    --- PASS: TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_read (0.01s)
+    --- PASS: TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_list (0.01s)
+    --- PASS: TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions/artifact_versions (0.01s)
+=== RUN   TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt
+=== RUN   TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt/artifact_create
+=== RUN   TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt/artifact_edit
+=== RUN   TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt/artifact_read
+=== RUN   TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt/artifact_list
+=== RUN   TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt/artifact_versions
+=== RUN   TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt/artifact_export
+--- PASS: TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt (0.00s)
+    --- PASS: TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt/artifact_create (0.00s)
+    --- PASS: TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt/artifact_edit (0.00s)
+    --- PASS: TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt/artifact_read (0.00s)
+    --- PASS: TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt/artifact_list (0.00s)
+    --- PASS: TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt/artifact_versions (0.00s)
+    --- PASS: TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt/artifact_export (0.00s)
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/business_catalog
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/query_records
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/get_record
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/query_related_records
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/workflow_get
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/invoke_action
+=== RUN   TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/workflow_start
+--- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence (0.05s)
+    --- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/business_catalog (0.01s)
+    --- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/query_records (0.01s)
+    --- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/get_record (0.01s)
+    --- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/query_related_records (0.01s)
+    --- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/workflow_get (0.01s)
+    --- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/invoke_action (0.01s)
+    --- PASS: TestDeliveryBusinessReadsPreserveActualReaderAndOwnerEvidence/workflow_start (0.01s)
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/business_catalog
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/query_records
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/get_record
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/query_related_records
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/workflow_get
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/invoke_action
+=== RUN   TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/workflow_start
+--- PASS: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader (0.00s)
+    --- PASS: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/business_catalog (0.00s)
+    --- PASS: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/query_records (0.00s)
+    --- PASS: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/get_record (0.00s)
+    --- PASS: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/query_related_records (0.00s)
+    --- PASS: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/workflow_get (0.00s)
+    --- PASS: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/invoke_action (0.00s)
+    --- PASS: TestReleasedBusinessReceiptUsesProducerScopeAndCurrentReader/workflow_start (0.00s)
+=== RUN   TestDeliveryCollaborationProvenanceDoesNotReleaseRawWorkingContext
+--- PASS: TestDeliveryCollaborationProvenanceDoesNotReleaseRawWorkingContext (0.01s)
+=== RUN   TestDeliveredHistoryAndExecutionReadOriginalSourcesWithoutReaderTools
+=== RUN   TestDeliveredHistoryAndExecutionReadOriginalSourcesWithoutReaderTools/history_search
+=== RUN   TestDeliveredHistoryAndExecutionReadOriginalSourcesWithoutReaderTools/history_read
+=== RUN   TestDeliveredHistoryAndExecutionReadOriginalSourcesWithoutReaderTools/execution_read
+=== RUN   TestDeliveredHistoryAndExecutionReadOriginalSourcesWithoutReaderTools/tool_result_read
+--- PASS: TestDeliveredHistoryAndExecutionReadOriginalSourcesWithoutReaderTools (0.06s)
+    --- PASS: TestDeliveredHistoryAndExecutionReadOriginalSourcesWithoutReaderTools/history_search (0.02s)
+    --- PASS: TestDeliveredHistoryAndExecutionReadOriginalSourcesWithoutReaderTools/history_read (0.01s)
+    --- PASS: TestDeliveredHistoryAndExecutionReadOriginalSourcesWithoutReaderTools/execution_read (0.02s)
+    --- PASS: TestDeliveredHistoryAndExecutionReadOriginalSourcesWithoutReaderTools/tool_result_read (0.02s)
+=== RUN   TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader
+=== RUN   TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_libraries
+=== RUN   TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_search
+=== RUN   TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_read
+=== RUN   TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_extract
+--- PASS: TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader (0.08s)
+    --- PASS: TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_libraries (0.01s)
+    --- PASS: TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_search (0.01s)
+    --- PASS: TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_read (0.01s)
+    --- PASS: TestReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader/knowledge_extract (0.04s)
+=== RUN   TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights
+=== RUN   TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_search
+=== RUN   TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_read
+=== RUN   TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_libraries
+=== RUN   TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_extract
+--- PASS: TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights (0.13s)
+    --- PASS: TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_search (0.02s)
+    --- PASS: TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_read (0.02s)
+    --- PASS: TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_libraries (0.02s)
+    --- PASS: TestDeliveryKnowledgeReadsDoNotAcquireProducerExecutionRights/knowledge_extract (0.06s)
+=== RUN   TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools
+=== RUN   TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/calculate
+=== RUN   TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/time_now
+=== RUN   TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/ask_user
+=== RUN   TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/memory_search
+=== RUN   TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/memory_save
+=== RUN   TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/memory_forget
+=== RUN   TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/todo_get
+=== RUN   TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/todo_list
+=== RUN   TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/todo_create
+=== RUN   TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/todo_update
+=== RUN   TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/todo_delete
+--- PASS: TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools (0.05s)
+    --- PASS: TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/calculate (0.00s)
+    --- PASS: TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/time_now (0.00s)
+    --- PASS: TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/ask_user (0.00s)
+    --- PASS: TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/memory_search (0.00s)
+    --- PASS: TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/memory_save (0.00s)
+    --- PASS: TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/memory_forget (0.00s)
+    --- PASS: TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/todo_get (0.00s)
+    --- PASS: TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/todo_list (0.01s)
+    --- PASS: TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/todo_create (0.01s)
+    --- PASS: TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/todo_update (0.01s)
+    --- PASS: TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools/todo_delete (0.00s)
+=== RUN   TestDeliveryPublicationPreviewAndCommitRecheckCanonicalHistoryAndCurrentSources
+--- PASS: TestDeliveryPublicationPreviewAndCommitRecheckCanonicalHistoryAndCurrentSources (0.00s)
+=== RUN   TestDeliveryResultEndpointRequiresExactDeliveryPublication
+--- PASS: TestDeliveryResultEndpointRequiresExactDeliveryPublication (0.00s)
+=== RUN   TestReleasedResultRestrictsMembershipAndRechecksEveryPage
+--- PASS: TestReleasedResultRestrictsMembershipAndRechecksEveryPage (0.01s)
+=== RUN   TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources
+=== RUN   TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_start
+=== RUN   TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_get
+=== RUN   TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_list
+=== RUN   TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_cancel
+=== RUN   TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_resume
+--- PASS: TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources (0.07s)
+    --- PASS: TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_start (0.01s)
+    --- PASS: TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_get (0.01s)
+    --- PASS: TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_list (0.02s)
+    --- PASS: TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_cancel (0.01s)
+    --- PASS: TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources/task_resume (0.01s)
+=== RUN   TestDeliveryToolReadKeepsReaderAuthoritySeparateFromProducerProof
+--- PASS: TestDeliveryToolReadKeepsReaderAuthoritySeparateFromProducerProof (0.00s)
+=== RUN   TestDeliveryToolReadPreservesScopeAndCurrentSourceDenial
+--- PASS: TestDeliveryToolReadPreservesScopeAndCurrentSourceDenial (0.01s)
+=== RUN   TestDeliveredWrappersCannotReuseProvenanceAccessForRawCollaboration
+=== RUN   TestDeliveredWrappersCannotReuseProvenanceAccessForRawCollaboration/history_search
+=== RUN   TestDeliveredWrappersCannotReuseProvenanceAccessForRawCollaboration/history_read
+=== RUN   TestDeliveredWrappersCannotReuseProvenanceAccessForRawCollaboration/execution_read
+=== RUN   TestDeliveredWrappersCannotReuseProvenanceAccessForRawCollaboration/tool_result_read
+--- PASS: TestDeliveredWrappersCannotReuseProvenanceAccessForRawCollaboration (0.04s)
+    --- PASS: TestDeliveredWrappersCannotReuseProvenanceAccessForRawCollaboration/history_search (0.01s)
+    --- PASS: TestDeliveredWrappersCannotReuseProvenanceAccessForRawCollaboration/history_read (0.01s)
+    --- PASS: TestDeliveredWrappersCannotReuseProvenanceAccessForRawCollaboration/execution_read (0.01s)
+    --- PASS: TestDeliveredWrappersCannotReuseProvenanceAccessForRawCollaboration/tool_result_read (0.01s)
+=== RUN   TestDeliveredEmptyPagesStillRequireSourceOwnershipAndExecutionRead
+=== RUN   TestDeliveredEmptyPagesStillRequireSourceOwnershipAndExecutionRead/history_search
+=== RUN   TestDeliveredEmptyPagesStillRequireSourceOwnershipAndExecutionRead/execution_read
+--- PASS: TestDeliveredEmptyPagesStillRequireSourceOwnershipAndExecutionRead (0.00s)
+    --- PASS: TestDeliveredEmptyPagesStillRequireSourceOwnershipAndExecutionRead/history_search (0.00s)
+    --- PASS: TestDeliveredEmptyPagesStillRequireSourceOwnershipAndExecutionRead/execution_read (0.00s)
+=== RUN   TestDeliveredResultWrapperAllowsOwnEarlierCallButRejectsForwardReferences
+--- PASS: TestDeliveredResultWrapperAllowsOwnEarlierCallButRejectsForwardReferences (0.01s)
+=== RUN   TestDeliveredExecutionIndexDoesNotReleaseUnfinishedOrErrorPayloads
+=== RUN   TestDeliveredExecutionIndexDoesNotReleaseUnfinishedOrErrorPayloads/started
+=== RUN   TestDeliveredExecutionIndexDoesNotReleaseUnfinishedOrErrorPayloads/failed-result
+--- PASS: TestDeliveredExecutionIndexDoesNotReleaseUnfinishedOrErrorPayloads (0.00s)
+    --- PASS: TestDeliveredExecutionIndexDoesNotReleaseUnfinishedOrErrorPayloads/started (0.00s)
+    --- PASS: TestDeliveredExecutionIndexDoesNotReleaseUnfinishedOrErrorPayloads/failed-result (0.00s)
+=== RUN   TestAdmittedDependencyGraphUsesOriginalVersionsAndExactDuplicateEvidence
+--- PASS: TestAdmittedDependencyGraphUsesOriginalVersionsAndExactDuplicateEvidence (0.00s)
+=== RUN   TestMultipleDependencyOwnersKeepIndependentOriginalPublishersAndRecipientScopes
+--- PASS: TestMultipleDependencyOwnersKeepIndependentOriginalPublishersAndRecipientScopes (0.03s)
+=== RUN   TestDependencySourceUsesOriginalAgreementPublisherAndCurrentAudience
+--- PASS: TestDependencySourceUsesOriginalAgreementPublisherAndCurrentAudience (0.00s)
+=== RUN   TestPeerDisagreementContextKeepsOverflowIssuesDiscoverableWithoutLosingProvenance
+--- PASS: TestPeerDisagreementContextKeepsOverflowIssuesDiscoverableWithoutLosingProvenance (0.00s)
+=== RUN   TestPeerDisagreementResolutionClearsOnlyCurrentBlockerAndPreservesReviewHistory
+--- PASS: TestPeerDisagreementResolutionClearsOnlyCurrentBlockerAndPreservesReviewHistory (0.00s)
+=== RUN   TestPeerDisagreementContextAndHistoryRetainSourceBoundaries
+--- PASS: TestPeerDisagreementContextAndHistoryRetainSourceBoundaries (0.00s)
+=== RUN   TestExecutionInputSizerPreservesFrozenMetadataAndRetainsConservativeFallback
+--- PASS: TestExecutionInputSizerPreservesFrozenMetadataAndRetainsConservativeFallback (0.02s)
+=== RUN   TestResultPreviewPreservesOutcomeAndBoundsEscapedUnicode
+--- PASS: TestResultPreviewPreservesOutcomeAndBoundsEscapedUnicode (0.04s)
+=== RUN   TestResultLocatorWithoutExcerptRetainsExactOutcomeAndReadReference
+--- PASS: TestResultLocatorWithoutExcerptRetainsExactOutcomeAndReadReference (0.00s)
+=== RUN   TestExecutionPublicationOwnerMetadataRequiresOnlyViewAndRejectsForeignProofs
+--- PASS: TestExecutionPublicationOwnerMetadataRequiresOnlyViewAndRejectsForeignProofs (0.00s)
+=== RUN   TestExecutionSharingDoesNotExposeUnprovedPayloadsOrTheirGeneratedReply
+--- PASS: TestExecutionSharingDoesNotExposeUnprovedPayloadsOrTheirGeneratedReply (0.00s)
+=== RUN   TestSharedExecutionResultWrapperRetainsOriginalPageAcrossContextBudgets
+--- PASS: TestSharedExecutionResultWrapperRetainsOriginalPageAcrossContextBudgets (0.00s)
+=== RUN   TestSavedSharedExecutionWrapperRestoresOnlyItsExactEarlierFlattenedSource
+--- PASS: TestSavedSharedExecutionWrapperRestoresOnlyItsExactEarlierFlattenedSource (0.02s)
+=== RUN   TestSavedDelegationTaskResultSeparatesExecutionReadFromWriteAndCommunication
+--- PASS: TestSavedDelegationTaskResultSeparatesExecutionReadFromWriteAndCommunication (0.01s)
+=== RUN   TestSharedExecutionReadWrappersCannotResetReferenceCycleGuards
+--- PASS: TestSharedExecutionReadWrappersCannotResetReferenceCycleGuards (0.00s)
+=== RUN   TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads
+=== RUN   TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/run
+=== RUN   TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/controls
+=== RUN   TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/result
+=== RUN   TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/arguments
+=== RUN   TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/reply
+--- PASS: TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads (0.00s)
+    --- PASS: TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/run (0.00s)
+    --- PASS: TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/controls (0.00s)
+    --- PASS: TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/result (0.00s)
+    --- PASS: TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/arguments (0.00s)
+    --- PASS: TestSharedLiveExecutionObservationRetainsOldCompletedCallsButRejectsInventedPayloads/reply (0.00s)
+=== RUN   TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange
+=== RUN   TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/unassigned
+=== RUN   TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/agreement
+=== RUN   TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/brief
+=== RUN   TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/requirements
+=== RUN   TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/input
+=== RUN   TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/negative-agreement
+=== RUN   TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/negative-brief
+--- PASS: TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange (0.00s)
+    --- PASS: TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/unassigned (0.00s)
+    --- PASS: TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/agreement (0.00s)
+    --- PASS: TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/brief (0.00s)
+    --- PASS: TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/requirements (0.00s)
+    --- PASS: TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/input (0.00s)
+    --- PASS: TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/negative-agreement (0.00s)
+    --- PASS: TestHistoricalContractRunReadsItsOriginalRootsAfterRequirementsAndAssignmentChange/negative-brief (0.00s)
+=== RUN   TestHistoricalRunWithoutImmutableContractPortCannotUseCurrentContract
+--- PASS: TestHistoricalRunWithoutImmutableContractPortCannotUseCurrentContract (0.00s)
+=== RUN   TestDelegationResumeChecksOriginalExecutorAndSourcesWithoutBoundSnapshot
+--- PASS: TestDelegationResumeChecksOriginalExecutorAndSourcesWithoutBoundSnapshot (0.00s)
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/value
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/quote
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/citation
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/complete
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/schema
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/source
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/location
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/offset
+=== RUN   TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/citation-location
+--- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource (0.12s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/value (0.01s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/quote (0.01s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/citation (0.01s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/complete (0.01s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/schema (0.01s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/source (0.01s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/location (0.01s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/offset (0.01s)
+    --- PASS: TestExtractionResultCannotChangeValueEvidenceSchemaOrSource/citation-location (0.01s)
+=== RUN   TestExtractionRechecksActionAfterReadAndPreservesCancellation
+--- PASS: TestExtractionRechecksActionAfterReadAndPreservesCancellation (0.01s)
+=== RUN   TestManagementReceiptUsesCurrentCanonicalGrantAndRejectsExtraContent
+--- PASS: TestManagementReceiptUsesCurrentCanonicalGrantAndRejectsExtraContent (0.00s)
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/native
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/custom-no-native-checker
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/assembled-forwarder
+=== RUN   TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/assembled-no-result-checker
+--- PASS: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts (0.03s)
+    --- PASS: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/native (0.01s)
+    --- PASS: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/custom-no-native-checker (0.01s)
+    --- PASS: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/assembled-forwarder (0.01s)
+    --- PASS: TestModelSourceReceiptIsFullyAuditedOnceWithNativeAndCustomHosts/assembled-no-result-checker (0.01s)
+=== RUN   TestModelSourceReceiptChecksRevocationAfterInitialTraversal
+=== RUN   TestModelSourceReceiptChecksRevocationAfterInitialTraversal/native
+=== RUN   TestModelSourceReceiptChecksRevocationAfterInitialTraversal/custom
+--- PASS: TestModelSourceReceiptChecksRevocationAfterInitialTraversal (0.01s)
+    --- PASS: TestModelSourceReceiptChecksRevocationAfterInitialTraversal/native (0.00s)
+    --- PASS: TestModelSourceReceiptChecksRevocationAfterInitialTraversal/custom (0.00s)
+=== RUN   TestModelSourceReceiptRetainsOriginalTraversalValuesAndFreshCancellation
+--- PASS: TestModelSourceReceiptRetainsOriginalTraversalValuesAndFreshCancellation (0.00s)
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/changed-content
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/orphan
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/unknown-original-role
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/different-original-role
+=== RUN   TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/inherited-run
+--- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls (0.01s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/changed-content (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/orphan (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/unknown-original-role (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/different-original-role (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferChangedOrUnrepresentedSourceCalls/inherited-run (0.00s)
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-step
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-model-step
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-result
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-call
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-tool-result
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/uncertain-call
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-arguments
+=== RUN   TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-step
+--- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-step (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-model-step (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-result (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-call (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/missing-tool-result (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/uncertain-call (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-arguments (0.00s)
+    --- PASS: TestModelSourceReceiptRejectsIncompletePreviousExecutionBeforeModel/different-step (0.00s)
+=== RUN   TestModelSourceReceiptRechecksInheritedPrivateAttachment
+=== RUN   TestModelSourceReceiptRechecksInheritedPrivateAttachment/native
+=== RUN   TestModelSourceReceiptRechecksInheritedPrivateAttachment/custom
+--- PASS: TestModelSourceReceiptRechecksInheritedPrivateAttachment (0.01s)
+    --- PASS: TestModelSourceReceiptRechecksInheritedPrivateAttachment/native (0.01s)
+    --- PASS: TestModelSourceReceiptRechecksInheritedPrivateAttachment/custom (0.00s)
+=== RUN   TestModelSourceReceiptCustomResultPolicyCannotBeBypassed
+--- PASS: TestModelSourceReceiptCustomResultPolicyCannotBeBypassed (0.00s)
+=== RUN   TestModelSourceReceiptPreservesNativeRechecksWithinOneResultPolicy
+--- PASS: TestModelSourceReceiptPreservesNativeRechecksWithinOneResultPolicy (0.00s)
+=== RUN   TestModelSourceReceiptDoesNotDeferPrefixesChangedDefinitionsOrPendingResults
+=== RUN   TestModelSourceReceiptDoesNotDeferPrefixesChangedDefinitionsOrPendingResults/prefix
+=== RUN   TestModelSourceReceiptDoesNotDeferPrefixesChangedDefinitionsOrPendingResults/definition
+=== RUN   TestModelSourceReceiptDoesNotDeferPrefixesChangedDefinitionsOrPendingResults/state
+=== RUN   TestModelSourceReceiptDoesNotDeferPrefixesChangedDefinitionsOrPendingResults/pending-result
+--- PASS: TestModelSourceReceiptDoesNotDeferPrefixesChangedDefinitionsOrPendingResults (0.01s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferPrefixesChangedDefinitionsOrPendingResults/prefix (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferPrefixesChangedDefinitionsOrPendingResults/definition (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferPrefixesChangedDefinitionsOrPendingResults/state (0.00s)
+    --- PASS: TestModelSourceReceiptDoesNotDeferPrefixesChangedDefinitionsOrPendingResults/pending-result (0.00s)
+=== RUN   TestModelSourceReceiptCannotSubstituteAnotherServiceSourceAudit
+--- PASS: TestModelSourceReceiptCannotSubstituteAnotherServiceSourceAudit (0.00s)
+=== RUN   TestModelSourceReceiptRetainsStricterNativeSourcePurpose
+--- PASS: TestModelSourceReceiptRetainsStricterNativeSourcePurpose (0.00s)
+=== RUN   TestModelSourceReceiptDiscardedNativeDenialInvalidatesCompletionMarker
+--- PASS: TestModelSourceReceiptDiscardedNativeDenialInvalidatesCompletionMarker (0.00s)
+=== RUN   TestModelSourceReceiptDiscardedStricterDenialCannotAuthorizeInput
+--- PASS: TestModelSourceReceiptDiscardedStricterDenialCannotAuthorizeInput (0.01s)
+=== RUN   TestPeerOutcomeInspectionCompositionNeverFallsBackToInvocation
+--- PASS: TestPeerOutcomeInspectionCompositionNeverFallsBackToInvocation (0.00s)
+=== RUN   TestExecutorCanReceiveExplicitManagementWithoutLosingAdmittedAccessOnRevocation
+--- PASS: TestExecutorCanReceiveExplicitManagementWithoutLosingAdmittedAccessOnRevocation (0.00s)
+=== RUN   TestParticipantManagementReturnsOnlyReceiptAndChecksCurrentRoleAndGrant
+--- PASS: TestParticipantManagementReturnsOnlyReceiptAndChecksCurrentRoleAndGrant (0.00s)
+=== RUN   TestParticipantFirstPublicationChecksOriginalSourcesWithActualNewPublisher
+--- PASS: TestParticipantFirstPublicationChecksOriginalSourcesWithActualNewPublisher (0.00s)
+=== RUN   TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole
+=== RUN   TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole/unknown
+=== RUN   TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole/role
+=== RUN   TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole/user
+=== RUN   TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole/workspace
+=== RUN   TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole/runtime
+--- PASS: TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole (0.00s)
+    --- PASS: TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole/unknown (0.00s)
+    --- PASS: TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole/role (0.00s)
+    --- PASS: TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole/user (0.00s)
+    --- PASS: TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole/workspace (0.00s)
+    --- PASS: TestParticipantGrantRechecksActualPublisherWithoutBorrowingReaderRole/runtime (0.00s)
+=== RUN   TestParticipantContractChecksFrozenRequiredSourcesAndKeepsPrivateIDsHidden
+--- PASS: TestParticipantContractChecksFrozenRequiredSourcesAndKeepsPrivateIDsHidden (0.00s)
+=== RUN   TestExitedSubjectDelegationRemainsMetadataWithoutReadingDeletedRecords
+--- PASS: TestExitedSubjectDelegationRemainsMetadataWithoutReadingDeletedRecords (0.00s)
+=== RUN   TestDelegationParticipantRevocationReturnsReceiptWithoutReadingWithdrawnSources
+--- PASS: TestDelegationParticipantRevocationReturnsReceiptWithoutReadingWithdrawnSources (0.00s)
+=== RUN   TestDelegationParticipantIntakeKeepsTheSendersSelectedRole
+--- PASS: TestDelegationParticipantIntakeKeepsTheSendersSelectedRole (0.00s)
+=== RUN   TestDelegationBoundSenderIntakeRechecksItsOwnRole
+--- PASS: TestDelegationBoundSenderIntakeRechecksItsOwnRole (0.00s)
+=== RUN   TestPeerMessagesAndDeliveriesDoNotSharePrivateAttachmentsImplicitly
+--- PASS: TestPeerMessagesAndDeliveriesDoNotSharePrivateAttachmentsImplicitly (0.00s)
+=== RUN   TestPeerDependencySnapshotsRecheckSourceBeforeModelAndSharing
+--- PASS: TestPeerDependencySnapshotsRecheckSourceBeforeModelAndSharing (0.00s)
+=== RUN   TestPeerStructuredInputSourceCannotBeSharedImplicitly
+--- PASS: TestPeerStructuredInputSourceCannotBeSharedImplicitly (0.01s)
+=== RUN   TestPeerTransferRechecksOriginalEffectsAndDecisionSources
+--- PASS: TestPeerTransferRechecksOriginalEffectsAndDecisionSources (0.02s)
+=== RUN   TestPeerTransferDecisionHistoryRechecksCurrentAccess
+--- PASS: TestPeerTransferDecisionHistoryRechecksCurrentAccess (0.00s)
+=== RUN   TestPeerVerificationHistoryRechecksReviewAndEveryReceiptSource
+--- PASS: TestPeerVerificationHistoryRechecksReviewAndEveryReceiptSource (0.00s)
+=== RUN   TestReportToolPublicContractFitsConversationEngine
+--- PASS: TestReportToolPublicContractFitsConversationEngine (0.00s)
+=== RUN   TestDeliveredScheduleCannotReuseProvenanceForPrivateOrigin
+--- PASS: TestDeliveredScheduleCannotReuseProvenanceForPrivateOrigin (0.02s)
+=== RUN   TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay
+=== RUN   TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay/revoked
+=== RUN   TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay/revision
+=== RUN   TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay/hash
+=== RUN   TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay/deleting
+=== RUN   TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay/indexing
+=== RUN   TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay/owner
+--- PASS: TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay (0.00s)
+    --- PASS: TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay/revoked (0.00s)
+    --- PASS: TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay/revision (0.00s)
+    --- PASS: TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay/hash (0.00s)
+    --- PASS: TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay/deleting (0.00s)
+    --- PASS: TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay/indexing (0.00s)
+    --- PASS: TestSharedDocumentsRecheckOwnerBeforeMessagesReachModelAndReplay/owner (0.00s)
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/verified_own_shared_execution
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/raw_collaboration_receipt
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/different_delegation_scope
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/prospective_execution_publication
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/prospective_contract
+=== RUN   TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/message_is_not_execution_publication
+--- PASS: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope (0.00s)
+    --- PASS: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/verified_own_shared_execution (0.00s)
+    --- PASS: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/raw_collaboration_receipt (0.00s)
+    --- PASS: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/different_delegation_scope (0.00s)
+    --- PASS: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/prospective_execution_publication (0.00s)
+    --- PASS: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/prospective_contract (0.00s)
+    --- PASS: TestCurrentRoleExecutionReleasePreservesOnlyTheAlreadyVerifiedDelegationReadScope/message_is_not_execution_publication (0.00s)
+=== RUN   TestSourceReleaseUsesProducerOnlyForImmutableEvidenceAndKeepsActualDataReader
+--- PASS: TestSourceReleaseUsesProducerOnlyForImmutableEvidenceAndKeepsActualDataReader (0.00s)
+=== RUN   TestSourceReleasePersistentPublisherRoleRecheckedSeparatelyFromOriginalProof
+--- PASS: TestSourceReleasePersistentPublisherRoleRecheckedSeparatelyFromOriginalProof (0.00s)
+=== RUN   TestOwnRoleDeliveryPublicationRequiresCurrentPublisherAndReaderPermission
+--- PASS: TestOwnRoleDeliveryPublicationRequiresCurrentPublisherAndReaderPermission (0.00s)
+=== RUN   TestPublishedSourceContextUsesExactPublicationPurposeAndActualRole
+--- PASS: TestPublishedSourceContextUsesExactPublicationPurposeAndActualRole (0.00s)
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/unassigned-role
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-user
+=== RUN   TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-workspace
+--- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope (0.00s)
+    --- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/unassigned-role (0.00s)
+    --- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-user (0.00s)
+    --- PASS: TestSourceReleaseSameUserGraphRestoresEachRunsOriginalRoleWithoutWideningScope/wrong-workspace (0.00s)
+=== RUN   TestSourceReleaseFirstSharingOfMixedOldRoleRootsUsesEachImmutableAuthority
+--- PASS: TestSourceReleaseFirstSharingOfMixedOldRoleRootsUsesEachImmutableAuthority (0.00s)
+=== RUN   TestSourceReleaseCurrentRoleRootCanFirstShareInheritedOldRoleWithoutGrantingRawScope
+--- PASS: TestSourceReleaseCurrentRoleRootCanFirstShareInheritedOldRoleWithoutGrantingRawScope (0.00s)
+=== RUN   TestSourceReleasePrefixCannotExpandToUnpublishedRunOrSteps
+--- PASS: TestSourceReleasePrefixCannotExpandToUnpublishedRunOrSteps (0.00s)
+=== RUN   TestSourceReleaseSameUserDifferentRolesPreservesOriginalProofAndCurrentReader
+--- PASS: TestSourceReleaseSameUserDifferentRolesPreservesOriginalProofAndCurrentReader (0.00s)
+=== RUN   TestSharedSourceTraversalIsMemoizedOnlyWithinOneRead
+--- PASS: TestSharedSourceTraversalIsMemoizedOnlyWithinOneRead (0.00s)
+=== RUN   TestSourceMemoCannotAuthorizeRawCollaborationAfterDeliveryProjection
+--- PASS: TestSourceMemoCannotAuthorizeRawCollaborationAfterDeliveryProjection (0.00s)
+=== RUN   TestSourceMemoRejectsUnserializableReadBoundary
+--- PASS: TestSourceMemoRejectsUnserializableReadBoundary (0.00s)
+=== RUN   TestPeerStructuredInputValidatedBeforeAdmission
+=== RUN   TestPeerStructuredInputValidatedBeforeAdmission/valid
+=== RUN   TestPeerStructuredInputValidatedBeforeAdmission/wrong_type
+=== RUN   TestPeerStructuredInputValidatedBeforeAdmission/missing_field
+=== RUN   TestPeerStructuredInputValidatedBeforeAdmission/negative
+=== RUN   TestPeerStructuredInputValidatedBeforeAdmission/invalid_data
+=== RUN   TestPeerStructuredInputValidatedBeforeAdmission/invalid_schema
+=== RUN   TestPeerStructuredInputValidatedBeforeAdmission/bounded
+=== RUN   TestPeerStructuredInputValidatedBeforeAdmission/explicit_null
+--- PASS: TestPeerStructuredInputValidatedBeforeAdmission (0.00s)
+    --- PASS: TestPeerStructuredInputValidatedBeforeAdmission/valid (0.00s)
+    --- PASS: TestPeerStructuredInputValidatedBeforeAdmission/wrong_type (0.00s)
+    --- PASS: TestPeerStructuredInputValidatedBeforeAdmission/missing_field (0.00s)
+    --- PASS: TestPeerStructuredInputValidatedBeforeAdmission/negative (0.00s)
+    --- PASS: TestPeerStructuredInputValidatedBeforeAdmission/invalid_data (0.00s)
+    --- PASS: TestPeerStructuredInputValidatedBeforeAdmission/invalid_schema (0.00s)
+    --- PASS: TestPeerStructuredInputValidatedBeforeAdmission/bounded (0.00s)
+    --- PASS: TestPeerStructuredInputValidatedBeforeAdmission/explicit_null (0.00s)
+=== RUN   TestPrepareConversationTaskFreezesGoalScopeAuthorizationAndBudget
+--- PASS: TestPrepareConversationTaskFreezesGoalScopeAuthorizationAndBudget (0.00s)
+=== RUN   TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope
+=== RUN   TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/recursive
+=== RUN   TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/self_control
+=== RUN   TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/denied
+=== RUN   TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/step_budget
+--- PASS: TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope (0.01s)
+    --- PASS: TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/recursive (0.00s)
+    --- PASS: TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/self_control (0.00s)
+    --- PASS: TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/denied (0.00s)
+    --- PASS: TestPrepareConversationTaskRejectsRecursiveUnavailableAndDeploymentExceedingScope/step_budget (0.00s)
+=== RUN   TestConversationTaskRunCatalogAndBudgetsStayFrozen
+--- PASS: TestConversationTaskRunCatalogAndBudgetsStayFrozen (0.01s)
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/queued_before_launch
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/cancelled_before_launch
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/waiting_for_user
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/failed_model_call
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/closed_input
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/cancelled_reconciliation
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/pending_reconciliation
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/revoked_source_projection
+=== RUN   TestConversationTaskControlStateFollowsDurableRunState/completed
+--- PASS: TestConversationTaskControlStateFollowsDurableRunState (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/queued_before_launch (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/cancelled_before_launch (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/waiting_for_user (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/failed_model_call (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/closed_input (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/cancelled_reconciliation (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/pending_reconciliation (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/revoked_source_projection (0.00s)
+    --- PASS: TestConversationTaskControlStateFollowsDurableRunState/completed (0.00s)
+=== RUN   TestConversationTaskWorkerWaitsForStateTransitionWhenQueueIsEmpty
+--- PASS: TestConversationTaskWorkerWaitsForStateTransitionWhenQueueIsEmpty (0.05s)
+=== RUN   TestPersonalTimeUsesLiveProfileAndCalendarBoundaries
+--- PASS: TestPersonalTimeUsesLiveProfileAndCalendarBoundaries (0.00s)
+=== RUN   TestConversationCatalogBoundsHostAuthorizationDeadline
+--- PASS: TestConversationCatalogBoundsHostAuthorizationDeadline (0.00s)
+=== RUN   TestConversationCatalogAvailabilityPreservesRegisteredContractAndOwnedSnapshot
+--- PASS: TestConversationCatalogAvailabilityPreservesRegisteredContractAndOwnedSnapshot (0.00s)
+=== RUN   TestConversationCatalogDoesNotHideInvalidRegistrationOrLeakAvailabilityErrors
+--- PASS: TestConversationCatalogDoesNotHideInvalidRegistrationOrLeakAvailabilityErrors (0.00s)
+=== RUN   TestDialogStateServiceOwnsScopedSessionLifecycle
+--- PASS: TestDialogStateServiceOwnsScopedSessionLifecycle (0.00s)
+=== RUN   TestDialogStateServiceOwnsProposalCASAndVisibility
+--- PASS: TestDialogStateServiceOwnsProposalCASAndVisibility (0.00s)
+=== RUN   TestDialogStateServiceFailsClosedWithoutAuthorityOrRepository
+--- PASS: TestDialogStateServiceFailsClosedWithoutAuthorityOrRepository (0.00s)
+=== RUN   TestTaskStateServiceOwnsCreateFenceApprovalAndOperatorTransitions
+--- PASS: TestTaskStateServiceOwnsCreateFenceApprovalAndOperatorTransitions (0.00s)
+=== RUN   TestTaskStateServiceRejectsOperationsForMissingRuns
+--- PASS: TestTaskStateServiceRejectsOperationsForMissingRuns (0.00s)
+=== RUN   TestInteractiveStateServiceOwnsIdentityIsolationAndHandoff
+--- PASS: TestInteractiveStateServiceOwnsIdentityIsolationAndHandoff (0.00s)
+=== RUN   TestInteractiveExecutionOwnsToolBudgetAndEvidence
+--- PASS: TestInteractiveExecutionOwnsToolBudgetAndEvidence (0.00s)
+=== RUN   TestLifecycleExecutorOwnsPreviewArchiveAndPurge
+--- PASS: TestLifecycleExecutorOwnsPreviewArchiveAndPurge (0.00s)
+=== RUN   TestRemovedOriginalParsingCannotAuthorizeOldResults
+--- PASS: TestRemovedOriginalParsingCannotAuthorizeOldResults (0.00s)
+=== RUN   TestTaskCompletionValidatesTheFullOutputContract
+=== RUN   TestTaskCompletionValidatesTheFullOutputContract/valid
+=== RUN   TestTaskCompletionValidatesTheFullOutputContract/wrong_nested_type
+=== RUN   TestTaskCompletionValidatesTheFullOutputContract/wrong_enum
+=== RUN   TestTaskCompletionValidatesTheFullOutputContract/negative_amount
+=== RUN   TestTaskCompletionValidatesTheFullOutputContract/extra_field
+=== RUN   TestTaskCompletionValidatesTheFullOutputContract/invalid_date
+=== RUN   TestTaskCompletionValidatesTheFullOutputContract/empty_array
+--- PASS: TestTaskCompletionValidatesTheFullOutputContract (0.01s)
+    --- PASS: TestTaskCompletionValidatesTheFullOutputContract/valid (0.00s)
+    --- PASS: TestTaskCompletionValidatesTheFullOutputContract/wrong_nested_type (0.00s)
+    --- PASS: TestTaskCompletionValidatesTheFullOutputContract/wrong_enum (0.00s)
+    --- PASS: TestTaskCompletionValidatesTheFullOutputContract/negative_amount (0.00s)
+    --- PASS: TestTaskCompletionValidatesTheFullOutputContract/extra_field (0.00s)
+    --- PASS: TestTaskCompletionValidatesTheFullOutputContract/invalid_date (0.00s)
+    --- PASS: TestTaskCompletionValidatesTheFullOutputContract/empty_array (0.00s)
+=== RUN   TestTaskToolServiceOwnsFencedLedgerAndBudget
+--- PASS: TestTaskToolServiceOwnsFencedLedgerAndBudget (0.00s)
+=== RUN   TestTaskToolServiceRequiresAgentOwnedLedger
+--- PASS: TestTaskToolServiceRequiresAgentOwnedLedger (0.00s)
+=== RUN   TestTaskExecutionNotifiesWorkflowAfterAgentTerminalState
+--- PASS: TestTaskExecutionNotifiesWorkflowAfterAgentTerminalState (0.00s)
+=== RUN   TestTaskToolChecksLiveScopeBeforeReservingOrInvoking
+=== RUN   TestTaskToolChecksLiveScopeBeforeReservingOrInvoking/revoked
+=== RUN   TestTaskToolChecksLiveScopeBeforeReservingOrInvoking/wrong_workspace
+=== RUN   TestTaskToolChecksLiveScopeBeforeReservingOrInvoking/wrong_version
+=== RUN   TestTaskToolChecksLiveScopeBeforeReservingOrInvoking/unknown_principal
+=== RUN   TestTaskToolChecksLiveScopeBeforeReservingOrInvoking/cancel_requested
+=== RUN   TestTaskToolChecksLiveScopeBeforeReservingOrInvoking/cancelled_context
+--- PASS: TestTaskToolChecksLiveScopeBeforeReservingOrInvoking (0.00s)
+    --- PASS: TestTaskToolChecksLiveScopeBeforeReservingOrInvoking/revoked (0.00s)
+    --- PASS: TestTaskToolChecksLiveScopeBeforeReservingOrInvoking/wrong_workspace (0.00s)
+    --- PASS: TestTaskToolChecksLiveScopeBeforeReservingOrInvoking/wrong_version (0.00s)
+    --- PASS: TestTaskToolChecksLiveScopeBeforeReservingOrInvoking/unknown_principal (0.00s)
+    --- PASS: TestTaskToolChecksLiveScopeBeforeReservingOrInvoking/cancel_requested (0.00s)
+    --- PASS: TestTaskToolChecksLiveScopeBeforeReservingOrInvoking/cancelled_context (0.00s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/application	2.863s

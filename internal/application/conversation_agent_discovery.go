@@ -69,7 +69,7 @@ func (s *ConversationService) MatchConversationAgents(ctx context.Context, in ag
 }
 
 func (s *ConversationService) matchConversationAgentDirectory(ctx context.Context, page agentsdk.ConversationAgentPage, in agentsdk.ConversationAgentMatchRequest, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgentMatchPage, error) {
-	out := agentsdk.ConversationAgentMatchPage{Items: []agentsdk.ConversationAgentCandidate{}, CheckedAt: time.Now().UTC(), HistoryComplete: true, Basis: "Current issuer authorization, owned or explicitly shared configurations, explicit receiving-role bindings, actual executor tool grants and queue capacity, durable workspace Agent leases, and the latest 200 terminal issuer-owned runs. Execution admission checks these facts again; a recommendation is not a reservation. Ranking: readiness, reviewed outcomes (at least 3 samples), backlog, comparable model cost, duration, stable ID."}
+	out := agentsdk.ConversationAgentMatchPage{Items: []agentsdk.ConversationAgentCandidate{}, CheckedAt: time.Now().UTC(), HistoryComplete: true, Basis: "Current issuer authorization, owned or explicitly shared configurations, explicit receiving-role bindings, actual executor tool grants and queue capacity, durable workspace Agent leases, and the latest 200 terminal issuer-owned runs. Execution admission checks these facts again; a recommendation is not a reservation. Ranking: readiness, reviewed outcomes (at least 3 samples), backlog, comparable model cost, reviewed coordination time, run duration, stable ID."}
 	repo, ok := s.repo.(persistence.ConversationAgentDiscoveryRepository)
 	if !ok {
 		return out, conversationFailure("unavailable", "agent_discovery_unavailable")
@@ -241,7 +241,13 @@ func (s *ConversationService) matchConversationAgentDirectory(ctx context.Contex
 	if !comparable {
 		priceCurrency = ""
 	}
-	sort.SliceStable(out.Items, func(i, j int) bool { return preferAgentCandidate(out.Items[i], out.Items[j], priceCurrency) })
+	strategy, err := s.currentDelegationStrategy(ctx, a)
+	if err != nil {
+		return out, err
+	}
+	sort.SliceStable(out.Items, func(i, j int) bool {
+		return preferAgentCandidateWithStrategy(out.Items[i], out.Items[j], priceCurrency, strategy)
+	})
 	for _, item := range out.Items {
 		if item.CanAccept {
 			out.RecommendedAgentID = item.AgentID
@@ -255,6 +261,20 @@ func (s *ConversationService) delegationAncestors(ctx context.Context, id string
 	seen := map[string]bool{}
 	if id == "" {
 		return seen, nil
+	}
+	if ancestry, ok := s.repo.(persistence.ConversationAgentAncestryRepository); ok {
+		conversation, err := s.repo.Get(ctx, id, a)
+		if err != nil {
+			return nil, err
+		}
+		if conversation.Archived {
+			return nil, conversationFailure("conflict", "archived")
+		}
+		ids, err := ancestry.ConversationAgentAncestors(ctx, id, a)
+		for _, agentID := range ids {
+			seen[agentID] = true
+		}
+		return seen, err
 	}
 	repo, err := s.collaborationRepository()
 	if err != nil {
@@ -287,7 +307,7 @@ func (s *ConversationService) delegationAncestors(ctx context.Context, id string
 }
 
 func agentHistory(items []persistence.ConversationAgentObservation, snapshot *agentsdk.ConversationAgentSnapshot, taskType string) agentsdk.ConversationAgentHistory {
-	out := agentsdk.ConversationAgentHistory{Basis: "Same Agent configuration revision and model identity; matching task type when specified. Completed execution is not accepted delivery. Durations exclude queue time. Usage samples cover individual terminal runs, not a full goal."}
+	out := agentsdk.ConversationAgentHistory{Basis: "Same Agent configuration revision and model identity; matching task type when specified. Completed execution is distinct from accepted delivery. Run durations exclude queue time; coordination time spans delegation creation through its latest reviewed outcome. Usage samples cover individual terminal runs, not a full goal."}
 	if snapshot == nil {
 		return out
 	}
@@ -300,9 +320,11 @@ func agentHistory(items []persistence.ConversationAgentObservation, snapshot *ag
 		case "accepted_delivery":
 			out.AcceptedDeliveries++
 			out.ReviewedDeliveries++
+			out.MeanCoordinationMillis += item.CoordinationMillis
 			continue
 		case "needs_changes":
 			out.ReviewedDeliveries++
+			out.MeanCoordinationMillis += item.CoordinationMillis
 			continue
 		case "completed":
 			out.CompletedRuns++
@@ -326,6 +348,11 @@ func agentHistory(items []persistence.ConversationAgentObservation, snapshot *ag
 	if out.UsageSamples > 0 {
 		out.MeanInputTokens /= int64(out.UsageSamples)
 		out.MeanOutputTokens /= int64(out.UsageSamples)
+	}
+	if out.ReviewedDeliveries > 0 {
+		out.AcceptanceRate = float64(out.AcceptedDeliveries) / float64(out.ReviewedDeliveries)
+		out.MeanCoordinationMillis /= int64(out.ReviewedDeliveries)
+		out.AcceptanceRateKnown = out.ReviewedDeliveries >= 3
 	}
 	return out
 }
@@ -389,6 +416,10 @@ func (s *ConversationService) estimateAgentCost(key string, r agentsdk.Conversat
 }
 
 func preferAgentCandidate(a, b agentsdk.ConversationAgentCandidate, currency string) bool {
+	return preferAgentCandidateWithStrategy(a, b, currency, conversationDelegationStrategy{MinimumReviewedDeliveries: 3, PreferCost: true, PreferCoordination: true, PreferDuration: true})
+}
+
+func preferAgentCandidateWithStrategy(a, b agentsdk.ConversationAgentCandidate, currency string, strategy conversationDelegationStrategy) bool {
 	rank := func(s string) int {
 		switch s {
 		case "ready":
@@ -402,7 +433,7 @@ func preferAgentCandidate(a, b agentsdk.ConversationAgentCandidate, currency str
 		return rank(a.State) < rank(b.State)
 	}
 	quality := func(h agentsdk.ConversationAgentHistory) float64 {
-		if h.ReviewedDeliveries < 3 {
+		if h.ReviewedDeliveries < strategy.MinimumReviewedDeliveries {
 			return .5
 		}
 		return float64(h.AcceptedDeliveries+1) / float64(h.ReviewedDeliveries+2)
@@ -419,8 +450,17 @@ func preferAgentCandidate(a, b agentsdk.ConversationAgentCandidate, currency str
 		}
 		return math.MaxFloat64
 	}
-	if currency != "" && cost(a) != cost(b) {
+	if strategy.PreferCost && currency != "" && cost(a) != cost(b) {
 		return cost(a) < cost(b)
+	}
+	coordination := func(c agentsdk.ConversationAgentCandidate) int64 {
+		if c.History.ReviewedDeliveries >= strategy.MinimumReviewedDeliveries {
+			return c.History.MeanCoordinationMillis
+		}
+		return math.MaxInt64
+	}
+	if strategy.PreferCoordination && coordination(a) != coordination(b) {
+		return coordination(a) < coordination(b)
 	}
 	duration := func(c agentsdk.ConversationAgentCandidate) int64 {
 		if c.History.Runs >= 3 {
@@ -428,7 +468,7 @@ func preferAgentCandidate(a, b agentsdk.ConversationAgentCandidate, currency str
 		}
 		return math.MaxInt64
 	}
-	if duration(a) != duration(b) {
+	if strategy.PreferDuration && duration(a) != duration(b) {
 		return duration(a) < duration(b)
 	}
 	return a.AgentID < b.AgentID

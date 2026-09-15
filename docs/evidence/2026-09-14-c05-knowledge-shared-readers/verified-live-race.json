@@ -1,0 +1,8 @@
+{
+  "session_id": 80410,
+  "pid": 72654,
+  "observed_at_utc": "2026-09-14T06:41:17.764472+00:00",
+  "process": "  PID ELAPSED COMMAND\n72654   07:45 /var/folders/5w/z9d657ts32zg837n0bvff0yh0000gn/T/go-build2173623974/b001/integrationtest.test -test.paniconexit0 -test.timeout=10m0s -test.run=^TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$ -test.count=1 -test.v=true\n",
+  "log": "/tmp/c05-knowledge-shared-real-race.log",
+  "race_accepted": false
+}

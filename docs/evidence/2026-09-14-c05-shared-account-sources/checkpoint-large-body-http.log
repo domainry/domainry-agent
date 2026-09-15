@@ -1,0 +1,22 @@
+=== RUN   TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission
+    conversation_delivery_write_permissions_test.go:167: real Agent/Identity/Tools/Integration/Provider HTTP: exact confirmation, effects={"mail_send":1}, saved catalog/receipt readable without send or account-write action and after restart; data/account/tool revocation hides result; no additional vendor IO
+--- PASS: TestPeerWriteDeliveryReadsOriginalMailReceiptWithoutSendPermission (8.14s)
+=== RUN   TestCrossUserWorkspaceMailSourcesAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_sources_test.go:94: mail: real personal owner body remains private despite explicit participant delivery/execution scopes and original run publication
+    conversation_shared_account_sources_test.go:94: mail: actual cross-user agent_delegate confirmation and owner worker; 4 original receipts; running payload hidden; original delivery/execution SHA and byte pages after both users' execution revocation and restart; private controls denied; reader data and workspace account revocation enforced; vendor HTTP remained 6
+--- PASS: TestCrossUserWorkspaceMailSourcesAutomaticDeliveryAndSharedExecution (18.07s)
+=== RUN   TestCrossUserWorkspaceCalendarSourcesAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_sources_test.go:98: calendar: real personal owner body remains private despite explicit participant delivery/execution scopes and original run publication
+    conversation_shared_account_sources_test.go:98: calendar: actual cross-user agent_delegate confirmation and owner worker; 5 original receipts; running payload hidden; original delivery/execution SHA and byte pages after both users' execution revocation and restart; private controls denied; reader data and workspace account revocation enforced; vendor HTTP remained 5
+--- PASS: TestCrossUserWorkspaceCalendarSourcesAutomaticDeliveryAndSharedExecution (28.88s)
+=== RUN   TestCrossUserWorkspaceWebSourcesAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_sources_test.go:102: web: actual cross-user agent_delegate confirmation and owner worker; 2 original receipts; running payload hidden; original delivery/execution SHA and byte pages after both users' execution revocation and restart; private controls denied; reader data and workspace account revocation enforced; vendor HTTP remained 2
+--- PASS: TestCrossUserWorkspaceWebSourcesAutomaticDeliveryAndSharedExecution (13.41s)
+=== RUN   TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution
+    conversation_shared_account_sources_test.go:106: mail-write: actual cross-user agent_delegate confirmation and owner worker; 2 original receipts; running payload hidden; original delivery/execution SHA and byte pages after both users' execution revocation and restart; private controls denied; reader data and workspace account revocation enforced; vendor HTTP remained 2
+--- PASS: TestCrossUserWorkspaceMailWriteReceiptsAutomaticDeliveryAndSharedExecution (17.05s)
+=== RUN   TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart
+    conversation_shared_failed_execution_test.go:164: actual connector HTTP 503, durably started failed call and subsequent model reply; shared run retains exact state/timing while failed parameters/results/reply/control stay hidden after execution revocation and restart; no repeat vendor IO
+--- PASS: TestSharedExecutionHidesRealFailedToolPayloadAndUnverifiedReplyAfterRestart (3.81s)
+PASS
+ok  	github.com/domainry/domainry-agent/internal/assembly/web	89.819s

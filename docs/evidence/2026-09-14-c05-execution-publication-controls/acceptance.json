@@ -1,0 +1,38 @@
+{
+  "phase_status": "accepted_owner_publication_controls_without_execution_or_share_authority_and_live_http_reading",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 181,
+  "source_manifest": "source-sha256.json",
+  "artifact_files": 29,
+  "artifact_manifest": "artifact-sha256.json",
+  "accepted_logs": [
+    "core.log",
+    "sdk.log",
+    "build.log",
+    "frontend.log",
+    "metadata.log",
+    "race.log",
+    "http-browser.log",
+    "live-http.log"
+  ],
+  "browser_report": "browser/report.json",
+  "visually_inspected": [
+    "browser/withdraw-without-execution.png",
+    "browser/withdraw-without-execution-mobile.png"
+  ],
+  "real_identity": true,
+  "real_http": true,
+  "real_tool_execution": true,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "new_owner_metadata_route": "GET /agent/delegations/{delegationID}/execution-publications",
+  "owner_metadata_requires": [
+    "view"
+  ],
+  "requires_execution_read": false,
+  "requires_share": false,
+  "pending_or_failed_payload_policy_changed": false,
+  "live_http_scope": "original admitted worker held in first model request; exact running ID and step; withdrawal before release denies subsequent scoped reading"
+}

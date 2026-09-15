@@ -1,0 +1,259 @@
+package identity
+
+import (
+	"context"
+	"strings"
+	"time"
+
+	"github.com/domainry/domainry-foundation/apperror"
+	"github.com/domainry/domainry-foundation/requestcontext"
+	definitionmodel "github.com/domainry/domainry-identity/internal/domain/definition/model"
+	identitycontract "github.com/domainry/domainry-identity/internal/domain/identity/contract"
+	identitymodel "github.com/domainry/domainry-identity/internal/domain/identity/model"
+	identityprojection "github.com/domainry/domainry-identity/internal/domain/identity/projection"
+)
+
+type IdentityEffectiveAccessDependencies struct {
+	Identity IdentityEffectiveAccessWorkspaceScope
+	Objects  func() []definitionmodel.ObjectSchema
+	Actions  func() []definitionmodel.ActionSchema
+}
+
+type IdentityEffectiveAccessWorkspaceScope interface {
+	ForWorkspace(string) (*IdentityApplicationService, error)
+}
+
+func (s *IdentityEffectiveAccessApplicationService) ReverseIndex(ctx context.Context, actor identitymodel.Principal) (identitymodel.IdentityAccessReverseIndex, error) {
+	scoped, workspaceContext, err := s.governanceScope(ctx, actor, "identity.access.reverse_index")
+	if err != nil {
+		return identitymodel.IdentityAccessReverseIndex{}, err
+	}
+	roles, err := scoped.ListRoles(workspaceContext)
+	if err != nil {
+		return identitymodel.IdentityAccessReverseIndex{}, err
+	}
+	assignments, err := scoped.ListUserRoleAssignmentsWithinDataScope(workspaceContext, "", actor, "identity.access.reverse_index")
+	if err != nil {
+		return identitymodel.IdentityAccessReverseIndex{}, err
+	}
+	return identityprojection.IdentityBuildAccessReverseIndex(roles, scoped.PublishedRoleDefinitions(workspaceContext), assignments), nil
+}
+
+func (s *IdentityEffectiveAccessApplicationService) GovernanceReports(ctx context.Context, actor identitymodel.Principal) (identitymodel.IdentityGovernanceReports, error) {
+	scoped, workspaceContext, err := s.governanceScope(ctx, actor, "identity.access.reports")
+	if err != nil {
+		return identitymodel.IdentityGovernanceReports{}, err
+	}
+	roles, err := scoped.ListRoles(workspaceContext)
+	if err != nil {
+		return identitymodel.IdentityGovernanceReports{}, err
+	}
+	assignments, err := scoped.ListUserRoleAssignmentsWithinDataScope(workspaceContext, "", actor, "identity.access.reports")
+	if err != nil {
+		return identitymodel.IdentityGovernanceReports{}, err
+	}
+	permissions := scoped.PermissionDefinitions()
+	permissionList := make([]identitymodel.IdentityPermissionDefinition, 0, len(permissions))
+	for _, permission := range permissions {
+		permissionList = append(permissionList, permission)
+	}
+	return identityprojection.IdentityBuildGovernanceReports(time.Now(), permissionList, roles, scoped.PublishedRoleDefinitions(workspaceContext), assignments), nil
+}
+
+func (s *IdentityEffectiveAccessApplicationService) PreviewRoleChange(ctx context.Context, request identitymodel.IdentityRoleChangeImpactRequest, actor identitymodel.Principal) (identitymodel.IdentityRoleChangeImpact, error) {
+	scoped, workspaceContext, err := s.governanceScope(ctx, actor, identitycontract.IdentityActionRolesImpactPreview)
+	if err != nil {
+		return identitymodel.IdentityRoleChangeImpact{}, err
+	}
+	if s.dependencies.Actions == nil {
+		return identitymodel.IdentityRoleChangeImpact{}, internalError("preview identity role change", nil)
+	}
+	roles, err := scoped.ListRoles(workspaceContext)
+	if err != nil {
+		return identitymodel.IdentityRoleChangeImpact{}, err
+	}
+	assignments, err := scoped.ListUserRoleAssignmentsWithinDataScope(workspaceContext, "", actor, identitycontract.IdentityActionRolesImpactPreview)
+	if err != nil {
+		return identitymodel.IdentityRoleChangeImpact{}, err
+	}
+	roleKey := strings.TrimSpace(request.RoleKey)
+	if roleKey == "" {
+		roleKey = strings.TrimSpace(request.Role.Key)
+	}
+	var projectionRole identitymodel.IdentityRole
+	for _, role := range roles {
+		if role.Key == roleKey || role.ID == roleKey {
+			projectionRole = role
+			break
+		}
+	}
+	if projectionRole.ID == "" {
+		return identitymodel.IdentityRoleChangeImpact{}, &apperror.AppError{Kind: apperror.KindNotFound, Code: "backend.identity.role_not_found"}
+	}
+	current, _ := scoped.PublishedRoleDefinition(workspaceContext, roleKey)
+	request.RoleKey = roleKey
+	return identityprojection.IdentityPreviewRoleChange(request, current, projectionRole, assignments, scopedEffectiveAccessObjects(s.dependencies.Objects), append([]definitionmodel.ActionSchema(nil), s.dependencies.Actions()...)), nil
+}
+
+func (s *IdentityEffectiveAccessApplicationService) governanceScope(ctx context.Context, actor identitymodel.Principal, actionKey string) (*IdentityApplicationService, context.Context, error) {
+	if err := identityAuthorizeQuery(actor); err != nil {
+		return nil, nil, err
+	}
+	if !identitycontract.IdentityRoleHasPermissionKey(actor.Role, actionKey) {
+		return nil, nil, &apperror.AppError{Kind: apperror.KindForbidden, Code: "backend.permission.denied"}
+	}
+	if s == nil || s.dependencies.Identity == nil || s.dependencies.Objects == nil {
+		return nil, nil, internalError("read identity access governance", nil)
+	}
+	scoped, err := s.dependencies.Identity.ForWorkspace(actor.WorkspaceID)
+	if err != nil {
+		return nil, nil, err
+	}
+	return scoped, requestcontext.WithWorkspaceID(ctx, actor.WorkspaceID), nil
+}
+
+type IdentityEffectiveAccessApplicationService struct {
+	dependencies IdentityEffectiveAccessDependencies
+}
+
+func NewIdentityEffectiveAccessApplicationService(dependencies IdentityEffectiveAccessDependencies) *IdentityEffectiveAccessApplicationService {
+	return &IdentityEffectiveAccessApplicationService{dependencies: dependencies}
+}
+
+func (s *IdentityEffectiveAccessApplicationService) Snapshot(ctx context.Context, userID string, actor identitymodel.Principal) (identitymodel.IdentityEffectiveAccessSnapshot, error) {
+	return s.snapshot(ctx, userID, actor, "identity.users.effective_access", "")
+}
+
+// SnapshotForRole returns exactly the current assigned role's policies. A
+// role-restricted worker must never receive the user's effective union bundle.
+func (s *IdentityEffectiveAccessApplicationService) SnapshotForRole(ctx context.Context, userID, roleKey string, actor identitymodel.Principal) (identitymodel.IdentityEffectiveAccessSnapshot, error) {
+	if strings.TrimSpace(roleKey) == "" {
+		return identitymodel.IdentityEffectiveAccessSnapshot{}, &apperror.AppError{Kind: apperror.KindBadRequest, Code: "identity.role_required"}
+	}
+	return s.snapshot(ctx, userID, actor, "identity.users.effective_access", strings.TrimSpace(roleKey))
+}
+
+// SnapshotWorkflowWorkload projects a governed non-human principal directly
+// from its published service Role. It deliberately avoids every user,
+// credential, external-account and session repository.
+func (s *IdentityEffectiveAccessApplicationService) SnapshotWorkflowWorkload(_ context.Context, principal identitymodel.Principal) (identitymodel.IdentityEffectiveAccessSnapshot, error) {
+	if s == nil || s.dependencies.Objects == nil || !principal.Known || principal.UserID == "" || principal.WorkspaceID == "" ||
+		principal.Role.Audience != identitymodel.IdentityRoleAudienceService || principal.Role.AssignmentMode != identitymodel.IdentityRoleAssignmentSystemManaged {
+		return identitymodel.IdentityEffectiveAccessSnapshot{}, internalError("build workflow workload access snapshot", nil)
+	}
+	role := identitymodel.IdentityRole{ID: principal.Role.Key, Key: principal.Role.Key, Label: principal.Role.Name, Status: identitymodel.IdentityStatusActive}
+	assignment := identitymodel.IdentityUserRoleAssignment{UserID: principal.UserID, RoleID: role.ID, Source: "workflow_release", Status: "active"}
+	return identityprojection.IdentityBuildEffectiveAccessSnapshot(identityprojection.IdentityEffectiveAccessProjectionInput{
+		Principal: principal, Assignments: []identitymodel.IdentityUserRoleAssignment{assignment}, ProjectionRoles: []identitymodel.IdentityRole{role}, RoleDefinitions: []identitymodel.RoleSchema{principal.Role},
+		Objects: scopedEffectiveAccessObjects(s.dependencies.Objects),
+		FieldDecision: func(role identitymodel.RoleSchema, object definitionmodel.ObjectSchema, field definitionmodel.FieldSchema) (bool, bool, bool, bool) {
+			return identitycontract.IdentityCanReadObjectField(role, object, field), identitycontract.IdentityCanWriteObjectField(role, object, field), identitycontract.IdentityCanExportObjectField(role, object, field), identitycontract.IdentityFieldExportMasked(role, object.Key, field.Key)
+		},
+	}), nil
+}
+
+func (s *IdentityEffectiveAccessApplicationService) snapshot(ctx context.Context, userID string, actor identitymodel.Principal, permission, roleKey string) (identitymodel.IdentityEffectiveAccessSnapshot, error) {
+	if err := identityAuthorizeEffectiveAccess(actor, userID, permission); err != nil {
+		return identitymodel.IdentityEffectiveAccessSnapshot{}, err
+	}
+	if s == nil || s.dependencies.Identity == nil || s.dependencies.Objects == nil {
+		return identitymodel.IdentityEffectiveAccessSnapshot{}, internalError("build effective access snapshot", nil)
+	}
+	scoped, err := s.dependencies.Identity.ForWorkspace(actor.WorkspaceID)
+	if err != nil {
+		return identitymodel.IdentityEffectiveAccessSnapshot{}, err
+	}
+	workspaceContext := requestcontext.WithWorkspaceID(ctx, actor.WorkspaceID)
+	userID = strings.TrimSpace(userID)
+	if userID != strings.TrimSpace(actor.UserID) {
+		if _, found, scopeErr := scoped.UserByIDWithinDataScope(workspaceContext, userID, actor, permission); scopeErr != nil {
+			return identitymodel.IdentityEffectiveAccessSnapshot{}, scopeErr
+		} else if !found {
+			return identitymodel.IdentityEffectiveAccessSnapshot{}, &apperror.AppError{Kind: apperror.KindNotFound, Code: "backend.identity.user_not_found"}
+		}
+	}
+	var principal identitymodel.Principal
+	if roleKey != "" {
+		principal, err = scoped.ResolvePrincipalForRole(workspaceContext, userID, roleKey)
+	} else {
+		principal, err = scoped.ResolvePrincipal(workspaceContext, userID)
+	}
+	if err != nil {
+		return identitymodel.IdentityEffectiveAccessSnapshot{}, err
+	}
+	assignments, err := scoped.ResolveEffectiveRoleAssignments(workspaceContext, principal.UserID)
+	if err != nil {
+		return identitymodel.IdentityEffectiveAccessSnapshot{}, err
+	}
+	roles, err := scoped.ListRoles(workspaceContext)
+	if err != nil {
+		return identitymodel.IdentityEffectiveAccessSnapshot{}, err
+	}
+	if roleKey != "" {
+		selected := make(map[string]bool)
+		for _, role := range roles {
+			if role.Key == principal.Role.Key {
+				selected[role.ID] = true
+			}
+		}
+		filtered := assignments[:0]
+		for _, assignment := range assignments {
+			if selected[assignment.RoleID] {
+				filtered = append(filtered, assignment)
+			}
+		}
+		assignments = filtered
+	}
+	menus, err := scoped.ListMenus(workspaceContext)
+	if err != nil {
+		return identitymodel.IdentityEffectiveAccessSnapshot{}, err
+	}
+	roleMenus, err := scoped.ListRoleMenuAssignments(workspaceContext, "")
+	if err != nil {
+		return identitymodel.IdentityEffectiveAccessSnapshot{}, err
+	}
+	return identityprojection.IdentityBuildEffectiveAccessSnapshot(identityprojection.IdentityEffectiveAccessProjectionInput{
+		Principal: principal, Assignments: assignments, ProjectionRoles: roles,
+		RoleDefinitions: scoped.PublishedRoleDefinitions(workspaceContext), PermissionSets: scoped.PublishedPermissionSets(workspaceContext),
+		PermissionSetGroups: scoped.PublishedPermissionSetGroups(workspaceContext), Menus: menus, RoleMenus: roleMenus,
+		Objects: scopedEffectiveAccessObjects(s.dependencies.Objects),
+		FieldDecision: func(role identitymodel.RoleSchema, object definitionmodel.ObjectSchema, field definitionmodel.FieldSchema) (bool, bool, bool, bool) {
+			return identitycontract.IdentityCanReadObjectField(role, object, field),
+				identitycontract.IdentityCanWriteObjectField(role, object, field),
+				identitycontract.IdentityCanExportObjectField(role, object, field),
+				identitycontract.IdentityFieldExportMasked(role, object.Key, field.Key)
+		},
+	}), nil
+}
+
+func (s *IdentityEffectiveAccessApplicationService) Explain(ctx context.Context, request identitymodel.IdentityAccessExplainRequest, actor identitymodel.Principal) (identitymodel.IdentityAccessExplainResult, error) {
+	snapshot, err := s.snapshot(ctx, request.UserID, actor, "identity.access.explain", "")
+	if err != nil {
+		return identitymodel.IdentityAccessExplainResult{}, err
+	}
+	scoped, err := s.dependencies.Identity.ForWorkspace(actor.WorkspaceID)
+	if err != nil {
+		return identitymodel.IdentityAccessExplainResult{}, err
+	}
+	principal, err := scoped.ResolvePrincipal(requestcontext.WithWorkspaceID(ctx, actor.WorkspaceID), request.UserID)
+	if err != nil {
+		return identitymodel.IdentityAccessExplainResult{}, err
+	}
+	result := identityprojection.IdentityExplainEffectiveAccess(snapshot, principal.Role, request)
+	return result, nil
+}
+
+func identityAuthorizeEffectiveAccess(actor identitymodel.Principal, userID, permission string) error {
+	if err := identityAuthorizeQuery(actor); err != nil {
+		return err
+	}
+	if strings.TrimSpace(userID) == actor.UserID || identitycontract.IdentityRoleHasPermissionKey(actor.Role, permission) {
+		return nil
+	}
+	return &apperror.AppError{Kind: apperror.KindForbidden, Code: "backend.permission.denied"}
+}
+
+func scopedEffectiveAccessObjects(source func() []definitionmodel.ObjectSchema) []definitionmodel.ObjectSchema {
+	values := source()
+	return append([]definitionmodel.ObjectSchema(nil), values...)
+}

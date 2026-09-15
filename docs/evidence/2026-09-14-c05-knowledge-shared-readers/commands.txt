@@ -1,0 +1,17 @@
+Agent workspace:
+go test ./internal/application ./module ../domainry-agent-sdk/... ../domainry-knowledge/... -count=1
+go test ../domainry-knowledge/internal/infrastructure/provider -run '^TestSharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence$' -count=1 -v
+go test -race ./internal/application ../domainry-agent-sdk ../domainry-knowledge/internal/application/knowledge ../domainry-knowledge/internal/infrastructure/provider -run 'Test(SharedKnowledgeReadPreservesAuthorityAndPrivateSourceBoundary|SharedManagedKnowledgeKeepsProducerScopeAndActualReaderFileRights|SharedKnowledgeProviderUsesActualReaderACLAndPreservesOriginalEvidence|ReleasedKnowledgeReceiptKeepsOriginalProducerAndCurrentReader)$' -count=1 -v
+
+Runtime workspace (GOWORK=/tmp/runtime-work/go.work):
+go test ./runtime/application/agenthost ./runtime/bootstrap/transport -count=1
+go test -race ./runtime/application/agenthost -run '^TestConversationKnowledge' -count=1 -v
+go test ./runtime/bootstrap/runtime -run 'Test(OpenAgentBinding|OpenManifestAgentBinding|ReportAnalysis|AgentSDK)' -count=1 -v
+go test ./runtime/bootstrap/integrationtest -run '^TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$' -count=1 -v
+go test -race ./runtime/bootstrap/integrationtest -run '^TestCrossUserManagedKnowledgeAgentDispatchSharedOriginalExtractionAutoDeliveryAndRestart$' -count=1 -v
+
+Failed diagnostic, not accepted:
+go test ./runtime/application/agenthost ./runtime/bootstrap/transport ./runtime/bootstrap/runtime -count=1
+Published module set contract lock does not match current local Agent source publication capability. No published version, sum or capability pin was modified.
+Failed diagnostic logs retained, including late reader revocation before fix. The live actual race snapshot is not acceptance.
+git diff --check: Agent, SDK, Knowledge, Runtime.

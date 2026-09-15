@@ -4,6 +4,7 @@ import { repairRequest } from "./execution-outcome.ts";
 import type { ToolView } from "./execution-state.ts";
 import { TodoDialog } from "./TodoDialog";
 import { CollaborationDialog } from "./CollaborationDialog";
+import { ConversationCollaborationSummary } from "./ConversationCollaborationSummary";
 import { TaskDialog } from "./TaskDialog";
 import { ScheduleDialog } from "./ScheduleDialog";
 import { ArtifactDialog } from "./ArtifactDialog";
@@ -56,9 +57,15 @@ import {
 } from "@/components/ai-elements/message";
 import {
   PromptInput,
+	PromptInputActionAddAttachments,
+	PromptInputActionMenu,
+	PromptInputActionMenuContent,
+	PromptInputActionMenuTrigger,
   PromptInputFooter,
+	PromptInputHeader,
   PromptInputTextarea,
   PromptInputSubmit,
+	usePromptInputAttachments,
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -82,12 +89,14 @@ import {
   type ConversationPage,
   type MessagePage,
   type Run,
+	type ContentBlock,
 } from "./api";
 
 import { DraftStore } from "./drafts";
 import { describeError, errorMessage } from "./errors";
 import { MemoryDialog, type MemorySource } from "./MemoryDialog";
 import type { AppSession } from "./session";
+import { attachmentHash, attachmentMaxBytes, attachmentPath, uploadAttachment } from "./attachment-state.ts";
 
 const labels = {
   queued: "等待模型响应…",
@@ -99,6 +108,20 @@ const labels = {
   waiting_confirmation: "等待操作确认",
   needs_reconciliation: "外部操作结果待核查",
 };
+
+const imageTypes = new Set(["image/png", "image/jpeg", "image/gif", "image/webp"]);
+
+function ComposerImages() {
+  const attachments = usePromptInputAttachments();
+  if (!attachments.files.length) return null;
+  return <div className="composer-images" aria-label="待发送图片">{attachments.files.map(file => <figure key={file.id}><img src={file.url} alt={file.filename || "待发送图片"} /><figcaption>{file.filename || "图片"}</figcaption><button type="button" aria-label={`移除 ${file.filename || "图片"}`} onClick={() => attachments.remove(file.id)}><X size={13} /></button></figure>)}</div>;
+}
+
+function MessageImages({ blocks }: { blocks?: ContentBlock[] }) {
+  const images = blocks?.filter((block): block is Extract<ContentBlock, { type: "image" }> => block.type === "image") || [];
+  if (!images.length) return null;
+  return <div className="message-images">{images.map(({ image }) => image.source ? <div className="shared-image-reference" key={`${image.attachment_id}:${image.sha256}`}><FileText size={18} /><span><strong>{image.filename}</strong><small>经委派来源授权提供给 Agent · {(image.bytes / 1024).toFixed(1)} KiB</small></span></div> : <img key={`${image.attachment_id}:${image.sha256}`} loading="lazy" src={`${attachmentPath(image.conversation_id, image.attachment_id)}/content`} alt={image.filename} />)}</div>;
+}
 export default function App({ session, onLogout, accountBusy, accountError }: { session: AppSession; onLogout?: () => void; accountBusy?: boolean; accountError?: string }) {
   const [toolSettings, setToolSettings] = useState(false);
   const [externalAccounts, setExternalAccounts] = useState(() => !!loadAuthorization(session.scope));
@@ -129,6 +152,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
   );
   const [todoDialog, setTodoDialog] = useState(false);
   const [collaborationDialog, setCollaborationDialog] = useState(false);
+  const [collaborationSelection, setCollaborationSelection] = useState("");
   const [taskDialog, setTaskDialog] = useState(false);
   const [scheduleDialog, setScheduleDialog] = useState(false);
   const [artifactDialog, setArtifactDialog] = useState<false | true | { id: string; version: number }>(false);
@@ -225,7 +249,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
     setNotice("");
     setInspectedRun(inspectRunID ? { conversationID: id, runID: inspectRunID } : null);
   }
-  async function mutate(action: () => Promise<void>) {
+  async function mutate(action: () => Promise<void>, rethrow = false) {
     if (mutationLock.current) return;
     mutationLock.current = true;
     setBusy(true);
@@ -234,6 +258,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
       await action();
     } catch (e) {
       fail(e);
+	  if (rethrow) throw e;
     } finally {
       mutationLock.current = false;
       setBusy(false);
@@ -348,18 +373,36 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
   }
   async function submit(message: PromptInputMessage) {
     const text = message.text.trim();
-    if (!text || !record || record.active_run_id || blocksConversation || busy || record.archived) return;
+	const files = message.files;
+    if ((!text && !files.length) || !record || record.active_run_id || blocksConversation || busy || record.archived) return;
+	if (files.length > 4 || files.some(file => !imageTypes.has(file.mediaType || ""))) {
+	  setError("每条消息最多发送 4 张 PNG、JPEG、GIF 或 WebP 图片。");
+	  throw new Error("message_image_invalid");
+	}
     if (new TextEncoder().encode(text).length > 16384) {
       setError("消息超过 16 KB，请缩短后发送。");
-      return;
+	  throw new Error("message_too_large");
     }
+	const contentIdentity = files.map(file => (file as typeof file & { id?: string }).id || `${file.filename}:${file.mediaType}:${file.url.length}`).join("|");
     await mutate(async () => {
-      const pending = drafts.pending(record.id, text, memoryWrite, todoWrite, artifactWrite, backgroundTaskWrite);
+      const pending = drafts.pending(record.id, text, memoryWrite, todoWrite, artifactWrite, backgroundTaskWrite, contentIdentity);
       setDraftUnavailable(!drafts.available);
+	  const content: ContentBlock[] = text ? [{ type: "text", text }] : [];
+	  for (const [index, item] of files.entries()) {
+		const response = await fetch(item.url);
+		const blob = await response.blob();
+		const mediaType = item.mediaType || blob.type;
+		if (!response.ok || !imageTypes.has(mediaType) || blob.size < 1 || blob.size > attachmentMaxBytes) throw new Error("message_image_invalid");
+		const filename = item.filename || `image-${index + 1}.${mediaType.split("/")[1] === "jpeg" ? "jpg" : mediaType.split("/")[1]}`;
+		const file = new File([blob], filename, { type: mediaType });
+		const sha256 = await attachmentHash(await blob.arrayBuffer());
+		const attachment = await uploadAttachment(record.id, file, { clientID: `message-${pending.id}-${index}`, filename, bytes: blob.size, sha256 }, new AbortController().signal);
+		content.push({ type: "image", image: { attachment_id: attachment.id, conversation_id: "", filename: "", content_type: "", bytes: 0, sha256: "", revision: 0, detail: "auto" } });
+	  }
       const sent = await request<Run>(
         `${conversationPath(record.id)}/messages`,
         "POST",
-        { client_message_id: pending.id, message: pending.text, ...(pending.memoryWrite || pending.todoWrite || pending.artifactWrite || pending.backgroundTaskWrite ? { write_scope: { personal_memory: !!pending.memoryWrite, ...(pending.todoWrite ? { personal_todos: true } : {}), ...(pending.artifactWrite ? { personal_artifacts: true } : {}), ...(pending.backgroundTaskWrite ? { background_tasks: true } : {}) } } : {}) },
+		{ client_message_id: pending.id, message: pending.text, ...(files.length ? { content: content.map(block => block.type === "text" ? block : { type: "image", image: { attachment_id: block.image.attachment_id, detail: block.image.detail } }) } : {}), ...(pending.memoryWrite || pending.todoWrite || pending.artifactWrite || pending.backgroundTaskWrite ? { write_scope: { personal_memory: !!pending.memoryWrite, ...(pending.todoWrite ? { personal_todos: true } : {}), ...(pending.artifactWrite ? { personal_artifacts: true } : {}), ...(pending.backgroundTaskWrite ? { background_tasks: true } : {}) } } : {}) },
       );
       drafts.acknowledge(record.id, pending);
       setInputState(drafts.read(record.id).text);
@@ -371,7 +414,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
       setRecord({ ...record, active_run_id: sent.id });
       setHistoryCursors([0]);
       setRefresh((v) => v + 1);
-    });
+	}, true);
   }
 
   const allowedWrites = [
@@ -520,7 +563,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
         </div>
         <div className="sidebar-bottom">
           <div className="library-caption">我的工作空间</div>
-          <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setCollaborationDialog(true); }}><Sparkles size={17} />Agent 协作<span className="subtle">目录、委派与沟通</span></Button>
+          <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setCollaborationSelection(""); setCollaborationDialog(true); }}><Sparkles size={17} />Agent 协作<span className="subtle">目录、委派与沟通</span></Button>
           <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setTodoDialog(true); }}><Check size={17} />个人待办<span className="subtle">事项与截止日期</span></Button>
           <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setTaskDialog(true); }}><ListChecks size={17} />后台任务<span className="subtle">进度、等待与成果</span></Button>
           {session.mode === "identity" && <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setScheduleDialog(true); }}><CalendarClock size={17} />计划与提醒<span className="subtle">查看、修改与暂停</span></Button>}
@@ -563,6 +606,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
             <div>
             <div className="eyebrow">工作空间 <span>/</span> 对话</div>
             <h1>{record?.title || "开始新的工作"}</h1>
+            {record?.fork && <button type="button" className="fork-origin" onClick={() => activate(record.fork!.conversation_id, record.fork!.run_id)}>分叉自运行 {record.fork.run_id.slice(0, 12)}… · 边界事件 {record.fork.boundary_event_seq}</button>}
             </div>
           </div>
           <div className="header-actions">
@@ -610,6 +654,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                 : "历史记录与上下文会自动保存"}
           </span>
         </div>
+        {record&&<ConversationCollaborationSummary conversationID={record.id} delegationID={record.delegation_id} userID={session.user_id} onOpen={id=>{setCollaborationSelection(id);setCollaborationDialog(true);}}/>}
         <Conversation
           key={`${selectedId}:${historyCursors.at(-1)}`}
           className="conversation-view"
@@ -653,7 +698,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                     {message.role === "assistant" ? (
                       message.access_error ? <p role="status" className="subtle">{errorMessage(message.access_error)}</p> : <KnowledgeResponse text={message.content} citations={message.citations} />
                     ) : (
-                      <div className="user-text">{message.peer_event?"收到委派任务的新消息，Agent 正在继续处理。具体发件方和内容可在协作记录中查看。":message.content}</div>
+					  <><MessageImages blocks={message.content_blocks} />{message.content && <div className="user-text">{message.peer_event?"收到委派任务的新消息，Agent 正在继续处理。具体发件方和内容可在协作记录中查看。":message.content}</div>}</>
                     )}
                   </MessageContent>
                   <div className="message-actions">
@@ -695,6 +740,10 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                           source: {
                             title: "对话约定",
                             content: message.content,
+                            conversationID: selectedId,
+                            messageID: message.id,
+                            runID: message.run_id,
+                            taskID: message.background_task_id,
                           },
                         })
                       }
@@ -800,8 +849,9 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
           {!blocksConversation && <label className="memory-write-scope"><input type="checkbox" checked={backgroundTaskWrite} disabled={!canEdit || record?.archived || !!drafts.read(selectedId).pending} onChange={event => { const allowed = event.target.checked; drafts.writeBackgroundTaskScope(selectedId, allowed); setBackgroundTaskWrite(allowed); setDraftUnavailable(!drafts.available); }} />允许本次请求创建独立的后台任务</label>}
             </div>
           </details>
-          {record?.delegation_id && <Button variant="outline" onClick={()=>setCollaborationDialog(true)}>打开协作 · 发送补充信息或更新需求</Button>}
-          <PromptInput onSubmit={submit} className="composer">
+          {record?.delegation_id && <Button variant="outline" onClick={()=>{setCollaborationSelection(record.delegation_id!);setCollaborationDialog(true);}}>打开协作 · 发送补充信息或更新需求</Button>}
+		  <PromptInput onSubmit={submit} className="composer" accept="image/png,image/jpeg,image/gif,image/webp" multiple maxFiles={4} maxFileSize={attachmentMaxBytes} onError={() => setError("每条消息最多发送 4 张、每张不超过 16 MiB 的 PNG、JPEG、GIF 或 WebP 图片。") }>
+			<PromptInputHeader><ComposerImages /></PromptInputHeader>
             <PromptInputTextarea
               aria-label="消息"
               placeholder={
@@ -825,6 +875,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                     : "Enter 发送 · Shift + Enter 换行"}
               </span>
               <div className="composer-actions">
+				<PromptInputActionMenu><PromptInputActionMenuTrigger aria-label="添加图片" tooltip="添加图片"><Plus size={15} /></PromptInputActionMenuTrigger><PromptInputActionMenuContent><PromptInputActionAddAttachments label="添加图片" /></PromptInputActionMenuContent></PromptInputActionMenu>
                 {run &&
                   !isActive &&
                   resumable(run) && !isWaiting && (
@@ -854,7 +905,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                   disabled={
                     busy ||
                     (!(isActive && !run?.background_task) &&
-                      (!input.trim() || !record || !!record.delegation_id || record.archived || !!record.active_run_id || blocksConversation || loading))
+					  (!record || !!record.delegation_id || record.archived || !!record.active_run_id || blocksConversation || loading))
                   }
                   onStop={() =>
                     void mutate(async () => {
@@ -979,10 +1030,10 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
           </Button>
         </DialogContent>
       </Dialog>
-      {inspectedRun && inspectedRun.conversationID === selectedId && <RunDialog key={`${inspectedRun.conversationID}:${inspectedRun.runID}`} {...inspectedRun} onClose={() => setInspectedRun(null)} onResume={inspectedRun.runID === run?.id ? resumeExecution : undefined} onRepair={prepareRepair} recoveryDisabled={recoveryDisabled} repairDisabled={repairDisabled} />}
+      {inspectedRun && inspectedRun.conversationID === selectedId && <RunDialog key={`${inspectedRun.conversationID}:${inspectedRun.runID}`} {...inspectedRun} onClose={() => setInspectedRun(null)} onResume={inspectedRun.runID === run?.id ? resumeExecution : undefined} onRepair={prepareRepair} onFork={conversation => { setInspectedRun(null); activate(conversation.id); }} recoveryDisabled={recoveryDisabled} repairDisabled={repairDisabled} />}
 
       {todoDialog && <TodoDialog conversationID={selectedId} onClose={() => setTodoDialog(false)} onSource={id => { setTodoDialog(false); activate(id); }} />}
-      {collaborationDialog && <CollaborationDialog conversationID={selectedId} onClose={() => setCollaborationDialog(false)} onSource={id => {setCollaborationDialog(false); activate(id);}} onArtifact={(id,version)=>{setCollaborationDialog(false);setArtifactDialog({id,version});}}/>}
+      {collaborationDialog && <CollaborationDialog conversationID={selectedId} initialDelegationID={collaborationSelection} onClose={() => setCollaborationDialog(false)} onSource={id => {setCollaborationDialog(false); activate(id);}} onArtifact={(id,version)=>{setCollaborationDialog(false);setArtifactDialog({id,version});}}/>}
       {taskDialog && <TaskDialog conversationID={selectedId} onClose={() => setTaskDialog(false)} onSource={id => { setTaskDialog(false); activate(id); }} onRun={(conversationID, runID) => { setTaskDialog(false); activate(conversationID, runID); }} onArtifact={(id, version) => { setTaskDialog(false); setArtifactDialog({ id, version }); }} />}
       {scheduleDialog && <ScheduleDialog onClose={() => setScheduleDialog(false)} onAsk={prompt => { setScheduleDialog(false); setInputState(prompt); }} />}
       {toolSettings && <ToolSettingsDialog key={session.scope} session={session} onClose={() => { setToolSettings(false); refreshResultAccess(); }} />}
@@ -993,6 +1044,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
       {memoryDialog && (
         <MemoryDialog
           source={memoryDialog.source}
+          conversationID={selectedId}
           onClose={() => setMemoryDialog(null)}
           onSaved={() =>
             setNotice(

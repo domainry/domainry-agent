@@ -1,0 +1,46 @@
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/restricted
+    principal_resolution_reads_test.go:160: real ORM reads: user=2 user-list=2 roles=2 assignments=2
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/role-id-alias
+    principal_resolution_reads_test.go:160: real ORM reads: user=2 user-list=2 roles=2 assignments=2
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/effective
+    principal_resolution_reads_test.go:160: real ORM reads: user=2 user-list=2 roles=2 assignments=2
+=== RUN   TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/session-display-keeps-union
+    principal_resolution_reads_test.go:160: real ORM reads: user=2 user-list=2 roles=2 assignments=2
+--- PASS: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection (0.13s)
+    --- PASS: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/restricted (0.04s)
+    --- PASS: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/role-id-alias (0.03s)
+    --- PASS: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/effective (0.03s)
+    --- PASS: TestSDKPrincipalResolutionReusesOwnerReadsAndPreservesRoleSelection/session-display-keeps-union (0.03s)
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/assignment
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/user
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/role
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/permission
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/published-policy
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/expiry
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/eligibility
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/users-error
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/roles-error
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/assignments-error
+=== RUN   TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/cancelled
+--- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO (0.37s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/assignment (0.03s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/user (0.03s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/role (0.03s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/permission (0.03s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/published-policy (0.03s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/expiry (0.04s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/eligibility (0.03s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/users-error (0.03s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/roles-error (0.04s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/assignments-error (0.03s)
+    --- PASS: TestSDKPrincipalResolutionChecksRevocationAfterProjectionIO/cancelled (0.04s)
+=== RUN   TestSDKPrincipalResolutionExcludesDisabledRoleFromEffectiveUnion
+    principal_resolution_reads_test.go:236: disabled role entered effective authorization: result={Principal:{ContractVersion:domainry-principal-context-v1 Known:true WorkspaceID:workspace-primary UserID:subject RoleKey:reader AuthorizationRevision:55c91277fe134b6a219a0f8f681903144922c1f49cc1026452d06dd5ba9407e7 OrgID: OrgScopeIDs:[] SupportOrgID: SupportOrgScopeIDs:[] ReportingScopeUserIDs:[subject] User:{ID:subject Name:Subject GivenName: MiddleName: FamilyName: NamePrefix: NameSuffix: NativeName: NameLocale: Email: Phone: AccountType:human Locale: Timezone: OrgID: SupportOrgID: ManagerUserID: ReportingPath: WorkerNo: WorkerType: WorkStatus: StartDate: EndDate: Status:active Version:1 CreatedAt:2026-09-14T10:09:55Z UpdatedAt:2026-09-14T10:09:55Z} Roles:[{ID:reader-id Key:reader Label:reader Description: Status:active}] Permissions:[order.read order.write] MustChangePassword:false AccessBundle:0x6c45973c1b80 Workload:<nil>} AccessBundle:{ContractVersion:domainry-identity-access-bundle-v6 AuthorizationRevision:55c91277fe134b6a219a0f8f681903144922c1f49cc1026452d06dd5ba9407e7 ExpiresAt:2026-09-14 10:14:55.601571 +0000 UTC Subject:{WorkspaceID:workspace-primary SubjectID:subject OrgID: OrgScopeIDs:[] SupportOrgID: SupportOrgScopeIDs:[] ReportingScopeUserIDs:[subject]} FunctionGrants:[{Resource:order Action:read Effect:allow} {Resource:order Action:write Effect:allow}] DataPolicies:[{Key:data-order.read-0 Resource:order Action:read Effect:allow DataScopes:[all] Predicate:{Fact: Path:[] Operator: Value:<nil> All:[] Any:[] Not:<nil>} AuditDenial:false} {Key:data-order.write-1 Resource:order Action:write Effect:allow DataScopes:[owner] Predicate:{Fact:owner_user_id Path:[] Operator:eq Value:$subject.id All:[] Any:[] Not:<nil>} AuditDenial:false}] FieldPolicies:[] ReferencePolicies:[] ExportPolicies:[] Guardrails:[]}} err=<nil>
+--- FAIL: TestSDKPrincipalResolutionExcludesDisabledRoleFromEffectiveUnion (0.03s)
+=== RUN   TestSDKPrincipalResolutionNeverReusesFactsAcrossRequests
+--- PASS: TestSDKPrincipalResolutionNeverReusesFactsAcrossRequests (0.05s)
+FAIL
+FAIL	github.com/domainry/domainry-identity/internal/adapter/identitysdk	1.299s
+FAIL

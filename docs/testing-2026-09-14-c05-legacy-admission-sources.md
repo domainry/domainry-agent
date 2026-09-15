@@ -2,6 +2,8 @@
 
 日期：2026-09-14。接续[旧发布角色恢复](testing-2026-09-14-c05-legacy-source-publishers.md)。本阶段继续 C05，整表仍为 4／25。
 
+后续[原交付明确重新共享](testing-2026-09-14-c05-delivery-republication.md)已补当前／历史交付预览、已验收记录发布及原请求重试页面。下文保留本阶段原范围与证据。
+
 ## 当前实现
 
 - 旧约定历史不重复保存 `requirements.sources`。初始约定的可信 `ChangeSource` 定位原接单步骤；只有该步骤中已完成的 `agent_delegate`、返回的准确委派 ID 和原参数中逐份明确声明的来源根，能恢复对应发布者。当前要求根或当前 Agent 配置不能补造历史声明。

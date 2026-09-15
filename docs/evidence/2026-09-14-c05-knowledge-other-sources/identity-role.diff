@@ -1,0 +1,56 @@
+diff --git a/internal/application/identity/identity_effective_access_application_service.go b/internal/application/identity/identity_effective_access_application_service.go
+index 0efddec..0c3e413 100644
+--- a/internal/application/identity/identity_effective_access_application_service.go
++++ b/internal/application/identity/identity_effective_access_application_service.go
+@@ -172,9 +172,11 @@ func (s *IdentityEffectiveAccessApplicationService) snapshot(ctx context.Context
+ 			return identitymodel.IdentityEffectiveAccessSnapshot{}, &apperror.AppError{Kind: apperror.KindNotFound, Code: "backend.identity.user_not_found"}
+ 		}
+ 	}
+-	principal, err := scoped.ResolvePrincipal(workspaceContext, userID)
++	var principal identitymodel.Principal
+ 	if roleKey != "" {
+ 		principal, err = scoped.ResolvePrincipalForRole(workspaceContext, userID, roleKey)
++	} else {
++		principal, err = scoped.ResolvePrincipal(workspaceContext, userID)
+ 	}
+ 	if err != nil {
+ 		return identitymodel.IdentityEffectiveAccessSnapshot{}, err
+diff --git a/internal/application/identity/identity_effective_access_application_service_test.go b/internal/application/identity/identity_effective_access_application_service_test.go
+index c974544..784f923 100644
+--- a/internal/application/identity/identity_effective_access_application_service_test.go
++++ b/internal/application/identity/identity_effective_access_application_service_test.go
+@@ -10,6 +10,34 @@ import (
+ 	identitymodel "github.com/domainry/domainry-identity/internal/domain/identity/model"
+ )
+ 
++func TestIdentityRoleSnapshotPropagatesCurrentResolutionFailureAndKeepsRoleIsolation(t *testing.T) {
++	base := &identityScopedRepository{
++		users:       []identitymodel.IdentityUser{{ID: "target", Status: identitymodel.IdentityStatusActive}},
++		roles:       []identitymodel.IdentityRole{{ID: "reader-id", Key: "reader", Status: identitymodel.IdentityStatusActive}, {ID: "writer-id", Key: "writer", Status: identitymodel.IdentityStatusActive}},
++		assignments: []identitymodel.IdentityUserRoleAssignment{{UserID: "target", RoleID: "reader-id", Source: "manual", Status: "active"}, {UserID: "target", RoleID: "writer-id", Source: "manual", Status: "active"}},
++	}
++	repository := &effectiveAccessFaultRepository{identityScopedRepository: base}
++	identity := NewIdentityApplicationService(repository, executableIdentityPermissionDefinitions("order.read", "order.write"))
++	identity.ReplaceRoleDefinitions([]identitymodel.RoleSchema{{Key: "reader", Permissions: identityTestRolePermissions("order.read")}, {Key: "writer", Permissions: identityTestRolePermissions("order.write")}})
++	service := NewIdentityEffectiveAccessApplicationService(IdentityEffectiveAccessDependencies{Identity: identity, Objects: func() []definitionmodel.ObjectSchema { return []definitionmodel.ObjectSchema{{Key: "order"}} }})
++	actor := identitymodel.Principal{Known: true, UserID: "target", WorkspaceID: "workspace-a"}
++	snapshot, err := service.SnapshotForRole(t.Context(), "target", "reader", actor)
++	if err != nil || !snapshot.Known || len(snapshot.Permissions) != 1 || snapshot.Permissions[0].Key != "order.read" {
++		t.Fatal("selected role acquired another assigned role's grants", snapshot, err)
++	}
++	repository.roleCalls = 0
++	repository.fail, repository.failRoleCall, repository.err = "roles", 1, errors.New("current role repository unavailable")
++	if _, err := service.SnapshotForRole(t.Context(), "target", "reader", actor); !errors.Is(err, repository.err) {
++		t.Fatal("current role resolution failure was overwritten by a later successful resolution", err)
++	}
++	repository.fail = ""
++	base.assignments[0].Status = "revoked"
++	snapshot, err = service.SnapshotForRole(t.Context(), "target", "reader", actor)
++	if err != nil || snapshot.Known || len(snapshot.Permissions) != 0 {
++		t.Fatal("role withdrawal retained prior selected or union grants", snapshot, err)
++	}
++}
++
+ type effectiveAccessFaultRepository struct {
+ 	*identityScopedRepository
+ 	fail               string

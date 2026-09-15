@@ -1,0 +1,171 @@
+{
+  "phase_status": "accepted_agent_native_execution_tools_and_reusable_scoped_receipts",
+  "c05_complete": false,
+  "complete_todo_items": 4,
+  "total_todo_items": 25,
+  "source_files": 178,
+  "source_manifest": "source-sha256.json",
+  "tools": [
+    "delegation_execution_publish",
+    "delegation_executions",
+    "delegation_execution_read",
+    "delegation_execution_result_read"
+  ],
+  "real_identity": true,
+  "real_http": true,
+  "real_tool_execution": true,
+  "fixture_model": true,
+  "external_model_service_called": false,
+  "accepted_logs": [
+    "core-final.log",
+    "sdk-current.log",
+    "http-final.log",
+    "race-final.log",
+    "runtime-final.log",
+    "wrapper.log",
+    "store-current.log"
+  ],
+  "logs": {
+    "app-current.log": {
+      "observed_terminal": "passed",
+      "packages": 1,
+      "passed_roots": 0
+    },
+    "core-final.log": {
+      "observed_terminal": "passed",
+      "packages": 6,
+      "passed_roots": 0
+    },
+    "core.log": {
+      "observed_terminal": "failed",
+      "packages": 5,
+      "passed_roots": 0
+    },
+    "http-current.log": {
+      "observed_terminal": "failed",
+      "packages": 0,
+      "passed_roots": 0
+    },
+    "http-final.log": {
+      "observed_terminal": "passed",
+      "packages": 1,
+      "passed_roots": 3
+    },
+    "http-pages.log": {
+      "observed_terminal": "passed",
+      "packages": 1,
+      "passed_roots": 1
+    },
+    "http-regression.log": {
+      "observed_terminal": "passed",
+      "packages": 1,
+      "passed_roots": 2
+    },
+    "http-schema.log": {
+      "observed_terminal": "failed",
+      "packages": 0,
+      "passed_roots": 0
+    },
+    "http.log": {
+      "observed_terminal": "failed",
+      "packages": 0,
+      "passed_roots": 0
+    },
+    "initial.log": {
+      "observed_terminal": "passed",
+      "packages": 1,
+      "passed_roots": 0
+    },
+    "race-final.log": {
+      "observed_terminal": "passed",
+      "packages": 2,
+      "passed_roots": 10
+    },
+    "race.log": {
+      "observed_terminal": "passed",
+      "packages": 2,
+      "passed_roots": 8
+    },
+    "runtime-final.log": {
+      "observed_terminal": "passed",
+      "packages": 1,
+      "passed_roots": 2
+    },
+    "runtime.log": {
+      "observed_terminal": "passed",
+      "packages": 1,
+      "passed_roots": 2
+    },
+    "sdk-current.log": {
+      "observed_terminal": "passed",
+      "packages": 1,
+      "passed_roots": 0
+    },
+    "sdk.log": {
+      "observed_terminal": "passed",
+      "packages": 1,
+      "passed_roots": 0
+    },
+    "security.log": {
+      "observed_terminal": "failed",
+      "packages": 1,
+      "passed_roots": 2
+    },
+    "store-current.log": {
+      "observed_terminal": "passed",
+      "packages": 1,
+      "passed_roots": 1
+    },
+    "store-full.log": {
+      "observed_terminal": "passed",
+      "packages": 1,
+      "passed_roots": 0
+    },
+    "wrapper.log": {
+      "observed_terminal": "passed",
+      "packages": 1,
+      "passed_roots": 2
+    }
+  },
+  "accepted": [
+    "Actual owner confirmed tool publication/withdrawal/republish; current worker fence checked before mutations or replay.",
+    "Actual third-user model index, exact five-step run, original result page, unpublished reference denied.",
+    "Raw communication withdrawal invalidates previously saved scoped read history.",
+    "Exact completed calls and text prefixes survive live ledger progress; invented payload/control fields rejected.",
+    "Original result bytes survive a smaller context budget while fresh pagination actually changes.",
+    "Acyclic shared read wrappers succeed and two-run reference cycle is rejected with source_reference_invalid.",
+    "Final three HTTP roots and seven complete Go packages pass; ten race roots pass.",
+    "Final actual Runtime cross-user and same-user different-role professional seven-step, 4-7 result pages/original SHA-256, restart and current row/field/provider withdrawal pass."
+  ],
+  "pending": [
+    "Live HTTP execution process timeline and independent pending/failed parameter policy.",
+    "Opaque owner withdrawal UI after execution_read loss.",
+    "Remaining cross-subject source families and multiple-owner mixed/dependency sources.",
+    "Full participant dependency/transfer management and subject exit lifecycle."
+  ],
+  "implementation_owner": "Agent implements delegation/execution handlers; shared Tools SDK types/schema; existing collaborationToolHost registration path.",
+  "validation_note": "No frontend production change or new browser claim; earlier browser acceptance remains historical. Diagnostic failures are preserved separately. Runtime initial regression preceded final original-page/prefix refactor; runtime-final.log covers the final production code.",
+  "artifact_sha256": {
+    "logs/app-current.log": "d01264ab4bd62afa213578dc8fbdd33e5e6e1bb1a8412bb1fc87c40082b6f508",
+    "logs/core-final.log": "75888333f7ed03b99d7864d378042208dbc9243363c80bd466c63b2ccc0c7dcd",
+    "logs/core.log": "961dd2d90bfb9b026d48a038a2ddb7091c161f75d3b820699386c2f6deacb3ce",
+    "logs/http-current.log": "9cb4a9835318186c211fa7c5f0f4f1b00d7bcb13b7f8b511d01c81bf77229337",
+    "logs/http-final.log": "2265ee77060caf47e2705fddfca3f8d16f8737736b4d0a3330e4d8749fc83712",
+    "logs/http-pages.log": "ee2ec29bf70cdedd88b7c77ffa62edf74772467e1e8825dc66cdf270e4485494",
+    "logs/http-regression.log": "6de2eae07ec9ec0fd3230add1c9a500147c1327a73f2c464a76e7c9e3a584f3e",
+    "logs/http-schema.log": "5fb574fda722dbe2537e826f1249c7ecd42fa69c173ae2965e1186cc1b93c19f",
+    "logs/http.log": "fcd3b200eab1055f16011f2aedc915445a18c6d63f97fd4253eca397cd6856f8",
+    "logs/initial.log": "332c5749f37700f52ca7c6a35d2191511900efb822330c78e26023f395c29995",
+    "logs/race-final.log": "0ae7ec2255b8cea7ffb0b94ecb8a27d40ac6949199ee077fe6eaed4bef294ef6",
+    "logs/race.log": "5e5249ac9d6fe2533b385b8dfac50f8c12e9fc13c5ca71733457494c722d30d5",
+    "logs/runtime-final.log": "cec74b0049a25644f0d228792fdc0de023f8dc54d36045591f7b3b47626a64ab",
+    "logs/runtime.log": "b2bd5a137603f6f374be2fa1842e7e797d929ba95419cd039f0f77d21092617b",
+    "logs/sdk-current.log": "36f98457aed99eb92de8fc52e3eadd961c366bfb020ba0667bee445e0d6769fb",
+    "logs/sdk.log": "6c2e2cd5c4875078680144392d57f0375afd013e308049e033f9e76a4374c2dc",
+    "logs/security.log": "b46ad17b470c8944d5e307c08f945f5e73a87dbc0ccd4264f1f69ee18212175d",
+    "logs/store-current.log": "233e634823bd023487b9be1964e63ab3cb2935084d87a9e2c037c98f5a07aa83",
+    "logs/store-full.log": "c05554c4d54006cf09d474c2dd0db060ec468da46e8461466ee48d1a261c02f8",
+    "logs/wrapper.log": "01207742cd672650676144bcc3c162cc296f4dea554f0cf20dea247fa1832ad3",
+    "source-sha256.json": "f572f69f3afeb0daa8150a6a5a765dc667d61a23bb17f64e402bc1b3de39a317"
+  }
+}

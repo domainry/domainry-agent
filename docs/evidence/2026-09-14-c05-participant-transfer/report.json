@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "page_errors": [],
+  "transfer_request": {
+    "expected_revision": 6,
+    "action": "transfer",
+    "reason": "由独立接手人继续处理",
+    "transfer": {
+      "agent_id": "agent_d5138e621e412179c7c39d07bf59d28c",
+      "remaining_work": "核对原时钟回执并完成剩余工作"
+    },
+    "dependencies": [],
+    "client_id": "3d083132-a113-40e6-8f28-6edfd05cf86c"
+  },
+  "scenarios": [
+    "real three-account participant UI transfer",
+    "immutable original and current assignment",
+    "manager scoped original execution",
+    "recipient scoped original execution without private conversation control",
+    "recipient index includes original shared run",
+    "former executor retains own withdrawal control",
+    "390px modal bounds"
+  ]
+}

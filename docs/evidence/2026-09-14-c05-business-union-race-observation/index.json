@@ -1,0 +1,41 @@
+{
+  "phase": "C05 actual business Agent race observation terminal, task not observed terminal",
+  "artifacts": {
+    "race.cpu": {
+      "sha256": "4f6d62b5c0423d8548e9d6b673fcefda1ac51b576c20fc8bdc37cc6da83f301e",
+      "bytes": 358002
+    },
+    "acceptance.json": {
+      "sha256": "94ff331d5f14106a78c8f45bf98f64e36f8738dc21f77bbabceeba9cc520b741",
+      "bytes": 897
+    },
+    "observed-task.json": {
+      "sha256": "c8a8bedec4bffd40118c0b47e93d6ca4047c76eb6546438d1c601cec5f2719dd",
+      "bytes": 15529
+    },
+    "cpu-top.txt": {
+      "sha256": "c8f9c405c7157e8996ab8578749acecddd1f10afefa19e7ec08f411a7548b225",
+      "bytes": 3003
+    },
+    "observed-running-run.json": {
+      "sha256": "99cf2437420167cb55eef951f3bc783ccc7608dc6d65463aed15b240c358f2fe",
+      "bytes": 30759
+    },
+    "race.log": {
+      "sha256": "c519947cd056df0c975c79e31f33ad0b9b4164f8579834c308eb16e5e4dc423f",
+      "bytes": 38642
+    },
+    "original-observer-test.go.txt": {
+      "sha256": "cd40649c64200ef64899d87bb43fe8a9a3a420e9bd8631b260569962e8a7bfbd",
+      "bytes": 21261
+    },
+    "cpu-cumulative.txt": {
+      "sha256": "e743c6039bfc879880ef762c04479722c940f561a73f1938f9fec92ecaa84265",
+      "bytes": 4877
+    },
+    "input-audit.json": {
+      "sha256": "d69c43739970b00b901b9ceefa76d21b865e6ee368256883c1f8d5f709b11467",
+      "bytes": 320
+    }
+  }
+}

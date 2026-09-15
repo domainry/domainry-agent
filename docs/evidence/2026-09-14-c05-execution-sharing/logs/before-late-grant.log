@@ -1,0 +1,6 @@
+=== RUN   TestExecutionSharingKeepsActualPublisherAndProviderAndWithdrawsOnlyExecution
+    conversation_execution_sharing_store_test.go:32: publication lost original provider/actual publisher [] <nil>
+--- FAIL: TestExecutionSharingKeepsActualPublisherAndProviderAndWithdrawsOnlyExecution (0.02s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent	1.114s
+FAIL

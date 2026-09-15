@@ -111,10 +111,10 @@ func TestModuleDescriptor(t *testing.T) {
 	if b.Descriptor().Mode != agentsdk.DeploymentModeModule {
 		t.Fatalf("descriptor=%+v", b.Descriptor())
 	}
-	if len(host.applied) != 28 {
+	if len(host.applied) != 36 {
 		t.Fatalf("Agent migrations=%d", len(host.applied))
 	}
-	if latest := host.applied[len(host.applied)-1]; latest.Version != 28 || latest.Name != "delegation_source_releases" {
+	if latest := host.applied[len(host.applied)-1]; latest.Version != 36 || latest.Name != "agent_scoped_memories" {
 		t.Fatalf("Agent latest owned migration=%+v", latest)
 	}
 	contracttest.VerifyBinding(t, b, agentsdk.DeploymentModeModule)

@@ -1,0 +1,16 @@
+Agent core (cwd /Users/tiger/Projects/domainry-agent):
+go test ./internal/application ./internal/infrastructure/persistence/database/agent ./internal/assembly/conversation ./internal/capability ./internal/infrastructure/provider ./remote ./module ./server -count=1
+
+Agent race (same cwd):
+go test -race ./internal/application ./internal/infrastructure/persistence/database/agent -run '^Test(SubjectExit|ConcurrentSubjectExit|IssuerSubjectExit|ExecutorSubjectExit|AgentSubjectLifecycle|ExitedSubjectDelegation|AdmittedDependencyGraph|CrossSubjectTransferRequires|ParticipantDependencyTransferStore).*' -count=1 -v
+
+Agent HTTP (same cwd):
+go test ./internal/assembly/web -run '^(TestDelegationExecutionHTTPUsesConsentingReceiversRoleAndStopsAfterRevocation|TestSourceReleaseHTTPAgentDispatchMessageAndAutomaticDeliveryAcrossSubjects)$' -count=1 -v
+
+Runtime (cwd /Users/tiger/Projects/domainry-runtime):
+GOWORK=/tmp/runtime-work/go.work go test ./runtime/bootstrap/integrationtest -run '^(TestMultipleOwnerProfessionalDependenciesReadOriginalsAndDeliverThroughRealRuntime|TestInactiveIdentityRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime|TestSubjectErasureRechecksMultipleOwnerProfessionalDependenciesThroughRealRuntime|TestMixedOldRoleSourceToolDispatchReadAndAutomaticDelivery|TestLegacyAgreementUpdateRestartResumeAndOriginalHistoryThroughRealHTTP)$' -count=1 -v
+
+Runtime owner boundary (same cwd):
+GOWORK=/tmp/runtime-work/go.work go test ./runtime/boundary -run '^(TestRuntimeProductionUsesExtractedOwnerSDKs|TestAgentOwnsLifecycleExecution)$' -count=1 -v
+
+Fix-before diagnostics: finished-task regression -count=1; deleted-notice regression -count=16 (13 failed, 3 passed).

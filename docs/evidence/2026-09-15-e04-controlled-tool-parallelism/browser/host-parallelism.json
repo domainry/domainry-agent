@@ -1,0 +1,11 @@
+{
+  "compiled_frontend": true,
+  "complete": true,
+  "execution_authorization_checks": 2,
+  "explicit_read_calls": 2,
+  "host_authorization_calls_including_result_reads": 4,
+  "observed_parallel_peak": 2,
+  "ordered_result_projection": true,
+  "real_identity_http": true,
+  "real_sqlite": true
+}

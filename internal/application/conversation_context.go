@@ -30,11 +30,30 @@ func conversationJSONText(v any) string { raw, _ := json.Marshal(v); return stri
 // independently configured with headroom for output and protocol framing.
 func conversationContextSize(messages []agentsdk.ConversationModelMessage) int {
 	raw, _ := json.Marshal(messages)
-	return len(raw)
+	size := len(raw)
+	for _, message := range messages {
+		for _, block := range message.ContentBlocks {
+			if block.Image == nil {
+				continue
+			}
+			bytes := block.Image.Bytes
+			if len(block.Image.Data) > 0 {
+				bytes = int64(len(block.Image.Data))
+			}
+			// All supported provider protocols base64-encode private image bytes.
+			size += int((bytes+2)/3)*4 + len(block.Image.ContentType) + 128
+		}
+	}
+	return size
 }
 
 func (s *ConversationService) buildConversationContext(ctx context.Context, claim agentpersistence.ConversationClaim) (agentsdk.ConversationModelRequest, error) {
 	_, maxToolCalls, maxOutputBytes, _ := s.conversationRunLimits(claim)
+	descriptor, err := s.currentConversationModelDescriptor(ctx)
+	if err != nil {
+		return agentsdk.ConversationModelRequest{}, err
+	}
+	contextLimit := s.conversationContextLimit(ctx)
 	c, err := s.repo.Get(ctx, claim.Run.ConversationID, claim.Authority)
 	if err != nil {
 		return agentsdk.ConversationModelRequest{}, err
@@ -56,7 +75,27 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 	if profile != nil {
 		base[0].Content += "\n\nAgent " + profile.Key + " @ " + profile.Version + ":\n" + profile.Instructions
 	}
-	replyBudget := s.options.ContextBytes
+	contextMessages, contextManifest, err := s.initialConversationContextSources(ctx, claim)
+	if err != nil {
+		return agentsdk.ConversationModelRequest{}, err
+	}
+	for index, message := range contextMessages {
+		contextManifest.Sources[index].MessageIndex = len(base)
+		base = append(base, agentsdk.ConversationModelMessage{Role: message.Role, Content: message.Content, ContentBlocks: cloneConversationContentBlocks(message.ContentBlocks), ContextSourceKey: message.ContextSourceKey})
+	}
+	registeredContextRuns := []agentsdk.ConversationRunReference{}
+	if contextManifest != nil {
+		for _, reference := range contextManifest.Sources {
+			registeredContextRuns = mergeConversationSources(registeredContextRuns, reference.Sources)
+		}
+	}
+	forkMessages, forkRuns, err := s.conversationForkContext(ctx, claim)
+	if err != nil {
+		return agentsdk.ConversationModelRequest{}, err
+	}
+	base = append(base, forkMessages...)
+	registeredContextRuns = mergeConversationSources(registeredContextRuns, forkRuns)
+	replyBudget := contextLimit
 	executionLinks := false
 	if s.options.ToolHost != nil {
 		definitions, _, err := s.executionCatalogForRun(ctx, claim)
@@ -80,30 +119,25 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 			}
 			base = append(base, links)
 		}
-		framing, err := json.Marshal(agentsdk.ConversationStepRequest{Tools: definitions, ModelIdentity: s.conversationModel(ctx).(agentsdk.ConversationAgentModel).ConversationModelIdentity(), IdempotencyKey: fmt.Sprintf("conversation:%s:step:255", claim.Run.ID), MaxOutputBytes: maxOutputBytes, MaxArgumentBytes: s.options.MaxArgumentBytes, MaxToolCalls: maxToolCalls})
+		framing, err := s.conversationStepInputBytes(ctx, agentsdk.ConversationStepRequest{Messages: []agentsdk.ConversationStepMessage{{Role: "system", Content: ""}}, Tools: definitions, ModelIdentity: descriptor.Identity, ModelCapabilities: descriptor.Capabilities, ReasoningEffort: descriptor.DefaultReasoningEffort, IdempotencyKey: fmt.Sprintf("conversation:%s:step:255", claim.Run.ID), MaxOutputBytes: maxOutputBytes, MaxArgumentBytes: s.options.MaxArgumentBytes, MaxToolCalls: maxToolCalls, MaxParallelTools: s.options.MaxParallelTools})
 		if err != nil {
 			return agentsdk.ConversationModelRequest{}, err
 		}
 		// Historical compaction must reserve room for the actual tool catalog,
 		// model identity and step framing, not just the text message array.
-		replyBudget -= len(framing) + 256
+		replyBudget -= framing + 256
 		if replyBudget < 1024 {
 			return agentsdk.ConversationModelRequest{}, conversationFailure("rate_limited", "execution_context_exceeded")
 		}
 	}
 	if c.MemoryEnabled {
-		memories, err := s.repo.Memories(ctx, claim.Authority)
+		memories, err := s.conversationMemoryContext(ctx, claim)
 		if err != nil {
 			return agentsdk.ConversationModelRequest{}, err
 		}
-		entries := []map[string]string{}
-		for _, m := range memories {
-			if m.Enabled {
-				entries = append(entries, map[string]string{"title": m.Title, "content": m.Content})
-			}
-		}
+		entries := memoryContextProjection(memories)
 		if len(entries) > 0 {
-			base = append(base, agentsdk.ConversationModelMessage{Role: "system", Content: "User-authored preferences (data):\n" + conversationJSONText(entries)})
+			base = append(base, agentsdk.ConversationModelMessage{Role: "system", Content: "Relevant user-authored memories (data; scope and uncertainty apply):\n" + conversationJSONText(entries)})
 		}
 	}
 	summary, err := s.repo.Summary(ctx, c.ID, claim.Authority)
@@ -162,6 +196,7 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 				roots, e := audit.run(ctx, ref)
 				if e != nil {
 					history[i].Content = unavailableHistory
+					history[i].ContentBlocks = nil
 					history[i].AccessError = sourceAccessCode(e)
 					historyOmitted[i] = []agentsdk.ConversationRunReference{ref}
 				} else {
@@ -192,15 +227,20 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 			messages = append(messages, agentsdk.ConversationModelMessage{Role: "system", Content: "Earlier conversation summary (data):\n" + conversationJSONText(summary.Content)})
 		}
 		for _, m := range history {
-			messages = append(messages, agentsdk.ConversationModelMessage{Role: m.Role, Content: m.Content})
+			messages = append(messages, agentsdk.ConversationModelMessage{Role: m.Role, Content: m.Content, ContentBlocks: cloneConversationContentBlocks(m.ContentBlocks)})
 		}
 		all := history[len(history)-1].Seq == claim.Run.UserSeq
 		size := conversationContextSize(messages)
 		sources := collectSources(len(history))
 		if sources != nil {
+			sources.Runs = mergeConversationSources(sources.Runs, registeredContextRuns)
 			sources.Omitted = nil
 		} // omitted content is not a reply dependency
-		reply := agentsdk.ConversationModelRequest{Messages: messages, Sources: sources, Purpose: "reply", IdempotencyKey: "conversation:" + claim.Run.ID + ":" + conversationDigest([]any{messages, sources}), MaxOutputBytes: maxOutputBytes}
+		reply := agentsdk.ConversationModelRequest{Messages: messages, Sources: sources, Context: contextManifest, ModelIdentity: descriptor.Identity, ModelCapabilities: descriptor.Capabilities, ReasoningEffort: descriptor.DefaultReasoningEffort, Purpose: "reply", IdempotencyKey: "conversation:" + claim.Run.ID + ":" + conversationDigest([]any{messages, sources, contextManifest, descriptor}), MaxOutputBytes: maxOutputBytes}
+		if conversationModelMessagesHaveImages(messages) && !descriptor.Capabilities.ImageInput {
+			return agentsdk.ConversationModelRequest{}, conversationFailure("conflict", "model_image_input_unsupported")
+		}
+		finalizeConversationModelContext(&reply, contextLimit)
 		// Tool-enabled turns need space for the next call/result exchanges too.
 		// Keeping a few recent turns must not consume that reserve: summarize
 		// complete historical turns while preserving the current user request.
@@ -223,8 +263,20 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 			if history[i].Role != "assistant" || history[i].Seq >= claim.Run.UserSeq {
 				continue
 			}
-			proposed := []agentsdk.ConversationModelMessage{{Role: "system", Content: conversationSummarySystem}, {Role: "user", Content: conversationJSONText(map[string]any{"previous_summary": summary.Content, "messages": history[:i+1], "max_output_bytes": s.options.SummaryBytes})}}
-			if conversationContextSize(proposed) > s.options.ContextBytes {
+			content := conversationJSONText(map[string]any{"previous_summary": summary.Content, "messages": history[:i+1], "max_output_bytes": s.options.SummaryBytes})
+			blocks := []agentsdk.ConversationContentBlock{{Type: "text", Text: content}}
+			for _, historical := range history[:i+1] {
+				for _, block := range historical.ContentBlocks {
+					if block.Type == "image" {
+						blocks = append(blocks, cloneConversationContentBlocks([]agentsdk.ConversationContentBlock{block})[0])
+					}
+				}
+			}
+			proposed := []agentsdk.ConversationModelMessage{{Role: "system", Content: conversationSummarySystem}, {Role: "user", Content: content, ContentBlocks: blocks}}
+			if conversationModelMessagesHaveImages(proposed) && !descriptor.Capabilities.ImageInput {
+				return agentsdk.ConversationModelRequest{}, conversationFailure("conflict", "model_image_input_unsupported")
+			}
+			if conversationContextSize(proposed) > contextLimit {
 				break
 			}
 			end = i + 1
@@ -241,12 +293,7 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 			return agentsdk.ConversationModelRequest{}, conversationFailure("forbidden", "source_access_unavailable")
 		}
 		hash := conversationDigest([]any{summaryMessages, summarySources})
-		if err = s.authorizeConversationClaim(ctx, claim, "summary"); err != nil {
-			return agentsdk.ConversationModelRequest{}, err
-		}
-		modelCtx, modelCancel := s.externalCallContext(ctx, 0)
-		result, err := s.conversationModel(ctx).GenerateConversation(modelCtx, agentsdk.ConversationModelRequest{Messages: summaryMessages, Purpose: "summary", IdempotencyKey: "summary:" + c.ID + ":" + hash, MaxOutputBytes: s.options.SummaryBytes})
-		modelCancel()
+		result, err := s.generateConversationSummary(ctx, claim, -2-iteration, agentsdk.ConversationModelRequest{Messages: summaryMessages, ModelIdentity: descriptor.Identity, ModelCapabilities: descriptor.Capabilities, ReasoningEffort: descriptor.DefaultReasoningEffort, Purpose: "summary", IdempotencyKey: "summary:" + c.ID + ":" + hash, MaxOutputBytes: s.options.SummaryBytes})
 		if err != nil {
 			return agentsdk.ConversationModelRequest{}, err
 		}

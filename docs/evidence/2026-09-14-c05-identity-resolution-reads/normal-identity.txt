@@ -1,0 +1,30 @@
+File: c05-identity-resolution-runtime-normal.test
+Type: cpu
+Time: 2026-09-14 18:11:53 CST
+Duration: 56.06s, Total samples = 127.29s (227.08%)
+Active filters:
+   focus=sdkPrincipalResolver|buildPrincipal|userByID|SnapshotForRole|ResolvePrinci…
+Showing nodes accounting for 14.07s, 11.05% of 127.29s total
+Dropped 573 nodes (cum <= 0.64s)
+Showing top 20 nodes out of 377
+      flat  flat%   sum%        cum   cum%
+         0     0%     0%     23.91s 18.78%  github.com/domainry/domainry-identity-sdk/application.principals.Resolve
+     0.03s 0.024% 0.024%     23.91s 18.78%  github.com/domainry/domainry-identity/internal/adapter/identitysdk.sdkPrincipalResolver.Resolve
+         0     0% 0.024%     23.91s 18.78%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).principal
+         0     0% 0.024%     21.33s 16.76%  github.com/domainry/domainry-identity/internal/application/identity.(*IdentityEffectiveAccessApplicationService).ResolvePrincipalAccess
+         0     0% 0.024%     20.94s 16.45%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).run
+         0     0% 0.024%     16.56s 13.01%  github.com/domainry/domainry-agent/internal/application.(*conversationSourceAudit).record
+         0     0% 0.024%     16.13s 12.67%  database/sql.withLock
+         0     0% 0.024%     14.35s 11.27%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).collaborationAuthorization
+         0     0% 0.024%     14.35s 11.27%  github.com/domainry/domainry-runtime/runtime/application/agenthost.(*ConversationBusinessHost).AuthorizeConversationCollaboration
+         0     0% 0.024%     14.17s 11.13%  github.com/domainry/domainry-agent/internal/application.(*ConversationService).authorizeCollaboration
+         0     0% 0.024%     14.07s 11.05%  net/http.HandlerFunc.ServeHTTP
+    14.01s 11.01% 11.03%     14.01s 11.01%  syscall.rawsyscalln
+         0     0% 11.03%     14.01s 11.01%  syscall.syscalln
+     0.01s 0.0079% 11.04%     13.51s 10.61%  syscall.syscall
+     0.01s 0.0079% 11.05%     13.42s 10.54%  github.com/domainry/domainry-identity/internal/domain/identity/service.(*IdentityDomainService).buildPrincipalForRole
+         0     0% 11.05%     13.39s 10.52%  net/http.(*ServeMux).ServeHTTP
+         0     0% 11.05%     13.37s 10.50%  golang.org/x/sys/unix.FcntlFlock (inline)
+     0.01s 0.0079% 11.05%     13.37s 10.50%  golang.org/x/sys/unix.fcntl
+         0     0% 11.05%     13.37s 10.50%  modernc.org/libc.Xfcntl
+         0     0% 11.05%     13.37s 10.50%  modernc.org/libc.Xfcntl64

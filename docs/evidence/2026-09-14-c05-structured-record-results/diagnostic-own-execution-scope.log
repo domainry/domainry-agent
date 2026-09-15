@@ -1,0 +1,15 @@
+=== RUN   TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart
+    record_result_read_test.go:288: Exact original structured result record-save via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:288: Exact original structured result record-read via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:288: Exact original structured result record-list via current delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:288: Exact original structured result record-save via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:288: Exact original structured result record-read via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:288: Exact original structured result record-list via original historical delivery: 2 pages, original SHA-256 verified
+    record_result_read_test.go:288: Exact original structured result record-save via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:288: Exact original structured result record-read via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:288: Exact original structured result record-list via shared execution: 2 pages, original SHA-256 verified
+    record_result_read_test.go:380: POST /agent/delegations/delegation_f6beb8fde2278fdfdcdcbd80e2f6ade0/execution: 403 {"code":"agent.conversation.tool_access_denied"}
+--- FAIL: TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndRestart (4.66s)
+FAIL
+FAIL	github.com/domainry/domainry-agent/internal/assembly/product	7.912s
+FAIL

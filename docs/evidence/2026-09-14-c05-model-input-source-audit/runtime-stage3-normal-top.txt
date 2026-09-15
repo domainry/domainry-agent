@@ -1,0 +1,28 @@
+File: c05-model-input-source-runtime-normal.test
+Type: cpu
+Time: 2026-09-14 18:51:06 CST
+Duration: 47.51s, Total samples = 107.30s (225.83%)
+Showing nodes accounting for 90.32s, 84.18% of 107.30s total
+Dropped 1502 nodes (cum <= 0.54s)
+Showing top 20 nodes out of 368
+      flat  flat%   sum%        cum   cum%
+    29.86s 27.83% 27.83%     29.86s 27.83%  runtime.pthread_cond_signal
+    18.65s 17.38% 45.21%     18.65s 17.38%  syscall.rawsyscalln
+    13.62s 12.69% 57.90%     13.62s 12.69%  runtime.usleep
+     4.57s  4.26% 62.16%      4.57s  4.26%  runtime.pthread_cond_wait
+     4.52s  4.21% 66.37%      4.52s  4.21%  runtime.pthread_kill
+     3.56s  3.32% 69.69%      3.56s  3.32%  runtime.(*bucket).mp
+     3.05s  2.84% 72.53%      5.55s  5.17%  runtime.scanObjectsSmall
+     2.79s  2.60% 75.14%      3.64s  3.39%  runtime.tryDeferToSpanScan
+     2.46s  2.29% 77.43%      5.47s  5.10%  runtime.scanObject
+     2.26s  2.11% 79.53%      2.26s  2.11%  runtime.madvise
+     0.94s  0.88% 80.41%      1.11s  1.03%  runtime.findObject
+     0.90s  0.84% 81.25%      0.90s  0.84%  runtime.memmove
+     0.66s  0.62% 81.86%      0.72s  0.67%  encoding/json.appendString[go.shape.string]
+     0.54s   0.5% 82.37%      0.88s  0.82%  runtime.unlock2
+     0.44s  0.41% 82.78%      5.67s  5.28%  runtime.lock2
+     0.42s  0.39% 83.17%      4.26s  3.97%  runtime.mProf_FlushLocked
+     0.31s  0.29% 83.46%      3.18s  2.96%  encoding/json.structEncoder.encode
+     0.30s  0.28% 83.74%      0.92s  0.86%  runtime.freeDeadSpanSPMCs
+     0.25s  0.23% 83.97%      1.33s  1.24%  runtime.sweepone
+     0.22s  0.21% 84.18%      8.86s  8.26%  runtime.stealWork

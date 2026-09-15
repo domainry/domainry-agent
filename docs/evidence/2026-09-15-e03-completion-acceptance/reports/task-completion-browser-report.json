@@ -1,0 +1,22 @@
+{
+  "steps": [
+    "task execution end remains awaiting review and renders the Agent submission, each condition, basis and blocker",
+    "user review binds the current digest and revision, evaluates every non-program condition and commits completion",
+    "completion history preserves both the original unresolved assessment and the later user acceptance"
+  ],
+  "javascriptErrors": [],
+  "preLoginConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "reviewRequests": [
+    {
+      "path": "/agent/conversation-tasks/task_5117de6dd820cd100a830fa48748268f/completion-review",
+      "status": 200
+    }
+  ],
+  "complete": true
+}

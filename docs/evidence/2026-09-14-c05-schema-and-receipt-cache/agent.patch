@@ -1,0 +1,231 @@
+--- a/internal/application/conversation_delegations.go
++++ b/internal/application/conversation_delegations.go
+@@ -323,11 +323,8 @@
+ 				}
+ 			}
+ 			if item.PreviousDelivery != nil {
+-				for _, assessment := range item.PreviousDelivery.Conditions {
+-					if err = s.checkCompletionReceipts(deliveryCtx, assessment.Receipts, a, ""); err != nil {
+-						item.PreviousDelivery = nil
+-						break
+-					}
++				if err = s.checkCompletionReceipts(deliveryCtx, conditionAssessmentReceipts(item.PreviousDelivery.Conditions), a, ""); err != nil {
++					item.PreviousDelivery = nil
+ 				}
+ 			}
+ 			if item.PreviousDelivery != nil {
+@@ -412,12 +409,9 @@
+ 		}
+ 	}
+ 	if d.Delivery != nil {
+-		for _, assessment := range d.Delivery.Conditions {
+-			if err := s.checkCompletionReceipts(deliveryCtx, assessment.Receipts, a, ""); err != nil {
+-				out.Delivery = nil
+-				out.Verification = nil
+-				break
+-			}
++		if err := s.checkCompletionReceipts(deliveryCtx, conditionAssessmentReceipts(d.Delivery.Conditions), a, ""); err != nil {
++			out.Delivery = nil
++			out.Verification = nil
+ 		}
+ 		for _, ref := range d.Delivery.Evidence {
+ 			if err = s.checkRunSources(deliveryCtx, ref, a); err != nil {
+--- a/internal/application/conversation_delivery_publication.go
++++ b/internal/application/conversation_delivery_publication.go
+@@ -122,15 +122,9 @@
+ 			return out, err
+ 		}
+ 	}
+-	for _, condition := range record.Delivery.Conditions {
+-		if err = s.checkCompletionReceipts(ctx, condition.Receipts, a, ""); err != nil {
+-			return out, err
+-		}
+-	}
+-	for _, check := range record.Verification.Checks {
+-		if err = s.checkCompletionReceipts(ctx, check.Receipts, a, ""); err != nil {
+-			return out, err
+-		}
++	receipts := append(conditionAssessmentReceipts(record.Delivery.Conditions), completionCheckReceipts(record.Verification.Checks)...)
++	if err = s.checkCompletionReceipts(ctx, receipts, a, ""); err != nil {
++		return out, err
+ 	}
+ 	if err = ctx.Err(); err != nil {
+ 		return out, err
+--- a/internal/application/conversation_verification.go
++++ b/internal/application/conversation_verification.go
+@@ -17,9 +17,29 @@
+ 		return conversationFailure("unavailable", "execution_read_unavailable")
+ 	}
+ 	audit := s.sourceAudit(a, consumer)
++	type sourceRun struct {
++		conversationID string
++		runID          string
++	}
++	// A source snapshot at the largest referenced prefix already includes and
++	// reauthorizes every earlier completed call in that immutable run. Audit it
++	// once, then retain the exact state and digest check for every receipt.
++	largestPrefix := make(map[sourceRun]sdk.ConversationRunReference, len(refs))
+ 	for _, ref := range refs {
+-		if _, err := audit.run(ctx, sdk.ConversationRunReference{ConversationID: ref.ConversationID, RunID: ref.RunID, BeforeStep: ref.Step + 2}); err != nil {
+-			return err
++		key := sourceRun{conversationID: ref.ConversationID, runID: ref.RunID}
++		prefix := sdk.ConversationRunReference{ConversationID: ref.ConversationID, RunID: ref.RunID, BeforeStep: ref.Step + 2}
++		if current, found := largestPrefix[key]; !found || prefix.BeforeStep > current.BeforeStep {
++			largestPrefix[key] = prefix
++		}
++	}
++	audited := make(map[sourceRun]bool, len(largestPrefix))
++	for _, ref := range refs {
++		key := sourceRun{conversationID: ref.ConversationID, runID: ref.RunID}
++		if !audited[key] {
++			if _, err := audit.run(ctx, largestPrefix[key]); err != nil {
++				return err
++			}
++			audited[key] = true
+ 		}
+ 		producer, err := s.sharedEvidenceAuthority(ctx, sdk.ConversationRunReference{ConversationID: ref.ConversationID, RunID: ref.RunID, BeforeStep: ref.Step + 2}, a)
+ 		if err != nil {
+@@ -40,12 +60,23 @@
+ 	if err := execution.ValidateConditionAssessments(brief, entries); err != nil {
+ 		return conversationFailure("bad_request", "completion_assessment_invalid")
+ 	}
++	return s.checkCompletionReceipts(ctx, conditionAssessmentReceipts(entries), a, consumer)
++}
++
++func conditionAssessmentReceipts(entries []sdk.ConversationConditionAssessment) []sdk.ConversationResultReference {
++	var refs []sdk.ConversationResultReference
+ 	for _, entry := range entries {
+-		if err := s.checkCompletionReceipts(ctx, entry.Receipts, a, consumer); err != nil {
+-			return err
+-		}
++		refs = append(refs, entry.Receipts...)
+ 	}
+-	return nil
++	return refs
++}
++
++func completionCheckReceipts(checks []sdk.ConversationCompletionCheck) []sdk.ConversationResultReference {
++	var refs []sdk.ConversationResultReference
++	for _, check := range checks {
++		refs = append(refs, check.Receipts...)
++	}
++	return refs
+ }
+ 
+ func (s *ConversationService) checkVerificationSources(ctx context.Context, report *sdk.ConversationDeliveryVerification, a sdk.ConversationAuthority, consumer string) error {
+@@ -57,10 +88,8 @@
+ 			return err
+ 		}
+ 	}
+-	for _, check := range report.Checks {
+-		if err := s.checkCompletionReceipts(ctx, check.Receipts, a, consumer); err != nil {
+-			return err
+-		}
++	if err := s.checkCompletionReceipts(ctx, completionCheckReceipts(report.Checks), a, consumer); err != nil {
++		return err
+ 	}
+ 	return nil
+ }
+@@ -101,10 +130,8 @@
+ 				return out, err
+ 			}
+ 		}
+-		for _, claim := range entry.Delivery.Conditions {
+-			if err = s.checkCompletionReceipts(entryCtx, claim.Receipts, a, ""); err != nil {
+-				return out, err
+-			}
++		if err = s.checkCompletionReceipts(entryCtx, conditionAssessmentReceipts(entry.Delivery.Conditions), a, ""); err != nil {
++			return out, err
+ 		}
+ 	}
+ 	return value, nil
+--- /dev/null
++++ b/internal/application/conversation_verification_compaction_test.go
+@@ -0,0 +1,87 @@
++package application
++
++import (
++	"context"
++	"fmt"
++	"testing"
++
++	sdk "github.com/domainry/domainry-agent-sdk"
++	"github.com/domainry/domainry-agent-sdk/persistence"
++)
++
++type compactingReceiptRepository struct {
++	privatePeerSources
++	persistence.ConversationExecutionReadRepository
++	a         sdk.ConversationAuthority
++	snapshots []sdk.ConversationRunReference
++	records   map[string]persistence.ConversationToolExecution
++}
++
++func (r *compactingReceiptRepository) ConversationSourceSnapshot(_ context.Context, ref sdk.ConversationRunReference, a sdk.ConversationAuthority) (persistence.ConversationSourceSnapshot, error) {
++	if a != r.a {
++		return persistence.ConversationSourceSnapshot{}, conversationFailure("forbidden", "source_read_forbidden")
++	}
++	r.snapshots = append(r.snapshots, ref)
++	return persistence.ConversationSourceSnapshot{Authority: a, Run: sdk.ConversationRun{ID: ref.RunID, ConversationID: ref.ConversationID}}, nil
++}
++
++func (r *compactingReceiptRepository) ReadExecutionCall(_ context.Context, conversationID, runID string, step int, callID string, a sdk.ConversationAuthority) (persistence.ConversationToolExecution, error) {
++	if a != r.a {
++		return persistence.ConversationToolExecution{}, conversationFailure("forbidden", "execution_read_forbidden")
++	}
++	record, ok := r.records[fmt.Sprintf("%s\x00%s\x00%d\x00%s", conversationID, runID, step, callID)]
++	if !ok {
++		return persistence.ConversationToolExecution{}, conversationFailure("not_found", "execution_call_not_found")
++	}
++	return record, nil
++}
++
++func TestCompletionReceiptsAuditOnlyLargestPrefixPerRun(t *testing.T) {
++	a := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "reader"}
++	repo := &compactingReceiptRepository{a: a, records: map[string]persistence.ConversationToolExecution{}}
++	refs := []sdk.ConversationResultReference{}
++	for _, item := range []struct {
++		conversationID string
++		runID          string
++		step           int
++		callID         string
++	}{
++		{"conversation-a", "run-a", 0, "first"},
++		{"conversation-a", "run-a", 1, "second"},
++		{"conversation-b", "run-b", 2, "foreign"},
++		{"conversation-a", "run-a", 4, "last"},
++	} {
++		result := &sdk.ConversationToolResult{Status: "completed", Content: []byte(`{"ok":true}`)}
++		record := persistence.ConversationToolExecution{State: "completed", Step: item.step, Call: sdk.ConversationToolCall{ID: item.callID}, Result: result}
++		repo.records[fmt.Sprintf("%s\x00%s\x00%d\x00%s", item.conversationID, item.runID, item.step, item.callID)] = record
++		refs = append(refs, sdk.ConversationResultReference{ConversationID: item.conversationID, RunID: item.runID, Step: item.step, CallID: item.callID, SHA256: conversationDigest(result)})
++	}
++	s := &ConversationService{runtimeID: a.RuntimeID, repo: repo}
++	if err := s.checkCompletionReceipts(t.Context(), refs, a, ""); err != nil {
++		t.Fatal(err)
++	}
++	want := []sdk.ConversationRunReference{
++		{ConversationID: "conversation-a", RunID: "run-a", BeforeStep: 6},
++		{ConversationID: "conversation-b", RunID: "run-b", BeforeStep: 4},
++	}
++	if len(repo.snapshots) != len(want) {
++		t.Fatalf("audited %d prefixes, want %d: %+v", len(repo.snapshots), len(want), repo.snapshots)
++	}
++	for index := range want {
++		if repo.snapshots[index] != want[index] {
++			t.Fatalf("prefix %d = %+v, want %+v", index, repo.snapshots[index], want[index])
++		}
++	}
++	repo.snapshots = nil
++	brief := sdk.ConversationTaskBrief{CompletionConditions: []string{"first", "second", "foreign", "last"}}
++	entries := make([]sdk.ConversationConditionAssessment, len(refs))
++	for index, ref := range refs {
++		entries[index] = sdk.ConversationConditionAssessment{Condition: index, Verdict: "met", Basis: "verified", Receipts: []sdk.ConversationResultReference{ref}}
++	}
++	if err := s.checkCompletionAssessments(t.Context(), brief, entries, a, ""); err != nil {
++		t.Fatal(err)
++	}
++	if len(repo.snapshots) != len(want) {
++		t.Fatalf("assessment groups audited %d prefixes, want %d: %+v", len(repo.snapshots), len(want), repo.snapshots)
++	}
++}

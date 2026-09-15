@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strings"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	persistence "github.com/domainry/domainry-agent-sdk/persistence"
@@ -20,7 +21,7 @@ func (s *ConversationStore) ApplyPersonalTool(ctx context.Context, in agentsdk.C
 		if strings.HasPrefix(call.Call.Name, "todo_") {
 			return s.applyTodoTool(ctx, tx, in, call)
 		}
-		return s.applyPersonalMemory(ctx, tx, claim.Authority, call)
+		return s.applyPersonalMemory(ctx, tx, claim, call)
 	})
 }
 
@@ -35,6 +36,7 @@ func (s *ConversationStore) applyLocalTool(ctx context.Context, in agentsdk.Conv
 		if err != nil {
 			return err
 		}
+		claim.Run = row.Run
 		var call persistence.ConversationToolExecution
 		found, err := s.readExecutionTool(ctx, tx, claim, in.Step, in.Call.ID, &call)
 		if err != nil {
@@ -80,33 +82,108 @@ func (s *ConversationStore) applyLocalTool(ctx context.Context, in agentsdk.Conv
 	return result, err
 }
 
-func (s *ConversationStore) applyPersonalMemory(ctx context.Context, tx *sql.Tx, a agentsdk.ConversationAuthority, call persistence.ConversationToolExecution) (agentsdk.ConversationToolResult, error) {
+func (s *ConversationStore) applyPersonalMemory(ctx context.Context, tx *sql.Tx, claim persistence.ConversationClaim, call persistence.ConversationToolExecution) (agentsdk.ConversationToolResult, error) {
 	var result agentsdk.ConversationToolResult
-	var in agentsdk.ConversationMemoryWrite
-	if err := json.Unmarshal([]byte(call.Call.Arguments), &in); err != nil {
+	var args struct {
+		ID               string   `json:"id"`
+		Kind             string   `json:"kind"`
+		Title            string   `json:"title"`
+		Content          string   `json:"content"`
+		Enabled          bool     `json:"enabled"`
+		Scope            string   `json:"scope"`
+		AppliesTo        []string `json:"applies_to"`
+		Uncertainty      string   `json:"uncertainty"`
+		CorrectionReason string   `json:"correction_reason"`
+		ExpectedRevision int64    `json:"expected_revision"`
+	}
+	if err := json.Unmarshal([]byte(call.Call.Arguments), &args); err != nil {
 		return result, conversationError("bad_request", "memory_invalid")
 	}
 	if call.Call.Name == "memory_forget" {
-		if !personalMemoryKey(in.ID) || in.ExpectedRevision < 1 {
+		if !personalMemoryKey(args.ID) || args.ExpectedRevision < 1 {
 			return result, conversationError("bad_request", "memory_invalid")
 		}
-		q, args, err := query.NewDeleteBuilder(s.store.Renderer(), "_agent_user_memories").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("memory_id", in.ID), query.Equal("revision", in.ExpectedRevision))).Build()
-		if err = conversationCAS(ctx, tx, q, args, err); err != nil {
+		if err := s.deleteMemory(ctx, tx, args.ID, args.ExpectedRevision, claim.Authority); err != nil {
 			return result, err
 		}
-		return agentsdk.ConversationToolResult{Status: "completed", ResourceID: in.ID, Content: conversationJSON(map[string]any{"id": in.ID, "deleted": true})}, nil
+		return agentsdk.ConversationToolResult{Status: "completed", ResourceID: args.ID, Content: conversationJSON(map[string]any{"id": args.ID, "deleted": true})}, nil
 	}
-	if call.Call.Name != "memory_save" || !executionText(in.Title, 128, true) || !executionText(in.Content, 512, true) || in.ExpectedRevision < 0 || in.ID != "" && (!personalMemoryKey(in.ID) || in.ExpectedRevision == 0) || in.ID == "" && in.ExpectedRevision != 0 {
+	if args.Kind == "" {
+		args.Kind = agentsdk.ConversationMemoryKindUserPreference
+	}
+	if args.Scope == "" {
+		args.Scope = agentsdk.ConversationMemoryScopeWorkspace
+	}
+	args.Title = strings.TrimSpace(args.Title)
+	args.Content = strings.TrimSpace(args.Content)
+	args.Uncertainty = strings.TrimSpace(args.Uncertainty)
+	args.CorrectionReason = strings.TrimSpace(args.CorrectionReason)
+	args.AppliesTo = normalizeStoredMemoryTopics(args.AppliesTo)
+	if call.Call.Name != "memory_save" || !executionText(args.Title, 128, true) || !executionText(args.Content, 512, true) || !executionText(args.Uncertainty, 512, false) || !executionText(args.CorrectionReason, 512, false) || args.ExpectedRevision < 0 || args.ID != "" && (!personalMemoryKey(args.ID) || args.ExpectedRevision == 0) || args.ID == "" && args.ExpectedRevision != 0 || len(args.AppliesTo) > 16 {
 		return result, conversationError("bad_request", "memory_invalid")
 	}
-	if in.ID == "" {
-		in.ID = "mem_" + conversationHash(call.IdempotencyKey)[:32]
+	if args.Kind != agentsdk.ConversationMemoryKindUserPreference && args.Kind != agentsdk.ConversationMemoryKindProjectFact && args.Kind != agentsdk.ConversationMemoryKindTaskContext || args.Scope != agentsdk.ConversationMemoryScopeWorkspace && args.Scope != agentsdk.ConversationMemoryScopeConversation && args.Scope != agentsdk.ConversationMemoryScopeTask || args.Kind == agentsdk.ConversationMemoryKindTaskContext && args.Scope == agentsdk.ConversationMemoryScopeWorkspace {
+		return result, conversationError("bad_request", "memory_scope_invalid")
 	}
+	for _, topic := range args.AppliesTo {
+		if !executionText(topic, 64, true) {
+			return result, conversationError("bad_request", "memory_invalid")
+		}
+	}
+	if args.ID == "" {
+		args.ID = "mem_" + conversationHash(call.IdempotencyKey)[:32]
+	}
+	scope := agentsdk.ConversationMemoryScope{Kind: args.Scope}
+	switch args.Scope {
+	case agentsdk.ConversationMemoryScopeConversation:
+		scope.ConversationID = claim.Run.ConversationID
+	case agentsdk.ConversationMemoryScopeTask:
+		if claim.Run.BackgroundTask == nil || claim.Run.BackgroundTask.TaskID == "" {
+			return result, conversationError("bad_request", "memory_scope_invalid")
+		}
+		scope.ConversationID = claim.Run.ConversationID
+		scope.TaskID = claim.Run.BackgroundTask.TaskID
+	}
+	source, err := s.personalMemoryToolSource(ctx, tx, claim)
+	if err != nil {
+		return result, err
+	}
+	if args.CorrectionReason != "" {
+		source.Kind = "user_correction"
+	}
+	in := agentsdk.ConversationMemoryWrite{ID: args.ID, Kind: args.Kind, Title: args.Title, Content: args.Content, Enabled: args.Enabled, Scope: scope, AppliesTo: args.AppliesTo, Source: &source, Uncertainty: args.Uncertainty, CorrectionReason: args.CorrectionReason, ExpectedRevision: args.ExpectedRevision}
 	var memory agentsdk.ConversationMemory
-	if err := s.writeMemory(ctx, tx, in, a, &memory, true); err != nil {
+	if err := s.writeMemory(ctx, tx, in, claim.Authority, &memory, true); err != nil {
 		return result, err
 	}
 	return agentsdk.ConversationToolResult{Status: "completed", ResourceID: memory.ID, Content: conversationJSON(map[string]any{"memory": memory})}, nil
+}
+
+func (s *ConversationStore) personalMemoryToolSource(ctx context.Context, tx *sql.Tx, claim persistence.ConversationClaim) (agentsdk.ConversationMemorySource, error) {
+	source := agentsdk.ConversationMemorySource{Kind: "user_request", ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, CapturedAt: time.Now().UTC()}
+	if claim.Run.BackgroundTask != nil {
+		source.TaskID = claim.Run.BackgroundTask.TaskID
+	}
+	if claim.Run.UserSeq < 1 {
+		return source, nil
+	}
+	q, queryArgs, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_messages").Columns("payload_json").Where(query.And(conversationScope(claim.Authority, claim.Run.ConversationID), query.Equal("seq", claim.Run.UserSeq))).Build()
+	if err != nil {
+		return source, err
+	}
+	var raw []byte
+	if err = tx.QueryRowContext(ctx, q, queryArgs...).Scan(&raw); err != nil {
+		return source, err
+	}
+	var message agentsdk.ConversationMessage
+	if err = json.Unmarshal(raw, &message); err != nil {
+		return source, err
+	}
+	if message.Role != "user" || message.RunID != claim.Run.ID {
+		return source, conversationError("conflict", "memory_source_invalid")
+	}
+	source.MessageID = message.ID
+	return source, nil
 }
 
 func personalMemoryKey(value string) bool {

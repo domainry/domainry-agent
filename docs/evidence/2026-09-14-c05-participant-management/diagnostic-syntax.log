@@ -1,0 +1,9 @@
+# github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent [github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent.test]
+internal/infrastructure/persistence/database/agent/conversation_delegation_store.go:609:3: syntax error: unexpected ) at end of statement
+internal/infrastructure/persistence/database/agent/conversation_delegation_store.go:611:2: syntax error: unexpected newline in argument list; possibly missing comma or )
+internal/infrastructure/persistence/database/agent/conversation_delegation_store.go:613:54: syntax error: unexpected name bool at end of statement
+# github.com/domainry/domainry-agent/internal/application [github.com/domainry/domainry-agent/internal/application.test]
+internal/application/conversation_delegations.go:550:105: undefined: slices
+FAIL	github.com/domainry/domainry-agent/internal/application [build failed]
+FAIL	github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent [build failed]
+FAIL
