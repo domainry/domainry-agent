@@ -39,8 +39,8 @@ github.com/domainry/domainry-integration v0.1.15 h1:pOjokVfMq+YdGlegWgI7DlUM1bq/
 github.com/domainry/domainry-integration v0.1.15/go.mod h1:75IZexBbbRnIgidhpr/JVHoz1fS2/bklSBXGqN44Jns=
 github.com/domainry/domainry-integration-sdk v0.1.7 h1:LS/ve4T+izsPuGLkqkcYiRB1MvoBNuqCeNE3BZatzdI=
 github.com/domainry/domainry-integration-sdk v0.1.7/go.mod h1:bJFmwNgHxm0w/qJ8s8INbgd0ikssQUDjIBkIQDX8fmc=
-github.com/domainry/domainry-knowledge v0.1.4 h1:E7VI/kVsBCF1WAOrkAWFKldqeSPbf2giOKkhdRXmZGM=
-github.com/domainry/domainry-knowledge v0.1.4/go.mod h1:ECnIRT1efMPWHh/A+fd8cSLST/Ji3LZUsIIldS3gIKQ=
+github.com/domainry/domainry-knowledge v0.1.5 h1:f0mwh0fdCHXnY/bqhBN4D6dFKZ/yiJvtEC8TeHeyFNg=
+github.com/domainry/domainry-knowledge v0.1.5/go.mod h1:ECnIRT1efMPWHh/A+fd8cSLST/Ji3LZUsIIldS3gIKQ=
 github.com/domainry/domainry-lifecycle-sdk v0.1.11 h1:ahH5zEw9w0EQxxD+TU3wVpBf4SddEDlfuUjkPCYV3uk=
 github.com/domainry/domainry-lifecycle-sdk v0.1.11/go.mod h1:fRFRPcyQWD8hm0u9CH3vpn40EblOKuAodk2XCWCM8G4=
 github.com/domainry/domainry-metadata v0.1.7 h1:Nr0Ukeu+JG3sRkIIhQ7N2llSMus6kwhND3OWXT7uRsM=

@@ -6,7 +6,6 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
-	"golang.org/x/sys/unix"
 	"os"
 	"path/filepath"
 	"sync"
@@ -46,11 +45,11 @@ func LockFile(path string) (func() error, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err = unix.Flock(int(f.Fd()), unix.LOCK_EX|unix.LOCK_NB); err != nil {
+	if err = lockFileHandle(f); err != nil {
 		f.Close()
 		return nil, fmt.Errorf("host storage is already in use: %w", err)
 	}
-	return sync.OnceValue(func() error { return errors.Join(unix.Flock(int(f.Fd()), unix.LOCK_UN), f.Close()) }), nil
+	return sync.OnceValue(func() error { return errors.Join(unlockFileHandle(f), f.Close()) }), nil
 }
 func (c *Connection) SetLocalRelease(release func() error) { c.closeLocal = release }
 
