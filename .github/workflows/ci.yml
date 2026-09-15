@@ -107,6 +107,14 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: domainry-agent/frontend/package-lock.json
+      - name: Build Integration browser client
+        run: |
+          npm --prefix domainry-integration-sdk/browser ci
+          npm --prefix domainry-integration-sdk/browser run build
+      - name: Build Tools browser client
+        run: |
+          npm --prefix domainry-tools-sdk/browser ci
+          npm --prefix domainry-tools-sdk/browser run build
       - name: Install playground UI dependencies
         run: npm --prefix domainry-agent/frontend ci
       - name: Test conversation draft and error behavior

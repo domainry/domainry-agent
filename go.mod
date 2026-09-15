@@ -3,11 +3,11 @@ module github.com/domainry/domainry-agent
 go 1.26.0
 
 require (
-	github.com/domainry/domainry-agent-sdk v0.1.16
-	github.com/domainry/domainry-connector-sdk v0.1.1
-	github.com/domainry/domainry-connectors v0.1.3
+	github.com/domainry/domainry-agent-sdk v0.1.17
+	github.com/domainry/domainry-connector-sdk v0.1.2
+	github.com/domainry/domainry-connectors v0.1.4
 	github.com/domainry/domainry-foundation v0.1.0
-	github.com/domainry/domainry-identity v0.2.12
+	github.com/domainry/domainry-identity v0.2.13
 	github.com/domainry/domainry-identity-bridge v0.1.2
 	github.com/domainry/domainry-identity-sdk v0.1.11
 	github.com/domainry/domainry-lifecycle-sdk v0.1.11
@@ -72,14 +72,14 @@ require (
 
 require (
 	github.com/domainry/domainry-todo v0.1.1
-	github.com/domainry/domainry-tools v0.1.3
-	github.com/domainry/domainry-tools-sdk v0.1.4
+	github.com/domainry/domainry-tools v0.1.4
+	github.com/domainry/domainry-tools-sdk v0.1.5
 )
 
 require (
-	github.com/domainry/domainry-integration v0.1.14
-	github.com/domainry/domainry-integration-sdk v0.1.6
-	github.com/domainry/domainry-knowledge v0.1.3
+	github.com/domainry/domainry-integration v0.1.15
+	github.com/domainry/domainry-integration-sdk v0.1.7
+	github.com/domainry/domainry-knowledge v0.1.4
 	github.com/domainry/domainry-report-sdk v0.1.10
 )
 
