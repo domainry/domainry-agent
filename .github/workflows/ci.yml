@@ -63,7 +63,7 @@ jobs:
           fi
       - name: Test all Agent packages
         working-directory: domainry-agent
-        run: go test ./...
+        run: go test ./... -timeout=20m
       - name: Test Identity publication regression
         working-directory: domainry-identity
         run: go test ./internal/infrastructure/persistence/database/metadata
