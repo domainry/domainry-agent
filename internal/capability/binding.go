@@ -17,6 +17,7 @@ const (
 	DialogCategory                = agentsdk.AgentCapabilityDialog
 	OperationsCategory            = agentsdk.AgentCapabilityOperations
 	ProposalsCategory             = agentsdk.AgentCapabilityProposals
+	TaskExecutionCategory         = agentsdk.AgentCapabilityTaskExecution
 	ToolGatewayCategory           = agentsdk.AgentCapabilityToolGateway
 	agentInitialDefinitionVersion = "1.0.0"
 	agentDefaultSelectedRecords   = 20
@@ -47,6 +48,7 @@ func NewBinding() (*modulecapability.StaticBinding, error) {
 		{DialogCategory, "Agent dialog and analysis", "Run principal-scoped conversations, retain sessions and execution state, query permitted business data, and inspect Agent diagnostics.", []string{"identity_principal_to_agent_context", "agent_route_to_task_or_workflow", "agent_analysis_to_report_or_proposal"}},
 		{OperationsCategory, "Agent task operations", "Inspect and recover durable Agent task runs with operator evidence and idempotent commands.", []string{"agent_task_to_operator_recovery", "agent_task_to_workflow_reconciliation"}},
 		{ProposalsCategory, "Agent proposals", "Create, inspect, approve, and reject suggested business changes without granting the model direct write authority.", []string{"agent_suggestion_to_approval_to_business_action"}},
+		{TaskExecutionCategory, "Agent task execution", "Start principal-owned durable Agent tasks with contract-governed private image or PDF inputs.", []string{"agent_route_to_task_or_workflow"}},
 		{ToolGatewayCategory, "Agent task tool gateway", "Invoke Runtime-authorized tools through a short-lived task credential, fencing evidence, budgets, and an idempotency key.", []string{"agent_task_credential_to_runtime_guarded_tool"}},
 	} {
 		category, err := httpCategory(contract, specification.key, specification.name, specification.description, specification.chains)

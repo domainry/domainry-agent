@@ -2,8 +2,12 @@ package application
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -23,18 +27,22 @@ type taskLocator struct{ workspaceID, runID string }
 // polling, retries and the later Runtime completion notification happen on the
 // Agent worker, outside the Runtime workflow call stack.
 type TaskExecutionService struct {
-	state        agentpersistence.AgentTaskStateService
-	provider     agentsdk.TaskRunner
-	workerID     string
-	pollInterval time.Duration
-	leaseTTL     time.Duration
-	wakeups      chan taskLocator
+	state             agentpersistence.AgentTaskStateService
+	provider          agentsdk.TaskRunner
+	workerID          string
+	pollInterval      time.Duration
+	leaseTTL          time.Duration
+	wakeups           chan taskLocator
+	attachmentStorage agentsdk.ConversationAttachmentStorage
+	runtimeID         string
 
 	mu     sync.RWMutex
 	host   modulehost.TaskHost
 	cancel context.CancelFunc
 	done   chan struct{}
 }
+
+var taskAttachmentIDPattern = regexp.MustCompile(`^att_[a-f0-9]{32}$`)
 
 func NewTaskExecutionService(state agentpersistence.AgentTaskStateService, provider agentsdk.TaskRunner, workerID string) *TaskExecutionService {
 	workerID = strings.TrimSpace(workerID)
@@ -46,6 +54,17 @@ func NewTaskExecutionService(state agentpersistence.AgentTaskStateService, provi
 		pollInterval: 500 * time.Millisecond, leaseTTL: 30 * time.Second,
 		wakeups: make(chan taskLocator, 256), done: make(chan struct{}),
 	}
+}
+
+// ConfigureAttachments binds the private byte store used by durable task
+// inputs. It is startup-only configuration and must be called before workers
+// or public task ingress are started.
+func (s *TaskExecutionService) ConfigureAttachments(storage agentsdk.ConversationAttachmentStorage, runtimeID string) error {
+	if s == nil || storage == nil || strings.TrimSpace(runtimeID) == "" {
+		return fmt.Errorf("Agent task attachment storage is incomplete")
+	}
+	s.attachmentStorage, s.runtimeID = storage, strings.TrimSpace(runtimeID)
+	return nil
 }
 
 func (s *TaskExecutionService) BindHost(host modulehost.TaskHost) error {
@@ -88,14 +107,37 @@ func (s *TaskExecutionService) Close() {
 }
 
 func (s *TaskExecutionService) Start(ctx context.Context, request agentsdk.TaskRequest) (agentsdk.TaskResult, error) {
+	run, _, err := s.StartRun(ctx, request)
+	if err != nil {
+		return taskFailure(errorClass(err, "state"), errorCode(err, "agent.task.create_failed"), false), err
+	}
+	return taskResultFromRun(run), nil
+}
+
+// StartRun exposes the accepted persisted run to Agent-owned HTTP ingress so
+// it can return the stable principal-readable task ID without decoding the
+// internal service locator.
+func (s *TaskExecutionService) StartRun(ctx context.Context, request agentsdk.TaskRequest) (agentmodel.AgentTaskRun, bool, error) {
 	if !agentsdk.HasAuthorizedServiceAction(ctx, agentsdk.ActionAgentTaskExecutionStart, agentsdk.AgentRuntimeServiceAudience) {
-		return taskFailure("authorization", "agent.authorization.service_action_denied", false), forbidden("agent.authorization.service_action_denied")
+		return agentmodel.AgentTaskRun{}, false, forbidden("agent.authorization.service_action_denied")
 	}
 	if s == nil || s.state == nil || s.provider == nil {
-		return taskFailure("configuration", "agent.task.capability_unavailable", false), unavailable("agent.task.capability_unavailable")
+		return agentmodel.AgentTaskRun{}, false, unavailable("agent.task.capability_unavailable")
 	}
 	if err := definition.ValidateTaskRequest(request); err != nil {
-		return taskFailure("request_contract", "agent.task.request_invalid", false), err
+		return agentmodel.AgentTaskRun{}, false, err
+	}
+	attachments, err := normalizeTaskAttachments(request.Task.AttachmentSchema, request.Attachments)
+	if err != nil {
+		return agentmodel.AgentTaskRun{}, false, badRequest("agent.task.attachment_contract_mismatch")
+	}
+	request.Attachments = attachments
+	if err := validateTaskInput(request.Task.InputSchema, request.Input, request.Attachments, request.Task.ExecutionLimits.MaxInputBytes); err != nil {
+		return agentmodel.AgentTaskRun{}, false, err
+	}
+	attachments, err = s.persistTaskAttachments(ctx, request)
+	if err != nil {
+		return agentmodel.AgentTaskRun{}, false, err
 	}
 	maxAttempts := request.MaxAttempts
 	if maxAttempts < 1 {
@@ -111,7 +153,7 @@ func (s *TaskExecutionService) Start(ctx context.Context, request agentsdk.TaskR
 	run := agentmodel.AgentTaskRun{
 		ID: strings.TrimSpace(request.TaskRunID), WorkspaceID: strings.TrimSpace(request.WorkspaceID),
 		ProcessID: strings.TrimSpace(request.ProcessID), NodeInstanceID: strings.TrimSpace(request.NodeInstanceID), TaskKey: strings.TrimSpace(request.Task.Key), TaskVersion: strings.TrimSpace(request.Task.Version),
-		Status: agentmodel.AgentTaskRunPending, Identity: request.Identity, Input: cloneTaskMap(request.Input),
+		Status: agentmodel.AgentTaskRunPending, Identity: request.Identity, Input: cloneTaskMap(request.Input), Attachments: attachments,
 		MaxAttempts: maxAttempts, TimeoutSeconds: timeoutSeconds,
 		MaxToolCalls: agentTaskMaxToolCalls(request.Task.ExecutionLimits.MaxToolCalls), MaxCostUnits: agentTaskCostBudgetUnits(request.Task.ExecutionLimits.CostBudget),
 		IdempotencyKey: strings.TrimSpace(request.IdempotencyKey),
@@ -130,12 +172,24 @@ func (s *TaskExecutionService) Start(ctx context.Context, request agentsdk.TaskR
 	}
 	created, replayed, err := s.state.Create(ctx, run)
 	if err != nil {
-		return taskFailure("state", "agent.task.create_failed", false), err
+		return agentmodel.AgentTaskRun{}, false, err
+	}
+	if replayed && !sameTaskCommand(created, run) {
+		return agentmodel.AgentTaskRun{}, false, conflict("agent.task.idempotency_conflict")
 	}
 	if !replayed || !created.Status.Terminal() {
 		s.Wake(created.WorkspaceID, created.ID)
 	}
-	return taskResultFromRun(created), nil
+	return created, replayed, nil
+}
+
+func sameTaskCommand(current, requested agentmodel.AgentTaskRun) bool {
+	if current.ID != requested.ID || current.TaskKey != requested.TaskKey || current.TaskVersion != requested.TaskVersion || current.IdempotencyKey != requested.IdempotencyKey || current.Identity.Initiator != requested.Identity.Initiator {
+		return false
+	}
+	left, leftErr := json.Marshal(map[string]any{"input": current.Input, "attachments": current.Attachments})
+	right, rightErr := json.Marshal(map[string]any{"input": requested.Input, "attachments": requested.Attachments})
+	return leftErr == nil && rightErr == nil && string(left) == string(right)
 }
 
 func (s *TaskExecutionService) Poll(ctx context.Context, externalRunID, idempotencyKey string) (agentsdk.TaskResult, error) {
@@ -330,9 +384,13 @@ func (s *TaskExecutionService) executeClaim(parent context.Context, claim agentp
 }
 
 func (s *TaskExecutionService) runProvider(ctx context.Context, run agentmodel.AgentTaskRun, authorization modulehost.TaskAuthorization, credential string) (agentsdk.TaskResult, string, error) {
+	attachments, err := s.materializeTaskAttachments(ctx, run)
+	if err != nil {
+		return taskFailure("attachment", errorCode(err, "agent.task.attachment_unavailable"), false), "", err
+	}
 	request := agentsdk.TaskRequest{
 		TaskRunID: run.ID, ProcessID: run.ProcessID, NodeInstanceID: run.NodeInstanceID, WorkspaceID: run.WorkspaceID,
-		Task: authorization.Task, Identity: authorization.Identity, Input: cloneTaskMap(run.Input),
+		Task: authorization.Task, Identity: authorization.Identity, Input: cloneTaskMap(run.Input), Attachments: attachments,
 		AllowedObjects:      append([]string(nil), authorization.Evidence.AllowedObjects...),
 		AllowedActions:      append([]string(nil), authorization.Evidence.AllowedActions...),
 		AllowedOutcomes:     append([]string(nil), authorization.Evidence.AllowedOutcomes...),
@@ -362,6 +420,191 @@ func (s *TaskExecutionService) runProvider(ctx context.Context, run agentmodel.A
 		}
 	}
 	return result, externalRunID, nil
+}
+
+func (s *TaskExecutionService) persistTaskAttachments(ctx context.Context, request agentsdk.TaskRequest) ([]agentsdk.TaskAttachment, error) {
+	if len(request.Attachments) == 0 {
+		return nil, nil
+	}
+	if len(request.Attachments) > agentsdk.TaskAttachmentMaxCount || s.attachmentStorage == nil || strings.TrimSpace(s.runtimeID) == "" {
+		return nil, badRequest("agent.task.attachments_unavailable")
+	}
+	authority := taskAttachmentAuthority(s.runtimeID, request.WorkspaceID, request.Identity)
+	if !authority.Known {
+		return nil, forbidden("agent.task.attachment_access_denied")
+	}
+	out := make([]agentsdk.TaskAttachment, 0, len(request.Attachments))
+	seen := map[string]bool{}
+	for _, source := range request.Attachments {
+		attachment := cloneTaskAttachment(source, false)
+		if err := validateTaskAttachment(source, true); err != nil || seen[attachment.ID] {
+			return nil, badRequest("agent.task.attachment_invalid")
+		}
+		seen[attachment.ID] = true
+		if strings.TrimSpace(attachment.BodyRef) == "" {
+			reference, err := s.attachmentStorage.PutAttachmentContent(ctx, attachment.ID, attachment.SHA256, source.Data, authority)
+			if err != nil {
+				return nil, err
+			}
+			attachment.BodyRef = reference
+		}
+		out = append(out, attachment)
+	}
+	return out, nil
+}
+
+func (s *TaskExecutionService) materializeTaskAttachments(ctx context.Context, run agentmodel.AgentTaskRun) ([]agentsdk.TaskAttachment, error) {
+	if len(run.Attachments) == 0 {
+		return nil, nil
+	}
+	if len(run.Attachments) > agentsdk.TaskAttachmentMaxCount || s.attachmentStorage == nil || strings.TrimSpace(s.runtimeID) == "" {
+		return nil, unavailable("agent.task.attachments_unavailable")
+	}
+	authority := taskAttachmentAuthority(s.runtimeID, run.WorkspaceID, run.Identity)
+	if !authority.Known {
+		return nil, forbidden("agent.task.attachment_access_denied")
+	}
+	out := make([]agentsdk.TaskAttachment, 0, len(run.Attachments))
+	for _, frozen := range run.Attachments {
+		if err := validateTaskAttachment(frozen, false); err != nil || strings.TrimSpace(frozen.BodyRef) == "" {
+			return nil, unavailable("agent.task.attachment_identity_invalid")
+		}
+		raw, err := s.attachmentStorage.ReadAttachmentContent(ctx, frozen.ID, frozen.BodyRef, authority)
+		if err != nil {
+			return nil, err
+		}
+		digest := sha256.Sum256(raw)
+		if int64(len(raw)) != frozen.Bytes || hex.EncodeToString(digest[:]) != frozen.SHA256 {
+			return nil, unavailable("agent.task.attachment_content_mismatch")
+		}
+		attachment := cloneTaskAttachment(frozen, false)
+		attachment.BodyRef = ""
+		attachment.Data = raw
+		out = append(out, attachment)
+	}
+	return out, nil
+}
+
+func taskAttachmentAuthority(runtimeID, workspaceID string, identity agentsdk.ExecutionIdentity) agentsdk.ConversationAuthority {
+	return agentsdk.ConversationAuthority{
+		Known:     strings.TrimSpace(runtimeID) != "" && strings.TrimSpace(workspaceID) != "" && strings.TrimSpace(identity.Initiator.UserID) != "",
+		RuntimeID: strings.TrimSpace(runtimeID), WorkspaceID: strings.TrimSpace(workspaceID), UserID: strings.TrimSpace(identity.Initiator.UserID),
+		RoleKey: strings.TrimSpace(identity.Initiator.RoleKey),
+	}
+}
+
+func validateTaskAttachment(attachment agentsdk.TaskAttachment, requireData bool) error {
+	attachment.ID, attachment.Filename = strings.TrimSpace(attachment.ID), strings.TrimSpace(attachment.Filename)
+	attachment.ContentType, attachment.SHA256 = strings.ToLower(strings.TrimSpace(attachment.ContentType)), strings.ToLower(strings.TrimSpace(attachment.SHA256))
+	attachment.Detail = strings.ToLower(strings.TrimSpace(attachment.Detail))
+	if attachment.Detail == "" {
+		attachment.Detail = "auto"
+	}
+	if !taskAttachmentIDPattern.MatchString(attachment.ID) || attachment.Filename == "" || len([]byte(attachment.Filename)) > 255 || strings.ContainsAny(attachment.Filename, "/\\") || attachment.Bytes < 1 || attachment.Bytes > agentsdk.TaskAttachmentMaxBytes || len(attachment.SHA256) != 64 || (attachment.Detail != "auto" && attachment.Detail != "low" && attachment.Detail != "high") {
+		return fmt.Errorf("invalid Agent task attachment identity")
+	}
+	for _, r := range attachment.Filename {
+		if r == 0 || r < 0x20 || r >= 0x7f && r <= 0x9f {
+			return fmt.Errorf("invalid Agent task attachment filename")
+		}
+	}
+	if !agentsdk.SupportedTaskAttachmentContentType(attachment.ContentType) {
+		return fmt.Errorf("unsupported Agent task attachment content type")
+	}
+	if _, err := hex.DecodeString(attachment.SHA256); err != nil {
+		return fmt.Errorf("invalid Agent task attachment digest")
+	}
+	if requireData {
+		digest := sha256.Sum256(attachment.Data)
+		if int64(len(attachment.Data)) != attachment.Bytes || hex.EncodeToString(digest[:]) != attachment.SHA256 {
+			return fmt.Errorf("Agent task attachment content mismatch")
+		}
+	}
+	return nil
+}
+
+func taskAttachmentCountAllowed(schema *agentsdk.AgentTaskAttachmentSchema, count int) bool {
+	if schema == nil {
+		return count == 0
+	}
+	return count >= schema.MinItems && count <= schema.MaxItems
+}
+
+func normalizeTaskAttachments(schema *agentsdk.AgentTaskAttachmentSchema, attachments []agentsdk.TaskAttachment) ([]agentsdk.TaskAttachment, error) {
+	if err := agentsdk.ValidateAgentTaskAttachmentSchema(schema); err != nil {
+		return nil, err
+	}
+	if !taskAttachmentCountAllowed(schema, len(attachments)) {
+		return nil, fmt.Errorf("Agent task attachment count does not match its contract")
+	}
+	if len(attachments) == 0 {
+		return nil, nil
+	}
+	allowed := make(map[string]bool, len(schema.AllowedContentTypes))
+	for _, contentType := range schema.AllowedContentTypes {
+		allowed[contentType] = true
+	}
+	detail := strings.TrimSpace(schema.ImageDetail)
+	if detail == "" {
+		detail = "auto"
+	}
+	out := make([]agentsdk.TaskAttachment, 0, len(attachments))
+	for _, source := range attachments {
+		attachment := cloneTaskAttachment(source, true)
+		if !allowed[attachment.ContentType] {
+			return nil, fmt.Errorf("Agent task attachment content type is outside its contract")
+		}
+		if attachment.Bytes < 1 || attachment.Bytes > schema.MaxBytes {
+			return nil, fmt.Errorf("Agent task attachment size is outside its contract")
+		}
+		attachment.Detail = detail
+		out = append(out, attachment)
+	}
+	return out, nil
+}
+
+func cloneTaskAttachment(source agentsdk.TaskAttachment, data bool) agentsdk.TaskAttachment {
+	out := source
+	out.ID, out.Filename = strings.TrimSpace(source.ID), strings.TrimSpace(source.Filename)
+	out.ContentType, out.SHA256 = strings.ToLower(strings.TrimSpace(source.ContentType)), strings.ToLower(strings.TrimSpace(source.SHA256))
+	out.BodyRef, out.Detail = strings.TrimSpace(source.BodyRef), strings.ToLower(strings.TrimSpace(source.Detail))
+	if out.Detail == "" {
+		out.Detail = "auto"
+	}
+	out.Data = nil
+	if data {
+		out.Data = append([]byte(nil), source.Data...)
+	}
+	return out
+}
+
+func validateTaskInput(schema map[string]any, input map[string]any, attachments []agentsdk.TaskAttachment, maxBytes int) error {
+	raw, err := json.Marshal(input)
+	if err != nil {
+		return err
+	}
+	total := int64(len(raw))
+	for _, attachment := range attachments {
+		total += attachment.Bytes
+	}
+	if maxBytes <= 0 {
+		maxBytes = 16 << 20
+	}
+	if total > int64(maxBytes) {
+		return fmt.Errorf("Agent task input exceeds %d bytes", maxBytes)
+	}
+	if strings.TrimSpace(fmt.Sprint(schema["type"])) != "object" {
+		return fmt.Errorf("Agent task input schema must be an object")
+	}
+	schemaRaw, err := json.Marshal(schema)
+	if err != nil {
+		return err
+	}
+	compiled, err := execution.CompileSchema(schemaRaw)
+	if err != nil {
+		return err
+	}
+	return execution.ValidateJSON(compiled, raw)
 }
 
 func (s *TaskExecutionService) heartbeat(ctx context.Context, run agentmodel.AgentTaskRun, lease agentmodel.AgentTaskLease, stop <-chan struct{}, failures chan<- error, cancel context.CancelFunc) {
@@ -585,6 +828,17 @@ func errorCode(err error, fallback string) string {
 	type coded interface{ ErrorCode() string }
 	if value, ok := err.(coded); ok && strings.TrimSpace(value.ErrorCode()) != "" {
 		return strings.TrimSpace(value.ErrorCode())
+	}
+	return strings.TrimSpace(fallback)
+}
+
+func errorClass(err error, fallback string) string {
+	if err == nil {
+		return strings.TrimSpace(fallback)
+	}
+	var structured *agentsdk.Error
+	if errors.As(err, &structured) && strings.TrimSpace(structured.Class) != "" {
+		return strings.TrimSpace(structured.Class)
 	}
 	return strings.TrimSpace(fallback)
 }

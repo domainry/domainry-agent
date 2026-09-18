@@ -47,7 +47,7 @@ func TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority(t *testi
 
 			first := harness.open(t)
 			agentcontracttest.VerifyBinding(t, first, mode)
-			if result, err := first.TaskRunner().Start(t.Context(), request); sdkErrorCode(err) != "agent.authorization.service_action_denied" || result.ErrorClass != "authorization" {
+			if result, err := first.TaskRunner().Start(t.Context(), request); sdkErrorCode(err) != "agent.authorization.service_action_denied" || result.ErrorClass != "forbidden" {
 				t.Fatalf("unauthorized Start result=%+v err=%v", result, err)
 			}
 			result, err := first.TaskRunner().Start(serviceContext(t.Context(), agentsdk.ActionAgentTaskExecutionStart), request)

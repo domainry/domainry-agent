@@ -9,6 +9,7 @@ import (
 	"testing"
 	"testing/fstest"
 
+	agentmodule "github.com/domainry/domainry-agent/module"
 	agentweb "github.com/domainry/domainry-agent/web"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
@@ -18,7 +19,7 @@ func TestConversationBrowserUsesVerifiedScopeAndHostAdmission(t *testing.T) {
 	t.Setenv("AUTH_JWT_SECRET", "host-router-signing-secret-32bytes")
 	t.Setenv("IDENTITY_DATA_SECRET_KEY", "host-router-data-secret-32bytes-long")
 	t.Setenv("APP_ENV", "development")
-	host, err := Open(t.Context(), Options{DatabasePath: filepath.Join(t.TempDir(), "web.db"), RuntimeID: "router-runtime", WorkspaceID: "router-workspace", ApplicationKey: "router-app"})
+	host, err := Open(t.Context(), Options{DatabasePath: filepath.Join(t.TempDir(), "web.db"), RuntimeID: "router-runtime", WorkspaceID: "router-workspace", ApplicationKey: "router-app", Agent: agentmodule.Options{ConversationEnabled: true}})
 	if err != nil {
 		t.Fatal(err)
 	}

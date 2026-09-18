@@ -53,6 +53,7 @@ func BindApplicationAdapter(dependencies ApplicationAdapterDependencies) (module
 		TaskTools:   agentapplication.NewTaskToolService(dependencies.TaskState, dependencies.ToolLedger, host.TaskAgent(), proposals),
 		Analysis:    agentapplication.NewAnalysisService(host.AnalysisAgent(), host.AuditAgent()),
 		Diagnostics: agentapplication.NewDiagnosticsService(dependencies.DialogState, host.AuditAgent()),
+		DirectTasks: agentapplication.NewDirectTaskExecutionService(dependencies.TaskExecution, host.InteractiveAgent()),
 	}
 	return agenthttp.NewOwnedAdapter(dependencies.Binding, applications)
 }

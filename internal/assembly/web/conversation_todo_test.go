@@ -344,7 +344,7 @@ func TestPersonalTodosWithoutModelAndAcrossUsers(t *testing.T) {
 	t.Setenv("AUTH_JWT_SECRET", "test-agent-identity-signing-key-32bytes")
 	t.Setenv("IDENTITY_DATA_SECRET_KEY", "test-agent-identity-encryption-key-32bytes")
 	t.Setenv("APP_ENV", "development")
-	options := Options{DatabasePath: filepath.Join(t.TempDir(), "todos-ui.db"), RuntimeID: "todo-ui-runtime", WorkspaceID: "todo-ui-workspace", ApplicationKey: "todo-ui-app"}
+	options := Options{DatabasePath: filepath.Join(t.TempDir(), "todos-ui.db"), RuntimeID: "todo-ui-runtime", WorkspaceID: "todo-ui-workspace", ApplicationKey: "todo-ui-app", Agent: agentmodule.Options{ConversationEnabled: true}}
 	host, err := Open(t.Context(), options)
 	if err != nil {
 		t.Fatal(err)

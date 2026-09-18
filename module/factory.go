@@ -57,6 +57,16 @@ type Options struct {
 	ConversationDefaultReasoningEffort                     string
 	ConversationProvider                                   agentsdk.ConversationModel
 	ConversationOptions                                    ConversationOptions
+	TaskModelBaseURL                                       string
+	TaskModelURL, TaskModelAPIKey, TaskModelName           string
+	TaskModelProviderName, TaskModelProtocol               string
+	TaskModelContextTokenLimit                             int
+	TaskModelImageInput, TaskModelStructuredOutput         bool
+	TaskModelDisableProtocolContinuation                   bool
+	TaskModelReasoningEfforts                              []string
+	TaskModelDefaultReasoningEffort                        string
+	TaskModelProvider                                      agentsdk.ConversationModel
+	TaskAttachmentStorage                                  agentsdk.ConversationAttachmentStorage
 	Knowledge                                              KnowledgeConfig
 }
 
@@ -95,6 +105,15 @@ func positiveEnvironmentDuration(name string) time.Duration {
 		return -1
 	}
 	return value
+}
+
+func firstAttachmentStorage(values ...agentsdk.ConversationAttachmentStorage) agentsdk.ConversationAttachmentStorage {
+	for _, value := range values {
+		if value != nil {
+			return value
+		}
+	}
+	return nil
 }
 
 type Factory struct{ options Options }
@@ -136,16 +155,33 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if err != nil {
 		return nil, fmt.Errorf("build Agent capability binding: %w", err)
 	}
-	binding := newBinding(runner, store, agentsdk.DeploymentModeModule)
-	model := f.options.ConversationProvider
-	modelConfig := provider.ConversationModelConfig{Provider: f.options.ConversationProviderName, Protocol: f.options.ConversationProtocol, BaseURL: f.options.ConversationBaseURL, URL: f.options.ConversationURL, APIKey: f.options.ConversationAPIKey, Model: f.options.ConversationModel, ContextTokenLimit: f.options.ConversationContextTokenLimit, ImageInput: f.options.ConversationImageInput, StructuredOutput: f.options.ConversationStructuredOutput, DisableProtocolContinuation: f.options.ConversationDisableProtocolContinuation, ReasoningEfforts: append([]string(nil), f.options.ConversationReasoningEfforts...), DefaultReasoningEffort: f.options.ConversationDefaultReasoningEffort, Client: f.options.Client}
-	if model == nil && modelConfig.Configured() {
-		model, err = provider.NewConversationModel(modelConfig)
+	conversationModel := f.options.ConversationProvider
+	conversationModelConfig := provider.ConversationModelConfig{Provider: f.options.ConversationProviderName, Protocol: f.options.ConversationProtocol, BaseURL: f.options.ConversationBaseURL, URL: f.options.ConversationURL, APIKey: f.options.ConversationAPIKey, Model: f.options.ConversationModel, ContextTokenLimit: f.options.ConversationContextTokenLimit, ImageInput: f.options.ConversationImageInput, StructuredOutput: f.options.ConversationStructuredOutput, DisableProtocolContinuation: f.options.ConversationDisableProtocolContinuation, ReasoningEfforts: append([]string(nil), f.options.ConversationReasoningEfforts...), DefaultReasoningEffort: f.options.ConversationDefaultReasoningEffort, Client: f.options.Client}
+	if conversationModel == nil && conversationModelConfig.Configured() {
+		conversationModel, err = provider.NewConversationModel(conversationModelConfig)
 		if err != nil {
 			return nil, err
 		}
 	}
+	taskModel := f.options.TaskModelProvider
+	taskModelConfig := provider.ConversationModelConfig{Provider: f.options.TaskModelProviderName, Protocol: f.options.TaskModelProtocol, BaseURL: f.options.TaskModelBaseURL, URL: f.options.TaskModelURL, APIKey: f.options.TaskModelAPIKey, Model: f.options.TaskModelName, ContextTokenLimit: f.options.TaskModelContextTokenLimit, ImageInput: f.options.TaskModelImageInput, StructuredOutput: f.options.TaskModelStructuredOutput, DisableProtocolContinuation: f.options.TaskModelDisableProtocolContinuation, ReasoningEfforts: append([]string(nil), f.options.TaskModelReasoningEfforts...), DefaultReasoningEffort: f.options.TaskModelDefaultReasoningEffort, Client: f.options.Client}
+	if taskModel == nil && taskModelConfig.Configured() {
+		taskModel, err = provider.NewConversationModel(taskModelConfig)
+		if err != nil {
+			return nil, err
+		}
+	}
+	taskRunner := agentsdk.TaskRunner(runner)
+	if taskModel != nil {
+		taskRunner = provider.NewModelTaskRunner(taskModel)
+	}
+	binding := newBinding(runner, taskRunner, store, agentsdk.DeploymentModeModule)
 	conversationOptions := f.options.ConversationOptions
+	if f.options.TaskAttachmentStorage != nil {
+		if err := binding.taskExecution.ConfigureAttachments(f.options.TaskAttachmentStorage, app.RuntimeID); err != nil {
+			return nil, err
+		}
+	}
 	deferConversations := false
 	if deferred, ok := host.(modulehost.DeferredConversationHost); ok {
 		deferConversations = deferred.DeferConversationHostBinding()
@@ -168,14 +204,14 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		agentstore.NewSubjectLifecycle(store, app.RuntimeID),
 		todomodule.NewSubjectLifecycle(todoStore, app.RuntimeID),
 		knowledgemodule.NewSubjectLifecycle(store, app.RuntimeID, knowledgemodule.Options{
-			AttachmentStorage: conversationOptions.AttachmentStorage,
+			AttachmentStorage: firstAttachmentStorage(conversationOptions.AttachmentStorage, f.options.TaskAttachmentStorage),
 			ArtifactStorage:   conversationOptions.ArtifactStorage,
 			DocumentStorage:   conversationOptions.DocumentStorage,
 		}),
 	}
 	if !deferConversations && conversationOptions.ToolHost == nil {
 		if authorizer, ok := host.(agentsdk.ConversationToolAuthorizer); ok {
-			if _, capable := model.(agentsdk.ConversationAgentModel); capable {
+			if _, capable := conversationModel.(agentsdk.ConversationAgentModel); capable {
 				conversationOptions.ToolHost, err = agentapplication.NewPersonalConversationHost(conversationRepository, authorizer, f.options.ConversationTimezone)
 				if err != nil {
 					return nil, err
@@ -214,11 +250,13 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 			return nil, err
 		}
 	}
-	assembly := &conversationAssembly{repository: conversationRepository, model: model, runtimeID: app.RuntimeID, timezone: f.options.ConversationTimezone, options: conversationOptions}
-	if deferConversations {
-		binding.pendingConversations = assembly
-	} else if err := binding.openConversations(assembly, nil); err != nil {
-		return nil, err
+	if f.ConversationEnabled() {
+		assembly := &conversationAssembly{repository: conversationRepository, model: conversationModel, runtimeID: app.RuntimeID, timezone: f.options.ConversationTimezone, options: conversationOptions}
+		if deferConversations {
+			binding.pendingConversations = assembly
+		} else if err := binding.openConversations(assembly, nil); err != nil {
+			return nil, err
+		}
 	}
 	binding.Binding = capabilityBinding
 	binding.taskExecution.StartWorker(ctx)
@@ -252,19 +290,23 @@ type binding struct {
 	conversations        *agentapplication.ConversationService
 	conversationAdapter  modulehttp.Adapter
 	pendingConversations *conversationAssembly
+	applicationHostBound bool
 	closed               bool
 }
 
-func newBinding(r *provider.Runner, store *agentstore.Store, m agentsdk.DeploymentMode) *binding {
+func newBinding(r *provider.Runner, taskRunner agentsdk.TaskRunner, store *agentstore.Store, m agentsdk.DeploymentMode) *binding {
 	repositories := agentstore.NewRepositories(store)
 	state := repositories.AgentStateRepository()
 	runs := repositories.AgentTaskRunRepository()
 	interactiveRuns, _ := runs.(agentpersistence.AgentInteractiveRunRepository)
 	taskState := agentapplication.NewTaskStateService(runs)
-	return &binding{runner: r, taskExecution: agentapplication.NewTaskExecutionService(taskState, r, ""), definitions: repositories.DefinitionRepository(), state: state, runs: runs, lifecycle: repositories.AgentLifecycleRepository(), dialogState: agentapplication.NewDialogStateService(state), taskState: taskState, interactive: agentapplication.NewInteractiveStateService(interactiveRuns), mode: m}
+	return &binding{runner: r, taskExecution: agentapplication.NewTaskExecutionService(taskState, taskRunner, ""), definitions: repositories.DefinitionRepository(), state: state, runs: runs, lifecycle: repositories.AgentLifecycleRepository(), dialogState: agentapplication.NewDialogStateService(state), taskState: taskState, interactive: agentapplication.NewInteractiveStateService(interactiveRuns), mode: m}
 }
 func (b *binding) Descriptor() agentsdk.Descriptor {
-	descriptor := agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: b.mode, Capabilities: []string{agentsdk.CapabilityConversationV1, agentsdk.CapabilityTaskStart, agentsdk.CapabilityTaskPoll, agentsdk.CapabilityTaskCancel, agentsdk.CapabilityInteractiveRun, "dialog.state", "execution.state", "structured_output", "usage", "tool_callback", agentsdk.CapabilityLifecycleExecute}}
+	descriptor := agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: b.mode, Capabilities: []string{agentsdk.CapabilityTaskStart, agentsdk.CapabilityTaskPoll, agentsdk.CapabilityTaskCancel, agentsdk.CapabilityInteractiveRun, "dialog.state", "execution.state", "structured_output", "usage", "tool_callback", agentsdk.CapabilityLifecycleExecute}}
+	if b.conversations != nil {
+		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationV1)
+	}
 	if b.conversations != nil && b.conversations.ConversationStreaming() {
 		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationStreamV1)
 	}
@@ -285,14 +327,41 @@ func (b *binding) AgentInteractiveState() agentpersistence.AgentInteractiveState
 func (b *binding) HTTPAdapters() []modulehttp.Adapter {
 	return append([]modulehttp.Adapter(nil), b.adapters...)
 }
-func (*binding) AuthorizationActions() ([]actioncontract.ActionDefinition, error) {
-	return agentsdk.AgentAuthorizationActions()
+func (b *binding) AuthorizationActions() ([]actioncontract.ActionDefinition, error) {
+	definitions, err := agentsdk.AgentAuthorizationActions()
+	if err != nil {
+		return nil, err
+	}
+	b.assemblyMu.Lock()
+	adapters := append([]modulehttp.Adapter(nil), b.adapters...)
+	applicationHostBound := b.applicationHostBound
+	b.assemblyMu.Unlock()
+	mounted := map[string]bool{}
+	for _, adapter := range adapters {
+		for _, route := range adapter.Routes() {
+			mounted[route.Action.Key] = true
+		}
+	}
+	result := make([]actioncontract.ActionDefinition, 0, len(definitions))
+	for _, definition := range definitions {
+		// The authenticated direct-task ingress is assembled only after Runtime
+		// supplies its application authorization host. Keep that Action visible
+		// before binding so Runtime cannot mistake the persistence-only adapter
+		// for the complete product adapter and skip BindApplicationHost.
+		if definition.HTTP == nil || mounted[definition.Key] || (!applicationHostBound && definition.Key == agentsdk.ActionAgentTaskRunsStart) {
+			result = append(result, definition)
+		}
+	}
+	return result, nil
 }
 func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
 	b.assemblyMu.Lock()
 	defer b.assemblyMu.Unlock()
 	if b.closed {
 		return fmt.Errorf("Agent Module binding is closed")
+	}
+	if b.applicationHostBound {
+		return nil
 	}
 	var conversationHost modulehost.ConversationApplicationHost
 	if b.pendingConversations != nil {
@@ -320,6 +389,7 @@ func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
 	if b.conversationAdapter != nil {
 		b.adapters = append(b.adapters, b.conversationAdapter)
 	}
+	b.applicationHostBound = true
 	return nil
 }
 func (b *binding) AgentStateRepository() agentpersistence.AgentStateRepository     { return b.state }

@@ -11,6 +11,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	webhttp "github.com/domainry/domainry-agent/internal/transport/http/web"
+	agentmodule "github.com/domainry/domainry-agent/module"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
 
@@ -20,7 +21,7 @@ func TestArtifactsThroughIdentityHTTPAndPrivateStorageRestart(t *testing.T) {
 	t.Setenv("AUTH_JWT_SECRET", "artifact-test-signing-key-long-enough")
 	t.Setenv("IDENTITY_DATA_SECRET_KEY", "artifact-test-encryption-key-long-enough")
 	t.Setenv("APP_ENV", "development")
-	options := Options{DatabasePath: filepath.Join(t.TempDir(), "artifacts.db"), RuntimeID: "artifact-runtime", WorkspaceID: "artifact-workspace", ApplicationKey: "artifact-app"}
+	options := Options{DatabasePath: filepath.Join(t.TempDir(), "artifacts.db"), RuntimeID: "artifact-runtime", WorkspaceID: "artifact-workspace", ApplicationKey: "artifact-app", Agent: agentmodule.Options{ConversationEnabled: true}}
 	host, err := Open(t.Context(), options)
 	if err != nil {
 		t.Fatal(err)

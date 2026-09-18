@@ -27,6 +27,7 @@ type adapter struct {
 	taskTools   *agentapplication.TaskToolService
 	analysis    *agentapplication.AnalysisService
 	diagnostics *agentapplication.DiagnosticsService
+	directTasks *agentapplication.DirectTaskExecutionService
 	mux         *http.ServeMux
 	routes      []modulehttp.Route
 	openAPI     map[string]map[string]any
@@ -63,6 +64,7 @@ type AdapterApplications struct {
 	TaskTools      *agentapplication.TaskToolService
 	Analysis       *agentapplication.AnalysisService
 	Diagnostics    *agentapplication.DiagnosticsService
+	DirectTasks    *agentapplication.DirectTaskExecutionService
 }
 
 func NewOwnedAdapter(binding agentsdk.Binding, applications AdapterApplications) (modulehttp.Adapter, error) {
@@ -78,7 +80,8 @@ func NewOwnedAdapter(binding agentsdk.Binding, applications AdapterApplications)
 		state: stateBinding.DialogState(), tasks: executionBinding.AgentTaskState(), interactive: executionBinding.AgentInteractiveState(),
 		execution: applications.Interactive, proposals: applications.Proposals, operations: applications.TaskOperations,
 		taskTools: applications.TaskTools, analysis: applications.Analysis, diagnostics: applications.Diagnostics,
-		mux: http.NewServeMux(), openAPI: map[string]map[string]any{},
+		directTasks: applications.DirectTasks,
+		mux:         http.NewServeMux(), openAPI: map[string]map[string]any{},
 	}
 	handlers := map[string]http.HandlerFunc{
 		agentsdk.ActionAgentSessionsList:    s.listSessions,
@@ -93,6 +96,9 @@ func NewOwnedAdapter(binding agentsdk.Binding, applications AdapterApplications)
 	if s.execution != nil {
 		handlers[agentsdk.ActionAgentRunsExecute] = s.runInteractive
 		handlers[agentsdk.ActionAgentRunsStream] = s.streamInteractive
+	}
+	if s.directTasks != nil {
+		handlers[agentsdk.ActionAgentTaskRunsStart] = s.startPrincipalTaskRun
 	}
 	if s.proposals != nil {
 		handlers[agentsdk.ActionAgentProposalsCreate] = s.createProposal

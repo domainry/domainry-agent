@@ -131,7 +131,7 @@ func TestModuleDescriptor(t *testing.T) {
 		t.Fatalf("subject lifecycle owners=%v", owners)
 	}
 	ctx := agentsdk.WithAuthorizedServiceAction(t.Context(), agentsdk.ActionAgentTaskExecutionStart, agentsdk.AgentRuntimeServiceAudience)
-	result, err := b.TaskRunner().Start(ctx, agentsdk.TaskRequest{TaskRunID: "task", WorkspaceID: "workspace", IdempotencyKey: "key", Deadline: time.Now().Add(time.Minute), Task: agentsdk.AgentTaskDefinition{ContractVersion: agentsdk.AgentTaskContractVersion, Key: "review", Version: "1", AgentKey: "reviewer", Instruction: "review", InputSchema: map[string]any{"type": "object"}, OutputSchema: map[string]any{"type": "object"}, AllowedOutcomes: []string{"success"}, SideEffectMode: agentsdk.AgentTaskSideEffectAnalysisOnly, Enabled: true}})
+	result, err := b.TaskRunner().Start(ctx, agentsdk.TaskRequest{TaskRunID: "task", WorkspaceID: "workspace", IdempotencyKey: "key", Deadline: time.Now().Add(time.Minute), Input: map[string]any{}, Task: agentsdk.AgentTaskDefinition{ContractVersion: agentsdk.AgentTaskContractVersion, Key: "review", Version: "1", AgentKey: "reviewer", Instruction: "review", InputSchema: map[string]any{"type": "object"}, OutputSchema: map[string]any{"type": "object"}, AllowedOutcomes: []string{"success"}, SideEffectMode: agentsdk.AgentTaskSideEffectAnalysisOnly, Enabled: true}})
 	if err != nil || result.ExternalRunID != "workspace/task" || result.Status != agentsdk.ProviderRunAccepted {
 		t.Fatalf("result=%+v err=%v", result, err)
 	}

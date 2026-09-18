@@ -149,7 +149,7 @@ func TestSurfaceOwnsDialogStateRoutesAndUsesAuthenticatedIdentity(t *testing.T) 
 
 func TestAgentOwnsOpenAPIForEveryHTTPRoute(t *testing.T) {
 	operations := agentOpenAPIOperations()
-	if len(operations) != 125 {
+	if len(operations) != 126 {
 		t.Fatalf("Agent OpenAPI operations=%d", len(operations))
 	}
 	stream := operations["POST /agent/runs/stream"]
@@ -174,6 +174,7 @@ func TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest(t *testing.T)
 		TaskTools:      agentapplication.NewTaskToolService(tasks, nil, nil),
 		Analysis:       agentapplication.NewAnalysisService(nil, nil),
 		Diagnostics:    agentapplication.NewDiagnosticsService(state, nil),
+		DirectTasks:    agentapplication.NewDirectTaskExecutionService(nil, nil),
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -182,7 +183,7 @@ func TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(actions) != 138+len(agentsdk.ConversationToolActions()) || len(adapter.Routes()) != 22 {
+	if len(actions) != 139+len(agentsdk.ConversationToolActions()) || len(adapter.Routes()) != 23 {
 		t.Fatalf("actions=%d routes=%d", len(actions), len(adapter.Routes()))
 	}
 	conversation, err := NewConversationAdapter(conversationSurfaceStub{}, "runtime")

@@ -29,6 +29,9 @@ func ValidateTaskDefinition(task agentsdk.AgentTaskDefinition) error {
 	if err := validateAgentObjectSchema(task.InputSchema); err != nil {
 		return fmt.Errorf("Agent task input schema: %w", err)
 	}
+	if err := agentsdk.ValidateAgentTaskAttachmentSchema(task.AttachmentSchema); err != nil {
+		return fmt.Errorf("Agent task attachment schema: %w", err)
+	}
 	if err := validateAgentObjectSchema(task.OutputSchema); err != nil {
 		return fmt.Errorf("Agent task output schema: %w", err)
 	}

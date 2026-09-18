@@ -154,7 +154,7 @@ func TestDeferredConversationModuleRecoversOnlyAfterBusinessHostBinding(t *testi
 func TestDeferredConversationModuleWithoutModelKeepsPersonalHTTPServices(t *testing.T) {
 	a := conversationAuthority()
 	host := deferredModuleHost{newSQLiteModuleHost(t, a.RuntimeID)}
-	opened, err := agentmodule.NewFactory(agentmodule.Options{}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, host)
+	opened, err := agentmodule.NewFactory(agentmodule.Options{ConversationEnabled: true}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, host)
 	if err != nil {
 		t.Fatal(err)
 	}
