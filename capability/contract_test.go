@@ -12,7 +12,7 @@ import (
 )
 
 func TestAgentCapabilityOwnsAllProductRoutesAndAuthoringValidation(t *testing.T) {
-	binding, err := NewBinding()
+	binding, err := Open(Inputs{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -22,7 +22,7 @@ func TestAgentCapabilityOwnsAllProductRoutesAndAuthoringValidation(t *testing.T)
 		t.Fatal(err)
 	}
 	declaredChains := map[string]bool{}
-	for _, chain := range summary.Scenarios.AssemblyChains {
+	for _, chain := range summary.Composition.AssemblyChains {
 		declaredChains[chain] = true
 	}
 	for _, category := range summary.Categories {
@@ -67,7 +67,7 @@ func TestAgentCapabilityOwnsAllProductRoutesAndAuthoringValidation(t *testing.T)
 }
 
 func TestAgentAuthoringContractHidesAndDefaultsProtocolVersions(t *testing.T) {
-	binding, err := NewBinding()
+	binding, err := Open(Inputs{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -148,7 +148,7 @@ func TestAgentAuthoringContractHidesAndDefaultsProtocolVersions(t *testing.T) {
 }
 
 func TestAgentToolGatewayDisclosesDelegatedCredentialBoundary(t *testing.T) {
-	binding, err := NewBinding()
+	binding, err := Open(Inputs{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -171,7 +171,7 @@ func TestAgentToolGatewayDisclosesDelegatedCredentialBoundary(t *testing.T) {
 }
 
 func TestAgentStreamCapabilityDisclosesResumeTransport(t *testing.T) {
-	binding, err := NewBinding()
+	binding, err := Open(Inputs{})
 	if err != nil {
 		t.Fatal(err)
 	}

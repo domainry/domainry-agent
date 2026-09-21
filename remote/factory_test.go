@@ -11,7 +11,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentcontracttest "github.com/domainry/domainry-agent-sdk/contracttest"
-	agentcapability "github.com/domainry/domainry-agent/internal/capability"
+	agentcapability "github.com/domainry/domainry-agent/capability"
 	"github.com/domainry/domainry-agent/server"
 	"github.com/domainry/domainry-foundation/modulecapability"
 	capabilitycontracttest "github.com/domainry/domainry-foundation/modulecapability/contracttest"
@@ -84,7 +84,7 @@ func TestSaaSFactoryValidatesDescriptorAndRunsProtocol(t *testing.T) {
 	t.Cleanup(func() { _ = opened.Close(context.Background()) })
 	agentcontracttest.VerifyBinding(t, opened, agentsdk.DeploymentModeSaaS)
 	capabilitycontracttest.VerifyBinding(t, opened)
-	directCapability, err := agentcapability.NewBinding()
+	directCapability, err := agentcapability.Open(agentcapability.Inputs{})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,5 +1,7 @@
 # domainry-agent
 
+Agent-facing question index and source-owned guides: [`capability/agent/index.json`](capability/agent/index.json).
+
 Source-owned Agent Runner / AI Gateway implementation for Domainry.
 
 Public Agent/Skill/Task/Context/Routing/Runner contracts are owned by

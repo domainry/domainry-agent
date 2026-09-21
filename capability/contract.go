@@ -24,7 +24,7 @@ const (
 	agentDefaultContextBytes      = 65536
 )
 
-func NewBinding() (*modulecapability.StaticBinding, error) {
+func openContract(_ Inputs) (*modulecapability.StaticBinding, error) {
 	contract, err := agentsdk.CompileAgentHTTPAdapterContract()
 	if err != nil {
 		return nil, err
@@ -69,12 +69,17 @@ func NewBinding() (*modulecapability.StaticBinding, error) {
 			SupportedDeploymentModes: []modulecapability.DeploymentMode{modulecapability.DeploymentModeModule, modulecapability.DeploymentModeSaaS},
 		},
 		Name: "Agent", Description: "Owns conversational and asynchronous model execution, sessions, task state, tool-call evidence, proposal policy, guarded routing, and Agent-specific authoring contracts; Runtime remains the authority for identity, visible business schema, permissions, workflows, and concrete business effects.",
-		Scenarios: modulecapability.AdaptationScenarios{
-			UseWhen:              []string{"A PRD needs natural-language interaction, model-assisted reasoning, semi-autonomous multi-step work, structured Agent tasks, governed tool use, or proposals that require human approval"},
-			DoNotUseWhen:         []string{"The requirement is deterministic CRUD, a fixed workflow, a scheduled trigger, a static report, or a notification delivery with no model reasoning or conversational interaction"},
-			RequirementSignals:   []string{"AI assistant", "copilot", "natural language", "agent task", "tool calling", "reasoning", "human approval", "proposal", "conversation", "autonomous analysis"},
-			ProvidedCapabilities: []string{"agent.persistent_conversation", "agent.interactive_dialog", "agent.asynchronous_task", "agent.guarded_tool_call", "agent.proposal_approval", "agent.principal_scoped_analysis", "agent.execution_evidence", "agent.operator_recovery"},
-			RequiredModules:      []string{"audit", "identity"}, OptionalModules: []string{"integration", "notification", "report", "scheduler"}, ConflictingModules: []string{},
+		Composition: modulecapability.ModuleComposition{
+			ProvidedCapabilities: []string{
+				"agent.persistent_conversation", "agent.interactive_dialog", "agent.asynchronous_task", "agent.guarded_tool_call",
+				"agent.proposal_approval", "agent.principal_scoped_analysis", "agent.execution_evidence", "agent.operator_recovery",
+				agentsdk.AgentCapabilityCollaboration, agentsdk.AgentCapabilityExternalAgents, agentsdk.AgentCapabilitySourcePublication,
+				agentsdk.AgentCapabilityConversation, agentsdk.AgentCapabilityTrajectories, agentsdk.AgentCapabilitySkills,
+				agentsdk.AgentCapabilityBackgroundTasks, agentsdk.AgentCapabilityPersonalTodos, agentsdk.AgentCapabilityKnowledgeLibraries,
+				agentsdk.AgentCapabilityAttachments, agentsdk.AgentCapabilityArtifacts,
+				"agent.agent", "agent.entrypoint", "agent.service_principal", "agent.skill", "agent.task",
+			},
+			RequiredModules: []string{"audit", "identity"}, OptionalModules: []string{"integration", "notification", "report", "scheduler"}, ConflictingModules: []string{},
 			AssemblyChains: []string{
 				"identity_principal_to_knowledge_library_membership", "identity_principal_to_private_conversation_attachment", "conversation_to_versioned_artifact_and_download",
 				"identity_principal_to_persistent_conversation", "identity_principal_to_agent_context", "agent_route_to_task_or_workflow", "agent_task_credential_to_runtime_guarded_tool",
@@ -82,9 +87,7 @@ func NewBinding() (*modulecapability.StaticBinding, error) {
 				"agent_task_to_operator_recovery", "agent_task_to_workflow_reconciliation",
 				"agent_skill_to_agent_to_task", "agent_entrypoint_to_identity_permission", "agent_task_to_object_action_or_workflow",
 			},
-			ValidationScopes:  []string{"agent.agent", "agent.entrypoint", "agent.service_principal", "agent.skill", "agent.task"},
-			SelectionExamples: []modulecapability.ScenarioExample{{Requirement: "Let account managers ask questions about visible customer data and propose a follow-up action for approval", Reason: "Agent owns the conversation, scoped analysis, proposal state, and guarded tool orchestration while Identity and the business owner enforce access and effects"}},
-			RejectionExamples: []modulecapability.ScenarioExample{{Requirement: "Send an email when an order is approved", Reason: "A deterministic Workflow plus Notification or Connector integration is sufficient; no model reasoning or Agent state is required"}},
+			ValidationScopes: []string{"agent.agent", "agent.entrypoint", "agent.service_principal", "agent.skill", "agent.task"},
 		},
 	}
 	return modulecapability.NewStaticBinding(summary, categories, validator())

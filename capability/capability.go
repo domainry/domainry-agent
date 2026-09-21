@@ -3,12 +3,11 @@
 package capability
 
 import (
-	internalcapability "github.com/domainry/domainry-agent/internal/capability"
 	"github.com/domainry/domainry-foundation/modulecapability"
 )
 
 type Inputs struct{}
 
-func Open(Inputs) (*modulecapability.StaticBinding, error) {
-	return internalcapability.NewBinding()
+func Open(inputs Inputs) (*modulecapability.StaticBinding, error) {
+	return openContract(inputs)
 }
