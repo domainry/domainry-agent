@@ -303,11 +303,15 @@ func TestConversationCatalogIdentityHTTPConnectionsAndBrowser(t *testing.T) {
 			}
 		},
 	})
-	for _, table := range []string{"_agent_task_runs", "_agent_task_definitions", "_agent_interactive_runs"} {
+	for _, table := range []string{"_agent_task_runs", "_agent_interactive_runs"} {
 		var count int
 		if err := host.db.QueryRowContext(t.Context(), "SELECT COUNT(*) FROM "+table).Scan(&count); err != nil || count != 0 {
 			t.Fatalf("conversation-only host wrote legacy table %s: count=%d error=%v", table, count, err)
 		}
+	}
+	var privateDefinitions int
+	if err := host.db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='_agent_task_definitions'`).Scan(&privateDefinitions); err != nil || privateDefinitions != 0 {
+		t.Fatalf("private Agent task definitions table count=%d error=%v", privateDefinitions, err)
 	}
 	t.Log("conversation-only web binding: legacy Task, TaskDefinition and Interactive rows=0")
 	if interruptedReads.Load() > 0 {

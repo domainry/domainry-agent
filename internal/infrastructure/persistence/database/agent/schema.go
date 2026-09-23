@@ -10,14 +10,6 @@ import (
 
 const SchemaVersion uint = 1
 
-var schemaDefinitionTables = []string{
-	"_agent_skill_definitions",
-	"_agent_definitions",
-	"_agent_task_definitions",
-	"_agent_entrypoint_definitions",
-	"_agent_service_principal_definitions",
-}
-
 // SchemaMigrations is the sole source of Agent-owned DDL. Embedded modules
 // submit it to the host registrar; standalone SaaS applies the same history to
 // its own database and migration ledger.
@@ -31,14 +23,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		return nil, fmt.Errorf("create Agent database dialect: %w", err)
 	}
 	renderer := dialect.WithSchema(schema)
-	statements := make([]string, 0, len(schemaDefinitionTables)+7)
-	for _, table := range schemaDefinitionTables {
-		statement, _, buildErr := definitionTable(renderer, table).Build()
-		if buildErr != nil {
-			return nil, fmt.Errorf("build Agent definition table %s: %w", table, buildErr)
-		}
-		statements = append(statements, statement)
-	}
+	statements := make([]string, 0, 7)
 	// Migration statement order is part of the host-owned checksum. Keep this
 	// source-owned history deterministic; ranging over a map here made the same
 	// migration drift between Runtime instances sharing one ledger.
@@ -222,23 +207,6 @@ func workerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
 		ormschema.Column("last_error", ormschema.LongText()).NotNull().DefaultValue(""),
 		ormschema.Column("updated_at", ormschema.TextKey(255)).NotNull().DefaultValue(""),
 	).PrimaryKey("id").Unique("owner", "scope_key")
-}
-
-func definitionTable(renderer modulehost.Dialect, name string) *ormschema.TableBuilder {
-	return ormschema.NewTable(renderer, name).IfNotExists().Columns(
-		required("id", ormschema.TextKey(255)),
-		required("resource_key", ormschema.TextKey(255)),
-		required("object_key", ormschema.TextKey(255)),
-		required("name", ormschema.Text()),
-		required("payload_json", ormschema.LongText()),
-		required("schema_version", ormschema.TextKey(255)),
-		required("schema_hash", ormschema.TextKey(255)),
-		required("source_kind", ormschema.TextKey(255)),
-		required("source_id", ormschema.TextKey(255)),
-		optional("disabled_at", ormschema.TextKey(255)),
-		required("created_at", ormschema.TextKey(255)),
-		required("updated_at", ormschema.TextKey(255)),
-	).PrimaryKey("id").Unique("resource_key")
 }
 
 func runtimeStateTable(renderer modulehost.Dialect) *ormschema.TableBuilder {

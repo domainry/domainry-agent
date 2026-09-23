@@ -15,6 +15,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
+	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	_ "modernc.org/sqlite"
 )
@@ -39,6 +40,17 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 			}
 		}
 	}
+	definitionMigrations, err := shareddefinition.SchemaMigrationsForDialect(dialect.WithSchema(""))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, migration := range definitionMigrations {
+		for _, statement := range migration.Statements {
+			if _, err := database.ExecContext(t.Context(), statement); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
 	if _, err = database.ExecContext(t.Context(), `CREATE TABLE _subject_steps (workspace_id TEXT NOT NULL, request_id TEXT NOT NULL, owner TEXT NOT NULL, operation TEXT NOT NULL, payload_json TEXT NOT NULL, completed_at TEXT NOT NULL, PRIMARY KEY(workspace_id,request_id,owner,operation))`); err != nil {
 		t.Fatal(err)
 	}
@@ -51,7 +63,7 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 			t.Fatal(err)
 		}
 	}
-	store, err := NewStore(database, dialect.WithSchema(""), sqlite.NewEngine())
+	store, err := NewStore(database, dialect.WithSchema(""), sqlite.NewEngine(), "agent-store-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -209,12 +221,22 @@ func TestAgentInteractiveHandoffCommitsTaskAtomically(t *testing.T) {
 func TestAgentDefinitionStoreOwnsSyncRestoreAndDisable(t *testing.T) {
 	store, database := openAgentStore(t)
 	repository := NewDefinitionStore(store)
-	first := agentpersistence.DefinitionSnapshot{SchemaVersion: "1", SchemaHash: "hash-1", SourceKind: "manifest", SourceID: "crm", Skills: []agentsdk.SkillSchema{{Key: "lookup", Name: "Lookup"}}, Agents: []agentsdk.AgentSchema{{Key: "assistant", Name: "Assistant"}}}
+	first := agentpersistence.DefinitionSnapshot{
+		SchemaVersion: "1", SchemaHash: "hash-1", SourceKind: "manifest", SourceID: "crm",
+		Skills: []agentsdk.SkillSchema{{Key: "lookup", Name: "Lookup"}},
+		Agents: []agentsdk.AgentSchema{{Key: "assistant", Name: "Assistant"}},
+		Tasks: []agentsdk.AgentTaskDefinition{{
+			ContractVersion: agentsdk.AgentTaskContractVersion, Key: "review", Version: "1", Name: "Review", AgentKey: "assistant", Instruction: "Review",
+			InputSchema: map[string]any{"type": "object"}, OutputSchema: map[string]any{"type": "object"}, AllowedOutcomes: []string{"success"}, SideEffectMode: agentsdk.AgentTaskSideEffectAnalysisOnly, Enabled: true,
+		}},
+		Entrypoints: []agentsdk.AgentEntrypointAssignment{{Key: "default"}},
+		Principals:  []agentsdk.AgentServicePrincipalBinding{{Key: "worker"}},
+	}
 	if err := repository.SyncDefinitions(t.Context(), first); err != nil {
 		t.Fatal(err)
 	}
 	loaded, err := repository.DefinitionSnapshot(t.Context())
-	if err != nil || len(loaded.Skills) != 1 || len(loaded.Agents) != 1 {
+	if err != nil || len(loaded.Skills) != 1 || len(loaded.Agents) != 1 || len(loaded.Tasks) != 1 || len(loaded.Entrypoints) != 1 || len(loaded.Principals) != 1 {
 		t.Fatalf("loaded=%#v err=%v", loaded, err)
 	}
 	second := first
@@ -224,12 +246,17 @@ func TestAgentDefinitionStoreOwnsSyncRestoreAndDisable(t *testing.T) {
 		t.Fatal(err)
 	}
 	loaded, err = repository.DefinitionSnapshot(t.Context())
-	if err != nil || len(loaded.Skills) != 0 || len(loaded.Agents) != 1 {
+	if err != nil || len(loaded.Skills) != 0 || len(loaded.Agents) != 1 || len(loaded.Tasks) != 1 || len(loaded.Entrypoints) != 1 || len(loaded.Principals) != 1 {
 		t.Fatalf("loaded=%#v err=%v", loaded, err)
 	}
-	var disabled int
-	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_skill_definitions WHERE disabled_at IS NOT NULL`).Scan(&disabled); err != nil || disabled != 1 {
-		t.Fatalf("disabled=%d err=%v", disabled, err)
+	var rows int
+	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _definitions WHERE owner = 'agent' AND kind = 'skill'`).Scan(&rows); err != nil || rows != 0 {
+		t.Fatalf("removed shared skill rows=%d err=%v", rows, err)
+	}
+	for _, table := range []string{"_agent_skill_definitions", "_agent_definitions", "_agent_task_definitions", "_agent_entrypoint_definitions", "_agent_service_principal_definitions"} {
+		if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&rows); err != nil || rows != 0 {
+			t.Fatalf("private Agent Definition table %s rows=%d err=%v", table, rows, err)
+		}
 	}
 }
 

@@ -64,7 +64,11 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	store, err := agentpersistence.NewAgentStore(database, renderer, driver)
+	installationID := strings.TrimSpace(os.Getenv("AGENT_SAAS_RUNTIME_ID"))
+	if installationID == "" {
+		installationID = "domainry-agent"
+	}
+	store, err := agentpersistence.NewAgentStore(database, renderer, driver, installationID)
 	if err != nil {
 		return err
 	}

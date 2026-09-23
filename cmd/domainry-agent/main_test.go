@@ -71,7 +71,7 @@ func TestConversationExecutableStartsWithoutLegacyProvider(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	store, err := agentinfra.NewAgentStore(db, renderer, "sqlite")
+	store, err := agentinfra.NewAgentStore(db, renderer, "sqlite", "runtime")
 	if err != nil {
 		t.Fatal(err)
 	}

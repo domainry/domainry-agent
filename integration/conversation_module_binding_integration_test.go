@@ -64,7 +64,7 @@ func TestDeferredConversationModuleRecoversOnlyAfterBusinessHostBinding(t *testi
 	if err := initial.Close(t.Context()); err != nil {
 		t.Fatal(err)
 	}
-	store, err := agentinfra.NewAgentStore(host.database, host.dialect, "sqlite")
+	store, err := agentinfra.NewAgentStore(host.database, host.dialect, "sqlite", "module-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -253,7 +253,7 @@ func TestConversationOnlyBindingRecoversWithAuthorizationAndSharedBudget(t *test
 			}
 			opened := open()
 			defer func() { _ = opened.Close(t.Context()) }()
-			store, err := agentinfra.NewAgentStore(database.database, database.dialect, "sqlite")
+			store, err := agentinfra.NewAgentStore(database.database, database.dialect, "sqlite", "module-test")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -339,11 +339,15 @@ func TestConversationOnlyBindingRecoversWithAuthorizationAndSharedBudget(t *test
 			if invokes != 2 || reconciles != 0 || calls.Load() != 4 {
 				t.Fatalf("effects=%d reconciles=%d model=%d", invokes, reconciles, calls.Load())
 			}
-			for _, table := range []string{"_agent_task_runs", "_agent_task_definitions", "_agent_interactive_runs"} {
+			for _, table := range []string{"_agent_task_runs", "_agent_interactive_runs"} {
 				var count int
 				if err = database.database.QueryRowContext(t.Context(), "SELECT COUNT(*) FROM "+table).Scan(&count); err != nil || count != 0 {
 					t.Fatalf("legacy table %s count=%d err=%v", table, count, err)
 				}
+			}
+			var privateDefinitions int
+			if err := database.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='_agent_task_definitions'`).Scan(&privateDefinitions); err != nil || privateDefinitions != 0 {
+				t.Fatalf("private Agent task definitions table count=%d error=%v", privateDefinitions, err)
 			}
 			t.Logf("thin host: run=%s attempt=%d status=%s error=%s effects=%d model=%d legacy rows=0", final.ID, final.Attempt, final.Status, final.ErrorCode, invokes, calls.Load())
 		})

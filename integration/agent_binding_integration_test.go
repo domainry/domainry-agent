@@ -30,6 +30,7 @@ import (
 	agentremote "github.com/domainry/domainry-agent/remote"
 	agentserver "github.com/domainry/domainry-agent/server"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
+	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	_ "modernc.org/sqlite"
 )
@@ -217,7 +218,7 @@ func newBindingHarness(t *testing.T, mode agentsdk.DeploymentMode) *bindingHarne
 	if err != nil {
 		t.Fatal(err)
 	}
-	store, err := agentinfra.NewAgentStore(database, renderer, "sqlite")
+	store, err := agentinfra.NewAgentStore(database, renderer, "sqlite", "binding-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -299,7 +300,7 @@ func (h *sqliteModuleHost) ArtifactContentWriter() sharedartifact.ContentWriter 
 func (*sqliteModuleHost) Driver() string                                        { return "sqlite" }
 func (*sqliteModuleHost) Schema() string                                        { return "" }
 func (h *sqliteModuleHost) ApplyOwnedMigrations(ctx context.Context, owner string, migrations []modulehost.SchemaMigration) error {
-	if owner != "agent" && owner != sharedartifact.MigrationOwner {
+	if owner != "agent" && owner != sharedartifact.MigrationOwner && owner != shareddefinition.MigrationOwner {
 		return fmt.Errorf("unexpected migration owner %q", owner)
 	}
 	h.mu.Lock()

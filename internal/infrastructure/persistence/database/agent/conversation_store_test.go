@@ -129,7 +129,7 @@ func TestConversationRestartLeaseFenceAndFrozenInput(t *testing.T) {
 			}
 		}
 		d, _ := ormdialect.New(ormdialect.SQLite)
-		store, err := NewStore(db, d.WithSchema(""), sqlite.NewEngine())
+		store, err := NewStore(db, d.WithSchema(""), sqlite.NewEngine(), "conversation-store-test")
 		if err != nil {
 			t.Fatal(err)
 		}

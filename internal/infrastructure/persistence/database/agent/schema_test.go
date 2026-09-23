@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects(t *testing.T) {
+func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialects(t *testing.T) {
 	for _, driver := range []string{"sqlite", "postgres", "mysql"} {
 		t.Run(driver, func(t *testing.T) {
 			migrations, err := SchemaMigrations(driver, "")
@@ -67,9 +67,14 @@ func TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects(t *testing.
 				t.Fatal("sharing migration owns a private ledger")
 			}
 			joined := strings.Join(migrations[0].Statements, "\n")
-			for _, table := range append(append([]string(nil), schemaDefinitionTables...), "_agent_runtime_states", "_agent_task_runs", "_agent_interactive_runs", "_worker_scopes") {
+			for _, table := range []string{"_agent_runtime_states", "_agent_task_runs", "_agent_interactive_runs", "_worker_scopes"} {
 				if !strings.Contains(joined, table) {
 					t.Errorf("%s migration does not own %s", driver, table)
+				}
+			}
+			for _, table := range []string{"_definitions", "_definition_versions", "_agent_skill_definitions", "_agent_definitions", "_agent_task_definitions", "_agent_entrypoint_definitions", "_agent_service_principal_definitions"} {
+				if strings.Contains(joined, table) {
+					t.Errorf("%s Agent migration still owns Definition table %s", driver, table)
 				}
 			}
 			if strings.Contains(joined, "_schema_migrations") {

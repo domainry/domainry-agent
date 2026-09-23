@@ -46,7 +46,7 @@ func openAttachmentIndexStore(t *testing.T, path string) (*ConversationStore, *s
 	if err = r.ApplyOwnedMigrations(t.Context(), "agent", migrations); err != nil {
 		t.Fatal(err)
 	}
-	s, err := NewStore(db, renderer, sqlite.NewEngine())
+	s, err := NewStore(db, renderer, sqlite.NewEngine(), "attachment-index-test")
 	if err != nil {
 		t.Fatal(err)
 	}

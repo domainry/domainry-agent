@@ -11,6 +11,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/base"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
+	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	ormdriver "github.com/domainry/domainry-orm/driver"
 	"github.com/domainry/domainry-orm/query"
 )
@@ -24,13 +25,21 @@ type Store struct {
 	artifactStore   sharedartifact.ManagedStore
 	artifactContent sharedartifact.ContentStore
 	artifactWriter  sharedartifact.ContentWriter
+	definitions     shareddefinition.Store
 }
 
-func NewStore(database modulehost.Database, renderer modulehost.Dialect, profile ormdriver.Profile) (*Store, error) {
-	if database == nil || renderer == nil || profile == nil {
-		return nil, fmt.Errorf("Agent database, dialect and engine profile are required")
+func NewStore(database modulehost.Database, renderer modulehost.Dialect, profile ormdriver.Profile, installationID string) (*Store, error) {
+	if database == nil || renderer == nil || profile == nil || strings.TrimSpace(installationID) == "" {
+		return nil, fmt.Errorf("Agent database, dialect, engine profile and installation identity are required")
 	}
-	return &Store{SQLDatabase: base.NewSQLDatabase(database, renderer, profile)}, nil
+	definitionDialect, ok := renderer.(shareddefinition.Dialect)
+	if !ok {
+		return nil, fmt.Errorf("Agent database dialect does not support shared Definitions")
+	}
+	return &Store{
+		SQLDatabase: base.NewSQLDatabase(database, renderer, profile),
+		definitions: shareddefinition.NewStore(database, definitionDialect, installationID),
+	}, nil
 }
 
 func (s *Store) BindArtifactPersistence(store sharedartifact.ManagedStore, content sharedartifact.ContentStore, writer sharedartifact.ContentWriter) error {

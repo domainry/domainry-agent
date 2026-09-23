@@ -60,7 +60,7 @@ func conversationRepositoryWithArtifactContent(t *testing.T, wrap func(sharedart
 	if err != nil {
 		t.Fatal(err)
 	}
-	store, err := agentinfra.NewAgentStore(db, renderer, "sqlite")
+	store, err := agentinfra.NewAgentStore(db, renderer, "sqlite", "conversation-test")
 	if err != nil {
 		t.Fatal(err)
 	}

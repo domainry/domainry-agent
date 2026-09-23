@@ -16,6 +16,7 @@ import (
 	schemastore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
+	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	_ "modernc.org/sqlite"
 	"testing"
@@ -94,7 +95,7 @@ func (h *host) ArtifactContentWriter() sharedartifact.ContentWriter { return h.c
 func (*host) Driver() string                                        { return "sqlite" }
 func (*host) Schema() string                                        { return "" }
 func (h *host) ApplyOwnedMigrations(ctx context.Context, owner string, migrations []modulehost.SchemaMigration) error {
-	if owner != "agent" && owner != sharedartifact.MigrationOwner {
+	if owner != "agent" && owner != sharedartifact.MigrationOwner && owner != shareddefinition.MigrationOwner {
 		return &agentsdk.Error{Code: "wrong_owner", Message: owner}
 	}
 	for _, migration := range migrations {
@@ -126,6 +127,18 @@ func TestModuleDescriptor(t *testing.T) {
 	}
 	if len(host.applied) != 34 {
 		t.Fatalf("Agent migrations=%d", len(host.applied))
+	}
+	for _, table := range []string{shareddefinition.TableName, shareddefinition.VersionTableName} {
+		var count int
+		if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 1 {
+			t.Fatalf("shared Definition table %s count=%d err=%v", table, count, err)
+		}
+	}
+	for _, table := range []string{"_agent_skill_definitions", "_agent_definitions", "_agent_task_definitions", "_agent_entrypoint_definitions", "_agent_service_principal_definitions"} {
+		var count int
+		if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 0 {
+			t.Fatalf("private Agent Definition table %s count=%d err=%v", table, count, err)
+		}
 	}
 	if latest := host.applied[len(host.applied)-1]; latest.Version != 36 || latest.Name != "agent_scoped_memories" {
 		t.Fatalf("Agent latest owned migration=%+v", latest)

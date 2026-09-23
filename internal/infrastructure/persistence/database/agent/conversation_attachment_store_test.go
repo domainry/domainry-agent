@@ -230,7 +230,7 @@ func TestAttachmentCleanupSurvivesDatabaseReopen(t *testing.T) {
 				}
 			}
 		}
-		store, err := NewStore(database, dialect.WithSchema(""), sqlite.NewEngine())
+		store, err := NewStore(database, dialect.WithSchema(""), sqlite.NewEngine(), "attachment-store-test")
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -90,7 +90,7 @@ func TestGatewayLiveLongConversation(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		store, err := agentinfra.NewAgentStore(db, renderer, "sqlite")
+		store, err := agentinfra.NewAgentStore(db, renderer, "sqlite", "conversation-live")
 		if err != nil {
 			t.Fatal(err)
 		}

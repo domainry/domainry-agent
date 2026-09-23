@@ -22,6 +22,7 @@ import (
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
 	actioncontract "github.com/domainry/domainry-foundation/action"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
+	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
@@ -176,6 +177,17 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if host.Database() == nil || host.Dialect() == nil || host.Migrations() == nil {
 		return nil, fmt.Errorf("Agent Module persistence host is incomplete")
 	}
+	definitionDialect, ok := host.Dialect().(shareddefinition.Dialect)
+	if !ok {
+		return nil, fmt.Errorf("Agent Module dialect does not support shared Definitions")
+	}
+	definitionMigrations, err := shareddefinition.SchemaMigrationsForDialect(definitionDialect)
+	if err != nil {
+		return nil, err
+	}
+	if err := host.Migrations().ApplyOwnedMigrations(ctx, shareddefinition.MigrationOwner, definitionMigrations); err != nil {
+		return nil, fmt.Errorf("apply shared Definition migrations: %w", err)
+	}
 	migrations, err := agentstore.SchemaMigrations(host.Migrations().Driver(), host.Migrations().Schema())
 	if err != nil {
 		return nil, err
@@ -183,7 +195,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if err := host.Migrations().ApplyOwnedMigrations(ctx, "agent", migrations); err != nil {
 		return nil, fmt.Errorf("apply Agent Module migrations: %w", err)
 	}
-	store, err := agentinfra.NewAgentStore(host.Database(), host.Dialect(), host.Migrations().Driver())
+	store, err := agentinfra.NewAgentStore(host.Database(), host.Dialect(), host.Migrations().Driver(), app.RuntimeID)
 	if err != nil {
 		return nil, err
 	}

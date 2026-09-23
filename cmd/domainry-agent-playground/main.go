@@ -77,7 +77,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	store, err := persistence.NewAgentStore(db, renderer, "sqlite")
+	store, err := persistence.NewAgentStore(db, renderer, "sqlite", "agent-playground")
 	if err != nil {
 		return err
 	}

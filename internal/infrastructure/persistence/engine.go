@@ -7,12 +7,13 @@ import (
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/migrationhost"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/mysql"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
+	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	ormdriver "github.com/domainry/domainry-orm/driver"
-	ormmigration "github.com/domainry/domainry-orm/migration"
 )
 
 var engineRegistry = map[ormdialect.Name]func() ormdriver.Profile{
@@ -45,34 +46,47 @@ func Renderer(driver, schema string) (modulehost.Dialect, error) {
 	return dialect.WithSchema(strings.TrimSpace(schema)), nil
 }
 
-func NewAgentStore(database modulehost.Database, renderer modulehost.Dialect, driver string) (*agentstore.Store, error) {
+func NewAgentStore(database modulehost.Database, renderer modulehost.Dialect, driver, installationID string) (*agentstore.Store, error) {
 	profile, _, err := engineFor(driver)
 	if err != nil {
 		return nil, err
 	}
-	return agentstore.NewStore(database, renderer, profile)
+	return agentstore.NewStore(database, renderer, profile, installationID)
 }
 
-// EnsureSchema applies Agent-owned migrations to a standalone SaaS database.
-// Embedded Module deployments use the host MigrationRegistrar instead.
+// EnsureSchema installs shared Foundation kernels and Agent-owned tables into
+// a standalone SaaS database through the same owner-aware migration ledger.
+// Embedded Module deployments use the Runtime host's registrar instead.
 func EnsureSchema(ctx context.Context, database modulehost.Database, driver, schema string) error {
 	renderer, err := Renderer(driver, schema)
 	if err != nil {
 		return err
 	}
-	runner, err := ormmigration.NewRunner(database, renderer, ormmigration.Options{InsertConflict: func(err error) bool {
-		if err == nil {
-			return false
-		}
-		value := strings.ToLower(err.Error())
-		return strings.Contains(value, "unique") || strings.Contains(value, "duplicate") || strings.Contains(value, "constraint")
-	}})
+	profile, _, err := engineFor(driver)
 	if err != nil {
 		return err
 	}
-	migrations, err := agentstore.SchemaMigrations(driver, schema)
+	registrar := &migrationhost.Registrar{DatabaseDriver: driver, Namespace: strings.TrimSpace(schema), Profile: profile, DB: database, Renderer: renderer}
+	if err := registrar.Prepare(ctx); err != nil {
+		return err
+	}
+	definitionDialect, ok := renderer.(shareddefinition.Dialect)
+	if !ok {
+		return fmt.Errorf("Agent database dialect does not support shared Definitions")
+	}
+	definitionMigrations, err := shareddefinition.SchemaMigrationsForDialect(definitionDialect)
 	if err != nil {
 		return err
 	}
-	return runner.Apply(ctx, migrations)
+	if err := registrar.ApplyOwnedMigrations(ctx, shareddefinition.MigrationOwner, definitionMigrations); err != nil {
+		return fmt.Errorf("apply shared Definition migrations: %w", err)
+	}
+	agentMigrations, err := agentstore.SchemaMigrations(driver, schema)
+	if err != nil {
+		return err
+	}
+	if err := registrar.ApplyOwnedMigrations(ctx, "agent", agentMigrations); err != nil {
+		return fmt.Errorf("apply Agent migrations: %w", err)
+	}
+	return nil
 }

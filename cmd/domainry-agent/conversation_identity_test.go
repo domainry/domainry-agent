@@ -36,7 +36,7 @@ func executableConversationStore(t *testing.T) *agentstore.Store {
 	if err != nil {
 		t.Fatal(err)
 	}
-	store, err := agentinfra.NewAgentStore(db, renderer, "sqlite")
+	store, err := agentinfra.NewAgentStore(db, renderer, "sqlite", "runtime")
 	if err != nil {
 		t.Fatal(err)
 	}

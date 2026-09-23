@@ -44,7 +44,7 @@ func TestSaaSBindingPersistsDefinitionsStateAndWorkerRunsRemotely(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	store, err := agentinfra.NewAgentStore(db, renderer, "sqlite")
+	store, err := agentinfra.NewAgentStore(db, renderer, "sqlite", "remote-test")
 	if err != nil {
 		t.Fatal(err)
 	}

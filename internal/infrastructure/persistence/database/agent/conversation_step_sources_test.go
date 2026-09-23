@@ -22,7 +22,7 @@ func TestConversationStepSourcesSurviveDatabaseReopenAndCannotChangeOnReplay(t *
 		db.SetMaxOpenConns(1)
 		t.Cleanup(func() { _ = db.Close() })
 		dialect, _ := ormdialect.New(ormdialect.SQLite)
-		store, err := NewStore(db, dialect.WithSchema(""), sqlite.NewEngine())
+		store, err := NewStore(db, dialect.WithSchema(""), sqlite.NewEngine(), "step-sources-test")
 		if err != nil {
 			t.Fatal(err)
 		}
