@@ -54,7 +54,7 @@ func (s *ConversationStore) BindArtifactPersistence(store sharedartifact.Managed
 }
 
 func (s *ConversationStore) Ready(ctx context.Context) error {
-	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_user_memories", conversationRunStepTable, conversationForkTable, interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationPeerLinkTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
+	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_user_memories", conversationRunStepTable, conversationForkTable, interactionTable, conversationTaskTable, conversationPeerLinkTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("owner_key").Limit(1).Build()
 		if err != nil {
 			return err

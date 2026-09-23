@@ -255,7 +255,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		}
 		conversationRepository = agentstore.NewConversationStore(store)
 	}
-	todoStore, err := todomodule.NewStore(store.Database(), store.Renderer(), store.Profile(), nil)
+	todoStore, err := todomodule.Open(ctx, store.Database(), store.Renderer(), store.Profile(), host.Migrations(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("open Todo lifecycle store: %w", err)
 	}

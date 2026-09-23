@@ -10,7 +10,7 @@ require (
 	github.com/domainry/domainry-identity v0.2.17
 	github.com/domainry/domainry-identity-bridge v0.1.5
 	github.com/domainry/domainry-identity-sdk v0.1.14
-	github.com/domainry/domainry-lifecycle-sdk v0.1.13
+	github.com/domainry/domainry-lifecycle-sdk v0.1.16
 	github.com/domainry/domainry-orm v0.1.30
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3
@@ -71,7 +71,7 @@ require (
 )
 
 require (
-	github.com/domainry/domainry-todo v0.1.1
+	github.com/domainry/domainry-todo v0.1.3
 	github.com/domainry/domainry-tools v0.1.4
 	github.com/domainry/domainry-tools-sdk v0.1.5
 )

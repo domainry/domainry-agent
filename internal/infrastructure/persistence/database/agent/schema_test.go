@@ -12,7 +12,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 23 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
+			if len(migrations) != 22 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
 				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
 			byVersion := map[uint]string{}
@@ -127,6 +127,11 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 				all = append(all, migration.Statements...)
 			}
 			joinedAll := strings.Join(all, "\n")
+			for _, foreign := range []string{"_agent_user_todos", "_agent_todo_mutations"} {
+				if strings.Contains(joinedAll, foreign) {
+					t.Fatalf("Agent migration still owns Todo table %s", foreign)
+				}
+			}
 			for _, retired := range []string{"_agent_artifact_exports", "_agent_conversation_attachments", "_agent_attachment_cleanup", "_agent_subject_erasure_receipts", "_todo_subject_erasure_receipts", "_knowledge_subject_erasure_receipts"} {
 				if strings.Contains(joinedAll, retired) {
 					t.Fatalf("Agent migration still owns retired table %s", retired)

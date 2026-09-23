@@ -14,6 +14,7 @@ import (
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	ormdriver "github.com/domainry/domainry-orm/driver"
+	todomodule "github.com/domainry/domainry-todo/module"
 )
 
 var engineRegistry = map[ormdialect.Name]func() ormdriver.Profile{
@@ -80,6 +81,9 @@ func EnsureSchema(ctx context.Context, database modulehost.Database, driver, sch
 	}
 	if err := registrar.ApplyOwnedMigrations(ctx, shareddefinition.MigrationOwner, definitionMigrations); err != nil {
 		return fmt.Errorf("apply shared Definition migrations: %w", err)
+	}
+	if _, err := todomodule.Open(ctx, database, renderer, profile, registrar, nil); err != nil {
+		return fmt.Errorf("open Todo persistence: %w", err)
 	}
 	agentMigrations, err := agentstore.SchemaMigrations(driver, schema)
 	if err != nil {

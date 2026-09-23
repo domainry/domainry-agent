@@ -10,7 +10,6 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-agent-sdk/modulehost"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost"
 	"github.com/domainry/domainry-agent/testsupport/databasetest"
@@ -45,7 +44,7 @@ func TestExtractedPersistenceOnAllDatabases(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		tm, err := todo.LegacyMigration(d)
+		tm, err := todo.SchemaMigrations(d)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -53,7 +52,7 @@ func TestExtractedPersistenceOnAllDatabases(t *testing.T) {
 			if err = registrar.ApplyOwnedMigrations(t.Context(), "knowledge", km); err != nil {
 				t.Fatal(err)
 			}
-			if err = registrar.ApplyOwnedMigrations(t.Context(), "todo", []modulehost.SchemaMigration{tm}); err != nil {
+			if err = registrar.ApplyOwnedMigrations(t.Context(), todo.MigrationOwner, tm); err != nil {
 				t.Fatal(err)
 			}
 		}

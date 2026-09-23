@@ -16,7 +16,9 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
+	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
+	todomodule "github.com/domainry/domainry-todo/module"
 	_ "modernc.org/sqlite"
 )
 
@@ -51,8 +53,27 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 			}
 		}
 	}
-	if _, err = database.ExecContext(t.Context(), `CREATE TABLE _subject_steps (workspace_id TEXT NOT NULL, request_id TEXT NOT NULL, owner TEXT NOT NULL, operation TEXT NOT NULL, payload_json TEXT NOT NULL, completed_at TEXT NOT NULL, PRIMARY KEY(workspace_id,request_id,owner,operation))`); err != nil {
+	subjectMigrations, err := sharedsubjectlifecycle.SchemaMigrationsForDialect(dialect.WithSchema(""))
+	if err != nil {
 		t.Fatal(err)
+	}
+	for _, migration := range subjectMigrations {
+		for _, statement := range migration.Statements {
+			if _, err = database.ExecContext(t.Context(), statement); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	todoMigrations, err := todomodule.SchemaMigrations(dialect.WithSchema(""))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, migration := range todoMigrations {
+		for _, statement := range migration.Statements {
+			if _, err = database.ExecContext(t.Context(), statement); err != nil {
+				t.Fatal(err)
+			}
+		}
 	}
 	artifactMigration, err := sharedartifact.SchemaMigrationForDialect(dialect.WithSchema(""))
 	if err != nil {
