@@ -73,7 +73,6 @@ type Host struct {
 	registrar                *webhost.Registrar
 	knowledgePermissions     map[string]string
 	artifactFiles            *knowledgemodule.ArtifactFiles
-	sharedArtifactStore      artifactkernel.Store
 	sharedArtifactFiles      *artifactkernel.ContentFiles
 	documentFiles            *knowledgemodule.DocumentFiles
 	external                 bool
@@ -157,13 +156,6 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	if err = h.registrar.Prepare(ctx); err != nil {
 		return nil, err
 	}
-	artifactMigration, err := artifactkernel.SchemaMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	if err = h.registrar.ApplyOwnedMigrations(ctx, "artifact", []modulehost.SchemaMigration{artifactMigration}); err != nil {
-		return nil, fmt.Errorf("apply shared Artifact migration: %w", err)
-	}
 	operationMigration, err := operationkernel.SchemaMigration(renderer)
 	if err != nil {
 		return nil, err
@@ -171,7 +163,6 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	if err = h.registrar.ApplyOwnedMigrations(ctx, "operations", []modulehost.SchemaMigration{operationMigration}); err != nil {
 		return nil, fmt.Errorf("apply shared Operations migration: %w", err)
 	}
-	h.sharedArtifactStore = artifactkernel.NewStore(h.db, renderer)
 	h.sharedArtifactFiles, err = artifactkernel.NewContentFiles(path + ".shared-artifacts")
 	if err != nil {
 		return nil, fmt.Errorf("open shared Artifact content: %w", err)
@@ -319,9 +310,6 @@ func (h *Host) DatabaseProfile() driver.Profile           { return h.profile }
 func (h *Host) Database() modulehost.Database             { return h.db }
 func (h *Host) Dialect() modulehost.Dialect               { return h.registrar.Renderer }
 func (h *Host) Migrations() modulehost.MigrationRegistrar { return h.registrar }
-func (h *Host) ArtifactStore() sharedartifact.ManagedStore {
-	return h.sharedArtifactStore
-}
 func (h *Host) ArtifactContentStore() sharedartifact.ContentStore {
 	return h.sharedArtifactFiles
 }

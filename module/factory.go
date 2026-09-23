@@ -21,6 +21,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
 	actioncontract "github.com/domainry/domainry-foundation/action"
+	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
@@ -230,10 +231,14 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	conversationRepository := agentstore.NewConversationStore(store)
 	artifactHost, artifactHosted := host.(modulehost.ArtifactHost)
 	if f.ConversationEnabled() && !artifactHosted {
-		return nil, fmt.Errorf("Agent conversations require the shared Artifact host")
+		return nil, fmt.Errorf("Agent conversations require Artifact content storage")
 	}
 	if artifactHosted {
-		if err := store.BindArtifactPersistence(artifactHost.ArtifactStore(), artifactHost.ArtifactContentStore(), artifactHost.ArtifactContentWriter()); err != nil {
+		artifacts, openErr := sharedartifact.Open(ctx, host.Database(), host.Dialect(), host.Migrations())
+		if openErr != nil {
+			return nil, fmt.Errorf("open Agent Artifact persistence: %w", openErr)
+		}
+		if err := store.BindArtifactPersistence(artifacts, artifactHost.ArtifactContentStore(), artifactHost.ArtifactContentWriter()); err != nil {
 			return nil, err
 		}
 		conversationRepository = agentstore.NewConversationStore(store)

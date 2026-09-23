@@ -14,6 +14,7 @@ import (
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
+	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	_ "modernc.org/sqlite"
 )
@@ -41,7 +42,7 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 	if _, err = database.ExecContext(t.Context(), `CREATE TABLE _subject_steps (workspace_id TEXT NOT NULL, request_id TEXT NOT NULL, owner TEXT NOT NULL, operation TEXT NOT NULL, payload_json TEXT NOT NULL, completed_at TEXT NOT NULL, PRIMARY KEY(workspace_id,request_id,owner,operation))`); err != nil {
 		t.Fatal(err)
 	}
-	artifactMigration, err := artifactkernel.SchemaMigration(dialect.WithSchema(""))
+	artifactMigration, err := sharedartifact.SchemaMigrationForDialect(dialect.WithSchema(""))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,7 +60,7 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = content.Close() })
-	if err = store.BindArtifactPersistence(artifactkernel.NewStore(database, dialect.WithSchema("")), content, content); err != nil {
+	if err = store.BindArtifactPersistence(sharedartifact.NewSQLStore(database, dialect.WithSchema("")), content, content); err != nil {
 		t.Fatal(err)
 	}
 	return store, database

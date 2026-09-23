@@ -266,7 +266,6 @@ type sqliteModuleHost struct {
 	dialect   modulehost.Dialect
 	mu        sync.Mutex
 	applied   map[string]struct{}
-	artifacts artifactkernel.Store
 	content   *artifactkernel.ContentFiles
 }
 
@@ -278,21 +277,12 @@ func newSQLiteModuleHost(t *testing.T, runtimeID string) *sqliteModuleHost {
 		t.Fatal(err)
 	}
 	renderer := dialect.WithSchema("")
-	migration, err := artifactkernel.SchemaMigration(renderer)
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, statement := range migration.Statements {
-		if _, err = database.ExecContext(t.Context(), statement); err != nil {
-			t.Fatal(err)
-		}
-	}
 	content, err := artifactkernel.NewContentFiles(filepath.Join(t.TempDir(), "shared-artifacts"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = content.Close() })
-	return &sqliteModuleHost{runtimeID: runtimeID, database: database, dialect: renderer, applied: map[string]struct{}{}, artifacts: artifactkernel.NewStore(database, renderer), content: content}
+	return &sqliteModuleHost{runtimeID: runtimeID, database: database, dialect: renderer, applied: map[string]struct{}{}, content: content}
 }
 
 func (h *sqliteModuleHost) RuntimeID() string { return h.runtimeID }
@@ -304,13 +294,12 @@ func (h *sqliteModuleHost) AuthorizeConversationExecution(_ context.Context, in 
 func (h *sqliteModuleHost) Database() modulehost.Database                       { return h.database }
 func (h *sqliteModuleHost) Dialect() modulehost.Dialect                         { return h.dialect }
 func (h *sqliteModuleHost) Migrations() modulehost.MigrationRegistrar           { return h }
-func (h *sqliteModuleHost) ArtifactStore() sharedartifact.ManagedStore          { return h.artifacts }
 func (h *sqliteModuleHost) ArtifactContentStore() sharedartifact.ContentStore   { return h.content }
 func (h *sqliteModuleHost) ArtifactContentWriter() sharedartifact.ContentWriter { return h.content }
 func (*sqliteModuleHost) Driver() string                                        { return "sqlite" }
 func (*sqliteModuleHost) Schema() string                                        { return "" }
 func (h *sqliteModuleHost) ApplyOwnedMigrations(ctx context.Context, owner string, migrations []modulehost.SchemaMigration) error {
-	if owner != "agent" {
+	if owner != "agent" && owner != sharedartifact.MigrationOwner {
 		return fmt.Errorf("unexpected migration owner %q", owner)
 	}
 	h.mu.Lock()

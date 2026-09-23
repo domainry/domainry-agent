@@ -14,6 +14,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
+	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	knowledgeartifact "github.com/domainry/domainry-knowledge/artifact"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 )
@@ -208,7 +209,7 @@ func TestAttachmentCleanupSurvivesDatabaseReopen(t *testing.T) {
 		database.SetMaxOpenConns(1)
 		dialect, _ := ormdialect.New(ormdialect.SQLite)
 		if migrate {
-			artifactMigration, migrationErr := artifactkernel.SchemaMigration(dialect.WithSchema(""))
+			artifactMigration, migrationErr := sharedartifact.SchemaMigrationForDialect(dialect.WithSchema(""))
 			if migrationErr != nil {
 				t.Fatal(migrationErr)
 			}
@@ -238,7 +239,7 @@ func TestAttachmentCleanupSurvivesDatabaseReopen(t *testing.T) {
 			t.Fatal(err)
 		}
 		t.Cleanup(func() { _ = content.Close() })
-		if err = store.BindArtifactPersistence(artifactkernel.NewStore(database, dialect.WithSchema("")), content, content); err != nil {
+		if err = store.BindArtifactPersistence(sharedartifact.NewSQLStore(database, dialect.WithSchema("")), content, content); err != nil {
 			t.Fatal(err)
 		}
 		repo := NewConversationStore(store)

@@ -26,7 +26,6 @@ type host struct {
 	database  *sql.DB
 	dialect   modulehost.Dialect
 	applied   []modulehost.SchemaMigration
-	artifacts artifactkernel.Store
 	content   *artifactkernel.ContentFiles
 }
 
@@ -78,34 +77,24 @@ func newHost(t *testing.T, runtimeID string) *host {
 		t.Fatal(err)
 	}
 	renderer := dialect.WithSchema("")
-	migration, err := artifactkernel.SchemaMigration(renderer)
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, statement := range migration.Statements {
-		if _, err = database.ExecContext(t.Context(), statement); err != nil {
-			t.Fatal(err)
-		}
-	}
 	content, err := artifactkernel.NewContentFiles(filepath.Join(t.TempDir(), "shared-artifacts"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = content.Close() })
-	return &host{runtimeID: runtimeID, database: database, dialect: renderer, artifacts: artifactkernel.NewStore(database, renderer), content: content}
+	return &host{runtimeID: runtimeID, database: database, dialect: renderer, content: content}
 }
 
 func (h *host) RuntimeID() string                                   { return h.runtimeID }
 func (h *host) Database() modulehost.Database                       { return h.database }
 func (h *host) Dialect() modulehost.Dialect                         { return h.dialect }
 func (h *host) Migrations() modulehost.MigrationRegistrar           { return h }
-func (h *host) ArtifactStore() sharedartifact.ManagedStore          { return h.artifacts }
 func (h *host) ArtifactContentStore() sharedartifact.ContentStore   { return h.content }
 func (h *host) ArtifactContentWriter() sharedartifact.ContentWriter { return h.content }
 func (*host) Driver() string                                        { return "sqlite" }
 func (*host) Schema() string                                        { return "" }
 func (h *host) ApplyOwnedMigrations(ctx context.Context, owner string, migrations []modulehost.SchemaMigration) error {
-	if owner != "agent" {
+	if owner != "agent" && owner != sharedartifact.MigrationOwner {
 		return &agentsdk.Error{Code: "wrong_owner", Message: owner}
 	}
 	for _, migration := range migrations {
@@ -115,7 +104,9 @@ func (h *host) ApplyOwnedMigrations(ctx context.Context, owner string, migration
 			}
 		}
 	}
-	h.applied = append(h.applied, migrations...)
+	if owner == "agent" {
+		h.applied = append(h.applied, migrations...)
+	}
 	return nil
 }
 

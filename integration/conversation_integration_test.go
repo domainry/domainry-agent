@@ -64,7 +64,7 @@ func conversationRepositoryWithArtifactContent(t *testing.T, wrap func(sharedart
 	if err != nil {
 		t.Fatal(err)
 	}
-	migration, err := artifactkernel.SchemaMigration(renderer)
+	migration, err := sharedartifact.SchemaMigrationForDialect(renderer)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -82,7 +82,7 @@ func conversationRepositoryWithArtifactContent(t *testing.T, wrap func(sharedart
 	if wrap != nil {
 		contentStore = wrap(contentStore)
 	}
-	if err = store.BindArtifactPersistence(artifactkernel.NewStore(db, renderer), contentStore, content); err != nil {
+	if err = store.BindArtifactPersistence(sharedartifact.NewSQLStore(db, renderer), contentStore, content); err != nil {
 		t.Fatal(err)
 	}
 	return agentstore.NewConversationStore(store)
