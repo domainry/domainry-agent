@@ -6,7 +6,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"os"
 	"path/filepath"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
@@ -243,9 +242,6 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 			return nil, fmt.Errorf("open document storage: %w", err)
 		}
 		options.Agent.ConversationOptions.DocumentStorage = h.documentFiles
-	}
-	if err := os.RemoveAll(path + ".parses"); err != nil {
-		return nil, fmt.Errorf("remove retired document cache: %w", err)
 	}
 	if options.Agent.ConversationOptions.AttachmentAuthorizer == nil {
 		options.Agent.ConversationOptions.AttachmentAuthorizer = h

@@ -169,7 +169,7 @@ func (s LifecycleStore) conversationLifecycleActive(ctx context.Context, owner, 
 
 func (s LifecycleStore) conversationLifecyclePayload(ctx context.Context, owner, id string, conversation []byte) (json.RawMessage, error) {
 	graph := map[string]any{"conversation": json.RawMessage(append([]byte(nil), conversation...))}
-	for _, table := range []string{conversationItemTable, agentRunTable, conversationRunStepTable, interactionTable, conversationTaskTable} {
+	for _, table := range []string{conversationItemTable, agentRunTable, conversationRunStepTable, interactionTable, conversationTaskTable, conversationForkTable} {
 		predicate := query.And(query.Equal("owner_key", owner), query.Equal("conversation_id", id))
 		if table == agentRunTable {
 			predicate = query.And(agentRunKindPredicate(agentRunKindConversation), predicate)
@@ -281,7 +281,7 @@ func (s LifecycleStore) deleteConversationLifecycleCandidate(ctx context.Context
 			return execErr
 		}
 		deleted = true
-		for _, table := range []string{conversationItemTable, agentRunTable, conversationRunStepTable, interactionTable} {
+		for _, table := range []string{conversationItemTable, agentRunTable, conversationRunStepTable, interactionTable, conversationForkTable} {
 			predicate := query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("conversation_id", candidate.ResourceID))
 			if table == agentRunTable {
 				predicate = query.And(agentRunKindPredicate(agentRunKindConversation), predicate)
@@ -298,6 +298,15 @@ func (s LifecycleStore) deleteConversationLifecycleCandidate(ctx context.Context
 			return execErr
 		}
 		statement, args, buildErr = query.NewDeleteBuilder(s.store.Renderer(), conversationTaskTable).Where(query.And(conversationTaskKindPredicate(conversationTaskKindTask), query.Equal("owner_key", candidate.OwnerKey), query.Equal("source_conversation_id", candidate.ResourceID))).Build()
+		if buildErr != nil {
+			return buildErr
+		}
+		_, execErr = tx.ExecContext(ctx, statement, args...)
+		if execErr != nil {
+			return execErr
+		}
+		statement, args, buildErr = query.NewWorkspaceDeleteBuilder(s.store.Renderer(), conversationWorkBudgetTable, workspaceID).
+			Where(query.Equal("root_conversation_id", candidate.ResourceID)).Build()
 		if buildErr != nil {
 			return buildErr
 		}

@@ -401,6 +401,11 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 		if err = conversationExec(ctx, tx, q, args, e); err != nil {
 			return err
 		}
+		q, args, e = query.NewWorkspaceDeleteBuilder(s.store.Renderer(), conversationWorkBudgetTable, a.WorkspaceID).
+			Where(query.And(query.Equal("runtime_id", a.RuntimeID), query.Equal("root_conversation_id", id))).Build()
+		if err = conversationExec(ctx, tx, q, args, e); err != nil {
+			return err
+		}
 		receipt, _ = json.Marshal(map[string]any{"request_id": requestID, "conversation_id": id, "revision": revision, "completed_at": time.Now().UTC()})
 		return s.store.operations.Complete(sharedoperation.WithExecutor(ctx, tx), sharedoperation.Completion{ID: command.ID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind, IdempotencyKey: command.IdempotencyKey, RequestFingerprint: command.RequestFingerprint, Result: receipt, CompletedAt: time.Now().UTC()})
 	})

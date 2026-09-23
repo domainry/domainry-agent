@@ -15,6 +15,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/contracttest"
 	agentlifecycle "github.com/domainry/domainry-agent-sdk/lifecycle"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
+	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
@@ -146,10 +147,10 @@ func TestModuleDescriptor(t *testing.T) {
 	if b.Descriptor().Mode != agentsdk.DeploymentModeModule {
 		t.Fatalf("descriptor=%+v", b.Descriptor())
 	}
-	if len(host.applied) != 16 {
+	if len(host.applied) != 14 {
 		t.Fatalf("Agent migrations=%d", len(host.applied))
 	}
-	for _, owner := range []string{sharedoperation.MigrationOwner, sharedworkerscope.MigrationOwner, sharedsubjectlifecycle.MigrationOwner, todomodule.MigrationOwner, knowledgemodule.MigrationOwner, "agent"} {
+	for _, owner := range []string{sharedoperation.MigrationOwner, sharedworkerscope.MigrationOwner, sharedsubjectlifecycle.MigrationOwner, todomodule.MigrationOwner, knowledgemodule.MigrationOwner, agentstore.MigrationOwner} {
 		if !slices.Contains(host.owners, owner) {
 			t.Fatalf("module migration owner %q missing from %v", owner, host.owners)
 		}
@@ -160,7 +161,7 @@ func TestModuleDescriptor(t *testing.T) {
 			t.Fatalf("module-owned table %s count=%d err=%v", table, count, err)
 		}
 	}
-	for _, retired := range []string{"_agent_owner_operation_receipts", "_agent_collaboration_mutations", "_agent_todo_mutations", "_agent_artifact_mutations", "_knowledge_owner_operation_receipts", "_agent_knowledge_document_sources", "_agent_knowledge_datasource_bindings", "_agent_attachment_knowledge_sources"} {
+	for _, retired := range []string{"_agent_document_parses", "_agent_owner_operation_receipts", "_agent_collaboration_mutations", "_agent_todo_mutations", "_agent_artifact_mutations", "_knowledge_owner_operation_receipts", "_agent_knowledge_document_sources", "_agent_knowledge_datasource_bindings", "_agent_attachment_knowledge_sources"} {
 		var count int
 		if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, retired).Scan(&count); err != nil || count != 0 {
 			t.Fatalf("retired Knowledge table %s count=%d err=%v", retired, count, err)

@@ -29,6 +29,11 @@ func TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly(t *testing.T) {
 	if _, err = repo.Enqueue(t.Context(), bob.ID, agentsdk.ConversationSend{ClientMessageID: "bob-message", Message: "Bob execution secret"}, b); err != nil {
 		t.Fatal(err)
 	}
+	for _, root := range []string{alice.ID, bob.ID} {
+		if _, err = db.ExecContext(t.Context(), `INSERT INTO _agent_conversation_work_budgets(runtime_id,workspace_id,root_conversation_id,updated_at,payload_json) VALUES(?,?,?,?,?)`, a.RuntimeID, a.WorkspaceID, root, int64(1), `{}`); err != nil {
+			t.Fatal(err)
+		}
+	}
 	if _, err = repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{ID: "prefs:alice.v1", Title: "Alice preference", Content: "private", Enabled: true}, a); err != nil {
 		t.Fatal(err)
 	}
@@ -70,6 +75,13 @@ func TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly(t *testing.T) {
 	}
 	if _, err = repo.Get(t.Context(), bob.ID, b); err != nil {
 		t.Fatal("Bob conversation was removed", err)
+	}
+	var aliceBudgets, bobBudgets int
+	if err = db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_work_budgets WHERE root_conversation_id=?`, alice.ID).Scan(&aliceBudgets); err != nil || aliceBudgets != 0 {
+		t.Fatalf("Alice work budgets=%d err=%v", aliceBudgets, err)
+	}
+	if err = db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_work_budgets WHERE root_conversation_id=?`, bob.ID).Scan(&bobBudgets); err != nil || bobBudgets != 1 {
+		t.Fatalf("Bob work budgets=%d err=%v", bobBudgets, err)
 	}
 	if record, err := repo.AttachmentRecord(t.Context(), attachment.Attachment.ID, a); err != nil || record.Attachment.ID != attachment.Attachment.ID {
 		t.Fatalf("Agent mutated Knowledge-owned attachment=%+v err=%v", record, err)

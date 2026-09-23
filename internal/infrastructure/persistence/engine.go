@@ -101,7 +101,7 @@ func EnsureSchema(ctx context.Context, database modulehost.Database, driver, sch
 	if err != nil {
 		return err
 	}
-	if err := registrar.ApplyOwnedMigrations(ctx, "agent", agentMigrations); err != nil {
+	if err := registrar.ApplyOwnedMigrations(ctx, agentstore.MigrationOwner, agentMigrations); err != nil {
 		return fmt.Errorf("apply Agent migrations: %w", err)
 	}
 	return nil

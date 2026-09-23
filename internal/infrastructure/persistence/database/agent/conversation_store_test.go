@@ -223,12 +223,15 @@ func TestConversationRestartLeaseFenceAndFrozenInput(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if _, err = db.ExecContext(ctx, `INSERT INTO _agent_conversation_work_budgets(runtime_id,workspace_id,root_conversation_id,updated_at,payload_json) VALUES(?,?,?,?,?)`, a.RuntimeID, a.WorkspaceID, c.ID, time.Now().UnixMilli(), `{}`); err != nil {
+		t.Fatal(err)
+	}
 	if err = repo.Delete(ctx, c.ID, latest.Revision, a); err != nil {
 		t.Fatal(err)
 	}
 	_, err = repo.Get(ctx, c.ID, a)
 	requireConversationCode(t, err, "not_found")
-	for _, table := range []string{conversationItemTable, agentRunTable} {
+	for _, table := range []string{conversationItemTable, agentRunTable, conversationWorkBudgetTable} {
 		var count int
 		if err = db.QueryRowContext(context.Background(), "SELECT COUNT(*) FROM "+table).Scan(&count); err != nil || count != 0 {
 			t.Fatalf("delete %s count=%d err=%v", table, count, err)

@@ -8,7 +8,10 @@ import (
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 )
 
-const SchemaVersion uint = 1
+const (
+	SchemaVersion  uint = 1
+	MigrationOwner      = "agent"
+)
 
 // SchemaMigrations is the sole source of Agent-owned DDL. Embedded modules
 // submit it to the host registrar; standalone SaaS applies the same history to
@@ -67,14 +70,6 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	parses, err := documentParseMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	retired, err := retireDocumentParsingMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
 	tasks, err := conversationTaskMigration(renderer)
 	if err != nil {
 		return nil, err
@@ -115,7 +110,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, parses, retired, tasks, capacity, collaboration, subjectsBinding, sourceReleases, contractPublications, workBudgets, forks, improvements, memories}, nil
+	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, tasks, capacity, collaboration, subjectsBinding, sourceReleases, contractPublications, workBudgets, forks, improvements, memories}, nil
 }
 
 func runtimeStateTable(renderer modulehost.Dialect) *ormschema.TableBuilder {

@@ -12,7 +12,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 16 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
+			if len(migrations) != 14 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
 				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
 			byVersion := map[uint]string{}
@@ -34,6 +34,11 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			for _, folded := range []uint{16, 17, 21, 22, 23, 24, 25, 26, 31, 32, 33} {
 				if _, found := byVersion[folded]; found {
 					t.Fatalf("folded Agent migration v%d remains", folded)
+				}
+			}
+			for _, retired := range []uint{12, 13} {
+				if _, found := byVersion[retired]; found {
+					t.Fatalf("retired document parse migration v%d remains", retired)
 				}
 			}
 			contract := byVersion[29]
@@ -130,6 +135,9 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 				all = append(all, migration.Statements...)
 			}
 			joinedAll := strings.Join(all, "\n")
+			if strings.Contains(joinedAll, "_agent_document_parses") {
+				t.Fatal("retired document parse table remains in fresh Agent schema")
+			}
 			for _, foreign := range []string{"_agent_user_todos", "_agent_todo_mutations"} {
 				if strings.Contains(joinedAll, foreign) {
 					t.Fatalf("Agent migration still owns Todo table %s", foreign)

@@ -13,6 +13,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost"
 	"github.com/domainry/domainry-agent/testsupport/databasetest"
+	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	knowledge "github.com/domainry/domainry-knowledge/module"
 	"github.com/domainry/domainry-orm/query"
 	todocontract "github.com/domainry/domainry-todo/contract"
@@ -33,6 +34,9 @@ func TestExtractedPersistenceOnAllDatabases(t *testing.T) {
 		}
 		registrar := &webhost.Registrar{DB: c.DB, Renderer: d, DatabaseDriver: c.Driver, Namespace: c.Schema, Profile: profile}
 		if err = registrar.Prepare(t.Context()); err != nil {
+			t.Fatal(err)
+		}
+		if _, err = sharedoperation.Open(t.Context(), c.DB, sharedoperation.AdaptDialect(d), registrar); err != nil {
 			t.Fatal(err)
 		}
 		backend := knowledge.SQLBackend{DB: c.DB, Dialect: d, Engine: profile}

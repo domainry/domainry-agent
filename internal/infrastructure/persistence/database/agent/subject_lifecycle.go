@@ -40,7 +40,9 @@ func (s SubjectLifecycle) authority(workspaceID, subjectID string) (agentsdk.Con
 var agentSubjectOwnerTables = []string{
 	conversationContractPublicationTable, conversationSourceReleaseTable, conversationAgentMessageTable, conversationPeerLinkTable,
 	"_agent_conversation_interactions", conversationRunStepTable,
-	conversationItemTable, agentRunTable, conversationTaskTable, "_agent_conversations", conversationMemoryChangeTable, "_agent_user_memories",
+	conversationItemTable, agentRunTable, conversationTaskTable, "_agent_conversations", conversationForkTable,
+	conversationCapabilityFeedbackTable, conversationImprovementCandidateTable, conversationCapabilityConfigTable,
+	conversationMemoryChangeTable, "_agent_user_memories",
 }
 
 func agentSubjectOwnerPredicate(table, owner string) query.Predicate {
@@ -223,6 +225,10 @@ func (s SubjectLifecycle) EraseSubjectForRequest(ctx context.Context, requestID,
 			return scanErr
 		}
 		changed := map[string]int64{}
+		conversationIDs, err := s.subjectConversationIDs(ctx, tx, owner)
+		if err != nil {
+			return err
+		}
 		if err := collaboration.eraseSubjectCollaboration(ctx, tx, a, changed); err != nil {
 			return err
 		}
@@ -236,6 +242,22 @@ func (s SubjectLifecycle) EraseSubjectForRequest(ctx context.Context, requestID,
 				return err
 			}
 			changed[table], _ = result.RowsAffected()
+		}
+		if len(conversationIDs) > 0 {
+			values := make([]any, len(conversationIDs))
+			for index, id := range conversationIDs {
+				values[index] = id
+			}
+			statement, deleteArgs, deleteErr := query.NewWorkspaceDeleteBuilder(s.store.Renderer(), conversationWorkBudgetTable, a.WorkspaceID).
+				Where(query.In("root_conversation_id", values...)).Build()
+			if deleteErr != nil {
+				return deleteErr
+			}
+			result, deleteErr := tx.ExecContext(ctx, statement, deleteArgs...)
+			if deleteErr != nil {
+				return deleteErr
+			}
+			changed[conversationWorkBudgetTable], _ = result.RowsAffected()
 		}
 		for _, table := range agentSubjectOwnerTables {
 			statement, deleteArgs, deleteErr := query.NewDeleteBuilder(s.store.Renderer(), table).Where(agentSubjectOwnerPredicate(table, owner)).Build()
@@ -283,6 +305,27 @@ func (s SubjectLifecycle) EraseSubjectForRequest(ctx context.Context, requestID,
 		return buildErr
 	})
 	return receipt, err
+}
+
+func (s SubjectLifecycle) subjectConversationIDs(ctx context.Context, tx *sql.Tx, owner string) ([]string, error) {
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversations").Columns("conversation_id").Where(query.Equal("owner_key", owner)).Build()
+	if err != nil {
+		return nil, err
+	}
+	rows, err := tx.QueryContext(ctx, statement, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	ids := []string{}
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+	return ids, rows.Err()
 }
 
 var _ lifecyclecontract.SubjectExecutionHandler = SubjectLifecycle{}

@@ -200,7 +200,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if err != nil {
 		return nil, err
 	}
-	if err := host.Migrations().ApplyOwnedMigrations(ctx, "agent", migrations); err != nil {
+	if err := host.Migrations().ApplyOwnedMigrations(ctx, agentstore.MigrationOwner, migrations); err != nil {
 		return nil, fmt.Errorf("apply Agent Module migrations: %w", err)
 	}
 	store, err := agentinfra.NewAgentStore(host.Database(), host.Dialect(), host.Migrations().Driver(), app.RuntimeID)
