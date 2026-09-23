@@ -33,10 +33,6 @@ func NewAgentTaskRunStore(store *Store) *AgentTaskRunStore {
 	return &AgentTaskRunStore{store: store, db: store.Database()}
 }
 
-func (s *AgentTaskRunStore) BackfillWorkerScopes(context.Context) error {
-	return nil
-}
-
 func (s *AgentTaskRunStore) Create(ctx context.Context, run agentmodel.AgentTaskRun) (agentmodel.AgentTaskRun, bool, error) {
 	payload, err := json.Marshal(run)
 	if err != nil {
