@@ -387,7 +387,7 @@ func (s *ConversationStore) ExpireInteractions(ctx context.Context, runtimeID st
 		changed := false
 		err = s.transaction(ctx, func(tx *sql.Tx) error {
 			changed = false
-			q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns(conversationRunColumns...).Where(query.And(query.Equal("owner_key", item.owner), query.Equal("conversation_id", item.conversation), query.Equal("run_id", item.run), query.Equal("runtime_id", runtimeID))).Build()
+			q, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns(conversationRunColumns...).Where(query.And(agentRunKindPredicate(agentRunKindConversation), query.Equal("owner_key", item.owner), query.Equal("conversation_id", item.conversation), query.Equal("run_id", item.run), query.Equal("runtime_id", runtimeID))).Build()
 			if err != nil {
 				return err
 			}

@@ -39,12 +39,15 @@ func (s SubjectLifecycle) authority(workspaceID, subjectID string) (agentsdk.Con
 var agentSubjectOwnerTables = []string{
 	conversationContractPublicationTable, conversationSourceReleaseTable, conversationAgentMessageTable, conversationAgreementTable, conversationAssignmentTable, conversationDeliveryRecordTable, conversationDisagreementTable, conversationStepSourceTable, conversationDelegationTable, conversationAgentTable, conversationCollaborationMutationTable,
 	"_agent_conversation_interactions", "_agent_conversation_tool_calls", "_agent_conversation_steps",
-	conversationItemTable, "_agent_conversation_runs", conversationFollowUpEventTable,
+	conversationItemTable, agentRunTable, conversationFollowUpEventTable,
 	conversationFollowUpStateTable, conversationTaskPlanTable, conversationTaskTable, "_agent_conversations", conversationMemoryChangeTable, "_agent_user_memories",
 }
 
 func agentSubjectOwnerPredicate(table, owner string) query.Predicate {
 	owned := query.Equal("owner_key", owner)
+	if table == agentRunTable {
+		return query.And(agentRunKindPredicate(agentRunKindConversation), owned)
+	}
 	if table == conversationSourceReleaseTable {
 		return query.Or(owned, query.Equal("producer_key", owner))
 	}
@@ -95,8 +98,12 @@ func (s SubjectLifecycle) PreviewSubject(ctx context.Context, workspaceID, subje
 		}
 		counts[table] = count
 	}
-	for key, table := range map[string]string{"runtime_states": "_agent_runtime_states", "interactive_runs": "_agent_interactive_runs"} {
-		statement, args, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), table, a.WorkspaceID).Projections(query.Project(query.CountAll())).Where(query.Equal("user_id", a.UserID)).Build()
+	for key, table := range map[string]string{"runtime_states": "_agent_runtime_states", "interactive_runs": agentRunTable} {
+		predicate := query.Equal("user_id", a.UserID)
+		if table == agentRunTable {
+			predicate = query.And(agentRunKindPredicate(agentRunKindInteractive), predicate)
+		}
+		statement, args, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), table, a.WorkspaceID).Projections(query.Project(query.CountAll())).Where(predicate).Build()
 		if buildErr != nil {
 			return nil, buildErr
 		}
@@ -142,13 +149,17 @@ func (s SubjectLifecycle) ExportSubjectForRequest(ctx context.Context, _ string,
 			export[table] = items
 		}
 	}
-	for _, table := range []string{"_agent_runtime_states", "_agent_interactive_runs"} {
-		items, readErr := s.payloads(ctx, table, query.And(query.Equal("workspace_id", a.WorkspaceID), query.Equal("user_id", a.UserID)))
+	for key, table := range map[string]string{"runtime_states": "_agent_runtime_states", "interactive_runs": agentRunTable} {
+		predicate := query.And(query.Equal("workspace_id", a.WorkspaceID), query.Equal("user_id", a.UserID))
+		if table == agentRunTable {
+			predicate = query.And(agentRunKindPredicate(agentRunKindInteractive), predicate)
+		}
+		items, readErr := s.payloads(ctx, table, predicate)
 		if readErr != nil {
 			return nil, readErr
 		}
 		if len(items) > 0 {
-			export[table] = items
+			export[key] = items
 		}
 	}
 	return json.Marshal(map[string]any{"records": export})
@@ -234,8 +245,12 @@ func (s SubjectLifecycle) EraseSubjectForRequest(ctx context.Context, requestID,
 			}
 			changed[table], _ = result.RowsAffected()
 		}
-		for key, table := range map[string]string{"runtime_states": "_agent_runtime_states", "interactive_runs": "_agent_interactive_runs"} {
-			statement, deleteArgs, deleteErr := query.NewWorkspaceDeleteBuilder(s.store.Renderer(), table, a.WorkspaceID).Where(query.Equal("user_id", a.UserID)).Build()
+		for key, table := range map[string]string{"runtime_states": "_agent_runtime_states", "interactive_runs": agentRunTable} {
+			predicate := query.Equal("user_id", a.UserID)
+			if table == agentRunTable {
+				predicate = query.And(agentRunKindPredicate(agentRunKindInteractive), predicate)
+			}
+			statement, deleteArgs, deleteErr := query.NewWorkspaceDeleteBuilder(s.store.Renderer(), table, a.WorkspaceID).Where(predicate).Build()
 			if deleteErr != nil {
 				return deleteErr
 			}

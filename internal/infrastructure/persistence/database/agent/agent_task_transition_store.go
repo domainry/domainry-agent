@@ -13,9 +13,9 @@ import (
 
 func (s *AgentTaskRunStore) Heartbeat(ctx context.Context, workspaceID, runID string, owner string, token int64, now time.Time, duration time.Duration) (agentpersistence.AgentTaskHeartbeatResult, error) {
 	expires := now.Add(duration)
-	statement, args, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
+	statement, args, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), agentRunTable, workspaceID).
 		Set("lease_expires_at", expires.UnixMilli()).Set("updated_at", now.UnixMilli()).Where(query.And(
-		query.Equal("run_id", runID), query.Equal("status", string(agentmodel.AgentTaskRunRunning)),
+		agentRunKindPredicate(agentRunKindTask), query.Equal("run_id", runID), query.Equal("status", string(agentmodel.AgentTaskRunRunning)),
 		query.Equal("lease_owner", owner), query.Equal("fencing_token", token), query.GreaterThan("lease_expires_at", now.UnixMilli()),
 	)).Build()
 	if buildErr != nil {
@@ -38,7 +38,7 @@ func (s *AgentTaskRunStore) Heartbeat(ctx context.Context, workspaceID, runID st
 	}
 	run.Lease.ExpiresAt, run.UpdatedAt, run.Revision = expires, now, run.Revision+1
 	payload, _ := json.Marshal(run)
-	persist, persistArgs, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
+	persist, persistArgs, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), agentRunTable, workspaceID).
 		Set("payload_json", payload).Where(agentTaskLeasePredicate(runID, owner, token)).Build()
 	if buildErr != nil {
 		return agentpersistence.AgentTaskHeartbeatResult{}, buildErr
@@ -55,7 +55,7 @@ func (s *AgentTaskRunStore) SaveRunning(ctx context.Context, run agentmodel.Agen
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	read, readArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", run.WorkspaceID).
+	read, readArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), agentRunTable, run.WorkspaceID).
 		Columns("payload_json").Where(agentTaskLeasePredicate(run.ID, owner, token)).Limit(1).Build()
 	if buildErr != nil {
 		return buildErr
@@ -83,7 +83,7 @@ func (s *AgentTaskRunStore) SaveRunning(ctx context.Context, run agentmodel.Agen
 		return err
 	}
 	next := timeMillis(run.NextAttemptAt)
-	statement, args, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", run.WorkspaceID).
+	statement, args, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), agentRunTable, run.WorkspaceID).
 		Set("status", string(run.Status)).Set("next_attempt_at", next).Set("payload_json", payload).Set("updated_at", run.UpdatedAt.UnixMilli()).
 		Where(agentTaskLeasePredicate(run.ID, owner, token)).Build()
 	if buildErr != nil {
@@ -204,7 +204,7 @@ func (s *AgentTaskRunStore) SaveTerminalOverride(ctx context.Context, run agentm
 	if err != nil {
 		return err
 	}
-	statement, args, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", run.WorkspaceID).
+	statement, args, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), agentRunTable, run.WorkspaceID).
 		Set("payload_json", payload).Set("updated_at", run.UpdatedAt.UnixMilli()).Where(agentTaskStatusPredicate(run.ID, run.Status)).Build()
 	if buildErr != nil {
 		return buildErr
@@ -237,9 +237,9 @@ func (s *AgentTaskRunStore) RequestCancel(ctx context.Context, workspaceID, runI
 		run.Status, run.CompletedAt = agentmodel.AgentTaskRunCancelled, &now
 	}
 	payload, _ := json.Marshal(run)
-	statement, args, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
+	statement, args, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), agentRunTable, workspaceID).
 		Set("status", string(run.Status)).Set("payload_json", payload).Set("updated_at", now.UnixMilli()).Where(query.And(
-		query.Equal("run_id", runID), query.Equal("updated_at", previousUpdatedAt.UnixMilli()),
+		agentRunKindPredicate(agentRunKindTask), query.Equal("run_id", runID), query.Equal("updated_at", previousUpdatedAt.UnixMilli()),
 	)).Build()
 	if buildErr != nil {
 		return agentmodel.AgentTaskRun{}, false, buildErr

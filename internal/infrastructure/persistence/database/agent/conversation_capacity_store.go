@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
@@ -85,60 +84,17 @@ func (s *ConversationStore) conversationExecutionCapacity(ctx context.Context, d
 		return value, err
 	}
 	var err error
-	runBase := []query.Predicate{query.Equal("runtime_id", a.RuntimeID)}
-	if out.UserQueued, err = count("_agent_conversation_runs", append(runBase, query.Equal("owner_key", conversationOwner(a)), query.Equal("status", "queued"))...); err != nil {
+	runBase := []query.Predicate{agentRunKindPredicate(agentRunKindConversation), query.Equal("runtime_id", a.RuntimeID)}
+	if out.UserQueued, err = count(agentRunTable, append(runBase, query.Equal("owner_key", conversationOwner(a)), query.Equal("status", "queued"))...); err != nil {
 		return out, err
 	}
-	if out.UserRunning, err = count("_agent_conversation_runs", append(runBase, query.Equal("owner_key", conversationOwner(a)), query.Equal("status", "running"))...); err != nil {
+	if out.UserRunning, err = count(agentRunTable, append(runBase, query.Equal("owner_key", conversationOwner(a)), query.Equal("status", "running"))...); err != nil {
 		return out, err
 	}
-	if out.WorkspaceQueued, err = count("_agent_conversation_runs", append(runBase, query.Equal("workspace_key", workspaceKey), query.Equal("status", "queued"))...); err != nil {
+	if out.WorkspaceQueued, err = count(agentRunTable, append(runBase, query.Equal("workspace_id", workspaceKey), query.Equal("status", "queued"))...); err != nil {
 		return out, err
 	}
-	if out.WorkspaceRunning, err = count("_agent_conversation_runs", append(runBase, query.Equal("workspace_key", workspaceKey), query.Equal("status", "running"))...); err != nil {
-		return out, err
-	}
-
-	// Rows created before migration 19 have no workspace key. Only this bounded,
-	// draining legacy set needs JSON projection; all new capacity checks use the
-	// indexed owner/workspace columns and never scan another workspace's queue.
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").
-		Columns("authority_json", "status").Where(query.And(
-		query.Equal("runtime_id", a.RuntimeID), query.IsNull("workspace_key"),
-		query.Or(query.Equal("status", "queued"), query.Equal("status", "running")),
-	)).Build()
-	if err != nil {
-		return out, err
-	}
-	rows, err := db.QueryContext(ctx, statement, args...)
-	if err != nil {
-		return out, err
-	}
-	for rows.Next() {
-		var raw []byte
-		var status string
-		if err = rows.Scan(&raw, &status); err != nil {
-			break
-		}
-		var authority agentsdk.ConversationAuthority
-		if err = json.Unmarshal(raw, &authority); err != nil {
-			break
-		}
-		if authority.RuntimeID == a.RuntimeID && authority.WorkspaceID == a.WorkspaceID {
-			if status == "queued" {
-				out.WorkspaceQueued++
-			} else {
-				out.WorkspaceRunning++
-			}
-		}
-	}
-	if closeErr := rows.Close(); err == nil {
-		err = closeErr
-	}
-	if err == nil {
-		err = rows.Err()
-	}
-	if err != nil {
+	if out.WorkspaceRunning, err = count(agentRunTable, append(runBase, query.Equal("workspace_id", workspaceKey), query.Equal("status", "running"))...); err != nil {
 		return out, err
 	}
 
@@ -155,34 +111,6 @@ func (s *ConversationStore) conversationExecutionCapacity(ctx context.Context, d
 	}
 	out.UserQueued += userTasks
 	out.WorkspaceQueued += workspaceTasks
-	statement, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).
-		Columns("authority_json").Where(query.And(append(taskBase, query.IsNull("workspace_key"))...)).Build()
-	if err != nil {
-		return out, err
-	}
-	rows, err = db.QueryContext(ctx, statement, args...)
-	if err != nil {
-		return out, err
-	}
-	for rows.Next() {
-		var raw []byte
-		if err = rows.Scan(&raw); err != nil {
-			break
-		}
-		var authority agentsdk.ConversationAuthority
-		if err = json.Unmarshal(raw, &authority); err != nil {
-			break
-		}
-		if authority.RuntimeID == a.RuntimeID && authority.WorkspaceID == a.WorkspaceID {
-			out.WorkspaceQueued++
-		}
-	}
-	if closeErr := rows.Close(); err == nil {
-		err = closeErr
-	}
-	if err == nil {
-		err = rows.Err()
-	}
 	return out, err
 }
 

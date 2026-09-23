@@ -236,6 +236,71 @@ func TestAgentInteractiveHandoffCommitsTaskAtomically(t *testing.T) {
 	}
 }
 
+func TestUnifiedAgentRunTableIsolatesTaskInteractiveAndConversationKinds(t *testing.T) {
+	store, database := openAgentStore(t)
+	runs := NewAgentTaskRunStore(store)
+	now := time.Date(2026, 9, 23, 12, 0, 0, 0, time.UTC)
+	const workspaceID = "workspace-shared"
+	const sharedRunID = "run-shared"
+	const sharedIdempotencyKey = "idempotency-shared"
+
+	task := agentmodel.AgentTaskRun{ID: sharedRunID, WorkspaceID: workspaceID, TaskKey: "review", TaskVersion: "1", Status: agentmodel.AgentTaskRunPending, IdempotencyKey: sharedIdempotencyKey, MaxAttempts: 2, CreatedAt: now, UpdatedAt: now}
+	if _, replay, err := runs.Create(t.Context(), task); err != nil || replay {
+		t.Fatalf("create task replay=%v err=%v", replay, err)
+	}
+	interactive := agentmodel.AgentInteractiveRun{ID: sharedRunID, SessionID: "session-shared", WorkspaceID: workspaceID, UserID: "user-shared", RoleKey: "operator", AgentKey: "assistant", EntrypointKey: "chat", ContextRevision: "ctx-1", Status: agentmodel.AgentInteractiveRunRunning, IdempotencyKey: sharedIdempotencyKey, CreatedAt: now, UpdatedAt: now, Context: agentsdk.GlobalContext{ContextRevision: "ctx-1", EntrypointKey: "chat", AgentKey: "assistant"}}
+	if _, replay, err := runs.CreateInteractiveRun(t.Context(), interactive); err != nil || replay {
+		t.Fatalf("create interactive replay=%v err=%v", replay, err)
+	}
+
+	conversations := NewConversationStore(store)
+	authority := conversationTestAuthority()
+	authority.WorkspaceID = workspaceID
+	conversation, err := conversations.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "unified-run-table", Title: "Unified runs"}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = conversations.Enqueue(t.Context(), conversation.ID, agentsdk.ConversationSend{ClientMessageID: sharedIdempotencyKey, Message: "verify run isolation"}, authority); err != nil {
+		t.Fatal(err)
+	}
+
+	if loaded, found, err := runs.Get(t.Context(), workspaceID, sharedRunID); err != nil || !found || loaded.TaskKey != task.TaskKey {
+		t.Fatalf("task loaded=%+v found=%v err=%v", loaded, found, err)
+	}
+	if loaded, found, err := runs.GetInteractiveRun(t.Context(), workspaceID, sharedRunID); err != nil || !found || loaded.SessionID != interactive.SessionID {
+		t.Fatalf("interactive loaded=%+v found=%v err=%v", loaded, found, err)
+	}
+
+	rows, err := database.QueryContext(t.Context(), `SELECT run_kind, COUNT(*) FROM _agent_runs GROUP BY run_kind`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rows.Close()
+	counts := map[string]int{}
+	for rows.Next() {
+		var kind string
+		var count int
+		if err = rows.Scan(&kind, &count); err != nil {
+			t.Fatal(err)
+		}
+		counts[kind] = count
+	}
+	if err = rows.Err(); err != nil {
+		t.Fatal(err)
+	}
+	for _, kind := range []string{agentRunKindTask, agentRunKindInteractive, agentRunKindConversation} {
+		if counts[kind] != 1 {
+			t.Fatalf("run kind %s count=%d all=%v", kind, counts[kind], counts)
+		}
+	}
+	for _, retired := range []string{"_agent_task_runs", "_agent_interactive_runs", "_agent_conversation_runs"} {
+		var count int
+		if err = database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, retired).Scan(&count); err != nil || count != 0 {
+			t.Fatalf("retired table %s count=%d err=%v", retired, count, err)
+		}
+	}
+}
+
 func TestAgentDefinitionStoreOwnsSyncRestoreAndDisable(t *testing.T) {
 	store, database := openAgentStore(t)
 	repository := NewDefinitionStore(store)

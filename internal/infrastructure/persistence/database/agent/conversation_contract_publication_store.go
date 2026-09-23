@@ -181,7 +181,7 @@ func (s *ConversationStore) originalContractRequirements(ctx context.Context, db
 		if e != nil {
 			return result, false, e
 		}
-		q, args, e := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns(conversationRunColumns...).Where(conversationScope(executor, assignment.ConversationID)).Limit(257).Build()
+		q, args, e := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns(conversationRunColumns...).Where(conversationRunScope(executor, assignment.ConversationID)).Limit(257).Build()
 		if e != nil {
 			return result, false, e
 		}

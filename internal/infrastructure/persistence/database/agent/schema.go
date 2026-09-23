@@ -23,7 +23,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		return nil, fmt.Errorf("create Agent database dialect: %w", err)
 	}
 	renderer := dialect.WithSchema(schema)
-	statements := make([]string, 0, 7)
+	statements := make([]string, 0, 12)
 	// Migration statement order is part of the host-owned checksum. Keep this
 	// source-owned history deterministic; ranging over a map here made the same
 	// migration drift between Runtime instances sharing one ledger.
@@ -32,8 +32,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		builder *ormschema.TableBuilder
 	}{
 		{name: "_agent_runtime_states", builder: runtimeStateTable(renderer)},
-		{name: "_agent_task_runs", builder: taskRunTable(renderer)},
-		{name: "_agent_interactive_runs", builder: interactiveRunTable(renderer)},
+		{name: agentRunTable, builder: agentRunTableBuilder(renderer)},
 		{name: "_worker_scopes", builder: workerScopeTable(renderer)},
 	} {
 		statement, _, buildErr := table.builder.Build()
@@ -46,13 +45,14 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		name    string
 		columns []string
 	}{
-		{name: "idx_agent_owned_task_claim_v1", columns: []string{"workspace_id", "status", "next_attempt_at", "lease_expires_at", "created_at"}},
-		{name: "idx_agent_owned_task_process_v1", columns: []string{"workspace_id", "process_id", "status"}},
-		{name: "idx_agent_owned_task_key_v1", columns: []string{"workspace_id", "task_key", "status"}},
+		{name: "idx_agent_run_task_claim_v1", columns: []string{"run_kind", "workspace_id", "status", "next_attempt_at", "lease_expires_at", "created_at"}},
+		{name: "idx_agent_run_task_process_v1", columns: []string{"run_kind", "workspace_id", "process_id", "status"}},
+		{name: "idx_agent_run_task_key_v1", columns: []string{"run_kind", "workspace_id", "task_key", "status"}},
+		{name: "idx_agent_run_interactive_list_v1", columns: []string{"run_kind", "workspace_id", "user_id", "role_key", "status", "created_at"}},
 	} {
-		statement, _, buildErr := ormschema.NewIndex(renderer, index.name, "_agent_task_runs").Columns(index.columns...).Build()
+		statement, _, buildErr := ormschema.NewIndex(renderer, index.name, agentRunTable).Columns(index.columns...).Build()
 		if buildErr != nil {
-			return nil, fmt.Errorf("build Agent task index %s: %w", index.name, buildErr)
+			return nil, fmt.Errorf("build Agent run index %s: %w", index.name, buildErr)
 		}
 		statements = append(statements, statement)
 	}
@@ -210,28 +210,44 @@ func runtimeStateTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
 	).PrimaryKey("workspace_id", "kind", "state_key")
 }
 
-func taskRunTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
-	return ormschema.NewTable(renderer, "_agent_task_runs").IfNotExists().Columns(
-		required("workspace_id", ormschema.TextKey(255)), required("run_id", ormschema.TextKey(255)),
-		required("idempotency_key", ormschema.TextKey(255)), required("task_key", ormschema.TextKey(255)),
-		required("process_id", ormschema.TextKey(255)), required("status", ormschema.TextKey(255)),
-		required("lease_owner", ormschema.TextKey(255)), required("fencing_token", ormschema.BigInt()),
-		required("lease_expires_at", ormschema.BigInt()), required("next_attempt_at", ormschema.BigInt()),
-		required("payload_json", ormschema.LongText()), required("created_at", ormschema.BigInt()),
-		required("updated_at", ormschema.BigInt()),
-	).PrimaryKey("workspace_id", "run_id").Unique("workspace_id", "idempotency_key")
-}
+const (
+	agentRunTable            = "_agent_runs"
+	agentRunKindTask         = "task"
+	agentRunKindInteractive  = "interactive"
+	agentRunKindConversation = "conversation"
+)
 
-func interactiveRunTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
-	return ormschema.NewTable(renderer, "_agent_interactive_runs").IfNotExists().Columns(
-		required("workspace_id", ormschema.TextKey(255)), required("run_id", ormschema.TextKey(255)),
-		required("session_id", ormschema.TextKey(255)), required("user_id", ormschema.TextKey(255)),
-		required("role_key", ormschema.TextKey(255)),
-		required("status", ormschema.TextKey(255)), required("idempotency_key", ormschema.TextKey(255)),
-		required("process_id", ormschema.TextKey(255)), required("task_run_id", ormschema.TextKey(255)),
-		required("payload_json", ormschema.LongText()), required("created_at", ormschema.BigInt()),
+// agentRunTableBuilder stores every mutable Agent run in one typed physical
+// table. run_kind and scope_key keep each run family's identity, idempotency,
+// claim and lifecycle semantics isolated even though storage is shared.
+func agentRunTableBuilder(renderer modulehost.Dialect) *ormschema.TableBuilder {
+	return ormschema.NewTable(renderer, agentRunTable).IfNotExists().Columns(
+		required("run_kind", ormschema.TextKey(32)),
+		required("scope_key", ormschema.TextKey(191)),
+		required("workspace_id", ormschema.TextKey(255)),
+		required("run_id", ormschema.TextKey(255)),
+		required("idempotency_key", ormschema.TextKey(255)),
+		optional("owner_key", ormschema.TextKey(64)),
+		optional("conversation_id", ormschema.TextKey(96)),
+		optional("runtime_id", ormschema.TextKey(255)),
+		optional("authority_json", ormschema.LongText()),
+		optional("request_hash", ormschema.LongText()),
+		optional("task_key", ormschema.TextKey(255)),
+		optional("process_id", ormschema.TextKey(255)),
+		optional("session_id", ormschema.TextKey(255)),
+		optional("user_id", ormschema.TextKey(255)),
+		optional("role_key", ormschema.TextKey(255)),
+		optional("task_run_id", ormschema.TextKey(255)),
+		required("status", ormschema.TextKey(255)),
+		required("lease_owner", ormschema.TextKey(255)).DefaultValue(""),
+		required("fencing_token", ormschema.BigInt()).DefaultValue(0),
+		required("lease_expires_at", ormschema.BigInt()).DefaultValue(0),
+		required("next_attempt_at", ormschema.BigInt()).DefaultValue(0),
+		required("event_seq", ormschema.BigInt()).DefaultValue(0),
+		required("payload_json", ormschema.LongText()),
+		required("created_at", ormschema.BigInt()),
 		required("updated_at", ormschema.BigInt()),
-	).PrimaryKey("workspace_id", "run_id").Unique("workspace_id", "idempotency_key")
+	).PrimaryKey("run_kind", "scope_key", "run_id").Unique("run_kind", "scope_key", "idempotency_key")
 }
 
 func required(name string, kind ormschema.ColumnType) ormschema.ColumnDefinition {

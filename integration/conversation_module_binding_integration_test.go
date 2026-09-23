@@ -339,10 +339,10 @@ func TestConversationOnlyBindingRecoversWithAuthorizationAndSharedBudget(t *test
 			if invokes != 2 || reconciles != 0 || calls.Load() != 4 {
 				t.Fatalf("effects=%d reconciles=%d model=%d", invokes, reconciles, calls.Load())
 			}
-			for _, table := range []string{"_agent_task_runs", "_agent_interactive_runs"} {
+			for _, table := range []string{"_agent_task_runs", "_agent_interactive_runs", "_agent_conversation_runs"} {
 				var count int
-				if err = database.database.QueryRowContext(t.Context(), "SELECT COUNT(*) FROM "+table).Scan(&count); err != nil || count != 0 {
-					t.Fatalf("legacy table %s count=%d err=%v", table, count, err)
+				if err = database.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 0 {
+					t.Fatalf("retired table %s count=%d err=%v", table, count, err)
 				}
 			}
 			var privateDefinitions int

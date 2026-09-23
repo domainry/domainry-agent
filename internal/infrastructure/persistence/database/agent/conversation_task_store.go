@@ -759,7 +759,7 @@ func (s *ConversationStore) LaunchConversationTask(ctx context.Context, runtimeI
 				if err = s.event(ctx, tx, &run, "run.queued", map[string]any{"message_id": message.ID, "message_seq": message.Seq, "background_task_id": task.ID}); err != nil {
 					return err
 				}
-				q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("owner_key", "workspace_key", "conversation_id", "run_id", "client_message_id", "runtime_id", "authority_json", "request_hash", "status", "lease_owner", "fence", "lease_expires_at", "event_seq", "created_at", "payload_json").Values(conversationOwner(authority), conversationHash([]string{authority.RuntimeID, authority.WorkspaceID}), conversation.ID, run.Run.ID, run.Run.ClientMessageID, authority.RuntimeID, conversationJSON(authority), run.Run.RequestHash, run.Run.Status, "", 0, 0, run.EventSeq, now.UnixMilli(), conversationJSON(run.Run)).Build()
+				q, args, err = query.NewInsertBuilder(s.store.Renderer(), agentRunTable).Columns("run_kind", "scope_key", "workspace_id", "run_id", "idempotency_key", "owner_key", "conversation_id", "runtime_id", "authority_json", "request_hash", "status", "lease_owner", "fencing_token", "lease_expires_at", "event_seq", "created_at", "updated_at", "payload_json").Values(agentRunKindConversation, conversationRunScopeKey(authority, conversation.ID), conversationRunWorkspaceKey(authority), run.Run.ID, run.Run.ClientMessageID, conversationOwner(authority), conversation.ID, authority.RuntimeID, conversationJSON(authority), run.Run.RequestHash, run.Run.Status, "", 0, 0, run.EventSeq, now.UnixMilli(), now.UnixMilli(), conversationJSON(run.Run)).Build()
 				if err = conversationExec(ctx, tx, q, args, err); err != nil {
 					return err
 				}

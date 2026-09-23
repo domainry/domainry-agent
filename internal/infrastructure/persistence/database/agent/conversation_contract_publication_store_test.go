@@ -40,14 +40,14 @@ func TestLegacyContractRunEvidenceRequiresCapturedRootsAndOriginalAuthority(t *t
 				delete(background, "requirements")
 				envelope["background_task"], _ = json.Marshal(background)
 				raw, _ := json.Marshal(envelope)
-				q, args, err = query.NewUpdateBuilder(repo.store.Renderer(), "_agent_conversation_runs").Set("payload_json", raw).Where(query.And(conversationScope(executor, launched.Run.ConversationID), query.Equal("run_id", launched.Run.ID))).Build()
+				q, args, err = query.NewUpdateBuilder(repo.store.Renderer(), agentRunTable).Set("payload_json", raw).Where(query.And(conversationRunScope(executor, launched.Run.ConversationID), query.Equal("run_id", launched.Run.ID))).Build()
 				if err = conversationExec(t.Context(), repo.store.Database(), q, args, err); err != nil {
 					t.Fatal(err)
 				}
 			} else if kind == "wrong-authority" {
 				actor := executor
 				actor.UserID = "unrelated"
-				q, args, err = query.NewUpdateBuilder(repo.store.Renderer(), "_agent_conversation_runs").Set("authority_json", conversationJSON(actor)).Where(query.And(conversationScope(executor, launched.Run.ConversationID), query.Equal("run_id", launched.Run.ID))).Build()
+				q, args, err = query.NewUpdateBuilder(repo.store.Renderer(), agentRunTable).Set("authority_json", conversationJSON(actor)).Where(query.And(conversationRunScope(executor, launched.Run.ConversationID), query.Equal("run_id", launched.Run.ID))).Build()
 				if err = conversationExec(t.Context(), repo.store.Database(), q, args, err); err != nil {
 					t.Fatal(err)
 				}

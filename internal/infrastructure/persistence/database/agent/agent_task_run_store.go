@@ -44,8 +44,8 @@ func (s *AgentTaskRunStore) Create(ctx context.Context, run agentmodel.AgentTask
 	if err != nil {
 		return agentmodel.AgentTaskRun{}, false, err
 	}
-	statement, args, buildErr := query.NewWorkspaceInsertBuilder(s.store.Renderer(), "_agent_task_runs", run.WorkspaceID).
-		Columns(agentTaskRunColumns()...).Values(run.ID, run.IdempotencyKey, run.TaskKey, run.ProcessID, string(run.Status), "", int64(0), int64(0), timeMillis(run.NextAttemptAt), payload, run.CreatedAt.UnixMilli(), run.UpdatedAt.UnixMilli()).Build()
+	statement, args, buildErr := query.NewWorkspaceInsertBuilder(s.store.Renderer(), agentRunTable, run.WorkspaceID).
+		Columns(agentTaskRunColumns()...).Values(agentRunKindTask, run.WorkspaceID, run.ID, run.IdempotencyKey, run.TaskKey, run.ProcessID, string(run.Status), "", int64(0), int64(0), timeMillis(run.NextAttemptAt), payload, run.CreatedAt.UnixMilli(), run.UpdatedAt.UnixMilli()).Build()
 	if buildErr != nil {
 		return agentmodel.AgentTaskRun{}, false, buildErr
 	}
@@ -67,8 +67,8 @@ func (s *AgentTaskRunStore) Create(ctx context.Context, run agentmodel.AgentTask
 }
 
 func (s *AgentTaskRunStore) Get(ctx context.Context, workspaceID, runID string) (agentmodel.AgentTaskRun, bool, error) {
-	statement, args, err := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", strings.TrimSpace(workspaceID)).
-		Columns("payload_json").Where(query.Equal("run_id", strings.TrimSpace(runID))).Limit(1).Build()
+	statement, args, err := query.NewWorkspaceSelectBuilder(s.store.Renderer(), agentRunTable, strings.TrimSpace(workspaceID)).
+		Columns("payload_json").Where(query.And(agentRunKindPredicate(agentRunKindTask), query.Equal("run_id", strings.TrimSpace(runID)))).Limit(1).Build()
 	if err != nil {
 		return agentmodel.AgentTaskRun{}, false, err
 	}
@@ -76,8 +76,8 @@ func (s *AgentTaskRunStore) Get(ctx context.Context, workspaceID, runID string) 
 }
 
 func (s *AgentTaskRunStore) getByIdempotency(ctx context.Context, workspaceID, key string) (agentmodel.AgentTaskRun, bool, error) {
-	statement, args, err := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
-		Columns("payload_json").Where(query.Equal("idempotency_key", key)).Limit(1).Build()
+	statement, args, err := query.NewWorkspaceSelectBuilder(s.store.Renderer(), agentRunTable, workspaceID).
+		Columns("payload_json").Where(query.And(agentRunKindPredicate(agentRunKindTask), query.Equal("idempotency_key", key))).Limit(1).Build()
 	if err != nil {
 		return agentmodel.AgentTaskRun{}, false, err
 	}
@@ -101,7 +101,7 @@ func (s *AgentTaskRunStore) scanRun(row rowScanner) (agentmodel.AgentTaskRun, bo
 }
 
 func (s *AgentTaskRunStore) List(ctx context.Context, workspaceID string, filter agentpersistence.AgentTaskRunFilter) ([]agentmodel.AgentTaskRun, error) {
-	predicates := []query.Predicate{}
+	predicates := []query.Predicate{agentRunKindPredicate(agentRunKindTask)}
 	if filter.ProcessID != "" {
 		predicates = append(predicates, query.Equal("process_id", strings.TrimSpace(filter.ProcessID)))
 	}
@@ -119,7 +119,7 @@ func (s *AgentTaskRunStore) List(ctx context.Context, workspaceID string, filter
 	if limit <= 0 || limit > 500 {
 		limit = 100
 	}
-	builder := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", strings.TrimSpace(workspaceID)).Columns("payload_json")
+	builder := query.NewWorkspaceSelectBuilder(s.store.Renderer(), agentRunTable, strings.TrimSpace(workspaceID)).Columns("payload_json")
 	if len(predicates) > 0 {
 		builder = builder.Where(query.And(predicates...))
 	}
@@ -144,11 +144,13 @@ func (s *AgentTaskRunStore) List(ctx context.Context, workspaceID string, filter
 }
 
 func agentTaskRunColumns() []string {
-	return []string{"run_id", "idempotency_key", "task_key", "process_id", "status", "lease_owner", "fencing_token", "lease_expires_at", "next_attempt_at", "payload_json", "created_at", "updated_at"}
+	return []string{"run_kind", "scope_key", "run_id", "idempotency_key", "task_key", "process_id", "status", "lease_owner", "fencing_token", "lease_expires_at", "next_attempt_at", "payload_json", "created_at", "updated_at"}
 }
 
+func agentRunKindPredicate(kind string) query.Predicate { return query.Equal("run_kind", kind) }
+
 func agentTaskStatusPredicate(runID string, status agentmodel.AgentTaskRunStatus) query.Predicate {
-	return query.And(query.Equal("run_id", runID), query.Equal("status", string(status)))
+	return query.And(agentRunKindPredicate(agentRunKindTask), query.Equal("run_id", runID), query.Equal("status", string(status)))
 }
 
 func agentTaskLeasePredicate(runID, owner string, token int64) query.Predicate {
@@ -162,10 +164,12 @@ func agentTaskLeasePredicate(runID, owner string, token int64) query.Predicate {
 func agentTaskEligiblePredicate(now time.Time) query.Predicate {
 	return query.Or(
 		query.And(
+			agentRunKindPredicate(agentRunKindTask),
 			query.In("status", string(agentmodel.AgentTaskRunPending), string(agentmodel.AgentTaskRunRetryScheduled)),
 			query.LessThanOrEqual("next_attempt_at", now.UnixMilli()),
 		),
 		query.And(
+			agentRunKindPredicate(agentRunKindTask),
 			query.Equal("status", string(agentmodel.AgentTaskRunRunning)),
 			query.LessThanOrEqual("lease_expires_at", now.UnixMilli()),
 		),
@@ -173,7 +177,7 @@ func agentTaskEligiblePredicate(now time.Time) query.Predicate {
 }
 
 func agentTaskClaimUpdate(store *Store, workspaceID, runID, owner string, token, priorToken int64, expires, now time.Time, payload []byte) (string, []any, error) {
-	return query.NewWorkspaceUpdateBuilder(store.Renderer(), "_agent_task_runs", workspaceID).
+	return query.NewWorkspaceUpdateBuilder(store.Renderer(), agentRunTable, workspaceID).
 		Set("status", string(agentmodel.AgentTaskRunRunning)).Set("lease_owner", owner).Set("fencing_token", token).
 		Set("lease_expires_at", expires.UnixMilli()).Set("payload_json", payload).Set("updated_at", now.UnixMilli()).
 		Where(query.And(
@@ -182,14 +186,14 @@ func agentTaskClaimUpdate(store *Store, workspaceID, runID, owner string, token,
 }
 
 func agentTaskPayloadSelect(store *Store, workspaceID, runID, status string) (string, []any, error) {
-	return query.NewWorkspaceSelectBuilder(store.Renderer(), "_agent_task_runs", workspaceID).
+	return query.NewWorkspaceSelectBuilder(store.Renderer(), agentRunTable, workspaceID).
 		Columns("payload_json").Where(query.And(
-		query.Equal("run_id", runID), query.Equal("status", status),
+		agentRunKindPredicate(agentRunKindTask), query.Equal("run_id", runID), query.Equal("status", status),
 	)).Limit(1).Build()
 }
 
 func agentTaskStatusUpdate(store *Store, run agentmodel.AgentTaskRun, payload []byte, expectedStatus agentmodel.AgentTaskRunStatus) (string, []any, error) {
-	return query.NewWorkspaceUpdateBuilder(store.Renderer(), "_agent_task_runs", run.WorkspaceID).
+	return query.NewWorkspaceUpdateBuilder(store.Renderer(), agentRunTable, run.WorkspaceID).
 		Set("status", string(run.Status)).Set("payload_json", payload).Set("updated_at", run.UpdatedAt.UnixMilli()).
 		Where(agentTaskStatusPredicate(run.ID, expectedStatus)).Build()
 }

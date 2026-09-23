@@ -145,7 +145,7 @@ func (s LifecycleStore) listConversationLifecycleCandidates(ctx context.Context,
 }
 
 func (s LifecycleStore) conversationLifecycleActive(ctx context.Context, owner, id string) (bool, error) {
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("status").Where(query.And(query.Equal("owner_key", owner), query.Equal("conversation_id", id))).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns("status").Where(query.And(agentRunKindPredicate(agentRunKindConversation), query.Equal("owner_key", owner), query.Equal("conversation_id", id))).Build()
 	if err != nil {
 		return false, err
 	}
@@ -169,8 +169,12 @@ func (s LifecycleStore) conversationLifecycleActive(ctx context.Context, owner, 
 
 func (s LifecycleStore) conversationLifecyclePayload(ctx context.Context, owner, id string, conversation []byte) (json.RawMessage, error) {
 	graph := map[string]any{"conversation": json.RawMessage(append([]byte(nil), conversation...))}
-	for _, table := range []string{conversationItemTable, "_agent_conversation_runs", "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable, conversationTaskTable} {
-		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("conversation_id", id))).Build()
+	for _, table := range []string{conversationItemTable, agentRunTable, "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable, conversationTaskTable} {
+		predicate := query.And(query.Equal("owner_key", owner), query.Equal("conversation_id", id))
+		if table == agentRunTable {
+			predicate = query.And(agentRunKindPredicate(agentRunKindConversation), predicate)
+		}
+		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("payload_json").Where(predicate).Build()
 		if table == conversationTaskTable {
 			statement, args, err = query.NewSelectBuilder(s.store.Renderer(), table).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("source_conversation_id", id))).Build()
 		}
@@ -277,8 +281,12 @@ func (s LifecycleStore) deleteConversationLifecycleCandidate(ctx context.Context
 			return execErr
 		}
 		deleted = true
-		for _, table := range []string{conversationItemTable, "_agent_conversation_runs", "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable} {
-			statement, args, buildErr = query.NewDeleteBuilder(s.store.Renderer(), table).Where(query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("conversation_id", candidate.ResourceID))).Build()
+		for _, table := range []string{conversationItemTable, agentRunTable, "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable} {
+			predicate := query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("conversation_id", candidate.ResourceID))
+			if table == agentRunTable {
+				predicate = query.And(agentRunKindPredicate(agentRunKindConversation), predicate)
+			}
+			statement, args, buildErr = query.NewDeleteBuilder(s.store.Renderer(), table).Where(predicate).Build()
 			if buildErr != nil {
 				return buildErr
 			}

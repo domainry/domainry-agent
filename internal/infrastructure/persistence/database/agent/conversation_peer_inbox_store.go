@@ -208,7 +208,7 @@ func (s *ConversationStore) launchConversationPeerMessage(ctx context.Context, r
 				if c.Archived || c.ActiveRunID != "" {
 					continue
 				}
-				q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Projections(query.Project(query.CountAll())).Where(query.And(conversationScope(a, c.ID), query.Or(query.Equal("status", "queued"), query.Equal("status", "running"), query.Equal("status", "waiting_user"), query.Equal("status", "waiting_confirmation"), query.Equal("status", "needs_reconciliation")))).Build()
+				q, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Projections(query.Project(query.CountAll())).Where(query.And(conversationRunScope(a, c.ID), query.Or(query.Equal("status", "queued"), query.Equal("status", "running"), query.Equal("status", "waiting_user"), query.Equal("status", "waiting_confirmation"), query.Equal("status", "needs_reconciliation")))).Build()
 				if err != nil {
 					return err
 				}
@@ -292,7 +292,7 @@ func (s *ConversationStore) launchConversationPeerMessage(ctx context.Context, r
 				if err = s.event(ctx, tx, &run, "run.queued", map[string]any{"message_id": trigger.ID, "message_seq": trigger.Seq, "peer_message_id": message.ID}); err != nil {
 					return err
 				}
-				q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("owner_key", "workspace_key", "conversation_id", "run_id", "client_message_id", "runtime_id", "authority_json", "request_hash", "status", "lease_owner", "fence", "lease_expires_at", "event_seq", "created_at", "payload_json").Values(conversationOwner(a), conversationHash([]string{a.RuntimeID, a.WorkspaceID}), c.ID, run.Run.ID, run.Run.ClientMessageID, runtimeID, conversationJSON(a), run.Run.RequestHash, "queued", "", 0, 0, run.EventSeq, now.UnixMilli(), conversationJSON(run.Run)).Build()
+				q, args, err = query.NewInsertBuilder(s.store.Renderer(), agentRunTable).Columns("run_kind", "scope_key", "workspace_id", "run_id", "idempotency_key", "owner_key", "conversation_id", "runtime_id", "authority_json", "request_hash", "status", "lease_owner", "fencing_token", "lease_expires_at", "event_seq", "created_at", "updated_at", "payload_json").Values(agentRunKindConversation, conversationRunScopeKey(a, c.ID), conversationRunWorkspaceKey(a), run.Run.ID, run.Run.ClientMessageID, conversationOwner(a), c.ID, runtimeID, conversationJSON(a), run.Run.RequestHash, "queued", "", 0, 0, run.EventSeq, now.UnixMilli(), now.UnixMilli(), conversationJSON(run.Run)).Build()
 				if err = conversationExec(ctx, tx, q, args, err); err != nil {
 					return err
 				}

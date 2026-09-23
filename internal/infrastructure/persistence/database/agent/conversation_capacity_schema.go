@@ -15,15 +15,11 @@ const (
 // separate from Runtime rate limiting and serializes one workspace's admission
 // without creating an Agent-specific physical table.
 func conversationCapacityMigration(d modulehost.Dialect) (modulehost.SchemaMigration, error) {
-	runWorkspace, _, err := ormschema.NewAddColumn(d, "_agent_conversation_runs", ormschema.Column("workspace_key", ormschema.TextKey(64))).Build()
-	if err != nil {
-		return modulehost.SchemaMigration{}, err
-	}
 	taskWorkspace, _, err := ormschema.NewAddColumn(d, conversationTaskTable, ormschema.Column("workspace_key", ormschema.TextKey(64))).Build()
 	if err != nil {
 		return modulehost.SchemaMigration{}, err
 	}
-	runIndex, _, err := ormschema.NewIndex(d, "idx_agent_conversation_capacity_run_v19", "_agent_conversation_runs").Columns("runtime_id", "workspace_key", "status").Build()
+	runIndex, _, err := ormschema.NewIndex(d, "idx_agent_run_conversation_capacity_v19", agentRunTable).Columns("run_kind", "runtime_id", "workspace_id", "status").Build()
 	if err != nil {
 		return modulehost.SchemaMigration{}, err
 	}
@@ -31,5 +27,5 @@ func conversationCapacityMigration(d modulehost.Dialect) (modulehost.SchemaMigra
 	if err != nil {
 		return modulehost.SchemaMigration{}, err
 	}
-	return modulehost.SchemaMigration{Version: 19, Name: "agent_conversation_capacity", Statements: []string{runWorkspace, taskWorkspace, runIndex, taskIndex}}, nil
+	return modulehost.SchemaMigration{Version: 19, Name: "agent_conversation_capacity", Statements: []string{taskWorkspace, runIndex, taskIndex}}, nil
 }

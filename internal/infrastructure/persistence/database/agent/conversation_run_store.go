@@ -22,7 +22,19 @@ type conversationRunRow struct {
 	Fence, Expires, EventSeq int64
 }
 
-var conversationRunColumns = []string{"payload_json", "authority_json", "request_hash", "lease_owner", "fence", "lease_expires_at", "event_seq"}
+var conversationRunColumns = []string{"payload_json", "authority_json", "request_hash", "lease_owner", "fencing_token", "lease_expires_at", "event_seq"}
+
+func conversationRunScope(a agentsdk.ConversationAuthority, conversationID string) query.Predicate {
+	return query.And(agentRunKindPredicate(agentRunKindConversation), conversationScope(a, conversationID))
+}
+
+func conversationRunScopeKey(a agentsdk.ConversationAuthority, conversationID string) string {
+	return conversationHash([]string{conversationOwner(a), conversationID})
+}
+
+func conversationRunWorkspaceKey(a agentsdk.ConversationAuthority) string {
+	return conversationHash([]string{a.RuntimeID, a.WorkspaceID})
+}
 
 func scanConversationRun(row interface{ Scan(...any) error }) (conversationRunRow, error) {
 	var v conversationRunRow
@@ -51,7 +63,7 @@ func scanConversationRun(row interface{ Scan(...any) error }) (conversationRunRo
 	return v, err
 }
 func (s *ConversationStore) runRow(ctx context.Context, db conversationDB, id, runID string, a agentsdk.ConversationAuthority) (conversationRunRow, error) {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns(conversationRunColumns...).Where(query.And(conversationScope(a, id), query.Equal("run_id", runID))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns(conversationRunColumns...).Where(query.And(conversationRunScope(a, id), query.Equal("run_id", runID))).Build()
 	if err != nil {
 		return conversationRunRow{}, err
 	}
@@ -73,7 +85,7 @@ func (s *ConversationStore) saveRun(ctx context.Context, tx *sql.Tx, v, old conv
 		return conversationError("forbidden", "authority_invalid")
 	}
 	v.Run.UpdatedAt = time.Now().UTC()
-	q, args, err := query.NewUpdateBuilder(s.store.Renderer(), "_agent_conversation_runs").Set("payload_json", conversationJSON(v.Run)).Set("authority_json", conversationJSON(v.Authority)).Set("status", v.Run.Status).Set("lease_owner", v.Owner).Set("fence", v.Fence).Set("lease_expires_at", v.Expires).Set("event_seq", v.EventSeq).Where(query.And(conversationScope(old.Authority, v.Run.ConversationID), query.Equal("run_id", v.Run.ID), query.Equal("fence", old.Fence), query.Equal("status", old.Run.Status), query.Equal("event_seq", old.EventSeq))).Build()
+	q, args, err := query.NewUpdateBuilder(s.store.Renderer(), agentRunTable).Set("payload_json", conversationJSON(v.Run)).Set("authority_json", conversationJSON(v.Authority)).Set("status", v.Run.Status).Set("lease_owner", v.Owner).Set("fencing_token", v.Fence).Set("lease_expires_at", v.Expires).Set("event_seq", v.EventSeq).Set("updated_at", v.Run.UpdatedAt.UnixMilli()).Where(query.And(conversationRunScope(old.Authority, v.Run.ConversationID), query.Equal("run_id", v.Run.ID), query.Equal("fencing_token", old.Fence), query.Equal("status", old.Run.Status), query.Equal("event_seq", old.EventSeq))).Build()
 	return conversationCAS(ctx, tx, q, args, err)
 }
 func (s *ConversationStore) event(ctx context.Context, tx *sql.Tx, v *conversationRunRow, kind string, data map[string]any) error {
@@ -98,7 +110,7 @@ func (s *ConversationStore) Enqueue(ctx context.Context, id string, in agentsdk.
 		if err != nil {
 			return err
 		}
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns(conversationRunColumns...).Where(query.And(conversationScope(a, id), query.Equal("client_message_id", in.ClientMessageID))).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns(conversationRunColumns...).Where(query.And(conversationRunScope(a, id), query.Equal("idempotency_key", in.ClientMessageID))).Build()
 		if err != nil {
 			return err
 		}
@@ -148,7 +160,7 @@ func (s *ConversationStore) Enqueue(ctx context.Context, id string, in agentsdk.
 		if err = s.event(ctx, tx, &v, "run.queued", map[string]any{"message_id": m.ID, "message_seq": m.Seq}); err != nil {
 			return err
 		}
-		q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("owner_key", "workspace_key", "conversation_id", "run_id", "client_message_id", "runtime_id", "authority_json", "request_hash", "status", "lease_owner", "fence", "lease_expires_at", "event_seq", "created_at", "payload_json").Values(conversationOwner(a), conversationHash([]string{a.RuntimeID, a.WorkspaceID}), id, v.Run.ID, in.ClientMessageID, a.RuntimeID, conversationJSON(a), hash, "queued", "", 0, 0, v.EventSeq, now.UnixMilli(), conversationJSON(v.Run)).Build()
+		q, args, err = query.NewInsertBuilder(s.store.Renderer(), agentRunTable).Columns("run_kind", "scope_key", "workspace_id", "run_id", "idempotency_key", "owner_key", "conversation_id", "runtime_id", "authority_json", "request_hash", "status", "lease_owner", "fencing_token", "lease_expires_at", "event_seq", "created_at", "updated_at", "payload_json").Values(agentRunKindConversation, conversationRunScopeKey(a, id), conversationRunWorkspaceKey(a), v.Run.ID, in.ClientMessageID, conversationOwner(a), id, a.RuntimeID, conversationJSON(a), hash, "queued", "", 0, 0, v.EventSeq, now.UnixMilli(), now.UnixMilli(), conversationJSON(v.Run)).Build()
 		out = v.Run
 		return conversationExec(ctx, tx, q, args, err)
 	})
@@ -166,7 +178,7 @@ func (s *ConversationStore) Claim(ctx context.Context, runtimeID, owner string, 
 		saturatedOwners := map[string]bool{}
 		saturatedWorkspaces := map[string]bool{}
 		for offset := 0; ; offset += claimPageSize {
-			builder := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns(conversationRunColumns...).Where(query.And(query.Equal("runtime_id", runtimeID), query.Or(query.Equal("status", "queued"), query.And(query.Equal("status", "running"), query.LessThanOrEqual("lease_expires_at", now.UnixMilli()))))).OrderBy(query.Ascending("created_at"), query.Ascending("run_id")).Limit(claimPageSize).Offset(offset)
+			builder := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns(conversationRunColumns...).Where(query.And(agentRunKindPredicate(agentRunKindConversation), query.Equal("runtime_id", runtimeID), query.Or(query.Equal("status", "queued"), query.And(query.Equal("status", "running"), query.LessThanOrEqual("lease_expires_at", now.UnixMilli()))))).OrderBy(query.Ascending("created_at"), query.Ascending("run_id")).Limit(claimPageSize).Offset(offset)
 			profile := s.store.Profile()
 			if profile != nil && profile.Capabilities().RowLock {
 				var err error
@@ -282,7 +294,7 @@ func (s *ConversationStore) Heartbeat(ctx context.Context, claim agentpersistenc
 	if ttl <= 0 {
 		return false, conversationError("bad_request", "claim_invalid")
 	}
-	q, args, err := query.NewUpdateBuilder(s.store.Renderer(), "_agent_conversation_runs").Set("lease_expires_at", time.Now().Add(ttl).UnixMilli()).Where(query.And(conversationScope(claim.Authority, claim.Run.ConversationID), query.Equal("run_id", claim.Run.ID), query.Equal("status", "running"), query.Equal("lease_owner", claim.Owner), query.Equal("fence", claim.Fence), query.GreaterThan("lease_expires_at", time.Now().UnixMilli()))).Build()
+	q, args, err := query.NewUpdateBuilder(s.store.Renderer(), agentRunTable).Set("lease_expires_at", time.Now().Add(ttl).UnixMilli()).Where(query.And(conversationRunScope(claim.Authority, claim.Run.ConversationID), query.Equal("run_id", claim.Run.ID), query.Equal("status", "running"), query.Equal("lease_owner", claim.Owner), query.Equal("fencing_token", claim.Fence), query.GreaterThan("lease_expires_at", time.Now().UnixMilli()))).Build()
 	if err != nil {
 		return false, err
 	}

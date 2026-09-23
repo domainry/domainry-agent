@@ -13,7 +13,6 @@ import (
 	"github.com/domainry/domainry-agent-sdk/contracttest"
 	agentlifecycle "github.com/domainry/domainry-agent-sdk/lifecycle"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
-	schemastore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
@@ -30,39 +29,25 @@ type host struct {
 	content   *artifactkernel.ContentFiles
 }
 
-func TestModuleMigrationAdoptsLegacyRuntimeAgentIndexes(t *testing.T) {
-	host := newHost(t, "legacy-runtime")
-	migrations, err := schemastore.SchemaMigrations("sqlite", "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, statement := range migrations[0].Statements {
-		if strings.Contains(statement, `CREATE TABLE IF NOT EXISTS "_agent_task_runs"`) {
-			if _, err := host.database.ExecContext(t.Context(), statement); err != nil {
-				t.Fatal(err)
-			}
-		}
-	}
-	for _, statement := range []string{
-		`CREATE INDEX idx_agent_task_claim ON _agent_task_runs (workspace_id,status,next_attempt_at,lease_expires_at,created_at)`,
-		`CREATE INDEX idx_agent_task_process ON _agent_task_runs (workspace_id,process_id,status)`,
-		`CREATE INDEX idx_agent_task_key ON _agent_task_runs (workspace_id,task_key,status)`,
-	} {
-		if _, err := host.database.ExecContext(t.Context(), statement); err != nil {
-			t.Fatal(err)
-		}
-	}
+func TestModuleMigrationCreatesUnifiedRunTableAndIndexes(t *testing.T) {
+	host := newHost(t, "unified-runs")
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"data":{"run_id":"provider","status":"accepted"}}`))
 	}))
 	defer upstream.Close()
-	if _, err := NewFactory(Options{BaseURL: upstream.URL, APIKey: "key", AgentID: 1, Client: upstream.Client()}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: "legacy-runtime"}, host); err != nil {
+	if _, err := NewFactory(Options{BaseURL: upstream.URL, APIKey: "key", AgentID: 1, Client: upstream.Client()}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: "unified-runs"}, host); err != nil {
 		t.Fatal(err)
 	}
 	var count int
-	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='index' AND name LIKE 'idx_agent_owned_task_%_v1'`).Scan(&count); err != nil || count != 3 {
-		t.Fatalf("owned indexes=%d err=%v", count, err)
+	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='_agent_runs'`).Scan(&count); err != nil || count != 1 {
+		t.Fatalf("unified run table=%d err=%v", count, err)
+	}
+	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='index' AND name LIKE 'idx_agent_run_%'`).Scan(&count); err != nil || count != 7 {
+		t.Fatalf("unified run indexes=%d err=%v", count, err)
+	}
+	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name IN ('_agent_task_runs','_agent_interactive_runs','_agent_conversation_runs')`).Scan(&count); err != nil || count != 0 {
+		t.Fatalf("retired run tables=%d err=%v", count, err)
 	}
 }
 

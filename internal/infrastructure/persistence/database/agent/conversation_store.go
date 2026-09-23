@@ -54,7 +54,7 @@ func (s *ConversationStore) BindArtifactPersistence(store sharedartifact.Managed
 }
 
 func (s *ConversationStore) Ready(ctx context.Context) error {
-	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_conversation_runs", "_agent_user_memories", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", conversationForkTable, interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationTaskPlanTable, conversationFollowUpStateTable, conversationFollowUpEventTable, conversationAgentTable, conversationDelegationTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDisagreementTable, conversationAgentGrantTable, conversationParticipantTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
+	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_user_memories", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", conversationForkTable, interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationTaskPlanTable, conversationFollowUpStateTable, conversationFollowUpEventTable, conversationAgentTable, conversationDelegationTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDisagreementTable, conversationAgentGrantTable, conversationParticipantTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("owner_key").Limit(1).Build()
 		if err != nil {
 			return err
@@ -65,7 +65,15 @@ func (s *ConversationStore) Ready(ctx context.Context) error {
 			return err
 		}
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationWorkBudgetTable).Columns("runtime_id").Limit(1).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns("run_kind").Limit(1).Build()
+	if err != nil {
+		return err
+	}
+	var runKind string
+	if err = s.store.Database().QueryRowContext(ctx, q, args...).Scan(&runKind); err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return err
+	}
+	q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationWorkBudgetTable).Columns("runtime_id").Limit(1).Build()
 	if err != nil {
 		return err
 	}
@@ -383,11 +391,15 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 		if err = conversationCAS(ctx, tx, q, args, e); err != nil {
 			return err
 		}
-		for _, table := range []string{conversationItemTable, "_agent_conversation_runs", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", conversationForkTable, interactionTable} {
+		for _, table := range []string{conversationItemTable, "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", conversationForkTable, interactionTable} {
 			q, args, e := query.NewDeleteBuilder(s.store.Renderer(), table).Where(conversationScope(a, id)).Build()
 			if err = conversationExec(ctx, tx, q, args, e); err != nil {
 				return err
 			}
+		}
+		q, args, e = query.NewDeleteBuilder(s.store.Renderer(), agentRunTable).Where(conversationRunScope(a, id)).Build()
+		if err = conversationExec(ctx, tx, q, args, e); err != nil {
+			return err
 		}
 		if err = s.deleteConversationTaskPlansForSource(ctx, tx, owner, id); err != nil {
 			return err

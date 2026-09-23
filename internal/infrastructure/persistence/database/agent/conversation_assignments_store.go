@@ -159,7 +159,7 @@ func (s *ConversationStore) prepareDelegationHandoff(ctx context.Context, tx *sq
 		if err != nil {
 			return out, err
 		}
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("payload_json").Where(conversationScope(executor, assignment.ConversationID)).OrderBy(query.Ascending("created_at"), query.Ascending("run_id")).Limit(129).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns("payload_json").Where(conversationRunScope(executor, assignment.ConversationID)).OrderBy(query.Ascending("created_at"), query.Ascending("run_id")).Limit(129).Build()
 		if err != nil {
 			return out, err
 		}

@@ -69,7 +69,7 @@ func (s *AgentTaskRunStore) claimAgentTaskRunOnce(ctx context.Context, workspace
 		return agentpersistence.AgentTaskClaim{}, false, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	queryValue, queryArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
+	queryValue, queryArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), agentRunTable, workspaceID).
 		Columns("payload_json", "fencing_token").Where(query.And(
 		query.Equal("run_id", runID), agentTaskEligiblePredicate(now),
 	)).Limit(1).Build()
@@ -118,7 +118,7 @@ func (s *AgentTaskRunStore) claimNextOnce(ctx context.Context, workspaceID strin
 		return agentpersistence.AgentTaskClaim{}, false, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	queryValue, queryArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), "_agent_task_runs", workspaceID).
+	queryValue, queryArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), agentRunTable, workspaceID).
 		Columns("run_id", "payload_json", "fencing_token").Where(agentTaskEligiblePredicate(now)).
 		OrderBy(query.Ascending("created_at")).Limit(1).Build()
 	if buildErr != nil {

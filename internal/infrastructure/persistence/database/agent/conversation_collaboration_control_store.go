@@ -298,8 +298,8 @@ func (s *ConversationStore) peerAgentCapacity(ctx context.Context, tx *sql.Tx, r
 	}
 	// A shared Agent remains one identity. Count its leases across callers in
 	// this workspace while exposing none of those callers' execution details.
-	scope := query.Or(query.Equal("owner_key", conversationOwner(run.Authority)), query.And(query.Equal("runtime_id", run.Authority.RuntimeID), query.Equal("workspace_key", conversationHash([]string{run.Authority.RuntimeID, run.Authority.WorkspaceID}))))
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("payload_json").Where(query.And(scope, query.Equal("status", "running"), query.GreaterThan("lease_expires_at", time.Now().UnixMilli()))).Build()
+	scope := query.Or(query.Equal("owner_key", conversationOwner(run.Authority)), query.And(query.Equal("runtime_id", run.Authority.RuntimeID), query.Equal("workspace_id", conversationRunWorkspaceKey(run.Authority))))
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns("payload_json").Where(query.And(agentRunKindPredicate(agentRunKindConversation), scope, query.Equal("status", "running"), query.GreaterThan("lease_expires_at", time.Now().UnixMilli()))).Build()
 	if err != nil {
 		return false, err
 	}

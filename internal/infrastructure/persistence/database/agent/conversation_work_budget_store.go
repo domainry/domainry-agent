@@ -182,7 +182,7 @@ func workReservationKey(claim persistence.ConversationClaim, step int) string {
 func (s *ConversationStore) pruneConversationWorkReservations(ctx context.Context, tx *sql.Tx, ledger *conversationWorkLedger) error {
 	now := time.Now().UnixMilli()
 	for key, item := range ledger.Reservations {
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("status", "fence", "lease_expires_at").Where(query.And(query.Equal("owner_key", item.OwnerKey), query.Equal("conversation_id", item.ConversationID), query.Equal("run_id", item.RunID))).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns("status", "fencing_token", "lease_expires_at").Where(query.And(agentRunKindPredicate(agentRunKindConversation), query.Equal("owner_key", item.OwnerKey), query.Equal("conversation_id", item.ConversationID), query.Equal("run_id", item.RunID))).Build()
 		if err != nil {
 			return err
 		}

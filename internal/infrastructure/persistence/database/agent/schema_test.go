@@ -68,7 +68,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 				t.Fatal("sharing migration owns a private ledger")
 			}
 			joined := strings.Join(migrations[0].Statements, "\n")
-			for _, table := range []string{"_agent_runtime_states", "_agent_task_runs", "_agent_interactive_runs", "_worker_scopes"} {
+			for _, table := range []string{"_agent_runtime_states", agentRunTable, "_worker_scopes"} {
 				if !strings.Contains(joined, table) {
 					t.Errorf("%s migration does not own %s", driver, table)
 				}
@@ -90,6 +90,17 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			for _, retired := range []string{"_agent_conversation_messages", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_task_agreement_updates", "_agent_conversation_task_completions"} {
 				if strings.Contains(conversationItems, retired) {
 					t.Fatalf("private conversation item table remains: %s", retired)
+				}
+			}
+			allRunDDL := strings.Join(append([]string{}, migrations[0].Statements...), "\n") + "\n" + conversationItems + "\n" + byVersion[19]
+			for _, fragment := range []string{"run_kind", "scope_key", "idempotency_key", "fencing_token", "idx_agent_run_task_claim_v1", "idx_agent_run_interactive_list_v1", "idx_agent_run_conversation_claim_v2", "idx_agent_run_conversation_capacity_v19"} {
+				if !strings.Contains(allRunDDL, fragment) {
+					t.Fatalf("missing unified Agent run field/index %s", fragment)
+				}
+			}
+			for _, retired := range []string{"_agent_task_runs", "_agent_interactive_runs", "_agent_conversation_runs", "client_message_id", "workspace_key IS NULL"} {
+				if strings.Contains(allRunDDL, retired) {
+					t.Fatalf("retired Agent run schema remains: %s", retired)
 				}
 			}
 			all := make([]string, 0, len(migrations))

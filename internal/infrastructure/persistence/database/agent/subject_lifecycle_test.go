@@ -40,7 +40,7 @@ func TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly(t *testing.T) {
 	}
 	lifecycle := NewSubjectLifecycle(store, a.RuntimeID)
 	preview, err := lifecycle.PreviewSubject(t.Context(), a.WorkspaceID, a.UserID)
-	if err != nil || !bytes.Contains(preview, []byte(`"_agent_conversations":1`)) || !bytes.Contains(preview, []byte(`"_agent_conversation_runs":1`)) || !bytes.Contains(preview, []byte(`"_agent_conversation_items":`)) || !bytes.Contains(preview, []byte(`"_agent_user_memories":1`)) {
+	if err != nil || !bytes.Contains(preview, []byte(`"_agent_conversations":1`)) || !bytes.Contains(preview, []byte(`"_agent_runs":1`)) || !bytes.Contains(preview, []byte(`"_agent_conversation_items":`)) || !bytes.Contains(preview, []byte(`"_agent_user_memories":1`)) {
 		t.Fatalf("preview=%s err=%v", preview, err)
 	}
 	exported, err := lifecycle.ExportSubjectForRequest(t.Context(), "export", a.WorkspaceID, a.UserID)

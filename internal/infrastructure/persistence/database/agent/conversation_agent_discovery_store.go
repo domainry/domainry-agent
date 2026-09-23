@@ -48,11 +48,11 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 		if err != nil {
 			return err
 		}
-		workspace := query.Or(owner, query.And(query.Equal("runtime_id", a.RuntimeID), query.Equal("workspace_key", conversationHash([]string{a.RuntimeID, a.WorkspaceID}))))
+		workspace := query.Or(owner, query.And(query.Equal("runtime_id", a.RuntimeID), query.Equal("workspace_id", conversationRunWorkspaceKey(a))))
 		// Aggregate visible Agent load across workspace users, without exposing
 		// their task identities. Queued tasks and their runs are mutually
 		// exclusive in the launch transaction; default stays caller-scoped.
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("payload_json", "lease_expires_at", "owner_key").Where(query.And(workspace, query.Or(query.Equal("status", "queued"), query.Equal("status", "running"), query.Equal("status", "waiting_user"), query.Equal("status", "waiting_confirmation"), query.Equal("status", "needs_reconciliation")))).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns("payload_json", "lease_expires_at", "owner_key").Where(query.And(agentRunKindPredicate(agentRunKindConversation), workspace, query.Or(query.Equal("status", "queued"), query.Equal("status", "running"), query.Equal("status", "waiting_user"), query.Equal("status", "waiting_confirmation"), query.Equal("status", "needs_reconciliation")))).Build()
 		if err != nil {
 			return err
 		}
@@ -133,7 +133,7 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 			return err
 		}
 		// Recent history is explicitly sampled; it is not a lifetime success rate.
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("payload_json").Where(query.And(owner, query.Or(query.Equal("status", "completed"), query.Equal("status", "failed"), query.Equal("status", "cancelled")))).OrderBy(query.Descending("created_at"), query.Descending("run_id")).Limit(201).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns("payload_json").Where(query.And(agentRunKindPredicate(agentRunKindConversation), owner, query.Or(query.Equal("status", "completed"), query.Equal("status", "failed"), query.Equal("status", "cancelled")))).OrderBy(query.Descending("created_at"), query.Descending("run_id")).Limit(201).Build()
 		if err != nil {
 			return err
 		}

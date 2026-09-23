@@ -58,7 +58,7 @@ func (s *ConversationStore) peerMessageReady(ctx context.Context, db conversatio
 
 func (s *ConversationStore) preparePeerMessageDelivery(ctx context.Context, tx *sql.Tx, d sdk.ConversationDelegation, m *sdk.ConversationAgentMessage, a sdk.ConversationAuthority) error {
 	if m.DeliveryMode == "next_run" {
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_runs").Columns("run_id").Where(query.And(conversationScope(a, m.ConversationID), query.Or(query.Equal("status", "queued"), query.Equal("status", "running"), query.Equal("status", "waiting_user"), query.Equal("status", "waiting_confirmation"), query.Equal("status", "needs_reconciliation")))).OrderBy(query.Descending("created_at")).Limit(1).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns("run_id").Where(query.And(conversationRunScope(a, m.ConversationID), query.Or(query.Equal("status", "queued"), query.Equal("status", "running"), query.Equal("status", "waiting_user"), query.Equal("status", "waiting_confirmation"), query.Equal("status", "needs_reconciliation")))).OrderBy(query.Descending("created_at")).Limit(1).Build()
 		if err != nil {
 			return err
 		}
