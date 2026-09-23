@@ -2,10 +2,9 @@ package agent
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"strings"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
@@ -13,8 +12,8 @@ import (
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
+	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
 	ormdriver "github.com/domainry/domainry-orm/driver"
-	"github.com/domainry/domainry-orm/query"
 )
 
 func agentError(class, code string) error {
@@ -28,6 +27,7 @@ type Store struct {
 	artifactWriter  sharedartifact.ContentWriter
 	definitions     shareddefinition.Store
 	operations      *sharedoperation.SQLStore
+	workerScopes    *sharedworkerscope.Store
 }
 
 func NewStore(database modulehost.Database, renderer modulehost.Dialect, profile ormdriver.Profile, installationID string) (*Store, error) {
@@ -39,9 +39,10 @@ func NewStore(database modulehost.Database, renderer modulehost.Dialect, profile
 		return nil, fmt.Errorf("Agent database dialect does not support shared Definitions")
 	}
 	return &Store{
-		SQLDatabase: base.NewSQLDatabase(database, renderer, profile),
-		definitions: shareddefinition.NewStore(database, definitionDialect, installationID),
-		operations:  sharedoperation.NewSQLStore(database, sharedoperation.AdaptDialect(renderer)),
+		SQLDatabase:  base.NewSQLDatabase(database, renderer, profile),
+		definitions:  shareddefinition.NewStore(database, definitionDialect, installationID),
+		operations:   sharedoperation.NewSQLStore(database, sharedoperation.AdaptDialect(renderer)),
+		workerScopes: sharedworkerscope.NewStore(database, renderer),
 	}, nil
 }
 
@@ -59,51 +60,29 @@ func (s *Store) ArtifactContentWriter() sharedartifact.ContentWriter {
 	return s.artifactWriter
 }
 
-const agentTaskWorkerScopeRecoveryPolicy = "durable_due_scan"
+const (
+	agentTaskWorkerQueueKind           = sharedworkerscope.OwnerAgentTask
+	agentTaskWorkerScopeRecoveryPolicy = "durable_due_scan"
+)
 
 func (s *Store) registerWorkerScope(ctx context.Context, executor modulehost.Executor, workspaceID, updatedAt string) error {
 	workspaceID = strings.TrimSpace(workspaceID)
 	if workspaceID == "" {
 		return fmt.Errorf("Agent workspace is required")
 	}
-	digest := sha256.Sum256([]byte(agentTaskWorkerQueueKind + "\x00" + workspaceID))
-	id := "worker_scope:" + hex.EncodeToString(digest[:12])
-	insert := query.NewInsertBuilder(s.Renderer(), "_worker_scopes").Columns("id", "owner", "scope_key", "updated_at").Values(id, agentTaskWorkerQueueKind, workspaceID, updatedAt)
-	insert, err := s.Profile().ApplyUpsert(insert, []string{"owner", "scope_key"}, query.AssignExpression("updated_at", query.InsertedValue("updated_at")))
-	if err != nil {
-		return err
-	}
-	statement, args, err := insert.Build()
-	if err != nil {
-		return err
-	}
 	if executor == nil {
 		executor = s.Database()
 	}
-	_, err = executor.ExecContext(ctx, statement, args...)
-	return err
+	value, err := time.Parse(time.RFC3339Nano, strings.TrimSpace(updatedAt))
+	if err != nil {
+		return fmt.Errorf("Agent worker scope timestamp is invalid: %w", err)
+	}
+	return s.workerScopes.Register(ctx, executor, sharedworkerscope.NewIdentity(agentTaskWorkerQueueKind, workspaceID), value)
 }
 
 func (s *Store) workerScopePage(ctx context.Context, limit int) ([]string, error) {
 	if limit <= 0 || limit > 500 {
 		limit = 64
 	}
-	statement, args, err := query.NewSelectBuilder(s.Renderer(), "_worker_scopes").Columns("scope_key").Where(query.Equal("owner", agentTaskWorkerQueueKind)).OrderBy(query.Descending("updated_at")).Limit(limit).Build()
-	if err != nil {
-		return nil, err
-	}
-	rows, err := s.Database().QueryContext(ctx, statement, args...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	values := []string{}
-	for rows.Next() {
-		var workspaceID string
-		if err := rows.Scan(&workspaceID); err != nil {
-			return nil, err
-		}
-		values = append(values, workspaceID)
-	}
-	return values, rows.Err()
+	return s.workerScopes.ScopeKeys(ctx, nil, sharedworkerscope.ScopeQuery{Owner: agentTaskWorkerQueueKind, Order: sharedworkerscope.UpdatedAtDescending, Limit: limit})
 }

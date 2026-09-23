@@ -60,7 +60,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 				t.Fatal("peer-link migration owns a private ledger")
 			}
 			joined := strings.Join(migrations[0].Statements, "\n")
-			for _, table := range []string{"_agent_runtime_states", agentRunTable, "_worker_scopes"} {
+			for _, table := range []string{"_agent_runtime_states", agentRunTable} {
 				if !strings.Contains(joined, table) {
 					t.Errorf("%s migration does not own %s", driver, table)
 				}
@@ -72,6 +72,9 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			}
 			if strings.Contains(joined, "_schema_migrations") {
 				t.Fatal("Agent migration attempted to create a private ledger")
+			}
+			if strings.Contains(joined, "_worker_scopes") {
+				t.Fatal("Agent migration still owns the shared Worker Scope table")
 			}
 			conversationItems := byVersion[2]
 			for _, fragment := range []string{conversationItemTable, "item_kind", "subject_id", "idx_agent_conversation_item_sequence_v2", "idx_agent_conversation_item_run_v2", "idx_agent_conversation_item_subject_v2"} {

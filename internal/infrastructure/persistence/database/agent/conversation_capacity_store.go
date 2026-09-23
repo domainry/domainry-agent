@@ -4,9 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
+	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
 	"github.com/domainry/domainry-orm/query"
 )
 
@@ -39,32 +41,7 @@ func (s *ConversationStore) conversationExecutionLimits() (agentsdk.Conversation
 func (s *ConversationStore) lockConversationWorkspaceCapacity(ctx context.Context, tx *sql.Tx, a agentsdk.ConversationAuthority) error {
 	workspaceKey := conversationHash([]string{a.RuntimeID, a.WorkspaceID})
 	scopeKey := a.RuntimeID + ":" + workspaceKey
-	id := "worker_scope:" + conversationHash([]string{conversationCapacityOwner, scopeKey})[:24]
-	statement, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationCapacityGuardTable).
-		Columns("id", "owner", "scope_key", "checkpoint", "updated_at").
-		Values(id, conversationCapacityOwner, scopeKey, 1, "").
-		OnConflictDoNothing("owner", "scope_key").Build()
-	if err != nil {
-		return err
-	}
-	if _, err = tx.ExecContext(ctx, statement, args...); err != nil {
-		return err
-	}
-	builder := query.NewSelectBuilder(s.store.Renderer(), conversationCapacityGuardTable).
-		Columns("checkpoint").
-		Where(query.And(query.Equal("owner", conversationCapacityOwner), query.Equal("scope_key", scopeKey)))
-	if profile := s.store.Profile(); profile != nil && profile.Capabilities().RowLock {
-		builder, err = profile.ApplyClaimLock(builder, false)
-		if err != nil {
-			return err
-		}
-	}
-	statement, args, err = builder.Build()
-	if err != nil {
-		return err
-	}
-	var checkpoint int64
-	return tx.QueryRowContext(ctx, statement, args...).Scan(&checkpoint)
+	return s.store.workerScopes.LockCapacity(ctx, tx, sharedworkerscope.NewIdentity(conversationCapacityOwner, scopeKey), time.Time{})
 }
 
 func (s *ConversationStore) conversationExecutionCapacity(ctx context.Context, db conversationDB, a agentsdk.ConversationAuthority) (agentsdk.ConversationExecutionCapacity, error) {

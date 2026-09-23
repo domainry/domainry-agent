@@ -19,8 +19,6 @@ type AgentTaskRunStore struct {
 	db    modulehost.Database
 }
 
-const agentTaskWorkerQueueKind = "agent_task"
-
 func RegisterAgentTaskWorkerScope(ctx context.Context, store *Store, executor modulehost.Executor, workspaceID string, updatedAt time.Time) error {
 	if store == nil {
 		return fmt.Errorf("agent task worker scope store unavailable")

@@ -2,13 +2,13 @@ package agent
 
 import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
+	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
 	ormschema "github.com/domainry/domainry-orm/schema"
 )
 
 const (
-	conversationCapacityGuardTable = "_worker_scopes"
-	conversationCapacityOwner      = "agent_conversation_capacity"
-	conversationCapacityRecovery   = "transactional_guard"
+	conversationCapacityOwner    = sharedworkerscope.OwnerAgentConversationCapacity
+	conversationCapacityRecovery = "transactional_guard"
 )
 
 // The guard is an Agent-owned row in the shared worker-scope table. It remains

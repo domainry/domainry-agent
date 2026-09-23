@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
+	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	_ "modernc.org/sqlite"
 )
@@ -44,7 +45,7 @@ func TestEnsureSchemaUsesOneOwnerAwareLedgerForFoundationAndAgent(t *testing.T) 
 	if err := EnsureSchema(t.Context(), database, "sqlite", ""); err != nil {
 		t.Fatal(err)
 	}
-	for _, table := range []string{"_definitions", "_definition_versions", sharedoperation.TableName, "_subject_requests", "_subject_steps", "_agent_user_todos", "_agent_knowledge_libraries", "_agent_knowledge_library_members", "_agent_knowledge_documents", "_agent_knowledge_sources", "_agent_knowledge_document_jobs", "_agent_runtime_states"} {
+	for _, table := range []string{"_definitions", "_definition_versions", sharedoperation.TableName, sharedworkerscope.TableName, "_subject_requests", "_subject_steps", "_agent_user_todos", "_agent_knowledge_libraries", "_agent_knowledge_library_members", "_agent_knowledge_documents", "_agent_knowledge_sources", "_agent_knowledge_document_jobs", "_agent_runtime_states"} {
 		var count int
 		if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 1 {
 			t.Fatalf("table %s count=%d err=%v", table, count, err)
@@ -63,7 +64,7 @@ func TestEnsureSchemaUsesOneOwnerAwareLedgerForFoundationAndAgent(t *testing.T) 
 		}
 	}
 	var owners int
-	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(DISTINCT owner) FROM _schema_migrations WHERE owner IN ('shared/definitions','shared/operations','shared/subject-lifecycle','todo','knowledge','agent')`).Scan(&owners); err != nil || owners != 6 {
+	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(DISTINCT owner) FROM _schema_migrations WHERE owner IN ('shared/definitions','shared/operations','shared/worker-scopes','shared/subject-lifecycle','todo','knowledge','agent')`).Scan(&owners); err != nil || owners != 7 {
 		t.Fatalf("migration owners=%d err=%v", owners, err)
 	}
 }

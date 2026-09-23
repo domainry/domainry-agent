@@ -18,6 +18,7 @@ import (
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
+	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	todomodule "github.com/domainry/domainry-todo/module"
@@ -34,6 +35,17 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 	t.Cleanup(func() { _ = database.Close() })
 	dialect, _ := ormdialect.New(ormdialect.SQLite)
 	applyOperationMigrations(t, database, dialect.WithSchema(""))
+	workerScopeMigrations, err := sharedworkerscope.SchemaMigrationsForDialect(dialect.WithSchema(""))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, migration := range workerScopeMigrations {
+		for _, statement := range migration.Statements {
+			if _, err := database.ExecContext(t.Context(), statement); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
 	migrations, err := SchemaMigrations("sqlite", "")
 	if err != nil {
 		t.Fatal(err)

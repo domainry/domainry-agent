@@ -25,6 +25,7 @@ import (
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
+	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
 	todomodule "github.com/domainry/domainry-todo/module"
@@ -179,6 +180,9 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		return nil, fmt.Errorf("Agent Module persistence host is incomplete")
 	}
 	if _, err := sharedoperation.Open(ctx, host.Database(), sharedoperation.AdaptDialect(host.Dialect()), host.Migrations()); err != nil {
+		return nil, err
+	}
+	if _, err := sharedworkerscope.Open(ctx, host.Database(), host.Dialect(), host.Migrations()); err != nil {
 		return nil, err
 	}
 	definitionDialect, ok := host.Dialect().(shareddefinition.Dialect)
