@@ -79,7 +79,7 @@ require (
 require (
 	github.com/domainry/domainry-integration v0.1.22
 	github.com/domainry/domainry-integration-sdk v0.1.8
-	github.com/domainry/domainry-knowledge v0.1.7
+	github.com/domainry/domainry-knowledge v0.1.8
 	github.com/domainry/domainry-report-sdk v0.1.12
 )
 

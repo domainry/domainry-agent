@@ -152,10 +152,16 @@ func TestModuleDescriptor(t *testing.T) {
 			t.Fatalf("module migration owner %q missing from %v", owner, host.owners)
 		}
 	}
-	for _, table := range []string{"_subject_requests", "_subject_steps", "_agent_user_todos", "_agent_todo_mutations", "_agent_knowledge_libraries", "_agent_knowledge_library_members", "_agent_knowledge_documents", "_agent_knowledge_document_sources", "_agent_knowledge_document_jobs", "_agent_knowledge_datasource_bindings"} {
+	for _, table := range []string{"_subject_requests", "_subject_steps", "_agent_user_todos", "_agent_todo_mutations", "_agent_knowledge_libraries", "_agent_knowledge_library_members", "_agent_knowledge_documents", "_agent_knowledge_sources", "_agent_knowledge_document_jobs"} {
 		var count int
 		if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 1 {
 			t.Fatalf("module-owned table %s count=%d err=%v", table, count, err)
+		}
+	}
+	for _, retired := range []string{"_agent_knowledge_document_sources", "_agent_knowledge_datasource_bindings", "_agent_attachment_knowledge_sources"} {
+		var count int
+		if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, retired).Scan(&count); err != nil || count != 0 {
+			t.Fatalf("retired Knowledge table %s count=%d err=%v", retired, count, err)
 		}
 	}
 	for _, table := range []string{shareddefinition.TableName, shareddefinition.VersionTableName} {

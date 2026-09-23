@@ -7,7 +7,7 @@
 - SDK 的 `knowledge_datasource.go` 定义宿主目录 / 来源端口以及查询 / 绑定服务；HTTP 增加 `libraries_sources`、`libraries_bind_source`，均复用 Identity Action 权限。Module 和 SaaS 使用同一份契约。
 - `module/knowledge_datasources.go` 装配宿主批准的知识源目录。用户只提交目录键和资料库版本；地址、team、KB、密钥和 ACL 不接受网页输入。默认读取 / 写入使用按 Runtime / Workspace / Library 生成的私有标识。
 - `internal/application/knowledge_datasource.go` 检查实时成员管理角色与 Identity。`knowledge_library_source.go` 将持久绑定解析到公共来源端口；上传、后台 worker、检索和历史引用继续复用原有权限链。
-- ORM 第 11 个迁移建立 `_agent_knowledge_datasource_bindings`。事务同时检查资料库版本、登记远端来源独占关系、写入目录键 / 物理来源摘要 / 私有策略摘要 / 操作者 / 时间，并递增资料库版本。失败不能留下来源占用。相同请求恢复原结果，仍需当前授权。
+- Knowledge 模块用 `_agent_knowledge_sources` 统一保存资料库直连源、动态 datasource 与工作区附件源；`source_kind` 区分入口，`source_key` 全局唯一，动态 datasource 的目录键 / 私有策略摘要 / 操作者 / 时间保存在同一行。事务同时检查资料库版本并递增版本，失败不能留下来源占用；相同请求恢复原结果，仍需当前授权。
 - `frontend/src/KnowledgeSourcesPanel.tsx` 在资料库详情显示知识源选择、连接状态、分页与重试。绑定成功直接使用响应更新 UI；丢失响应后可读取实际绑定恢复。浏览器只保存目录键和提交时版本，不保存密钥或文档内容。
 
 绑定成功立即允许上传，无需重启。移除目录、改变 KB / 权限配置或尝试用启动绑定替代持久绑定时，知识源停用，已有原文件仍按资料库权限保存和下载。恢复原配置后恢复读取。当前 API 不支持换绑、释放物理 KB 或迁移已有文档；这些操作需要 K07 的迁移与清理流程。

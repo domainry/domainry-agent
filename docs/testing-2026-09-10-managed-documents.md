@@ -5,7 +5,7 @@
 ## 已交付代码
 
 - SDK `knowledge_document.go` 提供五个可选文档服务方法、资料库原文件存储端口和严格的文档片段投影端口。文档管理是用户 HTTP / SDK 操作，没有新增模型写文件工具。
-- Agent 第 10 个迁移增加 `_agent_knowledge_documents`、`_agent_knowledge_document_jobs`、`_agent_knowledge_document_sources`。分别保存文档归属与不可变原文摘要、可领取且带隔离令牌的持久任务、不能被配置降级绕过的远端来源登记。
+- Knowledge 模块建立 `_agent_knowledge_documents`、`_agent_knowledge_document_jobs` 与统一的 `_agent_knowledge_sources`。分别保存文档归属与不可变原文摘要、可领取且带隔离令牌的持久任务，以及不能被配置降级绕过的远端来源登记；资料库直连、动态 datasource 和工作区附件源由 `source_kind` 区分，不再拆成三张来源表。
 - `internal/infrastructure/documentstorage/files.go` 复用不可变文件引擎，但使用独立目录及 Runtime / Workspace / Library 命名空间。共享原件独立于上传者后续的成员身份，删除标记在重启后仍阻止迟到的写入。
 - `internal/application/knowledge_document.go` 实现登记、查询、下载和删除。相同用户／资料库／client_id 的重复请求复用记录，内容变化返回冲突。单文件上限 16 MiB，每库同时保留最多 1000 个未清理文档、256 MiB 原文件配额。
 - `knowledge_document_worker.go` 在网络请求前持久记录上传开始；已开始的上传不会因失联或租约接管再次推送。实际 INDEXED 才开放检索，未知写入保留 `needs_reconcile`。状态查询失败和不确定结果保存稳定错误码，不保存上游错误正文。

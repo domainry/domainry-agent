@@ -132,7 +132,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 					t.Fatalf("Agent migration still owns Todo table %s", foreign)
 				}
 			}
-			for _, foreign := range []string{"_agent_artifacts", "_agent_artifact_versions", "_agent_artifact_mutations", "_agent_knowledge_libraries", "_agent_knowledge_library_members", "_agent_knowledge_documents", "_agent_knowledge_document_sources", "_agent_knowledge_document_jobs", "_agent_knowledge_datasource_bindings", "_agent_attachment_knowledge_sources", "_agent_attachment_index_jobs", "_knowledge_owner_operation_receipts"} {
+			for _, foreign := range []string{"_agent_artifacts", "_agent_artifact_versions", "_agent_artifact_mutations", "_agent_knowledge_libraries", "_agent_knowledge_library_members", "_agent_knowledge_documents", "_agent_knowledge_sources", "_agent_knowledge_document_sources", "_agent_knowledge_document_jobs", "_agent_knowledge_datasource_bindings", "_agent_attachment_knowledge_sources", "_agent_attachment_index_jobs", "_knowledge_owner_operation_receipts"} {
 				if strings.Contains(joinedAll, foreign) {
 					t.Fatalf("Agent migration still owns Knowledge table %s", foreign)
 				}
