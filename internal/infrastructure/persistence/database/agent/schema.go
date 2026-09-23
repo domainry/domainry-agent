@@ -151,6 +151,7 @@ const (
 	agentRunKindTask         = "task"
 	agentRunKindInteractive  = "interactive"
 	agentRunKindConversation = "conversation"
+	agentRunIndexKeyLength   = 96
 )
 
 // agentRunTableBuilder stores every mutable Agent run in one typed physical
@@ -160,21 +161,21 @@ func agentRunTableBuilder(renderer modulehost.Dialect) *ormschema.TableBuilder {
 	return ormschema.NewTable(renderer, agentRunTable).IfNotExists().Columns(
 		required("run_kind", ormschema.TextKey(32)),
 		required("scope_key", ormschema.TextKey(191)),
-		required("workspace_id", ormschema.TextKey(255)),
+		required("workspace_id", ormschema.TextKey(agentRunIndexKeyLength)),
 		required("run_id", ormschema.TextKey(255)),
 		required("idempotency_key", ormschema.TextKey(255)),
 		optional("owner_key", ormschema.TextKey(64)),
 		optional("conversation_id", ormschema.TextKey(96)),
-		optional("runtime_id", ormschema.TextKey(255)),
+		optional("runtime_id", ormschema.TextKey(agentRunIndexKeyLength)),
 		optional("authority_json", ormschema.LongText()),
 		optional("request_hash", ormschema.LongText()),
-		optional("task_key", ormschema.TextKey(255)),
-		optional("process_id", ormschema.TextKey(255)),
+		optional("task_key", ormschema.TextKey(agentRunIndexKeyLength)),
+		optional("process_id", ormschema.TextKey(agentRunIndexKeyLength)),
 		optional("session_id", ormschema.TextKey(255)),
-		optional("user_id", ormschema.TextKey(255)),
-		optional("role_key", ormschema.TextKey(255)),
+		optional("user_id", ormschema.TextKey(agentRunIndexKeyLength)),
+		optional("role_key", ormschema.TextKey(agentRunIndexKeyLength)),
 		optional("task_run_id", ormschema.TextKey(255)),
-		required("status", ormschema.TextKey(255)),
+		required("status", ormschema.TextKey(64)),
 		required("lease_owner", ormschema.TextKey(255)).DefaultValue(""),
 		required("fencing_token", ormschema.BigInt()).DefaultValue(0),
 		required("lease_expires_at", ormschema.BigInt()).DefaultValue(0),

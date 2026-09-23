@@ -150,3 +150,20 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 		})
 	}
 }
+
+func TestMySQLAgentRunIndexesUseBoundedKeys(t *testing.T) {
+	migrations, err := SchemaMigrations("mysql", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	joined := strings.Join(migrations[0].Statements, "\n")
+	for _, column := range []string{"workspace_id", "runtime_id", "task_key", "process_id", "user_id", "role_key"} {
+		fragment := "`" + column + "` VARCHAR(96)"
+		if !strings.Contains(joined, fragment) {
+			t.Fatalf("MySQL Agent run schema is missing bounded key %q", fragment)
+		}
+	}
+	if !strings.Contains(joined, "`status` VARCHAR(64)") {
+		t.Fatal("MySQL Agent run status is not bounded for composite indexes")
+	}
+}
