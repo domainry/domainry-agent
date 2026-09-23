@@ -184,7 +184,7 @@ func (s *ConversationStore) SendConversationAgentMessage(ctx context.Context, id
 			if bound {
 				taskOwner = subjects.execution
 			}
-			q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(taskOwner)), query.Equal("task_id", d.TaskID))).Build()
+			q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(conversationOwner(taskOwner), d.TaskID)).Build()
 			if err != nil {
 				return err
 			}

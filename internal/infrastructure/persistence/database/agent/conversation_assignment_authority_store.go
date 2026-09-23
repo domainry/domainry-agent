@@ -26,7 +26,7 @@ func (s *ConversationStore) assignmentTaskAuthority(ctx context.Context, db conv
 	if conversationAuthority(routing) != nil {
 		return sdk.ConversationAuthority{}, conversationError("forbidden", "execution_subject_mismatch")
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(routing)), query.Equal("task_id", assignment.TaskID))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(conversationOwner(routing), assignment.TaskID)).Build()
 	if err != nil {
 		return sdk.ConversationAuthority{}, err
 	}

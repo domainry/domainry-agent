@@ -169,10 +169,10 @@ func TestConversationPlanFollowsConversationLifecycle(t *testing.T) {
 		t.Fatal(err)
 	}
 	var plans, tasks int
-	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_task_plans WHERE owner_key = ? AND task_id = ?`, conversationOwner(a), task.ID).Scan(&plans); err != nil {
+	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_items WHERE owner_key = ? AND item_kind = 'task_plan' AND subject_id = ?`, conversationOwner(a), task.ID).Scan(&plans); err != nil {
 		t.Fatal(err)
 	}
-	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_tasks WHERE owner_key = ? AND task_id = ?`, conversationOwner(a), task.ID).Scan(&tasks); err != nil {
+	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_tasks WHERE record_kind = 'task' AND owner_key = ? AND task_id = ?`, conversationOwner(a), task.ID).Scan(&tasks); err != nil {
 		t.Fatal(err)
 	}
 	if plans != 0 || tasks != 0 {

@@ -275,7 +275,7 @@ func (s *ConversationStore) CreateConversationDelegation(ctx context.Context, in
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}
-		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationTaskTable).Columns("owner_key", "workspace_key", "task_id", "runtime_id", "source_conversation_id", "source_run_id", "status", "authority_json", "request_hash", "created_at", "updated_at", "payload_json").Values(conversationOwner(executor), conversationHash([]string{executor.RuntimeID, executor.WorkspaceID}), task.ID, executor.RuntimeID, source.ID, in.SourceRunID, task.Status, conversationJSON(executor), conversationHash(id), now.UnixMilli(), now.UnixMilli(), conversationJSON(task)).Build()
+		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationTaskTable).Columns("record_kind", "owner_key", "workspace_key", "task_id", "runtime_id", "source_conversation_id", "source_run_id", "status", "authority_json", "request_hash", "created_at", "updated_at", "payload_json").Values(conversationTaskKindTask, conversationOwner(executor), conversationHash([]string{executor.RuntimeID, executor.WorkspaceID}), task.ID, executor.RuntimeID, source.ID, in.SourceRunID, task.Status, conversationJSON(executor), conversationHash(id), now.UnixMilli(), now.UnixMilli(), conversationJSON(task)).Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}
@@ -448,7 +448,7 @@ func (s *ConversationStore) UpdateConversationDelegation(ctx context.Context, id
 				if err != nil {
 					return err
 				}
-				q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(executor)), query.Equal("task_id", out.TaskID))).Build()
+				q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(conversationOwner(executor), out.TaskID)).Build()
 				if err != nil {
 					return err
 				}

@@ -255,7 +255,7 @@ func (s *ConversationStore) disagreementNotice(ctx context.Context, tx *sql.Tx, 
 	to, conversation, agent := d.FromAgentID, d.SourceConversationID, d.SourceAgent
 	if value.OwnerAgentID == d.ToAgentID {
 		to, conversation = d.ToAgentID, d.ConversationID
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", d.TaskID))).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(conversationOwner(a), d.TaskID)).Build()
 		if err != nil {
 			return err
 		}

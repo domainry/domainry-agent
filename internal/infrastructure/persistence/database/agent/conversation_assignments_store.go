@@ -46,7 +46,7 @@ func (s *ConversationStore) conversationAssignments(ctx context.Context, db conv
 	if len(out) == 0 {
 		// Pre-migration delegations retain their original assignment facts. The
 		// first transfer persists this exact record before adding the next one.
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", d.TaskID))).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(conversationOwner(a), d.TaskID)).Build()
 		if err != nil {
 			return nil, err
 		}

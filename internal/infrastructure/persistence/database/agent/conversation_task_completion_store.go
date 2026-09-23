@@ -128,7 +128,7 @@ func (s *ConversationStore) ApplyConversationTaskCompletionTool(ctx context.Cont
 		} else if !errors.Is(err, sql.ErrNoRows) {
 			return sdk.ConversationToolResult{}, err
 		}
-		statement, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", owner), query.Equal("task_id", taskID))).Build()
+		statement, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(owner, taskID)).Build()
 		if err != nil {
 			return sdk.ConversationToolResult{}, err
 		}
@@ -155,7 +155,7 @@ func (s *ConversationStore) ApplyConversationTaskCompletionTool(ctx context.Cont
 		prepared.Verification, prepared.RecordedAt, prepared.Submission.SubmittedAt = verification, now, now
 		previousUpdated := row.task.UpdatedAt
 		row.task.Completion, row.task.UpdatedAt = &prepared, now
-		statement, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(row.task)).Where(query.And(query.Equal("owner_key", owner), query.Equal("task_id", taskID), query.Equal("status", sdk.ConversationTaskStatusRunning), query.Equal("updated_at", previousUpdated.UnixMilli()))).Build()
+		statement, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(row.task)).Where(query.And(conversationTaskPredicate(owner, taskID), query.Equal("status", sdk.ConversationTaskStatusRunning), query.Equal("updated_at", previousUpdated.UnixMilli()))).Build()
 		if err = conversationCAS(ctx, tx, statement, args, err); err != nil {
 			return sdk.ConversationToolResult{}, err
 		}
@@ -190,7 +190,7 @@ func (s *ConversationStore) ReviewConversationTaskCompletion(ctx context.Context
 		} else if !errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
-		statement, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", owner), query.Equal("task_id", taskID))).Build()
+		statement, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(owner, taskID)).Build()
 		if err != nil {
 			return err
 		}
@@ -234,7 +234,7 @@ func (s *ConversationStore) ReviewConversationTaskCompletion(ctx context.Context
 			row.task.CompletionEventSeq = 0
 		}
 		setConversationTaskGoalPhase(&row.task, now)
-		statement, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", row.task.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(row.task)).Where(query.And(query.Equal("owner_key", owner), query.Equal("task_id", taskID), query.Equal("status", previousStatus), query.Equal("updated_at", previousUpdated.UnixMilli()))).Build()
+		statement, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", row.task.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(row.task)).Where(query.And(conversationTaskPredicate(owner, taskID), query.Equal("status", previousStatus), query.Equal("updated_at", previousUpdated.UnixMilli()))).Build()
 		if err = conversationCAS(ctx, tx, statement, args, err); err != nil {
 			return err
 		}

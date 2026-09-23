@@ -238,7 +238,7 @@ func (s *ConversationStore) launchConversationPeerMessage(ctx context.Context, r
 					continue
 				}
 				if c.ID == d.ConversationID {
-					q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", d.TaskID))).Build()
+					q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(conversationOwner(a), d.TaskID)).Build()
 					if err != nil {
 						return err
 					}
@@ -262,7 +262,7 @@ func (s *ConversationStore) launchConversationPeerMessage(ctx context.Context, r
 					task.Brief, task.Budget = &d.Brief, remaining
 					task.Goal, task.Input, task.Status, task.ExecutionRunID, task.UpdatedAt = d.Brief.Goal, d.Input, agentsdk.ConversationTaskStatusRunning, run.Run.ID, now
 					task.CompletedAt, task.ResultMessageID, task.ErrorCode, task.CompletionEventID, task.CompletionEventSeq = nil, "", "", "", 0
-					q, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", task.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(task)).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", task.ID), query.Equal("status", taskRow.task.Status))).Build()
+					q, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", task.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(task)).Where(query.And(conversationTaskPredicate(conversationOwner(a), task.ID), query.Equal("status", taskRow.task.Status))).Build()
 					if err = conversationCAS(ctx, tx, q, args, err); err != nil {
 						return err
 					}

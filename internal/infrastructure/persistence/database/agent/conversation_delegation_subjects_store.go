@@ -172,7 +172,7 @@ func (s *ConversationStore) delegationAuthorities(ctx context.Context, db conver
 		// Same-identity/legacy assignments have no separate subject mapping.
 		// Their original task authority is immutable; a new reading role must
 		// not become the original executor or publisher by virtue of ownership.
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(d, a))), query.Equal("task_id", d.TaskID))).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(conversationOwner(delegationRecordAuthority(d, a)), d.TaskID)).Build()
 		if err != nil {
 			return conversationDelegationSubjects{}, err
 		}

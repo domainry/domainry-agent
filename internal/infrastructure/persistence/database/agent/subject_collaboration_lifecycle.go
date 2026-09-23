@@ -146,7 +146,7 @@ func (s *ConversationStore) eraseSubjectCollaboration(ctx context.Context, tx *s
 		if err != nil {
 			return err
 		}
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(executor)), query.Equal("task_id", d.TaskID))).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(conversationOwner(executor), d.TaskID)).Build()
 		if err != nil {
 			return err
 		}

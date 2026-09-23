@@ -8,7 +8,7 @@ L01 已完成。会话模型可调用 `task_start`，以明确的 goal、input�
 | --- | --- |
 | Agent SDK | 拥有 `ConversationTask*` 公共 DTO、`task_start` 工具定义及 mutation / worker repository 端口；不知道 Agent 的应用或数据库实现。 |
 | Agent application | 校验并冻结目标、输入、选中工具的版本／动作／定义哈希／授权修订和预算；子运行只装配冻结工具，重新检查当前可用性与授权。 |
-| Agent persistence adapter | 通过第 15 个 Agent 自有迁移维护 `_agent_conversation_tasks`；任务与 `tool.completed` 回执同事务提交，启动时再原子创建普通 ConversationRun。 |
+| Agent persistence adapter | 通过第 15 个 Agent 自有迁移维护 typed `_agent_tasks`；任务与 `tool.completed` 回执同事务提交，启动时再原子创建普通 ConversationRun。 |
 | 现有 Conversation 执行 | 后台运行继续使用 Claim、Lease、fencing、逐步模型输入、工具调用账本和完成事务。后台 Run 不占 `Conversation.ActiveRunID`，因此前台消息可并行进入独立 Run。 |
 | Web | HTTP / SSE 沿用公开 Conversation 契约；页面只使用公开 `background_task_id`、Run 范围、步骤与回执，不访问数据库或应用内部类型。 |
 

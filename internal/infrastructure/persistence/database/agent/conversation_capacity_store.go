@@ -100,7 +100,7 @@ func (s *ConversationStore) conversationExecutionCapacity(ctx context.Context, d
 
 	// A queued background task becomes a queued ConversationRun atomically when
 	// launched. Count only one side of that transition so the backlog is stable.
-	taskBase := []query.Predicate{query.Equal("runtime_id", a.RuntimeID), query.Equal("status", agentsdk.ConversationTaskStatusQueued)}
+	taskBase := []query.Predicate{conversationTaskKindPredicate(conversationTaskKindTask), query.Equal("runtime_id", a.RuntimeID), query.Equal("status", agentsdk.ConversationTaskStatusQueued)}
 	userTasks, err := count(conversationTaskTable, append(taskBase, query.Equal("owner_key", conversationOwner(a)))...)
 	if err != nil {
 		return out, err

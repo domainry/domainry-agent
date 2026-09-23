@@ -114,7 +114,7 @@ func (s *ConversationStore) TransferConversationDelegation(ctx context.Context, 
 		if len(assignments) >= 16 {
 			return conversationError("rate_limited", "delegation_transfer_limit")
 		}
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(subjects.execution)), query.Equal("task_id", d.TaskID))).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(conversationOwner(subjects.execution), d.TaskID)).Build()
 		if err != nil {
 			return err
 		}
@@ -208,7 +208,7 @@ func (s *ConversationStore) TransferConversationDelegation(ctx context.Context, 
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}
-		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationTaskTable).Columns("owner_key", "workspace_key", "task_id", "runtime_id", "source_conversation_id", "source_run_id", "status", "authority_json", "request_hash", "created_at", "updated_at", "payload_json").Values(conversationOwner(executor), conversationHash([]string{executor.RuntimeID, executor.WorkspaceID}), task.ID, executor.RuntimeID, d.SourceConversationID, d.SourceRunID, task.Status, conversationJSON(executor), conversationHash(assignment), now.UnixMilli(), now.UnixMilli(), conversationJSON(task)).Build()
+		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationTaskTable).Columns("record_kind", "owner_key", "workspace_key", "task_id", "runtime_id", "source_conversation_id", "source_run_id", "status", "authority_json", "request_hash", "created_at", "updated_at", "payload_json").Values(conversationTaskKindTask, conversationOwner(executor), conversationHash([]string{executor.RuntimeID, executor.WorkspaceID}), task.ID, executor.RuntimeID, d.SourceConversationID, d.SourceRunID, task.Status, conversationJSON(executor), conversationHash(assignment), now.UnixMilli(), now.UnixMilli(), conversationJSON(task)).Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}

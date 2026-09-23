@@ -101,7 +101,7 @@ func (s *ConversationStore) dependencyGoalDelegations(ctx context.Context, db co
 		} else if err != sql.ErrNoRows {
 			return nil, err
 		}
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", item.key), query.Equal("task_id", item.d.TaskID))).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(item.key, item.d.TaskID)).Build()
 		if err != nil {
 			return nil, err
 		}

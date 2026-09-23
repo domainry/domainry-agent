@@ -130,7 +130,7 @@ func (s *ConversationStore) controlDelegationTask(ctx context.Context, tx *sql.T
 		return err
 	}
 	a = subjects.execution
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", d.TaskID))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(conversationOwner(a), d.TaskID)).Build()
 	if err != nil {
 		return err
 	}
@@ -162,7 +162,7 @@ func (s *ConversationStore) controlDelegationTask(ctx context.Context, tx *sql.T
 			return err
 		}
 		task.UpdatedAt = time.Now().UTC().Truncate(time.Millisecond)
-		q, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("updated_at", task.UpdatedAt.UnixMilli()).Set("payload_json", conversationJSON(task)).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", task.ID), query.Equal("status", row.task.Status), query.Equal("updated_at", previousUpdated.UnixMilli()))).Build()
+		q, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("updated_at", task.UpdatedAt.UnixMilli()).Set("payload_json", conversationJSON(task)).Where(query.And(conversationTaskPredicate(conversationOwner(a), task.ID), query.Equal("status", row.task.Status), query.Equal("updated_at", previousUpdated.UnixMilli()))).Build()
 		return conversationCAS(ctx, tx, q, args, err)
 	}
 	if action != "resume" && task.ExternalExecution == nil && task.ExecutionRunID != "" && !task.Terminal() {
@@ -272,7 +272,7 @@ func (s *ConversationStore) controlDelegationTask(ctx context.Context, tx *sql.T
 			task.ExternalExecution.UpdatedAt = now
 		}
 	}
-	q, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", task.Status).Set("updated_at", now.UnixMilli()).Set("authority_json", conversationJSON(a)).Set("payload_json", conversationJSON(task)).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", task.ID))).Build()
+	q, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", task.Status).Set("updated_at", now.UnixMilli()).Set("authority_json", conversationJSON(a)).Set("payload_json", conversationJSON(task)).Where(conversationTaskPredicate(conversationOwner(a), task.ID)).Build()
 	return conversationCAS(ctx, tx, q, args, err)
 }
 

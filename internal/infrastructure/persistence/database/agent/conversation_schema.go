@@ -13,6 +13,7 @@ const (
 	conversationItemRunEvent   = "run_event"
 	conversationItemAgreement  = "task_agreement"
 	conversationItemCompletion = "task_completion"
+	conversationItemTaskPlan   = "task_plan"
 )
 
 // Conversation roots and mutable runs stay separate. Immutable messages,

@@ -29,12 +29,15 @@ Migration 5 增加 `_agent_user_todos` 和 `_agent_todo_mutations`。待办按 r
 | 表 | 保存内容 |
 | --- | --- |
 | `_agent_conversations` | 标题、归档标记、记忆开关、修订号、消息序号、当前 run、当前摘要 |
-| `_agent_conversation_items` | typed 原始消息、模型输入、摘要、运行事件、任务协议和完成事实 |
+| `_agent_conversation_items` | typed 原始消息、模型输入、摘要、运行事件以及任务计划、协议和完成历史 |
 | `_agent_runs` | `task`、`interactive`、`conversation` 三类运行的幂等键、状态、claim、租约、fence 和有界 payload |
+| `_agent_tasks` | `task`、`follow_up_state`、`follow_up_event` 三类当前态；task payload 是当前计划、完成态、协议和跟进范围的唯一权威 |
 | `_agent_user_memories` | 用户显式保存的个人偏好，支持修改、停用和删除 |
 | `_agent_run_steps` | typed 冻结模型步骤、step sources、原生续接块、工具调用与结果账本 |
 | `_agent_conversation_interactions` | 绑定 run / step / call 的等待事项、工具版本 / 参数摘要、答复和有效期 |
 | `_agent_conversation_forks` | 独立分叉的来源运行、稳定事件边界、轨迹摘要和仅供服务端装配的受权历史快照 |
+
+任务计划版本以 `task_plan` item 追加到 `_agent_conversation_items`，协议和完成历史分别使用 `task_agreement`、`task_completion`；当前版本只保存在 `_agent_tasks` 的 task payload。跟进观察状态和可 claim 的投递事件使用同一张表的独立 `record_kind`，所有任务查询、claim、容量统计和 CAS 都显式按 kind 隔离。
 
 所有查询使用 `owner_key = SHA256(JSON([runtime_id, workspace_id, user_id]))` 隔离，子记录同时匹配 conversation ID。哈希是隔离键，不是内容加密。角色改变不清空个人会话。HTTP 身份来自宿主认证上下文，不能从 JSON 或查询参数指定其他用户。
 

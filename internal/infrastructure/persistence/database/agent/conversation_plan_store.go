@@ -134,13 +134,44 @@ func planMatchesUpdate(plan sdk.ConversationPlan, update sdk.ConversationPlanUpd
 	return true
 }
 
-func (s *ConversationStore) insertConversationTaskPlan(ctx context.Context, tx *sql.Tx, owner, clientID string, plan sdk.ConversationPlan) error {
-	statement, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationTaskPlanTable).Columns("owner_key", "task_id", "version", "client_id", "payload_json", "created_at").Values(owner, plan.TaskID, plan.Version, clientID, conversationJSON(plan), plan.CreatedAt.UnixMilli()).Build()
+func conversationTaskPlanReference(taskID, clientID string) string {
+	return conversationHash([]string{taskID, clientID})
+}
+
+func conversationTaskPlanItemKey(taskID string, version int64) string {
+	return conversationHash([]any{taskID, version})
+}
+
+func conversationTaskPlanScope(task *sdk.ConversationTask, source *sdk.ConversationRunReference) (string, string) {
+	conversationID, runID := task.ExecutionConversationID, task.ExecutionRunID
+	if (conversationID == "" || runID == "") && source != nil {
+		conversationID, runID = source.ConversationID, source.RunID
+	}
+	if (conversationID == "" || runID == "") && len(task.PreviousExecutionRuns) > 0 {
+		previous := task.PreviousExecutionRuns[len(task.PreviousExecutionRuns)-1]
+		conversationID, runID = previous.ConversationID, previous.RunID
+	}
+	if conversationID == "" {
+		conversationID = task.SourceConversationID
+	}
+	if runID == "" {
+		runID = task.SourceRunID
+	}
+	return conversationID, runID
+}
+
+func (s *ConversationStore) insertConversationTaskPlan(ctx context.Context, tx *sql.Tx, owner, conversationID, runID, clientID string, plan sdk.ConversationPlan) error {
+	if conversationID == "" || runID == "" {
+		return conversationError("conflict", "plan_source_invalid")
+	}
+	statement, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationItemTable).
+		Columns("owner_key", "conversation_id", "item_kind", "item_key", "reference_id", "subject_id", "run_id", "seq", "payload_json").
+		Values(owner, conversationID, conversationItemTaskPlan, conversationTaskPlanItemKey(plan.TaskID, plan.Version), conversationTaskPlanReference(plan.TaskID, clientID), plan.TaskID, runID, plan.Version, conversationJSON(plan)).Build()
 	return conversationExec(ctx, tx, statement, args, err)
 }
 
 func (s *ConversationStore) conversationTaskIDsForSource(ctx context.Context, db conversationDB, owner, conversationID string) ([]string, error) {
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns("task_id").Where(query.And(query.Equal("owner_key", owner), query.Equal("source_conversation_id", conversationID))).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns("task_id").Where(query.And(conversationTaskKindPredicate(conversationTaskKindTask), query.Equal("owner_key", owner), query.Equal("source_conversation_id", conversationID))).Build()
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +200,7 @@ func (s *ConversationStore) conversationTaskPlanPayloadsForSource(ctx context.Co
 	for index := range ids {
 		values[index] = ids[index]
 	}
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskPlanTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.In("task_id", values...))).OrderBy(query.Ascending("task_id"), query.Ascending("version")).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("conversation_id", "payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("item_kind", conversationItemTaskPlan), query.In("subject_id", values...))).OrderBy(query.Ascending("subject_id"), query.Ascending("seq")).Build()
 	if err != nil {
 		return nil, err
 	}
@@ -180,9 +211,16 @@ func (s *ConversationStore) conversationTaskPlanPayloadsForSource(ctx context.Co
 	defer rows.Close()
 	var out []json.RawMessage
 	for rows.Next() {
+		var itemConversationID string
 		var raw []byte
-		if err = rows.Scan(&raw); err != nil {
+		if err = rows.Scan(&itemConversationID, &raw); err != nil {
 			return nil, err
+		}
+		// Items already selected by the conversation graph are not emitted a
+		// second time. This branch only closes over task history written in a
+		// delegated/execution conversation.
+		if itemConversationID == conversationID {
+			continue
 		}
 		out = append(out, append(json.RawMessage(nil), raw...))
 	}
@@ -198,7 +236,7 @@ func (s *ConversationStore) deleteConversationTaskPlansForSource(ctx context.Con
 	for index := range ids {
 		values[index] = ids[index]
 	}
-	statement, args, err := query.NewDeleteBuilder(s.store.Renderer(), conversationTaskPlanTable).Where(query.And(query.Equal("owner_key", owner), query.In("task_id", values...))).Build()
+	statement, args, err := query.NewDeleteBuilder(s.store.Renderer(), conversationItemTable).Where(query.And(query.Equal("owner_key", owner), query.Equal("item_kind", conversationItemTaskPlan), query.In("subject_id", values...))).Build()
 	return conversationExec(ctx, tx, statement, args, err)
 }
 
@@ -214,7 +252,7 @@ func (s *ConversationStore) ApplyConversationTaskPlanTool(ctx context.Context, i
 			return sdk.ConversationToolResult{}, conversationError("conflict", "plan_task_invalid")
 		}
 		owner, taskID := conversationOwner(claim.Authority), run.Run.BackgroundTask.TaskID
-		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskPlanTable).Columns("version").Where(query.And(query.Equal("owner_key", owner), query.Equal("task_id", taskID), query.Equal("client_id", update.ClientID))).Build()
+		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("seq").Where(query.And(query.Equal("owner_key", owner), query.Equal("item_kind", conversationItemTaskPlan), query.Equal("reference_id", conversationTaskPlanReference(taskID, update.ClientID)))).Build()
 		if err != nil {
 			return sdk.ConversationToolResult{}, err
 		}
@@ -224,7 +262,7 @@ func (s *ConversationStore) ApplyConversationTaskPlanTool(ctx context.Context, i
 		} else if !errors.Is(err, sql.ErrNoRows) {
 			return sdk.ConversationToolResult{}, err
 		}
-		statement, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", owner), query.Equal("task_id", taskID))).Build()
+		statement, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(owner, taskID)).Build()
 		if err != nil {
 			return sdk.ConversationToolResult{}, err
 		}
@@ -270,12 +308,12 @@ func (s *ConversationStore) ApplyConversationTaskPlanTool(ctx context.Context, i
 		}
 		now := time.Now().UTC().Truncate(time.Millisecond)
 		prepared.CreatedAt = now
-		if err = s.insertConversationTaskPlan(ctx, tx, owner, update.ClientID, prepared); err != nil {
+		if err = s.insertConversationTaskPlan(ctx, tx, owner, run.Run.ConversationID, run.Run.ID, update.ClientID, prepared); err != nil {
 			return sdk.ConversationToolResult{}, err
 		}
 		previousUpdated := row.task.UpdatedAt
 		row.task.Plan, row.task.UpdatedAt = &prepared, now
-		statement, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(row.task)).Where(query.And(query.Equal("owner_key", owner), query.Equal("task_id", taskID), query.Equal("status", sdk.ConversationTaskStatusRunning), query.Equal("updated_at", previousUpdated.UnixMilli()))).Build()
+		statement, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(row.task)).Where(query.And(conversationTaskPredicate(owner, taskID), query.Equal("status", sdk.ConversationTaskStatusRunning), query.Equal("updated_at", previousUpdated.UnixMilli()))).Build()
 		if err = conversationCAS(ctx, tx, statement, args, err); err != nil {
 			return sdk.ConversationToolResult{}, err
 		}
@@ -294,11 +332,11 @@ func (s *ConversationStore) ConversationTaskPlans(ctx context.Context, taskID st
 	if _, err := s.ConversationTask(ctx, taskID, a); err != nil {
 		return out, err
 	}
-	predicate := query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", taskID))
+	predicate := query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("item_kind", conversationItemTaskPlan), query.Equal("subject_id", taskID))
 	if before > 0 {
-		predicate = query.And(predicate, query.LessThan("version", before))
+		predicate = query.And(predicate, query.LessThan("seq", before))
 	}
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskPlanTable).Columns("payload_json").Where(predicate).OrderBy(query.Descending("version")).Limit(21).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(predicate).OrderBy(query.Descending("seq")).Limit(21).Build()
 	if err != nil {
 		return out, err
 	}
@@ -333,7 +371,7 @@ func (s *ConversationStore) ConversationTaskPlan(ctx context.Context, taskID str
 	if !personalMemoryKey(taskID) || version < 1 {
 		return sdk.ConversationPlan{}, conversationError("bad_request", "plan_query_invalid")
 	}
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskPlanTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", taskID), query.Equal("version", version))).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("item_kind", conversationItemTaskPlan), query.Equal("subject_id", taskID), query.Equal("seq", version))).Build()
 	if err != nil {
 		return sdk.ConversationPlan{}, err
 	}
@@ -370,6 +408,7 @@ func (s *ConversationStore) supersedeConversationTaskPlan(ctx context.Context, t
 	if json.Unmarshal(raw, &plan) != nil {
 		return conversationError("conflict", "plan_invalid")
 	}
+	conversationID, runID := conversationTaskPlanScope(task, plan.Source)
 	plan.Version++
 	plan.AgreementRevision = max(1, revision)
 	plan.Reason = reason
@@ -402,7 +441,7 @@ func (s *ConversationStore) supersedeConversationTaskPlan(ctx context.Context, t
 		}
 	}
 	clientID := "system_" + conversationHash([]any{task.ID, plan.Version, revision, fields, reason})[:32]
-	if err := s.insertConversationTaskPlan(ctx, tx, owner, clientID, plan); err != nil {
+	if err := s.insertConversationTaskPlan(ctx, tx, owner, conversationID, runID, clientID, plan); err != nil {
 		return err
 	}
 	task.Plan = &plan
@@ -425,6 +464,7 @@ func (s *ConversationStore) closeConversationTaskPlan(ctx context.Context, tx *s
 	if json.Unmarshal(raw, &plan) != nil {
 		return conversationError("conflict", "plan_invalid")
 	}
+	conversationID, runID := conversationTaskPlanScope(task, plan.Source)
 	changed := false
 	reason := run.ErrorCode
 	if run.Status == "completed" {
@@ -455,7 +495,10 @@ func (s *ConversationStore) closeConversationTaskPlan(ctx context.Context, tx *s
 	plan.Source = nil
 	plan.CreatedAt = time.Now().UTC().Truncate(time.Millisecond)
 	clientID := "system_" + conversationHash([]any{task.ID, plan.Version, run.ID, run.Status, reason})[:32]
-	if err := s.insertConversationTaskPlan(ctx, tx, owner, clientID, plan); err != nil {
+	if run.ConversationID != "" && run.ID != "" {
+		conversationID, runID = run.ConversationID, run.ID
+	}
+	if err := s.insertConversationTaskPlan(ctx, tx, owner, conversationID, runID, clientID, plan); err != nil {
 		return err
 	}
 	task.Plan = &plan

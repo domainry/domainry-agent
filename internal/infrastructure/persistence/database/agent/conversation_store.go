@@ -54,7 +54,7 @@ func (s *ConversationStore) BindArtifactPersistence(store sharedartifact.Managed
 }
 
 func (s *ConversationStore) Ready(ctx context.Context) error {
-	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_user_memories", conversationRunStepTable, conversationForkTable, interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationTaskPlanTable, conversationFollowUpStateTable, conversationFollowUpEventTable, conversationAgentTable, conversationDelegationTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDisagreementTable, conversationAgentGrantTable, conversationParticipantTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
+	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_user_memories", conversationRunStepTable, conversationForkTable, interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationAgentTable, conversationDelegationTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDisagreementTable, conversationAgentGrantTable, conversationParticipantTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("owner_key").Limit(1).Build()
 		if err != nil {
 			return err
@@ -404,7 +404,7 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 		if err = s.deleteConversationTaskPlansForSource(ctx, tx, owner, id); err != nil {
 			return err
 		}
-		q, args, e = query.NewDeleteBuilder(s.store.Renderer(), conversationTaskTable).Where(query.And(query.Equal("owner_key", owner), query.Equal("source_conversation_id", id))).Build()
+		q, args, e = query.NewDeleteBuilder(s.store.Renderer(), conversationTaskTable).Where(query.And(conversationTaskKindPredicate(conversationTaskKindTask), query.Equal("owner_key", owner), query.Equal("source_conversation_id", id))).Build()
 		if err = conversationExec(ctx, tx, q, args, e); err != nil {
 			return err
 		}

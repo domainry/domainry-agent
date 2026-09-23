@@ -12,7 +12,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 32 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
+			if len(migrations) != 29 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
 				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
 			byVersion := map[uint]string{}
@@ -31,13 +31,9 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if forks := byVersion[34]; !strings.Contains(forks, conversationForkTable) || !strings.Contains(forks, "source_event_seq") || strings.Contains(forks, "_schema_migrations") {
 				t.Fatal("invalid conversation fork migration", forks)
 			}
-			plans := byVersion[32]
-			if !strings.Contains(plans, conversationTaskPlanTable) || strings.Contains(plans, "_schema_migrations") {
-				t.Fatal("invalid task plan migration", plans)
-			}
-			for _, folded := range []uint{31, 33} {
+			for _, folded := range []uint{16, 17, 31, 32, 33} {
 				if _, found := byVersion[folded]; found {
-					t.Fatalf("folded conversation item migration v%d remains", folded)
+					t.Fatalf("folded Agent migration v%d remains", folded)
 				}
 			}
 			contract := byVersion[29]
@@ -90,6 +86,17 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			for _, retired := range []string{"_agent_conversation_messages", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_task_agreement_updates", "_agent_conversation_task_completions"} {
 				if strings.Contains(conversationItems, retired) {
 					t.Fatalf("private conversation item table remains: %s", retired)
+				}
+			}
+			tasks := byVersion[15]
+			for _, fragment := range []string{conversationTaskTable, "record_kind", "scheduled_plan_id", "observation_hash", "fencing_token", "idx_agent_task_claim_v15", "idx_agent_task_follow_up_claim_v15"} {
+				if !strings.Contains(tasks, fragment) {
+					t.Fatalf("missing unified Agent task field/index %s", fragment)
+				}
+			}
+			for _, retired := range []string{"_agent_conversation_tasks", "_agent_conversation_task_plans", "_agent_conversation_follow_up_states", "_agent_conversation_follow_up_events", " plan_id ", " event_id ", " fence "} {
+				if strings.Contains(tasks, retired) {
+					t.Fatalf("retired Agent task schema remains: %s", retired)
 				}
 			}
 			allRunDDL := strings.Join(append([]string{}, migrations[0].Statements...), "\n") + "\n" + conversationItems + "\n" + byVersion[19]

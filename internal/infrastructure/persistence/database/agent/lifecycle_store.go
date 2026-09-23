@@ -176,7 +176,7 @@ func (s LifecycleStore) conversationLifecyclePayload(ctx context.Context, owner,
 		}
 		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("payload_json").Where(predicate).Build()
 		if table == conversationTaskTable {
-			statement, args, err = query.NewSelectBuilder(s.store.Renderer(), table).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("source_conversation_id", id))).Build()
+			statement, args, err = query.NewSelectBuilder(s.store.Renderer(), table).Columns("payload_json").Where(query.And(conversationTaskKindPredicate(conversationTaskKindTask), query.Equal("owner_key", owner), query.Equal("source_conversation_id", id))).Build()
 		}
 		if err != nil {
 			return nil, err
@@ -206,7 +206,7 @@ func (s LifecycleStore) conversationLifecyclePayload(ctx context.Context, owner,
 		return nil, err
 	}
 	if len(plans) > 0 {
-		graph[conversationTaskPlanTable] = plans
+		graph["task_plan_history"] = plans
 	}
 	return json.Marshal(graph)
 }
@@ -297,7 +297,7 @@ func (s LifecycleStore) deleteConversationLifecycleCandidate(ctx context.Context
 		if execErr = (&ConversationStore{store: s.store}).deleteConversationTaskPlansForSource(ctx, tx, candidate.OwnerKey, candidate.ResourceID); execErr != nil {
 			return execErr
 		}
-		statement, args, buildErr = query.NewDeleteBuilder(s.store.Renderer(), conversationTaskTable).Where(query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("source_conversation_id", candidate.ResourceID))).Build()
+		statement, args, buildErr = query.NewDeleteBuilder(s.store.Renderer(), conversationTaskTable).Where(query.And(conversationTaskKindPredicate(conversationTaskKindTask), query.Equal("owner_key", candidate.OwnerKey), query.Equal("source_conversation_id", candidate.ResourceID))).Build()
 		if buildErr != nil {
 			return buildErr
 		}

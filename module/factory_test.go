@@ -55,6 +55,12 @@ func TestModuleMigrationCreatesUnifiedRunTableAndIndexes(t *testing.T) {
 	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name IN ('_agent_conversation_steps','_agent_conversation_tool_calls','_agent_conversation_step_sources')`).Scan(&count); err != nil || count != 0 {
 		t.Fatalf("retired run-step tables=%d err=%v", count, err)
 	}
+	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='_agent_tasks'`).Scan(&count); err != nil || count != 1 {
+		t.Fatalf("unified task table=%d err=%v", count, err)
+	}
+	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name IN ('_agent_conversation_tasks','_agent_conversation_task_plans','_agent_conversation_follow_up_states','_agent_conversation_follow_up_events')`).Scan(&count); err != nil || count != 0 {
+		t.Fatalf("retired task tables=%d err=%v", count, err)
+	}
 }
 
 func newHost(t *testing.T, runtimeID string) *host {
@@ -116,7 +122,7 @@ func TestModuleDescriptor(t *testing.T) {
 	if b.Descriptor().Mode != agentsdk.DeploymentModeModule {
 		t.Fatalf("descriptor=%+v", b.Descriptor())
 	}
-	if len(host.applied) != 32 {
+	if len(host.applied) != 29 {
 		t.Fatalf("Agent migrations=%d", len(host.applied))
 	}
 	for _, table := range []string{shareddefinition.TableName, shareddefinition.VersionTableName} {

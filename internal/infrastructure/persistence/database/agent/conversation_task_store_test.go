@@ -44,7 +44,7 @@ func TestScheduledConversationTaskAcceptanceIsIdempotentOwnerScopedAndUsesExisti
 	}
 	var planID, schedulerRunID string
 	var scheduledFor int64
-	if err = store.Database().QueryRowContext(t.Context(), `SELECT scheduled_plan_id, scheduler_run_id, scheduled_for FROM _agent_conversation_tasks WHERE owner_key = ? AND task_id = ?`, conversationOwner(authority), first.Task.ID).Scan(&planID, &schedulerRunID, &scheduledFor); err != nil || planID != request.PlanID || schedulerRunID != request.SchedulerRunID || scheduledFor != request.ScheduledFor.UnixMilli() {
+	if err = store.Database().QueryRowContext(t.Context(), `SELECT scheduled_plan_id, scheduler_run_id, scheduled_for FROM _agent_tasks WHERE record_kind = 'task' AND owner_key = ? AND task_id = ?`, conversationOwner(authority), first.Task.ID).Scan(&planID, &schedulerRunID, &scheduledFor); err != nil || planID != request.PlanID || schedulerRunID != request.SchedulerRunID || scheduledFor != request.ScheduledFor.UnixMilli() {
 		t.Fatalf("scheduled metadata=%q/%q/%d err=%v", planID, schedulerRunID, scheduledFor, err)
 	}
 	other := request
@@ -152,7 +152,7 @@ func TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable(t *testing.T
 		t.Fatal("injected transaction failure was ignored")
 	}
 	var count int
-	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_tasks`).Scan(&count); err != nil || count != 0 {
+	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_tasks WHERE record_kind = 'task'`).Scan(&count); err != nil || count != 0 {
 		t.Fatalf("task survived receipt rollback: count=%d err=%v", count, err)
 	}
 	ledger, err := repo.ExecutionTools(t.Context(), claim, 0)
@@ -170,7 +170,7 @@ func TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable(t *testing.T
 	if err != nil || conversationHash(replayed) != conversationHash(result) {
 		t.Fatalf("durable task receipt changed: %+v %v", replayed, err)
 	}
-	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_tasks`).Scan(&count); err != nil || count != 1 {
+	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_tasks WHERE record_kind = 'task'`).Scan(&count); err != nil || count != 1 {
 		t.Fatalf("task replay duplicated work: count=%d err=%v", count, err)
 	}
 	queued, err := repo.ConversationTask(t.Context(), result.ResourceID, request.Authority)
@@ -253,7 +253,7 @@ func TestConversationTasksOwnerScopedFiltersAndStableCursor(t *testing.T) {
 	insert := func(index int, status, goal, conversation string, owner agentsdk.ConversationAuthority) {
 		t.Helper()
 		task := agentsdk.ConversationTask{ID: fmt.Sprintf("task_%02d", index), Status: status, Goal: goal, Input: "input", SourceConversationID: conversation, SourceRunID: fmt.Sprintf("run_%02d", index), CreatedAt: now.Add(time.Duration(index) * time.Millisecond), UpdatedAt: now.Add(time.Duration(index) * time.Millisecond)}
-		_, err := store.Database().ExecContext(t.Context(), `INSERT INTO _agent_conversation_tasks(owner_key, task_id, runtime_id, source_conversation_id, source_run_id, status, authority_json, request_hash, created_at, updated_at, payload_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, conversationOwner(owner), task.ID, owner.RuntimeID, task.SourceConversationID, task.SourceRunID, task.Status, conversationJSON(owner), conversationHash(task.ID), task.CreatedAt.UnixMilli(), task.UpdatedAt.UnixMilli(), conversationJSON(task))
+		_, err := store.Database().ExecContext(t.Context(), `INSERT INTO _agent_tasks(record_kind, owner_key, task_id, runtime_id, source_conversation_id, source_run_id, status, authority_json, request_hash, created_at, updated_at, payload_json) VALUES ('task', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, conversationOwner(owner), task.ID, owner.RuntimeID, task.SourceConversationID, task.SourceRunID, task.Status, conversationJSON(owner), conversationHash(task.ID), task.CreatedAt.UnixMilli(), task.UpdatedAt.UnixMilli(), conversationJSON(task))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -295,7 +295,7 @@ func TestConversationTaskChildCountIsBoundedPerSourceRun(t *testing.T) {
 	now := time.Now().UTC().Truncate(time.Millisecond)
 	for index := 0; index < agentsdk.ConversationTaskMaxChildrenPerRun; index++ {
 		task := agentsdk.ConversationTask{ID: fmt.Sprintf("task_child_%d", index), Status: agentsdk.ConversationTaskStatusQueued, Goal: "child", Input: "", SourceConversationID: request.ConversationID, SourceRunID: request.RunID, CreatedAt: now, UpdatedAt: now}
-		if _, err := store.Database().ExecContext(t.Context(), `INSERT INTO _agent_conversation_tasks(owner_key, task_id, runtime_id, source_conversation_id, source_run_id, status, authority_json, request_hash, created_at, updated_at, payload_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, conversationOwner(request.Authority), task.ID, request.Authority.RuntimeID, task.SourceConversationID, task.SourceRunID, task.Status, conversationJSON(request.Authority), conversationHash(task.ID), now.UnixMilli(), now.UnixMilli(), conversationJSON(task)); err != nil {
+		if _, err := store.Database().ExecContext(t.Context(), `INSERT INTO _agent_tasks(record_kind, owner_key, task_id, runtime_id, source_conversation_id, source_run_id, status, authority_json, request_hash, created_at, updated_at, payload_json) VALUES ('task', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, conversationOwner(request.Authority), task.ID, request.Authority.RuntimeID, task.SourceConversationID, task.SourceRunID, task.Status, conversationJSON(request.Authority), conversationHash(task.ID), now.UnixMilli(), now.UnixMilli(), conversationJSON(task)); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -305,7 +305,7 @@ func TestConversationTaskChildCountIsBoundedPerSourceRun(t *testing.T) {
 		t.Fatalf("child limit result=%+v err=%v", result, err)
 	}
 	var count int
-	if err := store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_tasks WHERE owner_key = ? AND source_run_id = ?`, conversationOwner(request.Authority), request.RunID).Scan(&count); err != nil || count != agentsdk.ConversationTaskMaxChildrenPerRun {
+	if err := store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_tasks WHERE record_kind = 'task' AND owner_key = ? AND source_run_id = ?`, conversationOwner(request.Authority), request.RunID).Scan(&count); err != nil || count != agentsdk.ConversationTaskMaxChildrenPerRun {
 		t.Fatalf("child count=%d err=%v", count, err)
 	}
 }

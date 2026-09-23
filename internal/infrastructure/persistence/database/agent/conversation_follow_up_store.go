@@ -18,17 +18,12 @@ import (
 	"github.com/domainry/domainry-orm/query"
 )
 
-const (
-	conversationFollowUpStateTable = "_agent_conversation_follow_up_states"
-	conversationFollowUpEventTable = "_agent_conversation_follow_up_events"
-)
-
 type conversationFollowUpState struct {
-	Status          string
-	ObservationHash string
-	Occurrence      int
-	LastTaskID      string
-	CreatedAt       int64
+	Status          string `json:"status"`
+	ObservationHash string `json:"observation_hash"`
+	Occurrence      int    `json:"occurrence"`
+	LastTaskID      string `json:"last_task_id"`
+	CreatedAt       int64  `json:"created_at"`
 }
 
 func parseConversationFollowUpReport(raw string) (agentsdk.ConversationFollowUpReport, string, error) {
@@ -65,9 +60,9 @@ func parseConversationFollowUpReport(raw string) (agentsdk.ConversationFollowUpR
 
 func (s *ConversationStore) readConversationFollowUpState(ctx context.Context, tx *sql.Tx, owner, planID string) (conversationFollowUpState, bool, error) {
 	var state conversationFollowUpState
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationFollowUpStateTable).
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).
 		Columns("status", "observation_hash", "occurrence", "last_task_id", "created_at").
-		Where(query.And(query.Equal("owner_key", owner), query.Equal("plan_id", planID))).Build()
+		Where(conversationTaskRecordPredicate(conversationTaskKindFollowState, owner, planID)).Build()
 	if err != nil {
 		return state, false, err
 	}
@@ -80,23 +75,23 @@ func (s *ConversationStore) readConversationFollowUpState(ctx context.Context, t
 
 func (s *ConversationStore) saveConversationFollowUpState(ctx context.Context, tx *sql.Tx, owner, runtimeID, planID string, state conversationFollowUpState, insert bool, now time.Time) error {
 	if insert {
-		statement, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationFollowUpStateTable).
-			Columns("owner_key", "plan_id", "runtime_id", "status", "observation_hash", "occurrence", "last_task_id", "created_at", "updated_at").
-			Values(owner, planID, runtimeID, state.Status, state.ObservationHash, state.Occurrence, state.LastTaskID, now.UnixMilli(), now.UnixMilli()).Build()
+		statement, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationTaskTable).
+			Columns("record_kind", "owner_key", "task_id", "runtime_id", "status", "observation_hash", "occurrence", "last_task_id", "created_at", "updated_at", "payload_json").
+			Values(conversationTaskKindFollowState, owner, planID, runtimeID, state.Status, state.ObservationHash, state.Occurrence, state.LastTaskID, now.UnixMilli(), now.UnixMilli(), conversationJSON(state)).Build()
 		return conversationExec(ctx, tx, statement, args, err)
 	}
-	statement, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationFollowUpStateTable).
+	statement, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).
 		Set("status", state.Status).Set("observation_hash", state.ObservationHash).Set("occurrence", state.Occurrence).
-		Set("last_task_id", state.LastTaskID).Set("updated_at", now.UnixMilli()).
-		Where(query.And(query.Equal("owner_key", owner), query.Equal("plan_id", planID))).Build()
+		Set("last_task_id", state.LastTaskID).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(state)).
+		Where(conversationTaskRecordPredicate(conversationTaskKindFollowState, owner, planID)).Build()
 	return conversationCAS(ctx, tx, statement, args, err)
 }
 
 func (s *ConversationStore) enqueueConversationFollowUpEvent(ctx context.Context, tx *sql.Tx, event agentsdk.ConversationFollowUpEvent) error {
-	statement, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationFollowUpEventTable).
-		Columns("owner_key", "event_id", "runtime_id", "status", "lease_owner", "fence", "lease_expires_at", "attempt", "next_attempt_at", "payload_json", "created_at", "updated_at").
-		Values(conversationOwner(event.Authority), event.ID, event.Authority.RuntimeID, "pending", "", 0, 0, 0, 0, conversationJSON(event), event.OccurredAt.UnixMilli(), event.OccurredAt.UnixMilli()).
-		OnConflictDoNothing("owner_key", "event_id").Build()
+	statement, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationTaskTable).
+		Columns("record_kind", "owner_key", "task_id", "runtime_id", "status", "lease_owner", "fencing_token", "lease_expires_at", "attempt", "next_attempt_at", "payload_json", "created_at", "updated_at").
+		Values(conversationTaskKindFollowEvent, conversationOwner(event.Authority), event.ID, event.Authority.RuntimeID, "pending", "", 0, 0, 0, 0, conversationJSON(event), event.OccurredAt.UnixMilli(), event.OccurredAt.UnixMilli()).
+		OnConflictDoNothing("record_kind", "owner_key", "task_id").Build()
 	return conversationExec(ctx, tx, statement, args, err)
 }
 
@@ -168,7 +163,7 @@ func (s *ConversationStore) recordConversationFollowUpWaiting(ctx context.Contex
 		return nil
 	}
 	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).
-		Where(query.And(query.Equal("owner_key", conversationOwner(authority)), query.Equal("task_id", run.BackgroundTask.TaskID), query.Equal("source_conversation_id", run.ConversationID))).Build()
+		Where(query.And(conversationTaskPredicate(conversationOwner(authority), run.BackgroundTask.TaskID), query.Equal("source_conversation_id", run.ConversationID))).Build()
 	if err != nil {
 		return err
 	}
@@ -219,11 +214,11 @@ func (s *ConversationStore) ClaimConversationFollowUpEvent(ctx context.Context, 
 	}
 	err := s.transaction(ctx, func(tx *sql.Tx) error {
 		now := time.Now().UTC()
-		builder := query.NewSelectBuilder(s.store.Renderer(), conversationFollowUpEventTable).
-			Columns("owner_key", "status", "lease_owner", "fence", "lease_expires_at", "attempt", "payload_json").
-			Where(query.And(query.Equal("runtime_id", runtimeID), query.LessThanOrEqual("next_attempt_at", now.UnixMilli()), query.Or(
+		builder := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).
+			Columns("owner_key", "status", "lease_owner", "fencing_token", "lease_expires_at", "attempt", "payload_json").
+			Where(query.And(conversationTaskKindPredicate(conversationTaskKindFollowEvent), query.Equal("runtime_id", runtimeID), query.LessThanOrEqual("next_attempt_at", now.UnixMilli()), query.Or(
 				query.Equal("status", "pending"), query.And(query.Equal("status", "publishing"), query.LessThanOrEqual("lease_expires_at", now.UnixMilli())),
-			))).OrderBy(query.Ascending("created_at"), query.Ascending("event_id")).Limit(1)
+			))).OrderBy(query.Ascending("created_at"), query.Ascending("task_id")).Limit(1)
 		if profile := s.store.Profile(); profile != nil && profile.Capabilities().RowLock {
 			var err error
 			builder, err = profile.ApplyClaimLock(builder, profile.Capabilities().SkipLocked)
@@ -243,10 +238,10 @@ func (s *ConversationStore) ClaimConversationFollowUpEvent(ctx context.Context, 
 			return err
 		}
 		fence := row.Fence + 1
-		statement, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationFollowUpEventTable).
-			Set("status", "publishing").Set("lease_owner", owner).Set("fence", fence).Set("lease_expires_at", now.Add(ttl).UnixMilli()).
+		statement, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).
+			Set("status", "publishing").Set("lease_owner", owner).Set("fencing_token", fence).Set("lease_expires_at", now.Add(ttl).UnixMilli()).
 			Set("attempt", row.Attempt+1).Set("updated_at", now.UnixMilli()).
-			Where(query.And(query.Equal("owner_key", row.OwnerKey), query.Equal("event_id", row.Event.ID), query.Equal("status", row.Status), query.Equal("fence", row.Fence))).Build()
+			Where(query.And(conversationTaskRecordPredicate(conversationTaskKindFollowEvent, row.OwnerKey, row.Event.ID), query.Equal("status", row.Status), query.Equal("fencing_token", row.Fence))).Build()
 		if err = conversationCAS(ctx, tx, statement, args, err); err != nil {
 			return err
 		}
@@ -265,9 +260,9 @@ func (s *ConversationStore) transitionConversationFollowUpEvent(ctx context.Cont
 	if complete {
 		status, next = "published", 0
 	}
-	statement, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationFollowUpEventTable).
+	statement, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).
 		Set("status", status).Set("lease_owner", "").Set("lease_expires_at", 0).Set("next_attempt_at", next).Set("updated_at", now.UnixMilli()).
-		Where(query.And(query.Equal("owner_key", conversationOwner(claim.Event.Authority)), query.Equal("event_id", claim.Event.ID), query.Equal("status", "publishing"), query.Equal("lease_owner", claim.Owner), query.Equal("fence", claim.Fence))).Build()
+		Where(query.And(conversationTaskRecordPredicate(conversationTaskKindFollowEvent, conversationOwner(claim.Event.Authority), claim.Event.ID), query.Equal("status", "publishing"), query.Equal("lease_owner", claim.Owner), query.Equal("fencing_token", claim.Fence))).Build()
 	return conversationCAS(ctx, s.store.Database(), statement, args, err)
 }
 

@@ -22,7 +22,7 @@ func (s *ConversationStore) ConversationExternalAgentTasks(ctx context.Context, 
 	}
 	out := []agentsdk.ConversationTask{}
 	for offset := 0; ; offset += 64 {
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Or(query.Equal("status", agentsdk.ConversationTaskStatusQueued), query.Equal("status", agentsdk.ConversationTaskStatusRunning), query.Equal("status", agentsdk.ConversationTaskStatusCancelled)))).OrderBy(query.Ascending("created_at"), query.Ascending("task_id")).Limit(64).Offset(offset).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(conversationTaskKindPredicate(conversationTaskKindTask), query.Equal("owner_key", conversationOwner(a)), query.Or(query.Equal("status", agentsdk.ConversationTaskStatusQueued), query.Equal("status", agentsdk.ConversationTaskStatusRunning), query.Equal("status", agentsdk.ConversationTaskStatusCancelled)))).OrderBy(query.Ascending("created_at"), query.Ascending("task_id")).Limit(64).Offset(offset).Build()
 		if err != nil {
 			return nil, false, err
 		}
@@ -62,7 +62,7 @@ func (s *ConversationStore) ConversationExternalAgentTasks(ctx context.Context, 
 }
 
 func (s *ConversationStore) externalAgentTaskRow(ctx context.Context, tx *sql.Tx, taskID string, a agentsdk.ConversationAuthority) (conversationTaskRow, error) {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", taskID))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(conversationOwner(a), taskID)).Build()
 	if err != nil {
 		return conversationTaskRow{}, err
 	}
@@ -119,7 +119,7 @@ func (s *ConversationStore) ClaimConversationExternalAgentTask(ctx context.Conte
 		exec.ClaimedAt, exec.UpdatedAt = &now, now
 		task.Status, task.UpdatedAt = agentsdk.ConversationTaskStatusRunning, now
 		setConversationTaskGoalPhase(&task, now)
-		q, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", task.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(task)).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", task.ID), query.Equal("status", agentsdk.ConversationTaskStatusQueued))).Build()
+		q, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", task.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(task)).Where(query.And(conversationTaskPredicate(conversationOwner(a), task.ID), query.Equal("status", agentsdk.ConversationTaskStatusQueued))).Build()
 		if err = conversationCAS(ctx, tx, q, args, err); err != nil {
 			return err
 		}
@@ -266,7 +266,7 @@ func (s *ConversationStore) ReportConversationExternalAgentTask(ctx context.Cont
 		}
 		task.UpdatedAt = now
 		setConversationTaskGoalPhase(&task, now)
-		q, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", task.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(task)).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", task.ID), query.Equal("updated_at", row.task.UpdatedAt.UnixMilli()))).Build()
+		q, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", task.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(task)).Where(query.And(conversationTaskPredicate(conversationOwner(a), task.ID), query.Equal("updated_at", row.task.UpdatedAt.UnixMilli()))).Build()
 		if err = conversationCAS(ctx, tx, q, args, err); err != nil {
 			return err
 		}

@@ -111,7 +111,7 @@ func (s *ConversationStore) UpdateConversationTaskAgreement(ctx context.Context,
 			out, replay = existing.Task, true
 			return nil
 		}
-		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(query.Equal("owner_key", owner), query.Equal("task_id", taskID))).Build()
+		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(owner, taskID)).Build()
 		if err != nil {
 			return err
 		}
@@ -153,7 +153,7 @@ func (s *ConversationStore) UpdateConversationTaskAgreement(ctx context.Context,
 			return err
 		}
 		setConversationTaskGoalPhase(&out, now)
-		statement, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", out.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(out)).Where(query.And(query.Equal("owner_key", owner), query.Equal("task_id", taskID), query.Equal("status", fromStatus), query.Equal("updated_at", fromUpdated.UnixMilli()))).Build()
+		statement, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationTaskTable).Set("status", out.Status).Set("updated_at", now.UnixMilli()).Set("payload_json", conversationJSON(out)).Where(query.And(conversationTaskPredicate(owner, taskID), query.Equal("status", fromStatus), query.Equal("updated_at", fromUpdated.UnixMilli()))).Build()
 		if err = conversationCAS(ctx, tx, statement, args, err); err != nil {
 			return err
 		}

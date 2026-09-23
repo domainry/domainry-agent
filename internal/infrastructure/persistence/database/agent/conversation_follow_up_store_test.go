@@ -154,7 +154,70 @@ func TestScheduledFollowUpFailureInvalidReportAndNeedsActionAreDurable(t *testin
 		t.Fatalf("needs action event=%+v found=%t", claim, found)
 	}
 	var count int
-	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_follow_up_events WHERE event_id = ?`, claim.Event.ID).Scan(&count); err != nil || count != 1 {
+	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_tasks WHERE record_kind = 'follow_up_event' AND task_id = ?`, claim.Event.ID).Scan(&count); err != nil || count != 1 {
 		t.Fatalf("needs action dedupe count=%d err=%v", count, err)
+	}
+}
+
+func TestUnifiedAgentTasksKeepTaskFollowUpStateAndEventNamespacesIndependent(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := NewConversationStore(store)
+	authority := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
+	owner, sharedID := conversationOwner(authority), "shared_task_record"
+	now := time.Now().UTC().Truncate(time.Millisecond)
+	task := agentsdk.ConversationTask{
+		ID: sharedID, Status: agentsdk.ConversationTaskStatusQueued, Goal: "keep typed task records isolated",
+		SourceConversationID: "conversation_source", SourceRunID: "run_source", CreatedAt: now, UpdatedAt: now,
+	}
+	if _, err := store.Database().ExecContext(t.Context(), `INSERT INTO _agent_tasks(record_kind, owner_key, task_id, runtime_id, source_conversation_id, source_run_id, status, authority_json, request_hash, created_at, updated_at, payload_json) VALUES ('task', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, owner, sharedID, authority.RuntimeID, task.SourceConversationID, task.SourceRunID, task.Status, conversationJSON(authority), conversationHash(task), now.UnixMilli(), now.UnixMilli(), conversationJSON(task)); err != nil {
+		t.Fatal(err)
+	}
+	event := agentsdk.ConversationFollowUpEvent{ID: sharedID, Kind: agentsdk.ConversationFollowUpEventChanged, Authority: authority, PlanID: sharedID, TaskID: sharedID, RunID: "run_event", Goal: task.Goal, Summary: "changed", Occurrence: 1, OccurredAt: now}
+	if err := repo.transaction(t.Context(), func(tx *sql.Tx) error {
+		state := conversationFollowUpState{Status: agentsdk.ConversationFollowUpReportActive, ObservationHash: conversationHash("observation"), Occurrence: 1, LastTaskID: sharedID, CreatedAt: now.UnixMilli()}
+		if err := repo.saveConversationFollowUpState(t.Context(), tx, owner, authority.RuntimeID, sharedID, state, true, now); err != nil {
+			return err
+		}
+		return repo.enqueueConversationFollowUpEvent(t.Context(), tx, event)
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	loaded, err := repo.ConversationTask(t.Context(), sharedID, authority)
+	if err != nil || loaded.ID != task.ID || loaded.Goal != task.Goal {
+		t.Fatalf("task=%+v err=%v", loaded, err)
+	}
+	var state conversationFollowUpState
+	var found bool
+	err = repo.transaction(t.Context(), func(tx *sql.Tx) error {
+		var readErr error
+		state, found, readErr = repo.readConversationFollowUpState(t.Context(), tx, owner, sharedID)
+		return readErr
+	})
+	if err != nil || !found || state.LastTaskID != sharedID {
+		t.Fatalf("state=%+v found=%v err=%v", state, found, err)
+	}
+	claim, found := claimFollowUp(t, repo, authority.RuntimeID)
+	if !found || claim.Event.ID != sharedID || claim.Event.Kind != event.Kind {
+		t.Fatalf("claim=%+v found=%v", claim, found)
+	}
+	rows, err := store.Database().QueryContext(t.Context(), `SELECT record_kind, COUNT(*) FROM _agent_tasks WHERE owner_key = ? AND task_id = ? GROUP BY record_kind`, owner, sharedID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rows.Close()
+	counts := map[string]int{}
+	for rows.Next() {
+		var kind string
+		var count int
+		if err = rows.Scan(&kind, &count); err != nil {
+			t.Fatal(err)
+		}
+		counts[kind] = count
+	}
+	for _, kind := range []string{conversationTaskKindTask, conversationTaskKindFollowState, conversationTaskKindFollowEvent} {
+		if counts[kind] != 1 {
+			t.Fatalf("kind=%s count=%d all=%v", kind, counts[kind], counts)
+		}
 	}
 }

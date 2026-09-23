@@ -11,7 +11,7 @@ G03 已完成。Scheduler 仍只拥有计划、时间窗、重试和签名投递
 | Runtime composition | 唯一的 Scheduler → Agent 映射处。先通过 Identity SDK 解析当前用户，再把受限事实映射到 Agent SDK；不沿用 RoleKey、AccessBundle 或浏览器令牌。 |
 | Agent / SDK | 新增可选 scheduled task 服务和精确 Runtime service Action。Agent 负责会话、Action、工具、连接状态、确认和执行账本。 |
 | Integration / Tools | Agent Web 宿主继续通过已有公开 SDK 查询所选工具的连接可用性；账号状态和凭证仍由 Integration／Connector 管理。 |
-| 存储 | Scheduler 保留自己的 run；Agent migration 16 只在 `_agent_conversation_tasks` 增加私有计划关联列，继续复用原任务 worker、Run、步骤、确认和幂等账本。 |
+| 存储 | Scheduler 保留自己的 run；Agent 在 typed `_agent_tasks` 的 `task` 记录中保存计划关联列，继续复用原任务 worker、Run、步骤、确认和幂等账本。 |
 
 [架构机器审计](evidence/2026-09-12-g03-scheduled-reauthorization/architecture-audit.json)记录依赖扫描、凭证字段扫描、存储归属和发布门禁状态。
 

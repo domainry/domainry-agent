@@ -434,7 +434,7 @@ func TestBackgroundTaskPersistsVersionedPlanThroughIdentityHTTPAndSQLite(t *test
 	}
 	b.call("GET", "/agent/conversation-tasks/"+receipt.Task.ID+"/plans?before_version=-1", "", 400)
 	var persisted int
-	if err = host.db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_task_plans WHERE task_id = ?`, receipt.Task.ID).Scan(&persisted); err != nil || persisted != 2 {
+	if err = host.db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_items WHERE item_kind = 'task_plan' AND subject_id = ?`, receipt.Task.ID).Scan(&persisted); err != nil || persisted != 2 {
 		t.Fatalf("persisted plans=%d err=%v", persisted, err)
 	}
 	reviewBrief := agentsdk.DefaultConversationTaskBrief("等待用户逐项复核")
@@ -797,7 +797,7 @@ func TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite(t *testing.T) {
 	}
 	var status string
 	var payload []byte
-	if err := host.db.QueryRowContext(t.Context(), `SELECT status, payload_json FROM _agent_conversation_tasks WHERE task_id = ?`, taskID).Scan(&status, &payload); err != nil {
+	if err := host.db.QueryRowContext(t.Context(), `SELECT status, payload_json FROM _agent_tasks WHERE record_kind = 'task' AND task_id = ?`, taskID).Scan(&status, &payload); err != nil {
 		t.Fatal(err)
 	}
 	if status != agentsdk.ConversationTaskStatusCompleted || strings.Contains(string(payload), "process_id") || strings.Contains(string(payload), "task_definition") || !strings.Contains(string(payload), `"goal":"核对 build 42"`) || !strings.Contains(string(payload), `"result_message_id":"`+backgroundResult.ID+`"`) {

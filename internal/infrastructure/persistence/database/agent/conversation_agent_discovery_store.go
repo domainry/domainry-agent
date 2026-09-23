@@ -96,7 +96,7 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 		if err != nil {
 			return err
 		}
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns("payload_json", "owner_key").Where(query.And(workspace, query.Equal("status", "queued"))).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns("payload_json", "owner_key").Where(query.And(conversationTaskKindPredicate(conversationTaskKindTask), workspace, query.Equal("status", "queued"))).Build()
 		if err != nil {
 			return err
 		}
