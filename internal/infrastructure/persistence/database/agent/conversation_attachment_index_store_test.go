@@ -15,6 +15,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 )
 
@@ -44,6 +45,13 @@ func openAttachmentIndexStore(t *testing.T, path string) (*ConversationStore, *s
 		t.Fatal(err)
 	}
 	if err = r.ApplyOwnedMigrations(t.Context(), "agent", migrations); err != nil {
+		t.Fatal(err)
+	}
+	knowledgeMigrations, err := knowledgemodule.SchemaMigrations(renderer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = r.ApplyOwnedMigrations(t.Context(), knowledgemodule.MigrationOwner, knowledgeMigrations); err != nil {
 		t.Fatal(err)
 	}
 	s, err := NewStore(db, renderer, sqlite.NewEngine(), "attachment-index-test")

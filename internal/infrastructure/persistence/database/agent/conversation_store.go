@@ -81,17 +81,6 @@ func (s *ConversationStore) Ready(ctx context.Context) error {
 	if err = s.store.Database().QueryRowContext(ctx, q, args...).Scan(&runtimeID); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
-	for _, table := range []string{libraryTable, libraryMemberTable} {
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("scope_key").Limit(1).Build()
-		if err != nil {
-			return err
-		}
-		var scope string
-		err = s.store.Database().QueryRowContext(ctx, q, args...).Scan(&scope)
-		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return err
-		}
-	}
 	return nil
 }
 

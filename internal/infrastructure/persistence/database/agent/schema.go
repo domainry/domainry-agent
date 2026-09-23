@@ -68,31 +68,11 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	artifacts, err := conversationArtifactMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	libraries, err := knowledgeLibraryMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	documents, err := knowledgeDocumentMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	datasources, err := knowledgeDatasourceMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
 	parses, err := documentParseMigration(renderer)
 	if err != nil {
 		return nil, err
 	}
 	retired, err := retireDocumentParsingMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	attachmentIndex, err := attachmentIndexMigration(renderer)
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +120,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, artifacts, libraries, documents, datasources, parses, retired, attachmentIndex, tasks, subjects, capacity, collaboration, subjectsBinding, sourceReleases, contractPublications, workBudgets, forks, improvements, memories}, nil
+	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, parses, retired, tasks, subjects, capacity, collaboration, subjectsBinding, sourceReleases, contractPublications, workBudgets, forks, improvements, memories}, nil
 }
 
 func workerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {

@@ -16,6 +16,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	knowledgeartifact "github.com/domainry/domainry-knowledge/artifact"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 )
 
@@ -223,6 +224,17 @@ func TestAttachmentCleanupSurvivesDatabaseReopen(t *testing.T) {
 				t.Fatal(migrationErr)
 			}
 			for _, migration := range migrations {
+				for _, statement := range migration.Statements {
+					if _, err = database.ExecContext(t.Context(), statement); err != nil {
+						t.Fatal(err)
+					}
+				}
+			}
+			knowledgeMigrations, migrationErr := knowledgemodule.SchemaMigrations(dialect.WithSchema(""))
+			if migrationErr != nil {
+				t.Fatal(migrationErr)
+			}
+			for _, migration := range knowledgeMigrations {
 				for _, statement := range migration.Statements {
 					if _, err = database.ExecContext(t.Context(), statement); err != nil {
 						t.Fatal(err)

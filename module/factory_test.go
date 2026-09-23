@@ -3,6 +3,7 @@ package module
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -18,6 +19,7 @@ import (
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	todomodule "github.com/domainry/domainry-todo/module"
 	_ "modernc.org/sqlite"
@@ -25,12 +27,13 @@ import (
 )
 
 type host struct {
-	runtimeID string
-	database  *sql.DB
-	dialect   modulehost.Dialect
-	applied   []modulehost.SchemaMigration
-	owners    []string
-	content   *artifactkernel.ContentFiles
+	runtimeID      string
+	database       *sql.DB
+	dialect        modulehost.Dialect
+	applied        []modulehost.SchemaMigration
+	owners         []string
+	appliedByOwner map[string]bool
+	content        *artifactkernel.ContentFiles
 }
 
 func TestModuleMigrationCreatesUnifiedAgentTablesAndIndexes(t *testing.T) {
@@ -102,19 +105,27 @@ func (h *host) ArtifactContentWriter() sharedartifact.ContentWriter { return h.c
 func (*host) Driver() string                                        { return "sqlite" }
 func (*host) Schema() string                                        { return "" }
 func (h *host) ApplyOwnedMigrations(ctx context.Context, owner string, migrations []modulehost.SchemaMigration) error {
-	if owner != "agent" && owner != sharedartifact.MigrationOwner && owner != shareddefinition.MigrationOwner && owner != sharedsubjectlifecycle.MigrationOwner && owner != todomodule.MigrationOwner {
+	if owner != "agent" && owner != sharedartifact.MigrationOwner && owner != shareddefinition.MigrationOwner && owner != sharedsubjectlifecycle.MigrationOwner && owner != todomodule.MigrationOwner && owner != knowledgemodule.MigrationOwner {
 		return &agentsdk.Error{Code: "wrong_owner", Message: owner}
 	}
 	h.owners = append(h.owners, owner)
+	if h.appliedByOwner == nil {
+		h.appliedByOwner = map[string]bool{}
+	}
 	for _, migration := range migrations {
+		key := fmt.Sprintf("%s/%d", owner, migration.Version)
+		if h.appliedByOwner[key] {
+			continue
+		}
 		for _, statement := range migration.Statements {
 			if _, err := h.database.ExecContext(ctx, statement); err != nil {
 				return err
 			}
 		}
-	}
-	if owner == "agent" {
-		h.applied = append(h.applied, migrations...)
+		h.appliedByOwner[key] = true
+		if owner == "agent" {
+			h.applied = append(h.applied, migration)
+		}
 	}
 	return nil
 }
@@ -133,15 +144,15 @@ func TestModuleDescriptor(t *testing.T) {
 	if b.Descriptor().Mode != agentsdk.DeploymentModeModule {
 		t.Fatalf("descriptor=%+v", b.Descriptor())
 	}
-	if len(host.applied) != 22 {
+	if len(host.applied) != 17 {
 		t.Fatalf("Agent migrations=%d", len(host.applied))
 	}
-	for _, owner := range []string{sharedsubjectlifecycle.MigrationOwner, todomodule.MigrationOwner, "agent"} {
+	for _, owner := range []string{sharedsubjectlifecycle.MigrationOwner, todomodule.MigrationOwner, knowledgemodule.MigrationOwner, "agent"} {
 		if !slices.Contains(host.owners, owner) {
 			t.Fatalf("module migration owner %q missing from %v", owner, host.owners)
 		}
 	}
-	for _, table := range []string{"_subject_requests", "_subject_steps", "_agent_user_todos", "_agent_todo_mutations"} {
+	for _, table := range []string{"_subject_requests", "_subject_steps", "_agent_user_todos", "_agent_todo_mutations", "_agent_knowledge_libraries", "_agent_knowledge_library_members", "_agent_knowledge_documents", "_agent_knowledge_document_sources", "_agent_knowledge_document_jobs", "_agent_knowledge_datasource_bindings"} {
 		var count int
 		if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 1 {
 			t.Fatalf("module-owned table %s count=%d err=%v", table, count, err)

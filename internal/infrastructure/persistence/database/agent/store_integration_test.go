@@ -17,6 +17,7 @@ import (
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	todomodule "github.com/domainry/domainry-todo/module"
 	_ "modernc.org/sqlite"
@@ -69,6 +70,17 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 		t.Fatal(err)
 	}
 	for _, migration := range todoMigrations {
+		for _, statement := range migration.Statements {
+			if _, err = database.ExecContext(t.Context(), statement); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	knowledgeMigrations, err := knowledgemodule.SchemaMigrations(dialect.WithSchema(""))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, migration := range knowledgeMigrations {
 		for _, statement := range migration.Statements {
 			if _, err = database.ExecContext(t.Context(), statement); err != nil {
 				t.Fatal(err)

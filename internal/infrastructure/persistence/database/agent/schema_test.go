@@ -12,7 +12,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 22 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
+			if len(migrations) != 17 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
 				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
 			byVersion := map[uint]string{}
@@ -130,6 +130,11 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			for _, foreign := range []string{"_agent_user_todos", "_agent_todo_mutations"} {
 				if strings.Contains(joinedAll, foreign) {
 					t.Fatalf("Agent migration still owns Todo table %s", foreign)
+				}
+			}
+			for _, foreign := range []string{"_agent_artifacts", "_agent_artifact_versions", "_agent_artifact_mutations", "_agent_knowledge_libraries", "_agent_knowledge_library_members", "_agent_knowledge_documents", "_agent_knowledge_document_sources", "_agent_knowledge_document_jobs", "_agent_knowledge_datasource_bindings", "_agent_attachment_knowledge_sources", "_agent_attachment_index_jobs", "_knowledge_owner_operation_receipts"} {
+				if strings.Contains(joinedAll, foreign) {
+					t.Fatalf("Agent migration still owns Knowledge table %s", foreign)
 				}
 			}
 			for _, retired := range []string{"_agent_artifact_exports", "_agent_conversation_attachments", "_agent_attachment_cleanup", "_agent_subject_erasure_receipts", "_todo_subject_erasure_receipts", "_knowledge_subject_erasure_receipts"} {

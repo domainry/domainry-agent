@@ -12,6 +12,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	ormdriver "github.com/domainry/domainry-orm/driver"
 	todomodule "github.com/domainry/domainry-todo/module"
@@ -84,6 +85,9 @@ func EnsureSchema(ctx context.Context, database modulehost.Database, driver, sch
 	}
 	if _, err := todomodule.Open(ctx, database, renderer, profile, registrar, nil); err != nil {
 		return fmt.Errorf("open Todo persistence: %w", err)
+	}
+	if err := knowledgemodule.EnsureSchema(ctx, knowledgemodule.SQLBackend{DB: database, Dialect: renderer, Engine: profile}, registrar); err != nil {
+		return fmt.Errorf("open Knowledge persistence: %w", err)
 	}
 	agentMigrations, err := agentstore.SchemaMigrations(driver, schema)
 	if err != nil {

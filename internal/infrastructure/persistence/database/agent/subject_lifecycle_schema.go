@@ -2,7 +2,6 @@ package agent
 
 import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormschema "github.com/domainry/domainry-orm/schema"
 )
 
@@ -16,11 +15,5 @@ func subjectLifecycleMigration(d modulehost.Dialect) (modulehost.SchemaMigration
 	if err != nil {
 		return modulehost.SchemaMigration{}, err
 	}
-	knowledgeOperations, err := knowledgemodule.ConversationReferenceLifecycleMigration(d)
-	if err != nil {
-		return modulehost.SchemaMigration{}, err
-	}
-	statements := []string{agentOperationReceipt}
-	statements = append(statements, knowledgeOperations.Statements...)
-	return modulehost.SchemaMigration{Version: 18, Name: "agent_owner_operation_receipts", Statements: statements}, nil
+	return modulehost.SchemaMigration{Version: 18, Name: "agent_owner_operation_receipts", Statements: []string{agentOperationReceipt}}, nil
 }

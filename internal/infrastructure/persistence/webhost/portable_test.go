@@ -40,7 +40,7 @@ func TestExtractedPersistenceOnAllDatabases(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		km, err := knowledge.LegacyMigrations(d)
+		km, err := knowledge.SchemaMigrations(d)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -49,7 +49,7 @@ func TestExtractedPersistenceOnAllDatabases(t *testing.T) {
 			t.Fatal(err)
 		}
 		for range 2 {
-			if err = registrar.ApplyOwnedMigrations(t.Context(), "knowledge", km); err != nil {
+			if err = registrar.ApplyOwnedMigrations(t.Context(), knowledge.MigrationOwner, km); err != nil {
 				t.Fatal(err)
 			}
 			if err = registrar.ApplyOwnedMigrations(t.Context(), todo.MigrationOwner, tm); err != nil {
