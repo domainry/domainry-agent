@@ -12,6 +12,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/base"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
+	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	ormdriver "github.com/domainry/domainry-orm/driver"
 	"github.com/domainry/domainry-orm/query"
 )
@@ -26,6 +27,7 @@ type Store struct {
 	artifactContent sharedartifact.ContentStore
 	artifactWriter  sharedartifact.ContentWriter
 	definitions     shareddefinition.Store
+	operations      *sharedoperation.SQLStore
 }
 
 func NewStore(database modulehost.Database, renderer modulehost.Dialect, profile ormdriver.Profile, installationID string) (*Store, error) {
@@ -39,6 +41,7 @@ func NewStore(database modulehost.Database, renderer modulehost.Dialect, profile
 	return &Store{
 		SQLDatabase: base.NewSQLDatabase(database, renderer, profile),
 		definitions: shareddefinition.NewStore(database, definitionDialect, installationID),
+		operations:  sharedoperation.NewSQLStore(database, sharedoperation.AdaptDialect(renderer)),
 	}, nil
 }
 

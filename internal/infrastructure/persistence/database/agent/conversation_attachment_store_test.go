@@ -210,6 +210,7 @@ func TestAttachmentCleanupSurvivesDatabaseReopen(t *testing.T) {
 		database.SetMaxOpenConns(1)
 		dialect, _ := ormdialect.New(ormdialect.SQLite)
 		if migrate {
+			applyOperationMigrations(t, database, dialect.WithSchema(""))
 			artifactMigration, migrationErr := sharedartifact.SchemaMigrationForDialect(dialect.WithSchema(""))
 			if migrationErr != nil {
 				t.Fatal(migrationErr)

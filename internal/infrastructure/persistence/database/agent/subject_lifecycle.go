@@ -10,6 +10,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
 	lifecyclemodel "github.com/domainry/domainry-lifecycle-sdk/model"
 	"github.com/domainry/domainry-orm/query"
@@ -37,7 +38,7 @@ func (s SubjectLifecycle) authority(workspaceID, subjectID string) (agentsdk.Con
 }
 
 var agentSubjectOwnerTables = []string{
-	conversationContractPublicationTable, conversationSourceReleaseTable, conversationAgentMessageTable, conversationPeerLinkTable, conversationCollaborationMutationTable,
+	conversationContractPublicationTable, conversationSourceReleaseTable, conversationAgentMessageTable, conversationPeerLinkTable,
 	"_agent_conversation_interactions", conversationRunStepTable,
 	conversationItemTable, agentRunTable, conversationTaskTable, "_agent_conversations", conversationMemoryChangeTable, "_agent_user_memories",
 }
@@ -261,6 +262,10 @@ func (s SubjectLifecycle) EraseSubjectForRequest(ctx context.Context, requestID,
 				return deleteErr
 			}
 			changed[key], _ = result.RowsAffected()
+		}
+		changed["operation_receipts"], err = s.store.operations.DeleteRecords(sharedoperation.WithExecutor(ctx, tx), sharedoperation.RecordFilter{WorkspaceID: a.WorkspaceID, Owner: "agent", RequestedBy: a.UserID})
+		if err != nil {
+			return err
 		}
 		completedAt := time.Now().UTC()
 		receipt, _ = json.Marshal(map[string]any{"request_id": requestID, "changed": changed, "completed_at": completedAt})

@@ -80,10 +80,6 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	subjects, err := subjectLifecycleMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
 	capacity, err := conversationCapacityMigration(renderer)
 	if err != nil {
 		return nil, err
@@ -120,7 +116,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, parses, retired, tasks, subjects, capacity, collaboration, subjectsBinding, sourceReleases, contractPublications, workBudgets, forks, improvements, memories}, nil
+	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, parses, retired, tasks, capacity, collaboration, subjectsBinding, sourceReleases, contractPublications, workBudgets, forks, improvements, memories}, nil
 }
 
 func workerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {

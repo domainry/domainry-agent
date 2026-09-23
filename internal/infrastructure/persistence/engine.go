@@ -12,6 +12,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/postgres"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
+	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	ormdriver "github.com/domainry/domainry-orm/driver"
@@ -70,6 +71,9 @@ func EnsureSchema(ctx context.Context, database modulehost.Database, driver, sch
 	}
 	registrar := &migrationhost.Registrar{DatabaseDriver: driver, Namespace: strings.TrimSpace(schema), Profile: profile, DB: database, Renderer: renderer}
 	if err := registrar.Prepare(ctx); err != nil {
+		return err
+	}
+	if _, err := sharedoperation.Open(ctx, database, sharedoperation.AdaptDialect(renderer), registrar); err != nil {
 		return err
 	}
 	definitionDialect, ok := renderer.(shareddefinition.Dialect)

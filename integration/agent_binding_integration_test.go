@@ -31,6 +31,7 @@ import (
 	agentserver "github.com/domainry/domainry-agent/server"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
+	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
@@ -303,7 +304,7 @@ func (h *sqliteModuleHost) ArtifactContentWriter() sharedartifact.ContentWriter 
 func (*sqliteModuleHost) Driver() string                                        { return "sqlite" }
 func (*sqliteModuleHost) Schema() string                                        { return "" }
 func (h *sqliteModuleHost) ApplyOwnedMigrations(ctx context.Context, owner string, migrations []modulehost.SchemaMigration) error {
-	if owner != "agent" && owner != sharedartifact.MigrationOwner && owner != shareddefinition.MigrationOwner && owner != sharedsubjectlifecycle.MigrationOwner && owner != todomodule.MigrationOwner && owner != knowledgemodule.MigrationOwner {
+	if owner != "agent" && owner != sharedartifact.MigrationOwner && owner != shareddefinition.MigrationOwner && owner != sharedoperation.MigrationOwner && owner != sharedsubjectlifecycle.MigrationOwner && owner != todomodule.MigrationOwner && owner != knowledgemodule.MigrationOwner {
 		return fmt.Errorf("unexpected migration owner %q", owner)
 	}
 	h.mu.Lock()

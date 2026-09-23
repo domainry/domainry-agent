@@ -13,7 +13,6 @@ const (
 	conversationPeerLinkKindUseGrant    = "use_grant"
 )
 const conversationAgentMessageTable = "_agent_peer_messages"
-const conversationCollaborationMutationTable = "_agent_collaboration_mutations"
 
 func conversationCollaborationMigration(d modulehost.Dialect) (modulehost.SchemaMigration, error) {
 	m := modulehost.SchemaMigration{Version: 20, Name: "agent_peer_collaboration"}
@@ -45,10 +44,6 @@ func conversationCollaborationMigration(d modulehost.Dialect) (modulehost.Schema
 			required("created_at", ormschema.BigInt()), required("consumed_run_id", ormschema.TextKey(96)),
 			required("payload_json", ormschema.LongText()),
 		).PrimaryKey("owner_key", "message_id"),
-		ormschema.NewTable(d, conversationCollaborationMutationTable).IfNotExists().Columns(
-			required("owner_key", ormschema.TextKey(64)), required("mutation_id", ormschema.TextKey(64)),
-			required("request_hash", ormschema.TextKey(64)), required("payload_json", ormschema.LongText()),
-		).PrimaryKey("owner_key", "mutation_id"),
 	}
 	for _, table := range tables {
 		statement, _, err := table.Build()

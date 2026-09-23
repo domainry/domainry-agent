@@ -16,6 +16,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
+	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	"github.com/domainry/domainry-orm/query"
 )
 
@@ -54,7 +55,7 @@ func (s *ConversationStore) BindArtifactPersistence(store sharedartifact.Managed
 }
 
 func (s *ConversationStore) Ready(ctx context.Context) error {
-	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_user_memories", conversationRunStepTable, conversationForkTable, interactionTable, conversationTaskTable, conversationPeerLinkTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
+	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_user_memories", conversationRunStepTable, conversationForkTable, interactionTable, conversationTaskTable, conversationPeerLinkTable, conversationAgentMessageTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("owner_key").Limit(1).Build()
 		if err != nil {
 			return err
@@ -347,16 +348,19 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 		return nil, conversationError("bad_request", "deletion_request_invalid")
 	}
 	owner := conversationOwner(a)
+	command := agentOperationCommand("agent.conversation_delete", "conversation.delete", requestID, []any{id, revision}, a)
 	var receipt json.RawMessage
 	err := s.transaction(ctx, func(tx *sql.Tx) error {
-		lookup, args, buildErr := query.NewSelectBuilder(s.store.Renderer(), agentOperationReceiptTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("request_id", requestID))).Build()
-		if buildErr != nil {
-			return buildErr
+		claimedReceipt, claimed, claimErr := s.store.operations.Claim(sharedoperation.WithExecutor(ctx, tx), command)
+		if claimErr = agentOperationError(claimErr); claimErr != nil {
+			return claimErr
 		}
-		if scanErr := tx.QueryRowContext(ctx, lookup, args...).Scan(&receipt); scanErr == nil {
+		if !claimed {
+			if claimedReceipt.Status != sharedoperation.StatusSucceeded {
+				return conversationError("conflict", "mutation_in_progress")
+			}
+			receipt = append(json.RawMessage(nil), claimedReceipt.Result...)
 			return nil
-		} else if !errors.Is(scanErr, sql.ErrNoRows) {
-			return scanErr
 		}
 		c, err := s.get(ctx, tx, id, a)
 		if err != nil {
@@ -398,12 +402,7 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 			return err
 		}
 		receipt, _ = json.Marshal(map[string]any{"request_id": requestID, "conversation_id": id, "revision": revision, "completed_at": time.Now().UTC()})
-		q, args, e = query.NewInsertBuilder(s.store.Renderer(), agentOperationReceiptTable).Columns("owner_key", "request_id", "payload_json").Values(owner, requestID, receipt).Build()
-		if e != nil {
-			return e
-		}
-		_, e = tx.ExecContext(ctx, q, args...)
-		return e
+		return s.store.operations.Complete(sharedoperation.WithExecutor(ctx, tx), sharedoperation.Completion{ID: command.ID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind, IdempotencyKey: command.IdempotencyKey, RequestFingerprint: command.RequestFingerprint, Result: receipt, CompletedAt: time.Now().UTC()})
 	})
 	return receipt, err
 }

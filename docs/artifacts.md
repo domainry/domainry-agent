@@ -27,7 +27,7 @@ Agent SDK 新增 `ConversationArtifactService` 及其输入输出类型，覆盖
 | --- | --- |
 | `_agent_artifacts` | 用户范围内的稳定成果 ID、最新版本及查询元数据 |
 | `_agent_artifact_versions` | 按成果 ID 和版本保存不可变正文、来源与元数据 |
-| `_agent_artifact_mutations` | 客户端幂等键、输入摘要及结果回执 |
+| `_operations` | Foundation 统一维护的客户端幂等键、输入摘要及结果回执 |
 
 生成的 Markdown／CSV 文件统一登记为共享 `_artifacts` 中的
 `owner=agent, kind=generated`，文件字节写入宿主 BlobStore；`_artifact_bindings`

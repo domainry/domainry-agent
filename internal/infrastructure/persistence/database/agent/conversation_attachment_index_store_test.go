@@ -15,6 +15,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
+	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 )
@@ -31,6 +32,13 @@ func openAttachmentIndexStore(t *testing.T, path string) (*ConversationStore, *s
 	renderer := d.WithSchema("")
 	r := &webhost.Registrar{DB: db, Renderer: renderer}
 	if err = r.Prepare(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	operationMigrations, err := sharedoperation.SchemaMigrationsForDialect(renderer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = r.ApplyOwnedMigrations(t.Context(), sharedoperation.MigrationOwner, operationMigrations); err != nil {
 		t.Fatal(err)
 	}
 	artifactMigration, err := sharedartifact.SchemaMigrationForDialect(renderer)

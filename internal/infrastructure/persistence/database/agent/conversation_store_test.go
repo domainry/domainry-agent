@@ -116,6 +116,8 @@ func TestConversationRestartLeaseFenceAndFrozenInput(t *testing.T) {
 		}
 		db.SetMaxOpenConns(1)
 		if migrate {
+			d, _ := ormdialect.New(ormdialect.SQLite)
+			applyOperationMigrations(t, db, d.WithSchema(""))
 			migrations, err := SchemaMigrations("sqlite", "")
 			if err != nil {
 				t.Fatal(err)

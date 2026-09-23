@@ -24,7 +24,7 @@ Migration 3 创建 typed `_agent_run_steps`，以 `record_kind=step|tool_call|st
 
 Migration 4 增加 `_agent_conversation_interactions`，保存问题、确认、核查记录及幂等答复。相同调用的确认与核查分别保存，核查不会覆盖原来的批准凭据。
 
-Migration 5 增加 `_agent_user_todos` 和 `_agent_todo_mutations`。待办按 runtime / workspace / user 保存，记录批次与原始项次；第二张表保存网页操作的幂等回执。工具操作复用已有调用账本，同事务写入待办、执行结果及事件。迁移继续通过宿主唯一 `_schema_migrations` 账本执行。删除来源会话不会删除个人待办或网页操作回执；来源引用不授予查看原会话的权限。
+Todo 模块只维护 `_agent_user_todos`；网页操作的幂等回执由 Foundation 统一维护在 `_operations`，并与待办变更处于同一事务。迁移继续通过宿主唯一 `_schema_migrations` 账本执行。删除来源会话不会删除个人待办或网页操作回执；来源引用不授予查看原会话的权限。
 
 | 表 | 保存内容 |
 | --- | --- |

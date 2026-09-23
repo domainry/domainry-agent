@@ -116,7 +116,7 @@ func TestArtifactHeadVersionAndReceiptCommitTogether(t *testing.T) {
 	repo := NewConversationStore(store)
 	a := conversationTestAuthority()
 	ctx := t.Context()
-	if _, err := store.Database().ExecContext(ctx, `CREATE TRIGGER fail_artifact_receipt BEFORE INSERT ON _agent_artifact_mutations BEGIN SELECT RAISE(ABORT, 'injected receipt failure'); END`); err != nil {
+	if _, err := store.Database().ExecContext(ctx, `CREATE TRIGGER fail_artifact_receipt BEFORE UPDATE OF status ON _operations WHEN NEW.owner = 'knowledge' AND NEW.kind = 'knowledge.artifact_mutation' AND NEW.status = 'succeeded' BEGIN SELECT RAISE(ABORT, 'injected receipt failure'); END`); err != nil {
 		t.Fatal(err)
 	}
 	in := artifactWrite(t, "create", "", 0, "周报", "原文")

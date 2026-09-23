@@ -5,34 +5,31 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-orm/query"
 	"time"
+
+	agentsdk "github.com/domainry/domainry-agent-sdk"
+	sharedoperation "github.com/domainry/domainry-foundation/operation"
+	"github.com/domainry/domainry-orm/query"
 )
 
 func (s *ConversationStore) collaborationReplay(ctx context.Context, tx *sql.Tx, a agentsdk.ConversationAuthority, key string, request any, out any) (bool, error) {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationCollaborationMutationTable).Columns("request_hash", "payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("mutation_id", key))).Build()
-	if err != nil {
+	command := agentOperationCommand("agent.collaboration_mutation", "agent.collaboration.mutate", key, request, a)
+	receipt, claimed, err := s.store.operations.Claim(sharedoperation.WithExecutor(ctx, tx), command)
+	if err = agentOperationError(err); err != nil {
 		return false, err
 	}
-	var hash string
-	var raw []byte
-	err = tx.QueryRowContext(ctx, q, args...).Scan(&hash, &raw)
-	if errors.Is(err, sql.ErrNoRows) {
+	if claimed {
 		return false, nil
 	}
-	if err != nil {
-		return false, err
+	if receipt.Status != sharedoperation.StatusSucceeded {
+		return false, conversationError("conflict", "mutation_in_progress")
 	}
-	if hash != conversationHash(request) {
-		return false, conversationError("conflict", "idempotency_conflict")
-	}
-	return true, json.Unmarshal(raw, out)
+	return true, json.Unmarshal(receipt.Result, out)
 }
 
 func (s *ConversationStore) saveCollaborationMutation(ctx context.Context, tx *sql.Tx, a agentsdk.ConversationAuthority, key string, request, result any) error {
-	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationCollaborationMutationTable).Columns("owner_key", "mutation_id", "request_hash", "payload_json").Values(conversationOwner(a), key, conversationHash(request), conversationJSON(result)).Build()
-	return conversationExec(ctx, tx, q, args, err)
+	command := agentOperationCommand("agent.collaboration_mutation", "agent.collaboration.mutate", key, request, a)
+	return s.store.operations.Complete(sharedoperation.WithExecutor(ctx, tx), sharedoperation.Completion{ID: command.ID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind, IdempotencyKey: command.IdempotencyKey, RequestFingerprint: command.RequestFingerprint, Result: json.RawMessage(conversationJSON(result)), CompletedAt: time.Now().UTC()})
 }
 
 func (s *ConversationStore) ownedConversationAgent(ctx context.Context, db conversationDB, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgent, error) {

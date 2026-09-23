@@ -29,6 +29,8 @@ func TestConversationStepSourcesSurviveDatabaseReopenAndCannotChangeOnReplay(t *
 		return NewConversationStore(store), db
 	}
 	repo, db := open()
+	d, _ := ormdialect.New(ormdialect.SQLite)
+	applyOperationMigrations(t, db, d.WithSchema(""))
 	migrations, err := SchemaMigrations("sqlite", "")
 	if err != nil {
 		t.Fatal(err)

@@ -12,7 +12,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 17 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
+			if len(migrations) != 16 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
 				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
 			byVersion := map[uint]string{}
@@ -140,6 +140,11 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			for _, retired := range []string{"_agent_artifact_exports", "_agent_conversation_attachments", "_agent_attachment_cleanup", "_agent_subject_erasure_receipts", "_todo_subject_erasure_receipts", "_knowledge_subject_erasure_receipts"} {
 				if strings.Contains(joinedAll, retired) {
 					t.Fatalf("Agent migration still owns retired table %s", retired)
+				}
+			}
+			for _, sharedOrRetired := range []string{"_operations", "_operation_controls", "_operation_break_glass_grants", "_agent_owner_operation_receipts", "_agent_collaboration_mutations"} {
+				if strings.Contains(joinedAll, sharedOrRetired) {
+					t.Fatalf("Agent migration owns shared or retired Operations table %s", sharedOrRetired)
 				}
 			}
 		})

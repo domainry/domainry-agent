@@ -16,6 +16,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
+	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
@@ -32,6 +33,7 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 	database.SetMaxOpenConns(1)
 	t.Cleanup(func() { _ = database.Close() })
 	dialect, _ := ormdialect.New(ormdialect.SQLite)
+	applyOperationMigrations(t, database, dialect.WithSchema(""))
 	migrations, err := SchemaMigrations("sqlite", "")
 	if err != nil {
 		t.Fatal(err)
@@ -111,6 +113,21 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 	return store, database
 }
 
+func applyOperationMigrations(t *testing.T, database *sql.DB, dialect sharedoperation.Dialect) {
+	t.Helper()
+	migrations, err := sharedoperation.SchemaMigrationsForDialect(dialect)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, migration := range migrations {
+		for _, statement := range migration.Statements {
+			if _, err = database.ExecContext(t.Context(), statement); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+}
+
 func TestConversationItemsReplaceSixPrivateHistoryTables(t *testing.T) {
 	_, database := openAgentStore(t)
 	var count int
@@ -126,6 +143,41 @@ func TestConversationItemsReplaceSixPrivateHistoryTables(t *testing.T) {
 		if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='index' AND name=?`, index).Scan(&count); err != nil || count != 1 {
 			t.Fatalf("conversation item index %s count=%d err=%v", index, count, err)
 		}
+	}
+}
+
+func TestAgentOperationReceiptsShareOnePhysicalTableWithoutSharingStoreObjects(t *testing.T) {
+	firstStore, database := openAgentStore(t)
+	authority := conversationTestAuthority()
+	input := agentsdk.ConversationAgentWrite{ClientID: "shared-operation", Name: "Reviewer", Instructions: "Review", ModelKey: "default", Enabled: true, MaxConcurrent: 1}
+	first, err := NewConversationStore(firstStore).WriteConversationAgent(t.Context(), "", input, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	dialect, _ := ormdialect.New(ormdialect.SQLite)
+	secondStore, err := NewStore(database, dialect.WithSchema(""), sqlite.NewEngine(), "agent-store-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	replayed, err := NewConversationStore(secondStore).WriteConversationAgent(t.Context(), "", input, authority)
+	if err != nil || replayed.ID != first.ID || replayed.Revision != first.Revision {
+		t.Fatalf("shared Store replay=%+v first=%+v err=%v", replayed, first, err)
+	}
+	var count int
+	if err = database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _operations WHERE owner = 'agent' AND kind = 'agent.collaboration_mutation' AND status = 'succeeded'`).Scan(&count); err != nil || count != 1 {
+		t.Fatalf("shared Agent operation rows=%d err=%v", count, err)
+	}
+
+	isolated, err := sql.Open("sqlite", "file:"+t.Name()+"-saas?mode=memory&cache=shared")
+	if err != nil {
+		t.Fatal(err)
+	}
+	isolated.SetMaxOpenConns(1)
+	t.Cleanup(func() { _ = isolated.Close() })
+	applyOperationMigrations(t, isolated, dialect.WithSchema(""))
+	if err = isolated.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _operations`).Scan(&count); err != nil || count != 0 {
+		t.Fatalf("isolated SaaS operation rows=%d err=%v", count, err)
 	}
 }
 

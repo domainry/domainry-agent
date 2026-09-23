@@ -14,10 +14,10 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/base"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
-	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/operationkernel"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
+	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	identitymodule "github.com/domainry/domainry-identity/module"
 	integrationsdk "github.com/domainry/domainry-integration-sdk"
@@ -156,12 +156,8 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	if err = h.registrar.Prepare(ctx); err != nil {
 		return nil, err
 	}
-	operationMigration, err := operationkernel.SchemaMigration(renderer)
-	if err != nil {
+	if _, err = sharedoperation.Open(ctx, h.db, sharedoperation.AdaptDialect(renderer), h.registrar); err != nil {
 		return nil, err
-	}
-	if err = h.registrar.ApplyOwnedMigrations(ctx, "operations", []modulehost.SchemaMigration{operationMigration}); err != nil {
-		return nil, fmt.Errorf("apply shared Operations migration: %w", err)
 	}
 	h.sharedArtifactFiles, err = artifactkernel.NewContentFiles(path + ".shared-artifacts")
 	if err != nil {
