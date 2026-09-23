@@ -49,7 +49,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		{name: "_agent_runtime_states", builder: runtimeStateTable(renderer)},
 		{name: "_agent_task_runs", builder: taskRunTable(renderer)},
 		{name: "_agent_interactive_runs", builder: interactiveRunTable(renderer)},
-		{name: "_agent_worker_scopes", builder: workerScopeTable(renderer)},
+		{name: "_worker_scopes", builder: workerScopeTable(renderer)},
 	} {
 		statement, _, buildErr := table.builder.Build()
 		if buildErr != nil {
@@ -88,14 +88,6 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		return nil, err
 	}
 	artifacts, err := conversationArtifactMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	attachments, err := conversationAttachmentMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	attachmentCleanup, err := conversationAttachmentCleanupMigration(renderer)
 	if err != nil {
 		return nil, err
 	}
@@ -211,13 +203,25 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, attachments, attachmentCleanup, libraries, documents, datasources, parses, retired, attachmentIndex, tasks, scheduledTasks, followUps, subjects, capacity, collaboration, agreements, assignments, deliveries, disagreements, agentSharing, participants, subjectsBinding, sourceReleases, contractPublications, workBudgets, taskAgreements, taskPlans, taskCompletions, forks, improvements, memories}, nil
+	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, libraries, documents, datasources, parses, retired, attachmentIndex, tasks, scheduledTasks, followUps, subjects, capacity, collaboration, agreements, assignments, deliveries, disagreements, agentSharing, participants, subjectsBinding, sourceReleases, contractPublications, workBudgets, taskAgreements, taskPlans, taskCompletions, forks, improvements, memories}, nil
 }
 
 func workerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
-	return ormschema.NewTable(renderer, "_agent_worker_scopes").IfNotExists().Columns(
-		required("workspace_id", ormschema.TextKey(255)), required("updated_at", ormschema.BigInt()),
-	).PrimaryKey("workspace_id")
+	return ormschema.NewTable(renderer, "_worker_scopes").IfNotExists().Columns(
+		required("id", ormschema.TextKey(255)),
+		required("owner", ormschema.TextKey(191)),
+		required("scope_key", ormschema.TextKey(191)),
+		ormschema.Column("cursor", ormschema.TextKey(255)).NotNull().DefaultValue(""),
+		ormschema.Column("checkpoint", ormschema.BigInt()).NotNull().DefaultValue(0),
+		ormschema.Column("capacity", ormschema.BigInt()).NotNull().DefaultValue(0),
+		ormschema.Column("lease_owner", ormschema.TextKey(255)).NotNull().DefaultValue(""),
+		ormschema.Column("lease_expires_at", ormschema.TextKey(255)).NotNull().DefaultValue(""),
+		ormschema.Column("fencing_token", ormschema.BigInt()).NotNull().DefaultValue(0),
+		ormschema.Column("last_started_at", ormschema.TextKey(255)).NotNull().DefaultValue(""),
+		ormschema.Column("last_completed_at", ormschema.TextKey(255)).NotNull().DefaultValue(""),
+		ormschema.Column("last_error", ormschema.LongText()).NotNull().DefaultValue(""),
+		ormschema.Column("updated_at", ormschema.TextKey(255)).NotNull().DefaultValue(""),
+	).PrimaryKey("id").Unique("owner", "scope_key")
 }
 
 func definitionTable(renderer modulehost.Dialect, name string) *ormschema.TableBuilder {

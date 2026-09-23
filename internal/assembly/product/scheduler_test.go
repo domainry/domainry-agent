@@ -6,7 +6,7 @@ import (
 )
 
 func TestScheduledPlansEnvironmentIsOptionalCompleteAndOriginBound(t *testing.T) {
-	keys := []string{"SCHEDULER_SAAS_ENDPOINT", "SCHEDULER_SAAS_TOKEN", "SCHEDULER_CAPABILITY_CONTRACT_SHA256"}
+	keys := []string{"SCHEDULER_SAAS_ENDPOINT", "SCHEDULER_SAAS_TOKEN"}
 	for _, key := range keys {
 		t.Setenv(key, "")
 	}
@@ -16,7 +16,7 @@ func TestScheduledPlansEnvironmentIsOptionalCompleteAndOriginBound(t *testing.T)
 	}
 	closePlans()
 
-	values := []string{"http://127.0.0.1:1", "private-scheduler-token", strings.Repeat("a", 64)}
+	values := []string{"http://127.0.0.1:1", "private-scheduler-token"}
 	for index, key := range keys {
 		t.Setenv(key, values[index])
 		if index < len(keys)-1 {

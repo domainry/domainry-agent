@@ -26,3 +26,20 @@ func TestOptionsFromEnvironmentLoadsConversationCapacityLimits(t *testing.T) {
 		t.Fatal("invalid worker limit did not remain invalid for service validation")
 	}
 }
+
+func TestOptionsFromEnvironmentLoadsTaskModel(t *testing.T) {
+	t.Setenv("AGENT_TASK_MODEL_PROVIDER", "gateway")
+	t.Setenv("AGENT_TASK_MODEL_PROTOCOL", "responses")
+	t.Setenv("AGENT_TASK_MODEL_BASE_URL", "https://models.example.test")
+	t.Setenv("AGENT_PROVIDER_API_KEY", "shared-secret")
+	t.Setenv("AGENT_TASK_MODEL", "vision-model")
+	t.Setenv("AGENT_TASK_MODEL_CONTEXT_TOKENS", "128000")
+	t.Setenv("AGENT_TASK_MODEL_IMAGE_INPUT", "true")
+	t.Setenv("AGENT_TASK_MODEL_STRUCTURED_OUTPUT", "true")
+	t.Setenv("AGENT_TASK_MODEL_REASONING_EFFORTS", "low, high")
+	t.Setenv("AGENT_TASK_MODEL_REASONING_EFFORT", "high")
+	options := OptionsFromEnvironment()
+	if options.TaskModelProviderName != "gateway" || options.TaskModelProtocol != "responses" || options.TaskModelBaseURL != "https://models.example.test" || options.TaskModelAPIKey != "shared-secret" || options.TaskModelName != "vision-model" || options.TaskModelContextTokenLimit != 128000 || !options.TaskModelImageInput || !options.TaskModelStructuredOutput || len(options.TaskModelReasoningEfforts) != 2 || options.TaskModelDefaultReasoningEffort != "high" {
+		t.Fatalf("task model options=%+v", options)
+	}
+}

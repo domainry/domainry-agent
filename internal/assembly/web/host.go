@@ -13,8 +13,11 @@ import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/base"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/operationkernel"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost"
 	agentmodule "github.com/domainry/domainry-agent/module"
+	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	identitymodule "github.com/domainry/domainry-identity/module"
 	integrationsdk "github.com/domainry/domainry-integration-sdk"
@@ -70,7 +73,8 @@ type Host struct {
 	registrar                *webhost.Registrar
 	knowledgePermissions     map[string]string
 	artifactFiles            *knowledgemodule.ArtifactFiles
-	attachmentFiles          *knowledgemodule.AttachmentFiles
+	sharedArtifactStore      artifactkernel.Store
+	sharedArtifactFiles      *artifactkernel.ContentFiles
 	documentFiles            *knowledgemodule.DocumentFiles
 	external                 bool
 	identityBorrowed         bool
@@ -153,6 +157,25 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	if err = h.registrar.Prepare(ctx); err != nil {
 		return nil, err
 	}
+	artifactMigration, err := artifactkernel.SchemaMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	if err = h.registrar.ApplyOwnedMigrations(ctx, "artifact", []modulehost.SchemaMigration{artifactMigration}); err != nil {
+		return nil, fmt.Errorf("apply shared Artifact migration: %w", err)
+	}
+	operationMigration, err := operationkernel.SchemaMigration(renderer)
+	if err != nil {
+		return nil, err
+	}
+	if err = h.registrar.ApplyOwnedMigrations(ctx, "operations", []modulehost.SchemaMigration{operationMigration}); err != nil {
+		return nil, fmt.Errorf("apply shared Operations migration: %w", err)
+	}
+	h.sharedArtifactStore = artifactkernel.NewStore(h.db, renderer)
+	h.sharedArtifactFiles, err = artifactkernel.NewContentFiles(path + ".shared-artifacts")
+	if err != nil {
+		return nil, fmt.Errorf("open shared Artifact content: %w", err)
+	}
 	application := identitysdk.ApplicationRef{WorkspaceID: identitysdk.WorkspaceID(options.WorkspaceID), ApplicationKey: identitysdk.ApplicationKey(options.ApplicationKey)}
 	h.application = application
 	handle := identitysdk.DatabaseHandle{
@@ -172,6 +195,15 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	}
 	if err != nil {
 		return nil, fmt.Errorf("open Identity module: %w", err)
+	}
+	if !h.identityBorrowed && !h.external {
+		binder, ok := h.Identity.(identitysdk.OperationsPersistenceBinding)
+		if !ok {
+			return nil, fmt.Errorf("embedded Identity shared Operations binding is required")
+		}
+		if err = binder.BindOperationsPersistence(); err != nil {
+			return nil, fmt.Errorf("bind embedded Identity shared Operations persistence: %w", err)
+		}
 	}
 	if err = h.validateBusinessBinding(); err != nil {
 		return nil, err
@@ -217,13 +249,6 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 			return nil, fmt.Errorf("open artifact storage: %w", err)
 		}
 		options.Agent.ConversationOptions.ArtifactStorage = h.artifactFiles
-	}
-	if options.Agent.ConversationOptions.AttachmentStorage == nil {
-		h.attachmentFiles, err = knowledgemodule.NewAttachmentFiles(path + ".attachments")
-		if err != nil {
-			return nil, fmt.Errorf("open attachment storage: %w", err)
-		}
-		options.Agent.ConversationOptions.AttachmentStorage = h.attachmentFiles
 	}
 	if options.Agent.ConversationOptions.DocumentStorage == nil {
 		h.documentFiles, err = knowledgemodule.NewDocumentFiles(path + ".documents")
@@ -294,6 +319,15 @@ func (h *Host) DatabaseProfile() driver.Profile           { return h.profile }
 func (h *Host) Database() modulehost.Database             { return h.db }
 func (h *Host) Dialect() modulehost.Dialect               { return h.registrar.Renderer }
 func (h *Host) Migrations() modulehost.MigrationRegistrar { return h.registrar }
+func (h *Host) ArtifactStore() sharedartifact.ManagedStore {
+	return h.sharedArtifactStore
+}
+func (h *Host) ArtifactContentStore() sharedartifact.ContentStore {
+	return h.sharedArtifactFiles
+}
+func (h *Host) ArtifactContentWriter() sharedartifact.ContentWriter {
+	return h.sharedArtifactFiles
+}
 func (h *Host) Close(ctx context.Context) error {
 	var result error
 	if h.Agent != nil {
@@ -306,17 +340,17 @@ func (h *Host) Close(ctx context.Context) error {
 		}
 		h.artifactFiles = nil
 	}
+	if h.sharedArtifactFiles != nil {
+		if err := h.sharedArtifactFiles.Close(); result == nil {
+			result = err
+		}
+		h.sharedArtifactFiles = nil
+	}
 	if h.documentFiles != nil {
 		if err := h.documentFiles.Close(); result == nil {
 			result = err
 		}
 		h.documentFiles = nil
-	}
-	if h.attachmentFiles != nil {
-		if err := h.attachmentFiles.Close(); result == nil {
-			result = err
-		}
-		h.attachmentFiles = nil
 	}
 	if h.Identity != nil {
 		if !h.identityBorrowed {

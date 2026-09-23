@@ -23,7 +23,6 @@ import (
 	agentserver "github.com/domainry/domainry-agent/server"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	identityremote "github.com/domainry/domainry-identity-sdk/remote"
-	identitycapability "github.com/domainry/domainry-identity/capability"
 )
 
 // This opt-in acceptance builds and starts the actual standalone Identity
@@ -114,15 +113,7 @@ func TestSaaSConversationAgainstRealIdentityProcess(t *testing.T) {
 	if !ready {
 		t.Fatal("Identity process did not become ready")
 	}
-	capability, err := identitycapability.Open(identitycapability.Inputs{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	summary, err := capability.CapabilitySummary(t.Context())
-	if err != nil {
-		t.Fatal(err)
-	}
-	config := identityremote.Config{Endpoint: issuer, WorkspaceID: "workspace", Audience: "agent-runtime", Issuer: issuer, ServiceAccessToken: credential, CapabilityContractSHA256: summary.Identity.ContractSHA256}
+	config := identityremote.Config{Endpoint: issuer, WorkspaceID: "workspace", Audience: "agent-runtime", Issuer: issuer, ServiceAccessToken: credential}
 	identity, err := identityremote.NewFactory(config).Open(t.Context(), identitysdk.ApplicationRef{WorkspaceID: "workspace", ApplicationKey: "agent-runtime"})
 	if err != nil {
 		t.Fatal("open real Identity SDK", err)
@@ -192,7 +183,7 @@ func TestSaaSConversationAgainstRealIdentityProcess(t *testing.T) {
 		fmt.Fprint(w, "data: {\"model\":\"fixture\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"Current owner verified.\"}}]}\n\ndata: {\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n")
 	}))
 	defer model.Close()
-	for key, value := range map[string]string{"IDENTITY_ENDPOINT": proxyServer.URL, "IDENTITY_WORKSPACE_ID": "workspace", "IDENTITY_AUDIENCE": "agent-runtime", "IDENTITY_ISSUER": issuer, "IDENTITY_SERVICE_ACCESS_TOKEN": credential, "IDENTITY_CAPABILITY_CONTRACT_SHA256": summary.Identity.ContractSHA256, "AGENT_SAAS_API_KEY": "agent-service-key", "AGENT_SAAS_RUNTIME_ID": "runtime", "AGENT_CONVERSATION_PROVIDER": "gateway", "AGENT_CONVERSATION_PROTOCOL": "chat_completions", "AGENT_CONVERSATION_MODEL": "fixture", "AGENT_PROVIDER_API_KEY": "model-key", "AGENT_CONVERSATION_BASE_URL": model.URL} {
+	for key, value := range map[string]string{"IDENTITY_ENDPOINT": proxyServer.URL, "IDENTITY_WORKSPACE_ID": "workspace", "IDENTITY_AUDIENCE": "agent-runtime", "IDENTITY_ISSUER": issuer, "IDENTITY_SERVICE_ACCESS_TOKEN": credential, "AGENT_SAAS_API_KEY": "agent-service-key", "AGENT_SAAS_RUNTIME_ID": "runtime", "AGENT_CONVERSATION_PROVIDER": "gateway", "AGENT_CONVERSATION_PROTOCOL": "chat_completions", "AGENT_CONVERSATION_MODEL": "fixture", "AGENT_PROVIDER_API_KEY": "model-key", "AGENT_CONVERSATION_BASE_URL": model.URL} {
 		t.Setenv(key, value)
 	}
 	store := executableConversationStore(t)

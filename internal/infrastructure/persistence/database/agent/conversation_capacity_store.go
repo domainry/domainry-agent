@@ -39,10 +39,12 @@ func (s *ConversationStore) conversationExecutionLimits() (agentsdk.Conversation
 
 func (s *ConversationStore) lockConversationWorkspaceCapacity(ctx context.Context, tx *sql.Tx, a agentsdk.ConversationAuthority) error {
 	workspaceKey := conversationHash([]string{a.RuntimeID, a.WorkspaceID})
+	scopeKey := a.RuntimeID + ":" + workspaceKey
+	id := "worker_scope:" + conversationHash([]string{conversationCapacityOwner, scopeKey})[:24]
 	statement, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationCapacityGuardTable).
-		Columns("runtime_id", "workspace_key", "revision").
-		Values(a.RuntimeID, workspaceKey, 1).
-		OnConflictDoNothing("runtime_id", "workspace_key").Build()
+		Columns("id", "owner", "scope_key", "checkpoint", "updated_at").
+		Values(id, conversationCapacityOwner, scopeKey, 1, "").
+		OnConflictDoNothing("owner", "scope_key").Build()
 	if err != nil {
 		return err
 	}
@@ -50,8 +52,8 @@ func (s *ConversationStore) lockConversationWorkspaceCapacity(ctx context.Contex
 		return err
 	}
 	builder := query.NewSelectBuilder(s.store.Renderer(), conversationCapacityGuardTable).
-		Columns("revision").
-		Where(query.And(query.Equal("runtime_id", a.RuntimeID), query.Equal("workspace_key", workspaceKey)))
+		Columns("checkpoint").
+		Where(query.And(query.Equal("owner", conversationCapacityOwner), query.Equal("scope_key", scopeKey)))
 	if profile := s.store.Profile(); profile != nil && profile.Capabilities().RowLock {
 		builder, err = profile.ApplyClaimLock(builder, false)
 		if err != nil {
@@ -62,8 +64,8 @@ func (s *ConversationStore) lockConversationWorkspaceCapacity(ctx context.Contex
 	if err != nil {
 		return err
 	}
-	var revision int64
-	return tx.QueryRowContext(ctx, statement, args...).Scan(&revision)
+	var checkpoint int64
+	return tx.QueryRowContext(ctx, statement, args...).Scan(&checkpoint)
 }
 
 func (s *ConversationStore) conversationExecutionCapacity(ctx context.Context, db conversationDB, a agentsdk.ConversationAuthority) (agentsdk.ConversationExecutionCapacity, error) {

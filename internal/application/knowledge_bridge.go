@@ -11,7 +11,7 @@ func knowledgeOptions(o ConversationOptions) knowledge.Options {
 	return knowledge.Options{
 		DocumentStorage: o.DocumentStorage, DocumentPoll: o.DocumentPoll,
 		LibraryKnowledge: o.LibraryKnowledge, KnowledgeDatasources: o.KnowledgeDatasources,
-		LibraryAuthorizer: o.LibraryAuthorizer, AttachmentStorage: o.AttachmentStorage,
+		LibraryAuthorizer:    o.LibraryAuthorizer,
 		AttachmentAuthorizer: o.AttachmentAuthorizer, AttachmentKnowledge: o.AttachmentKnowledge,
 		ArtifactStorage: o.ArtifactStorage, ArtifactExportTTL: o.ArtifactExportTTL,
 		PersonalAuthorizer: o.PersonalAuthorizer, Knowledge: o.Knowledge,

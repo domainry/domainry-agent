@@ -31,6 +31,9 @@ import (
 	integration "github.com/domainry/domainry-integration-sdk"
 	integrationhost "github.com/domainry/domainry-integration-sdk/modulehost"
 	integrationmodule "github.com/domainry/domainry-integration/module"
+	metadatasdk "github.com/domainry/domainry-metadata-sdk"
+	metadatamodulehost "github.com/domainry/domainry-metadata-sdk/modulehost"
+	metadatamodule "github.com/domainry/domainry-metadata/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 )
 
@@ -54,9 +57,20 @@ type accountFixture struct {
 	exchanges, probes int
 }
 type accountOwnerHost struct {
-	db        *sql.DB
-	registrar *hostdb.Registrar
-	registry  *connector.Registry
+	db          *sql.DB
+	registrar   *hostdb.Registrar
+	registry    *connector.Registry
+	definitions metadatasdk.DefinitionStore
+}
+
+type accountMetadataHost struct{ owner *accountOwnerHost }
+
+func (h accountMetadataHost) Database() metadatamodulehost.Database { return h.owner.db }
+func (h accountMetadataHost) Dialect() metadatamodulehost.Dialect {
+	return h.owner.registrar.Renderer.(metadatamodulehost.Dialect)
+}
+func (h accountMetadataHost) Migrations() metadatamodulehost.MigrationRegistrar {
+	return h.owner.registrar
 }
 
 func (h *accountOwnerHost) Database() integrationhost.Database { return h.db }
@@ -65,6 +79,7 @@ func (h *accountOwnerHost) Dialect() integrationhost.Dialect {
 }
 func (h *accountOwnerHost) Migrations() integrationhost.MigrationRegistrar { return h.registrar }
 func (h *accountOwnerHost) Providers() integrationhost.ProviderRegistry    { return h.registry }
+func (h *accountOwnerHost) DefinitionStore() metadatasdk.DefinitionStore   { return h.definitions }
 func (h *accountOwnerHost) SecretCipher() integrationhost.SecretMaterialCipher {
 	return accountFixtureCipher{}
 }
@@ -218,7 +233,12 @@ func (f *accountFixture) open() {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.owner = &accountOwnerHost{db, registrar, registry}
+	f.owner = &accountOwnerHost{db: db, registrar: registrar, registry: registry}
+	metadata, err := metadatamodule.NewFactory().OpenModule(t.Context(), metadatasdk.ApplicationRef{InstallationID: "agent-account-fixture"}, accountMetadataHost{owner: f.owner})
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.owner.definitions = metadata.DefinitionStore()
 	f.options.Integration, err = integrationmodule.NewFactory().OpenModule(t.Context(), integration.ApplicationRef{RuntimeID: f.options.RuntimeID}, f.owner)
 	if err != nil {
 		t.Fatal(err)

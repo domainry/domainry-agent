@@ -2,12 +2,15 @@ package agent
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"strings"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/base"
+	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	ormdriver "github.com/domainry/domainry-orm/driver"
 	"github.com/domainry/domainry-orm/query"
 )
@@ -18,6 +21,9 @@ func agentError(class, code string) error {
 
 type Store struct {
 	*base.SQLDatabase
+	artifactStore   sharedartifact.ManagedStore
+	artifactContent sharedartifact.ContentStore
+	artifactWriter  sharedartifact.ContentWriter
 }
 
 func NewStore(database modulehost.Database, renderer modulehost.Dialect, profile ormdriver.Profile) (*Store, error) {
@@ -27,13 +33,31 @@ func NewStore(database modulehost.Database, renderer modulehost.Dialect, profile
 	return &Store{SQLDatabase: base.NewSQLDatabase(database, renderer, profile)}, nil
 }
 
-func (s *Store) registerWorkerScope(ctx context.Context, executor modulehost.Executor, workspaceID string, updatedAt int64) error {
+func (s *Store) BindArtifactPersistence(store sharedartifact.ManagedStore, content sharedartifact.ContentStore, writer sharedartifact.ContentWriter) error {
+	if store == nil || content == nil || writer == nil {
+		return fmt.Errorf("shared Agent artifact persistence is incomplete")
+	}
+	s.artifactStore, s.artifactContent, s.artifactWriter = store, content, writer
+	return nil
+}
+
+func (s *Store) ArtifactStore() sharedartifact.ManagedStore        { return s.artifactStore }
+func (s *Store) ArtifactContentStore() sharedartifact.ContentStore { return s.artifactContent }
+func (s *Store) ArtifactContentWriter() sharedartifact.ContentWriter {
+	return s.artifactWriter
+}
+
+const agentTaskWorkerScopeRecoveryPolicy = "durable_due_scan"
+
+func (s *Store) registerWorkerScope(ctx context.Context, executor modulehost.Executor, workspaceID, updatedAt string) error {
 	workspaceID = strings.TrimSpace(workspaceID)
 	if workspaceID == "" {
 		return fmt.Errorf("Agent workspace is required")
 	}
-	insert := query.NewInsertBuilder(s.Renderer(), "_agent_worker_scopes").Columns("workspace_id", "updated_at").Values(workspaceID, updatedAt)
-	insert, err := s.Profile().ApplyUpsert(insert, []string{"workspace_id"}, query.AssignExpression("updated_at", query.InsertedValue("updated_at")))
+	digest := sha256.Sum256([]byte(agentTaskWorkerQueueKind + "\x00" + workspaceID))
+	id := "worker_scope:" + hex.EncodeToString(digest[:12])
+	insert := query.NewInsertBuilder(s.Renderer(), "_worker_scopes").Columns("id", "owner", "scope_key", "updated_at").Values(id, agentTaskWorkerQueueKind, workspaceID, updatedAt)
+	insert, err := s.Profile().ApplyUpsert(insert, []string{"owner", "scope_key"}, query.AssignExpression("updated_at", query.InsertedValue("updated_at")))
 	if err != nil {
 		return err
 	}
@@ -52,7 +76,7 @@ func (s *Store) workerScopePage(ctx context.Context, limit int) ([]string, error
 	if limit <= 0 || limit > 500 {
 		limit = 64
 	}
-	statement, args, err := query.NewSelectBuilder(s.Renderer(), "_agent_worker_scopes").Columns("workspace_id").OrderBy(query.Descending("updated_at")).Limit(limit).Build()
+	statement, args, err := query.NewSelectBuilder(s.Renderer(), "_worker_scopes").Columns("scope_key").Where(query.Equal("owner", agentTaskWorkerQueueKind)).OrderBy(query.Descending("updated_at")).Limit(limit).Build()
 	if err != nil {
 		return nil, err
 	}

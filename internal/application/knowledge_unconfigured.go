@@ -95,11 +95,6 @@ func (unconfiguredKnowledge) CheckAttachmentIndex(ctx context.Context, conversat
 	var zero1 agentsdk.ConversationAttachment
 	return zero1, &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.knowledge_not_configured"}
 }
-func (unconfiguredKnowledge) CleanAttachment(ctx context.Context, repo persistence.ConversationAttachmentRepository, work persistence.ConversationAttachmentCleanup) error {
-	return &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.knowledge_not_configured"}
-}
-func (unconfiguredKnowledge) CleanupAttachments(ctx context.Context, repo persistence.ConversationAttachmentRepository) {
-}
 func (unconfiguredKnowledge) Close() {
 }
 func (unconfiguredKnowledge) CreateArtifact(ctx context.Context, in agentsdk.ConversationArtifactCreate, a agentsdk.ConversationAuthority) (agentsdk.ConversationArtifactVersion, error) {
@@ -236,8 +231,6 @@ func (unconfiguredKnowledge) UploadDocumentContent(ctx context.Context, library 
 func (unconfiguredKnowledge) UploadKnowledgeDocument(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUpload, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
 	var zero1 agentsdk.KnowledgeDocument
 	return zero1, &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.knowledge_not_configured"}
-}
-func (unconfiguredKnowledge) WakeAttachmentCleanup() {
 }
 func (unconfiguredKnowledge) WakeAttachmentIndex() {
 }

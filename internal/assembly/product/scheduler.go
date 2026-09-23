@@ -20,13 +20,13 @@ type scheduledPlanClient struct {
 // composition does not open Scheduler workers, stores, or Runtime callbacks.
 func OpenScheduledPlansFromEnvironment(ctx context.Context, runtimeID string) (schedulersdk.ScheduledPlanService, func(), error) {
 	config := httptransport.ConfigFromEnvironment()
-	values := []string{strings.TrimSpace(config.Endpoint), strings.TrimSpace(config.Token), strings.TrimSpace(config.CapabilityContractSHA256)}
+	values := []string{strings.TrimSpace(config.Endpoint), strings.TrimSpace(config.Token)}
 	if strings.Join(values, "") == "" {
 		return nil, func() {}, nil
 	}
 	for _, value := range values {
 		if value == "" {
-			return nil, func() {}, fmt.Errorf("Scheduler SaaS requires endpoint, service token and expected contract SHA256")
+			return nil, func() {}, fmt.Errorf("Scheduler SaaS requires endpoint and service token")
 		}
 	}
 	if !serviceOrigin(values[0]) {

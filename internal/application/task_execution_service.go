@@ -33,7 +33,7 @@ type TaskExecutionService struct {
 	pollInterval      time.Duration
 	leaseTTL          time.Duration
 	wakeups           chan taskLocator
-	attachmentStorage agentsdk.ConversationAttachmentStorage
+	attachmentStorage agentsdk.TaskAttachmentStorage
 	runtimeID         string
 
 	mu     sync.RWMutex
@@ -59,7 +59,7 @@ func NewTaskExecutionService(state agentpersistence.AgentTaskStateService, provi
 // ConfigureAttachments binds the private byte store used by durable task
 // inputs. It is startup-only configuration and must be called before workers
 // or public task ingress are started.
-func (s *TaskExecutionService) ConfigureAttachments(storage agentsdk.ConversationAttachmentStorage, runtimeID string) error {
+func (s *TaskExecutionService) ConfigureAttachments(storage agentsdk.TaskAttachmentStorage, runtimeID string) error {
 	if s == nil || storage == nil || strings.TrimSpace(runtimeID) == "" {
 		return fmt.Errorf("Agent task attachment storage is incomplete")
 	}

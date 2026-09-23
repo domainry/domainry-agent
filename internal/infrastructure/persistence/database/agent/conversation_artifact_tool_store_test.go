@@ -36,7 +36,7 @@ func TestArtifactToolEffectResultAndEventCommitTogether(t *testing.T) {
 				write.Record.Sources.Runs = []agentsdk.ConversationRunReference{{ConversationID: request.ConversationID, RunID: request.RunID, BeforeStep: 1}}
 				prepared.Write = &write
 			} else {
-				prepared.Export = &persistence.ConversationArtifactExportWrite{ClientID: client, RequestSHA256: digest, TTLSeconds: 3600, Export: agentsdk.ConversationArtifactExport{ArtifactID: original.Artifact.ID, Version: 1, Format: "markdown", Filename: original.Artifact.ID + "-v1.md", ContentType: "text/markdown; charset=utf-8", SHA256: artifact.Hash([]byte("正文")), Bytes: len("正文")}}
+				prepared.Export = &persistence.ConversationArtifactExportWrite{ClientID: client, RequestSHA256: digest, TTLSeconds: 3600, Export: agentsdk.ConversationArtifactExport{ArtifactID: original.Artifact.ID, Version: 1, Format: "markdown", Filename: original.Artifact.ID + "-v1.md", ContentType: "text/markdown; charset=utf-8", SHA256: artifact.Hash([]byte("正文")), Bytes: len("正文")}, Content: []byte("正文")}
 			}
 			_, err := store.Database().ExecContext(t.Context(), `CREATE TRIGGER fail_artifact_receipt BEFORE INSERT ON _agent_conversation_events WHEN CAST(NEW.payload_json AS TEXT) LIKE '%tool.completed%' BEGIN SELECT RAISE(ABORT, 'injected artifact receipt failure'); END`)
 			if err != nil {
@@ -49,7 +49,7 @@ func TestArtifactToolEffectResultAndEventCommitTogether(t *testing.T) {
 			if name == "artifact_create" {
 				err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_artifact_versions`).Scan(&count)
 			} else {
-				err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_artifact_exports`).Scan(&count)
+				err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _artifacts WHERE owner='agent' AND kind='generated'`).Scan(&count)
 			}
 			if err != nil || count != 0 {
 				t.Fatal("artifact effect survived missing receipt", err)

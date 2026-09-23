@@ -76,7 +76,7 @@ func TestExtractedPersistenceOnAllDatabases(t *testing.T) {
 		if err != nil || len(page.Items) != 1 {
 			t.Fatalf("todo persistence: %+v %v", page, err)
 		}
-		libraryStore := knowledge.NewStore(backend, nil)
+		libraryStore := knowledge.NewStore(backend, nil, knowledge.ArtifactPersistence{})
 		library, err := libraryStore.CreateKnowledgeLibrary(t.Context(), agentsdk.KnowledgeLibraryCreate{ClientID: "one", Kind: "personal", Name: "知识库"}, a)
 		if err != nil {
 			t.Fatal(err)

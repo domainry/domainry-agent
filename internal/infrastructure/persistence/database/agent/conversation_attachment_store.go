@@ -2,7 +2,6 @@ package agent
 
 import (
 	"context"
-	"database/sql"
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
@@ -38,10 +37,14 @@ func (s *ConversationStore) Attachments(ctx context.Context, conversationID, aft
 	return s.knowledgeStore().Attachments(ctx, conversationID, after, limit, a)
 }
 
-func (s *ConversationStore) saveAttachment(ctx context.Context, tx *sql.Tx, record persistence.ConversationAttachmentRecord, expected int64, a agentsdk.ConversationAuthority) error {
-	return s.knowledgeStore().CompatSaveAttachment(ctx, tx, record, expected, a)
-}
-
 func (s *ConversationStore) TransitionAttachment(ctx context.Context, id string, expected int64, in persistence.ConversationAttachmentTransition, a agentsdk.ConversationAuthority) (persistence.ConversationAttachmentRecord, error) {
 	return s.knowledgeStore().TransitionAttachment(ctx, id, expected, in, a)
+}
+
+func (s *ConversationStore) AttachmentContent(ctx context.Context, id string, a agentsdk.ConversationAuthority) ([]byte, error) {
+	return s.knowledgeStore().AttachmentContent(ctx, id, a)
+}
+
+func (s *ConversationStore) DeleteAttachmentContent(ctx context.Context, id string, a agentsdk.ConversationAuthority) error {
+	return s.knowledgeStore().DeleteAttachmentContent(ctx, id, a)
 }

@@ -38,13 +38,3 @@ func (s *ConversationService) DownloadAttachment(ctx context.Context, conversati
 func (s *ConversationService) DeleteAttachment(ctx context.Context, conversationID, id string, expected int64, a agentsdk.ConversationAuthority) (agentsdk.ConversationAttachment, error) {
 	return s.knowledgeService().DeleteAttachment(ctx, conversationID, id, expected, a)
 }
-
-func (s *ConversationService) wakeAttachmentCleanup() { s.knowledgeService().WakeAttachmentCleanup() }
-
-func (s *ConversationService) cleanAttachment(ctx context.Context, repo persistence.ConversationAttachmentRepository, work persistence.ConversationAttachmentCleanup) error {
-	return s.knowledgeService().CleanAttachment(ctx, repo, work)
-}
-
-func (s *ConversationService) cleanupAttachments(ctx context.Context, repo persistence.ConversationAttachmentRepository) {
-	s.knowledgeService().CleanupAttachments(ctx, repo)
-}

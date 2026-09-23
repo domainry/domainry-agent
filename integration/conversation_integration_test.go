@@ -6,6 +6,7 @@ import (
 	"fmt"
 	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http/httptest"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"sync"
@@ -17,9 +18,11 @@ import (
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	agentremote "github.com/domainry/domainry-agent/remote"
 	agentserver "github.com/domainry/domainry-agent/server"
+	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
@@ -45,6 +48,10 @@ func conversationOptions() agentapplication.ConversationOptions {
 	return agentapplication.ConversationOptions{ContextBytes: 4096, MaxInputBytes: 512, MaxOutputBytes: 512, SummaryBytes: 512, Workers: 1, Lease: 300 * time.Millisecond, Poll: 10 * time.Millisecond, RunTimeout: 5 * time.Second}
 }
 func conversationRepository(t *testing.T) *agentstore.ConversationStore {
+	return conversationRepositoryWithArtifactContent(t, nil)
+}
+
+func conversationRepositoryWithArtifactContent(t *testing.T, wrap func(sharedartifact.ContentStore) sharedartifact.ContentStore) *agentstore.ConversationStore {
 	db := openSQLite(t, "conversation")
 	if err := agentinfra.EnsureSchema(t.Context(), db, "sqlite", ""); err != nil {
 		t.Fatal(err)
@@ -55,6 +62,27 @@ func conversationRepository(t *testing.T) *agentstore.ConversationStore {
 	}
 	store, err := agentinfra.NewAgentStore(db, renderer, "sqlite")
 	if err != nil {
+		t.Fatal(err)
+	}
+	migration, err := artifactkernel.SchemaMigration(renderer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, statement := range migration.Statements {
+		if _, err = db.ExecContext(t.Context(), statement); err != nil {
+			t.Fatal(err)
+		}
+	}
+	content, err := artifactkernel.NewContentFiles(filepath.Join(t.TempDir(), "shared-artifacts"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = content.Close() })
+	contentStore := sharedartifact.ContentStore(content)
+	if wrap != nil {
+		contentStore = wrap(contentStore)
+	}
+	if err = store.BindArtifactPersistence(artifactkernel.NewStore(db, renderer), contentStore, content); err != nil {
 		t.Fatal(err)
 	}
 	return agentstore.NewConversationStore(store)

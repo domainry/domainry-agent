@@ -13,13 +13,11 @@ import (
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	agenttestsupport "github.com/domainry/domainry-agent/testsupport"
-	"github.com/domainry/domainry-foundation/modulecapability"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
 
 type surfaceBindingStub struct {
-	modulecapability.Binding
 	state       agentsdk.AgentDialogStateService
 	tasks       agentpersistence.AgentTaskStateService
 	interactive agentpersistence.AgentInteractiveStateService
@@ -132,9 +130,6 @@ func TestSurfaceOwnsDialogStateRoutesAndUsesAuthenticatedIdentity(t *testing.T) 
 	if adapter.Owner() != "agent" || adapter.Name() != "dialog_state" || len(adapter.Routes()) != 8 {
 		t.Fatalf("adapter=%s/%s routes=%d", adapter.Owner(), adapter.Name(), len(adapter.Routes()))
 	}
-	if operations := adapter.(modulehttp.OpenAPIProvider).OpenAPIOperations(); len(operations) != len(adapter.Routes()) {
-		t.Fatalf("OpenAPI operations=%d routes=%d", len(operations), len(adapter.Routes()))
-	}
 	request := httptest.NewRequest(http.MethodGet, "/agent/sessions", nil)
 	request = request.WithContext(identitysdk.WithRequestIdentity(request.Context(), identitysdk.RequestIdentity{Principal: identitysdk.Principal{Known: true, WorkspaceID: "workspace-1", UserID: "user-1", RoleKey: "operator"}}))
 	response := httptest.NewRecorder()
@@ -144,23 +139,6 @@ func TestSurfaceOwnsDialogStateRoutesAndUsesAuthenticatedIdentity(t *testing.T) 
 	}
 	if state.authority != (agentsdk.AgentAuthority{WorkspaceID: "workspace-1", UserID: "user-1", RoleKey: "operator"}) {
 		t.Fatalf("authority=%+v", state.authority)
-	}
-}
-
-func TestAgentOwnsOpenAPIForEveryHTTPRoute(t *testing.T) {
-	operations := agentOpenAPIOperations()
-	if len(operations) != 126 {
-		t.Fatalf("Agent OpenAPI operations=%d", len(operations))
-	}
-	stream := operations["POST /agent/runs/stream"]
-	responses := stream["responses"].(map[string]any)
-	content := responses["200"].(map[string]any)["content"].(map[string]any)
-	if stream["operationId"] != "runAgentStream" || stream["requestBody"] == nil || content["text/event-stream"] == nil {
-		t.Fatalf("Agent stream OpenAPI=%#v", stream)
-	}
-	tool := operations["POST /agent/task-tools/invoke"]
-	if security, ok := tool["security"].([]any); !ok || len(security) != 0 {
-		t.Fatalf("tool callback must override inherited auth security: %#v", tool["security"])
 	}
 }
 

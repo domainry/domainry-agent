@@ -5,16 +5,12 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentcontracttest "github.com/domainry/domainry-agent-sdk/contracttest"
-	agentcapability "github.com/domainry/domainry-agent/capability"
 	"github.com/domainry/domainry-agent/server"
-	"github.com/domainry/domainry-foundation/modulecapability"
-	capabilitycontracttest "github.com/domainry/domainry-foundation/modulecapability/contracttest"
 )
 
 type host struct{ runtimeID string }
@@ -83,19 +79,6 @@ func TestSaaSFactoryValidatesDescriptorAndRunsProtocol(t *testing.T) {
 	}
 	t.Cleanup(func() { _ = opened.Close(context.Background()) })
 	agentcontracttest.VerifyBinding(t, opened, agentsdk.DeploymentModeSaaS)
-	capabilitycontracttest.VerifyBinding(t, opened)
-	directCapability, err := agentcapability.Open(agentcapability.Inputs{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	directSummary, err := directCapability.CapabilitySummary(t.Context())
-	if err != nil {
-		t.Fatal(err)
-	}
-	remoteSummary, err := opened.CapabilitySummary(t.Context())
-	if err != nil || remoteSummary.Identity.ContractSHA256 != directSummary.Identity.ContractSHA256 {
-		t.Fatalf("Agent Module/SaaS capability digest direct=%q remote=%q err=%v", directSummary.Identity.ContractSHA256, remoteSummary.Identity.ContractSHA256, err)
-	}
 	remoteBinding := opened.(*binding)
 	if opened.TaskRunner() == agentsdk.TaskRunner(remoteBinding.client) {
 		t.Fatal("SaaS Binding exposes the synchronous provider client as its task capability")
@@ -175,26 +158,6 @@ func TestSaaSFactoryFailsClosed(t *testing.T) {
 	defer service.Close()
 	if _, err := NewFactory(Options{BaseURL: service.URL, APIKey: "wrong", Client: service.Client()}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime"}, newRemoteHost(t, "runtime")); err == nil {
 		t.Fatal("invalid credential accepted")
-	}
-	different, err := capabilitycontracttest.NewFixtureBinding("agent")
-	if err != nil {
-		t.Fatal(err)
-	}
-	differentHandler, err := modulecapability.NewHTTPHandler(different, func(*http.Request) error { return nil })
-	if err != nil {
-		t.Fatal(err)
-	}
-	operationalHandler := agentServer.Handler()
-	staleService := httptest.NewServer(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
-		if request.URL.Path == modulecapability.SummaryPath || request.URL.Path == modulecapability.ValidationPath || strings.HasPrefix(request.URL.Path, modulecapability.CategoriesPath) {
-			differentHandler.ServeHTTP(response, request)
-			return
-		}
-		operationalHandler.ServeHTTP(response, request)
-	}))
-	defer staleService.Close()
-	if _, err := NewFactory(Options{BaseURL: staleService.URL, APIKey: "right", Client: staleService.Client()}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime"}, newRemoteHost(t, "runtime")); err == nil {
-		t.Fatal("Agent Remote accepted a different source capability digest")
 	}
 }
 

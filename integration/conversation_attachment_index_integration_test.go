@@ -8,8 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -21,7 +19,6 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	agentremote "github.com/domainry/domainry-agent/remote"
 	agentserver "github.com/domainry/domainry-agent/server"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 type privateIndexRemoteDocument struct {
@@ -123,12 +120,6 @@ func TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss(t *testing.
 			if err != nil {
 				t.Fatal(err)
 			}
-			originalDirectory := filepath.Join(t.TempDir(), "originals")
-			files, err := knowledgemodule.NewAttachmentFiles(originalDirectory)
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer files.Close()
 			policy := &attachmentTestPolicy{}
 			if mode == "revoked-during-preflight" {
 				wire.preflight = func() { policy.denied.Store("attachments_index") }
@@ -137,7 +128,7 @@ func TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss(t *testing.
 			if mode == "lost-delete" {
 				configured = noAttachmentDeleteRecovery{source}
 			}
-			options := application.ConversationOptions{AttachmentStorage: files, AttachmentAuthorizer: policy, DocumentPoll: 10 * time.Millisecond, AttachmentKnowledge: []agentsdk.ConversationAttachmentKnowledgeBinding{{WorkspaceID: a.WorkspaceID, Knowledge: configured}}}
+			options := application.ConversationOptions{AttachmentAuthorizer: policy, DocumentPoll: 10 * time.Millisecond, AttachmentKnowledge: []agentsdk.ConversationAttachmentKnowledgeBinding{{WorkspaceID: a.WorkspaceID, Knowledge: configured}}}
 			var service *application.ConversationService
 			var closeRPC func()
 			var api agentsdk.ConversationService
@@ -293,7 +284,6 @@ func TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss(t *testing.
 			}
 			// Restart the SaaS host with the durable state, then delete the parent.
 			// A lost PUT response must still lead to exactly one remote deletion.
-			originalRef := r.BodyRef
 			closeRPC()
 			service.Close()
 			start()
@@ -304,7 +294,7 @@ func TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss(t *testing.
 				r = wait(func(r persistence.ConversationAttachmentRecord) bool {
 					return r.Attachment.ErrorCode == "attachment_delete_uncertain"
 				}, 5*time.Second)
-				if r.Index.DeleteAcknowledged || r.BodyRef == "" {
+				if r.Index.DeleteAcknowledged {
 					t.Fatal("lost acknowledgement fabricated")
 				}
 				closeRPC()
@@ -334,26 +324,13 @@ func TestPrivateAttachmentIndexSaaSConnectorLifecycleAndResponseLoss(t *testing.
 				absentObserved := wire.fetchesAfterDelete > 0
 				wire.mu.Unlock()
 				r, err = repo.AttachmentRecord(t.Context(), att.ID, a)
-				if err != nil || !absentObserved || r.Index.DeleteAcknowledged || r.Attachment.State != "deleting" || r.BodyRef == "" {
+				if err != nil || !absentObserved || r.Index.DeleteAcknowledged || r.Attachment.State != "deleting" {
 					t.Fatal("absence falsely confirmed private deletion", r, err)
-				}
-				if original, err := files.ReadAttachmentContent(t.Context(), att.ID, r.BodyRef, a); err != nil || !bytes.Equal(original, upload.Data) {
-					t.Fatal("uncertain delete discarded original", err)
 				}
 			} else {
 				r = wait(func(r persistence.ConversationAttachmentRecord) bool { return r.Attachment.State == "deleted" }, 5*time.Second)
-				if r.BodyRef != "" {
-					t.Fatal("deleted original ref remains")
-				}
-				if _, err = files.ReadAttachmentContent(t.Context(), att.ID, originalRef, a); err == nil {
-					t.Fatal("original remains after confirmed remote cleanup")
-				}
-				remaining, err := filepath.Glob(filepath.Join(originalDirectory, "*", "*.bin"))
-				if err != nil || len(remaining) != 0 {
-					t.Fatal("original bytes not physically removed", remaining, err)
-				}
-				if _, err = os.Stat(originalDirectory); err != nil {
-					t.Fatal("test original store disappeared", err)
+				if _, err = repo.AttachmentContent(t.Context(), att.ID, a); err == nil {
+					t.Fatal("deleted shared Artifact remained readable")
 				}
 			}
 			wire.mu.Lock()

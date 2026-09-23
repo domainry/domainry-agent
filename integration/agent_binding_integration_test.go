@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"sync"
@@ -23,11 +24,12 @@ import (
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	agentprovider "github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	agentremote "github.com/domainry/domainry-agent/remote"
 	agentserver "github.com/domainry/domainry-agent/server"
-	"github.com/domainry/domainry-foundation/modulecapability"
+	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	_ "modernc.org/sqlite"
 )
@@ -181,62 +183,6 @@ func TestPublicAgentBindingRetriesAndPreservesProviderFailureCodes(t *testing.T)
 	}
 }
 
-func TestModuleAndSaaSBindingsExposeIdenticalCapabilityAndValidation(t *testing.T) {
-	moduleHarness := newBindingHarness(t, agentsdk.DeploymentModeModule)
-	remoteHarness := newBindingHarness(t, agentsdk.DeploymentModeSaaS)
-	moduleBinding, remoteBinding := moduleHarness.open(t), remoteHarness.open(t)
-	t.Cleanup(func() {
-		_ = moduleBinding.Close(context.Background())
-		_ = remoteBinding.Close(context.Background())
-	})
-
-	moduleSummary, err := moduleBinding.CapabilitySummary(t.Context())
-	if err != nil {
-		t.Fatal(err)
-	}
-	remoteSummary, err := remoteBinding.CapabilitySummary(t.Context())
-	if err != nil {
-		t.Fatal(err)
-	}
-	assertCanonicalEqual(t, moduleSummary, remoteSummary)
-	if moduleSummary.Identity.ContractSHA256 == "" || moduleSummary.Identity.ContractSHA256 != remoteSummary.Identity.ContractSHA256 {
-		t.Fatalf("capability digests module=%q remote=%q", moduleSummary.Identity.ContractSHA256, remoteSummary.Identity.ContractSHA256)
-	}
-	for _, category := range moduleSummary.Categories {
-		direct, err := moduleBinding.CapabilityCategory(t.Context(), category.Key)
-		if err != nil {
-			t.Fatal(err)
-		}
-		viaSaaS, err := remoteBinding.CapabilityCategory(t.Context(), category.Key)
-		if err != nil {
-			t.Fatal(err)
-		}
-		assertCanonicalEqual(t, direct, viaSaaS)
-	}
-
-	request := modulecapability.ValidationRequest{
-		ContractVersion: modulecapability.ValidationContractVersion,
-		ModuleKey:       "agent",
-		CategoryKey:     "agent.authoring",
-		ContractSHA256:  moduleSummary.Identity.ContractSHA256,
-		Kind:            "agent.skill",
-		Candidate: modulecapability.AuthoringFragment{
-			Collection: "skills",
-			Key:        "customer_reader",
-			Value:      json.RawMessage(`{"key":"customer_reader","name":"Customer reader","allowed_tools":["query_records"]}`),
-		},
-	}
-	directResult, directErr := moduleBinding.ValidateCapabilityCandidate(t.Context(), request)
-	remoteResult, remoteErr := remoteBinding.ValidateCapabilityCandidate(t.Context(), request)
-	if fmt.Sprint(directErr) != fmt.Sprint(remoteErr) {
-		t.Fatalf("validation errors differ: module=%v remote=%v", directErr, remoteErr)
-	}
-	assertCanonicalEqual(t, directResult, remoteResult)
-	if len(directResult.Diagnostics) != 1 || directResult.Diagnostics[0].RuleKey != "agent.skill.invalid" {
-		t.Fatalf("validation diagnostics=%+v", directResult.Diagnostics)
-	}
-}
-
 type taskSemantics struct {
 	Status         agentsdk.ProviderRunStatus
 	Outcome        string
@@ -320,6 +266,8 @@ type sqliteModuleHost struct {
 	dialect   modulehost.Dialect
 	mu        sync.Mutex
 	applied   map[string]struct{}
+	artifacts artifactkernel.Store
+	content   *artifactkernel.ContentFiles
 }
 
 func newSQLiteModuleHost(t *testing.T, runtimeID string) *sqliteModuleHost {
@@ -329,7 +277,22 @@ func newSQLiteModuleHost(t *testing.T, runtimeID string) *sqliteModuleHost {
 	if err != nil {
 		t.Fatal(err)
 	}
-	return &sqliteModuleHost{runtimeID: runtimeID, database: database, dialect: dialect.WithSchema(""), applied: map[string]struct{}{}}
+	renderer := dialect.WithSchema("")
+	migration, err := artifactkernel.SchemaMigration(renderer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, statement := range migration.Statements {
+		if _, err = database.ExecContext(t.Context(), statement); err != nil {
+			t.Fatal(err)
+		}
+	}
+	content, err := artifactkernel.NewContentFiles(filepath.Join(t.TempDir(), "shared-artifacts"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = content.Close() })
+	return &sqliteModuleHost{runtimeID: runtimeID, database: database, dialect: renderer, applied: map[string]struct{}{}, artifacts: artifactkernel.NewStore(database, renderer), content: content}
 }
 
 func (h *sqliteModuleHost) RuntimeID() string { return h.runtimeID }
@@ -338,11 +301,14 @@ func (h *sqliteModuleHost) AuthorizeConversationExecution(_ context.Context, in 
 	return in.Authority.Known && in.Authority.RuntimeID == h.runtimeID, nil
 }
 
-func (h *sqliteModuleHost) Database() modulehost.Database             { return h.database }
-func (h *sqliteModuleHost) Dialect() modulehost.Dialect               { return h.dialect }
-func (h *sqliteModuleHost) Migrations() modulehost.MigrationRegistrar { return h }
-func (*sqliteModuleHost) Driver() string                              { return "sqlite" }
-func (*sqliteModuleHost) Schema() string                              { return "" }
+func (h *sqliteModuleHost) Database() modulehost.Database                       { return h.database }
+func (h *sqliteModuleHost) Dialect() modulehost.Dialect                         { return h.dialect }
+func (h *sqliteModuleHost) Migrations() modulehost.MigrationRegistrar           { return h }
+func (h *sqliteModuleHost) ArtifactStore() sharedartifact.ManagedStore          { return h.artifacts }
+func (h *sqliteModuleHost) ArtifactContentStore() sharedartifact.ContentStore   { return h.content }
+func (h *sqliteModuleHost) ArtifactContentWriter() sharedartifact.ContentWriter { return h.content }
+func (*sqliteModuleHost) Driver() string                                        { return "sqlite" }
+func (*sqliteModuleHost) Schema() string                                        { return "" }
 func (h *sqliteModuleHost) ApplyOwnedMigrations(ctx context.Context, owner string, migrations []modulehost.SchemaMigration) error {
 	if owner != "agent" {
 		return fmt.Errorf("unexpected migration owner %q", owner)
@@ -708,19 +674,4 @@ func sdkErrorCode(err error) string {
 		return sdkError.ErrorCode()
 	}
 	return ""
-}
-
-func assertCanonicalEqual(t *testing.T, left, right any) {
-	t.Helper()
-	leftJSON, err := modulecapability.CanonicalJSON(left)
-	if err != nil {
-		t.Fatal(err)
-	}
-	rightJSON, err := modulecapability.CanonicalJSON(right)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if string(leftJSON) != string(rightJSON) {
-		t.Fatalf("canonical values differ\nleft: %s\nright: %s", leftJSON, rightJSON)
-	}
 }

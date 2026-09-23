@@ -11,8 +11,6 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
-	agentcapability "github.com/domainry/domainry-agent/capability"
-	"github.com/domainry/domainry-foundation/modulecapability"
 	"github.com/domainry/domainry-foundation/modulehttp"
 )
 
@@ -40,21 +38,12 @@ func New(config Config) (*Server, error) {
 	}
 	s := &Server{config: config}
 	mux := http.NewServeMux()
-	capabilityBinding, err := agentcapability.Open(agentcapability.Inputs{})
-	if err != nil {
-		return nil, fmt.Errorf("build Agent capability binding: %w", err)
-	}
-	capabilityHandler, err := modulecapability.NewHTTPHandler(capabilityBinding, func(*http.Request) error { return nil })
-	if err != nil {
-		return nil, err
-	}
 	handlers := map[string]http.Handler{
 		actionAgentSaaSDescriptorRead: http.HandlerFunc(s.descriptor), actionAgentSaaSReadinessRead: http.HandlerFunc(s.ready),
 		actionAgentSaaSTaskProviderStart: http.HandlerFunc(s.start), actionAgentSaaSTaskProviderPoll: http.HandlerFunc(s.poll), actionAgentSaaSTaskProviderCancel: http.HandlerFunc(s.cancel),
 		actionAgentSaaSInteractiveRun: http.HandlerFunc(s.interactive),
 		actionAgentSaaSSessionsQuery:  http.HandlerFunc(s.listSessions), actionAgentSaaSSessionsUpsert: http.HandlerFunc(s.upsertSession), actionAgentSaaSSessionsSetArchived: http.HandlerFunc(s.setSessionArchived),
 		actionAgentSaaSProposalsQuery: http.HandlerFunc(s.listProposals), actionAgentSaaSProposalsGet: http.HandlerFunc(s.getProposal), actionAgentSaaSProposalsStore: http.HandlerFunc(s.storeProposal), actionAgentSaaSProposalsDecide: http.HandlerFunc(s.decideProposal),
-		actionAgentSaaSCapabilitySummary: capabilityHandler, actionAgentSaaSCapabilityCategory: capabilityHandler, actionAgentSaaSCapabilityValidation: capabilityHandler,
 		agentsdk.ActionAgentScheduledConversationTaskStart:      http.HandlerFunc(s.conversationHandler("scheduled_task_start")),
 		agentsdk.ActionAgentBusinessEventConversationTaskAccept: http.HandlerFunc(s.conversationHandler("business_event_task_accept")),
 	}

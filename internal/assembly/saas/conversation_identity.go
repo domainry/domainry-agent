@@ -24,8 +24,8 @@ type ConversationIdentity struct {
 }
 
 func OpenConversationIdentity(ctx context.Context, runtimeID string, config identityremote.Config) (*ConversationIdentity, error) {
-	if strings.TrimSpace(runtimeID) == "" || strings.TrimSpace(config.Endpoint) == "" || strings.TrimSpace(config.WorkspaceID) == "" || strings.TrimSpace(config.Audience) == "" || strings.TrimSpace(config.Issuer) == "" || strings.TrimSpace(config.ServiceAccessToken) == "" || strings.TrimSpace(config.CapabilityContractSHA256) == "" {
-		return nil, errors.New("Agent SaaS conversations require IDENTITY_ENDPOINT, IDENTITY_WORKSPACE_ID, IDENTITY_AUDIENCE, IDENTITY_ISSUER, IDENTITY_SERVICE_ACCESS_TOKEN and IDENTITY_CAPABILITY_CONTRACT_SHA256")
+	if strings.TrimSpace(runtimeID) == "" || strings.TrimSpace(config.Endpoint) == "" || strings.TrimSpace(config.WorkspaceID) == "" || strings.TrimSpace(config.Audience) == "" || strings.TrimSpace(config.Issuer) == "" || strings.TrimSpace(config.ServiceAccessToken) == "" {
+		return nil, errors.New("Agent SaaS conversations require IDENTITY_ENDPOINT, IDENTITY_WORKSPACE_ID, IDENTITY_AUDIENCE, IDENTITY_ISSUER and IDENTITY_SERVICE_ACCESS_TOKEN")
 	}
 	application := identitysdk.ApplicationRef{WorkspaceID: identitysdk.WorkspaceID(strings.TrimSpace(config.WorkspaceID)), ApplicationKey: identitysdk.ApplicationKey(strings.TrimSpace(config.Audience))}
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)

@@ -9,7 +9,9 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent-sdk/modulehost"
 	"github.com/domainry/domainry-agent-sdk/persistence"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
@@ -29,6 +31,13 @@ func openAttachmentIndexStore(t *testing.T, path string) (*ConversationStore, *s
 	if err = r.Prepare(t.Context()); err != nil {
 		t.Fatal(err)
 	}
+	artifactMigration, err := artifactkernel.SchemaMigration(renderer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = r.ApplyOwnedMigrations(t.Context(), "artifact", []modulehost.SchemaMigration{artifactMigration}); err != nil {
+		t.Fatal(err)
+	}
 	migrations, err := SchemaMigrations("sqlite", "")
 	if err != nil {
 		t.Fatal(err)
@@ -38,6 +47,14 @@ func openAttachmentIndexStore(t *testing.T, path string) (*ConversationStore, *s
 	}
 	s, err := NewStore(db, renderer, sqlite.NewEngine())
 	if err != nil {
+		t.Fatal(err)
+	}
+	content, err := artifactkernel.NewContentFiles(path + ".content")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = content.Close() })
+	if err = s.BindArtifactPersistence(artifactkernel.NewStore(db, renderer), content, content); err != nil {
 		t.Fatal(err)
 	}
 	return NewConversationStore(s), db
@@ -51,10 +68,6 @@ func attachmentIndexFixture(t *testing.T, repo *ConversationStore, client string
 		t.Fatal(err)
 	}
 	r, err := repo.ReserveAttachment(ctx, attachmentReservation(c.ID, client), a)
-	if err != nil {
-		t.Fatal(err)
-	}
-	r, err = repo.TransitionAttachment(ctx, r.Attachment.ID, r.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "stored", BodyRef: "private-original"}, a)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -100,7 +113,7 @@ func TestAttachmentUnknownUploadSurvivesRestartWithoutResettingWrite(t *testing.
 			t.Fatal(err)
 		}
 		r, err = repo.AttachmentRecord(ctx, original.Attachment.ID, a)
-		if err != nil || r.Attachment.State != "needs_reconcile" || !r.Index.PutStarted || r.Index.PutAcknowledged || r.Index.IndexObserved || r.BodyRef != original.BodyRef || *r.Source != frozen {
+		if err != nil || r.Attachment.State != "needs_reconcile" || !r.Index.PutStarted || r.Index.PutAcknowledged || r.Index.IndexObserved || *r.Source != frozen {
 			t.Fatal("unknown result lost immutable original or write identity", code, r, err)
 		}
 		lease = claimAttachmentIndex(t, repo)
@@ -149,7 +162,7 @@ func TestAttachmentUnknownUploadSurvivesRestartWithoutResettingWrite(t *testing.
 		t.Fatal(err)
 	}
 	r, err = repo.AttachmentRecord(ctx, original.Attachment.ID, a)
-	if err != nil || r.Attachment.State != "deleting" || r.BodyRef == "" {
+	if err != nil || r.Attachment.State != "deleting" {
 		t.Fatal("late uncertainty undid deletion or discarded the original", r, err)
 	}
 }
@@ -212,7 +225,7 @@ func TestAttachmentIndexSourceClaimsExcludeLibrariesAndOtherWorkspaces(t *testin
 }
 
 func TestAttachmentIndexDeletionFencesLateWritesAndRequiresAcknowledgement(t *testing.T) {
-	repo, _ := openAttachmentIndexStore(t, filepath.Join(t.TempDir(), "inflight.db"))
+	repo, db := openAttachmentIndexStore(t, filepath.Join(t.TempDir(), "inflight.db"))
 	a, ctx := conversationTestAuthority(), t.Context()
 	c, original, source := attachmentIndexFixture(t, repo, "inflight")
 	r, err := repo.QueueAttachmentIndex(ctx, original.Attachment.ID, original.Attachment.Revision, source, a)
@@ -251,7 +264,7 @@ func TestAttachmentIndexDeletionFencesLateWritesAndRequiresAcknowledgement(t *te
 	applyAttachmentIndex(t, repo, l, "indexed", "INDEXED")
 	l = claimAttachmentIndex(t, repo)
 	r, err = repo.AttachmentIndexWorkRecord(ctx, l)
-	if err != nil || r.Attachment.State != "deleting" || r.BodyRef != original.BodyRef || !r.Index.IndexObserved {
+	if err != nil || r.Attachment.State != "deleting" || !r.Index.IndexObserved {
 		t.Fatal("late indexed result revived parent or lost original", r, err)
 	}
 	_, err = repo.TransitionAttachment(ctx, r.Attachment.ID, r.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "deleted"}, a)
@@ -264,10 +277,11 @@ func TestAttachmentIndexDeletionFencesLateWritesAndRequiresAcknowledgement(t *te
 	l = claimAttachmentIndex(t, repo)
 	applyAttachmentIndex(t, repo, l, "deleted", "")
 	r, err = repo.AttachmentRecord(ctx, r.Attachment.ID, a)
-	if err != nil || r.Attachment.State != "deleted" || r.BodyRef != "" {
+	if err != nil || r.Attachment.State != "deleted" {
 		t.Fatal("cleanup not finalized", r, err)
 	}
-	if jobs, err := repo.AttachmentCleanupCandidates(ctx, a.RuntimeID, time.Now().Add(time.Hour), 20); err != nil || len(jobs) != 0 {
+	var jobs int
+	if err = db.QueryRowContext(ctx, `SELECT count(*) FROM _agent_attachment_index_jobs WHERE attachment_id=?`, r.Attachment.ID).Scan(&jobs); err != nil || jobs != 0 {
 		t.Fatal("cleanup not retired", jobs, err)
 	}
 	if _, err = repo.QueueAttachmentIndex(ctx, r.Attachment.ID, r.Attachment.Revision, source, a); err == nil {

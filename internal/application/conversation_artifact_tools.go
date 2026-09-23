@@ -148,7 +148,7 @@ func (s *ConversationService) prepareArtifactTool(ctx context.Context, in agents
 			return out, err
 		}
 		value := agentsdk.ConversationArtifactExport{ArtifactID: args.ID, Version: args.Version, Format: args.Format, Filename: fmt.Sprintf("%s-v%d%s", args.ID, args.Version, data.Extension), ContentType: data.ContentType, SHA256: artifact.Hash(data.Data), Bytes: len(data.Data), FormulaGuarded: data.FormulaGuarded}
-		out.Export = &persistence.ConversationArtifactExportWrite{ClientID: clientID, RequestSHA256: digest, TTLSeconds: int64(s.options.ArtifactExportTTL / time.Second), Export: value}
+		out.Export = &persistence.ConversationArtifactExportWrite{ClientID: clientID, RequestSHA256: digest, TTLSeconds: int64(s.options.ArtifactExportTTL / time.Second), Export: value, Content: data.Data}
 		return out, nil
 	}
 	if !conversationKey(in.ConversationID) || !conversationKey(in.RunID) || in.Step < 0 || in.Step >= 256 {

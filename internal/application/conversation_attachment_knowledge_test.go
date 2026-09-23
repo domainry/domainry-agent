@@ -62,12 +62,8 @@ func TestAttachmentReceiptRejectsTamperingAndStaysScoped(t *testing.T) {
 	a := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
 	conversation, id := "conv_"+strings.Repeat("a", 32), "att_"+strings.Repeat("b", 32)
 	source := attachmentKnowledgeTestSource{}
-	repo := &attachmentKnowledgeTestRepository{record: persistence.ConversationAttachmentRecord{Attachment: agentsdk.ConversationAttachment{ID: id, ConversationID: conversation, Filename: "original.xlsx", State: "ready", SHA256: strings.Repeat("c", 64)}, BodyRef: "must-never-read", Source: &persistence.ConversationAttachmentSource{DocID: "remote", Identity: source.KnowledgeDocumentSourceIdentity(), AccessPolicySHA256: source.KnowledgeDocumentAccessPolicySHA256(), PermissionID: "scope:private"}, Index: &persistence.ConversationAttachmentIndex{Actor: a, IndexObserved: true}}}
-	// An embedded nil storage would panic if retrieval attempted original I/O.
-	storage := struct {
-		agentsdk.ConversationAttachmentStorage
-	}{}
-	service := &ConversationService{runtimeID: a.RuntimeID, repo: repo, options: ConversationOptions{KnowledgeFactory: knowledge.NewFactory(), AttachmentStorage: storage, AttachmentAuthorizer: attachmentKnowledgeTestPolicy{}, PersonalAuthorizer: attachmentKnowledgeTestPolicy{}, AttachmentKnowledge: []agentsdk.ConversationAttachmentKnowledgeBinding{{WorkspaceID: a.WorkspaceID, Knowledge: source}}}}
+	repo := &attachmentKnowledgeTestRepository{record: persistence.ConversationAttachmentRecord{Attachment: agentsdk.ConversationAttachment{ID: id, ConversationID: conversation, Filename: "original.xlsx", State: "ready", SHA256: strings.Repeat("c", 64)}, Source: &persistence.ConversationAttachmentSource{DocID: "remote", Identity: source.KnowledgeDocumentSourceIdentity(), AccessPolicySHA256: source.KnowledgeDocumentAccessPolicySHA256(), PermissionID: "scope:private"}, Index: &persistence.ConversationAttachmentIndex{Actor: a, IndexObserved: true}}}
+	service := &ConversationService{runtimeID: a.RuntimeID, repo: repo, options: ConversationOptions{KnowledgeFactory: knowledge.NewFactory(), AttachmentAuthorizer: attachmentKnowledgeTestPolicy{}, PersonalAuthorizer: attachmentKnowledgeTestPolicy{}, AttachmentKnowledge: []agentsdk.ConversationAttachmentKnowledgeBinding{{WorkspaceID: a.WorkspaceID, Knowledge: source}}}}
 	definition, _ := attachmentKnowledgeTool("attachment_read")
 	in := agentsdk.ConversationToolRequest{Authority: a, ConversationID: conversation, Definition: definition, Call: agentsdk.ConversationToolCall{Name: definition.Key, Arguments: `{"attachment_id":"` + id + `"}`}}
 	receipt, err := service.attachmentKnowledge(t.Context(), conversation, "fetch", "", id, a)

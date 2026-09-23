@@ -21,14 +21,27 @@ Agent SDK 新增 `ConversationArtifactService` 及其输入输出类型，覆盖
 
 ## 持久化
 
-迁移 6 `agent_conversation_artifacts` 追加以下表，原迁移内容保持不变：
+迁移 6 `agent_conversation_artifacts` 保留成果定义、版本和命令回执；导出文件不再创建 Agent 私有表：
 
 | 表 | 用途 |
 | --- | --- |
 | `_agent_artifacts` | 用户范围内的稳定成果 ID、最新版本及查询元数据 |
 | `_agent_artifact_versions` | 按成果 ID 和版本保存不可变正文、来源与元数据 |
 | `_agent_artifact_mutations` | 客户端幂等键、输入摘要及结果回执 |
-| `_agent_artifact_exports` | 导出所对应的版本、格式、内容哈希、到期时间和下载记录 |
+
+生成的 Markdown／CSV 文件统一登记为共享 `_artifacts` 中的
+`owner=agent, kind=generated`，文件字节写入宿主 BlobStore；`_artifact_bindings`
+记录创建用户及来源会话。独立 Web 组合安装同一共享表结构，嵌入模式借用
+Runtime 的 Artifact 端口，不存在 `_agent_artifact_exports` 回退表或双写。
+
+会话上传附件同样登记为 `owner=agent, kind=attachment`，共享 Artifact 是文件
+名称、媒体类型、哈希、大小、Blob 引用和终态的唯一权威；主体与来源会话通过
+`_artifact_bindings` 关联。Agent 特有的索引状态及远端写入标记保存在 Artifact
+元数据中，保留的 `_agent_attachment_index_jobs` 同时承载远端索引恢复和终态
+Blob 清理。`_agent_conversation_attachments` 与 `_agent_attachment_cleanup` 已
+删除，独立 Web 宿主也不再创建第二套 `.attachments` 内容目录。删除先将
+Artifact 置为不可下载的终态，再由带 fencing 的工作项幂等删除 Blob；任务执行
+附件仍使用独立的 `TaskAttachmentStorage`，不属于会话附件元数据权威。
 
 用户范围由运行时、工作区和用户共同确定。创建与编辑在同一事务内保存最新版本指针、不可变修订和回执；编辑通过期望版本比较并更新。
 旧创建请求重放会返回原始回执，不会回退当前版本。读取具体旧版本不会受后续编辑影响。
@@ -47,7 +60,7 @@ Agent SDK 新增 `ConversationArtifactService` 及其输入输出类型，覆盖
 
 已实现 Markdown 原文及表格 / 图表数据的 CSV 编码。CSV 保留十进制原文，正确处理逗号及引号；可能被电子表格解释为公式的文本加前导单引号，并在导出记录标明 `formula_guarded`，不修改原成果。
 
-导出必须指定实际版本，保存文件类型、稳定文件名、字节数及内容哈希。默认到期时间为一小时，宿主可配置 1 秒至 24 小时；同一幂等请求不会重新延长有效期。
+导出必须指定实际版本，保存文件类型、稳定文件名、字节数及内容哈希。生成字节以不可变对象写入 BlobStore，SQL 只保存不透明引用、完整性、授权范围、过期时间和下载审计元数据。默认到期时间为一小时，宿主可配置 1 秒至 24 小时；同一幂等请求不会重新延长有效期。
 下载记录原子检查到期时间，累计次数并保存最近时间。应用层先核对当前动作权限、来源权限和指定版本的实际字节，再记录下载；被拒绝的请求不会增加下载次数。下载返回附件字节，使用 `private, no-store` 和 `nosniff`，不暴露宿主文件路径或正文存储引用。
 
 ## 已接通的公共接口

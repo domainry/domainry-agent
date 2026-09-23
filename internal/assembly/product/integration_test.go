@@ -18,12 +18,11 @@ import (
 	"time"
 
 	gateway "github.com/domainry/domainry-agent-sdk/browsergateway"
-	"github.com/domainry/domainry-foundation/modulecapability"
 	integration "github.com/domainry/domainry-integration-sdk"
 )
 
 func TestIntegrationEnvironmentRequiresCompleteConfiguration(t *testing.T) {
-	for _, key := range []string{"INTEGRATION_SAAS_BASE_URL", "INTEGRATION_SAAS_TOKEN", "INTEGRATION_SAAS_CONTRACT_SHA256"} {
+	for _, key := range []string{"INTEGRATION_SAAS_BASE_URL", "INTEGRATION_SAAS_TOKEN"} {
 		t.Setenv(key, "")
 	}
 	if binding, err := OpenIntegrationFromEnvironment(t.Context(), "product"); err != nil || binding != nil {
@@ -101,14 +100,14 @@ func TestIntegrationSaaSProductionProcessWithProductIdentity(t *testing.T) {
 		go func(cmd *exec.Cmd) { done <- cmd.Wait() }(child)
 		client := &http.Client{Timeout: time.Second}
 		deadline := time.Now().Add(10 * time.Second)
-		var summary modulecapability.ModuleSummary
+		var descriptor integration.Descriptor
 		for {
-			req, _ := http.NewRequest("GET", base+modulecapability.SummaryPath, nil)
+			req, _ := http.NewRequest("GET", base+"/integration/v1/descriptor", nil)
 			req.Header.Set("Authorization", "Bearer fixture-service-token")
 			req.Header.Set("X-Domainry-Runtime-ID", "accounts-product")
 			response, err := client.Do(req)
 			if err == nil {
-				err = json.NewDecoder(response.Body).Decode(&summary)
+				err = json.NewDecoder(response.Body).Decode(&descriptor)
 				response.Body.Close()
 				if err == nil && response.StatusCode == 200 {
 					break
@@ -119,14 +118,12 @@ func TestIntegrationSaaSProductionProcessWithProductIdentity(t *testing.T) {
 			}
 			time.Sleep(20 * time.Millisecond)
 		}
-		t.Setenv("INTEGRATION_SAAS_CONTRACT_SHA256", strings.Repeat("0", 64))
-		if _, err := OpenIntegrationFromEnvironment(t.Context(), "accounts-product"); err == nil {
-			t.Fatal("mismatched service contract accepted")
-		}
-		t.Setenv("INTEGRATION_SAAS_CONTRACT_SHA256", summary.Identity.ContractSHA256)
 		binding, err = OpenIntegrationFromEnvironment(t.Context(), "accounts-product")
 		if err != nil {
 			t.Fatal(err)
+		}
+		if descriptor.Mode != integration.DeploymentModeSaaS || binding.Descriptor().ProtocolVersion != descriptor.ProtocolVersion {
+			t.Fatalf("Integration descriptor mismatch: server=%+v binding=%+v", descriptor, binding.Descriptor())
 		}
 		host, err = Open(t.Context(), Options{DatabasePath: filepath.Join(root, "agent.db"), RuntimeID: "accounts-product", WorkspaceID: "accounts-workspace", ApplicationKey: "accounts-product", Integration: binding})
 		if err != nil {

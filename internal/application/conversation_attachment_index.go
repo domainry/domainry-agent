@@ -23,7 +23,7 @@ func validateAttachmentKnowledge(repo persistence.ConversationRepository, option
 		if _, managed := options.Knowledge.(agentsdk.ManagedKnowledgeDocumentSource); managed {
 			return fmt.Errorf("managed knowledge requires a factory supplied by composition")
 		}
-		if options.AttachmentStorage != nil || options.DocumentStorage != nil || options.ArtifactStorage != nil || options.LibraryAuthorizer != nil || len(options.LibraryKnowledge) > 0 || len(options.AttachmentKnowledge) > 0 || options.KnowledgeDatasources != nil {
+		if options.DocumentStorage != nil || options.ArtifactStorage != nil || options.LibraryAuthorizer != nil || len(options.LibraryKnowledge) > 0 || len(options.AttachmentKnowledge) > 0 || options.KnowledgeDatasources != nil {
 			return fmt.Errorf("knowledge capabilities require a factory supplied by composition")
 		}
 		return nil

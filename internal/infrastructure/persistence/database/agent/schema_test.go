@@ -12,42 +12,52 @@ func TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects(t *testing.
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 36 || migrations[0].Version != SchemaVersion || migrations[1].Version != 2 || migrations[2].Version != 3 || migrations[3].Version != 4 || migrations[4].Version != 5 || migrations[5].Version != 6 || migrations[6].Version != 7 || migrations[7].Version != 8 || migrations[8].Version != 9 || migrations[9].Version != 10 || migrations[10].Version != 11 || migrations[11].Version != 12 || migrations[12].Version != 13 || migrations[13].Version != 14 || migrations[14].Version != 15 || migrations[15].Version != 16 || migrations[16].Version != 17 || migrations[17].Version != 18 || migrations[18].Version != 19 || migrations[19].Version != 20 || migrations[20].Version != 21 || migrations[21].Version != 22 || migrations[22].Version != 23 || migrations[23].Version != 24 || migrations[24].Version != 25 || migrations[25].Version != 26 || migrations[26].Version != 27 || migrations[27].Version != 28 || migrations[28].Version != 29 || migrations[29].Version != 30 || migrations[30].Version != 31 || migrations[31].Version != 32 || migrations[32].Version != 33 || migrations[33].Version != 34 || migrations[34].Version != 35 || migrations[35].Version != 36 {
+			if len(migrations) != 34 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
 				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
-			if memories := strings.Join(migrations[35].Statements, "\n"); !strings.Contains(memories, conversationMemoryChangeTable) || !strings.Contains(memories, "operation") || strings.Contains(memories, "_schema_migrations") {
+			byVersion := map[uint]string{}
+			for _, migration := range migrations {
+				byVersion[migration.Version] = strings.Join(migration.Statements, "\n")
+			}
+			if _, found := byVersion[7]; found {
+				t.Fatal("retired private attachment migration v7 remains")
+			}
+			if _, found := byVersion[8]; found {
+				t.Fatal("retired private attachment cleanup migration v8 remains")
+			}
+			if memories := byVersion[36]; !strings.Contains(memories, conversationMemoryChangeTable) || !strings.Contains(memories, "operation") || strings.Contains(memories, "_schema_migrations") {
 				t.Fatal("invalid scoped memory migration", memories)
 			}
-			if forks := strings.Join(migrations[33].Statements, "\n"); !strings.Contains(forks, conversationForkTable) || !strings.Contains(forks, "source_event_seq") || strings.Contains(forks, "_schema_migrations") {
+			if forks := byVersion[34]; !strings.Contains(forks, conversationForkTable) || !strings.Contains(forks, "source_event_seq") || strings.Contains(forks, "_schema_migrations") {
 				t.Fatal("invalid conversation fork migration", forks)
 			}
-			plans := strings.Join(migrations[31].Statements, "\n")
+			plans := byVersion[32]
 			if !strings.Contains(plans, conversationTaskPlanTable) || strings.Contains(plans, "_schema_migrations") {
 				t.Fatal("invalid task plan migration", plans)
 			}
-			taskAgreements := strings.Join(migrations[30].Statements, "\n")
+			taskAgreements := byVersion[31]
 			if !strings.Contains(taskAgreements, conversationTaskAgreementUpdateTable) || strings.Contains(taskAgreements, "_schema_migrations") {
 				t.Fatal("invalid task agreement migration", taskAgreements)
 			}
-			contract := strings.Join(migrations[28].Statements, "\n")
+			contract := byVersion[29]
 			if !strings.Contains(contract, conversationContractPublicationTable) || strings.Contains(contract, "_schema_migrations") {
 				t.Fatal("invalid contract publication migration", contract)
 			}
-			releases := strings.Join(migrations[27].Statements, "\n")
+			releases := byVersion[28]
 			for _, fragment := range []string{conversationSourceReleaseTable, "idx_agent_source_release_v28", "idx_agent_source_producer_v28", "before_step", "producer_key"} {
 				if !strings.Contains(releases, fragment) {
 					t.Fatalf("missing release migration field %s", fragment)
 				}
 			}
-			subjects := strings.Join(migrations[26].Statements, "\n")
+			subjects := byVersion[27]
 			if !strings.Contains(subjects, conversationDelegationSubjectTable) || !strings.Contains(subjects, "idx_agent_delegation_subject_v27") || strings.Contains(subjects, "_schema_migrations") {
 				t.Fatal("invalid delegation subject migration", subjects)
 			}
-			participants := strings.Join(migrations[25].Statements, "\n")
+			participants := byVersion[26]
 			if !strings.Contains(participants, conversationParticipantTable) || !strings.Contains(participants, "idx_agent_participant_v26") || strings.Contains(participants, "_schema_migrations") {
 				t.Fatal("invalid participant migration", participants)
 			}
-			sharing := strings.Join(migrations[24].Statements, "\n")
+			sharing := byVersion[25]
 			for _, fragment := range []string{conversationAgentGrantTable, "viewer_key", "owner_user_id", "idx_agent_peer_use_grant_v25"} {
 				if !strings.Contains(sharing, fragment) {
 					t.Fatalf("missing sharing migration field %s", fragment)
@@ -57,13 +67,23 @@ func TestSchemaMigrationsOwnDefinitionsAndRuntimeStateForAllDialects(t *testing.
 				t.Fatal("sharing migration owns a private ledger")
 			}
 			joined := strings.Join(migrations[0].Statements, "\n")
-			for _, table := range append(append([]string(nil), schemaDefinitionTables...), "_agent_runtime_states", "_agent_task_runs", "_agent_interactive_runs", "_agent_worker_scopes") {
+			for _, table := range append(append([]string(nil), schemaDefinitionTables...), "_agent_runtime_states", "_agent_task_runs", "_agent_interactive_runs", "_worker_scopes") {
 				if !strings.Contains(joined, table) {
 					t.Errorf("%s migration does not own %s", driver, table)
 				}
 			}
 			if strings.Contains(joined, "_schema_migrations") {
 				t.Fatal("Agent migration attempted to create a private ledger")
+			}
+			all := make([]string, 0, len(migrations))
+			for _, migration := range migrations {
+				all = append(all, migration.Statements...)
+			}
+			joinedAll := strings.Join(all, "\n")
+			for _, retired := range []string{"_agent_artifact_exports", "_agent_conversation_attachments", "_agent_attachment_cleanup", "_agent_subject_erasure_receipts", "_todo_subject_erasure_receipts", "_knowledge_subject_erasure_receipts"} {
+				if strings.Contains(joinedAll, retired) {
+					t.Fatalf("Agent migration still owns retired table %s", retired)
+				}
 			}
 		})
 	}

@@ -85,7 +85,7 @@ Workflow/Report effects exposed through narrow Host Ports.
 When business execution is configured, Module/SaaS bindings expose `dialog.state`
 and `execution.state` through the same Agent-owned HTTP Adapter. Conversation-only
 SaaS bindings expose the separate conversations Adapter and advertise their available capabilities. All `/agent/*` handlers,
-route metadata and OpenAPI operations come from Agent; Runtime mounts the Adapter and applies host middleware without
+route metadata and typed operation contracts come from Agent; Runtime mounts the Adapter and applies host middleware without
 duplicating Agent handlers. Host authorization, audit and business effects are
 requested internally through `InteractiveHost`, `TaskHost`, `ProposalHost`,
 `AuditHost` and `AnalysisHost`.
@@ -104,7 +104,7 @@ Agent definitions now select role instructions, Skills and tool subsets. Todo, K
 
 ### 工作账号服务（F01）
 
-原 Agent 网页、Work 和 PM 的共享「外部账号」页面可连接独立 Integration SaaS。产品宿主配置 `INTEGRATION_SAAS_BASE_URL`、`INTEGRATION_SAAS_TOKEN`、`INTEGRATION_SAAS_CONTRACT_SHA256` 三项；完全未配置时显示未连接，缺项或契约不兼容则启动失败。服务令牌只在宿主使用。Integration 的运行参数、持久加密密钥和 Provider 装配见 [Integration README](../domainry-integration/README.md)。
+原 Agent 网页、Work 和 PM 的共享「外部账号」页面可连接独立 Integration SaaS。产品宿主配置 `INTEGRATION_SAAS_BASE_URL` 和 `INTEGRATION_SAAS_TOKEN`；完全未配置时显示未连接，缺项或服务端 `Descriptor` 与当前 SDK 协议、SaaS 模式、Runtime audience 不兼容时启动失败。服务令牌只在宿主使用。Integration 的运行参数、持久加密密钥和 Provider 装配见 [Integration README](../domainry-integration/README.md)。
 
 管理员登录并完成初始密码修改后，在「外部账号」中显式点击「启用管理员账号管理」，再通过「应用配置」登记厂商 Client ID、写入 Client Secret、允许的 Scopes 和精确回调地址。产品回调路径是 `/oauth/callback`；各产品的 origin 必须与厂商注册的完整回调地址一致。已有应用的密钥留空表示保留，读取配置不会返回密钥。其他角色继续由 Identity 权限管理分配具体账号动作，产品启动不会重新授予已撤销的权限。
 
@@ -131,7 +131,7 @@ Work／PM 默认邮件 Skill 以实际正文生成摘要与待处理事项，缺
 
 Work／PM 默认 Web Skill 要求保留查询、原始／返回 URL、读取时间、裁剪和完整性提示，区分发布时间与读取时间；网页内容作为不可信数据。来源卡片与 Knowledge 报告沿用当前权限复核、版本编辑与导出；替换宿主服务连接也不能接管旧报告的来源授权。Agent 执行层与 Knowledge 无 Web 协议或 Provider 实现依赖，具体网络请求仍由 Integration／Connectors 处理。此处只接入 llm-proxy 已有的 `POST /tool/web_search` 与 `POST /tool/web_fetch_jina`，分别供 `web_search`／`web_fetch` 使用；范围见[网页边界](docs/web-read-boundaries.md)。
 
-独立业务宿主通过 Agent SDK 的 `businessrpc` 可选接入。产品入口读取 `AGENT_BUSINESS_ENDPOINT`、`AGENT_BUSINESS_SERVICE_TOKEN`、`AGENT_BUSINESS_SOURCE_IDENTITY`、`AGENT_BUSINESS_CONTRACT_SHA256`，并通过既有 Identity SDK 的 `IDENTITY_ENDPOINT`／`IDENTITY_ISSUER`／`IDENTITY_AUDIENCE`／`IDENTITY_SERVICE_ACCESS_TOKEN`／`IDENTITY_CAPABILITY_CONTRACT_SHA256` 连接同一身份服务。Runtime、工作区、应用及 issuer 必须完全匹配；Work／PM 可用 `SAAS_APPLICATION_KEY` 指定既有应用，Agent 使用 `AGENT_WEB_APPLICATION_KEY`。未配置业务服务时保留原本地部署；配置不完整或身份域不匹配时启动失败。
+独立业务宿主通过 Agent SDK 的 `businessrpc` 可选接入。产品入口读取 `AGENT_BUSINESS_ENDPOINT`、`AGENT_BUSINESS_SERVICE_TOKEN`、`AGENT_BUSINESS_SOURCE_IDENTITY`、`AGENT_BUSINESS_CONTRACT_SHA256`，并通过既有 Identity SDK 的 `IDENTITY_ENDPOINT`／`IDENTITY_ISSUER`／`IDENTITY_AUDIENCE`／`IDENTITY_SERVICE_ACCESS_TOKEN` 连接同一身份服务。这里的业务 RPC 摘要是该专用远程协议自身的真实握手，不是通用 module capability authoring 摘要。Runtime、工作区、应用及 issuer 必须完全匹配；Work／PM 可用 `SAAS_APPLICATION_KEY` 指定既有应用，Agent 使用 `AGENT_WEB_APPLICATION_KEY`。未配置业务服务时保留原本地部署；配置不完整或身份域不匹配时启动失败。
 
 Report 宿主复用既有 Report SDK 两个按声明 key 查询的端口，当前 businessrpc 契约及验证见 [Report 宿主验收](docs/testing-2026-09-12-f05-report-host.md)。Work／PM 默认选择七个已有业务工具；实际 Source 和当前权限仍决定可用性，具体报表工具按 TODO 的 N01 接入。
 

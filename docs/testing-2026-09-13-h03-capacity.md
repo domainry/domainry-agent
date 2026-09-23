@@ -6,14 +6,14 @@ H03 已完成。Agent 对用户和工作区分别限制排队数与运行数，S
 
 - Agent SDK 新增可选 `ConversationCapacityProvider` 和持久化 `ConversationCapacityRepository`。原 `ConversationService`、`ConversationRepository` 未扩方法，旧宿主保持源码兼容；启用显式配额而持久化端口缺失时，启动直接失败。
 - 默认值为：每用户排队 8、每工作区排队 `max(128, workers × 16)`、每用户运行 `min(2, workers)`、每工作区运行 `workers`。standalone 和 Module 都可通过 `AGENT_CONVERSATION_MAX_QUEUED_PER_USER`、`AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE`、`AGENT_CONVERSATION_MAX_RUNNING_PER_USER`、`AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE` 配置。
-- migration 19 为 run 和后台／计划 task 增加 `workspace_key` 与索引，并增加 `_agent_conversation_capacity_guards`。入队、恢复、交互继续、后台和计划任务受理都在同一数据库事务内锁定 workspace guard、统计当前用户／工作区容量并写入；稳定拒绝码为 `agent.conversation.user_queue_full`、`agent.conversation.workspace_queue_full`、`agent.conversation.user_execution_quota`、`agent.conversation.workspace_execution_quota`。
+- migration 19 为 run 和后台／计划 task 增加 `workspace_key` 与索引；容量串行化使用共享 `_worker_scopes` 中 owner=`agent_conversation_capacity` 的行，不再创建 Agent 私有 guard 表。入队、恢复、交互继续、后台和计划任务受理都在同一数据库事务内锁定 workspace guard、统计当前用户／工作区容量并写入；稳定拒绝码为 `agent.conversation.user_queue_full`、`agent.conversation.workspace_queue_full`、`agent.conversation.user_execution_quota`、`agent.conversation.workspace_execution_quota`。
 - 排队统计包含 queued run 和尚未转换成 run 的 queued task；task 转 run 在事务内完成，因此不会重复计数。旧版本遗留的少量 `workspace_key IS NULL` 活动记录只在迁移排空期间从权限 JSON 投影；新记录全部走索引列。
 - worker 分页读取候选并跳过达到运行上限的用户／工作区，仍可领取其他工作区任务。过期租约接管不会额外占用一个运行名额，终态释放容量。
 
 ## Scheduler 触发积压
 
 - Scheduler SDK 新增可选 `TriggerBacklogProvider`、`TriggerBacklog`、`ErrTriggerBacklogFull` 和能力标记；基础 `RunStore` 保持不变。`WorkerConfig.MaxPendingTriggers` 默认 10,000、最大 1,000,000。
-- migration 8 增加 Runtime 级 `_scheduler_capacity_guards`。新窗口 Claim 和终态 Retry 都在自己的事务内锁定 guard，先保留既有窗口幂等语义，再统计该 Runtime 下 `leased` 与 `retrying` run；达到上限时不插入新 run。另一 Runtime 的容量独立，完成后可再次领取。
+- migration 8 使用共享 `_worker_scopes` 中 owner=`scheduler_trigger_capacity` 的 Runtime 级 guard 行。新窗口 Claim 和终态 Retry 都在自己的事务内锁定 guard，先保留既有窗口幂等语义，再统计该 Runtime 下 `leased` 与 `retrying` run；达到上限时不插入新 run。另一 Runtime 的容量独立，完成后可再次领取。
 - Module 与 SaaS 将积压满映射为 HTTP 429。standalone 可通过 `SCHEDULER_MAX_PENDING_TRIGGERS` 配置，并通过可选投影读取当前 pending 与 limit。
 
 ## 外部服务超时

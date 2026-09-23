@@ -163,17 +163,52 @@ func TestArtifactExportBindsVersionExpiresAndAuditsDownloads(t *testing.T) {
 	repo := NewConversationStore(store)
 	a := conversationTestAuthority()
 	ctx := t.Context()
-	first, err := repo.SaveArtifact(ctx, artifactWrite(t, "create", "", 0, "周报", "original report"), a)
+	conversation, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "export-source"}, a)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := repo.SaveArtifact(ctx, artifactWrite(t, "edit", first.Artifact.ID, 1, "周报", "replacement report"), a); err != nil {
+	run, err := repo.Enqueue(ctx, conversation.ID, agentsdk.ConversationSend{ClientMessageID: "export-source", Message: "生成周报"}, a)
+	if err != nil {
 		t.Fatal(err)
 	}
-	input := persistence.ConversationArtifactExportWrite{ClientID: "export", TTLSeconds: 3600, Export: agentsdk.ConversationArtifactExport{ArtifactID: first.Artifact.ID, Version: 1, Format: "markdown", Filename: first.Artifact.ID + "-v1.md", ContentType: "text/markdown; charset=utf-8", SHA256: artifact.Hash([]byte("original report")), Bytes: len("original report")}}
+	write := artifactWrite(t, "create", "", 0, "周报", "original report")
+	write.Record.Artifact.SourceConversationID = conversation.ID
+	write.Record.Artifact.SourceRunID = run.ID
+	write.Record.Sources.Runs = []agentsdk.ConversationRunReference{{ConversationID: conversation.ID, RunID: run.ID}}
+	first, err := repo.SaveArtifact(ctx, write, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	edit := artifactWrite(t, "edit", first.Artifact.ID, 1, "周报", "replacement report")
+	edit.Record.Artifact.SourceConversationID = conversation.ID
+	edit.Record.Artifact.SourceRunID = run.ID
+	edit.Record.Sources.Runs = []agentsdk.ConversationRunReference{{ConversationID: conversation.ID, RunID: run.ID}}
+	if _, err := repo.SaveArtifact(ctx, edit, a); err != nil {
+		t.Fatal(err)
+	}
+	input := persistence.ConversationArtifactExportWrite{ClientID: "export", TTLSeconds: 3600, Export: agentsdk.ConversationArtifactExport{ArtifactID: first.Artifact.ID, Version: 1, Format: "markdown", Filename: first.Artifact.ID + "-v1.md", ContentType: "text/markdown; charset=utf-8", SHA256: artifact.Hash([]byte("original report")), Bytes: len("original report")}, Content: []byte("original report")}
 	export, err := repo.SaveArtifactExport(ctx, input, a)
 	if err != nil || export.Version != 1 || export.Downloads != 0 || export.ExpiresAt.Sub(export.CreatedAt) != time.Hour {
 		t.Fatal("export lost version or expiry", err)
+	}
+	content, err := repo.ArtifactExportContent(ctx, export.ID, a)
+	if err != nil || string(content) != "original report" {
+		t.Fatal("export content was not loaded from shared blob storage", err)
+	}
+	var owner, kind, reference string
+	if err = store.Database().QueryRowContext(ctx, `SELECT owner,kind,storage_reference FROM _artifacts WHERE workspace_id=? AND id=?`, a.WorkspaceID, export.ID).Scan(&owner, &kind, &reference); err != nil || owner != "agent" || kind != "generated" || reference == "" {
+		t.Fatalf("shared artifact owner=%q kind=%q reference=%q err=%v", owner, kind, reference, err)
+	}
+	var subjectBindings, conversationBindings int
+	if err = store.Database().QueryRowContext(ctx, `SELECT COUNT(*) FROM _artifact_bindings WHERE workspace_id=? AND artifact_id=? AND kind='subject' AND resource_type='agent_user' AND resource_id=?`, a.WorkspaceID, export.ID, a.UserID).Scan(&subjectBindings); err != nil || subjectBindings != 1 {
+		t.Fatalf("subject bindings=%d err=%v", subjectBindings, err)
+	}
+	if err = store.Database().QueryRowContext(ctx, `SELECT COUNT(*) FROM _artifact_bindings WHERE workspace_id=? AND artifact_id=? AND kind='conversation' AND resource_type='agent_conversation' AND resource_id=?`, a.WorkspaceID, export.ID, conversation.ID).Scan(&conversationBindings); err != nil || conversationBindings != 1 {
+		t.Fatalf("conversation bindings=%d err=%v", conversationBindings, err)
+	}
+	var retired int
+	if err = store.Database().QueryRowContext(ctx, `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='_agent_artifact_exports'`).Scan(&retired); err != nil || retired != 0 {
+		t.Fatalf("retired export table count=%d err=%v", retired, err)
 	}
 	replay, err := repo.SaveArtifactExport(ctx, input, a)
 	if err != nil || conversationHash(replay) != conversationHash(export) {
@@ -206,7 +241,7 @@ func TestArtifactExportBindsVersionExpiresAndAuditsDownloads(t *testing.T) {
 	}
 	// Move only this test record past expiry, avoiding a wall-clock sleep.
 	audited.ExpiresAt = time.Now().Add(-time.Second)
-	if _, err := store.Database().ExecContext(ctx, `UPDATE _agent_artifact_exports SET expires_at=?,payload_json=? WHERE owner_key=? AND export_id=?`, audited.ExpiresAt.UnixMilli(), conversationJSON(audited), conversationOwner(a), export.ID); err != nil {
+	if _, err := store.Database().ExecContext(ctx, `UPDATE _artifacts SET expires_at=? WHERE workspace_id=? AND id=?`, audited.ExpiresAt.UTC().Format(time.RFC3339Nano), a.WorkspaceID, export.ID); err != nil {
 		t.Fatal(err)
 	}
 	_, err = repo.RecordArtifactDownload(ctx, export.ID, a)

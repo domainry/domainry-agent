@@ -2,20 +2,10 @@ package agent
 
 import (
 	"context"
-	"database/sql"
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	"time"
 )
-
-// Legacy API forwarding. Knowledge owns the data implementation.
-func (s *ConversationStore) saveAttachmentIndex(ctx context.Context, tx *sql.Tx, r *persistence.ConversationAttachmentRecord, a agentsdk.ConversationAuthority) error {
-	return s.knowledgeStore().CompatSaveAttachmentIndex(ctx, tx, r, a)
-}
-
-func (s *ConversationStore) queueAttachmentIndexWork(ctx context.Context, tx *sql.Tx, r persistence.ConversationAttachmentRecord) error {
-	return s.knowledgeStore().CompatQueueAttachmentIndexWork(ctx, tx, r)
-}
 
 func (s *ConversationStore) QueueAttachmentIndex(ctx context.Context, id string, expected int64, source persistence.ConversationAttachmentSource, a agentsdk.ConversationAuthority) (out persistence.ConversationAttachmentRecord, err error) {
 	return s.knowledgeStore().QueueAttachmentIndex(ctx, id, expected, source, a)

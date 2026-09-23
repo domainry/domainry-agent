@@ -5,20 +5,16 @@ import (
 	ormschema "github.com/domainry/domainry-orm/schema"
 )
 
-const conversationCapacityGuardTable = "_agent_conversation_capacity_guards"
+const (
+	conversationCapacityGuardTable = "_worker_scopes"
+	conversationCapacityOwner      = "agent_conversation_capacity"
+	conversationCapacityRecovery   = "transactional_guard"
+)
 
-// The guard is deliberately separate from Runtime rate limiting. It belongs to
-// Agent's durable execution queue and serializes admission for one workspace
-// across processes without making Agent depend on a host implementation.
+// The guard is an Agent-owned row in the shared worker-scope table. It remains
+// separate from Runtime rate limiting and serializes one workspace's admission
+// without creating an Agent-specific physical table.
 func conversationCapacityMigration(d modulehost.Dialect) (modulehost.SchemaMigration, error) {
-	table, _, err := ormschema.NewTable(d, conversationCapacityGuardTable).IfNotExists().Columns(
-		required("runtime_id", ormschema.TextKey(255)),
-		required("workspace_key", ormschema.TextKey(64)),
-		required("revision", ormschema.BigInt()),
-	).PrimaryKey("runtime_id", "workspace_key").Build()
-	if err != nil {
-		return modulehost.SchemaMigration{}, err
-	}
 	runWorkspace, _, err := ormschema.NewAddColumn(d, "_agent_conversation_runs", ormschema.Column("workspace_key", ormschema.TextKey(64))).Build()
 	if err != nil {
 		return modulehost.SchemaMigration{}, err
@@ -35,5 +31,5 @@ func conversationCapacityMigration(d modulehost.Dialect) (modulehost.SchemaMigra
 	if err != nil {
 		return modulehost.SchemaMigration{}, err
 	}
-	return modulehost.SchemaMigration{Version: 19, Name: "agent_conversation_capacity", Statements: []string{table, runWorkspace, taskWorkspace, runIndex, taskIndex}}, nil
+	return modulehost.SchemaMigration{Version: 19, Name: "agent_conversation_capacity", Statements: []string{runWorkspace, taskWorkspace, runIndex, taskIndex}}, nil
 }

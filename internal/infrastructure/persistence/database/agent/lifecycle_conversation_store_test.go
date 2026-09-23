@@ -2,7 +2,6 @@ package agent
 
 import (
 	"bytes"
-	"strings"
 	"testing"
 	"time"
 
@@ -20,7 +19,9 @@ func TestConversationLifecycleArchivesCompleteGraphAndFencesPurge(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	attachment, err := repo.ReserveAttachment(t.Context(), agentpersistence.ConversationAttachmentReserve{ClientID: "retained-attachment", ConversationID: conversation.ID, Filename: "owned-by-knowledge.txt", ContentType: "text/plain", SHA256: strings.Repeat("a", 64), Bytes: 1}, a)
+	attachmentInput := attachmentReservation(conversation.ID, "retained-attachment")
+	attachmentInput.Filename, attachmentInput.ContentType = "owned-by-knowledge.txt", "text/plain"
+	attachment, err := repo.ReserveAttachment(t.Context(), attachmentInput, a)
 	if err != nil {
 		t.Fatal(err)
 	}

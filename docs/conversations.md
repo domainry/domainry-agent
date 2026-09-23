@@ -16,7 +16,7 @@ Runtime 宿主已接业务目录、记录、关联、动作及流程；各项能
 
 Conversation 不调用 InteractiveRunner，不依赖外部 Provider 保存 session。纯文本路径发送我们组装的 `system/user/assistant` 消息数组；配置工具宿主后，通过可选 `ConversationAgentModel` 多次发送模型步骤和实际工具结果。工具参数完整结束并校验后才执行。凭证、授权策略和 Provider 原生续接状态不会作为工具参数或浏览器公开数据。
 
-SDK 提供可选的 `ConversationBinding.Conversations()`，不在旧 `Binding` 上增加必需方法。SDK 持有类型、HTTP Action 清单、OpenAPI 和 Repository 接口；Agent 持有应用服务、SQL、后台执行和传输实现。Runtime 从 Binding 获取并挂载新增的 `conversations` HTTP Adapter。
+SDK 提供可选的 `ConversationBinding.Conversations()`，不在旧 `Binding` 上增加必需方法。SDK 持有类型、HTTP Action/route 清单和 Repository 接口；当前 SDK 源码和契约测试是精确接口依据。Agent 持有应用服务、SQL、后台执行和传输实现。Runtime 从 Binding 获取并挂载新增的 `conversations` HTTP Adapter。
 
 ## 存储与隔离
 
@@ -176,7 +176,7 @@ K08 与 K04 分开装配。K04 的 `run_code` 是一次性、无文件／Shell�
 
 ## 产品接口
 
-全部路径由 SDK 清单生成授权元数据及 OpenAPI。
+全部路径由 SDK typed Action/route 清单生成授权元数据，当前 Go 源码、公开客户端和契约测试共同约束实际接口。
 
 | 方法 / 路径 | 行为 |
 | --- | --- |
@@ -246,12 +246,12 @@ export IDENTITY_ENDPOINT='https://identity.example.com'
 export IDENTITY_WORKSPACE_ID='your-workspace-id'
 export IDENTITY_AUDIENCE='your-identity-application-key'
 export IDENTITY_ISSUER='https://identity.example.com'
-# 配置 IDENTITY_SERVICE_ACCESS_TOKEN 和已核对的 IDENTITY_CAPABILITY_CONTRACT_SHA256。
+# 配置 IDENTITY_SERVICE_ACCESS_TOKEN；客户端会校验 Identity Descriptor 的协议、issuer 与 audience。
 # 租户与工作区不同的部署还需配置 IDENTITY_TENANT_ID。
 go run ./cmd/domainry-agent
 ```
 
-这些 Identity 参数复用 Identity SDK 的环境配置；应用需在 Identity 中登记，服务凭证必须绑定到同一租户／工作区／应用。`IDENTITY_AUDIENCE` 是应用标识，不从模型或请求参数推断。契约摘要固定为部署时核对的 Identity capability 摘要，升级时一起核对更新。应用服务凭证由 SDK Transport 持有，Agent 运行记录只保存稳定主体标识与角色。初始绑定最多 15 秒，配置缺失、服务不可用或契约不兼容会阻止会话服务启动；运行期间主体解析失败会停止本次执行，恢复必须重新通过当前授权。
+这些 Identity 参数复用 Identity SDK 的环境配置；应用需在 Identity 中登记，服务凭证必须绑定到同一租户／工作区／应用。`IDENTITY_AUDIENCE` 是应用标识，不从模型或请求参数推断。Identity SDK 通过服务端 Descriptor 校验协议、issuer、audience 和部署模式，不再要求部署者维护通用 capability 摘要。应用服务凭证由 SDK Transport 持有，Agent 运行记录只保存稳定主体标识与角色。初始绑定最多 15 秒，配置缺失、服务不可用或 Descriptor 不兼容会阻止会话服务启动；运行期间主体解析失败会停止本次执行，恢复必须重新通过当前授权。
 
 根据已接入服务的接口约定，支持以下协议。服务地址通过部署配置传入，不绑定具体服务商。模型必须出现在所选协议的目录中且属于 API key 的 scope；目录可变，因此不硬编码模型名称或按前缀猜协议。
 

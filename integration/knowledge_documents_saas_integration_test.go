@@ -73,18 +73,13 @@ func TestKnowledgeDocumentsSaaSLargeOriginalAndUnknownPut(t *testing.T) {
 				t.Fatal(err)
 			}
 			defer files.Close()
-			attachments, err := knowledgemodule.NewAttachmentFiles(t.TempDir() + "/attachments")
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer attachments.Close()
 			attachmentPolicy := &attachmentTestPolicy{}
 			policy := &libraryTestPolicy{}
 			tools, err := application.NewPersonalConversationHost(repo, personalReadAuthorizer{}, "UTC")
 			if err != nil {
 				t.Fatal(err)
 			}
-			service, err := conversationassembly.NewService(repo, &executionModel{}, a.RuntimeID, application.ConversationOptions{AttachmentStorage: attachments, AttachmentAuthorizer: attachmentPolicy, DocumentStorage: files, DocumentPoll: 10 * time.Millisecond, LibraryAuthorizer: policy, PersonalAuthorizer: personalReadAuthorizer{}, ToolHost: tools, LibraryKnowledge: []application.LibraryKnowledgeBinding{{WorkspaceID: a.WorkspaceID, LibraryID: lib.ID, Source: source, ManageDocuments: true}}})
+			service, err := conversationassembly.NewService(repo, &executionModel{}, a.RuntimeID, application.ConversationOptions{AttachmentAuthorizer: attachmentPolicy, DocumentStorage: files, DocumentPoll: 10 * time.Millisecond, LibraryAuthorizer: policy, PersonalAuthorizer: personalReadAuthorizer{}, ToolHost: tools, LibraryKnowledge: []application.LibraryKnowledgeBinding{{WorkspaceID: a.WorkspaceID, LibraryID: lib.ID, Source: source, ManageDocuments: true}}})
 			if err != nil {
 				t.Fatal(err)
 			}

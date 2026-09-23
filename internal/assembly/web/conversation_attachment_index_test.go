@@ -3,6 +3,7 @@ package web
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,12 +19,51 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	webhttp "github.com/domainry/domainry-agent/internal/transport/http/web"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
-	"github.com/domainry/domainry-orm/query"
 )
+
+func readSharedAttachmentRecord(ctx context.Context, database *sql.DB, id string) (persistence.ConversationAttachmentRecord, error) {
+	var raw []byte
+	if err := database.QueryRowContext(ctx, `SELECT metadata_json FROM _artifacts WHERE id=? AND owner='agent' AND kind='attachment'`, id).Scan(&raw); err != nil {
+		return persistence.ConversationAttachmentRecord{}, err
+	}
+	var metadata struct {
+		State       string                                    `json:"state"`
+		Revision    int64                                     `json:"revision"`
+		IndexStatus string                                    `json:"index_status"`
+		ErrorCode   string                                    `json:"error_code"`
+		Source      *persistence.ConversationAttachmentSource `json:"source"`
+		Index       *persistence.ConversationAttachmentIndex  `json:"index"`
+	}
+	if err := json.Unmarshal(raw, &metadata); err != nil {
+		return persistence.ConversationAttachmentRecord{}, err
+	}
+	return persistence.ConversationAttachmentRecord{Attachment: agentsdk.ConversationAttachment{ID: id, State: metadata.State, Revision: metadata.Revision, IndexStatus: metadata.IndexStatus, ErrorCode: metadata.ErrorCode}, Source: metadata.Source, Index: metadata.Index}, nil
+}
+
+func readSharedConversationAttachmentRecord(ctx context.Context, database *sql.DB, conversationID string) (persistence.ConversationAttachmentRecord, error) {
+	var id string
+	err := database.QueryRowContext(ctx, `
+		SELECT a.id
+		FROM _artifacts a
+		JOIN _artifact_bindings b
+		  ON b.workspace_id = a.workspace_id
+		 AND b.artifact_id = a.id
+		WHERE a.owner = 'agent'
+		  AND a.kind = 'attachment'
+		  AND b.owner = 'agent'
+		  AND b.kind = 'conversation'
+		  AND b.resource_type = 'agent_conversation'
+		  AND b.resource_id = ?
+		ORDER BY a.created_at DESC, a.id DESC
+		LIMIT 1`, conversationID).Scan(&id)
+	if err != nil {
+		return persistence.ConversationAttachmentRecord{}, err
+	}
+	return readSharedAttachmentRecord(ctx, database, id)
+}
 
 func TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart(t *testing.T) {
 	runPrivateAttachmentIndexIdentityHTTP(t, nil, "")
@@ -326,24 +366,11 @@ func runPrivateAttachmentIndexIdentityHTTP(t *testing.T, live *agentmodule.Knowl
 	}
 	b.call("DELETE", fmt.Sprintf("/agent/conversations/%s?expected_revision=%d", c.ID, c.Revision), "", 200)
 	b.call("GET", path+"/"+att.ID+"/content", "", 404)
-	// Read-only repository inspection verifies cleanup independently of HTTP.
-	renderer, err := agentinfra.Renderer("sqlite", "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	statement, args, err := query.NewSelectBuilder(renderer, "_agent_conversation_attachments").Columns("payload_json").Where(query.Equal("attachment_id", att.ID)).Build()
-	if err != nil {
-		t.Fatal(err)
-	}
 	var record persistence.ConversationAttachmentRecord
 	deadline = time.Now().Add(cleanupWait)
 	for time.Now().Before(deadline) {
-		var saved []byte
-		if err = host.db.QueryRowContext(t.Context(), statement, args...).Scan(&saved); err != nil {
-			t.Fatal(err)
-		}
-		record = persistence.ConversationAttachmentRecord{}
-		if err = json.Unmarshal(saved, &record); err != nil {
+		record, err = readSharedAttachmentRecord(t.Context(), host.db, att.ID)
+		if err != nil {
 			t.Fatal(err)
 		}
 		if record.Attachment.State == "deleted" {
@@ -351,10 +378,10 @@ func runPrivateAttachmentIndexIdentityHTTP(t *testing.T, live *agentmodule.Knowl
 		}
 		time.Sleep(poll)
 	}
-	if record.Attachment.State != "deleted" || record.BodyRef != "" {
+	if record.Attachment.State != "deleted" {
 		t.Fatal("durable cleanup incomplete", record)
 	}
-	remaining, err := filepath.Glob(filepath.Join(options.DatabasePath+".attachments", "*", "*.bin"))
+	remaining, err := filepath.Glob(filepath.Join(options.DatabasePath+".shared-artifacts", "*", "*.blob"))
 	if err != nil || len(remaining) != 0 {
 		t.Fatal("physical original remains", remaining, err)
 	}

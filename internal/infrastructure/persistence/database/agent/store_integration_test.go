@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	"database/sql"
+	"path/filepath"
 	"strconv"
 	"sync"
 	"testing"
@@ -11,6 +12,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	_ "modernc.org/sqlite"
@@ -24,6 +26,7 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 	}
 	database.SetMaxOpenConns(1)
 	t.Cleanup(func() { _ = database.Close() })
+	dialect, _ := ormdialect.New(ormdialect.SQLite)
 	migrations, err := SchemaMigrations("sqlite", "")
 	if err != nil {
 		t.Fatal(err)
@@ -35,9 +38,28 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 			}
 		}
 	}
-	dialect, _ := ormdialect.New(ormdialect.SQLite)
+	if _, err = database.ExecContext(t.Context(), `CREATE TABLE _subject_steps (workspace_id TEXT NOT NULL, request_id TEXT NOT NULL, owner TEXT NOT NULL, operation TEXT NOT NULL, payload_json TEXT NOT NULL, completed_at TEXT NOT NULL, PRIMARY KEY(workspace_id,request_id,owner,operation))`); err != nil {
+		t.Fatal(err)
+	}
+	artifactMigration, err := artifactkernel.SchemaMigration(dialect.WithSchema(""))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, statement := range artifactMigration.Statements {
+		if _, err = database.ExecContext(t.Context(), statement); err != nil {
+			t.Fatal(err)
+		}
+	}
 	store, err := NewStore(database, dialect.WithSchema(""), sqlite.NewEngine())
 	if err != nil {
+		t.Fatal(err)
+	}
+	content, err := artifactkernel.NewContentFiles(filepath.Join(t.TempDir(), "shared-artifacts"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = content.Close() })
+	if err = store.BindArtifactPersistence(artifactkernel.NewStore(database, dialect.WithSchema("")), content, content); err != nil {
 		t.Fatal(err)
 	}
 	return store, database
@@ -85,7 +107,7 @@ func TestAgentTaskStoreOwnsIdempotencyClaimFenceAndWorkerScope(t *testing.T) {
 		t.Fatalf("second found=%v err=%v", found, err)
 	}
 	var scopes int
-	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_worker_scopes WHERE workspace_id=?`, run.WorkspaceID).Scan(&scopes); err != nil || scopes != 1 {
+	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _worker_scopes WHERE owner=? AND scope_key=?`, agentTaskWorkerQueueKind, run.WorkspaceID).Scan(&scopes); err != nil || scopes != 1 {
 		t.Fatalf("scopes=%d err=%v", scopes, err)
 	}
 }

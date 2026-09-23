@@ -20,7 +20,6 @@ import (
 	webhttp "github.com/domainry/domainry-agent/internal/transport/http/web"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
-	"github.com/domainry/domainry-orm/query"
 )
 
 func TestPrivateAttachmentIndexBrowserRecovery(t *testing.T) {
@@ -231,18 +230,11 @@ func TestPrivateAttachmentIndexBrowserRecovery(t *testing.T) {
 	if unconfirmed && countHidden < 2 {
 		t.Fatal("unconfirmed upload was not independently inspected across restart", countHidden)
 	}
-	q, args, err := query.NewSelectBuilder(host.registrar.Renderer, "_agent_conversation_attachments").Columns("payload_json").Build()
-	if err != nil {
-		t.Fatal(err)
-	}
 	var record persistence.ConversationAttachmentRecord
 	deadline := time.Now().Add(5 * time.Second)
 	for {
-		var raw []byte
-		if err = host.db.QueryRowContext(t.Context(), q, args...).Scan(&raw); err != nil {
-			t.Fatal(err)
-		}
-		if err = json.Unmarshal(raw, &record); err != nil {
+		record, err = readSharedConversationAttachmentRecord(t.Context(), host.db, conversation.ID)
+		if err != nil {
 			t.Fatal(err)
 		}
 		if record.Attachment.State == "deleted" {
@@ -253,10 +245,10 @@ func TestPrivateAttachmentIndexBrowserRecovery(t *testing.T) {
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
-	if record.BodyRef != "" || record.Index == nil || record.Index.PutAcknowledged || !record.Index.IndexObserved || !record.Index.DeleteAcknowledged || record.Index.LastCheckRevision < 1 {
+	if record.Index == nil || record.Index.PutAcknowledged || !record.Index.IndexObserved || !record.Index.DeleteAcknowledged || record.Index.LastCheckRevision < 1 {
 		t.Fatal("recovery markers incorrect", record.Index)
 	}
-	files, err := filepath.Glob(filepath.Join(options.DatabasePath+".attachments", "*", "*.bin"))
+	files, err := filepath.Glob(filepath.Join(options.DatabasePath+".shared-artifacts", "*", "*.blob"))
 	if err != nil || len(files) != 0 {
 		t.Fatal("original not removed", files, err)
 	}

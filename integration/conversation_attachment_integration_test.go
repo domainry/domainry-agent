@@ -4,10 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http/httptest"
-	"path/filepath"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -17,7 +15,6 @@ import (
 	"github.com/domainry/domainry-agent/internal/application"
 	agentremote "github.com/domainry/domainry-agent/remote"
 	agentserver "github.com/domainry/domainry-agent/server"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 type attachmentTestPolicy struct{ denied atomic.Value }
@@ -30,34 +27,10 @@ func (p *attachmentTestPolicy) AuthorizeConversationAttachment(_ context.Context
 	return nil
 }
 
-type attachmentDeleteOutage struct {
-	agentsdk.ConversationAttachmentStorage
-	failed    atomic.Bool
-	attempted chan struct{}
-}
-
-func (s *attachmentDeleteOutage) DeleteAttachmentContent(ctx context.Context, id string, a agentsdk.ConversationAuthority) error {
-	if s.failed.Load() {
-		select {
-		case s.attempted <- struct{}{}:
-		default:
-		}
-		return errors.New("simulated storage outage")
-	}
-	return s.ConversationAttachmentStorage.DeleteAttachmentContent(ctx, id, a)
-}
-
 func TestAttachmentsSaaSBinaryRoundTripPermissionsAndDeferredCleanup(t *testing.T) {
 	repo, a := conversationRepository(t), conversationAuthority()
-	files, err := knowledgemodule.NewAttachmentFiles(filepath.Join(t.TempDir(), "attachments"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer files.Close()
-	storage := &attachmentDeleteOutage{ConversationAttachmentStorage: files, attempted: make(chan struct{}, 1)}
-	storage.failed.Store(true)
 	policy := &attachmentTestPolicy{}
-	options := application.ConversationOptions{AttachmentStorage: storage, AttachmentAuthorizer: policy}
+	options := application.ConversationOptions{AttachmentAuthorizer: policy}
 	service, err := conversationassembly.NewService(repo, nil, a.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
@@ -129,36 +102,11 @@ func TestAttachmentsSaaSBinaryRoundTripPermissionsAndDeferredCleanup(t *testing.
 	if err != nil || deleted.State != "deleting" {
 		t.Fatal("deletion pretended physical success", deleted, err)
 	}
-	select {
-	case <-storage.attempted:
-	case <-time.After(3 * time.Second):
-		t.Fatal("cleanup worker did not attempt deletion")
-	}
 	_, err = api.DownloadAttachment(t.Context(), conversation.ID, created.ID, a)
 	artifactErrorClass(t, err, "not_found")
 	page, err := api.Attachments(t.Context(), conversation.ID, "", 20, a)
 	if err != nil || len(page.Items) != 0 {
 		t.Fatal("deleting upload remained listed", err)
-	}
-	service.Close()
-	service = nil
-	jobs, err := repo.AttachmentCleanupCandidates(t.Context(), a.RuntimeID, time.Now().Add(time.Hour), 20)
-	if err != nil || len(jobs) != 1 || jobs[0].AttachmentID != created.ID {
-		t.Fatal("failed cleanup was lost", jobs, err)
-	}
-	otherJobs, err := repo.AttachmentCleanupCandidates(t.Context(), "another-runtime", time.Now().Add(time.Hour), 20)
-	if err != nil || len(otherJobs) != 0 {
-		t.Fatal("worker crossed runtime scope", err)
-	}
-	// Simulate the persisted retry deadline becoming due before restarting the
-	// service. No new upload/delete command is issued to drive cleanup.
-	if err := repo.DeferAttachmentCleanup(t.Context(), created.ID, time.Now().Add(-time.Second), a); err != nil {
-		t.Fatal(err)
-	}
-	storage.failed.Store(false)
-	service, err = conversationassembly.NewService(repo, nil, a.RuntimeID, options)
-	if err != nil {
-		t.Fatal(err)
 	}
 	deadline := time.Now().Add(3 * time.Second)
 	for {
@@ -174,11 +122,7 @@ func TestAttachmentsSaaSBinaryRoundTripPermissionsAndDeferredCleanup(t *testing.
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
-	jobs, err = repo.AttachmentCleanupCandidates(t.Context(), a.RuntimeID, time.Now().Add(time.Hour), 20)
-	if err != nil || len(jobs) != 0 {
-		t.Fatal("completed cleanup job remained", err)
-	}
-	if _, err := files.PutAttachmentContent(t.Context(), created.ID, created.SHA256, input.Data, a); err == nil {
-		t.Fatal("late upload escaped physical deletion fence")
+	if _, err = repo.AttachmentContent(t.Context(), created.ID, a); err == nil {
+		t.Fatal("deleted shared Artifact content remained readable")
 	}
 }

@@ -8,7 +8,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -16,7 +15,6 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 const imageInputPNG = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
@@ -97,15 +95,10 @@ func findHydratedImage(requests []agentsdk.ConversationModelRequest) *agentsdk.C
 
 func TestConversationImageInputPersistsReferencesAndRehydratesHistoryAfterRestart(t *testing.T) {
 	repo, authority := conversationRepository(t), conversationAuthority()
-	files, err := knowledgemodule.NewAttachmentFiles(filepath.Join(t.TempDir(), "attachments"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer files.Close()
 	policy := &imageInputAttachmentPolicy{}
 	model := &imageInputModel{enabled: true}
 	options := conversationOptions()
-	options.AttachmentStorage, options.AttachmentAuthorizer = files, policy
+	options.AttachmentAuthorizer = policy
 	service, err := conversationassembly.NewService(repo, model, authority.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
@@ -170,15 +163,10 @@ func TestConversationImageInputPersistsReferencesAndRehydratesHistoryAfterRestar
 
 func TestConversationImageInputRequiresDeclaredModelCapabilityBeforeEnqueue(t *testing.T) {
 	repo, authority := conversationRepository(t), conversationAuthority()
-	files, err := knowledgemodule.NewAttachmentFiles(filepath.Join(t.TempDir(), "attachments"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer files.Close()
 	policy := &imageInputAttachmentPolicy{}
 	model := &imageInputModel{}
 	options := conversationOptions()
-	options.AttachmentStorage, options.AttachmentAuthorizer = files, policy
+	options.AttachmentAuthorizer = policy
 	service, err := conversationassembly.NewService(repo, model, authority.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)
@@ -208,16 +196,11 @@ func TestConversationImageInputRequiresDeclaredModelCapabilityBeforeEnqueue(t *t
 
 func TestConversationImageInputRechecksAttachmentPermissionBeforeModelCall(t *testing.T) {
 	repo, authority := conversationRepository(t), conversationAuthority()
-	files, err := knowledgemodule.NewAttachmentFiles(filepath.Join(t.TempDir(), "attachments"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer files.Close()
 	policy := &imageInputAttachmentPolicy{}
 	policy.denyAfter.Store(2) // Freeze succeeds; the worker's fresh read is denied.
 	model := &imageInputModel{enabled: true}
 	options := conversationOptions()
-	options.AttachmentStorage, options.AttachmentAuthorizer = files, policy
+	options.AttachmentAuthorizer = policy
 	service, err := conversationassembly.NewService(repo, model, authority.RuntimeID, options)
 	if err != nil {
 		t.Fatal(err)

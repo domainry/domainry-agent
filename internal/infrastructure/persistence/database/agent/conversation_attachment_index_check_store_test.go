@@ -114,7 +114,7 @@ func TestAttachmentIndexCheckReadyAndDeletionRemainMonotonic(t *testing.T) {
 		t.Fatal(err)
 	}
 	checked, err = repo.RequestAttachmentIndexCheck(ctx, c.ID, deleting.Attachment.ID, deleting.Attachment.Revision, a)
-	if err != nil || checked.Attachment.State != "deleting" || !checked.Index.DeleteStarted || checked.Index.DeleteAcknowledged || checked.BodyRef != original.BodyRef {
+	if err != nil || checked.Attachment.State != "deleting" || !checked.Index.DeleteStarted || checked.Index.DeleteAcknowledged {
 		t.Fatal("check rewrote uncertain deletion", err)
 	}
 	lease = claimAttachmentIndex(t, repo)

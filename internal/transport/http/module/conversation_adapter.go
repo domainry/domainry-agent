@@ -52,9 +52,6 @@ func (s *conversationAdapter) Handler() http.Handler { return s.mux }
 func (s *conversationAdapter) Routes() []modulehttp.Route {
 	return append([]modulehttp.Route(nil), s.routes...)
 }
-func (*conversationAdapter) OpenAPIOperations() map[string]map[string]any {
-	return agentsdk.ConversationOpenAPIOperations()
-}
 func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		identity, ok := identitysdk.RequestIdentityFromContext(r.Context())
@@ -447,4 +444,3 @@ func unwrapResponseFlusher(w http.ResponseWriter) (http.Flusher, bool) {
 }
 
 var _ modulehttp.Adapter = (*conversationAdapter)(nil)
-var _ modulehttp.OpenAPIProvider = (*conversationAdapter)(nil)

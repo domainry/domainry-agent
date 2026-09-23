@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -13,7 +14,8 @@ import (
 	agentlifecycle "github.com/domainry/domainry-agent-sdk/lifecycle"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	schemastore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
-	capabilitycontracttest "github.com/domainry/domainry-foundation/modulecapability/contracttest"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
+	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	_ "modernc.org/sqlite"
 	"testing"
@@ -24,6 +26,8 @@ type host struct {
 	database  *sql.DB
 	dialect   modulehost.Dialect
 	applied   []modulehost.SchemaMigration
+	artifacts artifactkernel.Store
+	content   *artifactkernel.ContentFiles
 }
 
 func TestModuleMigrationAdoptsLegacyRuntimeAgentIndexes(t *testing.T) {
@@ -73,15 +77,33 @@ func newHost(t *testing.T, runtimeID string) *host {
 	if err != nil {
 		t.Fatal(err)
 	}
-	return &host{runtimeID: runtimeID, database: database, dialect: dialect.WithSchema("")}
+	renderer := dialect.WithSchema("")
+	migration, err := artifactkernel.SchemaMigration(renderer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, statement := range migration.Statements {
+		if _, err = database.ExecContext(t.Context(), statement); err != nil {
+			t.Fatal(err)
+		}
+	}
+	content, err := artifactkernel.NewContentFiles(filepath.Join(t.TempDir(), "shared-artifacts"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = content.Close() })
+	return &host{runtimeID: runtimeID, database: database, dialect: renderer, artifacts: artifactkernel.NewStore(database, renderer), content: content}
 }
 
-func (h *host) RuntimeID() string                         { return h.runtimeID }
-func (h *host) Database() modulehost.Database             { return h.database }
-func (h *host) Dialect() modulehost.Dialect               { return h.dialect }
-func (h *host) Migrations() modulehost.MigrationRegistrar { return h }
-func (*host) Driver() string                              { return "sqlite" }
-func (*host) Schema() string                              { return "" }
+func (h *host) RuntimeID() string                                   { return h.runtimeID }
+func (h *host) Database() modulehost.Database                       { return h.database }
+func (h *host) Dialect() modulehost.Dialect                         { return h.dialect }
+func (h *host) Migrations() modulehost.MigrationRegistrar           { return h }
+func (h *host) ArtifactStore() sharedartifact.ManagedStore          { return h.artifacts }
+func (h *host) ArtifactContentStore() sharedartifact.ContentStore   { return h.content }
+func (h *host) ArtifactContentWriter() sharedartifact.ContentWriter { return h.content }
+func (*host) Driver() string                                        { return "sqlite" }
+func (*host) Schema() string                                        { return "" }
 func (h *host) ApplyOwnedMigrations(ctx context.Context, owner string, migrations []modulehost.SchemaMigration) error {
 	if owner != "agent" {
 		return &agentsdk.Error{Code: "wrong_owner", Message: owner}
@@ -111,14 +133,13 @@ func TestModuleDescriptor(t *testing.T) {
 	if b.Descriptor().Mode != agentsdk.DeploymentModeModule {
 		t.Fatalf("descriptor=%+v", b.Descriptor())
 	}
-	if len(host.applied) != 36 {
+	if len(host.applied) != 34 {
 		t.Fatalf("Agent migrations=%d", len(host.applied))
 	}
 	if latest := host.applied[len(host.applied)-1]; latest.Version != 36 || latest.Name != "agent_scoped_memories" {
 		t.Fatalf("Agent latest owned migration=%+v", latest)
 	}
 	contracttest.VerifyBinding(t, b, agentsdk.DeploymentModeModule)
-	capabilitycontracttest.VerifyBinding(t, b)
 	subjects, ok := b.(agentlifecycle.SubjectBinding)
 	if !ok {
 		t.Fatal("Agent module omitted subject lifecycle binding")

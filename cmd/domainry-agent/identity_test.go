@@ -8,12 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/domainry/domainry-foundation/modulecapability"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
-	identitycapability "github.com/domainry/domainry-identity/capability"
 )
 
-// Protocol fixture uses Identity's actual source-owned capability disclosure.
+// Protocol fixture exercises Identity's typed discovery and principal protocol.
 // It does not impersonate a production account or connect to a real endpoint.
 type identityFixture struct {
 	revoked, unavailable, forged atomic.Bool
@@ -25,18 +23,6 @@ type identityFixture struct {
 func configureIdentityFixture(t *testing.T) *identityFixture {
 	t.Helper()
 	state := &identityFixture{entered: make(chan struct{}), release: make(chan struct{})}
-	binding, err := identitycapability.Open(identitycapability.Inputs{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	summary, err := binding.CapabilitySummary(t.Context())
-	if err != nil {
-		t.Fatal(err)
-	}
-	capabilities, err := modulecapability.NewHTTPHandler(binding, func(r *http.Request) error { return nil })
-	if err != nil {
-		t.Fatal(err)
-	}
 	server := httptest.NewUnstartedServer(nil)
 	issuer := "http://" + server.Listener.Addr().String()
 	mux := http.NewServeMux()
@@ -77,7 +63,6 @@ func configureIdentityFixture(t *testing.T) *identityFixture {
 			AccessBundle: identitysdk.AccessBundle{ContractVersion: identitysdk.CurrentPolicyBundleVersion, AuthorizationRevision: "current-revision", ExpiresAt: time.Now().Add(time.Minute), Subject: identitysdk.Subject{WorkspaceID: "workspace", SubjectID: in.SubjectID}},
 		})
 	})
-	mux.Handle("/", capabilities)
 	server.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/identity/discovery" && r.Header.Get("Authorization") != "Bearer identity-service-key" {
 			http.Error(w, "denied", 403)
@@ -87,7 +72,7 @@ func configureIdentityFixture(t *testing.T) *identityFixture {
 	})
 	server.Start()
 	t.Cleanup(server.Close)
-	for key, value := range map[string]string{"IDENTITY_ENDPOINT": server.URL, "IDENTITY_WORKSPACE_ID": "workspace", "IDENTITY_AUDIENCE": "agent-runtime", "IDENTITY_ISSUER": issuer, "IDENTITY_SERVICE_ACCESS_TOKEN": "identity-service-key", "IDENTITY_CAPABILITY_CONTRACT_SHA256": summary.Identity.ContractSHA256} {
+	for key, value := range map[string]string{"IDENTITY_ENDPOINT": server.URL, "IDENTITY_WORKSPACE_ID": "workspace", "IDENTITY_AUDIENCE": "agent-runtime", "IDENTITY_ISSUER": issuer, "IDENTITY_SERVICE_ACCESS_TOKEN": "identity-service-key"} {
 		t.Setenv(key, value)
 	}
 	return state

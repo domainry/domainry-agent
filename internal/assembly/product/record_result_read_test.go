@@ -90,7 +90,8 @@ func TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndResta
 		r.Header.Set("Origin", options.Origin)
 		r.Header.Set("Content-Type", "application/json")
 		r.Header.Set("X-Agent-Scope", scope)
-		r.Header.Set("Idempotency-Key", "record-policy-test")
+		idempotencyKey := sha256.Sum256([]byte(method + "\x00" + path + "\x00" + string(raw)))
+		r.Header.Set("Idempotency-Key", "record-policy-"+hex.EncodeToString(idempotencyKey[:16]))
 		for _, c := range cookies {
 			r.AddCookie(c)
 		}

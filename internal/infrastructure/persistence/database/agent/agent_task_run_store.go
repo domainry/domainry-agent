@@ -25,7 +25,7 @@ func RegisterAgentTaskWorkerScope(ctx context.Context, store *Store, executor mo
 	if store == nil {
 		return fmt.Errorf("agent task worker scope store unavailable")
 	}
-	return store.registerWorkerScope(ctx, executor, workspaceID, updatedAt.UTC().UnixMilli())
+	return store.registerWorkerScope(ctx, executor, workspaceID, updatedAt.UTC().Format(time.RFC3339Nano))
 }
 
 func NewAgentTaskRunStore(store *Store) *AgentTaskRunStore {
@@ -35,43 +35,7 @@ func NewAgentTaskRunStore(store *Store) *AgentTaskRunStore {
 	return &AgentTaskRunStore{store: store, db: store.Database()}
 }
 
-func (s *AgentTaskRunStore) BackfillWorkerScopes(ctx context.Context) error {
-	queryValue, args, buildErr := query.NewSelectBuilder(s.store.Renderer(), "_agent_task_runs").Projections(
-		query.Project(query.Column("workspace_id")),
-		query.Project(query.Max(query.Column("updated_at"))),
-	).GroupBy(query.Column("workspace_id")).Build()
-	if buildErr != nil {
-		return buildErr
-	}
-	rows, err := s.db.QueryContext(ctx, queryValue, args...)
-	if err != nil {
-		return err
-	}
-	type workerScope struct {
-		workspaceID     string
-		updatedAtMillis int64
-	}
-	scopes := []workerScope{}
-	for rows.Next() {
-		var scope workerScope
-		if err := rows.Scan(&scope.workspaceID, &scope.updatedAtMillis); err != nil {
-			_ = rows.Close()
-			return err
-		}
-		scopes = append(scopes, scope)
-	}
-	if err := rows.Err(); err != nil {
-		_ = rows.Close()
-		return err
-	}
-	if err := rows.Close(); err != nil {
-		return err
-	}
-	for _, scope := range scopes {
-		if err := RegisterAgentTaskWorkerScope(ctx, s.store, s.db, scope.workspaceID, time.UnixMilli(scope.updatedAtMillis)); err != nil {
-			return err
-		}
-	}
+func (s *AgentTaskRunStore) BackfillWorkerScopes(context.Context) error {
 	return nil
 }
 

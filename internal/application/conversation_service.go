@@ -49,7 +49,6 @@ type ConversationOptions struct {
 	LibraryKnowledge                                           []LibraryKnowledgeBinding
 	KnowledgeDatasources                                       agentsdk.KnowledgeDatasourceCatalog
 	LibraryAuthorizer                                          agentsdk.KnowledgeLibraryAuthorizer
-	AttachmentStorage                                          agentsdk.ConversationAttachmentStorage
 	AttachmentAuthorizer                                       agentsdk.ConversationAttachmentAuthorizer
 	AttachmentKnowledge                                        []agentsdk.ConversationAttachmentKnowledgeBinding
 	Business                                                   agentsdk.ConversationBusinessSource
@@ -91,7 +90,6 @@ type ConversationService struct {
 	wake                chan struct{}
 	taskWake            chan struct{}
 	followUpWake        chan struct{}
-	attachmentWake      chan struct{}
 	attachmentIndexWake chan struct{}
 	documentWake        chan struct{}
 	cancel              context.CancelFunc
@@ -374,7 +372,7 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 			return nil, err
 		}
 	}
-	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, wake: make(chan struct{}, options.Workers), taskWake: make(chan struct{}, 1), followUpWake: make(chan struct{}, 1), attachmentWake: make(chan struct{}, 1), active: map[string]conversationActive{}, lifecycleExtensions: lifecycleExtensions, lifecycleManifest: lifecycleManifest}
+	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, wake: make(chan struct{}, options.Workers), taskWake: make(chan struct{}, 1), followUpWake: make(chan struct{}, 1), active: map[string]conversationActive{}, lifecycleExtensions: lifecycleExtensions, lifecycleManifest: lifecycleManifest}
 	if model != nil {
 		if _, err := s.conversationModelDescriptor("default"); err != nil {
 			return nil, fmt.Errorf("invalid default conversation model: %w", err)
@@ -423,7 +421,7 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	ctx, cancel := context.WithCancel(context.Background())
 	s.cancel = cancel
 	s.lifetime = ctx
-	if options.AttachmentStorage != nil || options.DocumentStorage != nil {
+	if options.AttachmentAuthorizer != nil || options.DocumentStorage != nil {
 		s.knowledgeService().Start(ctx)
 	}
 	if interactions, ok := repo.(agentpersistence.ConversationInteractionRepository); ok {
@@ -647,7 +645,7 @@ func (s *ConversationService) Delete(ctx context.Context, id string, revision in
 			return err
 		}
 	}
-	s.wakeAttachmentCleanup()
+	s.wakeAttachmentIndex()
 	return nil
 }
 func (s *ConversationService) Send(ctx context.Context, id string, in agentsdk.ConversationSend, a agentsdk.ConversationAuthority) (agentsdk.ConversationRun, error) {

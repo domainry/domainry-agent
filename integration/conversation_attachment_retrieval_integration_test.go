@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
+	"io"
 	"net/http"
 	"net/http/httptest"
-	"path/filepath"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -18,17 +18,17 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	agentremote "github.com/domainry/domainry-agent/remote"
 	agentserver "github.com/domainry/domainry-agent/server"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
+	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 )
 
-type attachmentRetrievalStorage struct {
-	agentsdk.ConversationAttachmentStorage
+type attachmentContentReadCounter struct {
+	sharedartifact.ContentStore
 	reads atomic.Int32
 }
 
-func (s *attachmentRetrievalStorage) ReadAttachmentContent(ctx context.Context, ref, sha string, a agentsdk.ConversationAuthority) ([]byte, error) {
+func (s *attachmentContentReadCounter) Open(ctx context.Context, workspaceID, reference string) (io.ReadCloser, error) {
 	s.reads.Add(1)
-	return s.ConversationAttachmentStorage.ReadAttachmentContent(ctx, ref, sha, a)
+	return s.ContentStore.Open(ctx, workspaceID, reference)
 }
 
 type attachmentRetrievalPolicy struct {
@@ -45,7 +45,12 @@ func (p *attachmentRetrievalPolicy) AuthorizeConversationTool(ctx context.Contex
 }
 
 func TestPrivateAttachmentConnectorRetrievalSaaSHistoryAndRestart(t *testing.T) {
-	repo, a := conversationRepository(t), conversationAuthority()
+	var storage *attachmentContentReadCounter
+	repo := conversationRepositoryWithArtifactContent(t, func(content sharedartifact.ContentStore) sharedartifact.ContentStore {
+		storage = &attachmentContentReadCounter{ContentStore: content}
+		return storage
+	})
+	a := conversationAuthority()
 	attachmentPolicy, toolPolicy := &attachmentTestPolicy{}, &attachmentRetrievalPolicy{}
 	wire := &privateIndexProtocol{docs: map[string]privateIndexRemoteDocument{}}
 	var revokeDuringRead, changedContent atomic.Bool
@@ -88,12 +93,6 @@ func TestPrivateAttachmentConnectorRetrievalSaaSHistoryAndRestart(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	files, err := knowledgemodule.NewAttachmentFiles(filepath.Join(t.TempDir(), "originals"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer files.Close()
-	storage := &attachmentRetrievalStorage{ConversationAttachmentStorage: files}
 	personal, err := application.NewPersonalConversationHost(repo, toolPolicy, "UTC")
 	if err != nil {
 		t.Fatal(err)
@@ -161,7 +160,7 @@ func TestPrivateAttachmentConnectorRetrievalSaaSHistoryAndRestart(t *testing.T) 
 			return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "No private content."}, FinishReason: "stop"}, nil
 		}
 	}}
-	options := application.ConversationOptions{ToolHost: personal, PersonalAuthorizer: toolPolicy, AttachmentStorage: storage, AttachmentAuthorizer: attachmentPolicy, DocumentPoll: 10 * time.Millisecond, AttachmentKnowledge: []agentsdk.ConversationAttachmentKnowledgeBinding{{WorkspaceID: a.WorkspaceID, Knowledge: source}}}
+	options := application.ConversationOptions{ToolHost: personal, PersonalAuthorizer: toolPolicy, AttachmentAuthorizer: attachmentPolicy, DocumentPoll: 10 * time.Millisecond, AttachmentKnowledge: []agentsdk.ConversationAttachmentKnowledgeBinding{{WorkspaceID: a.WorkspaceID, Knowledge: source}}}
 	var service *application.ConversationService
 	var api agentsdk.ConversationService
 	var closeRPC func()

@@ -8,15 +8,22 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
+	knowledgeartifact "github.com/domainry/domainry-knowledge/artifact"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 )
 
-func attachmentReservation(c, client string) persistence.ConversationAttachmentReserve {
-	return persistence.ConversationAttachmentReserve{ClientID: client, ConversationID: c, Filename: "合同.pdf", ContentType: "application/pdf", SHA256: strings.Repeat("a", 64), Bytes: 2048}
+func attachmentReservation(conversationID, client string) persistence.ConversationAttachmentReserve {
+	content := []byte("private attachment content: " + client)
+	return persistence.ConversationAttachmentReserve{
+		ClientID: client, ConversationID: conversationID, Filename: "合同.pdf",
+		ContentType: "application/pdf", SHA256: knowledgeartifact.Hash(content), Bytes: int64(len(content)), Content: content,
+	}
 }
 
 func deleteConversationAcrossOwners(t *testing.T, repo *ConversationStore, conversation agentsdk.Conversation, a agentsdk.ConversationAuthority) {
@@ -40,258 +47,234 @@ func deleteConversationAcrossOwners(t *testing.T, repo *ConversationStore, conve
 	}
 }
 
-func TestAttachmentReservationStateFencesAndOwnerIsolation(t *testing.T) {
-	store, _ := openAgentStore(t)
+func TestAttachmentUsesSharedArtifactBindingsAndOwnerIsolation(t *testing.T) {
+	store, database := openAgentStore(t)
 	repo, a, ctx := NewConversationStore(store), conversationTestAuthority(), t.Context()
-	c, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "attachment-conversation"}, a)
+	conversation, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "attachment-conversation"}, a)
 	if err != nil {
 		t.Fatal(err)
 	}
-	in := attachmentReservation(c.ID, "upload")
-	var wg sync.WaitGroup
+	in := attachmentReservation(conversation.ID, "upload")
+	var wait sync.WaitGroup
 	results := make(chan persistence.ConversationAttachmentRecord, 4)
 	errors := make(chan error, 4)
 	for i := 0; i < 4; i++ {
-		wg.Add(1)
+		wait.Add(1)
 		go func() {
-			defer wg.Done()
-			value, err := repo.ReserveAttachment(ctx, in, a)
+			defer wait.Done()
+			value, reserveErr := repo.ReserveAttachment(ctx, in, a)
 			results <- value
-			errors <- err
+			errors <- reserveErr
 		}()
 	}
-	wg.Wait()
+	wait.Wait()
 	close(results)
 	close(errors)
-	for err := range errors {
-		if err != nil {
-			t.Fatal(err)
+	for reserveErr := range errors {
+		if reserveErr != nil {
+			t.Fatal(reserveErr)
 		}
 	}
 	var current persistence.ConversationAttachmentRecord
 	for value := range results {
 		if current.Attachment.ID != "" && current.Attachment.ID != value.Attachment.ID {
-			t.Fatal("duplicate reservation")
+			t.Fatal("duplicate attachment identity")
 		}
 		current = value
 	}
-	if current.Attachment.Visibility != "conversation_private" || current.Attachment.State != "uploading" || current.Source != nil {
-		t.Fatal(current)
+	if current.Attachment.Visibility != "conversation_private" || current.Attachment.State != "stored" || current.Attachment.Revision != 1 || current.Source != nil || current.Index != nil {
+		t.Fatalf("unexpected attachment: %+v", current)
+	}
+	content, err := repo.AttachmentContent(ctx, current.Attachment.ID, a)
+	if err != nil || string(content) != string(in.Content) {
+		t.Fatalf("content=%q err=%v", content, err)
 	}
 	changed := in
 	changed.Filename = "different.pdf"
 	_, err = repo.ReserveAttachment(ctx, changed, a)
 	requireConversationCode(t, err, "idempotency_conflict")
 	for _, other := range []agentsdk.ConversationAuthority{{Known: true, RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, UserID: "other"}, {Known: true, RuntimeID: a.RuntimeID, WorkspaceID: "other", UserID: a.UserID}, {Known: true, RuntimeID: "other", WorkspaceID: a.WorkspaceID, UserID: a.UserID}} {
-		if _, err := repo.ReserveAttachment(ctx, in, other); err == nil {
-			t.Fatal("cross-owner reserve")
-		}
-		if _, err := repo.AttachmentRecord(ctx, current.Attachment.ID, other); err == nil {
+		if _, err = repo.AttachmentRecord(ctx, current.Attachment.ID, other); err == nil {
 			t.Fatal("cross-owner read")
 		}
-		if _, err := repo.Attachments(ctx, c.ID, "", 10, other); err == nil {
+		if _, err = repo.Attachments(ctx, conversation.ID, "", 10, other); err == nil {
 			t.Fatal("cross-owner list")
 		}
-		if _, err := repo.TransitionAttachment(ctx, current.Attachment.ID, 1, persistence.ConversationAttachmentTransition{State: "deleting"}, other); err == nil {
-			t.Fatal("cross-owner delete")
-		}
 	}
-	transition := func(in persistence.ConversationAttachmentTransition) {
-		t.Helper()
-		value, err := repo.TransitionAttachment(ctx, current.Attachment.ID, current.Attachment.Revision, in, a)
-		if err != nil {
-			t.Fatal(err)
-		}
-		current = value
-	}
-	_, err = repo.TransitionAttachment(ctx, current.Attachment.ID, 1, persistence.ConversationAttachmentTransition{State: "ready"}, a)
-	requireConversationCode(t, err, "attachment_transition_invalid")
-	transition(persistence.ConversationAttachmentTransition{State: "stored", BodyRef: "private-file-ref"})
-	_, err = repo.TransitionAttachment(ctx, current.Attachment.ID, 1, persistence.ConversationAttachmentTransition{State: "failed", ErrorCode: "upload_failed"}, a)
-	requireConversationCode(t, err, "revision_conflict")
-	_, err = repo.TransitionAttachment(ctx, current.Attachment.ID, current.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "indexing", Source: &persistence.ConversationAttachmentSource{Identity: "knowledge", DocID: "private-doc"}}, a)
-	requireConversationCode(t, err, "attachment_source_invalid")
-	transition(persistence.ConversationAttachmentTransition{State: "indexing", Source: &persistence.ConversationAttachmentSource{Identity: "knowledge", DocID: "private-doc", PermissionID: "user:workspace:user"}})
-	_, err = repo.TransitionAttachment(ctx, current.Attachment.ID, current.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "failed", ErrorCode: "upstream body: do not expose this"}, a)
-	requireConversationCode(t, err, "attachment_transition_invalid")
-	transition(persistence.ConversationAttachmentTransition{State: "failed", ErrorCode: "index_unavailable"})
-	transition(persistence.ConversationAttachmentTransition{State: "indexing"})
-	transition(persistence.ConversationAttachmentTransition{State: "ready"})
-	repo = NewConversationStore(store)
-	replay, err := repo.ReserveAttachment(ctx, in, a)
-	if err != nil || replay.Attachment.Revision != current.Attachment.Revision || replay.Attachment.State != "ready" {
-		t.Fatal("replay reset state", replay, err)
-	}
-	page, err := repo.Attachments(ctx, c.ID, "", 1, a)
+	page, err := repo.Attachments(ctx, conversation.ID, "", 1, a)
 	raw, _ := json.Marshal(page)
-	if err != nil || len(page.Items) != 1 || strings.Contains(string(raw), "private-doc") || strings.Contains(string(raw), "private-file-ref") || strings.Contains(string(raw), "user:workspace:user") {
-		t.Fatal("public projection leaked host references", err)
+	if err != nil || len(page.Items) != 1 || strings.Contains(string(raw), "storage_reference") || strings.Contains(string(raw), string(in.Content)) {
+		t.Fatalf("public page=%s err=%v", raw, err)
 	}
-	transition(persistence.ConversationAttachmentTransition{State: "deleting"})
-	page, err = repo.Attachments(ctx, c.ID, "", 1, a)
-	if err != nil || len(page.Items) != 0 {
-		t.Fatal("deleting attachment visible", err)
+	var artifacts, subjectBindings, conversationBindings int
+	if err = database.QueryRowContext(ctx, `SELECT count(*) FROM _artifacts WHERE id=? AND owner='agent' AND kind='attachment'`, current.Attachment.ID).Scan(&artifacts); err != nil || artifacts != 1 {
+		t.Fatalf("artifacts=%d err=%v", artifacts, err)
 	}
-	transition(persistence.ConversationAttachmentTransition{State: "deleted"})
-	replay, err = repo.ReserveAttachment(ctx, in, a)
-	if err != nil || replay.Attachment.State != "deleted" {
-		t.Fatal("replay resurrected attachment", err)
+	if err = database.QueryRowContext(ctx, `SELECT count(*) FROM _artifact_bindings WHERE artifact_id=? AND kind='subject' AND resource_type='agent_user' AND resource_id=?`, current.Attachment.ID, a.UserID).Scan(&subjectBindings); err != nil || subjectBindings != 1 {
+		t.Fatalf("subject bindings=%d err=%v", subjectBindings, err)
 	}
-	_, err = repo.TransitionAttachment(ctx, current.Attachment.ID, current.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "uploading"}, a)
-	requireConversationCode(t, err, "attachment_transition_invalid")
+	if err = database.QueryRowContext(ctx, `SELECT count(*) FROM _artifact_bindings WHERE artifact_id=? AND kind='conversation' AND resource_type='agent_conversation' AND resource_id=?`, current.Attachment.ID, conversation.ID).Scan(&conversationBindings); err != nil || conversationBindings != 1 {
+		t.Fatalf("conversation bindings=%d err=%v", conversationBindings, err)
+	}
+	for _, retired := range []string{"_agent_conversation_attachments", "_agent_attachment_cleanup"} {
+		var count int
+		if err = database.QueryRowContext(ctx, `SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?`, retired).Scan(&count); err != nil || count != 0 {
+			t.Fatalf("retired table %s exists count=%d err=%v", retired, count, err)
+		}
+	}
 }
 
-func TestAttachmentParentDeletionUsesOwnerReceiptsAndKeepsCleanupReferences(t *testing.T) {
+func TestAttachmentDeletionRevokesReadsAndKeepsDurableCleanupJob(t *testing.T) {
 	store, _ := openAgentStore(t)
 	repo, a, ctx := NewConversationStore(store), conversationTestAuthority(), t.Context()
-	c, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "parent"}, a)
+	conversation, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "parent"}, a)
 	if err != nil {
 		t.Fatal(err)
 	}
-	first, err := repo.ReserveAttachment(ctx, attachmentReservation(c.ID, "first"), a)
+	first, err := repo.ReserveAttachment(ctx, attachmentReservation(conversation.ID, "first"), a)
 	if err != nil {
 		t.Fatal(err)
 	}
-	stored, err := repo.TransitionAttachment(ctx, first.Attachment.ID, 1, persistence.ConversationAttachmentTransition{State: "stored", BodyRef: "retain-for-cleanup"}, a)
+	second, err := repo.ReserveAttachment(ctx, attachmentReservation(conversation.ID, "second"), a)
 	if err != nil {
 		t.Fatal(err)
 	}
-	second, err := repo.ReserveAttachment(ctx, attachmentReservation(c.ID, "second"), a)
-	if err != nil {
-		t.Fatal(err)
-	}
-	page, err := repo.Attachments(ctx, c.ID, "", 1, a)
+	page, err := repo.Attachments(ctx, conversation.ID, "", 1, a)
 	if err != nil || page.Complete || len(page.Items) != 1 {
 		t.Fatal(page, err)
 	}
-	next, err := repo.Attachments(ctx, c.ID, page.NextAfter, 1, a)
+	next, err := repo.Attachments(ctx, conversation.ID, page.NextAfter, 1, a)
 	if err != nil || !next.Complete || len(next.Items) != 1 || next.Items[0].ID == page.Items[0].ID {
 		t.Fatal(next, err)
 	}
-	// SQLite test-only fault injection: Agent must roll back its own deletion
-	// receipt. Knowledge remains untouched until its public owner request runs.
-	_, err = store.Database().ExecContext(ctx, `CREATE TRIGGER fail_attachment_parent_delete BEFORE DELETE ON _agent_conversations BEGIN SELECT RAISE(ABORT, 'injected parent deletion failure'); END`)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err = repo.Delete(ctx, c.ID, c.Revision, a); err == nil {
-		t.Fatal("fault injection did not fire")
-	}
-	still, err := repo.AttachmentRecord(ctx, first.Attachment.ID, a)
-	if err != nil || still.Attachment.State != "stored" {
-		t.Fatal("partial deletion committed", still, err)
-	}
-	if _, err = store.Database().ExecContext(ctx, `DROP TRIGGER fail_attachment_parent_delete`); err != nil {
-		t.Fatal(err)
-	}
-	deleteConversationAcrossOwners(t, repo, c, a)
+	deleteConversationAcrossOwners(t, repo, conversation, a)
 	for _, id := range []string{first.Attachment.ID, second.Attachment.ID} {
-		row, err := repo.AttachmentRecord(ctx, id, a)
-		if err != nil || row.Attachment.State != "deleting" {
-			t.Fatal("cleanup reference lost", err)
+		record, readErr := repo.AttachmentRecord(ctx, id, a)
+		if readErr != nil || record.Attachment.State != "deleting" {
+			t.Fatalf("cleanup state=%+v err=%v", record, readErr)
 		}
-		if id == first.Attachment.ID && row.BodyRef != "retain-for-cleanup" {
-			t.Fatal("file reference lost")
-		}
-		if _, err := repo.TransitionAttachment(ctx, id, row.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "deleted"}, a); err != nil {
-			t.Fatal("cleanup must finish after parent deletion", err)
+		if _, readErr = repo.AttachmentContent(ctx, id, a); readErr == nil {
+			t.Fatal("deleting attachment remained downloadable")
 		}
 	}
-	_, err = repo.TransitionAttachment(ctx, first.Attachment.ID, stored.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "indexing"}, a)
-	requireConversationCode(t, err, "revision_conflict")
-	if _, err := repo.Attachments(ctx, c.ID, "", 10, a); err == nil {
-		t.Fatal("deleted conversation remained readable")
+	lease, found, err := repo.ClaimAttachmentIndexWork(ctx, a.RuntimeID, "cleanup-worker", time.Now().UTC(), time.Minute)
+	if err != nil || !found {
+		t.Fatalf("cleanup lease=%+v found=%v err=%v", lease, found, err)
+	}
+	if err = repo.DeleteAttachmentContent(ctx, lease.AttachmentID, lease.Authority); err != nil {
+		t.Fatal(err)
+	}
+	if err = repo.ApplyAttachmentIndexProgress(ctx, lease, persistence.ConversationAttachmentIndexProgress{Event: "deleted"}); err != nil {
+		t.Fatal(err)
+	}
+	deleted, err := repo.AttachmentRecord(ctx, lease.AttachmentID, a)
+	if err != nil || deleted.Attachment.State != "deleted" {
+		t.Fatalf("deleted=%+v err=%v", deleted, err)
 	}
 }
 
-func TestAttachmentValidationAndQuotaIncludeUnfinishedUploads(t *testing.T) {
+func TestAttachmentValidationAndConversationQuota(t *testing.T) {
 	store, _ := openAgentStore(t)
 	repo, a, ctx := NewConversationStore(store), conversationTestAuthority(), t.Context()
-	c, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "quota"}, a)
+	conversation, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "quota"}, a)
 	if err != nil {
 		t.Fatal(err)
 	}
 	for _, filename := range []string{"../file.pdf", `C:\private.pdf`, "bad\nname.pdf", ".", ""} {
-		in := attachmentReservation(c.ID, "bad")
+		in := attachmentReservation(conversation.ID, "bad")
 		in.Filename = filename
-		_, err := repo.ReserveAttachment(ctx, in, a)
+		_, err = repo.ReserveAttachment(ctx, in, a)
 		requireConversationCode(t, err, "attachment_invalid")
 	}
-	for i := 0; i < 16; i++ {
-		in := attachmentReservation(c.ID, fmt.Sprintf("large-%d", i))
-		in.Bytes = agentsdk.ConversationAttachmentMaxBytes
-		if _, err := repo.ReserveAttachment(ctx, in, a); err != nil {
+	for index := 0; index < 50; index++ {
+		if _, err = repo.ReserveAttachment(ctx, attachmentReservation(conversation.ID, fmt.Sprintf("file-%d", index)), a); err != nil {
 			t.Fatal(err)
 		}
 	}
-	_, err = repo.ReserveAttachment(ctx, attachmentReservation(c.ID, "over-limit"), a)
+	_, err = repo.ReserveAttachment(ctx, attachmentReservation(conversation.ID, "over-limit"), a)
 	requireConversationCode(t, err, "attachment_limit")
 }
 
 func TestAttachmentCleanupSurvivesDatabaseReopen(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "attachments.db")
+	root := t.TempDir()
+	databasePath := filepath.Join(root, "attachments.db")
+	contentPath := filepath.Join(root, "shared-content")
 	open := func(migrate bool) (*ConversationStore, *sql.DB) {
 		t.Helper()
-		db, err := sql.Open("sqlite", path)
+		database, err := sql.Open("sqlite", databasePath)
 		if err != nil {
 			t.Fatal(err)
 		}
-		db.SetMaxOpenConns(1)
-		t.Cleanup(func() { _ = db.Close() })
+		database.SetMaxOpenConns(1)
+		dialect, _ := ormdialect.New(ormdialect.SQLite)
 		if migrate {
-			migrations, err := SchemaMigrations("sqlite", "")
-			if err != nil {
-				t.Fatal(err)
+			artifactMigration, migrationErr := artifactkernel.SchemaMigration(dialect.WithSchema(""))
+			if migrationErr != nil {
+				t.Fatal(migrationErr)
+			}
+			for _, statement := range artifactMigration.Statements {
+				if _, err = database.ExecContext(t.Context(), statement); err != nil {
+					t.Fatal(err)
+				}
+			}
+			migrations, migrationErr := SchemaMigrations("sqlite", "")
+			if migrationErr != nil {
+				t.Fatal(migrationErr)
 			}
 			for _, migration := range migrations {
 				for _, statement := range migration.Statements {
-					if _, err = db.ExecContext(t.Context(), statement); err != nil {
+					if _, err = database.ExecContext(t.Context(), statement); err != nil {
 						t.Fatal(err)
 					}
 				}
 			}
 		}
-		dialect, _ := ormdialect.New(ormdialect.SQLite)
-		store, err := NewStore(db, dialect.WithSchema(""), sqlite.NewEngine())
+		store, err := NewStore(database, dialect.WithSchema(""), sqlite.NewEngine())
 		if err != nil {
 			t.Fatal(err)
 		}
-		repo := NewConversationStore(store)
-		if err := repo.Ready(t.Context()); err != nil {
+		content, err := artifactkernel.NewContentFiles(contentPath)
+		if err != nil {
 			t.Fatal(err)
 		}
-		return repo, db
+		t.Cleanup(func() { _ = content.Close() })
+		if err = store.BindArtifactPersistence(artifactkernel.NewStore(database, dialect.WithSchema("")), content, content); err != nil {
+			t.Fatal(err)
+		}
+		repo := NewConversationStore(store)
+		if err = repo.Ready(t.Context()); err != nil {
+			t.Fatal(err)
+		}
+		return repo, database
 	}
-	repo, db := open(true)
-	ctx, a := t.Context(), conversationTestAuthority()
-	conversation, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "persistent-parent"}, a)
+	repo, database := open(true)
+	ctx, authority := t.Context(), conversationTestAuthority()
+	conversation, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "persistent-parent"}, authority)
 	if err != nil {
 		t.Fatal(err)
 	}
-	attachment, err := repo.ReserveAttachment(ctx, attachmentReservation(conversation.ID, "persistent-upload"), a)
+	attachment, err := repo.ReserveAttachment(ctx, attachmentReservation(conversation.ID, "persistent-upload"), authority)
 	if err != nil {
 		t.Fatal(err)
 	}
-	attachment, err = repo.TransitionAttachment(ctx, attachment.Attachment.ID, attachment.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "stored", BodyRef: "persistent-body-ref"}, a)
-	if err != nil {
+	deleteConversationAcrossOwners(t, repo, conversation, authority)
+	if err = database.Close(); err != nil {
 		t.Fatal(err)
 	}
-	attachment, err = repo.TransitionAttachment(ctx, attachment.Attachment.ID, attachment.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "indexing", Source: &persistence.ConversationAttachmentSource{Identity: "knowledge", DocID: "pending-index-doc", PermissionID: "private-permission"}}, a)
-	if err != nil {
+	repo, database = open(false)
+	t.Cleanup(func() { _ = database.Close() })
+	tombstone, err := repo.AttachmentRecord(ctx, attachment.Attachment.ID, authority)
+	if err != nil || tombstone.Attachment.State != "deleting" {
+		t.Fatalf("restart lost cleanup metadata: %+v err=%v", tombstone, err)
+	}
+	lease, found, err := repo.ClaimAttachmentIndexWork(ctx, authority.RuntimeID, "restart-worker", time.Now().UTC(), time.Minute)
+	if err != nil || !found || lease.AttachmentID != attachment.Attachment.ID {
+		t.Fatalf("lease=%+v found=%v err=%v", lease, found, err)
+	}
+	if err = repo.DeleteAttachmentContent(ctx, lease.AttachmentID, lease.Authority); err != nil {
 		t.Fatal(err)
 	}
-	deleteConversationAcrossOwners(t, repo, conversation, a)
-	if err := db.Close(); err != nil {
+	if err = repo.ApplyAttachmentIndexProgress(ctx, lease, persistence.ConversationAttachmentIndexProgress{Event: "deleted"}); err != nil {
 		t.Fatal(err)
-	}
-	repo, _ = open(false)
-	tombstone, err := repo.AttachmentRecord(ctx, attachment.Attachment.ID, a)
-	if err != nil || tombstone.Attachment.State != "deleting" || tombstone.BodyRef != "persistent-body-ref" || tombstone.Source == nil || tombstone.Source.DocID != "pending-index-doc" || tombstone.Source.PermissionID != "private-permission" {
-		t.Fatal("restart lost cleanup references", tombstone, err)
-	}
-	_, err = repo.TransitionAttachment(ctx, attachment.Attachment.ID, attachment.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "ready"}, a)
-	requireConversationCode(t, err, "revision_conflict")
-	if _, err := repo.TransitionAttachment(ctx, tombstone.Attachment.ID, tombstone.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "deleted"}, a); err != nil {
-		t.Fatal("cleanup cannot finish after restart", err)
 	}
 }

@@ -6,7 +6,6 @@ import (
 	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	"net/http"
 	"net/http/httptest"
-	"path/filepath"
 	"sync"
 	"testing"
 	"time"
@@ -15,7 +14,6 @@ import (
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent/internal/application"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 type heldAttachmentKnowledge struct {
@@ -78,12 +76,7 @@ func TestPrivateAttachmentCommittedWritesDrainBeforeHostCloses(t *testing.T) {
 				t.Fatal(err)
 			}
 			source := &heldAttachmentKnowledge{ConversationAttachmentKnowledge: base, operation: operation, entered: make(chan context.Context, 1), release: make(chan struct{})}
-			files, err := knowledgemodule.NewAttachmentFiles(filepath.Join(t.TempDir(), "originals"))
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer files.Close()
-			options := application.ConversationOptions{AttachmentStorage: files, AttachmentAuthorizer: &attachmentTestPolicy{}, DocumentPoll: 10 * time.Millisecond, AttachmentKnowledge: []agentsdk.ConversationAttachmentKnowledgeBinding{{WorkspaceID: a.WorkspaceID, Knowledge: source}}}
+			options := application.ConversationOptions{AttachmentAuthorizer: &attachmentTestPolicy{}, DocumentPoll: 10 * time.Millisecond, AttachmentKnowledge: []agentsdk.ConversationAttachmentKnowledgeBinding{{WorkspaceID: a.WorkspaceID, Knowledge: source}}}
 			model := conversationModelFunc(func(context.Context, agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
 				return agentsdk.ConversationModelResult{}, nil
 			})

@@ -6,28 +6,24 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	actioncontract "github.com/domainry/domainry-foundation/action"
-	"github.com/domainry/domainry-foundation/modulecapability"
 )
 
 const (
 	agentSaaSRepositoryActionPrefix = "agent.saas.repository."
 
-	actionAgentSaaSDescriptorRead       = "agent.saas.descriptor.read"
-	actionAgentSaaSReadinessRead        = "agent.saas.readiness.read"
-	actionAgentSaaSTaskProviderStart    = "agent.saas.task_provider.start"
-	actionAgentSaaSTaskProviderPoll     = "agent.saas.task_provider.poll"
-	actionAgentSaaSTaskProviderCancel   = "agent.saas.task_provider.cancel"
-	actionAgentSaaSInteractiveRun       = "agent.saas.interactive_provider.run"
-	actionAgentSaaSSessionsQuery        = "agent.saas.dialog_state.sessions.query"
-	actionAgentSaaSSessionsUpsert       = "agent.saas.dialog_state.sessions.upsert"
-	actionAgentSaaSSessionsSetArchived  = "agent.saas.dialog_state.sessions.set_archived"
-	actionAgentSaaSProposalsQuery       = "agent.saas.dialog_state.proposals.query"
-	actionAgentSaaSProposalsGet         = "agent.saas.dialog_state.proposals.get"
-	actionAgentSaaSProposalsStore       = "agent.saas.dialog_state.proposals.store"
-	actionAgentSaaSProposalsDecide      = "agent.saas.dialog_state.proposals.decide"
-	actionAgentSaaSCapabilitySummary    = "agent.saas.capability.summary"
-	actionAgentSaaSCapabilityCategory   = "agent.saas.capability.category.get"
-	actionAgentSaaSCapabilityValidation = "agent.saas.capability.validate"
+	actionAgentSaaSDescriptorRead      = "agent.saas.descriptor.read"
+	actionAgentSaaSReadinessRead       = "agent.saas.readiness.read"
+	actionAgentSaaSTaskProviderStart   = "agent.saas.task_provider.start"
+	actionAgentSaaSTaskProviderPoll    = "agent.saas.task_provider.poll"
+	actionAgentSaaSTaskProviderCancel  = "agent.saas.task_provider.cancel"
+	actionAgentSaaSInteractiveRun      = "agent.saas.interactive_provider.run"
+	actionAgentSaaSSessionsQuery       = "agent.saas.dialog_state.sessions.query"
+	actionAgentSaaSSessionsUpsert      = "agent.saas.dialog_state.sessions.upsert"
+	actionAgentSaaSSessionsSetArchived = "agent.saas.dialog_state.sessions.set_archived"
+	actionAgentSaaSProposalsQuery      = "agent.saas.dialog_state.proposals.query"
+	actionAgentSaaSProposalsGet        = "agent.saas.dialog_state.proposals.get"
+	actionAgentSaaSProposalsStore      = "agent.saas.dialog_state.proposals.store"
+	actionAgentSaaSProposalsDecide     = "agent.saas.dialog_state.proposals.decide"
 )
 
 type saasHTTPActionSpec struct {
@@ -57,9 +53,6 @@ func SaaSAuthorizationActions() ([]actioncontract.ActionDefinition, error) {
 		{actionAgentSaaSProposalsGet, "POST /agent/v1/dialog-state/proposals/{id}/get", "agent.saas.dialog_state", "Agent SaaS dialog state", "Read proposal", read, low, "not_applicable"},
 		{actionAgentSaaSProposalsStore, "POST /agent/v1/dialog-state/proposals/store", "agent.saas.dialog_state", "Agent SaaS dialog state", "Store proposal", write, medium, "request_contract"},
 		{actionAgentSaaSProposalsDecide, "POST /agent/v1/dialog-state/proposals/decide", "agent.saas.dialog_state", "Agent SaaS dialog state", "Decide proposal", write, high, "request_contract"},
-		{actionAgentSaaSCapabilitySummary, "GET " + modulecapability.SummaryPath, "agent.saas.capability", "Agent capability protocol", "Read capability summary", read, low, "not_applicable"},
-		{actionAgentSaaSCapabilityCategory, "GET " + modulecapability.CategoriesPath + "{key}", "agent.saas.capability", "Agent capability protocol", "Read capability category", read, low, "not_applicable"},
-		{actionAgentSaaSCapabilityValidation, "POST " + modulecapability.ValidationPath, "agent.saas.capability", "Agent capability protocol", "Validate capability candidate", read, low, "not_applicable"},
 		{agentsdk.ActionAgentScheduledConversationTaskStart, "POST /agent/v1/conversations/scheduled_task_start", "agent.saas.conversations", "Agent persistent conversations", "Accept scheduled background task", write, medium, "request_contract"},
 		{agentsdk.ActionAgentBusinessEventConversationTaskAccept, "POST /agent/v1/conversations/business_event_task_accept", "agent.saas.conversations", "Agent persistent conversations", "Accept verified business-event task", write, medium, "request_contract"},
 

@@ -30,7 +30,6 @@ type adapter struct {
 	directTasks *agentapplication.DirectTaskExecutionService
 	mux         *http.ServeMux
 	routes      []modulehttp.Route
-	openAPI     map[string]map[string]any
 }
 
 func (*adapter) ContractVersion() string { return modulehttp.ContractVersion }
@@ -81,7 +80,7 @@ func NewOwnedAdapter(binding agentsdk.Binding, applications AdapterApplications)
 		execution: applications.Interactive, proposals: applications.Proposals, operations: applications.TaskOperations,
 		taskTools: applications.TaskTools, analysis: applications.Analysis, diagnostics: applications.Diagnostics,
 		directTasks: applications.DirectTasks,
-		mux:         http.NewServeMux(), openAPI: map[string]map[string]any{},
+		mux:         http.NewServeMux(),
 	}
 	handlers := map[string]http.HandlerFunc{
 		agentsdk.ActionAgentSessionsList:    s.listSessions,
@@ -126,7 +125,6 @@ func NewOwnedAdapter(binding agentsdk.Binding, applications AdapterApplications)
 	if err != nil {
 		return nil, err
 	}
-	resolvedOperations := agentsdk.HTTPAdapterResolvedOpenAPIOperations()
 	for _, source := range contract.Routes {
 		handler, found := handlers[source.Action.Key]
 		if !found {
@@ -136,12 +134,7 @@ func NewOwnedAdapter(binding agentsdk.Binding, applications AdapterApplications)
 		if err != nil {
 			return nil, fmt.Errorf("project Agent HTTP Action %q: %w", source.Action.Key, err)
 		}
-		operation := resolvedOperations[route.Pattern()]
-		if len(operation) == 0 {
-			return nil, fmt.Errorf("Agent HTTP Action %q has no OpenAPI operation", source.Action.Key)
-		}
 		s.routes = append(s.routes, route)
-		s.openAPI[route.Pattern()] = operation
 		s.mux.HandleFunc(route.Pattern(), handler)
 		delete(handlers, source.Action.Key)
 	}
@@ -397,4 +390,3 @@ func sessionLimit(raw string) int {
 }
 
 var _ modulehttp.Adapter = (*adapter)(nil)
-var _ modulehttp.OpenAPIProvider = (*adapter)(nil)

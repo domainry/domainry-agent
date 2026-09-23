@@ -20,10 +20,6 @@ func TestKnowledgeAttachmentImportAtomicSourceCheckAndIndependentCopy(t *testing
 	if err != nil {
 		t.Fatal(err)
 	}
-	att, err = repo.TransitionAttachment(ctx, att.Attachment.ID, att.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "stored", BodyRef: "source-original"}, a)
-	if err != nil {
-		t.Fatal(err)
-	}
 	lib, err := repo.CreateKnowledgeLibrary(ctx, agentsdk.KnowledgeLibraryCreate{ClientID: "shared", Kind: "shared", Name: "Shared"}, a)
 	if err != nil {
 		t.Fatal(err)

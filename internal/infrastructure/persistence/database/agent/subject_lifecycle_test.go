@@ -2,16 +2,14 @@ package agent
 
 import (
 	"bytes"
-	"strings"
 	"testing"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-agent-sdk/persistence"
 	lifecyclemodel "github.com/domainry/domainry-lifecycle-sdk/model"
 )
 
 func TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly(t *testing.T) {
-	store, _ := openAgentStore(t)
+	store, db := openAgentStore(t)
 	repo := NewConversationStore(store)
 	a := conversationTestAuthority()
 	a.UserID = "alice"
@@ -34,7 +32,9 @@ func TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly(t *testing.T) {
 	if _, err = repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{ID: "prefs:alice.v1", Title: "Alice preference", Content: "private", Enabled: true}, a); err != nil {
 		t.Fatal(err)
 	}
-	attachment, err := repo.ReserveAttachment(t.Context(), persistence.ConversationAttachmentReserve{ClientID: "alice-attachment", ConversationID: alice.ID, Filename: "private.txt", ContentType: "text/plain", SHA256: strings.Repeat("a", 64), Bytes: 7}, a)
+	attachmentInput := attachmentReservation(alice.ID, "alice-attachment")
+	attachmentInput.Filename, attachmentInput.ContentType = "private.txt", "text/plain"
+	attachment, err := repo.ReserveAttachment(t.Context(), attachmentInput, a)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -57,6 +57,10 @@ func TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly(t *testing.T) {
 	replayed, err := lifecycle.EraseSubjectForRequest(t.Context(), "erase-alice", a.WorkspaceID, a.UserID, nil)
 	if err != nil || !bytes.Equal(receipt, replayed) {
 		t.Fatalf("receipt replay=%s err=%v", replayed, err)
+	}
+	var steps int
+	if err = db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _subject_steps WHERE workspace_id=? AND request_id=? AND owner='agent' AND operation='erase'`, a.WorkspaceID, "erase-alice").Scan(&steps); err != nil || steps != 1 {
+		t.Fatalf("shared Agent subject steps=%d err=%v", steps, err)
 	}
 	if _, err = repo.Get(t.Context(), alice.ID, a); err == nil {
 		t.Fatal("Alice conversation survived")

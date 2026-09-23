@@ -14,7 +14,6 @@ import (
 	agentlifecycle "github.com/domainry/domainry-agent-sdk/lifecycle"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
-	agentcapability "github.com/domainry/domainry-agent/capability"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	agentcomposition "github.com/domainry/domainry-agent/internal/composition"
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
@@ -22,7 +21,6 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
 	actioncontract "github.com/domainry/domainry-foundation/action"
-	"github.com/domainry/domainry-foundation/modulecapability"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
@@ -66,13 +64,24 @@ type Options struct {
 	TaskModelReasoningEfforts                              []string
 	TaskModelDefaultReasoningEffort                        string
 	TaskModelProvider                                      agentsdk.ConversationModel
-	TaskAttachmentStorage                                  agentsdk.ConversationAttachmentStorage
+	TaskAttachmentStorage                                  agentsdk.TaskAttachmentStorage
 	Knowledge                                              KnowledgeConfig
 }
 
 func OptionsFromEnvironment() Options {
 	id, _ := strconv.Atoi(strings.TrimSpace(os.Getenv("AGENT_HTTP_AGENT_ID")))
 	model := provider.ConversationModelConfigFromEnvironment()
+	taskContextLimit, _ := strconv.Atoi(strings.TrimSpace(os.Getenv("AGENT_TASK_MODEL_CONTEXT_TOKENS")))
+	taskEfforts := []string{}
+	for _, value := range strings.Split(os.Getenv("AGENT_TASK_MODEL_REASONING_EFFORTS"), ",") {
+		if value = strings.TrimSpace(value); value != "" {
+			taskEfforts = append(taskEfforts, value)
+		}
+	}
+	taskAPIKey := os.Getenv("AGENT_TASK_MODEL_API_KEY")
+	if strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_TASK_MODEL_PROVIDER")), provider.ConversationProviderGateway) && strings.TrimSpace(taskAPIKey) == "" {
+		taskAPIKey = os.Getenv("AGENT_PROVIDER_API_KEY")
+	}
 	conversation := ConversationOptions{
 		Workers: positiveEnvironmentInteger("AGENT_CONVERSATION_WORKERS"), MaxParallelTools: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_PARALLEL_TOOLS"),
 		MaxQueuedPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_USER"), MaxQueuedPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE"),
@@ -80,7 +89,43 @@ func OptionsFromEnvironment() Options {
 		RunTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_RUN_TIMEOUT"), ExternalCallTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT"),
 		MaxModelAttempts: positiveEnvironmentInteger("AGENT_CONVERSATION_MODEL_MAX_ATTEMPTS"), ModelRetryBaseDelay: positiveEnvironmentDuration("AGENT_CONVERSATION_MODEL_RETRY_BASE_DELAY"), ModelRetryMaxDelay: positiveEnvironmentDuration("AGENT_CONVERSATION_MODEL_RETRY_MAX_DELAY"),
 	}
-	return Options{AttachmentKnowledgeBindingsJSON: os.Getenv("AGENT_ATTACHMENT_KNOWLEDGE_BINDINGS"), KnowledgeDatasourcesJSON: os.Getenv("AGENT_KNOWLEDGE_DATASOURCES"), KnowledgeLibraryBindingsJSON: os.Getenv("AGENT_KNOWLEDGE_LIBRARY_BINDINGS"), ConversationEnabled: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_ENABLED")), "true"), BaseURL: os.Getenv("AGENT_HTTP_BASE_URL"), APIKey: os.Getenv("AGENT_HTTP_API_KEY"), AgentID: id, Timeout: 120 * time.Second, ConversationTimezone: os.Getenv("AGENT_CONVERSATION_TIMEZONE"), ConversationBaseURL: model.BaseURL, ConversationURL: model.URL, ConversationAPIKey: model.APIKey, ConversationModel: model.Model, ConversationProviderName: model.Provider, ConversationProtocol: model.Protocol, ConversationContextTokenLimit: model.ContextTokenLimit, ConversationImageInput: model.ImageInput, ConversationStructuredOutput: model.StructuredOutput, ConversationDisableProtocolContinuation: model.DisableProtocolContinuation, ConversationReasoningEfforts: append([]string(nil), model.ReasoningEfforts...), ConversationDefaultReasoningEffort: model.DefaultReasoningEffort, ConversationOptions: conversation, Knowledge: provider.KnowledgeConfigFromEnvironment()}
+	return Options{
+		AttachmentKnowledgeBindingsJSON:         os.Getenv("AGENT_ATTACHMENT_KNOWLEDGE_BINDINGS"),
+		KnowledgeDatasourcesJSON:                os.Getenv("AGENT_KNOWLEDGE_DATASOURCES"),
+		KnowledgeLibraryBindingsJSON:            os.Getenv("AGENT_KNOWLEDGE_LIBRARY_BINDINGS"),
+		ConversationEnabled:                     strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_ENABLED")), "true"),
+		BaseURL:                                 os.Getenv("AGENT_HTTP_BASE_URL"),
+		APIKey:                                  os.Getenv("AGENT_HTTP_API_KEY"),
+		AgentID:                                 id,
+		Timeout:                                 120 * time.Second,
+		ConversationTimezone:                    os.Getenv("AGENT_CONVERSATION_TIMEZONE"),
+		ConversationBaseURL:                     model.BaseURL,
+		ConversationURL:                         model.URL,
+		ConversationAPIKey:                      model.APIKey,
+		ConversationModel:                       model.Model,
+		ConversationProviderName:                model.Provider,
+		ConversationProtocol:                    model.Protocol,
+		ConversationContextTokenLimit:           model.ContextTokenLimit,
+		ConversationImageInput:                  model.ImageInput,
+		ConversationStructuredOutput:            model.StructuredOutput,
+		ConversationDisableProtocolContinuation: model.DisableProtocolContinuation,
+		ConversationReasoningEfforts:            append([]string(nil), model.ReasoningEfforts...),
+		ConversationDefaultReasoningEffort:      model.DefaultReasoningEffort,
+		ConversationOptions:                     conversation,
+		TaskModelBaseURL:                        os.Getenv("AGENT_TASK_MODEL_BASE_URL"),
+		TaskModelURL:                            os.Getenv("AGENT_TASK_MODEL_URL"),
+		TaskModelAPIKey:                         taskAPIKey,
+		TaskModelName:                           os.Getenv("AGENT_TASK_MODEL"),
+		TaskModelProviderName:                   os.Getenv("AGENT_TASK_MODEL_PROVIDER"),
+		TaskModelProtocol:                       os.Getenv("AGENT_TASK_MODEL_PROTOCOL"),
+		TaskModelContextTokenLimit:              taskContextLimit,
+		TaskModelImageInput:                     strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_TASK_MODEL_IMAGE_INPUT")), "true"),
+		TaskModelStructuredOutput:               strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_TASK_MODEL_STRUCTURED_OUTPUT")), "true"),
+		TaskModelDisableProtocolContinuation:    strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_TASK_MODEL_PROTOCOL_CONTINUATION")), "false"),
+		TaskModelReasoningEfforts:               taskEfforts,
+		TaskModelDefaultReasoningEffort:         os.Getenv("AGENT_TASK_MODEL_REASONING_EFFORT"),
+		Knowledge:                               provider.KnowledgeConfigFromEnvironment(),
+	}
 }
 
 func positiveEnvironmentInteger(name string) int {
@@ -105,15 +150,6 @@ func positiveEnvironmentDuration(name string) time.Duration {
 		return -1
 	}
 	return value
-}
-
-func firstAttachmentStorage(values ...agentsdk.ConversationAttachmentStorage) agentsdk.ConversationAttachmentStorage {
-	for _, value := range values {
-		if value != nil {
-			return value
-		}
-	}
-	return nil
 }
 
 type Factory struct{ options Options }
@@ -151,10 +187,6 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		return nil, err
 	}
 	runner := provider.New(provider.Config{BaseURL: f.options.BaseURL, APIKey: f.options.APIKey, AgentID: f.options.AgentID, Timeout: f.options.Timeout, Client: f.options.Client})
-	capabilityBinding, err := agentcapability.Open(agentcapability.Inputs{})
-	if err != nil {
-		return nil, fmt.Errorf("build Agent capability binding: %w", err)
-	}
 	conversationModel := f.options.ConversationProvider
 	conversationModelConfig := provider.ConversationModelConfig{Provider: f.options.ConversationProviderName, Protocol: f.options.ConversationProtocol, BaseURL: f.options.ConversationBaseURL, URL: f.options.ConversationURL, APIKey: f.options.ConversationAPIKey, Model: f.options.ConversationModel, ContextTokenLimit: f.options.ConversationContextTokenLimit, ImageInput: f.options.ConversationImageInput, StructuredOutput: f.options.ConversationStructuredOutput, DisableProtocolContinuation: f.options.ConversationDisableProtocolContinuation, ReasoningEfforts: append([]string(nil), f.options.ConversationReasoningEfforts...), DefaultReasoningEffort: f.options.ConversationDefaultReasoningEffort, Client: f.options.Client}
 	if conversationModel == nil && conversationModelConfig.Configured() {
@@ -196,6 +228,16 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		conversationOptions.CollaborationAuthorizer, _ = host.(agentsdk.ConversationCollaborationAuthorizer)
 	}
 	conversationRepository := agentstore.NewConversationStore(store)
+	artifactHost, artifactHosted := host.(modulehost.ArtifactHost)
+	if f.ConversationEnabled() && !artifactHosted {
+		return nil, fmt.Errorf("Agent conversations require the shared Artifact host")
+	}
+	if artifactHosted {
+		if err := store.BindArtifactPersistence(artifactHost.ArtifactStore(), artifactHost.ArtifactContentStore(), artifactHost.ArtifactContentWriter()); err != nil {
+			return nil, err
+		}
+		conversationRepository = agentstore.NewConversationStore(store)
+	}
 	todoStore, err := todomodule.NewStore(store.Database(), store.Renderer(), store.Profile(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("open Todo lifecycle store: %w", err)
@@ -204,9 +246,8 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		agentstore.NewSubjectLifecycle(store, app.RuntimeID),
 		todomodule.NewSubjectLifecycle(todoStore, app.RuntimeID),
 		knowledgemodule.NewSubjectLifecycle(store, app.RuntimeID, knowledgemodule.Options{
-			AttachmentStorage: firstAttachmentStorage(conversationOptions.AttachmentStorage, f.options.TaskAttachmentStorage),
-			ArtifactStorage:   conversationOptions.ArtifactStorage,
-			DocumentStorage:   conversationOptions.DocumentStorage,
+			ArtifactStorage: conversationOptions.ArtifactStorage,
+			DocumentStorage: conversationOptions.DocumentStorage,
 		}),
 	}
 	if !deferConversations && conversationOptions.ToolHost == nil {
@@ -258,7 +299,6 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 			return nil, err
 		}
 	}
-	binding.Binding = capabilityBinding
 	binding.taskExecution.StartWorker(ctx)
 	adapter, err := agenthttp.NewAdapter(binding)
 	if err != nil {
@@ -273,7 +313,6 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 }
 
 type binding struct {
-	modulecapability.Binding
 	assemblyMu           sync.Mutex
 	runner               *provider.Runner
 	taskExecution        *agentapplication.TaskExecutionService

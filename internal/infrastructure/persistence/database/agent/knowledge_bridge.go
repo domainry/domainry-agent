@@ -9,7 +9,9 @@ import (
 )
 
 func (s *ConversationStore) knowledgeStore() *knowledgemodule.Store {
-	return knowledgemodule.NewStore(s.store, knowledgeSources{s})
+	return knowledgemodule.NewStore(s.store, knowledgeSources{s}, knowledgemodule.ArtifactPersistence{
+		Store: s.artifactStore, Content: s.artifactContent, Writer: s.artifactWriter,
+	})
 }
 
 // DeleteConversationReferencesForRequest is the shared-database adapter for

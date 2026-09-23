@@ -15,21 +15,46 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	"github.com/domainry/domainry-orm/query"
 )
 
 type ConversationStore struct {
 	store *Store
 
+	artifactStore   sharedartifact.ManagedStore
+	artifactContent sharedartifact.ContentStore
+	artifactWriter  sharedartifact.ContentWriter
+
 	capacityMu         sync.RWMutex
 	capacityConfigured bool
 	capacityLimits     agentsdk.ConversationExecutionLimits
 }
 
-func NewConversationStore(s *Store) *ConversationStore { return &ConversationStore{store: s} }
+func NewConversationStore(s *Store) *ConversationStore {
+	value := &ConversationStore{store: s}
+	if s != nil {
+		value.artifactStore, value.artifactContent, value.artifactWriter = s.artifactStore, s.artifactContent, s.artifactWriter
+	}
+	return value
+}
+
+// BindArtifactPersistence supplies the deployment-owned shared Artifact
+// kernel. Generated files and attachments fail closed until all ports are
+// present; Agent does not fall back to an owner-private metadata table.
+func (s *ConversationStore) BindArtifactPersistence(store sharedartifact.ManagedStore, content sharedartifact.ContentStore, writer sharedartifact.ContentWriter) error {
+	if store == nil || content == nil || writer == nil {
+		return errors.New("shared Agent artifact persistence is incomplete")
+	}
+	s.artifactStore, s.artifactContent, s.artifactWriter = store, content, writer
+	if s.store != nil {
+		s.store.artifactStore, s.store.artifactContent, s.store.artifactWriter = store, content, writer
+	}
+	return nil
+}
 
 func (s *ConversationStore) Ready(ctx context.Context) error {
-	for _, table := range []string{"_agent_conversations", "_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_user_memories", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", conversationForkTable, interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationTaskPlanTable, conversationTaskCompletionTable, conversationTaskAgreementUpdateTable, conversationFollowUpStateTable, conversationFollowUpEventTable, attachmentTable, attachmentCleanupTable, conversationAgentTable, conversationDelegationTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDisagreementTable, conversationAgentGrantTable, conversationParticipantTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
+	for _, table := range []string{"_agent_conversations", "_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_user_memories", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", conversationForkTable, interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationTaskPlanTable, conversationTaskCompletionTable, conversationTaskAgreementUpdateTable, conversationFollowUpStateTable, conversationFollowUpEventTable, conversationAgentTable, conversationDelegationTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDisagreementTable, conversationAgentGrantTable, conversationParticipantTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("owner_key").Limit(1).Build()
 		if err != nil {
 			return err
