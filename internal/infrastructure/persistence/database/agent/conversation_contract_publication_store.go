@@ -20,7 +20,10 @@ func (s *ConversationStore) contractPublicationRecord(ctx context.Context, db co
 	if revision == 0 {
 		revision = max(1, d.AgreementRevision)
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAgreementTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(d, a))), query.Equal("delegation_id", d.ID), query.Equal("revision", revision))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(
+		delegationHistoryPredicate(conversationOwner(delegationRecordAuthority(d, a)), conversationItemDelegationAgreement, d.ID, ""),
+		query.Equal("seq", revision),
+	)).Build()
 	if err != nil {
 		return out, err
 	}
@@ -36,192 +39,11 @@ func (s *ConversationStore) contractPublicationRecord(ctx context.Context, db co
 	if out.Agreement.Revision != revision {
 		return out, conversationError("forbidden", "contract_sources_unverified")
 	}
-	if out.Agreement.Requirements != nil {
-		out.Requirements = *out.Agreement.Requirements
-		return out, nil
-	}
-	requirements, found, err := s.originalContractRequirements(ctx, db, d, out.Agreement, a)
-	if err != nil {
-		return out, err
-	}
-	if !found {
+	if out.Agreement.Requirements == nil {
 		return out, conversationError("forbidden", "contract_sources_unverified")
 	}
-	out.Requirements = requirements
-	return out, nil // Do not modify the legacy JSON or its nil snapshot marker.
-}
-
-func (s *ConversationStore) originalContractRequirements(ctx context.Context, db conversationDB, d sdk.ConversationDelegation, agreement sdk.ConversationAgreementRevision, a sdk.ConversationAuthority) (sdk.ConversationAgentRequirements, bool, error) {
-	var result sdk.ConversationAgentRequirements
-	found := false
-	merge := func(value sdk.ConversationAgentRequirements) error {
-		if found && conversationHash(value) != conversationHash(result) {
-			return conversationError("forbidden", "contract_sources_unverified")
-		}
-		result, found = value, true
-		return nil
-	}
-	subjects, _, err := s.delegationSubjects(ctx, db, d.ID, delegationRecordAuthority(d, a))
-	if err != nil {
-		return result, false, err
-	}
-	assignments, err := s.conversationAssignments(ctx, db, d, subjects.execution)
-	if err != nil {
-		return result, false, err
-	}
-	if agreement.Revision == 1 {
-		// Admission idempotency receipts are immutable complete original
-		// responses. Later mutations have a higher relationship revision.
-		// Page by the immutable key rather than limiting recovery to the most
-		// recent mutations or querying today's task declaration.
-		after := ""
-		for pages := 0; pages < 256; pages++ {
-			p := query.Equal("owner_key", conversationOwner(subjects.source))
-			if after != "" {
-				p = query.And(p, query.GreaterThan("mutation_id", after))
-			}
-			q, args, e := query.NewSelectBuilder(s.store.Renderer(), conversationCollaborationMutationTable).Columns("mutation_id", "payload_json").Where(p).OrderBy(query.Ascending("mutation_id")).Limit(64).Build()
-			if e != nil {
-				return result, false, e
-			}
-			rows, e := db.QueryContext(ctx, q, args...)
-			if e != nil {
-				return result, false, e
-			}
-			count := 0
-			for rows.Next() {
-				var raw []byte
-				if e = rows.Scan(&after, &raw); e != nil {
-					break
-				}
-				count++
-				var original sdk.ConversationDelegation
-				if json.Unmarshal(raw, &original) != nil {
-					continue
-				} // Other collaboration response types.
-				var fields map[string]json.RawMessage
-				if json.Unmarshal(raw, &fields) != nil || fields["requirements"] == nil {
-					continue
-				}
-				if original.ID != d.ID || original.Revision != 1 || original.Status != "accepted" || max(1, original.AgreementRevision) != 1 || original.SourceConversationID != d.SourceConversationID || original.OwnerUserID != d.OwnerUserID || !original.CreatedAt.Equal(d.CreatedAt) || original.ConversationID != "conv_"+conversationHash(d.ID)[:32] || original.TaskID != "task_"+conversationHash(d.ID)[:32] {
-					continue
-				}
-				if len(assignments) == 0 || assignments[0].Number != 1 || assignments[0].TaskID != original.TaskID || assignments[0].ConversationID != original.ConversationID || assignments[0].AgentID != original.ToAgentID {
-					e = conversationError("forbidden", "contract_sources_unverified")
-					break
-				}
-				if conversationHash(original.Brief) != conversationHash(agreement.Brief) || conversationHash(original.StructuredInput) != conversationHash(agreement.StructuredInput) || conversationHash(original.Dependencies) != conversationHash(agreement.Dependencies) || conversationHash(original.BriefSource) != conversationHash(agreement.Source) || conversationHash(original.InputSource) != conversationHash(agreement.InputSource) {
-					e = conversationError("forbidden", "contract_sources_unverified")
-					break
-				}
-				if e = merge(original.Requirements); e != nil {
-					break
-				}
-			}
-			if e == nil {
-				e = rows.Err()
-			}
-			rows.Close()
-			if e != nil {
-				return result, false, e
-			}
-			if count < 64 {
-				break
-			}
-			if pages == 255 {
-				return result, false, conversationError("unavailable", "source_limit_exceeded")
-			}
-		}
-	}
-	// The completed original admission is authoritative even before execution
-	// starts. Its exact result ID, step and immutable actor must all match.
-	if ref := agreement.ChangeSource; agreement.Revision == 1 && agreement.FromAgentID != "" && ref != nil && ref.ConversationID == d.SourceConversationID && ref.BeforeStep >= 1 && ref.BeforeStep <= 256 {
-		run, e := s.runRow(ctx, db, ref.ConversationID, ref.RunID, subjects.source)
-		if e != nil {
-			return result, false, e
-		}
-		c, e := s.get(ctx, db, ref.ConversationID, subjects.source)
-		if e != nil {
-			return result, false, e
-		}
-		agentID := c.AgentID
-		if agentID == "" {
-			agentID = "default"
-		}
-		if conversationAuthority(run.Authority) != nil || conversationOwner(run.Authority) != conversationOwner(subjects.source) || run.Run.ID != ref.RunID || run.Run.ConversationID != ref.ConversationID || agentID != agreement.FromAgentID {
-			return result, false, conversationError("forbidden", "contract_sources_unverified")
-		}
-		claim := persistence.ConversationClaim{Authority: run.Authority, Run: run.Run}
-		payloads, e := s.publicationPayloads(ctx, db, conversationRunStepTable, query.And(conversationRunStepKindPredicate(conversationRunStepKindTool), executionScope(claim, ref.BeforeStep-1)))
-		if e != nil {
-			return result, false, e
-		}
-		for _, raw := range payloads {
-			var record persistence.ConversationToolExecution
-			if json.Unmarshal(raw, &record) != nil {
-				return result, false, conversationError("forbidden", "contract_sources_unverified")
-			}
-			if record.Step != ref.BeforeStep-1 || record.State != "completed" || record.Result == nil || record.Result.Status != "completed" || record.Result.ErrorCode != "" || record.Result.ResourceID != d.ID || record.Call.Name != "agent_delegate" || record.Definition.Key != record.Call.Name || record.Definition.Effect != "write" {
-				continue
-			}
-			var request sdk.ConversationDelegationCreate
-			if json.Unmarshal([]byte(record.Call.Arguments), &request) != nil {
-				return result, false, conversationError("forbidden", "contract_sources_unverified")
-			}
-			if e = merge(request.Requirements); e != nil {
-				return result, false, e
-			}
-		}
-	}
-	for _, assignment := range assignments {
-		if assignment.AgreementRevision > agreement.Revision {
-			continue
-		}
-		executor, e := s.assignmentExecutionAuthority(ctx, db, d, assignment, subjects.execution)
-		if e != nil {
-			return result, false, e
-		}
-		q, args, e := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns(conversationRunColumns...).Where(conversationRunScope(executor, assignment.ConversationID)).Limit(257).Build()
-		if e != nil {
-			return result, false, e
-		}
-		rows, e := db.QueryContext(ctx, q, args...)
-		if e != nil {
-			return result, false, e
-		}
-		count := 0
-		for rows.Next() {
-			count++
-			if count > 256 {
-				e = conversationError("unavailable", "source_limit_exceeded")
-				break
-			}
-			run, scanErr := scanConversationRun(rows)
-			if scanErr != nil {
-				e = scanErr
-				break
-			}
-			background := run.Run.BackgroundTask
-			if !run.HasRequirementsSnapshot || background == nil || len(background.Requirements.Sources) == 0 || background.DelegationID != d.ID || background.TaskID != assignment.TaskID || max(1, background.AgreementRevision) != agreement.Revision {
-				continue
-			}
-			if conversationAuthority(run.Authority) != nil || conversationOwner(run.Authority) != conversationOwner(executor) || run.Run.ConversationID != assignment.ConversationID || background.BriefVersion != agreement.Brief.Version || run.Run.Agent != nil && run.Run.Agent.DelegationRoleKey != "" && run.Run.Agent.DelegationRoleKey != run.Authority.RoleKey {
-				e = conversationError("forbidden", "contract_sources_unverified")
-				break
-			}
-			if e = merge(background.Requirements); e != nil {
-				break
-			}
-		}
-		if e == nil {
-			e = rows.Err()
-		}
-		rows.Close()
-		if e != nil {
-			return result, false, e
-		}
-	}
-	return result, found, nil
+	out.Requirements = *out.Agreement.Requirements
+	return out, nil
 }
 
 func (s *ConversationStore) ConversationContractPublicationRecord(ctx context.Context, id string, revision int64, a sdk.ConversationAuthority) (persistence.ConversationContractPublicationRecord, error) {

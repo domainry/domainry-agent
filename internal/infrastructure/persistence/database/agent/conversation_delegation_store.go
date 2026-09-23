@@ -18,7 +18,7 @@ func (s *ConversationStore) ownedConversationDelegation(ctx context.Context, db 
 	if err := conversationAuthority(a); err != nil {
 		return out, err
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDelegationTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", id))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("payload_json").Where(query.And(query.Equal("link_kind", conversationPeerLinkKindDelegation), query.Equal("owner_key", conversationOwner(a)), query.Equal("link_id", id), query.Equal("peer_key", ""))).Build()
 	if err != nil {
 		return out, err
 	}
@@ -53,7 +53,7 @@ func (s *ConversationStore) ConversationDelegations(ctx context.Context, convers
 	if err := conversationAuthority(a); err != nil {
 		return nil, err
 	}
-	p := query.Equal("owner_key", conversationOwner(a))
+	p := query.And(query.Equal("link_kind", conversationPeerLinkKindDelegation), query.Equal("owner_key", conversationOwner(a)))
 	conversationDelegationID := ""
 	if conversationID != "" {
 		c, err := s.get(ctx, s.store.Database(), conversationID, a)
@@ -61,9 +61,9 @@ func (s *ConversationStore) ConversationDelegations(ctx context.Context, convers
 			return nil, err
 		}
 		conversationDelegationID = c.DelegationID
-		p = query.And(p, query.Or(query.Equal("source_conversation_id", conversationID), query.Equal("conversation_id", conversationID), query.Equal("delegation_id", c.DelegationID)))
+		p = query.And(p, query.Or(query.Equal("source_conversation_id", conversationID), query.Equal("conversation_id", conversationID), query.Equal("link_id", c.DelegationID)))
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDelegationTable).Columns("payload_json").Where(p).OrderBy(query.Descending("created_at"), query.Descending("delegation_id")).Limit(101).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("payload_json").Where(p).OrderBy(query.Descending("created_at"), query.Descending("link_id")).Limit(101).Build()
 	if err != nil {
 		return nil, err
 	}
@@ -279,7 +279,7 @@ func (s *ConversationStore) CreateConversationDelegation(ctx context.Context, in
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}
-		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationDelegationTable).Columns("owner_key", "delegation_id", "conversation_id", "source_conversation_id", "root_conversation_id", "status", "revision", "created_at", "payload_json").Values(conversationOwner(a), id, conversationID, source.ID, rootID, out.Status, out.Revision, now.UnixMilli(), conversationJSON(out)).Build()
+		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("link_kind", "owner_key", "link_id", "scope_key", "conversation_id", "source_conversation_id", "root_conversation_id", "status", "revision", "created_at", "updated_at", "payload_json").Values(conversationPeerLinkKindDelegation, conversationOwner(a), id, conversationID, conversationID, source.ID, rootID, out.Status, out.Revision, now.UnixMilli(), now.UnixMilli(), conversationJSON(out)).Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}
@@ -323,7 +323,7 @@ func (s *ConversationStore) saveConversationDelegation(ctx context.Context, tx *
 			}
 		}
 	}
-	q, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationDelegationTable).Set("conversation_id", out.ConversationID).Set("status", out.Status).Set("revision", out.Revision).Set("payload_json", conversationJSON(out)).Where(query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(out, a))), query.Equal("delegation_id", out.ID), query.Equal("revision", expected))).Build()
+	q, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationPeerLinkTable).Set("scope_key", out.ConversationID).Set("conversation_id", out.ConversationID).Set("status", out.Status).Set("revision", out.Revision).Set("updated_at", out.UpdatedAt.UnixMilli()).Set("payload_json", conversationJSON(out)).Where(query.And(query.Equal("link_kind", conversationPeerLinkKindDelegation), query.Equal("owner_key", conversationOwner(delegationRecordAuthority(out, a))), query.Equal("link_id", out.ID), query.Equal("peer_key", ""), query.Equal("revision", expected))).Build()
 	return conversationCAS(ctx, tx, q, args, err)
 }
 
@@ -406,14 +406,8 @@ func (s *ConversationStore) UpdateConversationDelegation(ctx context.Context, id
 		if out.Status == "cancelled" || out.Status == "rejected" || out.Status == "accepted_delivery" && in.Action != "update_brief" && in.Action != "set_dependencies" && in.Action != "update_input" && in.Action != "disagreement" {
 			return conversationError("conflict", "delegation_closed")
 		}
-		if err = s.saveAgreementRevisionSnapshot(ctx, tx, out, nil, "Initial recorded agreement", nil, a, false); err != nil {
-			return err
-		}
 		if in.Review != nil && in.Action != "accept_delivery" && in.Action != "review_delivery" {
 			return conversationError("bad_request", "completion_assessment_invalid")
-		}
-		if err = s.preserveLegacyDelivery(ctx, tx, out, a); err != nil {
-			return err
 		}
 		if in.Disagreement != nil && in.Action != "disagreement" {
 			return conversationError("bad_request", "disagreement_invalid")

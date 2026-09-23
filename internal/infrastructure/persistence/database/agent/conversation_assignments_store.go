@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"sort"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
@@ -13,7 +12,7 @@ import (
 )
 
 func (s *ConversationStore) conversationAssignments(ctx context.Context, db conversationDB, d sdk.ConversationDelegation, a sdk.ConversationAuthority) ([]sdk.ConversationDelegationAssignment, error) {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAssignmentTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(d, a))), query.Equal("delegation_id", d.ID))).OrderBy(query.Ascending("number")).Limit(17).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(delegationHistoryPredicate(conversationOwner(delegationRecordAuthority(d, a)), conversationItemDelegationAssignment, d.ID, "")).OrderBy(query.Ascending("seq")).Limit(17).Build()
 	if err != nil {
 		return nil, err
 	}
@@ -42,41 +41,6 @@ func (s *ConversationStore) conversationAssignments(ctx context.Context, db conv
 	}
 	if len(out) > 16 {
 		return nil, conversationError("conflict", "delegation_assignment_invalid")
-	}
-	if len(out) == 0 {
-		// Pre-migration delegations retain their original assignment facts. The
-		// first transfer persists this exact record before adding the next one.
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(conversationTaskPredicate(conversationOwner(a), d.TaskID)).Build()
-		if err != nil {
-			return nil, err
-		}
-		task, err := scanConversationTask(db.QueryRowContext(ctx, q, args...))
-		if err != nil {
-			return nil, err
-		}
-		revision := int64(0)
-		if task.task.Agent != nil {
-			revision = task.task.Agent.Revision
-		}
-		// A later brief's source does not describe the initial assignment. Only
-		// use the original persisted agreement; missing old provenance stays nil.
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationAgreementTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(d, a))), query.Equal("delegation_id", d.ID), query.Equal("revision", 1))).Build()
-		if err != nil {
-			return nil, err
-		}
-		var raw []byte
-		var initial sdk.ConversationAgreementRevision
-		if err = db.QueryRowContext(ctx, q, args...).Scan(&raw); err == nil {
-			err = json.Unmarshal(raw, &initial)
-		}
-		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return nil, err
-		}
-		actorID := initial.FromUserID
-		if actorID == "" {
-			actorID = delegationRecordAuthority(d, a).UserID
-		}
-		out = append(out, sdk.ConversationDelegationAssignment{Number: 1, AgentID: d.ToAgentID, AgentRevision: revision, ConversationID: d.ConversationID, TaskID: d.TaskID, AgreementRevision: 1, Reason: d.Purpose, ActorID: actorID, Source: initial.Source, CreatedAt: d.CreatedAt})
 	}
 	return out, nil
 }
@@ -115,32 +79,11 @@ func (s *ConversationStore) insertConversationAssignmentForExecutor(ctx context.
 		return err
 	}
 	record := conversationAssignmentRecord{ConversationDelegationAssignment: in, ExecutionAuthority: &original}
-	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationAssignmentTable).Columns("owner_key", "delegation_id", "number", "conversation_id", "task_id", "payload_json").Values(conversationOwner(owner), id, in.Number, in.ConversationID, in.TaskID, conversationJSON(record)).OnConflictDoNothing("owner_key", "delegation_id", "number").Build()
-	if err = conversationExec(ctx, tx, q, args, err); err != nil {
-		return err
-	}
-	q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationAssignmentTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(owner)), query.Equal("delegation_id", id), query.Equal("number", in.Number))).Build()
+	d, err := s.ownedConversationDelegation(ctx, tx, id, owner)
 	if err != nil {
 		return err
 	}
-	var raw []byte
-	var saved conversationAssignmentRecord
-	if err = tx.QueryRowContext(ctx, q, args...).Scan(&raw); err != nil {
-		return err
-	}
-	if err = json.Unmarshal(raw, &saved); err != nil {
-		return err
-	}
-	if assignmentFactHash(saved.ConversationDelegationAssignment) != assignmentFactHash(in) || saved.ExecutionAuthority != nil && *saved.ExecutionAuthority != original {
-		return conversationError("conflict", "delegation_assignment_invalid")
-	}
-	if saved.ExecutionAuthority == nil {
-		// Add proven routing to an old record while keeping every public fact
-		// byte-equivalent. This happens before its current binding can move.
-		q, args, err = query.NewUpdateBuilder(s.store.Renderer(), conversationAssignmentTable).Set("payload_json", conversationJSON(record)).Where(query.And(query.Equal("owner_key", conversationOwner(owner)), query.Equal("delegation_id", id), query.Equal("number", in.Number), query.Equal("payload_json", raw))).Build()
-		return conversationCAS(ctx, tx, q, args, err)
-	}
-	return nil
+	return s.insertDelegationHistory(ctx, tx, conversationItemDelegationAssignment, d, "", in.Number, in.Source, record, owner)
 }
 
 func (s *ConversationStore) prepareDelegationHandoff(ctx context.Context, tx *sql.Tx, d sdk.ConversationDelegation, remainingWork string, a sdk.ConversationAuthority) (sdk.ConversationDelegationHandoff, error) {

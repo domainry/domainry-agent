@@ -42,7 +42,10 @@ func (s *ConversationStore) assignmentTaskAuthority(ctx context.Context, db conv
 
 func (s *ConversationStore) assignmentExecutionAuthority(ctx context.Context, db conversationDB, d sdk.ConversationDelegation, assignment sdk.ConversationDelegationAssignment, a sdk.ConversationAuthority) (sdk.ConversationAuthority, error) {
 	owner := delegationRecordAuthority(d, a)
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAssignmentTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(owner)), query.Equal("delegation_id", d.ID), query.Equal("number", assignment.Number))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(
+		delegationHistoryPredicate(conversationOwner(owner), conversationItemDelegationAssignment, d.ID, ""),
+		query.Equal("seq", assignment.Number),
+	)).Build()
 	if err != nil {
 		return sdk.ConversationAuthority{}, err
 	}
@@ -50,9 +53,7 @@ func (s *ConversationStore) assignmentExecutionAuthority(ctx context.Context, db
 	var record conversationAssignmentRecord
 	err = db.QueryRowContext(ctx, q, args...).Scan(&raw)
 	if errors.Is(err, sql.ErrNoRows) {
-		if assignment.Number != 1 || d.AssignmentNumber > 1 {
-			return sdk.ConversationAuthority{}, conversationError("conflict", "delegation_assignment_invalid")
-		}
+		return sdk.ConversationAuthority{}, conversationError("conflict", "delegation_assignment_invalid")
 	} else if err != nil {
 		return sdk.ConversationAuthority{}, err
 	} else {
@@ -63,17 +64,10 @@ func (s *ConversationStore) assignmentExecutionAuthority(ctx context.Context, db
 			return sdk.ConversationAuthority{}, conversationError("conflict", "delegation_assignment_invalid")
 		}
 	}
-	routing := a
-	if record.ExecutionAuthority != nil {
-		routing = *record.ExecutionAuthority
-	} else {
-		// Legacy records can only use the still-current admission. The first
-		// transfer saves their exact task proof before changing that admission.
-		routing, err = s.delegationExecutionAuthority(ctx, db, d, a)
-		if err != nil {
-			return sdk.ConversationAuthority{}, err
-		}
+	if record.ExecutionAuthority == nil {
+		return sdk.ConversationAuthority{}, conversationError("conflict", "delegation_assignment_invalid")
 	}
+	routing := *record.ExecutionAuthority
 	if !sameConversationWorkspace(owner, routing) {
 		return sdk.ConversationAuthority{}, conversationError("forbidden", "execution_subject_mismatch")
 	}
@@ -81,7 +75,7 @@ func (s *ConversationStore) assignmentExecutionAuthority(ctx context.Context, db
 	if err != nil {
 		return sdk.ConversationAuthority{}, err
 	}
-	if record.ExecutionAuthority != nil && original != *record.ExecutionAuthority {
+	if original != *record.ExecutionAuthority {
 		return sdk.ConversationAuthority{}, conversationError("forbidden", "execution_subject_mismatch")
 	}
 	if assignment.ExecutionSubject != nil && *assignment.ExecutionSubject != (sdk.ConversationExecutionSubject{RuntimeID: original.RuntimeID, WorkspaceID: original.WorkspaceID, UserID: original.UserID}) {

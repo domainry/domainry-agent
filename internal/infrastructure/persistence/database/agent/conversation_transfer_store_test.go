@@ -8,7 +8,6 @@ import (
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	"github.com/domainry/domainry-orm/query"
 )
 
 func transferAdmission(t *testing.T, repo *ConversationStore, a sdk.ConversationAuthority, d sdk.ConversationDelegation, clientID string) persistence.ConversationDelegationTransferAdmission {
@@ -202,66 +201,6 @@ func TestPeerSameAgentRecoveryRequiresANewerImmutableSnapshot(t *testing.T) {
 	again, err := repo.TransferConversationDelegation(t.Context(), d.ID, admission, a)
 	if err != nil || again.ConversationID != next.ConversationID {
 		t.Fatalf("same-agent recovery was not idempotent: %+v %v", again, err)
-	}
-}
-
-func TestPeerTransferLegacyAssignmentUsesOriginalProvenance(t *testing.T) {
-	for _, keepInitial := range []bool{true, false} {
-		t.Run(map[bool]string{true: "original_available", false: "original_missing"}[keepInitial], func(t *testing.T) {
-			repo, a, d := peerFixture(t)
-			var err error
-			d, err = repo.UpdateConversationDelegation(t.Context(), d.ID, sdk.ConversationDelegationUpdate{ClientID: "pause", ExpectedRevision: d.Revision, Action: "pause", Reason: "Prepare transfer"}, a)
-			if err != nil {
-				t.Fatal(err)
-			}
-			initial := &sdk.ConversationRunReference{ConversationID: "initial", RunID: "first", BeforeStep: 1}
-			err = repo.transaction(t.Context(), func(tx *sql.Tx) error {
-				// Reproduce an upgraded database with no assignment rows and a
-				// brief whose source changed after the first agreement.
-				q, args, e := query.NewDeleteBuilder(repo.store.Renderer(), conversationAssignmentTable).Where(query.Equal("delegation_id", d.ID)).Build()
-				if e = conversationExec(t.Context(), tx, q, args, e); e != nil {
-					return e
-				}
-				q, args, e = query.NewDeleteBuilder(repo.store.Renderer(), conversationAgreementTable).Where(query.Equal("delegation_id", d.ID)).Build()
-				if e = conversationExec(t.Context(), tx, q, args, e); e != nil {
-					return e
-				}
-				if keepInitial {
-					first := d
-					first.AgreementRevision, first.BriefSource = 1, initial
-					if e = repo.saveAgreementRevision(t.Context(), tx, first, nil, "Original", nil, a); e != nil {
-						return e
-					}
-				}
-				previous := d.Revision
-				d.Revision++
-				d.AgreementRevision = 2
-				d.BriefSource = &sdk.ConversationRunReference{ConversationID: "later", RunID: "changed", BeforeStep: 1}
-				// Seed the historical bytes directly: the current writer now
-				// validates/publishes source roots and correctly rejects these
-				// intentionally unavailable legacy run references.
-				q, args, e = query.NewUpdateBuilder(repo.store.Renderer(), conversationDelegationTable).Set("revision", d.Revision).Set("payload_json", conversationJSON(d)).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", d.ID), query.Equal("revision", previous))).Build()
-				return conversationCAS(t.Context(), tx, q, args, e)
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			assignments, err := repo.ConversationDelegationAssignments(t.Context(), d.ID, a)
-			if err != nil || len(assignments) != 1 {
-				t.Fatalf("legacy assignment missing: %+v %v", assignments, err)
-			}
-			if keepInitial && conversationHash(assignments[0].Source) != conversationHash(initial) || !keepInitial && assignments[0].Source != nil {
-				t.Fatalf("later source substituted for original: %+v", assignments[0])
-			}
-			in := transferAdmission(t, repo, a, d, "legacy-replacement")
-			if _, err = repo.TransferConversationDelegation(t.Context(), d.ID, in, a); err != nil {
-				t.Fatal(err)
-			}
-			saved, err := repo.ConversationDelegationAssignments(t.Context(), d.ID, a)
-			if err != nil || len(saved) != 2 || conversationHash(saved[0]) != conversationHash(assignments[0]) {
-				t.Fatalf("legacy history changed on transfer: %+v %v", saved, err)
-			}
-		})
 	}
 }
 

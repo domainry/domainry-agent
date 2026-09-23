@@ -23,7 +23,7 @@ func TestSubjectExitRollsBackCounterpartCancellationWhenGrantScopeIsInvalid(t *t
 	setOwner := func(user string) {
 		t.Helper()
 		err := repo.transaction(t.Context(), func(tx *sql.Tx) error {
-			q, args, err := query.NewUpdateBuilder(repo.store.Renderer(), conversationAgentGrantTable).Set("owner_user_id", user).Where(query.And(query.Equal("owner_key", conversationOwner(executor)), query.Equal("viewer_key", conversationOwner(issuer)))).Build()
+			q, args, err := query.NewUpdateBuilder(repo.store.Renderer(), conversationPeerLinkTable).Set("owner_user_id", user).Where(query.And(query.Equal("link_kind", conversationPeerLinkKindUseGrant), query.Equal("owner_key", conversationOwner(executor)), query.Equal("peer_key", conversationOwner(issuer)))).Build()
 			return conversationCAS(t.Context(), tx, q, args, err)
 		})
 		if err != nil {
@@ -146,11 +146,11 @@ func TestIssuerSubjectExitStopsForeignWorkerAndKeepsCounterpartPrivateData(t *te
 	lifecycle := NewSubjectLifecycle(repo.store, issuer.RuntimeID)
 	preview, err := lifecycle.PreviewSubject(t.Context(), issuer.WorkspaceID, issuer.UserID)
 	var counts map[string]int64
-	if err != nil || json.Unmarshal(preview, &counts) != nil || counts[conversationDelegationSubjectTable] != 1 || counts[conversationAgentGrantTable] != 1 {
+	if err != nil || json.Unmarshal(preview, &counts) != nil || counts[conversationDelegationSubjectTable] != 1 || counts[conversationPeerLinkTable] < 2 {
 		t.Fatal("preview omitted collaboration indexes", string(preview), err)
 	}
 	exported, err := lifecycle.ExportSubjectForRequest(t.Context(), "export", issuer.WorkspaceID, issuer.UserID)
-	if err != nil || !bytes.Contains(exported, []byte(conversationDelegationSubjectTable)) || !bytes.Contains(exported, []byte(conversationAgentGrantTable)) || bytes.Contains(exported, []byte("COUNTERPART-PRIVATE")) {
+	if err != nil || !bytes.Contains(exported, []byte(conversationDelegationSubjectTable)) || !bytes.Contains(exported, []byte(conversationPeerLinkTable)) || bytes.Contains(exported, []byte("COUNTERPART-PRIVATE")) {
 		t.Fatal("export omitted own routing or exposed counterpart data", string(exported), err)
 	}
 	receipt, err := lifecycle.EraseSubjectForRequest(t.Context(), "issuer-exit", issuer.WorkspaceID, issuer.UserID, nil)

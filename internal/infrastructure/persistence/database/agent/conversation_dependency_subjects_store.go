@@ -33,7 +33,7 @@ func (s *ConversationStore) dependencyDelegation(ctx context.Context, db convers
 // owners. Scope is verified against each physical owner key; the graph and
 // private records are never returned to the changing participant.
 func (s *ConversationStore) dependencyGoalDelegations(ctx context.Context, db conversationDB, root string, realm sdk.ConversationAuthority) ([]sdk.ConversationDelegation, error) {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDelegationTable).Columns("owner_key", "payload_json").Where(query.Equal("root_conversation_id", root)).OrderBy(query.Ascending("delegation_id")).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("owner_key", "payload_json").Where(query.And(query.Equal("link_kind", conversationPeerLinkKindDelegation), query.Equal("root_conversation_id", root))).OrderBy(query.Ascending("link_id")).Build()
 	if err != nil {
 		return nil, err
 	}

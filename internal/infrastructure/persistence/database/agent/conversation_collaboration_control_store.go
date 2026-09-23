@@ -96,7 +96,7 @@ func (s *ConversationStore) conversationDelegationRoot(ctx context.Context, tx *
 		if receiver != "" && agent == receiver {
 			return "", conversationError("conflict", "delegation_cycle")
 		}
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDelegationTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("conversation_id", current))).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("payload_json").Where(query.And(query.Equal("link_kind", conversationPeerLinkKindDelegation), query.Equal("owner_key", conversationOwner(a)), query.Equal("conversation_id", current))).Build()
 		if err != nil {
 			return "", err
 		}

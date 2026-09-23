@@ -93,17 +93,9 @@ func (s *ConversationStore) freezeTaskDependencies(ctx context.Context, tx *sql.
 }
 
 func (s *ConversationStore) saveAgreementRevision(ctx context.Context, tx *sql.Tx, d sdk.ConversationDelegation, fields []string, reason string, actor *sdk.ConversationToolRequest, a sdk.ConversationAuthority) error {
-	return s.saveAgreementRevisionSnapshot(ctx, tx, d, fields, reason, actor, a, true)
-}
-
-func (s *ConversationStore) saveAgreementRevisionSnapshot(ctx context.Context, tx *sql.Tx, d sdk.ConversationDelegation, fields []string, reason string, actor *sdk.ConversationToolRequest, a sdk.ConversationAuthority, originalRequirements bool) error {
 	entry := sdk.ConversationAgreementRevision{StructuredInput: d.StructuredInput, InputSource: d.InputSource, Revision: d.AgreementRevision, Brief: d.Brief, Dependencies: d.Dependencies, ChangedFields: fields, Reason: reason, Source: d.BriefSource, CreatedAt: time.Now().UTC()}
-	// Recording an already existing legacy agreement does not prove its
-	// original admission requirements. New admissions and changed versions do.
-	if originalRequirements {
-		requirements := d.Requirements
-		entry.Requirements = &requirements
-	}
+	requirements := d.Requirements
+	entry.Requirements = &requirements
 	if actor == nil {
 		entry.FromUserID = a.UserID
 	} else {
@@ -117,8 +109,7 @@ func (s *ConversationStore) saveAgreementRevisionSnapshot(ctx context.Context, t
 			entry.FromAgentID = "default"
 		}
 	}
-	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationAgreementTable).Columns("owner_key", "delegation_id", "revision", "payload_json").Values(conversationOwner(delegationRecordAuthority(d, a)), d.ID, entry.Revision, conversationJSON(entry)).OnConflictDoNothing("owner_key", "delegation_id", "revision").Build()
-	return conversationExec(ctx, tx, q, args, err)
+	return s.insertDelegationHistory(ctx, tx, conversationItemDelegationAgreement, d, "", entry.Revision, entry.ChangeSource, entry, a)
 }
 
 func (s *ConversationStore) ConversationAgreementHistory(ctx context.Context, id string, before int64, a sdk.ConversationAuthority) (sdk.ConversationAgreementHistory, error) {
@@ -130,11 +121,11 @@ func (s *ConversationStore) ConversationAgreementHistory(ctx context.Context, id
 	if before < 0 {
 		return out, conversationError("bad_request", "cursor_invalid")
 	}
-	p := query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(current, a))), query.Equal("delegation_id", id))
+	p := delegationHistoryPredicate(conversationOwner(delegationRecordAuthority(current, a)), conversationItemDelegationAgreement, id, "")
 	if before > 0 {
-		p = query.And(p, query.LessThan("revision", before))
+		p = query.And(p, query.LessThan("seq", before))
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAgreementTable).Columns("payload_json").Where(p).OrderBy(query.Descending("revision")).Limit(21).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(p).OrderBy(query.Descending("seq")).Limit(21).Build()
 	if err != nil {
 		return out, err
 	}
@@ -158,9 +149,6 @@ func (s *ConversationStore) ConversationAgreementHistory(ctx context.Context, id
 		out.Complete = false
 		out.Items = out.Items[:20]
 		out.NextBefore = out.Items[len(out.Items)-1].Revision
-	}
-	if len(out.Items) == 0 && before == 0 {
-		out.Items = append(out.Items, sdk.ConversationAgreementRevision{StructuredInput: current.StructuredInput, InputSource: current.InputSource, Revision: current.AgreementRevision, Brief: current.Brief, Dependencies: current.Dependencies, Source: current.BriefSource, CreatedAt: current.UpdatedAt, Reason: "Existing agreement before revision history was introduced"})
 	}
 	return out, rows.Err()
 }

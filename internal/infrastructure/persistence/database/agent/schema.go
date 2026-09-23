@@ -116,30 +116,6 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	agreements, err := conversationAgreementMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	assignments, err := conversationAssignmentMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	deliveries, err := conversationDeliveryRecordMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	disagreements, err := conversationDisagreementMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	agentSharing, err := conversationAgentSharingMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	participants, err := conversationParticipantsMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
 	subjectsBinding, err := conversationDelegationSubjectsMigration(renderer)
 	if err != nil {
 		return nil, err
@@ -168,7 +144,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, libraries, documents, datasources, parses, retired, attachmentIndex, tasks, subjects, capacity, collaboration, agreements, assignments, deliveries, disagreements, agentSharing, participants, subjectsBinding, sourceReleases, contractPublications, workBudgets, forks, improvements, memories}, nil
+	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, libraries, documents, datasources, parses, retired, attachmentIndex, tasks, subjects, capacity, collaboration, subjectsBinding, sourceReleases, contractPublications, workBudgets, forks, improvements, memories}, nil
 }
 
 func workerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {

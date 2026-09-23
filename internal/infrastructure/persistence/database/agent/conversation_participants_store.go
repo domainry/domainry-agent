@@ -38,7 +38,7 @@ func (s *ConversationStore) participantDelegation(ctx context.Context, db conver
 	if err == nil || !errors.As(err, &coded) || coded.Code != "agent.conversation.delegation_not_found" {
 		return d, delegationRecordAuthority(d, a), err
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationParticipantTable).Columns("owner_key", "owner_user_id").Where(query.And(query.Equal("viewer_key", conversationOwner(a)), query.Equal("delegation_id", id))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("owner_key", "owner_user_id").Where(query.And(query.Equal("link_kind", conversationPeerLinkKindParticipant), query.Equal("peer_key", conversationOwner(a)), query.Equal("link_id", id))).Build()
 	if err != nil {
 		return d, a, err
 	}
@@ -63,7 +63,7 @@ func (s *ConversationStore) participantDelegation(ctx context.Context, db conver
 }
 
 func (s *ConversationStore) participantDelegations(ctx context.Context, a sdk.ConversationAuthority) ([]sdk.ConversationDelegation, error) {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationParticipantTable).Columns("delegation_id").Where(query.Equal("viewer_key", conversationOwner(a))).OrderBy(query.Descending("created_at"), query.Descending("delegation_id")).Limit(101).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("link_id").Where(query.And(query.Equal("link_kind", conversationPeerLinkKindParticipant), query.Equal("peer_key", conversationOwner(a)))).OrderBy(query.Descending("created_at"), query.Descending("link_id")).Limit(101).Build()
 	if err != nil {
 		return nil, err
 	}
@@ -198,13 +198,13 @@ func (s *ConversationStore) SetConversationDelegationParticipants(ctx context.Co
 		out.Participants = grants
 		out.Revision++
 		out.UpdatedAt = time.Now().UTC().Truncate(time.Millisecond)
-		q, args, err := query.NewDeleteBuilder(s.store.Renderer(), conversationParticipantTable).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", id))).Build()
+		q, args, err := query.NewDeleteBuilder(s.store.Renderer(), conversationPeerLinkTable).Where(query.And(query.Equal("link_kind", conversationPeerLinkKindParticipant), query.Equal("owner_key", conversationOwner(a)), query.Equal("link_id", id))).Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}
 		for _, grant := range grants {
 			viewer := sdk.ConversationAuthority{RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, UserID: grant.UserID}
-			q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationParticipantTable).Columns("owner_key", "delegation_id", "viewer_key", "owner_user_id", "revision", "created_at").Values(conversationOwner(a), id, conversationOwner(viewer), a.UserID, grant.Revision, out.CreatedAt.UnixMilli()).Build()
+			q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("link_kind", "owner_key", "link_id", "peer_key", "scope_key", "owner_user_id", "revision", "created_at", "updated_at", "payload_json").Values(conversationPeerLinkKindParticipant, conversationOwner(a), id, conversationOwner(viewer), id, a.UserID, grant.Revision, out.CreatedAt.UnixMilli(), out.UpdatedAt.UnixMilli(), conversationJSON(grant)).Build()
 			if err = conversationExec(ctx, tx, q, args, err); err != nil {
 				return err
 			}
@@ -228,7 +228,7 @@ func (s *ConversationStore) lockConversationParticipantGrant(ctx context.Context
 	if err != nil {
 		return err
 	}
-	builder := query.NewSelectBuilder(s.store.Renderer(), conversationParticipantTable).Columns("revision").Where(query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(d, a))), query.Equal("delegation_id", m.DelegationID), query.Equal("viewer_key", conversationOwner(viewer)), query.Equal("revision", m.ParticipantRevision)))
+	builder := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("revision").Where(query.And(query.Equal("link_kind", conversationPeerLinkKindParticipant), query.Equal("owner_key", conversationOwner(delegationRecordAuthority(d, a))), query.Equal("link_id", m.DelegationID), query.Equal("peer_key", conversationOwner(viewer)), query.Equal("revision", m.ParticipantRevision)))
 	if profile := s.store.Profile(); profile != nil && profile.Capabilities().RowLock {
 		var err error
 		builder, err = profile.ApplyClaimLock(builder, false)

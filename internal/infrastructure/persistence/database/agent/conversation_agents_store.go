@@ -40,7 +40,7 @@ func (s *ConversationStore) ownedConversationAgent(ctx context.Context, db conve
 	if err := conversationAuthority(a); err != nil {
 		return out, err
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAgentTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("agent_id", id))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("payload_json").Where(query.And(query.Equal("link_kind", conversationPeerLinkKindInstance), query.Equal("owner_key", conversationOwner(a)), query.Equal("link_id", id), query.Equal("peer_key", ""))).Build()
 	if err != nil {
 		return out, err
 	}
@@ -69,7 +69,7 @@ func (s *ConversationStore) ConversationAgents(ctx context.Context, a agentsdk.C
 	if err := conversationAuthority(a); err != nil {
 		return nil, err
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAgentTable).Columns("payload_json").Where(query.Equal("owner_key", conversationOwner(a))).OrderBy(query.Ascending("agent_id")).Limit(64).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("payload_json").Where(query.And(query.Equal("link_kind", conversationPeerLinkKindInstance), query.Equal("owner_key", conversationOwner(a)))).OrderBy(query.Ascending("link_id")).Limit(64).Build()
 	if err != nil {
 		return nil, err
 	}
@@ -174,12 +174,12 @@ func (s *ConversationStore) WriteConversationAgent(ctx context.Context, id strin
 		}
 		out.Revision, out.UpdatedAt = in.ExpectedRevision+1, now
 		if id == "" {
-			q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationAgentTable).Columns("owner_key", "agent_id", "revision", "payload_json").Values(conversationOwner(a), out.ID, out.Revision, conversationJSON(out)).Build()
+			q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("link_kind", "owner_key", "link_id", "scope_key", "revision", "created_at", "updated_at", "payload_json").Values(conversationPeerLinkKindInstance, conversationOwner(a), out.ID, out.ID, out.Revision, out.CreatedAt.UnixMilli(), out.UpdatedAt.UnixMilli(), conversationJSON(out)).Build()
 			if err = conversationExec(ctx, tx, q, args, err); err != nil {
 				return err
 			}
 		} else {
-			q, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationAgentTable).Set("revision", out.Revision).Set("payload_json", conversationJSON(out)).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("agent_id", id), query.Equal("revision", in.ExpectedRevision))).Build()
+			q, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationPeerLinkTable).Set("revision", out.Revision).Set("updated_at", out.UpdatedAt.UnixMilli()).Set("payload_json", conversationJSON(out)).Where(query.And(query.Equal("link_kind", conversationPeerLinkKindInstance), query.Equal("owner_key", conversationOwner(a)), query.Equal("link_id", id), query.Equal("peer_key", ""), query.Equal("revision", in.ExpectedRevision))).Build()
 			if err = conversationCAS(ctx, tx, q, args, err); err != nil {
 				return err
 			}

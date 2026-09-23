@@ -76,7 +76,7 @@ func TestParticipantPublicationUsesExactContractRootsAndAllowsRevocationWithoutO
 	// The exact original agreement may be unavailable. Reducing a grant must
 	// still work; adding a new user must neither guess roots nor half-commit.
 	if err := repo.transaction(t.Context(), func(tx *sql.Tx) error {
-		q, args, err := query.NewDeleteBuilder(repo.store.Renderer(), conversationAgreementTable).Where(query.And(query.Equal("owner_key", conversationOwner(owner)), query.Equal("delegation_id", d.ID))).Build()
+		q, args, err := query.NewDeleteBuilder(repo.store.Renderer(), conversationItemTable).Where(delegationHistoryPredicate(conversationOwner(owner), conversationItemDelegationAgreement, d.ID, "")).Build()
 		return conversationExec(t.Context(), tx, q, args, err)
 	}); err != nil {
 		t.Fatal(err)
@@ -114,7 +114,7 @@ func TestLegacyParticipantGrantRequiresExplicitNewPublication(t *testing.T) {
 	}
 	legacy.Participants[0].Publisher = nil
 	if err := repo.transaction(t.Context(), func(tx *sql.Tx) error {
-		q, args, err := query.NewUpdateBuilder(repo.store.Renderer(), conversationDelegationTable).Set("payload_json", conversationJSON(legacy)).Where(query.And(query.Equal("owner_key", conversationOwner(owner)), query.Equal("delegation_id", d.ID))).Build()
+		q, args, err := query.NewUpdateBuilder(repo.store.Renderer(), conversationPeerLinkTable).Set("payload_json", conversationJSON(legacy)).Where(query.And(query.Equal("link_kind", conversationPeerLinkKindDelegation), query.Equal("owner_key", conversationOwner(owner)), query.Equal("link_id", d.ID))).Build()
 		return conversationExec(t.Context(), tx, q, args, err)
 	}); err != nil {
 		t.Fatal(err)

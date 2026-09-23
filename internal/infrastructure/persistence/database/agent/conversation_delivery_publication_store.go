@@ -27,7 +27,10 @@ func (s *ConversationStore) deliveryPublicationRecord(ctx context.Context, db co
 		}
 		return out, nil
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDeliveryRecordTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(delegationRecordAuthority(d, a))), query.Equal("delegation_id", d.ID), query.Equal("revision", revision))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(
+		delegationHistoryPredicate(conversationOwner(delegationRecordAuthority(d, a)), conversationItemDelegationDelivery, d.ID, ""),
+		query.Equal("seq", revision),
+	)).Build()
 	if err != nil {
 		return out, err
 	}
@@ -98,8 +101,7 @@ func (s *ConversationStore) republishDelivery(ctx context.Context, tx *sql.Tx, d
 		return d, err
 	}
 	entry := sdk.ConversationDeliveryRecord{Revision: d.Revision, Kind: "republish_delivery", Delivery: original.Delivery, Verification: original.Verification, Reason: in.Reason, Publication: &sdk.ConversationDeliveryPublicationReceipt{ConversationDeliveryPublication: *in.Publication, Publisher: a, RecipientUserID: subjects.source.UserID, PublishedAt: d.UpdatedAt}}
-	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationDeliveryRecordTable).Columns("owner_key", "delegation_id", "revision", "payload_json").Values(conversationOwner(delegationRecordAuthority(d, a)), d.ID, entry.Revision, conversationJSON(entry)).Build()
-	return d, conversationExec(ctx, tx, q, args, err)
+	return d, s.insertDelegationHistory(ctx, tx, conversationItemDelegationDelivery, d, "", entry.Revision, entry.Verification.Source, entry, a)
 }
 
 var _ persistence.ConversationDeliveryPublicationRepository = (*ConversationStore)(nil)

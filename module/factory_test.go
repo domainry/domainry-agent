@@ -29,7 +29,7 @@ type host struct {
 	content   *artifactkernel.ContentFiles
 }
 
-func TestModuleMigrationCreatesUnifiedRunTableAndIndexes(t *testing.T) {
+func TestModuleMigrationCreatesUnifiedAgentTablesAndIndexes(t *testing.T) {
 	host := newHost(t, "unified-runs")
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -60,6 +60,12 @@ func TestModuleMigrationCreatesUnifiedRunTableAndIndexes(t *testing.T) {
 	}
 	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name IN ('_agent_conversation_tasks','_agent_conversation_task_plans','_agent_conversation_follow_up_states','_agent_conversation_follow_up_events')`).Scan(&count); err != nil || count != 0 {
 		t.Fatalf("retired task tables=%d err=%v", count, err)
+	}
+	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='_agent_peer_links'`).Scan(&count); err != nil || count != 1 {
+		t.Fatalf("unified peer-link table=%d err=%v", count, err)
+	}
+	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name IN ('_agent_peer_instances','_agent_delegations','_agent_delegation_agreements','_agent_delegation_assignments','_agent_delegation_deliveries','_agent_delegation_disagreements','_agent_delegation_participants','_agent_peer_use_grants')`).Scan(&count); err != nil || count != 0 {
+		t.Fatalf("retired peer tables=%d err=%v", count, err)
 	}
 }
 
@@ -122,7 +128,7 @@ func TestModuleDescriptor(t *testing.T) {
 	if b.Descriptor().Mode != agentsdk.DeploymentModeModule {
 		t.Fatalf("descriptor=%+v", b.Descriptor())
 	}
-	if len(host.applied) != 29 {
+	if len(host.applied) != 23 {
 		t.Fatalf("Agent migrations=%d", len(host.applied))
 	}
 	for _, table := range []string{shareddefinition.TableName, shareddefinition.VersionTableName} {

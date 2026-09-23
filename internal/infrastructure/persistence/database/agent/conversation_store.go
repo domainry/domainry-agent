@@ -54,7 +54,7 @@ func (s *ConversationStore) BindArtifactPersistence(store sharedartifact.Managed
 }
 
 func (s *ConversationStore) Ready(ctx context.Context) error {
-	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_user_memories", conversationRunStepTable, conversationForkTable, interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationAgentTable, conversationDelegationTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDisagreementTable, conversationAgentGrantTable, conversationParticipantTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
+	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_user_memories", conversationRunStepTable, conversationForkTable, interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationPeerLinkTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("owner_key").Limit(1).Build()
 		if err != nil {
 			return err
@@ -376,7 +376,7 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 		if c.Revision != revision {
 			return conversationError("conflict", "revision_conflict")
 		}
-		q, args, e := query.NewSelectBuilder(s.store.Renderer(), conversationDelegationTable).Projections(query.Project(query.CountAll())).Where(query.And(query.Equal("owner_key", owner), query.Or(query.Equal("conversation_id", id), query.Equal("source_conversation_id", id)))).Build()
+		q, args, e := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Projections(query.Project(query.CountAll())).Where(query.And(query.Equal("link_kind", conversationPeerLinkKindDelegation), query.Equal("owner_key", owner), query.Or(query.Equal("conversation_id", id), query.Equal("source_conversation_id", id)))).Build()
 		if e != nil {
 			return e
 		}

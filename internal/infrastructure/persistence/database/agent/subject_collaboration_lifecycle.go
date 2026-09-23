@@ -57,7 +57,7 @@ func (s *ConversationStore) eraseSubjectCollaboration(ctx context.Context, tx *s
 		owned      bool
 	}
 	items := map[string]affected{}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDelegationTable).Columns("payload_json").Where(query.Equal("owner_key", conversationOwner(a))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("payload_json").Where(query.And(query.Equal("link_kind", conversationPeerLinkKindDelegation), query.Equal("owner_key", conversationOwner(a)))).Build()
 	if err != nil {
 		return err
 	}
@@ -284,8 +284,8 @@ func (s *ConversationStore) eraseSubjectDelegationReleases(ctx context.Context, 
 	return nil
 }
 
-func (s *ConversationStore) subjectForeignGrants(ctx context.Context, tx *sql.Tx, table, idColumn string, a sdk.ConversationAuthority) (map[string]sdk.ConversationAuthority, error) {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns(idColumn, "owner_key", "owner_user_id").Where(query.And(query.Equal("viewer_key", conversationOwner(a)), query.Not(query.Equal("owner_key", conversationOwner(a))))).Build()
+func (s *ConversationStore) subjectForeignGrants(ctx context.Context, tx *sql.Tx, kind string, a sdk.ConversationAuthority) (map[string]sdk.ConversationAuthority, error) {
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("link_id", "owner_key", "owner_user_id").Where(query.And(query.Equal("link_kind", kind), query.Equal("peer_key", conversationOwner(a)), query.Not(query.Equal("owner_key", conversationOwner(a))))).Build()
 	if err != nil {
 		return nil, err
 	}
@@ -311,7 +311,7 @@ func (s *ConversationStore) subjectForeignGrants(ctx context.Context, tx *sql.Tx
 }
 
 func (s *ConversationStore) removeSubjectParticipation(ctx context.Context, tx *sql.Tx, a sdk.ConversationAuthority, changed map[string]int64) error {
-	items, err := s.subjectForeignGrants(ctx, tx, conversationParticipantTable, "delegation_id", a)
+	items, err := s.subjectForeignGrants(ctx, tx, conversationPeerLinkKindParticipant, a)
 	if err != nil {
 		return err
 	}
@@ -340,7 +340,7 @@ func (s *ConversationStore) removeSubjectParticipation(ctx context.Context, tx *
 }
 
 func (s *ConversationStore) removeSubjectAgentGrants(ctx context.Context, tx *sql.Tx, a sdk.ConversationAuthority, changed map[string]int64) error {
-	items, err := s.subjectForeignGrants(ctx, tx, conversationAgentGrantTable, "agent_id", a)
+	items, err := s.subjectForeignGrants(ctx, tx, conversationPeerLinkKindUseGrant, a)
 	if err != nil {
 		return err
 	}
@@ -353,7 +353,7 @@ func (s *ConversationStore) removeSubjectAgentGrants(ctx context.Context, tx *sq
 		agent.SharedWithUserIDs = slices.DeleteFunc(agent.SharedWithUserIDs, func(user string) bool { return user == a.UserID })
 		agent.Revision++
 		agent.UpdatedAt = time.Now().UTC().Truncate(time.Millisecond)
-		q, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationAgentTable).Set("revision", agent.Revision).Set("payload_json", conversationJSON(agent)).Where(query.And(query.Equal("owner_key", conversationOwner(owner)), query.Equal("agent_id", id), query.Equal("revision", previous))).Build()
+		q, args, err := query.NewUpdateBuilder(s.store.Renderer(), conversationPeerLinkTable).Set("revision", agent.Revision).Set("updated_at", agent.UpdatedAt.UnixMilli()).Set("payload_json", conversationJSON(agent)).Where(query.And(query.Equal("link_kind", conversationPeerLinkKindInstance), query.Equal("owner_key", conversationOwner(owner)), query.Equal("link_id", id), query.Equal("peer_key", ""), query.Equal("revision", previous))).Build()
 		if err := conversationCAS(ctx, tx, q, args, err); err != nil {
 			return err
 		}

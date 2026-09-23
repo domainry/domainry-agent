@@ -12,7 +12,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 29 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
+			if len(migrations) != 23 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
 				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
 			byVersion := map[uint]string{}
@@ -31,7 +31,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if forks := byVersion[34]; !strings.Contains(forks, conversationForkTable) || !strings.Contains(forks, "source_event_seq") || strings.Contains(forks, "_schema_migrations") {
 				t.Fatal("invalid conversation fork migration", forks)
 			}
-			for _, folded := range []uint{16, 17, 31, 32, 33} {
+			for _, folded := range []uint{16, 17, 21, 22, 23, 24, 25, 26, 31, 32, 33} {
 				if _, found := byVersion[folded]; found {
 					t.Fatalf("folded Agent migration v%d remains", folded)
 				}
@@ -50,18 +50,14 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if !strings.Contains(subjects, conversationDelegationSubjectTable) || !strings.Contains(subjects, "idx_agent_delegation_subject_v27") || strings.Contains(subjects, "_schema_migrations") {
 				t.Fatal("invalid delegation subject migration", subjects)
 			}
-			participants := byVersion[26]
-			if !strings.Contains(participants, conversationParticipantTable) || !strings.Contains(participants, "idx_agent_participant_v26") || strings.Contains(participants, "_schema_migrations") {
-				t.Fatal("invalid participant migration", participants)
-			}
-			sharing := byVersion[25]
-			for _, fragment := range []string{conversationAgentGrantTable, "viewer_key", "owner_user_id", "idx_agent_peer_use_grant_v25"} {
-				if !strings.Contains(sharing, fragment) {
-					t.Fatalf("missing sharing migration field %s", fragment)
+			peerLinks := byVersion[20]
+			for _, fragment := range []string{conversationPeerLinkTable, "link_kind", "link_id", "peer_key", "scope_key", "idx_agent_peer_link_delegation_source_v20", "idx_agent_peer_link_participant_v20", "idx_agent_peer_link_use_grant_v20"} {
+				if !strings.Contains(peerLinks, fragment) {
+					t.Fatalf("missing peer-link migration field/index %s", fragment)
 				}
 			}
-			if strings.Contains(sharing, "_schema_migrations") {
-				t.Fatal("sharing migration owns a private ledger")
+			if strings.Contains(peerLinks, "_schema_migrations") {
+				t.Fatal("peer-link migration owns a private ledger")
 			}
 			joined := strings.Join(migrations[0].Statements, "\n")
 			for _, table := range []string{"_agent_runtime_states", agentRunTable, "_worker_scopes"} {
@@ -86,6 +82,11 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			for _, retired := range []string{"_agent_conversation_messages", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_task_agreement_updates", "_agent_conversation_task_completions"} {
 				if strings.Contains(conversationItems, retired) {
 					t.Fatalf("private conversation item table remains: %s", retired)
+				}
+			}
+			for _, retired := range []string{"_agent_peer_instances", "_agent_delegations", "_agent_delegation_agreements", "_agent_delegation_assignments", "_agent_delegation_deliveries", "_agent_delegation_disagreements", "_agent_delegation_participants", "_agent_peer_use_grants"} {
+				if strings.Contains(peerLinks+"\n"+conversationItems, retired) {
+					t.Fatalf("retired Agent peer table remains: %s", retired)
 				}
 			}
 			tasks := byVersion[15]

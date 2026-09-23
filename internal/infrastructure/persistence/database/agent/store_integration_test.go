@@ -96,6 +96,34 @@ func TestConversationItemsReplaceSixPrivateHistoryTables(t *testing.T) {
 	}
 }
 
+func TestPeerLinksReplaceCurrentMicroTablesAndIsolateKinds(t *testing.T) {
+	_, database := openAgentStore(t)
+	const owner = "owner-shared"
+	const id = "link-shared"
+	for _, row := range []struct {
+		kind string
+		peer string
+	}{
+		{conversationPeerLinkKindInstance, ""},
+		{conversationPeerLinkKindDelegation, ""},
+		{conversationPeerLinkKindParticipant, "viewer-shared"},
+		{conversationPeerLinkKindUseGrant, "viewer-shared"},
+	} {
+		if _, err := database.ExecContext(t.Context(), `INSERT INTO _agent_peer_links (link_kind,owner_key,link_id,peer_key,scope_key,payload_json) VALUES (?,?,?,?,?,?)`, row.kind, owner, id, row.peer, id, `{}`); err != nil {
+			t.Fatalf("insert peer-link kind %s: %v", row.kind, err)
+		}
+	}
+	var count int
+	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_peer_links WHERE owner_key=? AND link_id=?`, owner, id).Scan(&count); err != nil || count != 4 {
+		t.Fatalf("peer-link kind isolation count=%d err=%v", count, err)
+	}
+	for _, table := range []string{"_agent_peer_instances", "_agent_delegations", "_agent_delegation_agreements", "_agent_delegation_assignments", "_agent_delegation_deliveries", "_agent_delegation_disagreements", "_agent_delegation_participants", "_agent_peer_use_grants"} {
+		if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 0 {
+			t.Fatalf("retired peer table %s count=%d err=%v", table, count, err)
+		}
+	}
+}
+
 func TestAgentStateStorePersistsAndComparesRevision(t *testing.T) {
 	store, _ := openAgentStore(t)
 	repository := NewAgentStateStore(store)

@@ -90,52 +90,6 @@ func TestAssignmentAuthorityKeepsCrossSubjectOriginalLedgerAndPrivateDTO(t *test
 	}
 }
 
-func TestAssignmentAuthorityEnrichesLegacyProofWithoutChangingHistory(t *testing.T) {
-	repo, a, d, old := peerUnknownWrite(t)
-	inspection, err := repo.BeginConversationOutcomeInspection(t.Context(), d.ID, d.Revision, sdk.ConversationOutcomeInspectionRequest{RunID: old.Run.ID, Step: 0, CallID: "write"}, "settle", a)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := repo.FinishConversationOutcomeInspection(t.Context(), inspection, sdk.ConversationToolResult{Status: "completed", ResourceID: "original-record", Content: []byte(`{"id":"original-record"}`)}, a); err != nil {
-		t.Fatal(err)
-	}
-	assignments, err := repo.ConversationDelegationAssignments(t.Context(), d.ID, a)
-	if err != nil || len(assignments) != 1 {
-		t.Fatal(assignments, err)
-	}
-	before := conversationHash(assignments[0])
-	err = repo.transaction(t.Context(), func(tx *sql.Tx) error {
-		q, args, err := query.NewUpdateBuilder(repo.store.Renderer(), conversationAssignmentTable).Set("payload_json", conversationJSON(assignments[0])).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", d.ID), query.Equal("number", 1))).Build()
-		return conversationCAS(t.Context(), tx, q, args, err)
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	reader := a
-	reader.RoleKey = "replacement-role"
-	admission := transferAdmission(t, repo, reader, d, "replacement-with-role")
-	next, err := repo.TransferConversationDelegation(t.Context(), d.ID, admission, reader)
-	if err != nil {
-		t.Fatal(err)
-	}
-	repo = NewConversationStore(repo.store)
-	assignments, err = repo.ConversationDelegationAssignments(t.Context(), d.ID, reader)
-	if err != nil || len(assignments) != 2 || conversationHash(assignments[0]) != before {
-		t.Fatal("enrichment changed original public facts", assignments, err)
-	}
-	for i, want := range []sdk.ConversationAuthority{a, reader} {
-		got, err := repo.assignmentExecutionAuthority(t.Context(), repo.store.Database(), next, assignments[i], reader)
-		if err != nil || got != want {
-			t.Fatal("assignment's actual original role lost", i, got, want, err)
-		}
-	}
-	if err := repo.transaction(t.Context(), func(tx *sql.Tx) error {
-		return repo.insertConversationAssignment(t.Context(), tx, d.ID, assignments[0], reader)
-	}); err != nil {
-		t.Fatal("later reader could not replay the same immutable facts", err)
-	}
-}
-
 func TestAssignmentAuthorityRejectsForgedRoutingBeforeHandoff(t *testing.T) {
 	repo, issuer, executor, d, _ := completedSubjectAssignment(t)
 	assignments, err := repo.ConversationDelegationAssignments(t.Context(), d.ID, issuer)
@@ -156,7 +110,7 @@ func TestAssignmentAuthorityRejectsForgedRoutingBeforeHandoff(t *testing.T) {
 			}
 			record := conversationAssignmentRecord{ConversationDelegationAssignment: assignment, ExecutionAuthority: &forged}
 			err := repo.transaction(t.Context(), func(tx *sql.Tx) error {
-				q, args, err := query.NewUpdateBuilder(repo.store.Renderer(), conversationAssignmentTable).Set("payload_json", conversationJSON(record)).Where(query.And(query.Equal("owner_key", conversationOwner(issuer)), query.Equal("delegation_id", d.ID), query.Equal("number", 1))).Build()
+				q, args, err := query.NewUpdateBuilder(repo.store.Renderer(), conversationItemTable).Set("payload_json", conversationJSON(record)).Where(query.And(delegationHistoryPredicate(conversationOwner(issuer), conversationItemDelegationAssignment, d.ID, ""), query.Equal("seq", 1))).Build()
 				return conversationCAS(t.Context(), tx, q, args, err)
 			})
 			if err != nil {

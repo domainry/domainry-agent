@@ -2,67 +2,11 @@ package agent
 
 import (
 	"database/sql"
-	"encoding/json"
 	"strings"
 	"testing"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-orm/query"
 )
-
-func TestLegacyContractRunEvidenceRequiresCapturedRootsAndOriginalAuthority(t *testing.T) {
-	for _, kind := range []string{"original", "missing-snapshot", "wrong-authority"} {
-		t.Run(kind, func(t *testing.T) {
-			repo, issuer, executor, d, root := contractPublicationFixture(t)
-			launched, found, err := repo.LaunchConversationTask(t.Context(), issuer.RuntimeID)
-			if err != nil || !found {
-				t.Fatal("launch", found, err)
-			}
-			legacyContractSnapshot(t, repo, d, issuer)
-			q, args, err := query.NewDeleteBuilder(repo.store.Renderer(), conversationCollaborationMutationTable).Where(query.Equal("owner_key", conversationOwner(issuer))).Build()
-			if err = conversationExec(t.Context(), repo.store.Database(), q, args, err); err != nil {
-				t.Fatal(err)
-			}
-			d.Requirements = sdk.ConversationAgentRequirements{TaskType: "today"}
-			q, args, err = query.NewUpdateBuilder(repo.store.Renderer(), conversationDelegationTable).Set("payload_json", conversationJSON(d)).Where(query.And(query.Equal("owner_key", conversationOwner(issuer)), query.Equal("delegation_id", d.ID))).Build()
-			if err = conversationExec(t.Context(), repo.store.Database(), q, args, err); err != nil {
-				t.Fatal(err)
-			}
-			if kind == "missing-snapshot" {
-				var envelope map[string]json.RawMessage
-				var background map[string]json.RawMessage
-				if err = json.Unmarshal(conversationJSON(launched.Run), &envelope); err != nil {
-					t.Fatal(err)
-				}
-				if err = json.Unmarshal(envelope["background_task"], &background); err != nil {
-					t.Fatal(err)
-				}
-				delete(background, "requirements")
-				envelope["background_task"], _ = json.Marshal(background)
-				raw, _ := json.Marshal(envelope)
-				q, args, err = query.NewUpdateBuilder(repo.store.Renderer(), agentRunTable).Set("payload_json", raw).Where(query.And(conversationRunScope(executor, launched.Run.ConversationID), query.Equal("run_id", launched.Run.ID))).Build()
-				if err = conversationExec(t.Context(), repo.store.Database(), q, args, err); err != nil {
-					t.Fatal(err)
-				}
-			} else if kind == "wrong-authority" {
-				actor := executor
-				actor.UserID = "unrelated"
-				q, args, err = query.NewUpdateBuilder(repo.store.Renderer(), agentRunTable).Set("authority_json", conversationJSON(actor)).Where(query.And(conversationRunScope(executor, launched.Run.ConversationID), query.Equal("run_id", launched.Run.ID))).Build()
-				if err = conversationExec(t.Context(), repo.store.Database(), q, args, err); err != nil {
-					t.Fatal(err)
-				}
-			}
-			record, err := repo.ConversationContractPublicationRecord(t.Context(), d.ID, 1, issuer)
-			if kind == "original" {
-				if err != nil || len(record.Requirements.Sources) != 1 || record.Requirements.Sources[0] != root {
-					t.Fatal("exact frozen execution roots not restored", record, err)
-				}
-			} else if err == nil {
-				t.Fatal("unknown/corrupt execution metadata manufactured original roots", kind, record)
-			}
-		})
-	}
-}
 
 func contractPublicationFixture(t *testing.T) (*ConversationStore, sdk.ConversationAuthority, sdk.ConversationAuthority, sdk.ConversationDelegation, sdk.ConversationRunReference) {
 	t.Helper()
@@ -85,21 +29,6 @@ func contractPublicationFixture(t *testing.T) (*ConversationStore, sdk.Conversat
 		t.Fatal(err)
 	}
 	return repo, issuer, executor, d, root
-}
-
-func legacyContractSnapshot(t *testing.T, repo *ConversationStore, d sdk.ConversationDelegation, a sdk.ConversationAuthority) sdk.ConversationAgreementRevision {
-	t.Helper()
-	history, err := repo.ConversationAgreementHistory(t.Context(), d.ID, 0, a)
-	if err != nil || len(history.Items) != 1 {
-		t.Fatal(history, err)
-	}
-	entry := history.Items[0]
-	entry.Requirements = nil
-	q, args, err := query.NewUpdateBuilder(repo.store.Renderer(), conversationAgreementTable).Set("payload_json", conversationJSON(entry)).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", d.ID), query.Equal("revision", entry.Revision))).Build()
-	if err = conversationExec(t.Context(), repo.store.Database(), q, args, err); err != nil {
-		t.Fatal(err)
-	}
-	return entry
 }
 
 func TestContractPublicationPreservesOriginalAndBindsActualPublisherWithExactRetry(t *testing.T) {
@@ -175,52 +104,5 @@ func TestContractPublicationPreservesOriginalAndBindsActualPublisherWithExactRet
 	}
 	if !found {
 		t.Fatal("original proof replaced by current publication role", releases)
-	}
-}
-
-func TestLegacyQueuedContractRecoversImmutableAdmissionNotCurrentMetadata(t *testing.T) {
-	repo, issuer, _, d, root := contractPublicationFixture(t)
-	legacy := legacyContractSnapshot(t, repo, d, issuer)
-	d.Requirements = sdk.ConversationAgentRequirements{TaskType: "today-different-task"}
-	q, args, err := query.NewUpdateBuilder(repo.store.Renderer(), conversationDelegationTable).Set("payload_json", conversationJSON(d)).Where(query.And(query.Equal("owner_key", conversationOwner(issuer)), query.Equal("delegation_id", d.ID))).Build()
-	if err = conversationExec(t.Context(), repo.store.Database(), q, args, err); err != nil {
-		t.Fatal(err)
-	}
-	record, err := NewConversationStore(repo.store).ConversationContractPublicationRecord(t.Context(), d.ID, 1, issuer)
-	if err != nil || record.Agreement.Requirements != nil || record.Requirements.TaskType != "original-review" || len(record.Requirements.Sources) != 1 || record.Requirements.Sources[0] != root {
-		t.Fatal("legacy declaration substituted today metadata", record, err)
-	}
-	history, err := repo.ConversationAgreementHistory(t.Context(), d.ID, 0, issuer)
-	if err != nil || conversationHash(history.Items[0]) != conversationHash(legacy) {
-		t.Fatal("virtual recovery changed legacy JSON", err)
-	}
-	// Removing the original receipt makes a queued legacy declaration unknown.
-	q, args, err = query.NewDeleteBuilder(repo.store.Renderer(), conversationCollaborationMutationTable).Where(query.Equal("owner_key", conversationOwner(issuer))).Build()
-	if err = conversationExec(t.Context(), repo.store.Database(), q, args, err); err != nil {
-		t.Fatal(err)
-	}
-	if _, err = repo.ConversationContractPublicationRecord(t.Context(), d.ID, 1, issuer); err == nil {
-		t.Fatal("unproven task/current declaration manufactured original requirements")
-	}
-}
-
-func TestLegacyAssignmentFallbackReadsIssuerHistoryAcrossExecutionOwners(t *testing.T) {
-	repo, issuer, executor, d, root := contractPublicationFixture(t)
-	if err := repo.transaction(t.Context(), func(tx *sql.Tx) error {
-		q, args, err := query.NewDeleteBuilder(repo.store.Renderer(), conversationAssignmentTable).Where(query.And(query.Equal("owner_key", conversationOwner(issuer)), query.Equal("delegation_id", d.ID))).Build()
-		if err = conversationExec(t.Context(), tx, q, args, err); err != nil {
-			return err
-		}
-		entry := sdk.ConversationAgreementRevision{Revision: 1, Brief: d.Brief, FromUserID: issuer.UserID, Source: &root}
-		q, args, err = query.NewUpdateBuilder(repo.store.Renderer(), conversationAgreementTable).Set("payload_json", conversationJSON(entry)).Where(query.And(query.Equal("owner_key", conversationOwner(issuer)), query.Equal("delegation_id", d.ID), query.Equal("revision", 1))).Build()
-		return conversationExec(t.Context(), tx, q, args, err)
-	}); err != nil {
-		t.Fatal(err)
-	}
-	for _, reader := range []sdk.ConversationAuthority{issuer, executor} {
-		assignments, err := repo.ConversationDelegationAssignments(t.Context(), d.ID, reader)
-		if err != nil || len(assignments) != 1 || assignments[0].ActorID != issuer.UserID || assignments[0].Source == nil || *assignments[0].Source != root {
-			t.Fatal("reader owner replaced original issuer history or could not resolve execution-owned task", reader, assignments, err)
-		}
 	}
 }

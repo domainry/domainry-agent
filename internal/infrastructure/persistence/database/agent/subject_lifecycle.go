@@ -37,7 +37,7 @@ func (s SubjectLifecycle) authority(workspaceID, subjectID string) (agentsdk.Con
 }
 
 var agentSubjectOwnerTables = []string{
-	conversationContractPublicationTable, conversationSourceReleaseTable, conversationAgentMessageTable, conversationAgreementTable, conversationAssignmentTable, conversationDeliveryRecordTable, conversationDisagreementTable, conversationDelegationTable, conversationAgentTable, conversationCollaborationMutationTable,
+	conversationContractPublicationTable, conversationSourceReleaseTable, conversationAgentMessageTable, conversationPeerLinkTable, conversationCollaborationMutationTable,
 	"_agent_conversation_interactions", conversationRunStepTable,
 	conversationItemTable, agentRunTable, conversationTaskTable, "_agent_conversations", conversationMemoryChangeTable, "_agent_user_memories",
 }
@@ -50,23 +50,26 @@ func agentSubjectOwnerPredicate(table, owner string) query.Predicate {
 	if table == conversationSourceReleaseTable {
 		return query.Or(owned, query.Equal("producer_key", owner))
 	}
+	if table == conversationPeerLinkTable {
+		return query.Or(
+			owned,
+			query.And(
+				query.In("link_kind", conversationPeerLinkKindParticipant, conversationPeerLinkKindUseGrant),
+				query.Equal("peer_key", owner),
+			),
+		)
+	}
 	return owned
 }
 
 func agentSubjectIndexedTables() map[string][]string {
 	return map[string][]string{
 		conversationDelegationSubjectTable: {"owner_key", "delegation_id", "execution_owner_key", "source_authority_json", "execution_authority_json", "created_at"},
-		conversationParticipantTable:       {"owner_key", "delegation_id", "viewer_key", "owner_user_id", "revision", "created_at"},
-		conversationAgentGrantTable:        {"owner_key", "agent_id", "viewer_key", "owner_user_id"},
 	}
 }
 
 func agentSubjectIndexPredicate(table, owner string) query.Predicate {
-	other := "viewer_key"
-	if table == conversationDelegationSubjectTable {
-		other = "execution_owner_key"
-	}
-	return query.Or(query.Equal("owner_key", owner), query.Equal(other, owner))
+	return query.Or(query.Equal("owner_key", owner), query.Equal("execution_owner_key", owner))
 }
 
 func (s SubjectLifecycle) PreviewSubject(ctx context.Context, workspaceID, subjectID string) (json.RawMessage, error) {
@@ -176,7 +179,7 @@ func (s SubjectLifecycle) payloads(ctx context.Context, table string, predicate 
 	defer rows.Close()
 	items := []json.RawMessage{}
 	for rows.Next() {
-		var raw json.RawMessage
+		var raw []byte
 		if err := rows.Scan(&raw); err != nil {
 			return nil, err
 		}

@@ -109,7 +109,7 @@ func (s *ConversationStore) shareParticipantDeliveryHistory(ctx context.Context,
 	}
 	// A grant covers submitted history; collect it in the same transaction as
 	// the current grant/revision. Arbitrary private execution is never queried.
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDeliveryRecordTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(publisher)), query.Equal("delegation_id", d.ID))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(delegationHistoryPredicate(conversationOwner(publisher), conversationItemDelegationDelivery, d.ID, "")).Build()
 	if err != nil {
 		return err
 	}

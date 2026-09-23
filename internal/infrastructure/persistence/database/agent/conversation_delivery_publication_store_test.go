@@ -1,12 +1,10 @@
 package agent
 
 import (
-	"database/sql"
 	"strings"
 	"testing"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-agent-sdk/persistence"
 )
 
 func TestRepublishAcceptedDeliveryPreservesOriginalTaskAndHistory(t *testing.T) {
@@ -103,42 +101,5 @@ func TestRepublishAcceptedDeliveryPreservesOriginalTaskAndHistory(t *testing.T) 
 	after, err := repo.ConversationDeliveryHistory(t.Context(), d.ID, 0, issuer)
 	if err != nil || len(after.Items) != len(history.Items)+1 {
 		t.Fatal("retry duplicated publication audit", after, err)
-	}
-}
-
-func TestRepublishCurrentLegacyDeliveryCreatesExplicitKnownPublisher(t *testing.T) {
-	repo, issuer, executor, d, root, _ := sourcePublisherFixture(t)
-	original := executor
-	original.RoleKey = "old-proof-role"
-	insertLegacyPublication(t, repo, persistence.ConversationSourceRelease{DelegationID: d.ID, Purpose: "delivery", Reference: root, Producer: original}, issuer)
-	delivery := sdk.ConversationDelegationDelivery{BriefVersion: 1, AgreementRevision: 1, Summary: "Original", Evidence: []sdk.ConversationRunReference{root}}
-	d.Delivery, d.Status = &delivery, "accepted_delivery"
-	if err := repo.transaction(t.Context(), func(tx *sql.Tx) error {
-		return repo.saveConversationDelegation(t.Context(), tx, d, d.Revision, executor)
-	}); err != nil {
-		t.Fatal(err)
-	}
-	current, err := repo.ConversationDeliveryPublicationRecord(t.Context(), d.ID, 0, executor)
-	if err != nil {
-		t.Fatal(err)
-	}
-	out, err := repo.UpdateConversationDelegation(t.Context(), d.ID, sdk.ConversationDelegationUpdate{ClientID: "explicit-old-share", ExpectedRevision: d.Revision, Action: "republish_delivery", Reason: "Explicit share", Publication: &sdk.ConversationDeliveryPublication{RecordDigest: conversationHash(current)}}, executor)
-	if err != nil || out.Status != "accepted_delivery" || out.Verification != nil {
-		t.Fatal("legacy assessment or acceptance manufactured", out, err)
-	}
-	items, err := repo.ConversationSourceReleases(t.Context(), root, issuer)
-	if err != nil || len(items) != 2 {
-		t.Fatal(items, err)
-	}
-	known, unknown := 0, 0
-	for _, item := range items {
-		if item.Publisher == nil {
-			unknown++
-		} else if *item.Publisher == executor {
-			known++
-		}
-	}
-	if known != 1 || unknown != 1 {
-		t.Fatal("explicit share rewrote the old unknown publisher", items)
 	}
 }

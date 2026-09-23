@@ -6,14 +6,18 @@ import (
 )
 
 const (
-	conversationItemTable      = "_agent_conversation_items"
-	conversationItemMessage    = "message"
-	conversationItemModelInput = "model_input"
-	conversationItemSummary    = "summary"
-	conversationItemRunEvent   = "run_event"
-	conversationItemAgreement  = "task_agreement"
-	conversationItemCompletion = "task_completion"
-	conversationItemTaskPlan   = "task_plan"
+	conversationItemTable                  = "_agent_conversation_items"
+	conversationItemMessage                = "message"
+	conversationItemModelInput             = "model_input"
+	conversationItemSummary                = "summary"
+	conversationItemRunEvent               = "run_event"
+	conversationItemAgreement              = "task_agreement"
+	conversationItemCompletion             = "task_completion"
+	conversationItemTaskPlan               = "task_plan"
+	conversationItemDelegationAgreement    = "delegation_agreement"
+	conversationItemDelegationAssignment   = "delegation_assignment"
+	conversationItemDelegationDelivery     = "delegation_delivery"
+	conversationItemDelegationDisagreement = "delegation_disagreement"
 )
 
 // Conversation roots and mutable runs stay separate. Immutable messages,

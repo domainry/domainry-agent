@@ -93,7 +93,7 @@ func (s *ConversationStore) saveConversationWorkLedger(ctx context.Context, tx *
 }
 
 func (s *ConversationStore) conversationWorkDelegationCount(ctx context.Context, db conversationDB, root string) (int, error) {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDelegationTable).Projections(query.Project(query.CountAll())).Where(query.Equal("root_conversation_id", root)).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Projections(query.Project(query.CountAll())).Where(query.And(query.Equal("link_kind", conversationPeerLinkKindDelegation), query.Equal("root_conversation_id", root))).Build()
 	if err != nil {
 		return 0, err
 	}

@@ -64,7 +64,10 @@ func disagreementSources(value sdk.ConversationDisagreement) []sdk.ConversationR
 
 func (s *ConversationStore) readDisagreement(ctx context.Context, db conversationDB, did, id string, revision int64, a sdk.ConversationAuthority) (sdk.ConversationDisagreement, error) {
 	var out sdk.ConversationDisagreement
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDisagreementTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", did), query.Equal("disagreement_id", id), query.Equal("revision", revision))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(
+		delegationHistoryPredicate(conversationOwner(a), conversationItemDelegationDisagreement, did, id),
+		query.Equal("seq", revision),
+	)).Build()
 	if err != nil {
 		return out, err
 	}
@@ -79,16 +82,15 @@ func (s *ConversationStore) readDisagreement(ctx context.Context, db conversatio
 	return out, err
 }
 
-func (s *ConversationStore) saveDisagreement(ctx context.Context, tx *sql.Tx, did string, value sdk.ConversationDisagreement, a sdk.ConversationAuthority) error {
+func (s *ConversationStore) saveDisagreement(ctx context.Context, tx *sql.Tx, d sdk.ConversationDelegation, value sdk.ConversationDisagreement, a sdk.ConversationAuthority) error {
 	raw := conversationJSON(value)
 	if len(raw) > 24576 || len(value.Sources) > 32 {
 		return conversationError("rate_limited", "disagreement_capacity")
 	}
-	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationDisagreementTable).Columns("owner_key", "delegation_id", "disagreement_id", "revision", "payload_json").Values(conversationOwner(a), did, value.ID, value.Revision, raw).OnConflictDoNothing("owner_key", "delegation_id", "disagreement_id", "revision").Build()
-	if err = conversationExec(ctx, tx, q, args, err); err != nil {
+	if err := s.insertDelegationHistory(ctx, tx, conversationItemDelegationDisagreement, d, value.ID, value.Revision, value.Actor.Source, value, a); err != nil {
 		return err
 	}
-	saved, err := s.readDisagreement(ctx, tx, did, value.ID, value.Revision, a)
+	saved, err := s.readDisagreement(ctx, tx, d.ID, value.ID, value.Revision, delegationRecordAuthority(d, a))
 	if err != nil {
 		return err
 	}
@@ -138,7 +140,7 @@ func (s *ConversationStore) applyDisagreement(ctx context.Context, tx *sql.Tx, d
 		if d.Disagreements[index].Revision != in.ExpectedRevision {
 			return conversationError("conflict", "disagreement_changed")
 		}
-		value, err = s.readDisagreement(ctx, tx, d.ID, in.ID, in.ExpectedRevision, a)
+		value, err = s.readDisagreement(ctx, tx, d.ID, in.ID, in.ExpectedRevision, delegationRecordAuthority(*d, a))
 		if err != nil {
 			return err
 		}
@@ -199,7 +201,7 @@ func (s *ConversationStore) applyDisagreement(ctx context.Context, tx *sql.Tx, d
 		}
 	}
 	value.Sources = disagreementSources(value)
-	if err = s.saveDisagreement(ctx, tx, d.ID, value, a); err != nil {
+	if err = s.saveDisagreement(ctx, tx, *d, value, a); err != nil {
 		return err
 	}
 	if index < 0 {
@@ -293,11 +295,11 @@ func (s *ConversationStore) ConversationDisagreementHistory(ctx context.Context,
 	if before < 0 {
 		return out, conversationError("bad_request", "cursor_invalid")
 	}
-	p := query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("delegation_id", did), query.Equal("disagreement_id", id))
+	p := delegationHistoryPredicate(conversationOwner(delegationRecordAuthority(d, a)), conversationItemDelegationDisagreement, did, id)
 	if before > 0 {
-		p = query.And(p, query.LessThan("revision", before))
+		p = query.And(p, query.LessThan("seq", before))
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationDisagreementTable).Columns("payload_json").Where(p).OrderBy(query.Descending("revision")).Limit(3).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(p).OrderBy(query.Descending("seq")).Limit(3).Build()
 	if err != nil {
 		return out, err
 	}
@@ -347,7 +349,7 @@ func (s *ConversationStore) transferDisagreementResponsibilities(ctx context.Con
 		value.Reason = in.Reason
 		value.UpdatedAt = after.UpdatedAt
 		value.Sources = disagreementSources(value)
-		if err = s.saveDisagreement(ctx, tx, after.ID, value, record); err != nil {
+		if err = s.saveDisagreement(ctx, tx, *after, value, record); err != nil {
 			return err
 		}
 		after.Disagreements[i] = value.ConversationDisagreementSummary

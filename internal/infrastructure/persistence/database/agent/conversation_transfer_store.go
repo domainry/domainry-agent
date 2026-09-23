@@ -130,7 +130,7 @@ func (s *ConversationStore) TransferConversationDelegation(ctx context.Context, 
 		}
 		// Active outgoing work still reports to this assignment's conversation.
 		// Do not strand it by silently changing who is responsible for it.
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationDelegationTable).Projections(query.Project(query.CountAll())).Where(query.And(query.Equal("owner_key", conversationOwner(subjects.execution)), query.Equal("source_conversation_id", d.ConversationID), query.Not(query.In("status", "accepted_delivery", "cancelled", "rejected")))).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Projections(query.Project(query.CountAll())).Where(query.And(query.Equal("link_kind", conversationPeerLinkKindDelegation), query.Equal("owner_key", conversationOwner(subjects.execution)), query.Equal("source_conversation_id", d.ConversationID), query.Not(query.In("status", "accepted_delivery", "cancelled", "rejected")))).Build()
 		if err != nil {
 			return err
 		}
@@ -232,9 +232,6 @@ func (s *ConversationStore) TransferConversationDelegation(ctx context.Context, 
 		out.Revision++
 		out.UpdatedAt = now
 		if err = s.transferDisagreementResponsibilities(ctx, tx, d, &out, in.Request, a); err != nil {
-			return err
-		}
-		if err = s.preserveLegacyDelivery(ctx, tx, d, a); err != nil {
 			return err
 		}
 		if err = s.saveConversationDelegation(ctx, tx, out, d.Revision, a); err != nil {

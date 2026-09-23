@@ -95,8 +95,7 @@ func (s *ConversationStore) saveDelegationDeliveryReleases(ctx context.Context, 
 	if conversationOwner(a) != conversationOwner(subjects.execution) {
 		return conversationError("forbidden", "execution_subject_mismatch")
 	}
-	// A legacy/same-identity delegation has no separate subject row; the
-	// caller-scoped fallback still publishes older roles owned by that user.
+	// Same-identity delegation can use the caller-scoped subject projection.
 	// saveSourceReleases resolves each immutable run's original authority.
 	refs := append([]sdk.ConversationRunReference{}, d.Delivery.Evidence...)
 	for _, claim := range d.Delivery.Conditions {
@@ -151,7 +150,7 @@ func (s *ConversationStore) ConversationSourceReleases(ctx context.Context, ref 
 	if err := rows.Close(); err != nil {
 		return nil, err
 	}
-	return s.restoreLegacySourcePublishers(ctx, items, a)
+	return items, nil
 }
 
 var _ persistence.ConversationSourceReleaseRepository = (*ConversationStore)(nil)

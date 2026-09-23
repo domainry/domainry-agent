@@ -29,7 +29,7 @@ func (s *ConversationStore) saveConversationAgentGrants(ctx context.Context, tx 
 	if err := validateAgentSharingUsers(agent.SharedWithUserIDs, a.UserID); err != nil {
 		return err
 	}
-	q, args, err := query.NewDeleteBuilder(s.store.Renderer(), conversationAgentGrantTable).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("agent_id", agent.ID))).Build()
+	q, args, err := query.NewDeleteBuilder(s.store.Renderer(), conversationPeerLinkTable).Where(query.And(query.Equal("link_kind", conversationPeerLinkKindUseGrant), query.Equal("owner_key", conversationOwner(a)), query.Equal("link_id", agent.ID))).Build()
 	if err = conversationExec(ctx, tx, q, args, err); err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func (s *ConversationStore) saveConversationAgentGrants(ctx context.Context, tx 
 		if count >= 64 {
 			return conversationError("rate_limited", "agent_limit")
 		}
-		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationAgentGrantTable).Columns("owner_key", "agent_id", "viewer_key", "owner_user_id").Values(conversationOwner(a), agent.ID, conversationOwner(viewer), a.UserID).Build()
+		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("link_kind", "owner_key", "link_id", "peer_key", "scope_key", "owner_user_id", "revision", "created_at", "updated_at", "payload_json").Values(conversationPeerLinkKindUseGrant, conversationOwner(a), agent.ID, conversationOwner(viewer), agent.ID, a.UserID, agent.Revision, agent.UpdatedAt.UnixMilli(), agent.UpdatedAt.UnixMilli(), "{}").Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}
@@ -52,8 +52,8 @@ func (s *ConversationStore) saveConversationAgentGrants(ctx context.Context, tx 
 
 func (s *ConversationStore) visibleConversationAgentCount(ctx context.Context, db conversationDB, a sdk.ConversationAuthority) (int, error) {
 	total := 0
-	for _, source := range []struct{ table, key string }{{conversationAgentTable, "owner_key"}, {conversationAgentGrantTable, "viewer_key"}} {
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), source.table).Projections(query.Project(query.CountAll())).Where(query.Equal(source.key, conversationOwner(a))).Build()
+	for _, source := range []struct{ kind, key string }{{conversationPeerLinkKindInstance, "owner_key"}, {conversationPeerLinkKindUseGrant, "peer_key"}} {
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Projections(query.Project(query.CountAll())).Where(query.And(query.Equal("link_kind", source.kind), query.Equal(source.key, conversationOwner(a)))).Build()
 		if err != nil {
 			return 0, err
 		}
@@ -68,8 +68,8 @@ func (s *ConversationStore) visibleConversationAgentCount(ctx context.Context, d
 
 func (s *ConversationStore) visibleConversationAgentIDs(ctx context.Context, tx *sql.Tx, a sdk.ConversationAuthority) (map[string]bool, error) {
 	out := map[string]bool{"default": true}
-	for _, source := range []struct{ table, key string }{{conversationAgentTable, "owner_key"}, {conversationAgentGrantTable, "viewer_key"}} {
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), source.table).Columns("agent_id").Where(query.Equal(source.key, conversationOwner(a))).Build()
+	for _, source := range []struct{ kind, key string }{{conversationPeerLinkKindInstance, "owner_key"}, {conversationPeerLinkKindUseGrant, "peer_key"}} {
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("link_id").Where(query.And(query.Equal("link_kind", source.kind), query.Equal(source.key, conversationOwner(a)))).Build()
 		if err != nil {
 			return nil, err
 		}
@@ -109,7 +109,7 @@ func (s *ConversationStore) sharedConversationAgent(ctx context.Context, db conv
 	if err := conversationAuthority(a); err != nil {
 		return out, err
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAgentGrantTable).Columns("owner_key", "owner_user_id").Where(query.And(query.Equal("viewer_key", conversationOwner(a)), query.Equal("agent_id", id))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("owner_key", "owner_user_id").Where(query.And(query.Equal("link_kind", conversationPeerLinkKindUseGrant), query.Equal("peer_key", conversationOwner(a)), query.Equal("link_id", id))).Build()
 	if err != nil {
 		return out, err
 	}
@@ -138,7 +138,7 @@ func (s *ConversationStore) sharedConversationAgent(ctx context.Context, db conv
 }
 
 func (s *ConversationStore) sharedConversationAgents(ctx context.Context, a sdk.ConversationAuthority) ([]sdk.ConversationAgent, error) {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationAgentGrantTable).Columns("agent_id").Where(query.Equal("viewer_key", conversationOwner(a))).OrderBy(query.Ascending("agent_id")).Limit(64).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationPeerLinkTable).Columns("link_id").Where(query.And(query.Equal("link_kind", conversationPeerLinkKindUseGrant), query.Equal("peer_key", conversationOwner(a)))).OrderBy(query.Ascending("link_id")).Limit(64).Build()
 	if err != nil {
 		return nil, err
 	}

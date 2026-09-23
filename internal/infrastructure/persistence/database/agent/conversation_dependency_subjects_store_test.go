@@ -235,7 +235,7 @@ func TestCrossOwnerDependencyChangeStopsTransitiveOriginalWorkersAndPreservesRea
 	foreignWork.RootConversationID = root.RootConversationID
 	foreignWork.Dependencies = child.Dependencies
 	err = repo.transaction(t.Context(), func(tx *sql.Tx) error {
-		q, args, e := query.NewUpdateBuilder(repo.store.Renderer(), conversationDelegationTable).Set("root_conversation_id", root.RootConversationID).Set("payload_json", conversationJSON(foreignWork)).Where(query.And(query.Equal("owner_key", conversationOwner(foreign)), query.Equal("delegation_id", foreignWork.ID))).Build()
+		q, args, e := query.NewUpdateBuilder(repo.store.Renderer(), conversationPeerLinkTable).Set("root_conversation_id", root.RootConversationID).Set("payload_json", conversationJSON(foreignWork)).Where(query.And(query.Equal("link_kind", conversationPeerLinkKindDelegation), query.Equal("owner_key", conversationOwner(foreign)), query.Equal("link_id", foreignWork.ID))).Build()
 		return conversationExec(t.Context(), tx, q, args, e)
 	})
 	if err != nil {

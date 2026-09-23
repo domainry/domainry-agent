@@ -97,7 +97,7 @@ func TestPeerDisagreementBlocksAcceptancePreservesHistoryAndBindsCurrentContext(
 	}
 	changed := history.Items[0]
 	changed.Claims[0].Conclusion = "Rewrite old evidence"
-	if err = repo.transaction(t.Context(), func(tx *sql.Tx) error { return repo.saveDisagreement(t.Context(), tx, d.ID, changed, a) }); err == nil {
+	if err = repo.transaction(t.Context(), func(tx *sql.Tx) error { return repo.saveDisagreement(t.Context(), tx, d, changed, a) }); err == nil {
 		t.Fatal("old issue snapshot overwritten")
 	}
 	other := a
