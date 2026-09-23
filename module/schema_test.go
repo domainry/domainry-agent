@@ -22,3 +22,19 @@ func TestModulePublishesOnlyAgentOwnedSchema(t *testing.T) {
 		}
 	}
 }
+
+func TestModulePublishesCanonicalAgentMigrations(t *testing.T) {
+	migrations, err := SchemaMigrations("sqlite", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	statements := ""
+	for _, migration := range migrations {
+		statements += strings.Join(migration.Statements, "\n")
+	}
+	for _, table := range OwnedTables() {
+		if !strings.Contains(statements, `CREATE TABLE IF NOT EXISTS "`+table+`"`) {
+			t.Fatalf("canonical Agent migrations omit %s", table)
+		}
+	}
+}
