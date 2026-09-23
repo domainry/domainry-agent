@@ -84,7 +84,8 @@ func (s *ConversationStore) event(ctx context.Context, tx *sql.Tx, v *conversati
 	v.Run.LastEventSeq = v.EventSeq
 	v.Run.UpdatedAt = time.Now().UTC()
 	e := agentsdk.ConversationEvent{RunID: v.Run.ID, Seq: v.EventSeq, Type: kind, Data: data, CreatedAt: time.Now().UTC()}
-	q, args, err := query.NewInsertBuilder(s.store.Renderer(), "_agent_conversation_events").Columns("owner_key", "conversation_id", "run_id", "seq", "payload_json").Values(conversationOwner(v.Authority), v.Run.ConversationID, v.Run.ID, e.Seq, conversationJSON(e)).Build()
+	itemKey := conversationRunEventItemKey(v.Run.ID, e.Seq)
+	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationItemTable).Columns("owner_key", "conversation_id", "item_kind", "item_key", "reference_id", "run_id", "seq", "payload_json").Values(conversationOwner(v.Authority), v.Run.ConversationID, conversationItemRunEvent, itemKey, itemKey, v.Run.ID, e.Seq, conversationJSON(e)).Build()
 	return conversationExec(ctx, tx, q, args, err)
 }
 func (s *ConversationStore) Enqueue(ctx context.Context, id string, in agentsdk.ConversationSend, a agentsdk.ConversationAuthority) (agentsdk.ConversationRun, error) {
@@ -516,7 +517,7 @@ func (s *ConversationStore) Events(ctx context.Context, id, runID string, after 
 	if after > row.EventSeq {
 		return out, conversationError("bad_request", "cursor_invalid")
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_events").Columns("payload_json").Where(query.And(conversationScope(a, id), query.Equal("run_id", runID), query.GreaterThan("seq", after), query.LessThanOrEqual("seq", row.EventSeq))).OrderBy(query.Ascending("seq")).Limit(conversationLimit(limit)).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(conversationItemScope(a, id, conversationItemRunEvent), query.Equal("run_id", runID), query.GreaterThan("seq", after), query.LessThanOrEqual("seq", row.EventSeq))).OrderBy(query.Ascending("seq")).Limit(conversationLimit(limit)).Build()
 	if err != nil {
 		return out, err
 	}

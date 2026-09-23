@@ -21,8 +21,8 @@ func (s *ConversationStore) ModelInput(ctx context.Context, claim agentpersisten
 		if err != nil {
 			return err
 		}
-		p := query.And(conversationScope(claim.Authority, claim.Run.ConversationID), query.Equal("run_id", claim.Run.ID))
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_inputs").Columns("payload_json").Where(p).Build()
+		p := query.And(conversationItemScope(claim.Authority, claim.Run.ConversationID, conversationItemModelInput), query.Equal("run_id", claim.Run.ID))
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(p).Build()
 		if err != nil {
 			return err
 		}
@@ -43,7 +43,7 @@ func (s *ConversationStore) ModelInput(ctx context.Context, claim agentpersisten
 			return conversationError("bad_request", "model_input_invalid")
 		}
 		old := row
-		q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversation_inputs").Columns("owner_key", "conversation_id", "run_id", "payload_json").Values(conversationOwner(claim.Authority), claim.Run.ConversationID, claim.Run.ID, conversationJSON(input)).Build()
+		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationItemTable).Columns("owner_key", "conversation_id", "item_kind", "item_key", "reference_id", "run_id", "seq", "payload_json").Values(conversationOwner(claim.Authority), claim.Run.ConversationID, conversationItemModelInput, claim.Run.ID, claim.Run.ID, claim.Run.ID, claim.Run.UserSeq, conversationJSON(input)).Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}

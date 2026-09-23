@@ -46,7 +46,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 		out.Run = row.Run
 		out.Authority = row.Authority
 		predicate := query.And(conversationScope(a, ref.ConversationID), query.Equal("run_id", ref.RunID))
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_inputs").Columns("payload_json").Where(predicate).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(predicate, query.Equal("item_kind", conversationItemModelInput))).Build()
 		if err != nil {
 			return err
 		}
@@ -95,7 +95,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 		}
 		stepRows.Close()
 		if row.Run.AssistantMessageID != "" {
-			q, args, err = query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_messages").Columns("payload_json").Where(query.And(conversationScope(a, ref.ConversationID), query.Equal("message_id", row.Run.AssistantMessageID), query.Equal("run_id", ref.RunID))).Build()
+			q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(conversationItemScope(a, ref.ConversationID, conversationItemMessage), query.Equal("reference_id", row.Run.AssistantMessageID), query.Equal("run_id", ref.RunID))).Build()
 			if err != nil {
 				return err
 			}

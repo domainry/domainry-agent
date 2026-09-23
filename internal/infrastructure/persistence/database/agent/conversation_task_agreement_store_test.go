@@ -95,7 +95,7 @@ func TestConversationTaskAgreementPersistsCurrentGoalAndStartsANewRun(t *testing
 		t.Fatalf("replacement after failure=%+v replay=%v err=%v", updatedAgain, replay, err)
 	}
 	var raw []byte
-	if err = store.Database().QueryRowContext(t.Context(), `SELECT payload_json FROM _agent_conversation_task_agreement_updates WHERE task_id = ? AND client_id = ?`, receipt.Task.ID, "goal-update-3").Scan(&raw); err != nil {
+	if err = store.Database().QueryRowContext(t.Context(), `SELECT payload_json FROM _agent_conversation_items WHERE item_kind = 'task_agreement' AND subject_id = ? AND reference_id = ?`, receipt.Task.ID, conversationTaskItemReference(receipt.Task.ID, "goal-update-3")).Scan(&raw); err != nil {
 		t.Fatal(err)
 	}
 	var mutation conversationTaskAgreementUpdateRecord

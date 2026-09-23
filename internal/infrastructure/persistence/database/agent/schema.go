@@ -164,15 +164,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	taskAgreements, err := conversationTaskAgreementUpdateMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
 	taskPlans, err := conversationTaskPlanMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	taskCompletions, err := conversationTaskCompletionMigration(renderer)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +180,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, libraries, documents, datasources, parses, retired, attachmentIndex, tasks, scheduledTasks, followUps, subjects, capacity, collaboration, agreements, assignments, deliveries, disagreements, agentSharing, participants, subjectsBinding, sourceReleases, contractPublications, workBudgets, taskAgreements, taskPlans, taskCompletions, forks, improvements, memories}, nil
+	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, todos, artifacts, libraries, documents, datasources, parses, retired, attachmentIndex, tasks, scheduledTasks, followUps, subjects, capacity, collaboration, agreements, assignments, deliveries, disagreements, agentSharing, participants, subjectsBinding, sourceReleases, contractPublications, workBudgets, taskPlans, forks, improvements, memories}, nil
 }
 
 func workerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {

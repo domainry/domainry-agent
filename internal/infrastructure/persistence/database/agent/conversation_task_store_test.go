@@ -145,7 +145,7 @@ func TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable(t *testing.T
 		Goal: start.Goal, Input: start.Input, Budget: budget, SourceConversationID: request.ConversationID, SourceRunID: request.RunID,
 		ToolScope: []agentsdk.ConversationTaskToolScope{{Key: timeDefinition.Key, Version: timeDefinition.Version, ActionKey: timeDefinition.ActionKey, DefinitionHash: conversationHash(timeDefinition), AuthorizationRevision: "auth-v1"}},
 	}
-	if _, err = store.Database().ExecContext(t.Context(), `CREATE TRIGGER fail_task_receipt BEFORE INSERT ON _agent_conversation_events WHEN CAST(NEW.payload_json AS TEXT) LIKE '%tool.completed%' BEGIN SELECT RAISE(ABORT, 'injected task receipt failure'); END`); err != nil {
+	if _, err = store.Database().ExecContext(t.Context(), `CREATE TRIGGER fail_task_receipt BEFORE INSERT ON _agent_conversation_items WHEN NEW.item_kind = 'run_event' AND CAST(NEW.payload_json AS TEXT) LIKE '%tool.completed%' BEGIN SELECT RAISE(ABORT, 'injected task receipt failure'); END`); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = repo.ApplyConversationTaskTool(t.Context(), request, prepared); err == nil {
@@ -226,7 +226,7 @@ func TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable(t *testing.T
 		t.Fatalf("completed task=%+v err=%v", completed, err)
 	}
 	var terminalEvents int
-	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_events WHERE conversation_id = ? AND run_id = ? AND CAST(payload_json AS TEXT) LIKE '%"type":"run.completed"%'`, request.ConversationID, launch.Run.ID).Scan(&terminalEvents); err != nil || terminalEvents != 1 {
+	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_items WHERE item_kind = 'run_event' AND conversation_id = ? AND run_id = ? AND CAST(payload_json AS TEXT) LIKE '%"type":"run.completed"%'`, request.ConversationID, launch.Run.ID).Scan(&terminalEvents); err != nil || terminalEvents != 1 {
 		t.Fatalf("terminal events=%d err=%v", terminalEvents, err)
 	}
 	if err = repo.Finish(t.Context(), child, agentsdk.ConversationModelResult{Content: "build 42 已核对"}, ""); err == nil {
@@ -236,7 +236,7 @@ func TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable(t *testing.T
 	if err != nil || again.CompletionEventID != completed.CompletionEventID || again.CompletionEventSeq != completed.CompletionEventSeq {
 		t.Fatalf("completion receipt changed after replay: before=%+v after=%+v err=%v", completed, again, err)
 	}
-	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_events WHERE conversation_id = ? AND run_id = ? AND CAST(payload_json AS TEXT) LIKE '%"type":"run.completed"%'`, request.ConversationID, launch.Run.ID).Scan(&terminalEvents); err != nil || terminalEvents != 1 {
+	if err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_items WHERE item_kind = 'run_event' AND conversation_id = ? AND run_id = ? AND CAST(payload_json AS TEXT) LIKE '%"type":"run.completed"%'`, request.ConversationID, launch.Run.ID).Scan(&terminalEvents); err != nil || terminalEvents != 1 {
 		t.Fatalf("terminal event replayed: count=%d err=%v", terminalEvents, err)
 	}
 	page, err = repo.Messages(t.Context(), request.ConversationID, agentsdk.ConversationMessageQuery{Limit: 20}, request.Authority)

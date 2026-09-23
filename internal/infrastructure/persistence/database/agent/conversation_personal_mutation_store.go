@@ -167,7 +167,7 @@ func (s *ConversationStore) personalMemoryToolSource(ctx context.Context, tx *sq
 	if claim.Run.UserSeq < 1 {
 		return source, nil
 	}
-	q, queryArgs, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_messages").Columns("payload_json").Where(query.And(conversationScope(claim.Authority, claim.Run.ConversationID), query.Equal("seq", claim.Run.UserSeq))).Build()
+	q, queryArgs, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(conversationItemScope(claim.Authority, claim.Run.ConversationID, conversationItemMessage), query.Equal("seq", claim.Run.UserSeq))).Build()
 	if err != nil {
 		return source, err
 	}

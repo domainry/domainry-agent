@@ -482,7 +482,7 @@ func TestBackgroundTaskPersistsVersionedPlanThroughIdentityHTTPAndSQLite(t *test
 	if err = json.Unmarshal(b.call("GET", "/agent/conversation-tasks/"+reviewReceipt.Task.ID+"/completions", "", 200).Body.Bytes(), &completionHistory); err != nil || len(completionHistory.Items) != 2 || completionHistory.Items[0].Revision != 2 || completionHistory.Items[1].Revision != 1 || !completionHistory.Items[0].Verification.Ready || completionHistory.Items[1].Verification.Ready {
 		t.Fatalf("review completion history=%+v err=%v", completionHistory, err)
 	}
-	if err = host.db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_task_completions WHERE task_id = ?`, reviewReceipt.Task.ID).Scan(&persisted); err != nil || persisted != 2 {
+	if err = host.db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_items WHERE item_kind = 'task_completion' AND subject_id = ?`, reviewReceipt.Task.ID).Scan(&persisted); err != nil || persisted != 2 {
 		t.Fatalf("persisted completion revisions=%d err=%v", persisted, err)
 	}
 	comparisonBudget := agentsdk.ConversationTaskBudget{MaxSteps: 1, MaxToolCalls: 1, MaxOutputBytes: 2048, TimeoutSeconds: 30}

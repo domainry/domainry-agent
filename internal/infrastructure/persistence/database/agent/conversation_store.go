@@ -54,7 +54,7 @@ func (s *ConversationStore) BindArtifactPersistence(store sharedartifact.Managed
 }
 
 func (s *ConversationStore) Ready(ctx context.Context) error {
-	for _, table := range []string{"_agent_conversations", "_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_user_memories", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", conversationForkTable, interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationTaskPlanTable, conversationTaskCompletionTable, conversationTaskAgreementUpdateTable, conversationFollowUpStateTable, conversationFollowUpEventTable, conversationAgentTable, conversationDelegationTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDisagreementTable, conversationAgentGrantTable, conversationParticipantTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
+	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_conversation_runs", "_agent_user_memories", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", conversationForkTable, interactionTable, "_agent_user_todos", "_agent_todo_mutations", conversationTaskTable, conversationTaskPlanTable, conversationFollowUpStateTable, conversationFollowUpEventTable, conversationAgentTable, conversationDelegationTable, conversationAgentMessageTable, conversationCollaborationMutationTable, conversationDisagreementTable, conversationAgentGrantTable, conversationParticipantTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("owner_key").Limit(1).Build()
 		if err != nil {
 			return err
@@ -383,16 +383,13 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 		if err = conversationCAS(ctx, tx, q, args, e); err != nil {
 			return err
 		}
-		for _, table := range []string{"_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_inputs", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", conversationForkTable, interactionTable} {
+		for _, table := range []string{conversationItemTable, "_agent_conversation_runs", "_agent_conversation_steps", conversationStepSourceTable, "_agent_conversation_tool_calls", conversationForkTable, interactionTable} {
 			q, args, e := query.NewDeleteBuilder(s.store.Renderer(), table).Where(conversationScope(a, id)).Build()
 			if err = conversationExec(ctx, tx, q, args, e); err != nil {
 				return err
 			}
 		}
 		if err = s.deleteConversationTaskPlansForSource(ctx, tx, owner, id); err != nil {
-			return err
-		}
-		if err = s.deleteConversationTaskCompletionsForSource(ctx, tx, owner, id); err != nil {
 			return err
 		}
 		q, args, e = query.NewDeleteBuilder(s.store.Renderer(), conversationTaskTable).Where(query.And(query.Equal("owner_key", owner), query.Equal("source_conversation_id", id))).Build()
@@ -414,7 +411,7 @@ func (s *ConversationStore) Messages(ctx context.Context, id string, in agentsdk
 	if _, err := s.Get(ctx, id, a); err != nil {
 		return out, err
 	}
-	p := []query.Predicate{conversationScope(a, id)}
+	p := []query.Predicate{conversationItemScope(a, id, conversationItemMessage)}
 	if in.BeforeSeq > 0 {
 		p = append(p, query.LessThan("seq", in.BeforeSeq))
 	}
@@ -426,7 +423,7 @@ func (s *ConversationStore) Messages(ctx context.Context, id string, in agentsdk
 	if in.AfterSeq > 0 {
 		order = query.Ascending("seq")
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_messages").Columns("payload_json").Where(query.And(p...)).OrderBy(order).Limit(limit + 1).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(p...)).OrderBy(order).Limit(limit + 1).Build()
 	if err != nil {
 		return out, err
 	}
@@ -466,7 +463,7 @@ func (s *ConversationStore) History(ctx context.Context, id string, after, throu
 	if limit <= 0 || limit > 1000 {
 		limit = 1000
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_messages").Columns("payload_json").Where(query.And(conversationScope(a, id), query.GreaterThan("seq", after), query.LessThanOrEqual("seq", through))).OrderBy(query.Ascending("seq")).Limit(limit).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(conversationItemScope(a, id, conversationItemMessage), query.GreaterThan("seq", after), query.LessThanOrEqual("seq", through))).OrderBy(query.Ascending("seq")).Limit(limit).Build()
 	if err != nil {
 		return nil, err
 	}
@@ -491,6 +488,6 @@ func (s *ConversationStore) History(ctx context.Context, id string, after, throu
 }
 
 func (s *ConversationStore) insertMessage(ctx context.Context, tx *sql.Tx, m agentsdk.ConversationMessage, a agentsdk.ConversationAuthority) error {
-	q, args, err := query.NewInsertBuilder(s.store.Renderer(), "_agent_conversation_messages").Columns("owner_key", "conversation_id", "message_id", "run_id", "seq", "payload_json").Values(conversationOwner(a), m.ConversationID, m.ID, m.RunID, m.Seq, conversationJSON(m)).Build()
+	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationItemTable).Columns("owner_key", "conversation_id", "item_kind", "item_key", "reference_id", "run_id", "seq", "payload_json").Values(conversationOwner(a), m.ConversationID, conversationItemMessage, strconv.FormatInt(m.Seq, 10), m.ID, m.RunID, m.Seq, conversationJSON(m)).Build()
 	return conversationExec(ctx, tx, q, args, err)
 }

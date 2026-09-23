@@ -169,7 +169,7 @@ func (s LifecycleStore) conversationLifecycleActive(ctx context.Context, owner, 
 
 func (s LifecycleStore) conversationLifecyclePayload(ctx context.Context, owner, id string, conversation []byte) (json.RawMessage, error) {
 	graph := map[string]any{"conversation": json.RawMessage(append([]byte(nil), conversation...))}
-	for _, table := range []string{"_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_inputs", "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable, conversationTaskTable} {
+	for _, table := range []string{conversationItemTable, "_agent_conversation_runs", "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable, conversationTaskTable} {
 		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("conversation_id", id))).Build()
 		if table == conversationTaskTable {
 			statement, args, err = query.NewSelectBuilder(s.store.Renderer(), table).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("source_conversation_id", id))).Build()
@@ -203,13 +203,6 @@ func (s LifecycleStore) conversationLifecyclePayload(ctx context.Context, owner,
 	}
 	if len(plans) > 0 {
 		graph[conversationTaskPlanTable] = plans
-	}
-	completions, err := (&ConversationStore{store: s.store}).conversationTaskCompletionPayloadsForSource(ctx, s.store.Database(), owner, id)
-	if err != nil {
-		return nil, err
-	}
-	if len(completions) > 0 {
-		graph[conversationTaskCompletionTable] = completions
 	}
 	return json.Marshal(graph)
 }
@@ -284,7 +277,7 @@ func (s LifecycleStore) deleteConversationLifecycleCandidate(ctx context.Context
 			return execErr
 		}
 		deleted = true
-		for _, table := range []string{"_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_inputs", "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable} {
+		for _, table := range []string{conversationItemTable, "_agent_conversation_runs", "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable} {
 			statement, args, buildErr = query.NewDeleteBuilder(s.store.Renderer(), table).Where(query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("conversation_id", candidate.ResourceID))).Build()
 			if buildErr != nil {
 				return buildErr
@@ -294,9 +287,6 @@ func (s LifecycleStore) deleteConversationLifecycleCandidate(ctx context.Context
 			}
 		}
 		if execErr = (&ConversationStore{store: s.store}).deleteConversationTaskPlansForSource(ctx, tx, candidate.OwnerKey, candidate.ResourceID); execErr != nil {
-			return execErr
-		}
-		if execErr = (&ConversationStore{store: s.store}).deleteConversationTaskCompletionsForSource(ctx, tx, candidate.OwnerKey, candidate.ResourceID); execErr != nil {
 			return execErr
 		}
 		statement, args, buildErr = query.NewDeleteBuilder(s.store.Renderer(), conversationTaskTable).Where(query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("source_conversation_id", candidate.ResourceID))).Build()

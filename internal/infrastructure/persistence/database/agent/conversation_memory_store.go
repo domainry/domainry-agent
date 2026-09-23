@@ -19,7 +19,7 @@ func (s *ConversationStore) Summary(ctx context.Context, id string, a agentsdk.C
 	if err != nil || c.SummaryID == "" {
 		return out, err
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_summaries").Columns("payload_json").Where(query.And(conversationScope(a, id), query.Equal("summary_id", c.SummaryID))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(conversationItemScope(a, id, conversationItemSummary), query.Equal("reference_id", c.SummaryID))).Build()
 	if err != nil {
 		return out, err
 	}
@@ -45,7 +45,7 @@ func (s *ConversationStore) SaveSummary(ctx context.Context, claim agentpersiste
 			return conversationError("conflict", "summary_stale")
 		}
 		if summary.PreviousID != "" {
-			q, args, e := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_summaries").Columns("through_seq").Where(query.And(conversationScope(claim.Authority, c.ID), query.Equal("summary_id", summary.PreviousID))).Build()
+			q, args, e := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("seq").Where(query.And(conversationItemScope(claim.Authority, c.ID, conversationItemSummary), query.Equal("reference_id", summary.PreviousID))).Build()
 			if e != nil {
 				return e
 			}
@@ -57,7 +57,7 @@ func (s *ConversationStore) SaveSummary(ctx context.Context, claim agentpersiste
 				return conversationError("conflict", "summary_stale")
 			}
 		}
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_messages").Columns("payload_json").Where(query.And(conversationScope(claim.Authority, c.ID), query.Equal("seq", summary.ThroughSeq))).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(conversationItemScope(claim.Authority, c.ID, conversationItemMessage), query.Equal("seq", summary.ThroughSeq))).Build()
 		if err != nil {
 			return err
 		}
@@ -72,7 +72,7 @@ func (s *ConversationStore) SaveSummary(ctx context.Context, claim agentpersiste
 		if boundary.Role != "assistant" {
 			return conversationError("bad_request", "summary_boundary_invalid")
 		}
-		q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversation_summaries").Columns("owner_key", "conversation_id", "summary_id", "through_seq", "payload_json").Values(conversationOwner(claim.Authority), c.ID, summary.ID, summary.ThroughSeq, conversationJSON(summary)).Build()
+		q, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationItemTable).Columns("owner_key", "conversation_id", "item_kind", "item_key", "reference_id", "run_id", "seq", "payload_json").Values(conversationOwner(claim.Authority), c.ID, conversationItemSummary, summary.ID, summary.ID, claim.Run.ID, summary.ThroughSeq, conversationJSON(summary)).Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}

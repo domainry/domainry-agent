@@ -74,12 +74,13 @@ func (s *ConversationStore) SearchHistory(ctx context.Context, in agentsdk.Conve
 		if err != nil || json.Unmarshal(raw, &cursor) != nil || cursor.Owner != owner || cursor.Query != hash || len(cursor.Before) > 96 || cursor.Before == "" {
 			return out, conversationError("bad_request", "history_cursor_invalid")
 		}
-		predicate = query.And(predicate, query.LessThan("message_id", cursor.Before))
+		predicate = query.And(predicate, query.LessThan("reference_id", cursor.Before))
 	}
-	// The existing message table stores its original content in an opaque JSON
+	predicate = query.And(predicate, query.Equal("item_kind", conversationItemMessage))
+	// The typed item journal stores original message content in an opaque JSON
 	// payload. Scan bounded keyset pages instead of searching JSON encodings or
 	// silently claiming that a capped scan searched the whole user's history.
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_messages").Columns("payload_json").Where(predicate).OrderBy(query.Descending("message_id")).Limit(301).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(predicate).OrderBy(query.Descending("reference_id")).Limit(301).Build()
 	if err != nil {
 		return out, err
 	}
@@ -127,7 +128,7 @@ func (s *ConversationStore) HistoryMessage(ctx context.Context, conversationID, 
 	if _, err := s.Get(ctx, conversationID, a); err != nil {
 		return out, err
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_messages").Columns("payload_json").Where(query.And(conversationScope(a, conversationID), query.Equal("message_id", messageID))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(conversationItemScope(a, conversationID, conversationItemMessage), query.Equal("reference_id", messageID))).Build()
 	if err != nil {
 		return out, err
 	}

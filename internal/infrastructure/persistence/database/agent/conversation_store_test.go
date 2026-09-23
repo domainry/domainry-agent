@@ -226,7 +226,7 @@ func TestConversationRestartLeaseFenceAndFrozenInput(t *testing.T) {
 	}
 	_, err = repo.Get(ctx, c.ID, a)
 	requireConversationCode(t, err, "not_found")
-	for _, table := range []string{"_agent_conversation_messages", "_agent_conversation_runs", "_agent_conversation_events", "_agent_conversation_inputs"} {
+	for _, table := range []string{conversationItemTable, "_agent_conversation_runs"} {
 		var count int
 		if err = db.QueryRowContext(context.Background(), "SELECT COUNT(*) FROM "+table).Scan(&count); err != nil || count != 0 {
 			t.Fatalf("delete %s count=%d err=%v", table, count, err)

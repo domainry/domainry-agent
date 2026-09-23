@@ -104,8 +104,8 @@ func (s *ConversationStore) projectConversationRunAudit(ctx context.Context, run
 	run.Metrics = agentsdk.ConversationRunMetrics{Steps: len(run.Steps)}
 	run.Audit = []agentsdk.ConversationRunAuditEvent{}
 	run.AuditComplete = true
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_events").Columns("payload_json").
-		Where(query.And(conversationScope(a, run.ConversationID), query.Equal("run_id", run.ID))).OrderBy(query.Ascending("seq")).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").
+		Where(query.And(conversationItemScope(a, run.ConversationID, conversationItemRunEvent), query.Equal("run_id", run.ID))).OrderBy(query.Ascending("seq")).Build()
 	if err != nil {
 		return err
 	}

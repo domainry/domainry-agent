@@ -38,7 +38,7 @@ func TestArtifactToolEffectResultAndEventCommitTogether(t *testing.T) {
 			} else {
 				prepared.Export = &persistence.ConversationArtifactExportWrite{ClientID: client, RequestSHA256: digest, TTLSeconds: 3600, Export: agentsdk.ConversationArtifactExport{ArtifactID: original.Artifact.ID, Version: 1, Format: "markdown", Filename: original.Artifact.ID + "-v1.md", ContentType: "text/markdown; charset=utf-8", SHA256: artifact.Hash([]byte("正文")), Bytes: len("正文")}, Content: []byte("正文")}
 			}
-			_, err := store.Database().ExecContext(t.Context(), `CREATE TRIGGER fail_artifact_receipt BEFORE INSERT ON _agent_conversation_events WHEN CAST(NEW.payload_json AS TEXT) LIKE '%tool.completed%' BEGIN SELECT RAISE(ABORT, 'injected artifact receipt failure'); END`)
+			_, err := store.Database().ExecContext(t.Context(), `CREATE TRIGGER fail_artifact_receipt BEFORE INSERT ON _agent_conversation_items WHEN NEW.item_kind = 'run_event' AND CAST(NEW.payload_json AS TEXT) LIKE '%tool.completed%' BEGIN SELECT RAISE(ABORT, 'injected artifact receipt failure'); END`)
 			if err != nil {
 				t.Fatal(err)
 			}

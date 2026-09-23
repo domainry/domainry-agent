@@ -57,7 +57,7 @@ func TestPersonalTodoBatchEffectReceiptAndEventAreAtomic(t *testing.T) {
 	claim, request := personalMutationFixture(t, repo, "todo-atomic", "todo_create", `{"items":[{"title":"访谈","timezone":"Asia/Shanghai"},{"title":"费用","description":"必须持久保存的完整说明","timezone":"Asia/Shanghai"},{"title":"周报","timezone":"Asia/Shanghai"}]}`, true)
 	// Fail after every item has been inserted. Neither a partial batch nor a
 	// completed receipt may survive if the corresponding event did not commit.
-	_, err := store.Database().ExecContext(t.Context(), `CREATE TRIGGER fail_todo_receipt BEFORE INSERT ON _agent_conversation_events WHEN CAST(NEW.payload_json AS TEXT) LIKE '%tool.completed%' BEGIN SELECT RAISE(ABORT, 'injected todo receipt failure'); END`)
+	_, err := store.Database().ExecContext(t.Context(), `CREATE TRIGGER fail_todo_receipt BEFORE INSERT ON _agent_conversation_items WHEN NEW.item_kind = 'run_event' AND CAST(NEW.payload_json AS TEXT) LIKE '%tool.completed%' BEGIN SELECT RAISE(ABORT, 'injected todo receipt failure'); END`)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,7 +125,7 @@ func TestPersonalMemoryEffectReceiptAndEventAreAtomic(t *testing.T) {
 	claim, request := personalMutationFixture(t, repo, "atomic", "memory_save", `{"title":"周报格式","content":"按项目组织","enabled":true,"expected_revision":0}`, true)
 	// SQLite fault injection at the final event write, after the memory UPDATE.
 	// A failure must roll back the resource and receipt together.
-	_, err := store.Database().ExecContext(t.Context(), `CREATE TRIGGER fail_personal_receipt BEFORE INSERT ON _agent_conversation_events WHEN CAST(NEW.payload_json AS TEXT) LIKE '%tool.completed%' BEGIN SELECT RAISE(ABORT, 'injected receipt failure'); END`)
+	_, err := store.Database().ExecContext(t.Context(), `CREATE TRIGGER fail_personal_receipt BEFORE INSERT ON _agent_conversation_items WHEN NEW.item_kind = 'run_event' AND CAST(NEW.payload_json AS TEXT) LIKE '%tool.completed%' BEGIN SELECT RAISE(ABORT, 'injected receipt failure'); END`)
 	if err != nil {
 		t.Fatal(err)
 	}

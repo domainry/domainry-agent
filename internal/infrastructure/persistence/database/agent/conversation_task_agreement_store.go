@@ -22,7 +22,7 @@ type conversationTaskAgreementUpdateRecord struct {
 
 func (s *ConversationStore) readConversationTaskAgreementUpdate(ctx context.Context, tx *sql.Tx, owner, taskID, clientID string) (conversationTaskAgreementUpdateRecord, bool, error) {
 	var raw []byte
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskAgreementUpdateTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("task_id", taskID), query.Equal("client_id", clientID))).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("item_kind", conversationItemAgreement), query.Equal("subject_id", taskID), query.Equal("reference_id", conversationTaskItemReference(taskID, clientID)))).Build()
 	if err != nil {
 		return conversationTaskAgreementUpdateRecord{}, false, err
 	}
@@ -158,7 +158,8 @@ func (s *ConversationStore) UpdateConversationTaskAgreement(ctx context.Context,
 			return err
 		}
 		record := conversationTaskAgreementUpdateRecord{RequestHash: requestHash, Update: in, Task: out}
-		statement, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationTaskAgreementUpdateTable).Columns("owner_key", "task_id", "client_id", "request_hash", "payload_json", "created_at").Values(owner, taskID, in.ClientID, requestHash, conversationJSON(record), now.UnixMilli()).Build()
+		reference := conversationTaskItemReference(taskID, in.ClientID)
+		statement, args, err = query.NewInsertBuilder(s.store.Renderer(), conversationItemTable).Columns("owner_key", "conversation_id", "item_kind", "item_key", "reference_id", "subject_id", "run_id", "seq", "payload_json").Values(owner, out.SourceConversationID, conversationItemAgreement, reference, reference, taskID, out.SourceRunID, out.AgreementRevision, conversationJSON(record)).Build()
 		return conversationExec(ctx, tx, statement, args, err)
 	})
 	return out, replay, err

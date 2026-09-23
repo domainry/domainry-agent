@@ -12,7 +12,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 34 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
+			if len(migrations) != 32 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
 				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
 			byVersion := map[uint]string{}
@@ -35,9 +35,10 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if !strings.Contains(plans, conversationTaskPlanTable) || strings.Contains(plans, "_schema_migrations") {
 				t.Fatal("invalid task plan migration", plans)
 			}
-			taskAgreements := byVersion[31]
-			if !strings.Contains(taskAgreements, conversationTaskAgreementUpdateTable) || strings.Contains(taskAgreements, "_schema_migrations") {
-				t.Fatal("invalid task agreement migration", taskAgreements)
+			for _, folded := range []uint{31, 33} {
+				if _, found := byVersion[folded]; found {
+					t.Fatalf("folded conversation item migration v%d remains", folded)
+				}
 			}
 			contract := byVersion[29]
 			if !strings.Contains(contract, conversationContractPublicationTable) || strings.Contains(contract, "_schema_migrations") {
@@ -79,6 +80,17 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			}
 			if strings.Contains(joined, "_schema_migrations") {
 				t.Fatal("Agent migration attempted to create a private ledger")
+			}
+			conversationItems := byVersion[2]
+			for _, fragment := range []string{conversationItemTable, "item_kind", "subject_id", "idx_agent_conversation_item_sequence_v2", "idx_agent_conversation_item_run_v2", "idx_agent_conversation_item_subject_v2"} {
+				if !strings.Contains(conversationItems, fragment) {
+					t.Fatalf("missing typed conversation item field/index %s", fragment)
+				}
+			}
+			for _, retired := range []string{"_agent_conversation_messages", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_task_agreement_updates", "_agent_conversation_task_completions"} {
+				if strings.Contains(conversationItems, retired) {
+					t.Fatalf("private conversation item table remains: %s", retired)
+				}
 			}
 			all := make([]string, 0, len(migrations))
 			for _, migration := range migrations {

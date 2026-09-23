@@ -78,6 +78,24 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 	return store, database
 }
 
+func TestConversationItemsReplaceSixPrivateHistoryTables(t *testing.T) {
+	_, database := openAgentStore(t)
+	var count int
+	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, conversationItemTable).Scan(&count); err != nil || count != 1 {
+		t.Fatalf("conversation item table count=%d err=%v", count, err)
+	}
+	for _, table := range []string{"_agent_conversation_messages", "_agent_conversation_inputs", "_agent_conversation_summaries", "_agent_conversation_events", "_agent_conversation_task_agreement_updates", "_agent_conversation_task_completions"} {
+		if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 0 {
+			t.Fatalf("retired conversation table %s count=%d err=%v", table, count, err)
+		}
+	}
+	for _, index := range []string{"idx_agent_conversation_item_sequence_v2", "idx_agent_conversation_item_run_v2", "idx_agent_conversation_item_subject_v2"} {
+		if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='index' AND name=?`, index).Scan(&count); err != nil || count != 1 {
+			t.Fatalf("conversation item index %s count=%d err=%v", index, count, err)
+		}
+	}
+}
+
 func TestAgentStateStorePersistsAndComparesRevision(t *testing.T) {
 	store, _ := openAgentStore(t)
 	repository := NewAgentStateStore(store)

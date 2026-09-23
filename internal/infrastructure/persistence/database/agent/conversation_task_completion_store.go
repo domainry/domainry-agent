@@ -90,8 +90,19 @@ func taskCompletionMatchesSubmit(record sdk.ConversationTaskCompletionRecord, su
 	return record.Submission.Source.ConversationID == run.ConversationID && record.Submission.Source.RunID == run.ID
 }
 
-func (s *ConversationStore) insertTaskCompletion(ctx context.Context, tx *sql.Tx, owner, taskID, clientID, requestHash string, value storedConversationTaskCompletion) error {
-	statement, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationTaskCompletionTable).Columns("owner_key", "task_id", "revision", "client_id", "request_hash", "payload_json", "created_at").Values(owner, taskID, value.Completion.Revision, clientID, requestHash, conversationJSON(value), value.Completion.RecordedAt.UnixMilli()).Build()
+func (s *ConversationStore) insertTaskCompletion(ctx context.Context, tx *sql.Tx, owner, taskID, clientID string, value storedConversationTaskCompletion) error {
+	conversationID, runID := value.Task.SourceConversationID, value.Task.SourceRunID
+	if value.Completion.Submission.Source != nil {
+		if conversationID == "" {
+			conversationID = value.Completion.Submission.Source.ConversationID
+		}
+		if runID == "" {
+			runID = value.Completion.Submission.Source.RunID
+		}
+	}
+	itemKey := conversationTaskCompletionItemKey(taskID, value.Completion.Revision)
+	reference := conversationTaskItemReference(taskID, clientID)
+	statement, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationItemTable).Columns("owner_key", "conversation_id", "item_kind", "item_key", "reference_id", "subject_id", "run_id", "seq", "payload_json").Values(owner, conversationID, conversationItemCompletion, itemKey, reference, taskID, runID, value.Completion.Revision, conversationJSON(value)).Build()
 	return conversationExec(ctx, tx, statement, args, err)
 }
 
@@ -107,12 +118,12 @@ func (s *ConversationStore) ApplyConversationTaskCompletionTool(ctx context.Cont
 			return sdk.ConversationToolResult{}, conversationError("conflict", "task_completion_run_invalid")
 		}
 		owner, taskID := conversationOwner(claim.Authority), run.Run.BackgroundTask.TaskID
-		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskCompletionTable).Columns("request_hash").Where(query.And(query.Equal("owner_key", owner), query.Equal("task_id", taskID), query.Equal("client_id", submit.ClientID))).Build()
+		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("item_kind", conversationItemCompletion), query.Equal("subject_id", taskID), query.Equal("reference_id", conversationTaskItemReference(taskID, submit.ClientID)))).Build()
 		if err != nil {
 			return sdk.ConversationToolResult{}, err
 		}
-		var priorHash string
-		if err = tx.QueryRowContext(ctx, statement, args...).Scan(&priorHash); err == nil {
+		var prior []byte
+		if err = tx.QueryRowContext(ctx, statement, args...).Scan(&prior); err == nil {
 			return sdk.ConversationToolResult{}, conversationError("conflict", "task_completion_idempotency_conflict")
 		} else if !errors.Is(err, sql.ErrNoRows) {
 			return sdk.ConversationToolResult{}, err
@@ -149,7 +160,7 @@ func (s *ConversationStore) ApplyConversationTaskCompletionTool(ctx context.Cont
 			return sdk.ConversationToolResult{}, err
 		}
 		requestHash := conversationHash(submit)
-		if err = s.insertTaskCompletion(ctx, tx, owner, taskID, submit.ClientID, requestHash, storedConversationTaskCompletion{RequestHash: requestHash, Completion: prepared, Task: row.task}); err != nil {
+		if err = s.insertTaskCompletion(ctx, tx, owner, taskID, submit.ClientID, storedConversationTaskCompletion{RequestHash: requestHash, Completion: prepared, Task: row.task}); err != nil {
 			return sdk.ConversationToolResult{}, err
 		}
 		return sdk.ConversationToolResult{Status: "completed", ResourceID: taskID, Content: conversationJSON(map[string]any{"completion": prepared})}, nil
@@ -164,15 +175,14 @@ func (s *ConversationStore) ReviewConversationTaskCompletion(ctx context.Context
 			return err
 		}
 		owner, requestHash := conversationOwner(a), conversationHash(in)
-		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskCompletionTable).Columns("request_hash", "payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("task_id", taskID), query.Equal("client_id", in.ClientID))).Build()
+		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.Equal("item_kind", conversationItemCompletion), query.Equal("subject_id", taskID), query.Equal("reference_id", conversationTaskItemReference(taskID, in.ClientID)))).Build()
 		if err != nil {
 			return err
 		}
-		var savedHash string
 		var raw []byte
-		if err = tx.QueryRowContext(ctx, statement, args...).Scan(&savedHash, &raw); err == nil {
+		if err = tx.QueryRowContext(ctx, statement, args...).Scan(&raw); err == nil {
 			var saved storedConversationTaskCompletion
-			if savedHash != requestHash || json.Unmarshal(raw, &saved) != nil || saved.RequestHash != requestHash {
+			if json.Unmarshal(raw, &saved) != nil || saved.RequestHash != requestHash {
 				return conversationError("conflict", "task_completion_idempotency_conflict")
 			}
 			out, replayed = saved.Task, true
@@ -228,7 +238,7 @@ func (s *ConversationStore) ReviewConversationTaskCompletion(ctx context.Context
 		if err = conversationCAS(ctx, tx, statement, args, err); err != nil {
 			return err
 		}
-		if err = s.insertTaskCompletion(ctx, tx, owner, taskID, in.ClientID, requestHash, storedConversationTaskCompletion{RequestHash: requestHash, Completion: completion, Task: row.task}); err != nil {
+		if err = s.insertTaskCompletion(ctx, tx, owner, taskID, in.ClientID, storedConversationTaskCompletion{RequestHash: requestHash, Completion: completion, Task: row.task}); err != nil {
 			return err
 		}
 		out = row.task
@@ -245,11 +255,11 @@ func (s *ConversationStore) ConversationTaskCompletionHistory(ctx context.Contex
 	if _, err := s.ConversationTask(ctx, taskID, a); err != nil {
 		return out, err
 	}
-	predicate := query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("task_id", taskID))
+	predicate := query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("item_kind", conversationItemCompletion), query.Equal("subject_id", taskID))
 	if before > 0 {
-		predicate = query.And(predicate, query.LessThan("revision", before))
+		predicate = query.And(predicate, query.LessThan("seq", before))
 	}
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskCompletionTable).Columns("payload_json").Where(predicate).OrderBy(query.Descending("revision")).Limit(21).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(predicate).OrderBy(query.Descending("seq")).Limit(21).Build()
 	if err != nil {
 		return out, err
 	}
@@ -275,48 +285,6 @@ func (s *ConversationStore) ConversationTaskCompletionHistory(ctx context.Contex
 		out.NextBefore = out.Items[len(out.Items)-1].Revision
 	}
 	return out, rows.Err()
-}
-
-func (s *ConversationStore) conversationTaskCompletionPayloadsForSource(ctx context.Context, db conversationDB, owner, conversationID string) ([]json.RawMessage, error) {
-	ids, err := s.conversationTaskIDsForSource(ctx, db, owner, conversationID)
-	if err != nil || len(ids) == 0 {
-		return nil, err
-	}
-	values := make([]any, len(ids))
-	for index := range ids {
-		values[index] = ids[index]
-	}
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskCompletionTable).Columns("payload_json").Where(query.And(query.Equal("owner_key", owner), query.In("task_id", values...))).OrderBy(query.Ascending("task_id"), query.Ascending("revision")).Build()
-	if err != nil {
-		return nil, err
-	}
-	rows, err := db.QueryContext(ctx, statement, args...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var out []json.RawMessage
-	for rows.Next() {
-		var raw json.RawMessage
-		if err = rows.Scan(&raw); err != nil {
-			return nil, err
-		}
-		out = append(out, append(json.RawMessage(nil), raw...))
-	}
-	return out, rows.Err()
-}
-
-func (s *ConversationStore) deleteConversationTaskCompletionsForSource(ctx context.Context, tx *sql.Tx, owner, conversationID string) error {
-	ids, err := s.conversationTaskIDsForSource(ctx, tx, owner, conversationID)
-	if err != nil || len(ids) == 0 {
-		return err
-	}
-	values := make([]any, len(ids))
-	for index := range ids {
-		values[index] = ids[index]
-	}
-	statement, args, err := query.NewDeleteBuilder(s.store.Renderer(), conversationTaskCompletionTable).Where(query.And(query.Equal("owner_key", owner), query.In("task_id", values...))).Build()
-	return conversationExec(ctx, tx, statement, args, err)
 }
 
 // finishConversationTaskCompletion records the execution-end boundary even
@@ -365,7 +333,7 @@ func (s *ConversationStore) finishConversationTaskCompletion(ctx context.Context
 	}
 	task.Completion = &record
 	clientID, requestHash := "system-finish-"+run.ID, conversationHash([]any{task.ID, run.ID, run.LastEventSeq, resultContent})
-	return s.insertTaskCompletion(ctx, tx, conversationOwner(authority), task.ID, clientID, requestHash, storedConversationTaskCompletion{RequestHash: requestHash, Completion: record, Task: *task})
+	return s.insertTaskCompletion(ctx, tx, conversationOwner(authority), task.ID, clientID, storedConversationTaskCompletion{RequestHash: requestHash, Completion: record, Task: *task})
 }
 
 var _ persistence.ConversationTaskCompletionRepository = (*ConversationStore)(nil)

@@ -125,7 +125,7 @@ func TestModuleDescriptor(t *testing.T) {
 	if b.Descriptor().Mode != agentsdk.DeploymentModeModule {
 		t.Fatalf("descriptor=%+v", b.Descriptor())
 	}
-	if len(host.applied) != 34 {
+	if len(host.applied) != 32 {
 		t.Fatalf("Agent migrations=%d", len(host.applied))
 	}
 	for _, table := range []string{shareddefinition.TableName, shareddefinition.VersionTableName} {

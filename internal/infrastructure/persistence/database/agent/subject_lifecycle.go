@@ -39,9 +39,8 @@ func (s SubjectLifecycle) authority(workspaceID, subjectID string) (agentsdk.Con
 var agentSubjectOwnerTables = []string{
 	conversationContractPublicationTable, conversationSourceReleaseTable, conversationAgentMessageTable, conversationAgreementTable, conversationAssignmentTable, conversationDeliveryRecordTable, conversationDisagreementTable, conversationStepSourceTable, conversationDelegationTable, conversationAgentTable, conversationCollaborationMutationTable,
 	"_agent_conversation_interactions", "_agent_conversation_tool_calls", "_agent_conversation_steps",
-	"_agent_conversation_events", "_agent_conversation_summaries", "_agent_conversation_messages",
-	"_agent_conversation_inputs", "_agent_conversation_runs", conversationFollowUpEventTable,
-	conversationFollowUpStateTable, conversationTaskAgreementUpdateTable, conversationTaskPlanTable, conversationTaskCompletionTable, conversationTaskTable, "_agent_conversations", conversationMemoryChangeTable, "_agent_user_memories",
+	conversationItemTable, "_agent_conversation_runs", conversationFollowUpEventTable,
+	conversationFollowUpStateTable, conversationTaskPlanTable, conversationTaskTable, "_agent_conversations", conversationMemoryChangeTable, "_agent_user_memories",
 }
 
 func agentSubjectOwnerPredicate(table, owner string) query.Predicate {
