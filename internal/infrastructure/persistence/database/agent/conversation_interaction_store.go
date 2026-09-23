@@ -19,7 +19,7 @@ func interactionScope(claim persistence.ConversationClaim, step int, callID, kin
 
 func (s *ConversationStore) readInteraction(ctx context.Context, db conversationDB, claim persistence.ConversationClaim, step int, callID, kind string) (persistence.ConversationInteractionRecord, bool, error) {
 	var out persistence.ConversationInteractionRecord
-	found, err := s.executionRead(ctx, db, interactionTable, interactionScope(claim, step, callID, kind), &out)
+	found, err := s.payloadRead(ctx, db, interactionTable, interactionScope(claim, step, callID, kind), &out)
 	return out, found, err
 }
 
@@ -71,7 +71,7 @@ func (s *ConversationStore) WaitExecution(ctx context.Context, claim persistence
 			return err
 		}
 		var step persistence.ConversationExecutionStep
-		found, err := s.executionRead(ctx, tx, "_agent_conversation_steps", executionScope(claim, wait.Step), &step)
+		found, err := s.executionRead(ctx, tx, conversationRunStepKindStep, executionScope(claim, wait.Step), &step)
 		if err != nil {
 			return err
 		}
@@ -212,7 +212,7 @@ func (s *ConversationStore) RespondExecution(ctx context.Context, id, runID stri
 			return err
 		}
 		var record persistence.ConversationInteractionRecord
-		found, err := s.executionRead(ctx, tx, interactionTable, query.And(conversationScope(a, id), query.Equal("run_id", runID), query.Equal("interaction_id", response.InteractionID)), &record)
+		found, err := s.payloadRead(ctx, tx, interactionTable, query.And(conversationScope(a, id), query.Equal("run_id", runID), query.Equal("interaction_id", response.InteractionID)), &record)
 		if err != nil {
 			return err
 		}

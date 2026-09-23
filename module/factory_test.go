@@ -49,6 +49,12 @@ func TestModuleMigrationCreatesUnifiedRunTableAndIndexes(t *testing.T) {
 	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name IN ('_agent_task_runs','_agent_interactive_runs','_agent_conversation_runs')`).Scan(&count); err != nil || count != 0 {
 		t.Fatalf("retired run tables=%d err=%v", count, err)
 	}
+	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='_agent_run_steps'`).Scan(&count); err != nil || count != 1 {
+		t.Fatalf("unified run-step table=%d err=%v", count, err)
+	}
+	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name IN ('_agent_conversation_steps','_agent_conversation_tool_calls','_agent_conversation_step_sources')`).Scan(&count); err != nil || count != 0 {
+		t.Fatalf("retired run-step tables=%d err=%v", count, err)
+	}
 }
 
 func newHost(t *testing.T, runtimeID string) *host {

@@ -64,7 +64,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 		if ref.BeforeStep > 0 {
 			stepPredicate = query.And(stepPredicate, query.LessThan("step_no", ref.BeforeStep))
 		}
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_steps").Columns("step_no", "payload_json").Where(stepPredicate).OrderBy(query.Ascending("step_no")).Limit(257).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("step_no", "payload_json").Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindStep), stepPredicate)).OrderBy(query.Ascending("step_no")).Limit(257).Build()
 		if err != nil {
 			return err
 		}
@@ -108,7 +108,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 			}
 			out.FinalMessage = &message
 		}
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_tool_calls").Columns("payload_json").Where(predicate).OrderBy(query.Ascending("step_no"), query.Ascending("call_key")).Limit(65).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("payload_json").Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindTool), predicate)).OrderBy(query.Ascending("step_no"), query.Ascending("call_key")).Limit(65).Build()
 		if err != nil {
 			return err
 		}
@@ -160,7 +160,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 			return err
 		}
 		peers.Close()
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationStepSourceTable).Columns("step_no", "payload_json").Where(predicate).OrderBy(query.Ascending("step_no")).Limit(257).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("step_no", "payload_json").Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindSources), predicate)).OrderBy(query.Ascending("step_no")).Limit(257).Build()
 		if err != nil {
 			return err
 		}

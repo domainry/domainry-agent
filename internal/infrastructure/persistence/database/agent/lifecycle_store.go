@@ -169,7 +169,7 @@ func (s LifecycleStore) conversationLifecycleActive(ctx context.Context, owner, 
 
 func (s LifecycleStore) conversationLifecyclePayload(ctx context.Context, owner, id string, conversation []byte) (json.RawMessage, error) {
 	graph := map[string]any{"conversation": json.RawMessage(append([]byte(nil), conversation...))}
-	for _, table := range []string{conversationItemTable, agentRunTable, "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable, conversationTaskTable} {
+	for _, table := range []string{conversationItemTable, agentRunTable, conversationRunStepTable, interactionTable, conversationTaskTable} {
 		predicate := query.And(query.Equal("owner_key", owner), query.Equal("conversation_id", id))
 		if table == agentRunTable {
 			predicate = query.And(agentRunKindPredicate(agentRunKindConversation), predicate)
@@ -281,7 +281,7 @@ func (s LifecycleStore) deleteConversationLifecycleCandidate(ctx context.Context
 			return execErr
 		}
 		deleted = true
-		for _, table := range []string{conversationItemTable, agentRunTable, "_agent_conversation_steps", "_agent_conversation_tool_calls", interactionTable} {
+		for _, table := range []string{conversationItemTable, agentRunTable, conversationRunStepTable, interactionTable} {
 			predicate := query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("conversation_id", candidate.ResourceID))
 			if table == agentRunTable {
 				predicate = query.And(agentRunKindPredicate(agentRunKindConversation), predicate)

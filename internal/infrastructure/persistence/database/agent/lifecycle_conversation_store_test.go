@@ -46,7 +46,7 @@ func TestConversationLifecycleArchivesCompleteGraphAndFencesPurge(t *testing.T) 
 		t.Fatal(err)
 	}
 	external := []byte(`{"call":{"name":"web_fetch"},"result":{"content":"retained external response"}}`)
-	if _, err = db.ExecContext(t.Context(), `INSERT INTO _agent_conversation_tool_calls(owner_key,conversation_id,run_id,step_no,payload_json,call_key) VALUES(?,?,?,?,?,?)`, conversationOwner(a), conversation.ID, run.ID, 1, external, conversationHash("web_fetch")); err != nil {
+	if _, err = db.ExecContext(t.Context(), `INSERT INTO _agent_run_steps(owner_key,conversation_id,run_id,record_kind,step_no,payload_json,call_key) VALUES(?,?,?,?,?,?,?)`, conversationOwner(a), conversation.ID, run.ID, conversationRunStepKindTool, 1, external, conversationHash("web_fetch")); err != nil {
 		t.Fatal(err)
 	}
 	active, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "active", Title: "Active"}, a)
@@ -84,7 +84,7 @@ func TestConversationLifecycleArchivesCompleteGraphAndFencesPurge(t *testing.T) 
 		t.Fatal("eligible conversation survived purge")
 	}
 	var calls int
-	if err = db.QueryRowContext(t.Context(), `SELECT count(*) FROM _agent_conversation_tool_calls WHERE owner_key=? AND conversation_id=?`, conversationOwner(a), conversation.ID).Scan(&calls); err != nil || calls != 0 {
+	if err = db.QueryRowContext(t.Context(), `SELECT count(*) FROM _agent_run_steps WHERE record_kind=? AND owner_key=? AND conversation_id=?`, conversationRunStepKindTool, conversationOwner(a), conversation.ID).Scan(&calls); err != nil || calls != 0 {
 		t.Fatalf("tool calls=%d err=%v", calls, err)
 	}
 	if _, err = repo.Get(t.Context(), active.ID, a); err != nil {

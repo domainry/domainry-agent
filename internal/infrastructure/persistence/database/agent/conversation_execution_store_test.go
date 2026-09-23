@@ -33,6 +33,7 @@ func TestConversationExecutionFreezesEachStepAndNeverReplaysCompletedWrites(t *t
 		t.Fatal(err)
 	}
 	in := executionStoreInput()
+	in.ContextSources = []agentsdk.ConversationRunReference{{ConversationID: c.ID, RunID: run.ID, BeforeStep: 1}}
 	step, found, err := repo.ExecutionStep(ctx, claim, 0, &in)
 	if err != nil || !found || step.Input.IdempotencyKey != "step-0" {
 		t.Fatalf("freeze %+v %v", step, err)
@@ -140,6 +141,32 @@ func TestConversationExecutionFreezesEachStepAndNeverReplaysCompletedWrites(t *t
 	if counts["step.started"] != 2 || counts["step.completed"] != 2 || counts["tool.started"] != 3 || counts["tool.completed"] != 2 || counts["tool.uncertain"] != 2 {
 		t.Fatalf("duplicate or missing committed events: %v", counts)
 	}
+	rows, err := store.Database().QueryContext(ctx, `SELECT record_kind, COUNT(*) FROM _agent_run_steps GROUP BY record_kind`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stored := map[string]int{}
+	for rows.Next() {
+		var kind string
+		var count int
+		if err = rows.Scan(&kind, &count); err != nil {
+			rows.Close()
+			t.Fatal(err)
+		}
+		stored[kind] = count
+	}
+	if err = rows.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if stored[conversationRunStepKindStep] != 2 || stored[conversationRunStepKindTool] != 2 || stored[conversationRunStepKindSources] != 2 {
+		t.Fatalf("unified run-step kinds=%v", stored)
+	}
+	for _, retired := range []string{"_agent_conversation_steps", "_agent_conversation_tool_calls", "_agent_conversation_step_sources"} {
+		var count int
+		if err = store.Database().QueryRowContext(ctx, `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, retired).Scan(&count); err != nil || count != 0 {
+			t.Fatalf("retired execution table %s count=%d err=%v", retired, count, err)
+		}
+	}
 }
 
 func TestConversationExecutionRejectsChangedResultsAndDeletesRecords(t *testing.T) {
@@ -168,7 +195,7 @@ func TestConversationExecutionRejectsChangedResultsAndDeletesRecords(t *testing.
 		t.Fatal(err)
 	}
 	var step persistence.ConversationExecutionStep
-	found, err := repo.executionRead(ctx, store.Database(), "_agent_conversation_steps", executionScope(persistence.ConversationClaim{Authority: a, Run: run}, 0), &step)
+	found, err := repo.executionRead(ctx, store.Database(), conversationRunStepKindStep, executionScope(persistence.ConversationClaim{Authority: a, Run: run}, 0), &step)
 	if err != nil || found {
 		t.Fatal("deleted conversation retained execution input", err)
 	}

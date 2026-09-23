@@ -52,7 +52,7 @@ func frozenConfirmationOperations(step persistence.ConversationExecutionStep, wa
 func (s *ConversationStore) approveListedOperations(ctx context.Context, tx *sql.Tx, row conversationRunRow, root *agentsdk.ConversationInteraction) error {
 	claim := persistence.ConversationClaim{Authority: row.Authority, Run: row.Run}
 	var step persistence.ConversationExecutionStep
-	found, err := s.executionRead(ctx, tx, "_agent_conversation_steps", executionScope(claim, root.Step), &step)
+	found, err := s.executionRead(ctx, tx, conversationRunStepKindStep, executionScope(claim, root.Step), &step)
 	if err != nil {
 		return err
 	}

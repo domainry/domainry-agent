@@ -10,9 +10,9 @@ Runtime 宿主已接业务目录、记录、关联、动作及流程；各项能
 
 | 能力 | 用途 | 入口 / 存储 |
 | --- | --- | --- |
-| Interactive | 单次业务理解、候选路由、结构化结果 | 原有 `/agent/runs`、`/agent/sessions` 和 Interactive 表 |
+| Interactive | 单次业务理解、候选路由、结构化结果 | `/agent/runs`、`/agent/sessions` 和 `_agent_runs` 中的 `interactive` 记录 |
 | Conversation | 用户持续聊天、历史上下文、个人记忆、摘要、运行恢复 | 新 `/agent/conversations` 和专用表 |
-| Task | 后台业务任务和受控工具执行 | 原有 TaskRunner、任务表和 Host Ports |
+| Task | 后台业务任务和受控工具执行 | TaskRunner、`_agent_runs` 中的 `task` 记录和 Host Ports |
 
 Conversation 不调用 InteractiveRunner，不依赖外部 Provider 保存 session。纯文本路径发送我们组装的 `system/user/assistant` 消息数组；配置工具宿主后，通过可选 `ConversationAgentModel` 多次发送模型步骤和实际工具结果。工具参数完整结束并校验后才执行。凭证、授权策略和 Provider 原生续接状态不会作为工具参数或浏览器公开数据。
 
@@ -20,22 +20,19 @@ SDK 提供可选的 `ConversationBinding.Conversations()`，不在旧 `Binding` 
 
 ## 存储与隔离
 
-Migration 1、2 保持原样；Migration 3 增加 `_agent_conversation_steps` 和 `_agent_conversation_tool_calls`，同样在原有 `_schema_migrations` 中登记。Module 借用宿主数据库，SaaS 使用自己的 Agent 数据库，均通过现有 ORM 生成 SQL。步骤输入、模型指纹及原生续接块保存在内部记录；Run 的 `steps` 只返回有界的公开执行视图。
+Migration 3 创建 typed `_agent_run_steps`，以 `record_kind=step|tool_call|step_sources` 保存模型步骤、工具调用回执和冻结来源，并在宿主唯一 `_schema_migrations` 中登记。Module 使用宿主数据库，SaaS 使用自己的 Agent 数据库，均调用 Agent 自己的迁移并通过现有 ORM 生成 SQL。步骤输入、模型指纹及原生续接块保存在内部记录；Run 的 `steps` 只返回有界的公开执行视图。
 
-Migration 4 增加 `_agent_conversation_interactions`，保存问题、确认、核查记录及幂等答复。相同调用的确认与核查分别保存，核查不会覆盖原来的批准凭据。迁移 1–3 的内容不变。
+Migration 4 增加 `_agent_conversation_interactions`，保存问题、确认、核查记录及幂等答复。相同调用的确认与核查分别保存，核查不会覆盖原来的批准凭据。
 
-Migration 5 增加 `_agent_user_todos` 和 `_agent_todo_mutations`。待办按 runtime / workspace / user 保存，记录批次与原始项次；第二张表保存网页操作的幂等回执。工具操作复用已有调用账本，同事务写入待办、执行结果及事件。迁移继续通过宿主唯一 `_schema_migrations` 账本执行，迁移 1–4 不变。删除来源会话不会删除个人待办或网页操作回执；来源引用不授予查看原会话的权限。
+Migration 5 增加 `_agent_user_todos` 和 `_agent_todo_mutations`。待办按 runtime / workspace / user 保存，记录批次与原始项次；第二张表保存网页操作的幂等回执。工具操作复用已有调用账本，同事务写入待办、执行结果及事件。迁移继续通过宿主唯一 `_schema_migrations` 账本执行。删除来源会话不会删除个人待办或网页操作回执；来源引用不授予查看原会话的权限。
 
 | 表 | 保存内容 |
 | --- | --- |
 | `_agent_conversations` | 标题、归档标记、记忆开关、修订号、消息序号、当前 run、当前摘要 |
-| `_agent_conversation_messages` | 不经摘要覆盖的原始用户消息和完整回复 |
-| `_agent_conversation_runs` | 幂等键、请求摘要、运行状态、尝试次数、租约、fence、当前尝试的草稿、字节数、事件游标、用量和错误码 |
-| `_agent_conversation_inputs` | 回复请求实际发送给模型的完整输入快照，用于恢复和重试 |
-| `_agent_conversation_summaries` | 结构化摘要及版本、前一摘要、覆盖序号、来源哈希和模型 |
-| `_agent_conversation_events` | 已提交的运行事件、文本增量和单调递增序号 |
+| `_agent_conversation_items` | typed 原始消息、模型输入、摘要、运行事件、任务协议和完成事实 |
+| `_agent_runs` | `task`、`interactive`、`conversation` 三类运行的幂等键、状态、claim、租约、fence 和有界 payload |
 | `_agent_user_memories` | 用户显式保存的个人偏好，支持修改、停用和删除 |
-| `_agent_conversation_steps` / `_agent_conversation_tool_calls` | 冻结的模型步骤、原生续接块、工具调用与结果账本 |
+| `_agent_run_steps` | typed 冻结模型步骤、step sources、原生续接块、工具调用与结果账本 |
 | `_agent_conversation_interactions` | 绑定 run / step / call 的等待事项、工具版本 / 参数摘要、答复和有效期 |
 | `_agent_conversation_forks` | 独立分叉的来源运行、稳定事件边界、轨迹摘要和仅供服务端装配的受权历史快照 |
 

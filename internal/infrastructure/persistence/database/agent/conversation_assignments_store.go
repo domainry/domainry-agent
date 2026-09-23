@@ -197,7 +197,7 @@ func (s *ConversationStore) prepareDelegationHandoff(ctx context.Context, tx *sq
 				return out, conversationError("conflict", "delegation_assignment_invalid")
 			}
 			out.Runs = append(out.Runs, sdk.ConversationRunReference{ConversationID: run.ConversationID, RunID: run.ID})
-			q, args, err = query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_tool_calls").Columns("payload_json").Where(query.And(conversationScope(executor, run.ConversationID), query.Equal("run_id", run.ID))).Build()
+			q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("payload_json").Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindTool), conversationScope(executor, run.ConversationID), query.Equal("run_id", run.ID))).Build()
 			if err != nil {
 				return out, err
 			}

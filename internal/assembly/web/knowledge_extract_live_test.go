@@ -47,7 +47,7 @@ func verifyLiveKnowledgeExtraction(t *testing.T, host *Host, format string, conv
 	if err != nil {
 		t.Fatal(err)
 	}
-	statement, args, err := query.NewSelectBuilder(renderer, "_agent_conversation_tool_calls").Columns("payload_json").Where(query.And(query.Equal("conversation_id", conversationID), query.Equal("run_id", runID))).Build()
+	statement, args, err := query.NewSelectBuilder(renderer, "_agent_run_steps").Columns("payload_json").Where(query.And(query.Equal("record_kind", "tool_call"), query.Equal("conversation_id", conversationID), query.Equal("run_id", runID))).Build()
 	if err != nil {
 		t.Fatal(err)
 	}

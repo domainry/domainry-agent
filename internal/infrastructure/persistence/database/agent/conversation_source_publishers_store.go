@@ -160,7 +160,7 @@ func (s *ConversationStore) legacyRequiredSourcePublication(ctx context.Context,
 		return false, nil
 	}
 	claim := persistence.ConversationClaim{Authority: producer, Run: sdk.ConversationRun{ConversationID: actor.ConversationID, ID: actor.RunID}}
-	rows, err := s.legacyPublicationPayloads(ctx, "_agent_conversation_tool_calls", executionScope(claim, actor.BeforeStep-1))
+	rows, err := s.legacyPublicationPayloads(ctx, conversationRunStepTable, query.And(conversationRunStepKindPredicate(conversationRunStepKindTool), executionScope(claim, actor.BeforeStep-1)))
 	if err != nil {
 		return false, err
 	}

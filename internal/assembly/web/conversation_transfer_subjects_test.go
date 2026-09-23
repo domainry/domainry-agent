@@ -424,7 +424,7 @@ func exerciseCrossSubjectTransferHTTP(t *testing.T, managed bool, dependencyMode
 			t.Fatal("model continued after upstream audience withdrawal", len(newRequests))
 		}
 		var attempts int
-		if err := host.db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_tool_calls WHERE conversation_id = ? AND run_id = ?`, receiving.ConversationID, receiving.Task.ExecutionRunID).Scan(&attempts); err != nil || attempts != 0 {
+		if err := host.db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_run_steps WHERE record_kind = 'tool_call' AND conversation_id = ? AND run_id = ?`, receiving.ConversationID, receiving.Task.ExecutionRunID).Scan(&attempts); err != nil || attempts != 0 {
 			t.Fatal("new clock invocation entered the original ledger after upstream withdrawal", attempts, err)
 		}
 		return

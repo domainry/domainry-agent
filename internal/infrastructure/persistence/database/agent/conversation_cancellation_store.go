@@ -15,7 +15,7 @@ import (
 // effect failed, and completed/pending provider receipts remain authoritative.
 // The caller commits these events with the cancellation in one transaction.
 func (s *ConversationStore) interruptConversationWrites(ctx context.Context, tx *sql.Tx, row *conversationRunRow) error {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_tool_calls").Columns("payload_json").Where(query.And(conversationScope(row.Authority, row.Run.ConversationID), query.Equal("run_id", row.Run.ID))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("payload_json").Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindTool), conversationScope(row.Authority, row.Run.ConversationID), query.Equal("run_id", row.Run.ID))).Build()
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (s *ConversationStore) interruptConversationWrites(ctx context.Context, tx 
 		call.State = "uncertain"
 		call.Result = &agentsdk.ConversationToolResult{Status: "uncertain", ErrorCode: "external_result_unknown"}
 		call.UpdatedAt = time.Now().UTC()
-		if err = s.executionWrite(ctx, tx, "_agent_conversation_tool_calls", claim, call.Step, call.Call.ID, call, false); err != nil {
+		if err = s.executionWrite(ctx, tx, conversationRunStepKindTool, claim, call.Step, call.Call.ID, call, false); err != nil {
 			return err
 		}
 		if err = s.event(ctx, tx, row, "tool.uncertain", map[string]any{"step": call.Step, "call_id": call.Call.ID, "tool": call.Call.Name, "status": "uncertain", "error_code": "external_result_unknown", "attempt": row.Run.Attempt, "parent_call_id": call.ParentCallID, "dispatch_index": call.DispatchIndex}); err != nil {

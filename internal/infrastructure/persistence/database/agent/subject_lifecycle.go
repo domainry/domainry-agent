@@ -37,8 +37,8 @@ func (s SubjectLifecycle) authority(workspaceID, subjectID string) (agentsdk.Con
 }
 
 var agentSubjectOwnerTables = []string{
-	conversationContractPublicationTable, conversationSourceReleaseTable, conversationAgentMessageTable, conversationAgreementTable, conversationAssignmentTable, conversationDeliveryRecordTable, conversationDisagreementTable, conversationStepSourceTable, conversationDelegationTable, conversationAgentTable, conversationCollaborationMutationTable,
-	"_agent_conversation_interactions", "_agent_conversation_tool_calls", "_agent_conversation_steps",
+	conversationContractPublicationTable, conversationSourceReleaseTable, conversationAgentMessageTable, conversationAgreementTable, conversationAssignmentTable, conversationDeliveryRecordTable, conversationDisagreementTable, conversationDelegationTable, conversationAgentTable, conversationCollaborationMutationTable,
+	"_agent_conversation_interactions", conversationRunStepTable,
 	conversationItemTable, agentRunTable, conversationFollowUpEventTable,
 	conversationFollowUpStateTable, conversationTaskPlanTable, conversationTaskTable, "_agent_conversations", conversationMemoryChangeTable, "_agent_user_memories",
 }

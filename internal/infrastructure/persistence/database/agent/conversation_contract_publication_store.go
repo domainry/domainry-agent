@@ -152,7 +152,7 @@ func (s *ConversationStore) originalContractRequirements(ctx context.Context, db
 			return result, false, conversationError("forbidden", "contract_sources_unverified")
 		}
 		claim := persistence.ConversationClaim{Authority: run.Authority, Run: run.Run}
-		payloads, e := s.publicationPayloads(ctx, db, "_agent_conversation_tool_calls", executionScope(claim, ref.BeforeStep-1))
+		payloads, e := s.publicationPayloads(ctx, db, conversationRunStepTable, query.And(conversationRunStepKindPredicate(conversationRunStepKindTool), executionScope(claim, ref.BeforeStep-1)))
 		if e != nil {
 			return result, false, e
 		}

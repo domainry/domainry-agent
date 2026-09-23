@@ -103,6 +103,17 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 					t.Fatalf("retired Agent run schema remains: %s", retired)
 				}
 			}
+			runSteps := byVersion[3]
+			for _, fragment := range []string{conversationRunStepTable, "record_kind", "step_no", "call_key"} {
+				if !strings.Contains(runSteps, fragment) {
+					t.Fatalf("missing unified Agent run-step field %s", fragment)
+				}
+			}
+			for _, retired := range []string{"_agent_conversation_steps", "_agent_conversation_tool_calls", "_agent_conversation_step_sources"} {
+				if strings.Contains(runSteps+"\n"+byVersion[24], retired) {
+					t.Fatalf("retired Agent run-step table remains: %s", retired)
+				}
+			}
 			all := make([]string, 0, len(migrations))
 			for _, migration := range migrations {
 				all = append(all, migration.Statements...)

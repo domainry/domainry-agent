@@ -331,7 +331,7 @@ func TestLegacyRequiredSourcePublisherUsesExactOriginalAdmissionCall(t *testing.
 			}
 			claim := persistence.ConversationClaim{Authority: publisher, Run: sdk.ConversationRun{ConversationID: actorRef.ConversationID, ID: actorRef.RunID}}
 			if err := repo.transaction(t.Context(), func(tx *sql.Tx) error {
-				return repo.executionWrite(t.Context(), tx, "_agent_conversation_tool_calls", claim, step, record.Call.ID, record, true)
+				return repo.executionWrite(t.Context(), tx, conversationRunStepKindTool, claim, step, record.Call.ID, record, true)
 			}); err != nil {
 				t.Fatal(err)
 			}

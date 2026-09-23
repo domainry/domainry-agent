@@ -59,7 +59,7 @@ func (s *ConversationStore) BeginConversationOutcomeInspection(ctx context.Conte
 			}
 		} else {
 			call.Inspection = &persistence.ConversationToolInspection{Token: conversationID("inspect_"), ClientID: clientID, StartedAt: now, ExpiresAt: now.Add(time.Duration(call.Definition.TimeoutMillis)*time.Millisecond + 30*time.Second), ActorID: a.UserID}
-			if err = s.executionWrite(ctx, tx, "_agent_conversation_tool_calls", claim, in.Step, in.CallID, call, false); err != nil {
+			if err = s.executionWrite(ctx, tx, conversationRunStepKindTool, claim, in.Step, in.CallID, call, false); err != nil {
 				return err
 			}
 			if err = s.executionEvent(ctx, tx, row, "tool.inspection.started", map[string]any{"step": in.Step, "call_id": in.CallID, "actor_id": a.UserID, "status": "reading", "checked_at": now}); err != nil {
@@ -162,7 +162,7 @@ func (s *ConversationStore) FinishConversationOutcomeInspection(ctx context.Cont
 		}
 		now := time.Now().UTC()
 		call.Inspection.CompletedAt = &now
-		if err = s.executionWrite(ctx, tx, "_agent_conversation_tool_calls", claim, inspection.Request.Step, call.Call.ID, call, false); err != nil {
+		if err = s.executionWrite(ctx, tx, conversationRunStepKindTool, claim, inspection.Request.Step, call.Call.ID, call, false); err != nil {
 			return err
 		}
 		return s.executionEvent(ctx, tx, row, "tool.inspection.completed", map[string]any{"step": inspection.Request.Step, "call_id": call.Call.ID, "actor_id": a.UserID, "status": call.State, "checked_at": now})

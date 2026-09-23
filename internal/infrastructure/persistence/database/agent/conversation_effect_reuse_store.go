@@ -73,7 +73,7 @@ func (s *ConversationStore) ReuseConversationDelegationEffect(ctx context.Contex
 				return conversationError("conflict", "delegation_handoff_changed")
 			}
 			var step persistence.ConversationExecutionStep
-			exists, err = s.executionRead(ctx, tx, "_agent_conversation_steps", executionScope(claim, number), &step)
+			exists, err = s.executionRead(ctx, tx, conversationRunStepKindStep, executionScope(claim, number), &step)
 			if err != nil {
 				return err
 			}
@@ -120,7 +120,7 @@ func (s *ConversationStore) ReuseConversationDelegationEffect(ctx context.Contex
 			}
 			now := time.Now().UTC()
 			record := persistence.ConversationToolExecution{Step: number, Call: call, Definition: definition, IdempotencyKey: original.IdempotencyKey, State: "started", LeaseOwner: claim.Owner, Fence: claim.Fence, ReusedFrom: &ref, CreatedAt: now, UpdatedAt: now}
-			if err = s.executionWrite(ctx, tx, "_agent_conversation_tool_calls", claim, number, call.ID, record, true); err != nil {
+			if err = s.executionWrite(ctx, tx, conversationRunStepKindTool, claim, number, call.ID, record, true); err != nil {
 				return err
 			}
 			if err = s.finishExecutionToolReceipt(ctx, tx, claim, number, call.ID, *original.Result, row); err != nil {

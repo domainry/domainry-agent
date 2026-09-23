@@ -25,7 +25,7 @@
 2. 每个 `tools.<key>(args)` 必须来自当前步骤冻结目录，参数必须是完整 JSON 并通过该工具的冻结 Schema。
 3. Agent 为子调用生成由 run、父调用和 dispatch 序号决定的稳定 ID，先以 `queued` 保存父子关系、完整参数和调用预算占用。
 4. 子调用进入普通 `executeConversationToolWithParent` 流程，重新检查执行 claim、来源、当前目录、定义摘要、工具可用性和具体 Action 授权。写操作需要原来的精确用户确认。
-5. 获准后才把子账本改成 `started` 并调用原 ToolHost。完成、失败或未知结果继续写入原 `_agent_conversation_tool_calls` 和事件账本；模型、页面、共享执行和历史轨迹复用现有结果授权。
+5. 获准后才把子账本改成 `started` 并调用原 ToolHost。完成、失败或未知结果继续写入 `_agent_run_steps` 的 `tool_call` 记录和事件账本；模型、页面、共享执行和历史轨迹复用现有结果授权。
 
 调用预算统计顶层调用和 Code Mode 子调用。子调用预留在同一数据库事务中重新统计整轮顶层与嵌套调用，多个 worker 不能靠并发越过上限。运行审计将 `run_code` 和实际子调用分别计数。
 

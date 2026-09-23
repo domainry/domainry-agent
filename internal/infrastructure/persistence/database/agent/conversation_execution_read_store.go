@@ -50,7 +50,7 @@ func (s *ConversationStore) ReadExecutionCalls(ctx context.Context, in agentsdk.
 	keyInput := in
 	keyInput.Cursor = ""
 	cursor := executionReadCursor{Owner: conversationOwner(a), Query: conversationHash(keyInput), EventSeq: run.LastEventSeq}
-	predicate := query.And(conversationScope(a, in.ConversationID), query.Equal("run_id", in.RunID))
+	predicate := query.And(conversationRunStepKindPredicate(conversationRunStepKindTool), conversationScope(a, in.ConversationID), query.Equal("run_id", in.RunID))
 	if in.Cursor != "" {
 		var previous executionReadCursor
 		raw, err := base64.RawURLEncoding.DecodeString(in.Cursor)
@@ -62,7 +62,7 @@ func (s *ConversationStore) ReadExecutionCalls(ctx context.Context, in agentsdk.
 		}
 		predicate = query.And(predicate, query.Or(query.GreaterThan("step_no", previous.Step), query.And(query.Equal("step_no", previous.Step), query.GreaterThan("call_key", previous.CallKey))))
 	}
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversation_tool_calls").Columns("payload_json", "call_key").Where(predicate).OrderBy(query.Ascending("step_no"), query.Ascending("call_key")).Limit(in.Limit + 1).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("payload_json", "call_key").Where(predicate).OrderBy(query.Ascending("step_no"), query.Ascending("call_key")).Limit(in.Limit + 1).Build()
 	if err != nil {
 		return out, err
 	}
