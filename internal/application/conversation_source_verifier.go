@@ -31,6 +31,9 @@ func (service *ConversationService) VerifyConversationSources(ctx context.Contex
 		if run.ConversationID != reference.ConversationID || (reference.BeforeStep > 0 && reference.BeforeStep > len(run.Steps)+1) {
 			return agentsdk.ConversationSourceVerificationReceipt{}, conversationFailure("invalid", "source_run_boundary_invalid")
 		}
+		if run.Status != "completed" || run.CompletedAt == nil {
+			return agentsdk.ConversationSourceVerificationReceipt{}, conversationFailure("invalid", "source_run_incomplete")
+		}
 		reference.BeforeStep = 0
 		references[reference] = struct{}{}
 	}

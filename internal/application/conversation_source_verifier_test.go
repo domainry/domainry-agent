@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
@@ -32,9 +33,10 @@ func (repository sourceVerifierRepository) Run(_ context.Context, conversationID
 func TestVerifyConversationSourcesRequiresEverySourceToBelongToAnOwnedRun(t *testing.T) {
 	authority := agentsdk.ConversationAuthority{Known: true, RuntimeID: "agent", WorkspaceID: "workspace-a", UserID: "reader-a"}
 	reference := agentsdk.ConversationRunReference{ConversationID: "conversation-a", RunID: "run-a", BeforeStep: 2}
+	completedAt := time.Now().UTC()
 	service := &ConversationService{repo: sourceVerifierRepository{
 		conversation: agentsdk.Conversation{ID: reference.ConversationID, WorkspaceID: authority.WorkspaceID},
-		run:          agentsdk.ConversationRun{ID: reference.RunID, ConversationID: reference.ConversationID, Steps: []agentsdk.ConversationStepView{{}}},
+		run:          agentsdk.ConversationRun{ID: reference.RunID, ConversationID: reference.ConversationID, Status: "completed", CompletedAt: &completedAt, Steps: []agentsdk.ConversationStepView{{}}},
 	}}
 	receipt, err := service.VerifyConversationSources(t.Context(), agentsdk.ConversationSourceVerificationRequest{
 		References: []agentsdk.ConversationRunReference{reference},
@@ -56,5 +58,18 @@ func TestVerifyConversationSourcesRequiresEverySourceToBelongToAnOwnedRun(t *tes
 	var coded *agentsdk.Error
 	if !errors.As(err, &coded) || coded.Code != "agent.conversation.source_run_mismatch" {
 		t.Fatalf("mismatched source error=%#v", err)
+	}
+
+	service.repo = sourceVerifierRepository{
+		conversation: agentsdk.Conversation{ID: reference.ConversationID, WorkspaceID: authority.WorkspaceID},
+		run:          agentsdk.ConversationRun{ID: reference.RunID, ConversationID: reference.ConversationID, Status: "running", Steps: []agentsdk.ConversationStepView{{}}},
+	}
+	_, err = service.VerifyConversationSources(t.Context(), agentsdk.ConversationSourceVerificationRequest{
+		References: []agentsdk.ConversationRunReference{reference},
+		SourceIDs:  []string{"conversation://conversation-a/turn/run-a"},
+		Reader:     authority,
+	})
+	if !errors.As(err, &coded) || coded.Code != "agent.conversation.source_run_incomplete" {
+		t.Fatalf("unfinished source error=%#v", err)
 	}
 }
