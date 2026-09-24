@@ -28,11 +28,11 @@ import (
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
-	knowledgecontract "github.com/domainry/domainry-knowledge/contract"
-	knowledgemodulehost "github.com/domainry/domainry-knowledge/modulehost"
+	knowledgecontract "github.com/domainry/domainry-knowledge-sdk/contract"
+	knowledgemodulehost "github.com/domainry/domainry-knowledge-sdk/modulehost"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
-	todocontract "github.com/domainry/domainry-todo/contract"
-	todomodulehost "github.com/domainry/domainry-todo/modulehost"
+	todocontract "github.com/domainry/domainry-todo-sdk/contract"
+	todomodulehost "github.com/domainry/domainry-todo-sdk/modulehost"
 )
 
 type ConversationOptions = agentapplication.ConversationOptions

@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	knowledge "github.com/domainry/domainry-knowledge/contract"
+	knowledge "github.com/domainry/domainry-knowledge-sdk/contract"
 	"log/slog"
 	"strings"
 	"sync"

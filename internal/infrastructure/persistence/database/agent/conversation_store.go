@@ -17,10 +17,10 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
-	knowledgecontract "github.com/domainry/domainry-knowledge/contract"
-	knowledgemodulehost "github.com/domainry/domainry-knowledge/modulehost"
+	knowledgecontract "github.com/domainry/domainry-knowledge-sdk/contract"
+	knowledgemodulehost "github.com/domainry/domainry-knowledge-sdk/modulehost"
 	"github.com/domainry/domainry-orm/query"
-	todomodulehost "github.com/domainry/domainry-todo/modulehost"
+	todomodulehost "github.com/domainry/domainry-todo-sdk/modulehost"
 )
 
 type ConversationStore struct {

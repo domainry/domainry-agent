@@ -4,7 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
-	knowledge "github.com/domainry/domainry-knowledge/contract"
+	knowledge "github.com/domainry/domainry-knowledge-sdk/contract"
 )
 
 func knowledgeOptions(o ConversationOptions) knowledge.Options {

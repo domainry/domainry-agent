@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	knowledge "github.com/domainry/domainry-knowledge/contract"
+	knowledge "github.com/domainry/domainry-knowledge-sdk/contract"
 )
 
 func (s *ConversationService) authorizedDeliveryArtifact(ctx context.Context, id string, in sdk.ConversationDeliveryArtifactRead, a sdk.ConversationAuthority) (context.Context, error) {

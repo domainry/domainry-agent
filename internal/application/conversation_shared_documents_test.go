@@ -7,7 +7,7 @@ import (
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	knowledge "github.com/domainry/domainry-knowledge/contract"
+	knowledge "github.com/domainry/domainry-knowledge-sdk/contract"
 )
 
 type sharedDocumentOwner struct {

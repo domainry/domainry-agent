@@ -5,7 +5,7 @@ import (
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent/internal/application"
-	knowledge "github.com/domainry/domainry-knowledge/contract"
+	knowledge "github.com/domainry/domainry-knowledge-sdk/contract"
 )
 
 func NewService(repo persistence.ConversationRepository, model sdk.ConversationModel, runtime string, options application.ConversationOptions) (*application.ConversationService, error) {

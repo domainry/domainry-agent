@@ -7,7 +7,7 @@ import (
 	"fmt"
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	todocontract "github.com/domainry/domainry-todo/contract"
+	todocontract "github.com/domainry/domainry-todo-sdk/contract"
 )
 
 func (s *ConversationStore) todoService() (todocontract.TodoService, error) {

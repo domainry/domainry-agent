@@ -26,9 +26,9 @@ import (
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
-	knowledgecontract "github.com/domainry/domainry-knowledge/contract"
+	knowledgecontract "github.com/domainry/domainry-knowledge-sdk/contract"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
-	todocontract "github.com/domainry/domainry-todo/contract"
+	todocontract "github.com/domainry/domainry-todo-sdk/contract"
 	todomodule "github.com/domainry/domainry-todo/module"
 )
 

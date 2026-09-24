@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	identity "github.com/domainry/domainry-identity-sdk"
-	"github.com/domainry/domainry-knowledge/contract"
+	"github.com/domainry/domainry-knowledge-sdk/contract"
 	sdk "github.com/domainry/domainry-tools-sdk"
 	toolsmodule "github.com/domainry/domainry-tools/module"
 	"io"

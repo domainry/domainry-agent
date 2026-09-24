@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	agent "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-knowledge/contract"
+	"github.com/domainry/domainry-knowledge-sdk/contract"
 )
 
 type recordDeliveryModel struct{}

@@ -7,10 +7,10 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentmodulehost "github.com/domainry/domainry-agent-sdk/modulehost"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
-	knowledgemodulehost "github.com/domainry/domainry-knowledge/modulehost"
+	knowledgemodulehost "github.com/domainry/domainry-knowledge-sdk/modulehost"
 	ormdriver "github.com/domainry/domainry-orm/driver"
 	"github.com/domainry/domainry-orm/sqlhost"
-	todomodulehost "github.com/domainry/domainry-todo/modulehost"
+	todomodulehost "github.com/domainry/domainry-todo-sdk/modulehost"
 	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
 

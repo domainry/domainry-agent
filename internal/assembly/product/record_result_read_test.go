@@ -20,7 +20,7 @@ import (
 	"github.com/domainry/domainry-foundation/requestcontext"
 	identity "github.com/domainry/domainry-identity-sdk"
 	identityhttp "github.com/domainry/domainry-identity-sdk/httpapi"
-	"github.com/domainry/domainry-knowledge/contract"
+	"github.com/domainry/domainry-knowledge-sdk/contract"
 	"github.com/domainry/domainry-orm/query"
 	toolsdk "github.com/domainry/domainry-tools-sdk"
 	toolmodule "github.com/domainry/domainry-tools/module"

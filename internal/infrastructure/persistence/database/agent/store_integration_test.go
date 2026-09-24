@@ -19,11 +19,11 @@ import (
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
-	knowledgecontract "github.com/domainry/domainry-knowledge/contract"
+	knowledgecontract "github.com/domainry/domainry-knowledge-sdk/contract"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	"github.com/domainry/domainry-orm/migration"
-	todocontract "github.com/domainry/domainry-todo/contract"
+	todocontract "github.com/domainry/domainry-todo-sdk/contract"
 	todomodule "github.com/domainry/domainry-todo/module"
 	_ "modernc.org/sqlite"
 )
