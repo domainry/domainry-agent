@@ -27,6 +27,21 @@ func (s *ConversationStore) collaborationReplay(ctx context.Context, tx *sql.Tx,
 	return true, json.Unmarshal(receipt.Result, out)
 }
 
+func (s *ConversationStore) collaborationReceipt(ctx context.Context, a agentsdk.ConversationAuthority, key string, request any, out any) (bool, error) {
+	command := agentOperationCommand("agent.collaboration_mutation", "agent.collaboration.mutate", key, request, a)
+	receipt, found, err := s.store.operations.Get(ctx, sharedoperation.ManagedIdentity{ID: command.ID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind})
+	if err != nil || !found {
+		return false, err
+	}
+	if receipt.Command.IdempotencyKey != command.IdempotencyKey || receipt.Command.RequestFingerprint != command.RequestFingerprint {
+		return false, agentOperationError(sharedoperation.ErrIdempotencyConflict)
+	}
+	if receipt.Status != sharedoperation.StatusSucceeded {
+		return false, conversationError("conflict", "mutation_in_progress")
+	}
+	return true, json.Unmarshal(receipt.Result, out)
+}
+
 func (s *ConversationStore) saveCollaborationMutation(ctx context.Context, tx *sql.Tx, a agentsdk.ConversationAuthority, key string, request, result any) error {
 	command := agentOperationCommand("agent.collaboration_mutation", "agent.collaboration.mutate", key, request, a)
 	return s.store.operations.Complete(sharedoperation.WithExecutor(ctx, tx), sharedoperation.Completion{ID: command.ID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind, IdempotencyKey: command.IdempotencyKey, RequestFingerprint: command.RequestFingerprint, Result: json.RawMessage(conversationJSON(result)), CompletedAt: time.Now().UTC()})

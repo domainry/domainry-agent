@@ -8,6 +8,7 @@ import (
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
+	sharedoperation "github.com/domainry/domainry-foundation/operation"
 )
 
 func transferAdmission(t *testing.T, repo *ConversationStore, a sdk.ConversationAuthority, d sdk.ConversationDelegation, clientID string) persistence.ConversationDelegationTransferAdmission {
@@ -22,6 +23,18 @@ func transferAdmission(t *testing.T, repo *ConversationStore, a sdk.Conversation
 		t.Fatal(err)
 	}
 	return persistence.ConversationDelegationTransferAdmission{Request: in, Agent: sdk.ConversationAgentSnapshot{ID: peer.ID, Revision: peer.Revision}, Task: sdk.ConversationTask{SourceConversationID: d.SourceConversationID, SourceRunID: d.SourceRunID, Budget: d.Budget}, Handoff: handoff}
+}
+
+func TestTransferReceiptLookupDoesNotClaimMissingMutation(t *testing.T) {
+	repo, a, d := peerFixture(t)
+	in := sdk.ConversationDelegationUpdate{ClientID: "receipt-probe", ExpectedRevision: d.Revision, Action: "transfer", Reason: "Probe an absent transfer receipt", Transfer: &sdk.ConversationDelegationTransfer{AgentID: "replacement", RemainingWork: "Continue remaining work"}}
+	if _, found, err := repo.ConversationDelegationTransferReceipt(t.Context(), d.ID, in, a); err != nil || found {
+		t.Fatalf("missing receipt lookup: found=%v err=%v", found, err)
+	}
+	command := agentOperationCommand("agent.collaboration_mutation", "agent.collaboration.mutate", transferMutationKey(d.ID, in.ClientID), in, a)
+	if _, found, err := repo.store.operations.Get(t.Context(), sharedoperation.ManagedIdentity{ID: command.ID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind}); err != nil || found {
+		t.Fatalf("receipt lookup wrote operation: found=%v err=%v", found, err)
+	}
 }
 
 func TestPeerTransferPreservesHistoryBudgetAndReusesCompletedEffects(t *testing.T) {

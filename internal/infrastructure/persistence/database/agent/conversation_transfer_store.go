@@ -7,6 +7,7 @@ import (
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
+	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	"github.com/domainry/domainry-orm/query"
 )
 
@@ -24,7 +25,7 @@ func (s *ConversationStore) ConversationDelegationTransferReceipt(ctx context.Co
 			return err
 		}
 		var err error
-		found, err = s.collaborationReplay(ctx, tx, a, transferMutationKey(id, in.ClientID), in, &out)
+		found, err = s.collaborationReceipt(sharedoperation.WithExecutor(ctx, tx), a, transferMutationKey(id, in.ClientID), in, &out)
 		return err
 	})
 	return out, found, err
