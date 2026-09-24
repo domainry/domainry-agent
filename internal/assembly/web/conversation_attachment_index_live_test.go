@@ -187,7 +187,7 @@ func (a *attachmentLiveAudit) readSource(ids []string) (*knowledgemodule.Knowled
 	} else {
 		c.PermissionIDs = nil
 	}
-	k, err := knowledgemodule.NewKnowledge(c)
+	k, err := newKnowledgeWithOfficialAdapter(c)
 	return k, agentsdk.ConversationAuthority{Known: true, RuntimeID: "attachment-probe", WorkspaceID: c.WorkspaceID, UserID: "synthetic-probe"}, err
 }
 
@@ -251,7 +251,7 @@ func (a *attachmentLiveAudit) cleanupFailedFixture() error {
 	c.Transport = a
 	c.WorkspaceID = "attachment-cleanup"
 	c.DocumentManagement = true
-	k, err := knowledgemodule.NewKnowledge(c)
+	k, err := newKnowledgeWithOfficialAdapter(c)
 	if err != nil {
 		return err
 	}

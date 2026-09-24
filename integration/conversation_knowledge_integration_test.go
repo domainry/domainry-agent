@@ -17,7 +17,6 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	agentmodule "github.com/domainry/domainry-agent/module"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 func TestConversationKnowledgeModuleRetrievesAndFreezesInputForResume(t *testing.T) {
@@ -120,7 +119,7 @@ func TestConversationKnowledgeEmptyAndFailuresRemainDistinct(t *testing.T) {
 				io.WriteString(w, tc.body)
 			}))
 			defer upstream.Close()
-			knowledge, err := knowledgemodule.NewKnowledge(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "key", TeamID: "team", KBID: "kb", WorkspaceID: tc.workspace})
+			knowledge, err := newKnowledgeWithOfficialAdapter(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "key", TeamID: "team", KBID: "kb", WorkspaceID: tc.workspace})
 			if err != nil {
 				t.Fatal(err)
 			}

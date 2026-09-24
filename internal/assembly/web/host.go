@@ -15,12 +15,15 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost"
 	agentmodule "github.com/domainry/domainry-agent/module"
+	auditmodule "github.com/domainry/domainry-audit/module"
+	knowledgehttpapi "github.com/domainry/domainry-connectors/providers/knowledge_base/http_api"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	identitymodule "github.com/domainry/domainry-identity/module"
 	integrationsdk "github.com/domainry/domainry-integration-sdk"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
+	metadatamodule "github.com/domainry/domainry-metadata/module"
 	"github.com/domainry/domainry-orm/driver"
 	schedulersdk "github.com/domainry/domainry-scheduler-sdk"
 	todomodule "github.com/domainry/domainry-todo/module"
@@ -168,6 +171,12 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	handle := identitysdk.DatabaseHandle{
 		Pool: h.db, Driver: connection.Driver, Schema: connection.Schema, FilePath: connection.FilePath, Migrations: h.registrar, ModuleMigrations: h.registrar,
 	}
+	if options.Identity.AuditFactory == nil {
+		options.Identity.AuditFactory = auditmodule.NewFactory(auditmodule.Options{})
+	}
+	if options.Identity.MetadataFactory == nil {
+		options.Identity.MetadataFactory = metadatamodule.NewFactory()
+	}
 	if h.identityBorrowed {
 		h.Identity, err = bindSharedIdentity(options.IdentityBinding, application)
 	} else if h.external {
@@ -254,7 +263,7 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 		options.Agent.KnowledgeFactory = knowledgemodule.NewFactory()
 	}
 	if options.Agent.KnowledgeProviderFactory == nil {
-		options.Agent.KnowledgeProviderFactory = knowledgemodule.NewProviderFactory()
+		options.Agent.KnowledgeProviderFactory = knowledgemodule.NewProviderFactory(knowledgehttpapi.New)
 	}
 	if options.Agent.TodoFactory == nil {
 		options.Agent.TodoFactory = todomodule.NewFactory()

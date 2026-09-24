@@ -13,7 +13,6 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent/internal/application"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 func TestKnowledgeExtractModelLoopRestartCitationsAndRevocation(t *testing.T) {
@@ -33,7 +32,7 @@ func TestKnowledgeExtractModelLoopRestartCitationsAndRevocation(t *testing.T) {
 		json.NewEncoder(w).Encode(map[string]any{"data": map[string]any{"doc_id": "contract.pdf", "title": "合成合同", "body": "付款金额：9007199254740993.25 元\n客户：青禾公司\n"}})
 	}))
 	defer upstream.Close()
-	source, err := knowledgemodule.NewKnowledge(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "fixture", TeamID: "team", KBID: "kb", WorkspaceID: a.WorkspaceID, ResponseMapping: &provider.KnowledgeResponseMapping{Fetch: &provider.KnowledgeCitationMapping{Items: "/data", DocumentID: "/doc_id", Title: "/title", Excerpt: "/body"}}})
+	source, err := newKnowledgeWithOfficialAdapter(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "fixture", TeamID: "team", KBID: "kb", WorkspaceID: a.WorkspaceID, ResponseMapping: &provider.KnowledgeResponseMapping{Fetch: &provider.KnowledgeCitationMapping{Items: "/data", DocumentID: "/doc_id", Title: "/title", Excerpt: "/body"}}})
 	if err != nil {
 		t.Fatal(err)
 	}

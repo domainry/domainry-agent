@@ -22,6 +22,7 @@ import (
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	"github.com/domainry/domainry-agent/internal/transport/http/playground"
+	knowledgehttpapi "github.com/domainry/domainry-connectors/providers/knowledge_base/http_api"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	_ "modernc.org/sqlite"
 )
@@ -84,7 +85,7 @@ func run() error {
 	}
 	knowledgeConfig := provider.KnowledgeConfigFromEnvironment()
 	knowledgeConfig.RuntimeID = "agent-playground"
-	knowledge, err := knowledgemodule.NewKnowledge(knowledgeConfig)
+	knowledge, err := knowledgemodule.NewKnowledge(knowledgeConfig, knowledgehttpapi.New)
 	if err != nil {
 		return err
 	}

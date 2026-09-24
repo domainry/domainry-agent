@@ -17,7 +17,6 @@ import (
 	"github.com/domainry/domainry-agent/internal/application"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 type cancelledEffectHost struct {
@@ -238,7 +237,7 @@ func TestConversationCancellationClosesOfficialKnowledgeConnectorRequest(t *test
 	}))
 	defer upstream.Close()
 	a := conversationAuthority()
-	knowledge, err := knowledgemodule.NewKnowledge(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "isolated-test-key", TeamID: "team", KBID: "cancel-test", WorkspaceID: a.WorkspaceID})
+	knowledge, err := newKnowledgeWithOfficialAdapter(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "isolated-test-key", TeamID: "team", KBID: "cancel-test", WorkspaceID: a.WorkspaceID})
 	if err != nil {
 		t.Fatal(err)
 	}

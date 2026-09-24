@@ -62,7 +62,7 @@ func sourceKnowledgeFixture(t *testing.T, visible *atomic.Bool) *knowledgemodule
 		fmt.Fprint(w, `{"hits":[{"doc_id":"policy","content":"PRIVATE-VALUE-97","title":"费用规则"}]}`)
 	}))
 	t.Cleanup(upstream.Close)
-	k, err := knowledgemodule.NewKnowledge(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "source-fixture", TeamID: "team", KBID: "kb", WorkspaceID: conversationAuthority().WorkspaceID})
+	k, err := newKnowledgeWithOfficialAdapter(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "source-fixture", TeamID: "team", KBID: "kb", WorkspaceID: conversationAuthority().WorkspaceID})
 	if err != nil {
 		t.Fatal(err)
 	}

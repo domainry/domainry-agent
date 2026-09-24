@@ -4,10 +4,10 @@ go 1.26.0
 
 require (
 	github.com/domainry/domainry-agent-sdk v0.1.23
-	github.com/domainry/domainry-connector-sdk v0.1.2
-	github.com/domainry/domainry-connectors v0.1.4
+	github.com/domainry/domainry-connector-sdk v0.1.3
+	github.com/domainry/domainry-connectors v0.1.5
 	github.com/domainry/domainry-foundation v0.1.38
-	github.com/domainry/domainry-identity v0.2.17
+	github.com/domainry/domainry-identity v0.2.27
 	github.com/domainry/domainry-identity-bridge v0.1.5
 	github.com/domainry/domainry-identity-sdk v0.1.14
 	github.com/domainry/domainry-lifecycle-sdk v0.1.16
@@ -25,11 +25,11 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.20.0 // indirect
 	github.com/crewjam/saml v0.5.1 // indirect
-	github.com/domainry/domainry-audit v0.1.14 // indirect
-	github.com/domainry/domainry-audit-sdk v0.1.6 // indirect
+	github.com/domainry/domainry-audit v0.1.18
+	github.com/domainry/domainry-audit-sdk v0.1.8 // indirect
 	github.com/domainry/domainry-data-exchange-sdk v0.3.8 // indirect
-	github.com/domainry/domainry-metadata v0.1.10
-	github.com/domainry/domainry-metadata-sdk v0.1.5
+	github.com/domainry/domainry-metadata v0.1.16
+	github.com/domainry/domainry-metadata-sdk v0.1.6
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -77,10 +77,10 @@ require (
 )
 
 require (
-	github.com/domainry/domainry-integration v0.1.26
+	github.com/domainry/domainry-integration v0.1.27
 	github.com/domainry/domainry-integration-sdk v0.1.9
-	github.com/domainry/domainry-knowledge v0.1.16
-	github.com/domainry/domainry-knowledge-sdk v0.1.2
+	github.com/domainry/domainry-knowledge v0.1.17
+	github.com/domainry/domainry-knowledge-sdk v0.1.3
 	github.com/domainry/domainry-report-sdk v0.1.13
 	github.com/domainry/domainry-todo-sdk v0.1.0
 )

@@ -17,6 +17,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
+	knowledgehttpapi "github.com/domainry/domainry-connectors/providers/knowledge_base/http_api"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
@@ -42,13 +43,13 @@ type host struct {
 
 func testFactory(options Options) *Factory {
 	options.KnowledgeFactory = knowledgemodule.NewFactory()
-	options.KnowledgeProviderFactory = knowledgemodule.NewProviderFactory()
+	options.KnowledgeProviderFactory = knowledgemodule.NewProviderFactory(knowledgehttpapi.New)
 	options.TodoFactory = todomodule.NewFactory()
 	return NewFactory(options)
 }
 
 func testKnowledgeProviderFactory() knowledgeprovider.Factory {
-	return knowledgemodule.NewProviderFactory()
+	return knowledgemodule.NewProviderFactory(knowledgehttpapi.New)
 }
 
 func testKnowledgeSource(config KnowledgeConfig) (knowledgeprovider.Source, error) {

@@ -21,6 +21,7 @@ import (
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	"github.com/domainry/domainry-agent/server"
+	knowledgehttpapi "github.com/domainry/domainry-connectors/providers/knowledge_base/http_api"
 	identityremote "github.com/domainry/domainry-identity-sdk/remote"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -140,7 +141,7 @@ func openService(store *agentstore.Store) (*server.Server, func(), error) {
 			}
 			model = configured
 		}
-		knowledge, err := knowledgemodule.NewKnowledge(knowledgeConfig)
+		knowledge, err := knowledgemodule.NewKnowledge(knowledgeConfig, knowledgehttpapi.New)
 		if err != nil {
 			return nil, closeService, err
 		}
