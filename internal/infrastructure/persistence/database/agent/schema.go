@@ -36,6 +36,12 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	}{
 		{name: "_agent_runtime_states", builder: runtimeStateTable(renderer)},
 		{name: agentRunTable, builder: agentRunTableBuilder(renderer)},
+		// _worker_scopes is now owned by Foundation, but it was part of the
+		// published Agent v1 migration. Published migration content is immutable:
+		// keep the historical statement here so existing Runtime ledgers retain
+		// the same checksum. Foundation's CREATE TABLE IF NOT EXISTS remains the
+		// canonical owner for fresh installations.
+		{name: "_worker_scopes", builder: historicalWorkerScopeTable(renderer)},
 	} {
 		statement, _, buildErr := table.builder.Build()
 		if buildErr != nil {
@@ -111,6 +117,24 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		return nil, err
 	}
 	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, tasks, capacity, collaboration, subjectsBinding, sourceReleases, contractPublications, workBudgets, forks, improvements, memories}, nil
+}
+
+func historicalWorkerScopeTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
+	return ormschema.NewTable(renderer, "_worker_scopes").IfNotExists().Columns(
+		required("id", ormschema.TextKey(255)),
+		required("owner", ormschema.TextKey(191)),
+		required("scope_key", ormschema.TextKey(191)),
+		ormschema.Column("cursor", ormschema.TextKey(255)).NotNull().DefaultValue(""),
+		ormschema.Column("checkpoint", ormschema.BigInt()).NotNull().DefaultValue(0),
+		ormschema.Column("capacity", ormschema.BigInt()).NotNull().DefaultValue(0),
+		ormschema.Column("lease_owner", ormschema.TextKey(255)).NotNull().DefaultValue(""),
+		ormschema.Column("lease_expires_at", ormschema.TextKey(255)).NotNull().DefaultValue(""),
+		ormschema.Column("fencing_token", ormschema.BigInt()).NotNull().DefaultValue(0),
+		ormschema.Column("last_started_at", ormschema.TextKey(255)).NotNull().DefaultValue(""),
+		ormschema.Column("last_completed_at", ormschema.TextKey(255)).NotNull().DefaultValue(""),
+		ormschema.Column("last_error", ormschema.LongText()).NotNull().DefaultValue(""),
+		ormschema.Column("updated_at", ormschema.TextKey(255)).NotNull().DefaultValue(""),
+	).PrimaryKey("id").Unique("owner", "scope_key")
 }
 
 func runtimeStateTable(renderer modulehost.Dialect) *ormschema.TableBuilder {

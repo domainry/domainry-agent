@@ -18,6 +18,7 @@ func TestSchemaOwnershipMatchesEveryFreshAgentTableAndPrimaryKey(t *testing.T) {
 		t.Fatal(err)
 	}
 	created := map[string]string{}
+	historicalWorkerScope := false
 	for _, migration := range migrations {
 		for _, statement := range migration.Statements {
 			const prefix = `CREATE TABLE IF NOT EXISTS "`
@@ -28,11 +29,21 @@ func TestSchemaOwnershipMatchesEveryFreshAgentTableAndPrimaryKey(t *testing.T) {
 			if !found || name == "" {
 				t.Fatalf("invalid CREATE TABLE statement: %s", statement)
 			}
+			if name == "_worker_scopes" {
+				if historicalWorkerScope {
+					t.Fatal("historical Worker Scope table is created more than once")
+				}
+				historicalWorkerScope = true
+				continue
+			}
 			if _, duplicate := created[name]; duplicate {
 				t.Fatalf("Agent table %s is created more than once", name)
 			}
 			created[name] = statement
 		}
+	}
+	if !historicalWorkerScope {
+		t.Fatal("published Agent v1 lost its historical Worker Scope statement")
 	}
 	if len(created) != len(tables) {
 		t.Fatalf("fresh Agent tables=%d ownership contracts=%d: created=%v owned=%v", len(created), len(tables), sortedKeys(created), OwnedTables())

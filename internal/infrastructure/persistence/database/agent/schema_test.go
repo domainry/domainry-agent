@@ -78,8 +78,11 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if strings.Contains(joined, "_schema_migrations") {
 				t.Fatal("Agent migration attempted to create a private ledger")
 			}
-			if strings.Contains(joined, "_worker_scopes") {
-				t.Fatal("Agent migration still owns the shared Worker Scope table")
+			// _worker_scopes remains in the immutable published v1 history. Current
+			// ownership is declared separately by SchemaOwnership and belongs to
+			// Foundation.
+			if !strings.Contains(joined, "_worker_scopes") {
+				t.Fatal("Agent migration v1 lost its historical Worker Scope statement")
 			}
 			conversationItems := byVersion[2]
 			for _, fragment := range []string{conversationItemTable, "item_kind", "subject_id", "idx_agent_conversation_item_sequence_v2", "idx_agent_conversation_item_run_v2", "idx_agent_conversation_item_subject_v2"} {
