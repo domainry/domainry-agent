@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
+	knowledgeprovider "github.com/domainry/domainry-knowledge-sdk/provider"
 )
 
 // A host-approved API-push source. Users select Key; all credentials, remote
@@ -28,6 +28,7 @@ type knowledgeDatasourceEntry struct {
 type knowledgeDatasourceCatalog struct {
 	runtimeID string
 	entries   map[string]knowledgeDatasourceEntry
+	factory   knowledgeprovider.Factory
 }
 
 func knowledgeDatasourceEnvironment(raw string) ([]KnowledgeDatasourceConfig, error) {
@@ -69,7 +70,7 @@ func knowledgeDatasourceEnvironment(raw string) ([]KnowledgeDatasourceConfig, er
 	}
 	return out, nil
 }
-func assembleKnowledgeDatasources(options *ConversationOptions, configured []KnowledgeDatasourceConfig, raw, runtimeID string) error {
+func assembleKnowledgeDatasources(options *ConversationOptions, configured []KnowledgeDatasourceConfig, raw, runtimeID string, factory knowledgeprovider.Factory) error {
 	if raw != "" {
 		if len(configured) > 0 {
 			return fmt.Errorf("configure knowledge datasources only once")
@@ -86,7 +87,7 @@ func assembleKnowledgeDatasources(options *ConversationOptions, configured []Kno
 	if options.KnowledgeDatasources != nil || len(configured) > 1000 {
 		return fmt.Errorf("configure at most 1000 datasources using one catalog")
 	}
-	out := &knowledgeDatasourceCatalog{runtimeID: runtimeID, entries: map[string]knowledgeDatasourceEntry{}}
+	out := &knowledgeDatasourceCatalog{runtimeID: runtimeID, entries: map[string]knowledgeDatasourceEntry{}, factory: factory}
 	seen := map[string]bool{}
 	if source, ok := options.Knowledge.(agentsdk.ManagedKnowledgeDocumentSource); ok {
 		seen[source.KnowledgeDocumentSourceIdentity()] = true
@@ -119,7 +120,7 @@ func assembleKnowledgeDatasources(options *ConversationOptions, configured []Kno
 			return err
 		}
 		binding.Knowledge.DocumentManagement = true
-		source, err := provider.NewKnowledge(binding.Knowledge)
+		source, err := factory.NewSource(binding.Knowledge)
 		if err != nil || source == nil || source.KnowledgeDocumentManagementReady() != nil {
 			return fmt.Errorf("datasource requires a document provider and explicit response mappings")
 		}
@@ -162,5 +163,5 @@ func (c *knowledgeDatasourceCatalog) OpenKnowledgeDatasource(ctx context.Context
 		return nil, err
 	}
 	binding.Knowledge.DocumentManagement = true
-	return provider.NewKnowledge(binding.Knowledge)
+	return c.factory.NewSource(binding.Knowledge)
 }

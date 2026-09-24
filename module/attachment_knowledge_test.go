@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 )
 
 func TestAttachmentKnowledgeConfigurationOwnsPrivateScopeAndRejectsKBReuse(t *testing.T) {
@@ -21,7 +20,7 @@ func TestAttachmentKnowledgeConfigurationOwnsPrivateScopeAndRejectsKBReuse(t *te
 		}
 	}
 	var options ConversationOptions
-	if err = assembleAttachmentKnowledge(&options, values, "", "runtime"); err != nil {
+	if err = assembleAttachmentKnowledge(&options, values, "", "runtime", testKnowledgeProviderFactory()); err != nil {
 		t.Fatal(err)
 	}
 	source := options.AttachmentKnowledge[0].Knowledge
@@ -45,7 +44,7 @@ func TestAttachmentKnowledgeConfigurationOwnsPrivateScopeAndRejectsKBReuse(t *te
 	rotated := values[0]
 	rotated.APIKey = "rotated"
 	rotated.BaseURL = "https://KNOWLEDGE.example.test:443/"
-	other, err := provider.NewAttachmentKnowledge(rotated, "runtime")
+	other, err := testAttachmentKnowledgeSource(rotated, "runtime")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -56,7 +55,7 @@ func TestAttachmentKnowledgeConfigurationOwnsPrivateScopeAndRejectsKBReuse(t *te
 	for _, kind := range []string{"default", "library", "catalog", "attachment"} {
 		t.Run(kind, func(t *testing.T) {
 			var existing ConversationOptions
-			base, err := provider.NewKnowledge(values[0])
+			base, err := testKnowledgeSource(values[0])
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -66,18 +65,18 @@ func TestAttachmentKnowledgeConfigurationOwnsPrivateScopeAndRejectsKBReuse(t *te
 			case "library":
 				existing.LibraryKnowledge = []LibraryKnowledgeBinding{{WorkspaceID: "w", LibraryID: "lib_" + strings.Repeat("b", 32), Source: base}}
 			case "catalog":
-				if err = assembleKnowledgeDatasources(&existing, []KnowledgeDatasourceConfig{{Key: "reserved", Name: "Reserved", Knowledge: values[0]}}, "", "runtime"); err != nil {
+				if err = assembleKnowledgeDatasources(&existing, []KnowledgeDatasourceConfig{{Key: "reserved", Name: "Reserved", Knowledge: values[0]}}, "", "runtime", testKnowledgeProviderFactory()); err != nil {
 					t.Fatal(err)
 				}
 			case "attachment":
 				foreign := rotated
 				foreign.WorkspaceID = "another-workspace"
-				if err = assembleAttachmentKnowledge(&existing, []KnowledgeConfig{values[0], foreign}, "", "runtime"); err == nil {
+				if err = assembleAttachmentKnowledge(&existing, []KnowledgeConfig{values[0], foreign}, "", "runtime", testKnowledgeProviderFactory()); err == nil {
 					t.Fatal("attachment KB reused across workspaces")
 				}
 				return
 			}
-			if err = assembleAttachmentKnowledge(&existing, []KnowledgeConfig{rotated}, "", "runtime"); err == nil {
+			if err = assembleAttachmentKnowledge(&existing, []KnowledgeConfig{rotated}, "", "runtime", testKnowledgeProviderFactory()); err == nil {
 				t.Fatal("attachment KB reused by", kind)
 			}
 		})

@@ -16,6 +16,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/application"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 type sourceModel struct {
@@ -51,7 +52,7 @@ func sourceAnswer(text string) agentsdk.ConversationStepResult {
 	return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: text}, FinishReason: "stop"}
 }
 
-func sourceKnowledgeFixture(t *testing.T, visible *atomic.Bool) *provider.Knowledge {
+func sourceKnowledgeFixture(t *testing.T, visible *atomic.Bool) *knowledgemodule.Knowledge {
 	t.Helper()
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !visible.Load() {
@@ -61,7 +62,7 @@ func sourceKnowledgeFixture(t *testing.T, visible *atomic.Bool) *provider.Knowle
 		fmt.Fprint(w, `{"hits":[{"doc_id":"policy","content":"PRIVATE-VALUE-97","title":"费用规则"}]}`)
 	}))
 	t.Cleanup(upstream.Close)
-	k, err := provider.NewKnowledge(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "source-fixture", TeamID: "team", KBID: "kb", WorkspaceID: conversationAuthority().WorkspaceID})
+	k, err := knowledgemodule.NewKnowledge(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "source-fixture", TeamID: "team", KBID: "kb", WorkspaceID: conversationAuthority().WorkspaceID})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -8,6 +8,7 @@ import (
 
 func newAgentModuleFactory(options agentmodule.Options) *agentmodule.Factory {
 	options.KnowledgeFactory = knowledgemodule.NewFactory()
+	options.KnowledgeProviderFactory = knowledgemodule.NewProviderFactory()
 	options.TodoFactory = todomodule.NewFactory()
 	return agentmodule.NewFactory(options)
 }

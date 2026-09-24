@@ -174,7 +174,7 @@ func (a *attachmentLiveAudit) RoundTripHTTP(ctx context.Context, in connector.HT
 	return out, nil
 }
 
-func (a *attachmentLiveAudit) readSource(ids []string) (*provider.Knowledge, agentsdk.ConversationAuthority, error) {
+func (a *attachmentLiveAudit) readSource(ids []string) (*knowledgemodule.Knowledge, agentsdk.ConversationAuthority, error) {
 	c := a.config
 	c.Transport = a
 	c.WorkspaceID = "attachment-visibility-probe"
@@ -187,7 +187,7 @@ func (a *attachmentLiveAudit) readSource(ids []string) (*provider.Knowledge, age
 	} else {
 		c.PermissionIDs = nil
 	}
-	k, err := provider.NewKnowledge(c)
+	k, err := knowledgemodule.NewKnowledge(c)
 	return k, agentsdk.ConversationAuthority{Known: true, RuntimeID: "attachment-probe", WorkspaceID: c.WorkspaceID, UserID: "synthetic-probe"}, err
 }
 
@@ -251,7 +251,7 @@ func (a *attachmentLiveAudit) cleanupFailedFixture() error {
 	c.Transport = a
 	c.WorkspaceID = "attachment-cleanup"
 	c.DocumentManagement = true
-	k, err := provider.NewKnowledge(c)
+	k, err := knowledgemodule.NewKnowledge(c)
 	if err != nil {
 		return err
 	}

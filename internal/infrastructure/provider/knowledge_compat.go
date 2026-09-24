@@ -1,16 +1,11 @@
 package provider
 
-import knowledgemodule "github.com/domainry/domainry-knowledge/module"
+import knowledgeprovider "github.com/domainry/domainry-knowledge-sdk/provider"
 
-// Compatibility names; implementation is owned by domainry-knowledge.
-type KnowledgeCitationMapping = knowledgemodule.KnowledgeCitationMapping
-type KnowledgeResponseMapping = knowledgemodule.KnowledgeResponseMapping
-type AttachmentKnowledge = knowledgemodule.AttachmentKnowledge
+// Provider configuration is an SDK contract. Concrete source construction is
+// selected by the outer composition root and injected into Agent's module.
+type KnowledgeCitationMapping = knowledgeprovider.CitationMapping
+type KnowledgeResponseMapping = knowledgeprovider.ResponseMapping
+type KnowledgeConfig = knowledgeprovider.Config
 
-var NewAttachmentKnowledge = knowledgemodule.NewAttachmentKnowledge
-
-type KnowledgeConfig = knowledgemodule.KnowledgeConfig
-type Knowledge = knowledgemodule.Knowledge
-
-var KnowledgeConfigFromEnvironment = knowledgemodule.KnowledgeConfigFromEnvironment
-var NewKnowledge = knowledgemodule.NewKnowledge
+var KnowledgeConfigFromEnvironment = knowledgeprovider.ConfigFromEnvironment

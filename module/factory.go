@@ -30,6 +30,7 @@ import (
 	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
 	knowledgecontract "github.com/domainry/domainry-knowledge-sdk/contract"
 	knowledgemodulehost "github.com/domainry/domainry-knowledge-sdk/modulehost"
+	knowledgeprovider "github.com/domainry/domainry-knowledge-sdk/provider"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
 	todocontract "github.com/domainry/domainry-todo-sdk/contract"
 	todomodulehost "github.com/domainry/domainry-todo-sdk/modulehost"
@@ -75,6 +76,7 @@ type Options struct {
 	TaskAttachmentStorage                                  agentsdk.TaskAttachmentStorage
 	Knowledge                                              KnowledgeConfig
 	KnowledgeFactory                                       knowledgemodulehost.Factory
+	KnowledgeProviderFactory                               knowledgeprovider.Factory
 	TodoFactory                                            todomodulehost.Factory
 }
 
@@ -185,8 +187,8 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if host.Database() == nil || host.Dialect() == nil || host.Migrations() == nil {
 		return nil, fmt.Errorf("Agent Module persistence host is incomplete")
 	}
-	if f.options.KnowledgeFactory == nil || f.options.TodoFactory == nil {
-		return nil, fmt.Errorf("Agent Module requires Knowledge and Todo factories")
+	if f.options.KnowledgeFactory == nil || f.options.KnowledgeProviderFactory == nil || f.options.TodoFactory == nil {
+		return nil, fmt.Errorf("Agent Module requires Knowledge module, Knowledge provider and Todo factories")
 	}
 	if _, err := sharedoperation.Open(ctx, host.Database(), sharedoperation.AdaptDialect(host.Dialect()), host.Migrations()); err != nil {
 		return nil, err
@@ -322,19 +324,19 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 			return nil, fmt.Errorf("configure only one conversation knowledge source")
 		}
 		f.options.Knowledge.RuntimeID = app.RuntimeID
-		knowledge, err := provider.NewKnowledge(f.options.Knowledge)
+		knowledge, err := f.options.KnowledgeProviderFactory.NewSource(f.options.Knowledge)
 		if err != nil {
 			return nil, err
 		}
 		conversationOptions.Knowledge = knowledge
 	}
-	if err := assembleLibraryKnowledge(&conversationOptions, f.options.KnowledgeLibraries, f.options.KnowledgeLibraryBindingsJSON, f.options.Knowledge, app.RuntimeID); err != nil {
+	if err := assembleLibraryKnowledge(&conversationOptions, f.options.KnowledgeLibraries, f.options.KnowledgeLibraryBindingsJSON, f.options.Knowledge, app.RuntimeID, f.options.KnowledgeProviderFactory); err != nil {
 		return nil, err
 	}
-	if err := assembleKnowledgeDatasources(&conversationOptions, f.options.KnowledgeDatasources, f.options.KnowledgeDatasourcesJSON, app.RuntimeID); err != nil {
+	if err := assembleKnowledgeDatasources(&conversationOptions, f.options.KnowledgeDatasources, f.options.KnowledgeDatasourcesJSON, app.RuntimeID, f.options.KnowledgeProviderFactory); err != nil {
 		return nil, err
 	}
-	if err := assembleAttachmentKnowledge(&conversationOptions, f.options.AttachmentKnowledge, f.options.AttachmentKnowledgeBindingsJSON, app.RuntimeID); err != nil {
+	if err := assembleAttachmentKnowledge(&conversationOptions, f.options.AttachmentKnowledge, f.options.AttachmentKnowledgeBindingsJSON, app.RuntimeID, f.options.KnowledgeProviderFactory); err != nil {
 		return nil, err
 	}
 	for _, attachment := range conversationOptions.AttachmentKnowledge {

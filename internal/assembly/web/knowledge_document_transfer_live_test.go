@@ -28,6 +28,7 @@ import (
 	webhttp "github.com/domainry/domainry-agent/internal/transport/http/web"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	"github.com/domainry/domainry-orm/query"
 )
 
@@ -385,7 +386,7 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 		c := config
 		c.KBID = w.KBID
 		c.DocumentPermissionIDs = ids
-		p, err := provider.NewKnowledge(c)
+		p, err := knowledgemodule.NewKnowledge(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -499,7 +500,7 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 		c := config
 		c.KBID = w.KBID
 		c.DocumentPermissionIDs = permissions(w)
-		source, err := provider.NewKnowledge(c)
+		source, err := knowledgemodule.NewKnowledge(c)
 		if err != nil {
 			t.Fatal(err)
 		}

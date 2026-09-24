@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
+	knowledgeprovider "github.com/domainry/domainry-knowledge-sdk/provider"
 )
 
 func attachmentKnowledgeEnvironment(raw string) ([]KnowledgeConfig, error) {
@@ -48,7 +48,7 @@ func attachmentKnowledgeEnvironment(raw string) ([]KnowledgeConfig, error) {
 	return out, nil
 }
 
-func assembleAttachmentKnowledge(options *ConversationOptions, configured []KnowledgeConfig, raw, runtime string) error {
+func assembleAttachmentKnowledge(options *ConversationOptions, configured []KnowledgeConfig, raw, runtime string, factory knowledgeprovider.Factory) error {
 	if raw != "" {
 		if len(configured) > 0 {
 			return fmt.Errorf("configure attachment knowledge only once")
@@ -63,7 +63,7 @@ func assembleAttachmentKnowledge(options *ConversationOptions, configured []Know
 		return fmt.Errorf("configure attachment sources using one binding mechanism")
 	}
 	for _, c := range configured {
-		source, err := provider.NewAttachmentKnowledge(c, runtime)
+		source, err := factory.NewAttachmentSource(c, runtime)
 		if err != nil {
 			return err
 		}

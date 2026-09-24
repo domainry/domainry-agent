@@ -13,7 +13,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/domainry/domainry-agent/internal/application"
-	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
+	knowledgeprovider "github.com/domainry/domainry-knowledge-sdk/provider"
 )
 
 // LibraryKnowledgeBinding lets a trusted host supply its own isolated source
@@ -95,7 +95,7 @@ func libraryRemoteIdentity(c KnowledgeConfig) string {
 	return string(key)
 }
 
-func assembleLibraryKnowledge(options *ConversationOptions, configured []KnowledgeLibraryConfig, raw string, legacy KnowledgeConfig, runtimeID string) error {
+func assembleLibraryKnowledge(options *ConversationOptions, configured []KnowledgeLibraryConfig, raw string, legacy KnowledgeConfig, runtimeID string, factory knowledgeprovider.Factory) error {
 	if raw != "" {
 		if len(configured) > 0 {
 			return fmt.Errorf("configure knowledge library bindings only once")
@@ -130,7 +130,7 @@ func assembleLibraryKnowledge(options *ConversationOptions, configured []Knowled
 		}
 		binding.Knowledge.DocumentManagement = binding.ManageDocuments
 		binding.Knowledge.RuntimeID = runtimeID
-		source, err := provider.NewKnowledge(binding.Knowledge)
+		source, err := factory.NewSource(binding.Knowledge)
 		if err != nil || source == nil {
 			return fmt.Errorf("invalid library knowledge provider configuration")
 		}

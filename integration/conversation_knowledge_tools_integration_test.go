@@ -13,6 +13,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent/internal/application"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 func TestKnowledgeToolsSearchReadFreezeAndRevalidateAcrossRestart(t *testing.T) {
@@ -45,7 +46,7 @@ func TestKnowledgeToolsSearchReadFreezeAndRevalidateAcrossRestart(t *testing.T) 
 		}
 	}))
 	defer upstream.Close()
-	knowledge, err := provider.NewKnowledge(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "fixture-only-key", TeamID: "team", KBID: "kb", WorkspaceID: a.WorkspaceID})
+	knowledge, err := knowledgemodule.NewKnowledge(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "fixture-only-key", TeamID: "team", KBID: "kb", WorkspaceID: a.WorkspaceID})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,7 +146,7 @@ func TestKnowledgeBusinessFailureIsRecordedWithoutSources(t *testing.T) {
 		fmt.Fprint(w, `{"err_code":0,"data":{"hits":[]}}`)
 	}))
 	defer upstream.Close()
-	knowledge, err := provider.NewKnowledge(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "fixture-only-key", TeamID: "team", KBID: "kb", WorkspaceID: a.WorkspaceID})
+	knowledge, err := knowledgemodule.NewKnowledge(provider.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "fixture-only-key", TeamID: "team", KBID: "kb", WorkspaceID: a.WorkspaceID})
 	if err != nil {
 		t.Fatal(err)
 	}

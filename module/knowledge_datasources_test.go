@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 )
 
 func TestKnowledgeDatasourceCatalogIsolationAndImmutableConfiguration(t *testing.T) {
@@ -22,7 +21,7 @@ func TestKnowledgeDatasourceCatalogIsolationAndImmutableConfiguration(t *testing
 		}
 	}
 	var options ConversationOptions
-	if err = assembleKnowledgeDatasources(&options, values, "", "r"); err != nil {
+	if err = assembleKnowledgeDatasources(&options, values, "", "r", testKnowledgeProviderFactory()); err != nil {
 		t.Fatal(err)
 	}
 	// Mutating host inputs after assembly cannot change the live catalog.
@@ -69,10 +68,14 @@ func TestKnowledgeDatasourceCatalogIsolationAndImmutableConfiguration(t *testing
 	duplicate := values[0]
 	duplicate.Key = "alias"
 	duplicate.Knowledge.BaseURL = "https://KNOWLEDGE.example.test:443/"
-	if e := assembleKnowledgeDatasources(&ConversationOptions{}, append(values, duplicate), "", "r"); e == nil {
+	if e := assembleKnowledgeDatasources(&ConversationOptions{}, append(values, duplicate), "", "r", testKnowledgeProviderFactory()); e == nil {
 		t.Fatal("physical KB alias allowed")
 	}
-	if e := assembleKnowledgeDatasources(&ConversationOptions{Knowledge: first.(*provider.Knowledge)}, values, "", "r"); e == nil {
+	defaultSource, err := testKnowledgeSource(values[0].Knowledge)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if e := assembleKnowledgeDatasources(&ConversationOptions{Knowledge: defaultSource}, values, "", "r", testKnowledgeProviderFactory()); e == nil {
 		t.Fatal("default source alias allowed")
 	}
 }

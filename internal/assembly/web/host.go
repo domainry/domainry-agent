@@ -253,6 +253,9 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	if options.Agent.KnowledgeFactory == nil {
 		options.Agent.KnowledgeFactory = knowledgemodule.NewFactory()
 	}
+	if options.Agent.KnowledgeProviderFactory == nil {
+		options.Agent.KnowledgeProviderFactory = knowledgemodule.NewProviderFactory()
+	}
 	if options.Agent.TodoFactory == nil {
 		options.Agent.TodoFactory = todomodule.NewFactory()
 	}

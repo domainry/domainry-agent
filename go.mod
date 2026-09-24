@@ -79,8 +79,8 @@ require (
 require (
 	github.com/domainry/domainry-integration v0.1.26
 	github.com/domainry/domainry-integration-sdk v0.1.9
-	github.com/domainry/domainry-knowledge v0.1.14
-	github.com/domainry/domainry-knowledge-sdk v0.1.1
+	github.com/domainry/domainry-knowledge v0.1.15
+	github.com/domainry/domainry-knowledge-sdk v0.1.2
 	github.com/domainry/domainry-report-sdk v0.1.13
 	github.com/domainry/domainry-todo-sdk v0.1.0
 )

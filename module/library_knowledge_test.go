@@ -26,17 +26,17 @@ func TestLibraryKnowledgeConfigurationIsolation(t *testing.T) {
 		}
 	}
 	var options ConversationOptions
-	if err := assembleLibraryKnowledge(&options, nil, raw, KnowledgeConfig{}, "r"); err != nil || len(options.LibraryKnowledge) != 1 {
+	if err := assembleLibraryKnowledge(&options, nil, raw, KnowledgeConfig{}, "r", testKnowledgeProviderFactory()); err != nil || len(options.LibraryKnowledge) != 1 {
 		t.Fatal(err)
 	}
 	options = ConversationOptions{}
-	if err := assembleLibraryKnowledge(&options, append(values, values...), "", KnowledgeConfig{}, "r"); err == nil {
+	if err := assembleLibraryKnowledge(&options, append(values, values...), "", KnowledgeConfig{}, "r", testKnowledgeProviderFactory()); err == nil {
 		t.Fatal("same remote KB shared by two bindings")
 	}
 	options = ConversationOptions{}
 	legacy := values[0].Knowledge
 	legacy.BaseURL = "https://KNOWLEDGE.example.test:443/"
-	if err := assembleLibraryKnowledge(&options, values, "", legacy, "r"); err == nil {
+	if err := assembleLibraryKnowledge(&options, values, "", legacy, "r", testKnowledgeProviderFactory()); err == nil {
 		t.Fatal("default source bypasses library membership")
 	}
 }
@@ -59,7 +59,7 @@ func TestLibraryKnowledgePrivateRetrievalPolicy(t *testing.T) {
 	defer upstream.Close()
 	raw, _ := json.Marshal([]map[string]any{{"library_id": "lib_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "workspace_id": "w", "base_url": upstream.URL, "team_id": "team", "kb_id": "private-kb", "api_key_env": "TEST_LIBRARY_API_KEY", "permission_ids": []string{"library:private:read"}}})
 	var options ConversationOptions
-	if err := assembleLibraryKnowledge(&options, nil, string(raw), KnowledgeConfig{}, "r"); err != nil {
+	if err := assembleLibraryKnowledge(&options, nil, string(raw), KnowledgeConfig{}, "r", testKnowledgeProviderFactory()); err != nil {
 		t.Fatal(err)
 	}
 	a := agentsdk.ConversationAuthority{Known: true, RuntimeID: "r", WorkspaceID: "w", UserID: "current-user"}

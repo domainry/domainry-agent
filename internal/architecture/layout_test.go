@@ -60,6 +60,59 @@ func TestApplicationDoesNotImportAdaptersOrOtherServiceImplementations(t *testin
 	}
 }
 
+// Core Agent code may depend on another module's SDK or a public, reusable
+// library package, but selecting another module's runnable implementation is a
+// composition-root responsibility. This keeps module mode injectable and SaaS
+// mode free to bind the same SDK contract to a remote client.
+func TestCoreDoesNotImportForeignModuleImplementations(t *testing.T) {
+	roots := []string{"../../module", "../application", "../composition", "../dataaccess", "../execution", "../infrastructure"}
+	for _, root := range roots {
+		if _, err := os.Stat(root); os.IsNotExist(err) {
+			continue
+		} else if err != nil {
+			t.Fatal(err)
+		}
+		err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if entry.IsDir() || !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") {
+				return nil
+			}
+			file, err := parser.ParseFile(token.NewFileSet(), path, nil, parser.ImportsOnly)
+			if err != nil {
+				return err
+			}
+			for _, spec := range file.Imports {
+				importPath, err := strconv.Unquote(spec.Path.Value)
+				if err != nil {
+					return err
+				}
+				const domainry = "github.com/domainry/"
+				if !strings.HasPrefix(importPath, domainry) {
+					continue
+				}
+				parts := strings.Split(strings.TrimPrefix(importPath, domainry), "/")
+				repository := parts[0]
+				if repository == "domainry-agent" || repository == "domainry-foundation" || strings.HasSuffix(repository, "-sdk") || len(parts) < 2 {
+					if len(parts) < 2 && repository != "domainry-agent" && repository != "domainry-foundation" && !strings.HasSuffix(repository, "-sdk") {
+						t.Errorf("%s selects foreign implementation root %s; inject its SDK boundary from a composition root", path, importPath)
+					}
+					continue
+				}
+				switch parts[1] {
+				case "internal", "module", "remote", "server", "web", "webhost":
+					t.Errorf("%s selects foreign implementation %s; inject its SDK boundary from a composition root", path, importPath)
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
 func TestPersistenceImplementationStaysInternal(t *testing.T) {
 	for _, path := range []string{"../../persistence", "../../infrastructure"} {
 		if _, err := os.Stat(path); !os.IsNotExist(err) {

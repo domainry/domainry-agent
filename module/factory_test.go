@@ -22,6 +22,7 @@ import (
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
+	knowledgeprovider "github.com/domainry/domainry-knowledge-sdk/provider"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	todomodule "github.com/domainry/domainry-todo/module"
@@ -41,8 +42,21 @@ type host struct {
 
 func testFactory(options Options) *Factory {
 	options.KnowledgeFactory = knowledgemodule.NewFactory()
+	options.KnowledgeProviderFactory = knowledgemodule.NewProviderFactory()
 	options.TodoFactory = todomodule.NewFactory()
 	return NewFactory(options)
+}
+
+func testKnowledgeProviderFactory() knowledgeprovider.Factory {
+	return knowledgemodule.NewProviderFactory()
+}
+
+func testKnowledgeSource(config KnowledgeConfig) (knowledgeprovider.Source, error) {
+	return testKnowledgeProviderFactory().NewSource(config)
+}
+
+func testAttachmentKnowledgeSource(config KnowledgeConfig, runtimeID string) (agentsdk.ConversationAttachmentKnowledge, error) {
+	return testKnowledgeProviderFactory().NewAttachmentSource(config, runtimeID)
 }
 
 func TestModuleMigrationCreatesUnifiedAgentTablesAndIndexes(t *testing.T) {
