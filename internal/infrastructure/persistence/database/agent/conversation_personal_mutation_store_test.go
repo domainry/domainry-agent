@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"context"
 	"encoding/json"
 	"strings"
 	"testing"
@@ -8,7 +9,31 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	persistence "github.com/domainry/domainry-agent-sdk/persistence"
+	todocontract "github.com/domainry/domainry-todo-sdk/contract"
+	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
+
+type remoteTodoMutationStub struct {
+	calls    int
+	effects  int
+	receipts map[string]todocontract.MutationResult
+}
+
+func (stub *remoteTodoMutationStub) ApplyMutation(_ context.Context, mutation todocontract.Mutation, _ toolsdk.Authority) (todocontract.MutationResult, error) {
+	stub.calls++
+	if receipt, ok := stub.receipts[mutation.Key]; ok {
+		return receipt, nil
+	}
+	stub.effects++
+	receipt := todocontract.MutationResult{ResourceID: "remote-todo", Content: json.RawMessage(`{"id":"remote-todo"}`)}
+	stub.receipts[mutation.Key] = receipt
+	return receipt, nil
+}
+
+func (stub *remoteTodoMutationStub) MutationReceipt(_ context.Context, mutation todocontract.Mutation, _ toolsdk.Authority) (todocontract.MutationResult, bool, error) {
+	receipt, ok := stub.receipts[mutation.Key]
+	return receipt, ok, nil
+}
 
 func personalMutationFixture(t *testing.T, repo *ConversationStore, key, name, arguments string, scoped bool) (persistence.ConversationClaim, agentsdk.ConversationToolRequest) {
 	t.Helper()
@@ -116,6 +141,43 @@ func TestPersonalTodoBatchEffectReceiptAndEventAreAtomic(t *testing.T) {
 	page, err = repo.Todos(t.Context(), agentsdk.ConversationTodoQuery{}, request.Authority)
 	if err != nil || len(page.Items) != 2 || page.Items[0].Position != 2 {
 		t.Fatal("old batch replay resurrected deleted item", err)
+	}
+}
+
+func TestRemoteTodoEffectRecoversAfterAgentReceiptFailure(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := newTestConversationStore(t, store)
+	remote := &remoteTodoMutationStub{receipts: map[string]todocontract.MutationResult{}}
+	repo.todoTransactions = nil
+	repo.todoMutations = remote
+	claim, request := personalMutationFixture(t, repo, "todo-remote-recovery", "todo_create", `{"items":[{"title":"访谈","timezone":"Asia/Shanghai"}]}`, true)
+	_, err := store.Database().ExecContext(t.Context(), `CREATE TRIGGER fail_remote_todo_receipt BEFORE INSERT ON _agent_conversation_items WHEN NEW.item_kind = 'run_event' AND CAST(NEW.payload_json AS TEXT) LIKE '%tool.completed%' BEGIN SELECT RAISE(ABORT, 'injected remote receipt failure'); END`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = repo.ApplyPersonalTool(t.Context(), request); err == nil {
+		t.Fatal("injected Agent receipt failure was ignored")
+	}
+	if remote.calls != 1 || remote.effects != 1 {
+		t.Fatalf("remote calls=%d effects=%d", remote.calls, remote.effects)
+	}
+	ledger, err := repo.ExecutionTools(t.Context(), claim, 0)
+	if err != nil || len(ledger) != 1 || ledger[0].State != "started" {
+		t.Fatal("Agent ledger committed despite receipt failure", err)
+	}
+	if _, err = store.Database().ExecContext(t.Context(), `DROP TRIGGER fail_remote_todo_receipt`); err != nil {
+		t.Fatal(err)
+	}
+	result, err := repo.ApplyPersonalTool(t.Context(), request)
+	if err != nil || result.Status != "completed" || result.ResourceID != "remote-todo" {
+		t.Fatalf("remote replay result=%+v error=%v", result, err)
+	}
+	if remote.calls != 2 || remote.effects != 1 {
+		t.Fatalf("remote replay calls=%d effects=%d", remote.calls, remote.effects)
+	}
+	replayed, err := repo.ApplyPersonalTool(t.Context(), request)
+	if err != nil || conversationHash(replayed) != conversationHash(result) || remote.calls != 2 || remote.effects != 1 {
+		t.Fatalf("durable Agent receipt replayed remote effect: result=%+v calls=%d effects=%d error=%v", replayed, remote.calls, remote.effects, err)
 	}
 }
 

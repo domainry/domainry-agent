@@ -23,13 +23,29 @@ import (
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
+	knowledgecontract "github.com/domainry/domainry-knowledge-sdk/contract"
 	knowledgeprovider "github.com/domainry/domainry-knowledge-sdk/provider"
+	knowledgesaashost "github.com/domainry/domainry-knowledge-sdk/saashost"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
+	todocontract "github.com/domainry/domainry-todo-sdk/contract"
+	todosaashost "github.com/domainry/domainry-todo-sdk/saashost"
 	todomodule "github.com/domainry/domainry-todo/module"
 	_ "modernc.org/sqlite"
 	"testing"
 )
+
+type knowledgeSaaSFactoryStub struct{}
+
+func (knowledgeSaaSFactoryStub) OpenSaaS(context.Context, knowledgecontract.ApplicationRef) (knowledgesaashost.Binding, error) {
+	return nil, fmt.Errorf("not opened")
+}
+
+type todoSaaSFactoryStub struct{}
+
+func (todoSaaSFactoryStub) OpenSaaS(context.Context, todocontract.ApplicationRef) (todosaashost.Binding, error) {
+	return nil, fmt.Errorf("not opened")
+}
 
 type host struct {
 	runtimeID      string
@@ -58,6 +74,53 @@ func testKnowledgeSource(config KnowledgeConfig) (knowledgeprovider.Source, erro
 
 func testAttachmentKnowledgeSource(config KnowledgeConfig, runtimeID string) (agentsdk.ConversationAttachmentKnowledge, error) {
 	return testKnowledgeProviderFactory().NewAttachmentSource(config, runtimeID)
+}
+
+func TestModuleRejectsMixedOrIncompleteDependencyTopologies(t *testing.T) {
+	tests := []struct {
+		name    string
+		options Options
+		want    string
+	}{
+		{
+			name: "knowledge module and SaaS",
+			options: Options{
+				KnowledgeFactory:         knowledgemodule.NewFactory(),
+				KnowledgeSaaSFactory:     knowledgeSaaSFactoryStub{},
+				KnowledgeProviderFactory: testKnowledgeProviderFactory(),
+				TodoFactory:              todomodule.NewFactory(),
+			},
+			want: "exactly one Knowledge",
+		},
+		{
+			name: "todo module and SaaS",
+			options: Options{
+				KnowledgeFactory:         knowledgemodule.NewFactory(),
+				KnowledgeProviderFactory: testKnowledgeProviderFactory(),
+				TodoFactory:              todomodule.NewFactory(),
+				TodoSaaSFactory:          todoSaaSFactoryStub{},
+			},
+			want: "exactly one Todo",
+		},
+		{
+			name: "SaaS with local provider",
+			options: Options{
+				KnowledgeSaaSFactory:     knowledgeSaaSFactoryStub{},
+				KnowledgeProviderFactory: testKnowledgeProviderFactory(),
+				TodoSaaSFactory:          todoSaaSFactoryStub{},
+			},
+			want: "cannot use Agent-local Knowledge provider",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			host := newHost(t, "dependency-topology-"+strings.ReplaceAll(test.name, " ", "-"))
+			_, err := NewFactory(test.options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: host.runtimeID}, host)
+			if err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("error=%v want=%q", err, test.want)
+			}
+		})
+	}
 }
 
 func TestModuleMigrationCreatesUnifiedAgentTablesAndIndexes(t *testing.T) {

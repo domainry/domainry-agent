@@ -17,12 +17,94 @@ import (
 // memory in the same transaction closes the effect/result crash window without
 // a second idempotency table. Never take mutation arguments from the caller.
 func (s *ConversationStore) ApplyPersonalTool(ctx context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {
+	if strings.HasPrefix(in.Call.Name, "todo_") && s.todoTransactions == nil && s.todoMutations != nil {
+		return s.applyRemoteTodoTool(ctx, in)
+	}
 	return s.applyLocalTool(ctx, in, agentsdk.PersonalConversationTools(), func(tx *sql.Tx, claim persistence.ConversationClaim, call persistence.ConversationToolExecution) (agentsdk.ConversationToolResult, error) {
 		if strings.HasPrefix(call.Call.Name, "todo_") {
 			return s.applyTodoTool(ctx, tx, in, call)
 		}
 		return s.applyPersonalMemory(ctx, tx, claim, call)
 	})
+}
+
+// applyRemoteTool separates the Agent ledger transaction from an independently
+// deployed module transaction. A crash after the remote effect is recovered by
+// replaying the same domain idempotency key, then committing the returned
+// receipt to the Agent ledger. It never holds an Agent SQL transaction across
+// the network.
+func (s *ConversationStore) applyRemoteTool(ctx context.Context, in agentsdk.ConversationToolRequest, definitions []agentsdk.ConversationToolDefinition, apply func(persistence.ConversationClaim, persistence.ConversationToolExecution) (agentsdk.ConversationToolResult, error)) (agentsdk.ConversationToolResult, error) {
+	var result agentsdk.ConversationToolResult
+	if err := conversationAuthority(in.Authority); err != nil {
+		return result, err
+	}
+	var claim persistence.ConversationClaim
+	var call persistence.ConversationToolExecution
+	completed := false
+	inspect := func(tx *sql.Tx) error {
+		claim = persistence.ConversationClaim{Authority: in.Authority, Run: agentsdk.ConversationRun{ID: in.RunID, ConversationID: in.ConversationID}, Owner: in.LeaseOwner, Fence: in.Fence}
+		row, err := s.claimed(ctx, tx, claim)
+		if err != nil {
+			return err
+		}
+		claim.Run = row.Run
+		found, err := s.readExecutionTool(ctx, tx, claim, in.Step, in.Call.ID, &call)
+		if err != nil {
+			return err
+		}
+		if !found || in.IdempotencyKey == "" || in.IdempotencyKey != call.IdempotencyKey || conversationHash(in.Call) != conversationHash(call.Call) || conversationHash(in.Definition) != conversationHash(call.Definition) {
+			return conversationError("conflict", "tool_input_conflict")
+		}
+		known := false
+		for _, definition := range definitions {
+			if definition.Effect == "write" && conversationHash(definition) == conversationHash(call.Definition) {
+				known = true
+			}
+		}
+		if !known {
+			return conversationError("forbidden", "tool_access_denied")
+		}
+		if !row.Run.WriteScope.Allows(call.Call.Name) {
+			record, found, err := s.readInteraction(ctx, tx, claim, in.Step, in.Call.ID, "confirmation")
+			if err != nil {
+				return err
+			}
+			interaction := record.Interaction
+			if !found || interaction.Status != "approved" || interaction.RespondedBy != in.Authority.UserID || interaction.RespondedAt == nil || interaction.DefinitionHash != conversationHash(call.Definition) || interaction.ArgumentsHash != conversationHash(call.Call.Arguments) {
+				return conversationError("forbidden", "tool_confirmation_required")
+			}
+		}
+		completed = call.State == "completed" && call.Result != nil
+		if completed {
+			result = *call.Result
+		}
+		return nil
+	}
+	if err := s.transaction(ctx, inspect); err != nil || completed {
+		return result, err
+	}
+	result, err := apply(claim, call)
+	if err != nil {
+		var coded *agentsdk.Error
+		if !errors.As(err, &coded) || coded.Class != "bad_request" && coded.Class != "conflict" && coded.Class != "not_found" {
+			return result, err
+		}
+		code := strings.TrimPrefix(coded.Code, "agent.conversation.")
+		result = agentsdk.ConversationToolResult{Status: "failed", ErrorCode: code, Content: conversationJSON(map[string]string{"error": code})}
+	}
+	remoteResult := result
+	err = s.transaction(ctx, func(tx *sql.Tx) error {
+		completed = false
+		if err := inspect(tx); err != nil {
+			return err
+		}
+		if completed {
+			return nil
+		}
+		result = remoteResult
+		return s.finishExecutionTool(ctx, tx, claim, in.Step, in.Call.ID, result)
+	})
+	return result, err
 }
 
 func (s *ConversationStore) applyLocalTool(ctx context.Context, in agentsdk.ConversationToolRequest, definitions []agentsdk.ConversationToolDefinition, apply func(*sql.Tx, persistence.ConversationClaim, persistence.ConversationToolExecution) (agentsdk.ConversationToolResult, error)) (agentsdk.ConversationToolResult, error) {

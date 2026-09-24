@@ -239,14 +239,14 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 		}
 		options.Agent.Knowledge.AuthorizeWorkspace = h.authorizeKnowledgeWorkspace
 	}
-	if options.Agent.ConversationOptions.ArtifactStorage == nil {
+	if options.Agent.KnowledgeSaaSFactory == nil && options.Agent.ConversationOptions.ArtifactStorage == nil {
 		h.artifactFiles, err = knowledgemodule.NewArtifactFiles(path + ".artifacts")
 		if err != nil {
 			return nil, fmt.Errorf("open artifact storage: %w", err)
 		}
 		options.Agent.ConversationOptions.ArtifactStorage = h.artifactFiles
 	}
-	if options.Agent.ConversationOptions.DocumentStorage == nil {
+	if options.Agent.KnowledgeSaaSFactory == nil && options.Agent.ConversationOptions.DocumentStorage == nil {
 		h.documentFiles, err = knowledgemodule.NewDocumentFiles(path + ".documents")
 		if err != nil {
 			return nil, fmt.Errorf("open document storage: %w", err)
@@ -259,13 +259,13 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	if options.Agent.ConversationOptions.LibraryAuthorizer == nil {
 		options.Agent.ConversationOptions.LibraryAuthorizer = h
 	}
-	if options.Agent.KnowledgeFactory == nil {
+	if options.Agent.KnowledgeFactory == nil && options.Agent.KnowledgeSaaSFactory == nil {
 		options.Agent.KnowledgeFactory = knowledgemodule.NewFactory()
 	}
-	if options.Agent.KnowledgeProviderFactory == nil {
+	if options.Agent.KnowledgeFactory != nil && options.Agent.KnowledgeProviderFactory == nil {
 		options.Agent.KnowledgeProviderFactory = knowledgemodule.NewProviderFactory(knowledgehttpapi.New)
 	}
-	if options.Agent.TodoFactory == nil {
+	if options.Agent.TodoFactory == nil && options.Agent.TodoSaaSFactory == nil {
 		options.Agent.TodoFactory = todomodule.NewFactory()
 	}
 	if options.Prepare != nil {

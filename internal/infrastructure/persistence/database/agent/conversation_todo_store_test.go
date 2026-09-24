@@ -120,7 +120,7 @@ func TestTodoOriginalPositionsRevisionDateAndCompletion(t *testing.T) {
 func TestTodoDeadlinesRejectAmbiguousOrMismatchedInputs(t *testing.T) {
 	store, _ := openAgentStore(t)
 	repo := newTestConversationStore(t, store)
-	for _, value := range []struct {
+	for index, value := range []struct {
 		date, at, zone string
 		valid          bool
 	}{
@@ -131,7 +131,7 @@ func TestTodoDeadlinesRejectAmbiguousOrMismatchedInputs(t *testing.T) {
 		{"2026-09-11", "2026-09-11T12:00:00Z", "UTC", false},
 		{"", "2026-09-11T12:00:00", "UTC", false}, {"2026-09-11", "", "Local", false},
 	} {
-		err := repo.todoBinding.Validate(agentsdk.ConversationTodoInput{Title: "deadline", DueDate: value.date, DueAt: value.at, Timezone: value.zone})
+		_, err := repo.CreateTodos(t.Context(), agentsdk.ConversationTodoCreate{ClientID: fmt.Sprintf("deadline-%d", index), Items: []agentsdk.ConversationTodoInput{{Title: "deadline", DueDate: value.date, DueAt: value.at, Timezone: value.zone}}}, conversationTestAuthority())
 		if (err == nil) != value.valid {
 			t.Errorf("deadline %+v: %v", value, err)
 		}

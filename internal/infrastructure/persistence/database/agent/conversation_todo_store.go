@@ -11,10 +11,10 @@ import (
 )
 
 func (s *ConversationStore) todoService() (todocontract.TodoService, error) {
-	if s == nil || s.todoBinding == nil || s.todoBinding.Todos() == nil {
+	if s == nil || s.todos == nil {
 		return nil, fmt.Errorf("Todo module is unavailable")
 	}
-	return s.todoBinding.Todos(), nil
+	return s.todos, nil
 }
 func (s *ConversationStore) Todo(ctx context.Context, id string, a sdk.ConversationAuthority) (sdk.ConversationTodo, error) {
 	service, err := s.todoService()
@@ -52,9 +52,27 @@ func (s *ConversationStore) DeleteTodo(ctx context.Context, id string, in sdk.Co
 	return service.DeleteTodo(ctx, id, in, a)
 }
 func (s *ConversationStore) applyTodoTool(ctx context.Context, tx *sql.Tx, in sdk.ConversationToolRequest, call persistence.ConversationToolExecution) (sdk.ConversationToolResult, error) {
-	if s == nil || s.todoBinding == nil || s.todoBinding.Mutations() == nil {
+	if s == nil || s.todoTransactions == nil {
 		return sdk.ConversationToolResult{}, fmt.Errorf("Todo module is unavailable")
 	}
-	result, err := s.todoBinding.Mutations().ApplyInTransaction(ctx, tx, todocontract.Mutation{Key: call.IdempotencyKey, Operation: call.Call.Name, Data: json.RawMessage(call.Call.Arguments), SourceConversationID: in.ConversationID, SourceRunID: in.RunID}, in.Authority)
+	result, err := s.todoTransactions.ApplyInTransaction(ctx, tx, todocontract.Mutation{Key: call.IdempotencyKey, Operation: call.Call.Name, Data: json.RawMessage(call.Call.Arguments), SourceConversationID: in.ConversationID, SourceRunID: in.RunID}, in.Authority)
 	return sdk.ConversationToolResult{Status: "completed", Content: result.Content, ResourceID: result.ResourceID}, err
+}
+
+func (s *ConversationStore) applyRemoteTodoTool(ctx context.Context, in sdk.ConversationToolRequest) (sdk.ConversationToolResult, error) {
+	if s == nil || s.todoMutations == nil {
+		return sdk.ConversationToolResult{}, fmt.Errorf("Todo SaaS module is unavailable")
+	}
+	return s.applyRemoteTool(ctx, in, sdk.PersonalConversationTools(), func(_ persistence.ConversationClaim, call persistence.ConversationToolExecution) (sdk.ConversationToolResult, error) {
+		result, err := s.todoMutations.ApplyMutation(ctx, todocontract.Mutation{Key: call.IdempotencyKey, Operation: call.Call.Name, Data: json.RawMessage(call.Call.Arguments), SourceConversationID: in.ConversationID, SourceRunID: in.RunID}, in.Authority)
+		return sdk.ConversationToolResult{Status: "completed", Content: result.Content, ResourceID: result.ResourceID}, err
+	})
+}
+
+func (s *ConversationStore) AuthorizeRemoteTodoSource(ctx context.Context, source string, authority sdk.ConversationAuthority) error {
+	if s == nil || s.store == nil {
+		return fmt.Errorf("Todo Agent source host is unavailable")
+	}
+	_, err := s.get(ctx, s.store.Database(), source, authority)
+	return err
 }

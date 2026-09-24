@@ -18,12 +18,22 @@ func knowledgeOptions(o ConversationOptions) knowledge.Options {
 	}
 }
 
+type knowledgeContextReader struct{ service *ConversationService }
+
+func (value knowledgeContextReader) Conversation(ctx context.Context, id string, authority sdk.ConversationAuthority) (sdk.Conversation, error) {
+	return value.service.Get(ctx, id, authority)
+}
+func (value knowledgeContextReader) Run(ctx context.Context, conversationID, runID string, authority sdk.ConversationAuthority) (sdk.ConversationRun, error) {
+	return value.service.Run(ctx, conversationID, runID, authority)
+}
+
 // This adapter preserves existing public conversation routes while Knowledge
 // owns business service lifetimes. It only supplies source authorization.
 func (s *ConversationService) knowledgeService() knowledge.Service {
 	s.knowledgeOnce.Do(func() {
 		options := knowledgeOptions(s.options)
 		options.Sources = knowledgeSourcePolicy{s: s}
+		options.Context = knowledgeContextReader{service: s}
 		if s.options.KnowledgeRuntime != nil {
 			s.knowledgeModule = s.options.KnowledgeRuntime.NewService(s.runtimeID, options)
 		} else {

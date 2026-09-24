@@ -71,7 +71,7 @@ require (
 )
 
 require (
-	github.com/domainry/domainry-todo v0.1.7
+	github.com/domainry/domainry-todo v0.1.9
 	github.com/domainry/domainry-tools v0.1.8
 	github.com/domainry/domainry-tools-sdk v0.1.7
 )
@@ -79,10 +79,10 @@ require (
 require (
 	github.com/domainry/domainry-integration v0.1.27
 	github.com/domainry/domainry-integration-sdk v0.1.9
-	github.com/domainry/domainry-knowledge v0.1.17
-	github.com/domainry/domainry-knowledge-sdk v0.1.3
+	github.com/domainry/domainry-knowledge v0.1.18
+	github.com/domainry/domainry-knowledge-sdk v0.1.5
 	github.com/domainry/domainry-report-sdk v0.1.13
-	github.com/domainry/domainry-todo-sdk v0.1.0
+	github.com/domainry/domainry-todo-sdk v0.1.3
 )
 
 require (
