@@ -24,6 +24,13 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 		return tasks.AcceptBusinessEventConversationTask(ctx, r.BusinessEventTask)
 	}
 	a := r.Authority
+	if op == "provenance_publish" {
+		publisher, ok := s.(agentsdk.ConversationProvenancePublisher)
+		if !ok {
+			return nil, conversationFailure("unavailable", "provenance_unavailable")
+		}
+		return publisher.PublishConversationProvenance(ctx, r.ProvenancePublication, a)
+	}
 	if op == "sources_verify" {
 		verifier, ok := s.(agentsdk.ConversationSourceVerifier)
 		if !ok {

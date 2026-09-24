@@ -34,7 +34,7 @@ func TestVerifyConversationSourcesRequiresEverySourceToBelongToAnOwnedRun(t *tes
 	authority := agentsdk.ConversationAuthority{Known: true, RuntimeID: "agent", WorkspaceID: "workspace-a", UserID: "reader-a"}
 	reference := agentsdk.ConversationRunReference{ConversationID: "conversation-a", RunID: "run-a", BeforeStep: 2}
 	completedAt := time.Now().UTC()
-	service := &ConversationService{repo: sourceVerifierRepository{
+	service := &ConversationService{runtimeID: authority.RuntimeID, repo: sourceVerifierRepository{
 		conversation: agentsdk.Conversation{ID: reference.ConversationID, WorkspaceID: authority.WorkspaceID},
 		run:          agentsdk.ConversationRun{ID: reference.RunID, ConversationID: reference.ConversationID, Status: "completed", CompletedAt: &completedAt, Steps: []agentsdk.ConversationStepView{{}}},
 	}}

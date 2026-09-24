@@ -161,7 +161,7 @@ func TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(actions) != 140+len(agentsdk.ConversationToolActions()) || len(adapter.Routes()) != 23 {
+	if len(actions) != 141+len(agentsdk.ConversationToolActions()) || len(adapter.Routes()) != 23 {
 		t.Fatalf("actions=%d routes=%d", len(actions), len(adapter.Routes()))
 	}
 	conversation, err := NewConversationAdapter(conversationSurfaceStub{}, "runtime")
@@ -298,6 +298,37 @@ type conversationSurfaceStub struct{ agentsdk.ConversationService }
 type conversationSourceSurfaceStub struct {
 	agentsdk.ConversationService
 	request agentsdk.ConversationSourceVerificationRequest
+}
+
+type conversationProvenanceSurfaceStub struct {
+	agentsdk.ConversationService
+	publication agentsdk.ConversationProvenancePublication
+	authority   agentsdk.ConversationAuthority
+}
+
+func (stub *conversationProvenanceSurfaceStub) PublishConversationProvenance(_ context.Context, publication agentsdk.ConversationProvenancePublication, authority agentsdk.ConversationAuthority) (agentsdk.ConversationProvenanceReceipt, error) {
+	stub.publication, stub.authority = publication, authority
+	return agentsdk.ConversationProvenanceReceipt{ConversationID: "conversation-a", RunID: "run-a", SourceID: "conversation://conversation-a/turn/run-a", PublishedAt: time.Now().UTC()}, nil
+}
+
+func TestConversationProvenanceRouteUsesAuthenticatedOwnerAndTypedBody(t *testing.T) {
+	service := &conversationProvenanceSurfaceStub{}
+	adapter, err := NewConversationAdapter(service, "runtime-owner")
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := httptest.NewRequest(http.MethodPost, "/agent/conversation-provenance", strings.NewReader(`{
+		"client_id":"deck-turn:1","conversation_client_id":"deck-thread:1","conversation_title":"Cancellation",
+		"user_message":"Allow cancellation.","assistant_message":"The requirement is ready."
+	}`))
+	request = request.WithContext(identitysdk.WithRequestIdentity(request.Context(), identitysdk.RequestIdentity{Principal: identitysdk.Principal{
+		Known: true, WorkspaceID: "workspace-a", UserID: "pm-a", RoleKey: "pm",
+	}}))
+	response := httptest.NewRecorder()
+	adapter.Handler().ServeHTTP(response, request)
+	if response.Code != http.StatusOK || service.publication.ClientID != "deck-turn:1" || service.authority != (agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime-owner", WorkspaceID: "workspace-a", UserID: "pm-a", RoleKey: "pm"}) {
+		t.Fatalf("status=%d body=%s publication=%#v authority=%#v", response.Code, response.Body.String(), service.publication, service.authority)
+	}
 }
 
 func (stub *conversationSourceSurfaceStub) VerifyConversationSources(_ context.Context, request agentsdk.ConversationSourceVerificationRequest) (agentsdk.ConversationSourceVerificationReceipt, error) {

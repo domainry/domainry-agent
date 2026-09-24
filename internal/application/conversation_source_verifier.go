@@ -15,8 +15,14 @@ func (service *ConversationService) VerifyConversationSources(ctx context.Contex
 	if err := request.Validate(); err != nil {
 		return agentsdk.ConversationSourceVerificationReceipt{}, conversationFailure("invalid", "source_verification_invalid")
 	}
+	if err := service.authorize(request.Reader); err != nil {
+		return agentsdk.ConversationSourceVerificationReceipt{}, err
+	}
 	references := make(map[agentsdk.ConversationRunReference]struct{}, len(request.References))
 	for _, reference := range request.References {
+		if err := service.authorizeCollaborationConversation(ctx, reference.ConversationID, "execution_read", request.Reader); err != nil {
+			return agentsdk.ConversationSourceVerificationReceipt{}, err
+		}
 		conversation, err := service.repo.Get(ctx, reference.ConversationID, request.Reader)
 		if err != nil {
 			return agentsdk.ConversationSourceVerificationReceipt{}, err

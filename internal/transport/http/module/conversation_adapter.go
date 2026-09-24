@@ -178,6 +178,8 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			}
 		}
 		switch op {
+		case "provenance_publish":
+			body = &in.ProvenancePublication
 		case "external_agent_assignments":
 			body = &in.ExternalAgentQuery
 		case "external_agent_claim":
