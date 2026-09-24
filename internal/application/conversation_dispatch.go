@@ -24,6 +24,15 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 		return tasks.AcceptBusinessEventConversationTask(ctx, r.BusinessEventTask)
 	}
 	a := r.Authority
+	if op == "sources_verify" {
+		verifier, ok := s.(agentsdk.ConversationSourceVerifier)
+		if !ok {
+			return nil, conversationFailure("unavailable", "source_verification_unavailable")
+		}
+		request := r.SourceVerification
+		request.Reader = a
+		return verifier.VerifyConversationSources(ctx, request)
+	}
 	if strings.HasPrefix(op, "external_agent_") {
 		external, ok := s.(agentsdk.ConversationExternalAgentService)
 		if !ok {

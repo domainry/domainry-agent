@@ -86,12 +86,12 @@ func TestSaaSManifestOwnsEveryServiceRouteAndInjectsCurrentAction(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(actions) != 146 {
-		t.Fatalf("Agent SaaS actions=%d, want 146", len(actions))
+	if len(actions) != 147 {
+		t.Fatalf("Agent SaaS actions=%d, want 147", len(actions))
 	}
 	patterns := map[string]bool{}
 	for _, action := range actions {
-		if (action.Key == conversationSaaSActionPrefix+"delegations_publication" || action.Key == conversationSaaSActionPrefix+"delegations_contract_publication" || action.Key == conversationSaaSActionPrefix+"delegations_execution" || action.Key == conversationSaaSActionPrefix+"delegations_execution_result" || action.Key == conversationSaaSActionPrefix+"delegations_result" || action.Key == conversationSaaSActionPrefix+"trajectory_compare") && action.EffectClass != actioncontract.EffectRead {
+		if (action.Key == conversationSaaSActionPrefix+"sources_verify" || action.Key == conversationSaaSActionPrefix+"delegations_publication" || action.Key == conversationSaaSActionPrefix+"delegations_contract_publication" || action.Key == conversationSaaSActionPrefix+"delegations_execution" || action.Key == conversationSaaSActionPrefix+"delegations_execution_result" || action.Key == conversationSaaSActionPrefix+"delegations_result" || action.Key == conversationSaaSActionPrefix+"trajectory_compare") && action.EffectClass != actioncontract.EffectRead {
 			t.Fatal("delivery publication preparation was classified as a mutation")
 		}
 		if action.Owner != agentsdk.AgentAuthorizationOwner || action.SourceKind != "service_protocol" || action.HTTP == nil || action.Permission != nil || action.Authorization.Strategy != actioncontract.AuthorizationSigned || action.Authorization.PolicyKey != "agent.saas_api_key" || len(action.Authorization.Audiences) != 1 || action.Authorization.Audiences[0] != agentsdk.AgentRuntimeServiceAudience {
