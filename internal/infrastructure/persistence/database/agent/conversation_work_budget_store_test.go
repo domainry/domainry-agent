@@ -15,7 +15,7 @@ import (
 func peerFixtureWithWorkBudget(t *testing.T, budget sdk.ConversationWorkBudget) (*ConversationStore, sdk.ConversationAuthority, sdk.ConversationDelegation) {
 	t.Helper()
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	peer, err := repo.WriteConversationAgent(t.Context(), "", sdk.ConversationAgentWrite{ClientID: "budget-receiver", Name: "Budget reviewer", Instructions: "Review", ModelKey: "default", Enabled: true, MaxConcurrent: 1}, a)
 	if err != nil {

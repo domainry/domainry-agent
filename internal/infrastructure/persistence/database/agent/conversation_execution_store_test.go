@@ -17,7 +17,7 @@ func executionStoreInput() agentsdk.ConversationStepRequest {
 
 func TestConversationExecutionFreezesEachStepAndNeverReplaysCompletedWrites(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	ctx := t.Context()
 	a := conversationTestAuthority()
 	c, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "execution", Title: "Execution"}, a)
@@ -90,7 +90,7 @@ func TestConversationExecutionFreezesEachStepAndNeverReplaysCompletedWrites(t *t
 		t.Fatal("missing new lease", err)
 	}
 	// A fresh store object has no in-memory model/call state to reuse.
-	repo = NewConversationStore(store)
+	repo = newTestConversationStore(t, store)
 	step, found, err = repo.ExecutionStep(ctx, recovered, 0, nil)
 	if err != nil || !found || step.Result == nil || step.Input.ModelIdentity.Fingerprint != "frozen-model" {
 		t.Fatal("lost step snapshot", err)
@@ -171,7 +171,7 @@ func TestConversationExecutionFreezesEachStepAndNeverReplaysCompletedWrites(t *t
 
 func TestConversationExecutionRejectsChangedResultsAndDeletesRecords(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	ctx := t.Context()
 	a := conversationTestAuthority()
 	c, _ := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "delete"}, a)
@@ -203,7 +203,7 @@ func TestConversationExecutionRejectsChangedResultsAndDeletesRecords(t *testing.
 
 func TestConversationExecutionAllowsOnlyExplicitParallelReadsToBeginOutOfOrder(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	ctx, authority := t.Context(), conversationTestAuthority()
 	conversation, _ := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "parallel-read"}, authority)
 	_, _ = repo.Enqueue(ctx, conversation.ID, agentsdk.ConversationSend{ClientMessageID: "parallel-read", Message: "Read two sources"}, authority)

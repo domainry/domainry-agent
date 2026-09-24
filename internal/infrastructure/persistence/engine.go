@@ -13,11 +13,10 @@ import (
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/sqlite"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
+	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	ormdriver "github.com/domainry/domainry-orm/driver"
-	todomodule "github.com/domainry/domainry-todo/module"
 )
 
 var engineRegistry = map[ormdialect.Name]func() ormdriver.Profile{
@@ -80,6 +79,13 @@ func EnsureSchema(ctx context.Context, database modulehost.Database, driver, sch
 	if _, err := sharedworkerscope.Open(ctx, database, renderer, registrar); err != nil {
 		return err
 	}
+	subjectDialect, ok := renderer.(sharedsubjectlifecycle.Dialect)
+	if !ok {
+		return fmt.Errorf("Agent database dialect does not support shared Subject Lifecycle")
+	}
+	if err := sharedsubjectlifecycle.EnsureSchema(ctx, subjectDialect, registrar); err != nil {
+		return err
+	}
 	definitionDialect, ok := renderer.(shareddefinition.Dialect)
 	if !ok {
 		return fmt.Errorf("Agent database dialect does not support shared Definitions")
@@ -90,12 +96,6 @@ func EnsureSchema(ctx context.Context, database modulehost.Database, driver, sch
 	}
 	if err := registrar.ApplyOwnedMigrations(ctx, shareddefinition.MigrationOwner, definitionMigrations); err != nil {
 		return fmt.Errorf("apply shared Definition migrations: %w", err)
-	}
-	if _, err := todomodule.Open(ctx, database, renderer, profile, registrar, nil); err != nil {
-		return fmt.Errorf("open Todo persistence: %w", err)
-	}
-	if err := knowledgemodule.EnsureSchema(ctx, knowledgemodule.SQLBackend{DB: database, Dialect: renderer, Engine: profile}, registrar); err != nil {
-		return fmt.Errorf("open Knowledge persistence: %w", err)
 	}
 	agentMigrations, err := agentstore.SchemaMigrations(driver, schema)
 	if err != nil {

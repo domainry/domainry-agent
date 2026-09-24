@@ -72,7 +72,7 @@ func applyTaskCompletion(t *testing.T, repo *ConversationStore, claim persistenc
 
 func TestAssessedTaskRequiresSubmissionAndCanResumeWithImmutableCompletionHistory(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	brief := sdk.DefaultConversationTaskBrief("verify release")
 	brief.CompletionConditions = []string{"The release result is verified."}
 	a, firstClaim, task := runningAssessedTask(t, repo, "resume", brief)
@@ -121,7 +121,7 @@ func TestAssessedTaskRequiresSubmissionAndCanResumeWithImmutableCompletionHistor
 
 func TestProgramCompletionCannotBeOverriddenByAgentOrUserReview(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	brief := sdk.DefaultConversationTaskBrief("verify structured result")
 	brief.CompletionConditions = []string{"Structured result has a string status.", "Summary is useful."}
 	brief.VerificationRules = []sdk.ConversationCompletionRule{{Condition: 0, Kind: "data", Schema: json.RawMessage(`{"type":"object","properties":{"status":{"type":"string"}},"required":["status"]}`)}}

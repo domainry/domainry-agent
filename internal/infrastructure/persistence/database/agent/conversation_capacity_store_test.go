@@ -11,7 +11,7 @@ import (
 
 func TestConversationCapacityAdmissionIsAtomicAndWorkerSkipsSaturatedWorkspace(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	limits := agentsdk.ConversationExecutionLimits{MaxQueuedPerUser: 1, MaxQueuedPerWorkspace: 2, MaxRunningPerUser: 1, MaxRunningPerWorkspace: 1}
 	if err := repo.ConfigureConversationExecutionLimits(limits); err != nil {
 		t.Fatal(err)
@@ -114,7 +114,7 @@ func TestConversationCapacityAdmissionIsAtomicAndWorkerSkipsSaturatedWorkspace(t
 
 func TestScheduledTaskBacklogSharesCapacityAndReplaySurvivesFullQueue(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	if err := repo.ConfigureConversationExecutionLimits(agentsdk.ConversationExecutionLimits{MaxQueuedPerUser: 1, MaxQueuedPerWorkspace: 1, MaxRunningPerUser: 1, MaxRunningPerWorkspace: 1}); err != nil {
 		t.Fatal(err)
 	}

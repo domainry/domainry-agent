@@ -10,7 +10,7 @@ import (
 
 func TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly(t *testing.T) {
 	store, db := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	a.UserID = "alice"
 	b := a
@@ -35,12 +35,6 @@ func TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly(t *testing.T) {
 		}
 	}
 	if _, err = repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{ID: "prefs:alice.v1", Title: "Alice preference", Content: "private", Enabled: true}, a); err != nil {
-		t.Fatal(err)
-	}
-	attachmentInput := attachmentReservation(alice.ID, "alice-attachment")
-	attachmentInput.Filename, attachmentInput.ContentType = "private.txt", "text/plain"
-	attachment, err := repo.ReserveAttachment(t.Context(), attachmentInput, a)
-	if err != nil {
 		t.Fatal(err)
 	}
 	lifecycle := NewSubjectLifecycle(store, a.RuntimeID)
@@ -82,8 +76,5 @@ func TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly(t *testing.T) {
 	}
 	if err = db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_conversation_work_budgets WHERE root_conversation_id=?`, bob.ID).Scan(&bobBudgets); err != nil || bobBudgets != 1 {
 		t.Fatalf("Bob work budgets=%d err=%v", bobBudgets, err)
-	}
-	if record, err := repo.AttachmentRecord(t.Context(), attachment.Attachment.ID, a); err != nil || record.Attachment.ID != attachment.Attachment.ID {
-		t.Fatalf("Agent mutated Knowledge-owned attachment=%+v err=%v", record, err)
 	}
 }

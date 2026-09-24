@@ -2,6 +2,7 @@ package module
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -25,10 +26,13 @@ import (
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
+	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
+	knowledgecontract "github.com/domainry/domainry-knowledge/contract"
+	knowledgemodulehost "github.com/domainry/domainry-knowledge/modulehost"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
-	todomodule "github.com/domainry/domainry-todo/module"
+	todocontract "github.com/domainry/domainry-todo/contract"
+	todomodulehost "github.com/domainry/domainry-todo/modulehost"
 )
 
 type ConversationOptions = agentapplication.ConversationOptions
@@ -70,6 +74,8 @@ type Options struct {
 	TaskModelProvider                                      agentsdk.ConversationModel
 	TaskAttachmentStorage                                  agentsdk.TaskAttachmentStorage
 	Knowledge                                              KnowledgeConfig
+	KnowledgeFactory                                       knowledgemodulehost.Factory
+	TodoFactory                                            todomodulehost.Factory
 }
 
 func OptionsFromEnvironment() Options {
@@ -179,10 +185,20 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if host.Database() == nil || host.Dialect() == nil || host.Migrations() == nil {
 		return nil, fmt.Errorf("Agent Module persistence host is incomplete")
 	}
+	if f.options.KnowledgeFactory == nil || f.options.TodoFactory == nil {
+		return nil, fmt.Errorf("Agent Module requires Knowledge and Todo factories")
+	}
 	if _, err := sharedoperation.Open(ctx, host.Database(), sharedoperation.AdaptDialect(host.Dialect()), host.Migrations()); err != nil {
 		return nil, err
 	}
 	if _, err := sharedworkerscope.Open(ctx, host.Database(), host.Dialect(), host.Migrations()); err != nil {
+		return nil, err
+	}
+	subjectDialect, ok := host.Dialect().(sharedsubjectlifecycle.Dialect)
+	if !ok {
+		return nil, fmt.Errorf("Agent Module dialect does not support shared Subject Lifecycle")
+	}
+	if err := sharedsubjectlifecycle.EnsureSchema(ctx, subjectDialect, host.Migrations()); err != nil {
 		return nil, err
 	}
 	definitionDialect, ok := host.Dialect().(shareddefinition.Dialect)
@@ -207,9 +223,6 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if err != nil {
 		return nil, err
 	}
-	if err := knowledgemodule.EnsureSchema(ctx, store, host.Migrations()); err != nil {
-		return nil, fmt.Errorf("open Knowledge persistence: %w", err)
-	}
 	runner := provider.New(provider.Config{BaseURL: f.options.BaseURL, APIKey: f.options.APIKey, AgentID: f.options.AgentID, Timeout: f.options.Timeout, Client: f.options.Client})
 	conversationModel := f.options.ConversationProvider
 	conversationModelConfig := provider.ConversationModelConfig{Provider: f.options.ConversationProviderName, Protocol: f.options.ConversationProtocol, BaseURL: f.options.ConversationBaseURL, URL: f.options.ConversationURL, APIKey: f.options.ConversationAPIKey, Model: f.options.ConversationModel, ContextTokenLimit: f.options.ConversationContextTokenLimit, ImageInput: f.options.ConversationImageInput, StructuredOutput: f.options.ConversationStructuredOutput, DisableProtocolContinuation: f.options.ConversationDisableProtocolContinuation, ReasoningEfforts: append([]string(nil), f.options.ConversationReasoningEfforts...), DefaultReasoningEffort: f.options.ConversationDefaultReasoningEffort, Client: f.options.Client}
@@ -232,6 +245,12 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		taskRunner = provider.NewModelTaskRunner(taskModel)
 	}
 	binding := newBinding(runner, taskRunner, store, agentsdk.DeploymentModeModule)
+	opened := false
+	defer func() {
+		if !opened {
+			_ = binding.Close(context.Background())
+		}
+	}()
 	conversationOptions := f.options.ConversationOptions
 	if f.options.TaskAttachmentStorage != nil {
 		if err := binding.taskExecution.ConfigureAttachments(f.options.TaskAttachmentStorage, app.RuntimeID); err != nil {
@@ -266,18 +285,25 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		}
 		conversationRepository = agentstore.NewConversationStore(store)
 	}
-	todoStore, err := todomodule.Open(ctx, store.Database(), store.Renderer(), store.Profile(), host.Migrations(), nil)
+	knowledgeBinding, err := f.options.KnowledgeFactory.OpenModule(ctx, knowledgecontract.ApplicationRef{RuntimeID: app.RuntimeID}, agentstore.NewKnowledgeModuleHost(conversationRepository, host.Migrations()))
 	if err != nil {
-		return nil, fmt.Errorf("open Todo lifecycle store: %w", err)
+		return nil, fmt.Errorf("open Knowledge module: %w", err)
 	}
-	binding.lifecycleSubjects = []lifecyclecontract.SubjectExecutionHandler{
-		agentstore.NewSubjectLifecycle(store, app.RuntimeID),
-		todomodule.NewSubjectLifecycle(todoStore, app.RuntimeID),
-		knowledgemodule.NewSubjectLifecycle(store, app.RuntimeID, knowledgemodule.Options{
-			ArtifactStorage: conversationOptions.ArtifactStorage,
-			DocumentStorage: conversationOptions.DocumentStorage,
-		}),
+	todoBinding, err := f.options.TodoFactory.OpenModule(ctx, todocontract.ApplicationRef{RuntimeID: app.RuntimeID}, agentstore.NewTodoModuleHost(conversationRepository, host.Migrations()))
+	if err != nil {
+		_ = knowledgeBinding.Close(ctx)
+		return nil, fmt.Errorf("open Todo module: %w", err)
 	}
+	if err := conversationRepository.BindKnowledge(knowledgeBinding); err != nil {
+		_ = errors.Join(todoBinding.Close(ctx), knowledgeBinding.Close(ctx))
+		return nil, err
+	}
+	if err := conversationRepository.BindTodo(todoBinding); err != nil {
+		_ = errors.Join(todoBinding.Close(ctx), knowledgeBinding.Close(ctx))
+		return nil, err
+	}
+	binding.knowledgeBinding, binding.todoBinding = knowledgeBinding, todoBinding
+	conversationOptions.KnowledgeRuntime = knowledgeBinding.Runtime()
 	if !deferConversations && conversationOptions.ToolHost == nil {
 		if authorizer, ok := host.(agentsdk.ConversationToolAuthorizer); ok {
 			if _, capable := conversationModel.(agentsdk.ConversationAgentModel); capable {
@@ -315,9 +341,14 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		if attachment.Knowledge == nil {
 			return nil, fmt.Errorf("invalid attachment knowledge binding")
 		}
-		if err := conversationRepository.ActivateAttachmentKnowledgeSource(ctx, app.RuntimeID, attachment.WorkspaceID, attachment.Knowledge.AttachmentKnowledgeSourceIdentity()); err != nil {
-			return nil, err
-		}
+	}
+	binding.lifecycleSubjects = []lifecyclecontract.SubjectExecutionHandler{
+		agentstore.NewSubjectLifecycle(store, app.RuntimeID),
+		todoBinding.SubjectLifecycle(),
+		knowledgeBinding.SubjectLifecycle(knowledgecontract.Options{
+			ArtifactStorage: conversationOptions.ArtifactStorage,
+			DocumentStorage: conversationOptions.DocumentStorage,
+		}),
 	}
 	if f.ConversationEnabled() {
 		assembly := &conversationAssembly{repository: conversationRepository, model: conversationModel, runtimeID: app.RuntimeID, timezone: f.options.ConversationTimezone, options: conversationOptions}
@@ -337,6 +368,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if binding.conversationAdapter != nil {
 		binding.adapters = append(binding.adapters, binding.conversationAdapter)
 	}
+	opened = true
 	return binding, nil
 }
 
@@ -349,6 +381,8 @@ type binding struct {
 	runs                 agentpersistence.AgentTaskRunRepository
 	lifecycle            agentpersistence.AgentLifecycleRepository
 	lifecycleSubjects    []lifecyclecontract.SubjectExecutionHandler
+	knowledgeBinding     knowledgemodulehost.ModuleBinding
+	todoBinding          todomodulehost.ModuleBinding
 	dialogState          agentsdk.AgentDialogStateService
 	taskState            agentpersistence.AgentTaskStateService
 	interactive          agentpersistence.AgentInteractiveStateService
@@ -474,7 +508,7 @@ func (b *binding) Conversations() agentsdk.ConversationService {
 	}
 	return b.conversations
 }
-func (b *binding) Close(context.Context) error {
+func (b *binding) Close(ctx context.Context) error {
 	if b == nil {
 		return nil
 	}
@@ -485,10 +519,19 @@ func (b *binding) Close(context.Context) error {
 	if b != nil && b.conversations != nil {
 		b.conversations.Close()
 	}
-	if b != nil && b.taskExecution != nil {
+	if b.taskExecution != nil {
 		b.taskExecution.Close()
 	}
-	return nil
+	var err error
+	if b.todoBinding != nil {
+		err = errors.Join(err, b.todoBinding.Close(ctx))
+		b.todoBinding = nil
+	}
+	if b.knowledgeBinding != nil {
+		err = errors.Join(err, b.knowledgeBinding.Close(ctx))
+		b.knowledgeBinding = nil
+	}
+	return err
 }
 
 var _ agentsdk.Factory = (*Factory)(nil)

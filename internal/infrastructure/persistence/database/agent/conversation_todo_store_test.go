@@ -12,7 +12,7 @@ func todoString(s string) *string { return &s }
 
 func TestTodoBatchAtomicityReceiptsAndIndependentLifecycle(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	ctx := t.Context()
 	c, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "source"}, a)
@@ -73,7 +73,7 @@ func TestTodoBatchAtomicityReceiptsAndIndependentLifecycle(t *testing.T) {
 
 func TestTodoOriginalPositionsRevisionDateAndCompletion(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	ctx := t.Context()
 	batch, err := repo.CreateTodos(ctx, agentsdk.ConversationTodoCreate{ClientID: "batch", Items: []agentsdk.ConversationTodoInput{{Title: "first", Timezone: "UTC"}, {Title: "second", Timezone: "America/New_York", DueAt: "2026-09-10T09:00:00-04:00"}, {Title: "third", Timezone: "UTC"}}}, a)
@@ -118,6 +118,8 @@ func TestTodoOriginalPositionsRevisionDateAndCompletion(t *testing.T) {
 }
 
 func TestTodoDeadlinesRejectAmbiguousOrMismatchedInputs(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := newTestConversationStore(t, store)
 	for _, value := range []struct {
 		date, at, zone string
 		valid          bool
@@ -129,7 +131,7 @@ func TestTodoDeadlinesRejectAmbiguousOrMismatchedInputs(t *testing.T) {
 		{"2026-09-11", "2026-09-11T12:00:00Z", "UTC", false},
 		{"", "2026-09-11T12:00:00", "UTC", false}, {"2026-09-11", "", "Local", false},
 	} {
-		err := validTodo(agentsdk.ConversationTodoInput{Title: "deadline", DueDate: value.date, DueAt: value.at, Timezone: value.zone})
+		err := repo.todoBinding.Validate(agentsdk.ConversationTodoInput{Title: "deadline", DueDate: value.date, DueAt: value.at, Timezone: value.zone})
 		if (err == nil) != value.valid {
 			t.Errorf("deadline %+v: %v", value, err)
 		}
@@ -138,7 +140,7 @@ func TestTodoDeadlinesRejectAmbiguousOrMismatchedInputs(t *testing.T) {
 
 func TestTodoPaginationIsBoundedCompleteAndOwnerBound(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	ctx := t.Context()
 	for batch := 0; batch < 2; batch++ {

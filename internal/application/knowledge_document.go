@@ -46,8 +46,8 @@ func (s *ConversationService) DeleteKnowledgeDocument(ctx context.Context, libra
 func (s *ConversationService) wakeKnowledgeDocuments() { s.knowledgeService().WakeKnowledgeDocuments() }
 
 func activateDocumentSources(repo persistence.ConversationRepository, runtime string, options ConversationOptions) error {
-	if options.KnowledgeFactory == nil {
+	if options.KnowledgeRuntime == nil {
 		return nil
 	}
-	return options.KnowledgeFactory.Activate(repo, runtime, knowledgeOptions(options))
+	return options.KnowledgeRuntime.Activate(runtime, knowledgeOptions(options))
 }

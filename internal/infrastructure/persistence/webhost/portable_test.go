@@ -9,15 +9,12 @@ import (
 	"testing"
 	"time"
 
-	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost"
 	"github.com/domainry/domainry-agent/testsupport/databasetest"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	knowledge "github.com/domainry/domainry-knowledge/module"
 	"github.com/domainry/domainry-orm/query"
-	todocontract "github.com/domainry/domainry-todo/contract"
-	todo "github.com/domainry/domainry-todo/module"
 	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
 
@@ -44,57 +41,7 @@ func TestExtractedPersistenceOnAllDatabases(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		km, err := knowledge.SchemaMigrations(d)
-		if err != nil {
-			t.Fatal(err)
-		}
-		tm, err := todo.SchemaMigrations(d)
-		if err != nil {
-			t.Fatal(err)
-		}
-		for range 2 {
-			if err = registrar.ApplyOwnedMigrations(t.Context(), knowledge.MigrationOwner, km); err != nil {
-				t.Fatal(err)
-			}
-			if err = registrar.ApplyOwnedMigrations(t.Context(), todo.MigrationOwner, tm); err != nil {
-				t.Fatal(err)
-			}
-		}
-		// The modules can own their tables without any Agent execution tables.
 		a := toolsdk.Authority{Known: true, RuntimeID: "standalone", WorkspaceID: "office", UserID: "one"}
-		todoStore, err := todo.NewStore(c.DB, d, profile, nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		mutation := todo.Mutation{Key: "create", Operation: "todo_create", Data: json.RawMessage(`{"items":[{"title":"跟进记录","timezone":"Asia/Shanghai"}]}`)}
-		first, err := todoStore.ApplyMutation(t.Context(), mutation, a)
-		if err != nil {
-			t.Fatal(err)
-		}
-		replay, err := todoStore.ApplyMutation(t.Context(), mutation, a)
-		if err != nil || string(first.Content) != string(replay.Content) {
-			t.Fatalf("todo receipt: %v", err)
-		}
-		page, err := todoStore.Todos(t.Context(), todocontract.TodoQuery{}, a)
-		if err != nil || len(page.Items) != 1 {
-			t.Fatalf("todo persistence: %+v %v", page, err)
-		}
-		libraryStore := knowledge.NewStore(backend, nil, knowledge.ArtifactPersistence{})
-		library, err := libraryStore.CreateKnowledgeLibrary(t.Context(), agentsdk.KnowledgeLibraryCreate{ClientID: "one", Kind: "personal", Name: "知识库"}, a)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if _, err = libraryStore.KnowledgeLibrary(t.Context(), library.ID, a); err != nil {
-			t.Fatal(err)
-		}
-		other := a
-		other.UserID = "two"
-		if _, err = libraryStore.KnowledgeLibrary(t.Context(), library.ID, other); err == nil {
-			t.Fatal("knowledge scope escaped")
-		}
-		if _, err = todoStore.Todo(t.Context(), page.Items[0].ID, other); err == nil {
-			t.Fatal("todo scope escaped")
-		}
 		verifyRecords(t, records, a)
 		work, err := knowledge.NewRecordStore(t.Context(), backend, registrar, "work")
 		if err != nil {

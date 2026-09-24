@@ -45,7 +45,7 @@ func completedForkSource(t *testing.T, repo *ConversationStore, clientID string,
 
 func TestConversationForkIsAtomicIdempotentAndOwnerScoped(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	authority := conversationTestAuthority()
 	source, run := completedForkSource(t, repo, "fork-source", authority)
 	seed := persistence.ConversationForkSeed{
@@ -96,7 +96,7 @@ func TestConversationForkIsAtomicIdempotentAndOwnerScoped(t *testing.T) {
 
 func TestConversationForkRejectsAnUnstableBoundary(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	authority := conversationTestAuthority()
 	source, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "unstable-source"}, authority)
 	if err != nil {

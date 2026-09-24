@@ -53,7 +53,7 @@ func personalMutationFixture(t *testing.T, repo *ConversationStore, key, name, a
 
 func TestPersonalTodoBatchEffectReceiptAndEventAreAtomic(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	claim, request := personalMutationFixture(t, repo, "todo-atomic", "todo_create", `{"items":[{"title":"访谈","timezone":"Asia/Shanghai"},{"title":"费用","description":"必须持久保存的完整说明","timezone":"Asia/Shanghai"},{"title":"周报","timezone":"Asia/Shanghai"}]}`, true)
 	// Fail after every item has been inserted. Neither a partial batch nor a
 	// completed receipt may survive if the corresponding event did not commit.
@@ -79,7 +79,7 @@ func TestPersonalTodoBatchEffectReceiptAndEventAreAtomic(t *testing.T) {
 	if err != nil || result.Status != "completed" {
 		t.Fatal("create batch", result.Status, err)
 	}
-	repo = NewConversationStore(store)
+	repo = newTestConversationStore(t, store)
 	replayed, err := repo.ApplyPersonalTool(t.Context(), request)
 	if err != nil || conversationHash(result) != conversationHash(replayed) {
 		t.Fatal("durable batch receipt changed", err)
@@ -121,7 +121,7 @@ func TestPersonalTodoBatchEffectReceiptAndEventAreAtomic(t *testing.T) {
 
 func TestPersonalMemoryEffectReceiptAndEventAreAtomic(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	claim, request := personalMutationFixture(t, repo, "atomic", "memory_save", `{"title":"周报格式","content":"按项目组织","enabled":true,"expected_revision":0}`, true)
 	// SQLite fault injection at the final event write, after the memory UPDATE.
 	// A failure must roll back the resource and receipt together.
@@ -145,7 +145,7 @@ func TestPersonalMemoryEffectReceiptAndEventAreAtomic(t *testing.T) {
 		t.Fatal("save", result.Status, err)
 	}
 	// Simulate loss of the host return and executor FinishExecutionTool call.
-	repo = NewConversationStore(store)
+	repo = newTestConversationStore(t, store)
 	replayed, err := repo.ApplyPersonalTool(t.Context(), request)
 	if err != nil || conversationHash(result) != conversationHash(replayed) {
 		t.Fatal("lost durable receipt", err)
@@ -183,7 +183,7 @@ func TestPersonalMemoryFrozenInputScopeOwnerAndCancellation(t *testing.T) {
 	for _, change := range []string{"arguments", "definition", "key", "user", "fence", "cancel", "unscoped"} {
 		t.Run(change, func(t *testing.T) {
 			store, _ := openAgentStore(t)
-			repo := NewConversationStore(store)
+			repo := newTestConversationStore(t, store)
 			_, in := personalMutationFixture(t, repo, change, "memory_save", `{"title":"偏好","content":"简洁","enabled":true,"expected_revision":0}`, change != "unscoped")
 			a := in.Authority
 			switch change {
@@ -217,7 +217,7 @@ func TestPersonalMemoryFrozenInputScopeOwnerAndCancellation(t *testing.T) {
 
 func TestPersonalMemoryStrictRevisionsAndDeleteReceipts(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	m, err := repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{ID: "prefs:weekly.v1", Title: "周报", Content: "按项目组织", Enabled: true}, a)
 	if err != nil {
@@ -259,7 +259,7 @@ func TestPersonalMemoryStrictRevisionsAndDeleteReceipts(t *testing.T) {
 
 func TestPersonalMemoryChangesRetainSourceCorrectionAndDeleteTombstone(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	now := time.Date(2026, 9, 15, 12, 0, 0, 0, time.UTC)
 	created, err := repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{

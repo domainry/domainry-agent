@@ -13,7 +13,7 @@ import (
 
 func TestScheduledConversationTaskAcceptanceIsIdempotentOwnerScopedAndUsesExistingWorkerQueue(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	authority := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
 	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "scheduled-conversation", Title: "每周整理"}, authority)
 	if err != nil {
@@ -31,7 +31,7 @@ func TestScheduledConversationTaskAcceptanceIsIdempotentOwnerScopedAndUsesExisti
 	if err != nil || first.Replay || first.Task.ID == "" || first.Task.Status != agentsdk.ConversationTaskStatusQueued || first.Task.SourceRunID != "" {
 		t.Fatalf("first receipt=%+v err=%v", first, err)
 	}
-	replayed, err := NewConversationStore(store).AcceptScheduledConversationTask(t.Context(), request, prepared)
+	replayed, err := newTestConversationStore(t, store).AcceptScheduledConversationTask(t.Context(), request, prepared)
 	if err != nil || !replayed.Replay || replayed.Task.ID != first.Task.ID {
 		t.Fatalf("replayed receipt=%+v err=%v", replayed, err)
 	}
@@ -64,7 +64,7 @@ func TestScheduledConversationTaskAcceptanceIsIdempotentOwnerScopedAndUsesExisti
 
 func TestBusinessEventTaskAcceptanceDeduplicatesAndCreatesImmutableWakeSuccessor(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	authority := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user", RoleKey: "support"}
 	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{AgentID: "support-agent", ClientID: "event-conversation", Title: "Support events"}, authority)
 	if err != nil {
@@ -87,7 +87,7 @@ func TestBusinessEventTaskAcceptanceDeduplicatesAndCreatesImmutableWakeSuccessor
 	if err != nil || first.Replay || first.Task.BusinessEvent == nil || first.Task.BusinessEvent.Source.EventID != "event-1" {
 		t.Fatalf("event receipt=%+v err=%v", first, err)
 	}
-	replay, err := NewConversationStore(store).AcceptBusinessEventConversationTask(t.Context(), request, prepared)
+	replay, err := newTestConversationStore(t, store).AcceptBusinessEventConversationTask(t.Context(), request, prepared)
 	if err != nil || !replay.Replay || replay.Task.ID != first.Task.ID {
 		t.Fatalf("event replay=%+v err=%v", replay, err)
 	}
@@ -127,7 +127,7 @@ func TestBusinessEventTaskAcceptanceDeduplicatesAndCreatesImmutableWakeSuccessor
 
 func TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	budget := agentsdk.ConversationTaskBudget{MaxSteps: 3, MaxToolCalls: 2, MaxOutputBytes: 1024, TimeoutSeconds: 30}
 	start := agentsdk.ConversationTaskStart{Goal: "核对发布", Input: "build 42", AllowedTools: []string{"time_now"}, Budget: budget}
 	arguments, err := json.Marshal(start)
@@ -166,7 +166,7 @@ func TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable(t *testing.T
 	if err != nil || result.Status != "completed" || result.Completion != "accepted" || result.ResourceID == "" {
 		t.Fatalf("task_start result=%+v err=%v", result, err)
 	}
-	replayed, err := NewConversationStore(store).ApplyConversationTaskTool(t.Context(), request, prepared)
+	replayed, err := newTestConversationStore(t, store).ApplyConversationTaskTool(t.Context(), request, prepared)
 	if err != nil || conversationHash(replayed) != conversationHash(result) {
 		t.Fatalf("durable task receipt changed: %+v %v", replayed, err)
 	}
@@ -247,7 +247,7 @@ func TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable(t *testing.T
 
 func TestConversationTasksOwnerScopedFiltersAndStableCursor(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	authority := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
 	now := time.Now().UTC().Add(-time.Minute).Truncate(time.Millisecond)
 	insert := func(index int, status, goal, conversation string, owner agentsdk.ConversationAuthority) {
@@ -287,7 +287,7 @@ func TestConversationTasksOwnerScopedFiltersAndStableCursor(t *testing.T) {
 
 func TestConversationTaskChildCountIsBoundedPerSourceRun(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	budget := agentsdk.ConversationTaskBudget{MaxSteps: 1, MaxToolCalls: 1, MaxOutputBytes: 256, TimeoutSeconds: 1}
 	start := agentsdk.ConversationTaskStart{Goal: "第五个子任务", Input: "", AllowedTools: []string{}, Budget: budget}
 	arguments, _ := json.Marshal(start)
@@ -312,7 +312,7 @@ func TestConversationTaskChildCountIsBoundedPerSourceRun(t *testing.T) {
 
 func TestConversationTaskFailureTracksTerminalRun(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	budget := agentsdk.ConversationTaskBudget{MaxSteps: 1, MaxToolCalls: 1, MaxOutputBytes: 256, TimeoutSeconds: 1}
 	start := agentsdk.ConversationTaskStart{Goal: "失败验证", Input: "", AllowedTools: []string{}, Budget: budget}
 	arguments, _ := json.Marshal(start)
@@ -363,7 +363,7 @@ func TestConversationTaskFailureTracksTerminalRun(t *testing.T) {
 
 func TestConversationTaskReconciliationResumeKeepsTaskRunning(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	input := executionStoreInput()
 	definition := input.Tools[0]
 	budget := agentsdk.ConversationTaskBudget{MaxSteps: 2, MaxToolCalls: 1, MaxOutputBytes: 1024, TimeoutSeconds: 30}

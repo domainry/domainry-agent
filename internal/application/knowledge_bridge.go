@@ -24,8 +24,8 @@ func (s *ConversationService) knowledgeService() knowledge.Service {
 	s.knowledgeOnce.Do(func() {
 		options := knowledgeOptions(s.options)
 		options.Sources = knowledgeSourcePolicy{s: s}
-		if s.options.KnowledgeFactory != nil {
-			s.knowledgeModule = s.options.KnowledgeFactory.NewService(s.repo, s.runtimeID, options)
+		if s.options.KnowledgeRuntime != nil {
+			s.knowledgeModule = s.options.KnowledgeRuntime.NewService(s.runtimeID, options)
 		} else {
 			s.knowledgeModule = unconfiguredKnowledge{}
 		}

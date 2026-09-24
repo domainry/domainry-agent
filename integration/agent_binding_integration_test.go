@@ -250,7 +250,7 @@ func (h *bindingHarness) open(t *testing.T) agentsdk.Binding {
 		err     error
 	)
 	if h.mode == agentsdk.DeploymentModeModule {
-		binding, err = agentmodule.NewFactory(agentmodule.Options{BaseURL: h.external.url(), APIKey: providerAPIKey, AgentID: 41, Timeout: 10 * time.Second, Client: h.external.client()}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime-integration"}, h.moduleHost)
+		binding, err = newAgentModuleFactory(agentmodule.Options{BaseURL: h.external.url(), APIKey: providerAPIKey, AgentID: 41, Timeout: 10 * time.Second, Client: h.external.client()}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime-integration"}, h.moduleHost)
 	} else {
 		binding, err = agentremote.NewFactory(agentremote.Options{BaseURL: h.remoteURL, APIKey: "saas-api-secret", Timeout: 10 * time.Second, Client: h.remoteHTTP}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime-integration"}, saasRuntimeHost("runtime-integration"))
 	}

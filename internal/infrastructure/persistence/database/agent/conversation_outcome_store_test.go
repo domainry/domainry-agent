@@ -11,7 +11,7 @@ import (
 
 func TestExecutionOutcomePersistsAcceptedAndFailedReceiptsAcrossFailureAndReplay(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	c, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "outcomes"}, a)
 	if err != nil {
@@ -49,7 +49,7 @@ func TestExecutionOutcomePersistsAcceptedAndFailedReceiptsAcrossFailureAndReplay
 	if err = repo.Finish(t.Context(), claim, agentsdk.ConversationModelResult{}, "tool_not_authorized"); err != nil {
 		t.Fatal(err)
 	}
-	saved, err := NewConversationStore(store).Run(t.Context(), c.ID, run.ID, a)
+	saved, err := newTestConversationStore(t, store).Run(t.Context(), c.ID, run.ID, a)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -104,7 +104,7 @@ func TestExecutionOutcomePersistsAcceptedAndFailedReceiptsAcrossFailureAndReplay
 
 func TestExecutionOutcomeRejectsAcceptanceOnReadTools(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	c, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "read-outcome"}, a)
 	if err != nil {

@@ -7,7 +7,7 @@ import (
 
 func TestAgentExecutionBindingPersistsRoleAndRejectsIdentityChangingRetry(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	a.RoleKey = "first-role"
 	mode := "owner"
@@ -25,7 +25,7 @@ func TestAgentExecutionBindingPersistsRoleAndRejectsIdentityChangingRetry(t *tes
 	in.ExpectedRevision = agent.Revision
 	in.Name = "Renamed"
 	in.DelegationExecution = nil
-	agent, err = NewConversationStore(store).WriteConversationAgent(t.Context(), agent.ID, in, changed)
+	agent, err = newTestConversationStore(t, store).WriteConversationAgent(t.Context(), agent.ID, in, changed)
 	if err != nil || agent.DelegationRoleKey != a.RoleKey {
 		t.Fatal("ordinary edit rebound role", agent, err)
 	}

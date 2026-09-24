@@ -11,7 +11,7 @@ import (
 
 func TestConversationRunDetailProjectsBoundedAuditMetricsUsageAndDurations(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	authority := conversationTestAuthority()
 	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "run-audit"}, authority)
 	if err != nil {
@@ -54,7 +54,7 @@ func TestConversationRunDetailProjectsBoundedAuditMetricsUsageAndDurations(t *te
 		t.Fatal(err)
 	}
 
-	detail, err := NewConversationStore(store).Run(t.Context(), conversation.ID, run.ID, authority)
+	detail, err := newTestConversationStore(t, store).Run(t.Context(), conversation.ID, run.ID, authority)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,7 +87,7 @@ func TestConversationRunDetailProjectsBoundedAuditMetricsUsageAndDurations(t *te
 
 func TestOrdinaryConversationProjectsSafeInitialContextAndCacheUsage(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	authority := conversationTestAuthority()
 	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "ordinary-context"}, authority)
 	if err != nil {
@@ -118,7 +118,7 @@ func TestOrdinaryConversationProjectsSafeInitialContextAndCacheUsage(t *testing.
 	if err = repo.Finish(t.Context(), claim, agentsdk.ConversationModelResult{Content: "done", Model: "ordinary-model", Usage: usage}, ""); err != nil {
 		t.Fatal(err)
 	}
-	detail, err := NewConversationStore(store).Run(t.Context(), conversation.ID, run.ID, authority)
+	detail, err := newTestConversationStore(t, store).Run(t.Context(), conversation.ID, run.ID, authority)
 	if err != nil || detail.Context == nil || detail.Context.Window == nil || detail.Context.Window.InputBytes != 4096 || len(detail.Context.Sources) != 1 || detail.Context.Sources[0].Version != "rules-v3" {
 		t.Fatal("safe initial context projection is missing", detail.Context, err)
 	}

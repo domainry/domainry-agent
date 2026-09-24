@@ -183,7 +183,11 @@ func (s *ConversationService) prepareArtifactTool(ctx context.Context, in agents
 			return out, err
 		}
 		var err error
-		record, err = s.repo.(persistence.ConversationArtifactRepository).ArtifactRecord(ctx, args.ID, args.ExpectedVersion, in.Authority)
+		repository, accessErr := s.artifactAccess(ctx, in.Authority, "artifact_read", map[string]any{"id": args.ID, "version": args.ExpectedVersion})
+		if accessErr != nil {
+			return out, accessErr
+		}
+		record, err = repository.ArtifactRecord(ctx, args.ID, args.ExpectedVersion, in.Authority)
 		if err != nil {
 			return out, err
 		}

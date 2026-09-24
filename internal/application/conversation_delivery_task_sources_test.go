@@ -101,7 +101,7 @@ func TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources(t *t
 			repo := &taskReceiptRepository{personalReceiptRepository: &personalReceiptRepository{a: a, record: record}, task: task, snapshots: map[string]persistence.ConversationSourceSnapshot{}, message: sdk.ConversationMessage{ID: "answer", ConversationID: "producer", RunID: "execution-run", Role: "assistant", BackgroundTaskID: task.ID, Content: "Original answer"}}
 			policy := &deliveryArtifactPolicy{denied: map[string]bool{key: true}, disabled: map[string]bool{}}
 			executor := &deliveryReadTestHost{}
-			s := &ConversationService{runtimeID: a.RuntimeID, repo: repo, options: ConversationOptions{KnowledgeFactory: knowledge.NewFactory(), ToolHost: &profileToolHost{base: executor, allowed: map[string]bool{}}, ToolAvailability: policy, PersonalAuthorizer: policy, CollaborationAuthorizer: fixedCollaborationTestPolicy{"view", "delivery_read", "execution_read"}}}
+			s := &ConversationService{runtimeID: a.RuntimeID, repo: repo, options: ConversationOptions{KnowledgeRuntime: knowledge.NewServiceRuntime(repo), ToolHost: &profileToolHost{base: executor, allowed: map[string]bool{}}, ToolAvailability: policy, PersonalAuthorizer: policy, CollaborationAuthorizer: fixedCollaborationTestPolicy{"view", "delivery_read", "execution_read"}}}
 			owner := sdk.ConversationRunReference{ConversationID: "producer", RunID: "run"}
 			base := context.WithValue(t.Context(), conversationAgentContextKey{}, &sdk.ConversationAgentSnapshot{})
 			ctx := deliverySourceContext(base, "released")

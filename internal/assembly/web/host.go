@@ -23,6 +23,7 @@ import (
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	"github.com/domainry/domainry-orm/driver"
 	schedulersdk "github.com/domainry/domainry-scheduler-sdk"
+	todomodule "github.com/domainry/domainry-todo/module"
 	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
 
@@ -248,6 +249,12 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	}
 	if options.Agent.ConversationOptions.LibraryAuthorizer == nil {
 		options.Agent.ConversationOptions.LibraryAuthorizer = h
+	}
+	if options.Agent.KnowledgeFactory == nil {
+		options.Agent.KnowledgeFactory = knowledgemodule.NewFactory()
+	}
+	if options.Agent.TodoFactory == nil {
+		options.Agent.TodoFactory = todomodule.NewFactory()
 	}
 	if options.Prepare != nil {
 		if err = options.Prepare(ctx, h); err != nil {

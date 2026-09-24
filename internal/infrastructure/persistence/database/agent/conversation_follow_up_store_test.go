@@ -53,7 +53,7 @@ func claimFollowUp(t *testing.T, repo *ConversationStore, runtimeID string) (per
 
 func TestScheduledFollowUpBaselineChangeCompletionAndOutboxReplay(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	authority := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
 	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "follow-up", Title: "Follow-up"}, authority)
 	if err != nil {
@@ -76,7 +76,7 @@ func TestScheduledFollowUpBaselineChangeCompletionAndOutboxReplay(t *testing.T) 
 		t.Fatal(err)
 	}
 	time.Sleep(1100 * time.Millisecond)
-	retried, found := claimFollowUp(t, NewConversationStore(store), authority.RuntimeID)
+	retried, found := claimFollowUp(t, newTestConversationStore(t, store), authority.RuntimeID)
 	if !found || retried.Event.ID != changed.Event.ID || retried.Fence <= changed.Fence {
 		t.Fatalf("retried event=%+v found=%t", retried, found)
 	}
@@ -103,7 +103,7 @@ func TestScheduledFollowUpBaselineChangeCompletionAndOutboxReplay(t *testing.T) 
 
 func TestScheduledFollowUpFailureInvalidReportAndNeedsActionAreDurable(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	authority := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
 	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "follow-up-errors", Title: "Follow-up errors"}, authority)
 	if err != nil {
@@ -161,7 +161,7 @@ func TestScheduledFollowUpFailureInvalidReportAndNeedsActionAreDurable(t *testin
 
 func TestUnifiedAgentTasksKeepTaskFollowUpStateAndEventNamespacesIndependent(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	authority := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
 	owner, sharedID := conversationOwner(authority), "shared_task_record"
 	now := time.Now().UTC().Truncate(time.Millisecond)

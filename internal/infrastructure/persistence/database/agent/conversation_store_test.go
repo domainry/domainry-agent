@@ -27,7 +27,7 @@ func requireConversationCode(t *testing.T, err error, code string) {
 
 func TestConversationAtomicIdempotencyAndOwnerIsolation(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	ctx := t.Context()
 	a := conversationTestAuthority()
 	c, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "client", Title: "100% plan"}, a)
@@ -135,7 +135,7 @@ func TestConversationRestartLeaseFenceAndFrozenInput(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		return NewConversationStore(store), db
+		return newTestConversationStore(t, store), db
 	}
 	repo, db := open(true)
 	a := conversationTestAuthority()
@@ -241,7 +241,7 @@ func TestConversationRestartLeaseFenceAndFrozenInput(t *testing.T) {
 
 func TestConversationDraftCommitReplayAndAttemptFence(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	ctx := t.Context()
 	a := conversationTestAuthority()
 	c, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "draft"}, a)

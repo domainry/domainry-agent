@@ -33,7 +33,7 @@ func TestConversationAgentMessageRateIsPerSenderAndReplayIsFree(t *testing.T) {
 func peerFixture(t *testing.T) (*ConversationStore, sdk.ConversationAuthority, sdk.ConversationDelegation) {
 	t.Helper()
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	agent, err := repo.WriteConversationAgent(t.Context(), "", sdk.ConversationAgentWrite{ClientID: "receiver", Name: "Reviewer", Instructions: "Review", ModelKey: "default", Enabled: true, MaxConcurrent: 1}, a)
 	if err != nil {
@@ -50,7 +50,7 @@ func peerFixture(t *testing.T) (*ConversationStore, sdk.ConversationAuthority, s
 	if err != nil {
 		t.Fatal(err)
 	}
-	again, err := NewConversationStore(store).CreateConversationDelegation(t.Context(), in, a)
+	again, err := newTestConversationStore(t, store).CreateConversationDelegation(t.Context(), in, a)
 	if err != nil || again.ID != d.ID {
 		t.Fatalf("replay %+v %v", again, err)
 	}

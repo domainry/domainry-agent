@@ -11,7 +11,7 @@ import (
 func delegationSubjectFixture(t *testing.T, sameUser ...bool) (*ConversationStore, sdk.ConversationAuthority, sdk.ConversationAuthority, persistence.ConversationDelegationAdmission) {
 	t.Helper()
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	source := conversationTestAuthority()
 	source.RoleKey = "issuer-role"
 	executor := source

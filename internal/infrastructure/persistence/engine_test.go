@@ -45,10 +45,16 @@ func TestEnsureSchemaUsesOneOwnerAwareLedgerForFoundationAndAgent(t *testing.T) 
 	if err := EnsureSchema(t.Context(), database, "sqlite", ""); err != nil {
 		t.Fatal(err)
 	}
-	for _, table := range []string{"_definitions", "_definition_versions", sharedoperation.TableName, sharedworkerscope.TableName, "_subject_requests", "_subject_steps", "_agent_user_todos", "_agent_knowledge_libraries", "_agent_knowledge_library_members", "_agent_knowledge_documents", "_agent_knowledge_sources", "_agent_knowledge_document_jobs", "_agent_runtime_states"} {
+	for _, table := range []string{"_definitions", "_definition_versions", sharedoperation.TableName, sharedworkerscope.TableName, "_subject_requests", "_subject_steps", "_agent_runtime_states"} {
 		var count int
 		if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 1 {
 			t.Fatalf("table %s count=%d err=%v", table, count, err)
+		}
+	}
+	for _, table := range []string{"_agent_user_todos", "_agent_knowledge_libraries", "_agent_knowledge_library_members", "_agent_knowledge_documents", "_agent_knowledge_sources", "_agent_knowledge_document_jobs"} {
+		var count int
+		if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 0 {
+			t.Fatalf("nested module table %s count=%d err=%v", table, count, err)
 		}
 	}
 	for _, retired := range []string{"_agent_owner_operation_receipts", "_agent_collaboration_mutations", "_agent_todo_mutations", "_agent_artifact_mutations", "_knowledge_owner_operation_receipts", "_agent_knowledge_document_sources", "_agent_knowledge_datasource_bindings", "_agent_attachment_knowledge_sources"} {
@@ -64,7 +70,7 @@ func TestEnsureSchemaUsesOneOwnerAwareLedgerForFoundationAndAgent(t *testing.T) 
 		}
 	}
 	var owners int
-	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(DISTINCT owner) FROM _schema_migrations WHERE owner IN ('shared/definitions','shared/operations','shared/worker-scopes','shared/subject-lifecycle','todo','knowledge','agent')`).Scan(&owners); err != nil || owners != 7 {
+	if err := database.QueryRowContext(t.Context(), `SELECT COUNT(DISTINCT owner) FROM _schema_migrations WHERE owner IN ('shared/definitions','shared/operations','shared/worker-scopes','shared/subject-lifecycle','agent')`).Scan(&owners); err != nil || owners != 5 {
 		t.Fatalf("migration owners=%d err=%v", owners, err)
 	}
 }

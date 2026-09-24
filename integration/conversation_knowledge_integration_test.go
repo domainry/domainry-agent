@@ -53,7 +53,7 @@ func TestConversationKnowledgeModuleRetrievesAndFreezesInputForResume(t *testing
 			a := conversationAuthority()
 			options := conversationOptions()
 			options.KnowledgeBytes = 512
-			binding, err := agentmodule.NewFactory(agentmodule.Options{
+			binding, err := newAgentModuleFactory(agentmodule.Options{
 				ConversationProvider: model, ConversationOptions: options,
 				Knowledge: agentmodule.KnowledgeConfig{BaseURL: upstream.URL, APIKey: "key", TeamID: "team", KBID: "bcri", WorkspaceID: a.WorkspaceID},
 			}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, newSQLiteModuleHost(t, a.RuntimeID))

@@ -73,7 +73,7 @@ func TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions(t *testing
 			meta := sdk.ConversationArtifact{ID: "art_" + strings.Repeat("a", 32), Version: 2, Title: "成果", Kind: "markdown", Bytes: len(body), SHA256: hash}
 			repo := &deliveryArtifactRepository{authority: a, record: persistence.ConversationArtifactRecord{Artifact: meta, Body: body, Sources: &sdk.ConversationSources{Version: 1}}}
 			policy := &deliveryArtifactPolicy{denied: map[string]bool{"artifact_create": true, "artifact_edit": true, "artifact_export": true}, disabled: map[string]bool{}}
-			s := &ConversationService{runtimeID: a.RuntimeID, repo: repo, options: ConversationOptions{KnowledgeFactory: knowledge.NewFactory(), PersonalAuthorizer: policy, ToolAvailability: policy, CollaborationAuthorizer: fixedCollaborationTestPolicy{"view", "delivery_read"}}}
+			s := &ConversationService{runtimeID: a.RuntimeID, repo: repo, options: ConversationOptions{KnowledgeRuntime: knowledge.NewServiceRuntime(repo), PersonalAuthorizer: policy, ToolAvailability: policy, CollaborationAuthorizer: fixedCollaborationTestPolicy{"view", "delivery_read"}}}
 			// Deliberately empty producer profile: viewing the released resource
 			// must not require the producer's old execution configuration.
 			host := &deliveryReadTestHost{}

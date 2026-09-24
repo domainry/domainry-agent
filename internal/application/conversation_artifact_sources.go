@@ -46,8 +46,7 @@ func (audit *conversationSourceAudit) artifactToolResult(ctx context.Context, ow
 		return nil, conversationFailure("conflict", "tool_changed")
 	}
 	policy := audit.s.options.PersonalAuthorizer
-	repo, ok := audit.s.repo.(persistence.ConversationArtifactRepository)
-	if policy == nil || !ok {
+	if policy == nil {
 		return nil, conversationFailure("unavailable", "artifacts_unavailable")
 	}
 	request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: execution.Step, Call: execution.Call, Definition: definition}
@@ -83,14 +82,11 @@ func (audit *conversationSourceAudit) artifactToolResult(ctx context.Context, ow
 	}
 	var roots []agentsdk.ConversationRunReference
 	check := func(meta agentsdk.ConversationArtifact) (persistence.ConversationArtifactRecord, error) {
-		reader := repo
-		if deliveryRead {
-			// Knowledge owns current read authorization and owner-scoped access;
-			// reading never acquires a mutation lease or repeats the operation.
-			reader, err = audit.s.artifactAccess(ctx, audit.a, "artifact_read", map[string]any{"id": meta.ID, "version": meta.Version})
-			if err != nil {
-				return persistence.ConversationArtifactRecord{}, err
-			}
+		// Knowledge owns current read authorization and owner-scoped access;
+		// reading never acquires a mutation lease or repeats the operation.
+		reader, err := audit.s.artifactAccess(ctx, audit.a, "artifact_read", map[string]any{"id": meta.ID, "version": meta.Version})
+		if err != nil {
+			return persistence.ConversationArtifactRecord{}, err
 		}
 		record, err := reader.ArtifactRecord(ctx, meta.ID, meta.Version, audit.a)
 		if err != nil {
@@ -183,11 +179,9 @@ func (audit *conversationSourceAudit) artifactToolResult(ctx context.Context, ow
 		if err = decodeArtifactToolResult(execution.Result.Content, &result); err != nil || json.Unmarshal([]byte(execution.Call.Arguments), &args) != nil || args.ID != result.Export.ArtifactID || args.Version != result.Export.Version || args.Format != result.Export.Format || execution.Result.ResourceID != args.ID {
 			return nil, conversationFailure("conflict", "artifact_result_invalid")
 		}
-		if deliveryRead {
-			repo, err = audit.s.artifactAccess(ctx, audit.a, "artifact_read", map[string]any{"id": args.ID, "version": args.Version})
-			if err != nil {
-				return nil, err
-			}
+		repo, accessErr := audit.s.artifactAccess(ctx, audit.a, "artifact_read", map[string]any{"id": args.ID, "version": args.Version})
+		if accessErr != nil {
+			return nil, accessErr
 		}
 		metadata, err := repo.ArtifactExport(ctx, result.Export.ID, audit.a)
 		if err != nil {

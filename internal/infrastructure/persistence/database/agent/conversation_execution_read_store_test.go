@@ -10,7 +10,7 @@ import (
 
 func TestExecutionReadCursorChangesAndCancelledEvidence(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	c, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "read-cursor"}, a)
 	if err != nil {

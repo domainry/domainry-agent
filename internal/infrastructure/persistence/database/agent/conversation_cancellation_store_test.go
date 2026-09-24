@@ -11,7 +11,7 @@ import (
 
 func TestCancellationRetainsReceiptsAndFencesAllOtherWrites(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	c, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "cancellation-receipt"}, a)
 	if err != nil {
@@ -92,7 +92,7 @@ func TestCancellationRetainsReceiptsAndFencesAllOtherWrites(t *testing.T) {
 		}
 	}
 	// Reopening repository state does not lose the cancellation/receipt guard.
-	repo = NewConversationStore(store)
+	repo = newTestConversationStore(t, store)
 	if err = repo.FinishExecutionTool(t.Context(), claim, 0, "in-flight", second); err != nil {
 		t.Fatal("late definitive receipt lost", err)
 	}

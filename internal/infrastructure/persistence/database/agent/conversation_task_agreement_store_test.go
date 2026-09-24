@@ -20,7 +20,7 @@ func taskAgreementBrief(version int64, goal string) sdk.ConversationTaskBrief {
 
 func TestConversationTaskAgreementPersistsCurrentGoalAndStartsANewRun(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	authority := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
 	conversation, err := repo.Create(t.Context(), sdk.ConversationCreate{ClientID: "goal-agreement-conversation", Title: "发布核对"}, authority)
 	if err != nil {

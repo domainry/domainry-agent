@@ -85,7 +85,7 @@ func applyPlanVersion(t *testing.T, repo *ConversationStore, claim persistence.C
 
 func TestConversationPlanVersionsPreserveCompletedWorkAndReactToFailureAndAgreementChange(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a, claim, task := runningScheduledPlanTask(t, repo)
 	v1 := sdk.ConversationPlanUpdate{ClientID: "plan-v1", ExpectedVersion: 0, AgreementRevision: 1, Reason: "Initial multi-step plan", Steps: []sdk.ConversationPlanStepUpdate{{ID: "inspect", Title: "Inspect inputs", Status: sdk.ConversationPlanStepInProgress, DependsOn: []string{}, Input: "release input", ExpectedOutput: "validated inputs", RequirementFields: []string{"goal"}, Evidence: []sdk.ConversationResultReference{}, Artifacts: []sdk.ConversationArtifactReference{}}, {ID: "publish", Title: "Publish release", Status: sdk.ConversationPlanStepPending, DependsOn: []string{"inspect"}, Input: "validated inputs", ExpectedOutput: "published release", RequirementFields: []string{"deliverable"}, Evidence: []sdk.ConversationResultReference{}, Artifacts: []sdk.ConversationArtifactReference{}}}}
 	result, err := applyPlanVersion(t, repo, claim, 0, v1, nil, nil)
@@ -144,7 +144,7 @@ func TestConversationPlanVersionsPreserveCompletedWorkAndReactToFailureAndAgreem
 
 func TestConversationPlanFollowsConversationLifecycle(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a, claim, task := runningScheduledPlanTask(t, repo)
 	update := sdk.ConversationPlanUpdate{ClientID: "lifecycle-plan", ExpectedVersion: 0, AgreementRevision: 1, Reason: "Persist the work graph", Steps: []sdk.ConversationPlanStepUpdate{{ID: "work", Title: "Do the work", Status: sdk.ConversationPlanStepInProgress, DependsOn: []string{}, Input: task.Input, ExpectedOutput: "verified output", RequirementFields: []string{"goal"}, Evidence: []sdk.ConversationResultReference{}, Artifacts: []sdk.ConversationArtifactReference{}}}}
 	if result, err := applyPlanVersion(t, repo, claim, 0, update, nil, nil); err != nil || result.Status != "completed" {

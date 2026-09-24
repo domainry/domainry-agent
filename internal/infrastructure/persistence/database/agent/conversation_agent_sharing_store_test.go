@@ -11,7 +11,7 @@ import (
 
 func TestSharedAgentKeepsExecutionOwnersAndGlobalCapacitySeparate(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	owner := conversationTestAuthority()
 	caller := owner
 	caller.UserID = "shared-caller"
@@ -21,7 +21,7 @@ func TestSharedAgentKeepsExecutionOwnersAndGlobalCapacitySeparate(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	shared, err := NewConversationStore(store).ConversationAgent(t.Context(), agent.ID, caller)
+	shared, err := newTestConversationStore(t, store).ConversationAgent(t.Context(), agent.ID, caller)
 	if err != nil || !shared.Shared || shared.OwnerUserID != owner.UserID || shared.SharedWithUserIDs != nil {
 		t.Fatal("shared configuration scope", shared, err)
 	}
@@ -102,7 +102,7 @@ func TestSharedAgentKeepsExecutionOwnersAndGlobalCapacitySeparate(t *testing.T) 
 	if _, err := repo.WriteConversationAgent(t.Context(), agent.ID, in, owner); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := NewConversationStore(store).ConversationAgent(t.Context(), agent.ID, caller); err == nil {
+	if _, err := newTestConversationStore(t, store).ConversationAgent(t.Context(), agent.ID, caller); err == nil {
 		t.Fatal("revoked grant survived reload")
 	}
 	// Revocation must not leave an unclaimable row poisoning other queued work.
@@ -113,7 +113,7 @@ func TestSharedAgentKeepsExecutionOwnersAndGlobalCapacitySeparate(t *testing.T) 
 
 func TestAgentSharingAdmissionIsAtomicAtRecipientDirectoryLimit(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	owner := conversationTestAuthority()
 	viewer := owner
 	viewer.UserID = "full-directory"

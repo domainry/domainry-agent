@@ -10,7 +10,7 @@ import (
 func externalAgentFixture(t *testing.T, capabilities sdk.ConversationExternalAgentCapabilities) (*ConversationStore, sdk.ConversationAuthority, sdk.ConversationDelegation) {
 	t.Helper()
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	external := &sdk.ConversationExternalAgentConfig{Protocol: sdk.ConversationExternalAgentProtocolV1, Version: "1", Capabilities: capabilities}
 	agent, err := repo.WriteConversationAgent(t.Context(), "", sdk.ConversationAgentWrite{ClientID: "external-receiver", Name: "External reviewer", Instructions: "Review independently", External: external, Enabled: true, MaxConcurrent: 1}, a)

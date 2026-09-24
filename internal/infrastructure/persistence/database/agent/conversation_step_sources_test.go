@@ -26,7 +26,7 @@ func TestConversationStepSourcesSurviveDatabaseReopenAndCannotChangeOnReplay(t *
 		if err != nil {
 			t.Fatal(err)
 		}
-		return NewConversationStore(store), db
+		return newTestConversationStore(t, store), db
 	}
 	repo, db := open()
 	d, _ := ormdialect.New(ormdialect.SQLite)

@@ -50,7 +50,7 @@ func TestConversationModelToPersistedBrowserStreamAndDisconnectReplay(t *testing
 			a := conversationAuthority()
 			var binding agentsdk.Binding
 			if mode == "module" {
-				binding, err = agentmodule.NewFactory(agentmodule.Options{ConversationProvider: model, ConversationOptions: conversationOptions()}).OpenModule(ctx, agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, newSQLiteModuleHost(t, a.RuntimeID))
+				binding, err = newAgentModuleFactory(agentmodule.Options{ConversationProvider: model, ConversationOptions: conversationOptions()}).OpenModule(ctx, agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, newSQLiteModuleHost(t, a.RuntimeID))
 			} else {
 				service, e := conversationassembly.NewService(conversationRepository(t), model, a.RuntimeID, conversationOptions())
 				if e != nil {

@@ -57,7 +57,7 @@ func (h conversationApplicationHost) ConversationBusinessSource() agentsdk.Conve
 func TestDeferredConversationModuleRecoversOnlyAfterBusinessHostBinding(t *testing.T) {
 	a := conversationAuthority()
 	host := newSQLiteModuleHost(t, a.RuntimeID)
-	initial, err := agentmodule.NewFactory(agentmodule.Options{}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, host)
+	initial, err := newAgentModuleFactory(agentmodule.Options{}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, host)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,7 +105,7 @@ func TestDeferredConversationModuleRecoversOnlyAfterBusinessHostBinding(t *testi
 		return (&executionModel{}).answerResult(), nil
 	}}
 	options := agentmodule.Options{ConversationProvider: model, ConversationOptions: agentmodule.ConversationOptions{Workers: 1, Poll: 10 * time.Millisecond}}
-	opened, err := agentmodule.NewFactory(options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, deferredModuleHost{host})
+	opened, err := newAgentModuleFactory(options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, deferredModuleHost{host})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -154,7 +154,7 @@ func TestDeferredConversationModuleRecoversOnlyAfterBusinessHostBinding(t *testi
 func TestDeferredConversationModuleWithoutModelKeepsPersonalHTTPServices(t *testing.T) {
 	a := conversationAuthority()
 	host := deferredModuleHost{newSQLiteModuleHost(t, a.RuntimeID)}
-	opened, err := agentmodule.NewFactory(agentmodule.Options{ConversationEnabled: true}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, host)
+	opened, err := newAgentModuleFactory(agentmodule.Options{ConversationEnabled: true}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, host)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -188,7 +188,7 @@ func TestDeferredConversationModuleAssemblesLifecycleHostBeforeWorkersStart(t *t
 	model := conversationModelFunc(func(context.Context, agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
 		return agentsdk.ConversationModelResult{Content: "done", Model: "module-model"}, nil
 	})
-	opened, err := agentmodule.NewFactory(agentmodule.Options{ConversationProvider: model}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: authority.RuntimeID}, database)
+	opened, err := newAgentModuleFactory(agentmodule.Options{ConversationProvider: model}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: authority.RuntimeID}, database)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -245,7 +245,7 @@ func TestConversationOnlyBindingRecoversWithAuthorizationAndSharedBudget(t *test
 			}}
 			options := agentmodule.Options{ConversationProvider: model, ConversationOptions: agentmodule.ConversationOptions{ToolHost: toolHost, MaxToolCalls: 2, Poll: 5 * time.Millisecond}}
 			open := func() agentsdk.Binding {
-				b, err := agentmodule.NewFactory(options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, deferredModuleHost{database})
+				b, err := newAgentModuleFactory(options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, deferredModuleHost{database})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -356,7 +356,7 @@ func TestConversationOnlyBindingRecoversWithAuthorizationAndSharedBudget(t *test
 
 func TestConversationOnlyBindingRequiresDeferredStartup(t *testing.T) {
 	a := conversationAuthority()
-	opened, err := agentmodule.NewFactory(agentmodule.Options{}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, newSQLiteModuleHost(t, a.RuntimeID))
+	opened, err := newAgentModuleFactory(agentmodule.Options{}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, newSQLiteModuleHost(t, a.RuntimeID))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -412,7 +412,7 @@ func TestConversationOnlyBindingResolvesLiveDefaultsAndPreservesExplicitOptions(
 			case "availability":
 				options.ConversationOptions.ToolAvailability = early
 			}
-			opened, err := agentmodule.NewFactory(options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, early)
+			opened, err := newAgentModuleFactory(options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, early)
 			if err != nil {
 				t.Fatal(err)
 			}

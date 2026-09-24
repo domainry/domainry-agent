@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-agent-sdk/persistence"
 )
 
 // Compatibility forwarding; business implementation is owned by Knowledge.
@@ -18,8 +17,8 @@ func (s *ConversationService) IndexAttachment(ctx context.Context, conversation,
 
 func (s *ConversationService) wakeAttachmentIndex() { s.knowledgeService().WakeAttachmentIndex() }
 
-func validateAttachmentKnowledge(repo persistence.ConversationRepository, options *ConversationOptions) error {
-	if options.KnowledgeFactory == nil {
+func validateAttachmentKnowledge(options *ConversationOptions) error {
+	if options.KnowledgeRuntime == nil {
 		if _, managed := options.Knowledge.(agentsdk.ManagedKnowledgeDocumentSource); managed {
 			return fmt.Errorf("managed knowledge requires a factory supplied by composition")
 		}
@@ -29,7 +28,7 @@ func validateAttachmentKnowledge(repo persistence.ConversationRepository, option
 		return nil
 	}
 	k := knowledgeOptions(*options)
-	if err := options.KnowledgeFactory.Validate(repo, &k); err != nil {
+	if err := options.KnowledgeRuntime.Validate(&k); err != nil {
 		return err
 	}
 	options.AttachmentKnowledge = k.AttachmentKnowledge

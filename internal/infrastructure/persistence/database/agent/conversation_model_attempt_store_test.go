@@ -9,7 +9,7 @@ import (
 
 func TestConversationModelAttemptsPersistWaitsAndDiscardFailedPreviews(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	ctx, authority := t.Context(), conversationTestAuthority()
 	conversation, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "model-attempts", Title: "Model attempts"}, authority)
 	if err != nil {
@@ -59,7 +59,7 @@ func TestConversationModelAttemptsPersistWaitsAndDiscardFailedPreviews(t *testin
 
 func TestConversationTextAttemptFailureClearsDurableDraft(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	ctx, authority := t.Context(), conversationTestAuthority()
 	conversation, _ := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "text-attempt", Title: "Text retry"}, authority)
 	run, _ := repo.Enqueue(ctx, conversation.ID, agentsdk.ConversationSend{ClientMessageID: "one", Message: "reply"}, authority)

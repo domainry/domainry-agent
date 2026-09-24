@@ -11,6 +11,9 @@ import (
 )
 
 func (s *ConversationStore) ApplyArtifactTool(ctx context.Context, in agentsdk.ConversationToolRequest, prepared persistence.ConversationArtifactToolMutation) (agentsdk.ConversationToolResult, error) {
+	if s.knowledgeArtifacts == nil {
+		return agentsdk.ConversationToolResult{}, conversationError("unavailable", "artifacts_unavailable")
+	}
 	return s.applyLocalTool(ctx, in, agentsdk.ArtifactConversationTools(), func(tx *sql.Tx, claim persistence.ConversationClaim, call persistence.ConversationToolExecution) (agentsdk.ConversationToolResult, error) {
 		var zero agentsdk.ConversationToolResult
 		clientID := "tool_" + conversationHash(call.IdempotencyKey)
@@ -28,7 +31,7 @@ func (s *ConversationStore) ApplyArtifactTool(ctx context.Context, in agentsdk.C
 			if write.ClientID != clientID || write.RequestSHA256 != digest || write.Export.ArtifactID != args.ID || write.Export.Version != args.Version || write.Export.Format != args.Format {
 				return zero, conversationError("conflict", "tool_input_conflict")
 			}
-			value, err := s.saveArtifactExport(ctx, tx, write, claim.Authority)
+			value, err := s.knowledgeArtifacts.SaveArtifactExportInTransaction(ctx, tx, write, claim.Authority)
 			if err != nil {
 				return zero, err
 			}
@@ -67,7 +70,7 @@ func (s *ConversationStore) ApplyArtifactTool(ctx context.Context, in agentsdk.C
 			if json.Unmarshal([]byte(call.Call.Arguments), &args) != nil || args.ID != write.Record.Artifact.ID || args.ExpectedVersion != write.ExpectedVersion {
 				return zero, conversationError("conflict", "tool_input_conflict")
 			}
-			previous, err := s.artifactRecord(ctx, tx, args.ID, args.ExpectedVersion, claim.Authority)
+			previous, err := s.knowledgeArtifacts.ArtifactRecordInTransaction(ctx, tx, args.ID, args.ExpectedVersion, claim.Authority)
 			if err != nil {
 				return zero, err
 			}
@@ -97,7 +100,7 @@ func (s *ConversationStore) ApplyArtifactTool(ctx context.Context, in agentsdk.C
 		default:
 			return zero, conversationError("forbidden", "tool_access_denied")
 		}
-		saved, err := s.saveArtifact(ctx, tx, write, claim.Authority)
+		saved, err := s.knowledgeArtifacts.SaveArtifactInTransaction(ctx, tx, write, claim.Authority)
 		if err != nil {
 			return zero, err
 		}

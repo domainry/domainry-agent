@@ -35,7 +35,7 @@ func interactionFixture(t *testing.T, repo *ConversationStore, key string) persi
 
 func TestConversationInteractionWaitFencesWorkerAndResponseIsDurableAndIdempotent(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	claim := interactionFixture(t, repo, "confirm")
 	ctx, a := t.Context(), claim.Authority
 	i, err := repo.WaitExecution(ctx, claim, persistence.ConversationWait{Step: 0, CallID: "call", Kind: "confirmation", Question: "创建此事项？"})
@@ -51,7 +51,7 @@ func TestConversationInteractionWaitFencesWorkerAndResponseIsDurableAndIdempoten
 	requireConversationCode(t, repo.AppendDelta(ctx, claim, 0, "late"), "lease_lost")
 	_, err = repo.Resume(ctx, claim.Run.ConversationID, claim.Run.ID, a)
 	requireConversationCode(t, err, "interaction_response_required")
-	repo = NewConversationStore(store)
+	repo = newTestConversationStore(t, store)
 	snapshot, err := repo.Run(ctx, claim.Run.ConversationID, claim.Run.ID, a)
 	if err != nil || snapshot.Status != "waiting_confirmation" || snapshot.Interaction.ID != i.ID || snapshot.Steps[0].Calls[0].Status != "waiting_confirmation" {
 		t.Fatal("lost waiting snapshot", err)
@@ -128,7 +128,7 @@ func TestConversationInteractionCancellationExpiryAndDeletion(t *testing.T) {
 	for _, mode := range []string{"cancel", "expire", "expire_on_response", "reject"} {
 		t.Run(mode, func(t *testing.T) {
 			store, _ := openAgentStore(t)
-			repo := NewConversationStore(store)
+			repo := newTestConversationStore(t, store)
 			claim := interactionFixture(t, repo, mode)
 			ctx, a := t.Context(), claim.Authority
 			ttl := time.Minute

@@ -11,17 +11,11 @@ import (
 
 func TestConversationLifecycleArchivesCompleteGraphAndFencesPurge(t *testing.T) {
 	store, db := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	now := time.Date(2026, 9, 12, 12, 0, 0, 0, time.UTC)
 	old := now.Add(-48 * time.Hour)
 	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "retained", Title: "Retained"}, a)
-	if err != nil {
-		t.Fatal(err)
-	}
-	attachmentInput := attachmentReservation(conversation.ID, "retained-attachment")
-	attachmentInput.Filename, attachmentInput.ContentType = "owned-by-knowledge.txt", "text/plain"
-	attachment, err := repo.ReserveAttachment(t.Context(), attachmentInput, a)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -89,8 +83,5 @@ func TestConversationLifecycleArchivesCompleteGraphAndFencesPurge(t *testing.T) 
 	}
 	if _, err = repo.Get(t.Context(), active.ID, a); err != nil {
 		t.Fatal("active run was purged", err)
-	}
-	if record, err := repo.AttachmentRecord(t.Context(), attachment.Attachment.ID, a); err != nil || record.Attachment.ID != attachment.Attachment.ID {
-		t.Fatalf("retention purge crossed into Knowledge=%+v err=%v", record, err)
 	}
 }

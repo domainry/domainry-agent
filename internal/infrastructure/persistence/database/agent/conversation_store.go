@@ -17,19 +17,44 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
+	knowledgecontract "github.com/domainry/domainry-knowledge/contract"
+	knowledgemodulehost "github.com/domainry/domainry-knowledge/modulehost"
 	"github.com/domainry/domainry-orm/query"
+	todomodulehost "github.com/domainry/domainry-todo/modulehost"
 )
 
 type ConversationStore struct {
 	store *Store
 
-	artifactStore   sharedartifact.ManagedStore
-	artifactContent sharedartifact.ContentStore
-	artifactWriter  sharedartifact.ContentWriter
+	artifactStore      sharedartifact.ManagedStore
+	artifactContent    sharedartifact.ContentStore
+	artifactWriter     sharedartifact.ContentWriter
+	knowledgeArtifacts knowledgemodulehost.ArtifactTransactions
+	knowledgeRuntime   knowledgecontract.Runtime
+	todoBinding        todomodulehost.ModuleBinding
 
 	capacityMu         sync.RWMutex
 	capacityConfigured bool
 	capacityLimits     agentsdk.ConversationExecutionLimits
+}
+
+func (s *ConversationStore) BindKnowledge(binding knowledgemodulehost.ModuleBinding) error {
+	if binding == nil || binding.Runtime() == nil || binding.ArtifactTransactions() == nil {
+		return errors.New("Knowledge module binding is incomplete")
+	}
+	s.knowledgeRuntime = binding.Runtime()
+	s.knowledgeArtifacts = binding.ArtifactTransactions()
+	return nil
+}
+
+func (s *ConversationStore) KnowledgeRuntime() knowledgecontract.Runtime { return s.knowledgeRuntime }
+
+func (s *ConversationStore) BindTodo(binding todomodulehost.ModuleBinding) error {
+	if binding == nil || binding.Todos() == nil || binding.Mutations() == nil {
+		return errors.New("Todo module binding is incomplete")
+	}
+	s.todoBinding = binding
+	return nil
 }
 
 func NewConversationStore(s *Store) *ConversationStore {
@@ -102,6 +127,10 @@ func conversationHash(v any) string {
 	b, _ := json.Marshal(v)
 	h := sha256.Sum256(b)
 	return hex.EncodeToString(h[:])
+}
+func artifactSHA(value string) bool {
+	raw, err := hex.DecodeString(value)
+	return err == nil && len(raw) == 32 && strings.ToLower(value) == value
 }
 func conversationJSON(v any) []byte { b, _ := json.Marshal(v); return b }
 func conversationError(class, code string) error {

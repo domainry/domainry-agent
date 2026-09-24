@@ -40,7 +40,7 @@ func TestConversationApplicationBindingRequiresExecutionPolicy(t *testing.T) {
 					return false, nil
 				})
 			}
-			opened, err := agentmodule.NewFactory(options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, deferredModuleHost{newSQLiteModuleHost(t, a.RuntimeID)})
+			opened, err := newAgentModuleFactory(options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, deferredModuleHost{newSQLiteModuleHost(t, a.RuntimeID)})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -79,7 +79,7 @@ func TestConversationImmediateModuleBindingRequiresExecutionPolicy(t *testing.T)
 		t.Error("model invoked without current execution policy")
 		return agentsdk.ConversationModelResult{}, nil
 	})}
-	if binding, err := agentmodule.NewFactory(options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, host); err == nil {
+	if binding, err := newAgentModuleFactory(options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, host); err == nil {
 		_ = binding.Close(t.Context())
 		t.Fatal("immediate model host started without current execution policy")
 	}

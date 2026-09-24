@@ -19,12 +19,17 @@ import (
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
+	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/webhost"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	agentremote "github.com/domainry/domainry-agent/remote"
 	agentserver "github.com/domainry/domainry-agent/server"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
+	knowledgecontract "github.com/domainry/domainry-knowledge/contract"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
+	todocontract "github.com/domainry/domainry-todo/contract"
+	todomodule "github.com/domainry/domainry-todo/module"
 )
 
 type conversationModelFunc func(context.Context, agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error)
@@ -85,7 +90,30 @@ func conversationRepositoryWithArtifactContent(t *testing.T, wrap func(sharedart
 	if err = store.BindArtifactPersistence(sharedartifact.NewSQLStore(db, renderer), contentStore, content); err != nil {
 		t.Fatal(err)
 	}
-	return agentstore.NewConversationStore(store)
+	repository := agentstore.NewConversationStore(store)
+	registrar := &webhost.Registrar{DB: db, Renderer: renderer, DatabaseDriver: "sqlite", Profile: store.Profile()}
+	if err = registrar.Prepare(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	knowledge, err := knowledgemodule.NewFactory().OpenModule(t.Context(), knowledgecontract.ApplicationRef{RuntimeID: conversationAuthority().RuntimeID}, agentstore.NewKnowledgeModuleHost(repository, registrar))
+	if err != nil {
+		t.Fatal(err)
+	}
+	todo, err := todomodule.NewFactory().OpenModule(t.Context(), todocontract.ApplicationRef{RuntimeID: conversationAuthority().RuntimeID}, agentstore.NewTodoModuleHost(repository, registrar))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = repository.BindKnowledge(knowledge); err != nil {
+		t.Fatal(err)
+	}
+	if err = repository.BindTodo(todo); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		_ = todo.Close(context.Background())
+		_ = knowledge.Close(context.Background())
+	})
+	return repository
 }
 func waitConversation(t *testing.T, s agentsdk.ConversationService, id, run string) agentsdk.ConversationRun {
 	t.Helper()
@@ -354,7 +382,7 @@ func TestConversationModuleSaaSAndBrowserSurface(t *testing.T) {
 			var binding agentsdk.Binding
 			var err error
 			if mode == "module" {
-				binding, err = agentmodule.NewFactory(agentmodule.Options{ConversationProvider: model}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, newSQLiteModuleHost(t, a.RuntimeID))
+				binding, err = newAgentModuleFactory(agentmodule.Options{ConversationProvider: model}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, newSQLiteModuleHost(t, a.RuntimeID))
 			} else {
 				svc, e := conversationassembly.NewService(conversationRepository(t), model, a.RuntimeID, conversationOptions())
 				if e != nil {

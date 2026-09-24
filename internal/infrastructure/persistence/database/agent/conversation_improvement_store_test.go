@@ -30,7 +30,7 @@ func evaluateImprovement(t *testing.T, repo *ConversationStore, id, client strin
 
 func TestCapabilityImprovementPublicationRollbackAndOwnerIsolation(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	now := time.Now().UTC().Truncate(time.Millisecond)
 	request := sdk.ConversationCapabilityFeedbackCreate{ClientID: "feedback-client", TaskID: "task-one", Outcome: "revised", Reason: "Changed report ordering", SkillKeys: []string{"report"}}
@@ -109,7 +109,7 @@ func TestCapabilityImprovementPublicationRollbackAndOwnerIsolation(t *testing.T)
 
 func TestCapabilityImprovementRejectsPublicationWithoutPassingEvaluation(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	a := conversationTestAuthority()
 	skill := improvementSkill("2", "Candidate")
 	create := sdk.ConversationImprovementCandidateCreate{ClientID: "candidate-failed", Kind: "skill", TargetKey: "report", Version: "2", FeedbackIDs: []string{"feedback"}, Proposal: json.RawMessage(conversationJSON(skill)), Reason: "Candidate"}

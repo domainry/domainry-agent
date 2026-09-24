@@ -39,6 +39,12 @@ type host struct {
 	content        *artifactkernel.ContentFiles
 }
 
+func testFactory(options Options) *Factory {
+	options.KnowledgeFactory = knowledgemodule.NewFactory()
+	options.TodoFactory = todomodule.NewFactory()
+	return NewFactory(options)
+}
+
 func TestModuleMigrationCreatesUnifiedAgentTablesAndIndexes(t *testing.T) {
 	host := newHost(t, "unified-runs")
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -46,7 +52,7 @@ func TestModuleMigrationCreatesUnifiedAgentTablesAndIndexes(t *testing.T) {
 		_, _ = w.Write([]byte(`{"data":{"run_id":"provider","status":"accepted"}}`))
 	}))
 	defer upstream.Close()
-	if _, err := NewFactory(Options{BaseURL: upstream.URL, APIKey: "key", AgentID: 1, Client: upstream.Client()}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: "unified-runs"}, host); err != nil {
+	if _, err := testFactory(Options{BaseURL: upstream.URL, APIKey: "key", AgentID: 1, Client: upstream.Client()}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: "unified-runs"}, host); err != nil {
 		t.Fatal(err)
 	}
 	var count int
@@ -140,7 +146,7 @@ func TestModuleDescriptor(t *testing.T) {
 	}))
 	defer upstream.Close()
 	host := newHost(t, "runtime")
-	b, err := NewFactory(Options{BaseURL: upstream.URL, APIKey: "key", AgentID: 1, Client: upstream.Client()}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime"}, host)
+	b, err := testFactory(Options{BaseURL: upstream.URL, APIKey: "key", AgentID: 1, Client: upstream.Client()}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime"}, host)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -203,7 +209,7 @@ func TestModuleDescriptor(t *testing.T) {
 
 func TestModuleCanPublishDefinitionsBeforeProviderConfiguration(t *testing.T) {
 	host := newHost(t, "runtime-unconfigured")
-	binding, err := NewFactory(Options{}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime-unconfigured"}, host)
+	binding, err := testFactory(Options{}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime-unconfigured"}, host)
 	if err != nil {
 		t.Fatalf("open unconfigured Agent module: %v", err)
 	}

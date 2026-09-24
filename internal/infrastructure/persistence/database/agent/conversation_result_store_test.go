@@ -7,7 +7,7 @@ import (
 
 func TestStoredToolResultReferenceOwnershipDigestAndDeletion(t *testing.T) {
 	store, _ := openAgentStore(t)
-	repo := NewConversationStore(store)
+	repo := newTestConversationStore(t, store)
 	_, request := personalMutationFixture(t, repo, "result-owner", "memory_save", `{"title":"工作","content":"保留完整内容","enabled":true,"expected_revision":0}`, true)
 	result, err := repo.ApplyPersonalTool(t.Context(), request)
 	if err != nil {

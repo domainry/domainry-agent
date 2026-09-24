@@ -19,8 +19,11 @@ import (
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
+	knowledgecontract "github.com/domainry/domainry-knowledge/contract"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
+	"github.com/domainry/domainry-orm/migration"
+	todocontract "github.com/domainry/domainry-todo/contract"
 	todomodule "github.com/domainry/domainry-todo/module"
 	_ "modernc.org/sqlite"
 )
@@ -123,6 +126,40 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 		t.Fatal(err)
 	}
 	return store, database
+}
+
+type testModuleRegistrar struct{}
+
+func (testModuleRegistrar) Driver() string { return "sqlite" }
+func (testModuleRegistrar) Schema() string { return "" }
+func (testModuleRegistrar) ApplyOwnedMigrations(context.Context, string, []migration.Migration) error {
+	return nil
+}
+
+func newTestConversationStore(t *testing.T, store *Store) *ConversationStore {
+	t.Helper()
+	repository := NewConversationStore(store)
+	registrar := testModuleRegistrar{}
+	knowledge, err := knowledgemodule.NewFactory().OpenModule(t.Context(), knowledgecontract.ApplicationRef{RuntimeID: "runtime"}, NewKnowledgeModuleHost(repository, registrar))
+	if err != nil {
+		t.Fatal(err)
+	}
+	todo, err := todomodule.NewFactory().OpenModule(t.Context(), todocontract.ApplicationRef{RuntimeID: "runtime"}, NewTodoModuleHost(repository, registrar))
+	if err != nil {
+		_ = knowledge.Close(t.Context())
+		t.Fatal(err)
+	}
+	if err = repository.BindKnowledge(knowledge); err != nil {
+		t.Fatal(err)
+	}
+	if err = repository.BindTodo(todo); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		_ = todo.Close(context.Background())
+		_ = knowledge.Close(context.Background())
+	})
+	return repository
 }
 
 func applyOperationMigrations(t *testing.T, database *sql.DB, dialect sharedoperation.Dialect) {
@@ -378,7 +415,7 @@ func TestUnifiedAgentRunTableIsolatesTaskInteractiveAndConversationKinds(t *test
 		t.Fatalf("create interactive replay=%v err=%v", replay, err)
 	}
 
-	conversations := NewConversationStore(store)
+	conversations := newTestConversationStore(t, store)
 	authority := conversationTestAuthority()
 	authority.WorkspaceID = workspaceID
 	conversation, err := conversations.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "unified-run-table", Title: "Unified runs"}, authority)

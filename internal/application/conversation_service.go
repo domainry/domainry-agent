@@ -28,7 +28,7 @@ type ConversationOptions struct {
 	AgentModelPrices    map[string]agentsdk.ConversationModelPrice
 	AgentDefinitions    []agentsdk.AgentSchema
 	LifecycleExtensions []agentsdk.ConversationLifecycleExtension
-	KnowledgeFactory    knowledge.Factory
+	KnowledgeRuntime    knowledge.Runtime
 	Agent               *agentsdk.AgentSchema
 	Skills              []agentsdk.SkillSchema
 	// ToolDefinitions declares optional product-owned registrations for profile validation.
@@ -120,7 +120,7 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	if options.CollaborationAuthorizer == nil {
 		options.CollaborationAuthorizer, _ = options.ToolHost.(agentsdk.ConversationCollaborationAuthorizer)
 	}
-	if err := validateAttachmentKnowledge(repo, &options); err != nil {
+	if err := validateAttachmentKnowledge(&options); err != nil {
 		return nil, err
 	}
 	if options.ContextBytes == 0 {
@@ -215,8 +215,8 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 			return nil, fmt.Errorf("library knowledge retrieval requires a tool-capable conversation host")
 		}
 	}
-	if options.KnowledgeFactory != nil {
-		prepared, err := options.KnowledgeFactory.Prepare(repo, runtimeID, knowledgeOptions(options))
+	if options.KnowledgeRuntime != nil {
+		prepared, err := options.KnowledgeRuntime.Prepare(runtimeID, knowledgeOptions(options))
 		if err != nil {
 			return nil, err
 		}
@@ -268,9 +268,6 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 		}
 		if _, ok := repo.(agentpersistence.ConversationSourceRepository); !ok {
 			return nil, fmt.Errorf("attachment tools require source access persistence")
-		}
-		if _, ok := repo.(agentpersistence.ConversationAttachmentKnowledgeRepository); !ok {
-			return nil, fmt.Errorf("attachment tools require scoped metadata persistence")
 		}
 	}
 	if options.ContextBytes < 4096 || options.MaxInputBytes < 1 || options.MaxOutputBytes < 1 || options.SummaryBytes < 256 || options.MaxInputBytes+options.SummaryBytes+1024 >= options.ContextBytes || options.Workers < 1 || options.Workers > 32 || options.Lease < 300*time.Millisecond || options.Poll <= 0 || options.RunTimeout <= 0 || options.ExternalCallTimeout <= 0 || options.ExternalCallTimeout > 5*time.Minute {

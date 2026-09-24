@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"database/sql"
 	"fmt"
 	"testing"
 
@@ -9,16 +10,28 @@ import (
 	"github.com/domainry/domainry-knowledge/artifact"
 )
 
+func artifactWrite(t *testing.T, client, id string, version int64, title, markdown string) persistence.ConversationArtifactWrite {
+	t.Helper()
+	raw, hash, err := artifact.Encode(agentsdk.ConversationArtifactContent{Kind: "markdown", Markdown: markdown})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return persistence.ConversationArtifactWrite{ClientID: client, ExpectedVersion: version, Record: persistence.ConversationArtifactRecord{Artifact: agentsdk.ConversationArtifact{ID: id, Title: title, Kind: "markdown", SHA256: hash, Bytes: len(raw)}, Body: raw, Sources: &agentsdk.ConversationSources{Version: 1}}}
+}
+
 func TestArtifactToolEffectResultAndEventCommitTogether(t *testing.T) {
 	for _, name := range []string{"artifact_create", "artifact_export"} {
 		t.Run(name, func(t *testing.T) {
 			store, _ := openAgentStore(t)
-			repo := NewConversationStore(store)
+			repo := newTestConversationStore(t, store)
 			arguments := `{"title":"周报","content":{"kind":"markdown","markdown":"正文"}}`
 			var original persistence.ConversationArtifactRecord
 			if name == "artifact_export" {
 				var err error
-				original, err = repo.SaveArtifact(t.Context(), artifactWrite(t, "original", "", 0, "周报", "正文"), conversationTestAuthority())
+				err = repo.transaction(t.Context(), func(tx *sql.Tx) error {
+					original, err = repo.knowledgeArtifacts.SaveArtifactInTransaction(t.Context(), tx, artifactWrite(t, "original", "", 0, "周报", "正文"), conversationTestAuthority())
+					return err
+				})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -65,7 +78,7 @@ func TestArtifactToolEffectResultAndEventCommitTogether(t *testing.T) {
 			if err != nil || result.Status != "completed" {
 				t.Fatal("artifact retry failed", err, result.ErrorCode)
 			}
-			repo = NewConversationStore(store)
+			repo = newTestConversationStore(t, store)
 			// The ledger alone recovers a committed effect after a lost response.
 			replayed, err := repo.ApplyArtifactTool(t.Context(), request, persistence.ConversationArtifactToolMutation{})
 			if err != nil || conversationHash(replayed) != conversationHash(result) {

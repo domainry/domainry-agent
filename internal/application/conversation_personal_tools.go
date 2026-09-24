@@ -178,9 +178,6 @@ func (h *PersonalConversationHost) supportsPersonalTool(definition agentsdk.Conv
 		if h.artifacts == nil || h.artifacts.options.ArtifactStorage == nil {
 			return false
 		}
-		if _, ok := h.repo.(persistence.ConversationArtifactRepository); !ok {
-			return false
-		}
 		if _, ok := h.repo.(persistence.ConversationSourceRepository); !ok {
 			return false
 		}
