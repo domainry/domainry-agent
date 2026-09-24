@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/domainry/domainry-tools/timeutil"
+	"github.com/domainry/domainry-tools-sdk/timeutil"
 	"strings"
 	"time"
 	"unicode/utf8"

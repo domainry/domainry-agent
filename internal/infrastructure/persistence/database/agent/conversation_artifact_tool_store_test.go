@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent-sdk/artifact"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	"github.com/domainry/domainry-knowledge/artifact"
 )
 
 func artifactWrite(t *testing.T, client, id string, version int64, title, markdown string) persistence.ConversationArtifactWrite {

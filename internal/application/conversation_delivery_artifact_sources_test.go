@@ -8,8 +8,8 @@ import (
 	"time"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent-sdk/artifact"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	"github.com/domainry/domainry-knowledge/artifact"
 	knowledge "github.com/domainry/domainry-knowledge/module"
 	tools "github.com/domainry/domainry-tools-sdk"
 )

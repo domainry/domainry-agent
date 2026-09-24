@@ -44,9 +44,7 @@ func TestApplicationDoesNotImportAdaptersOrOtherServiceImplementations(t *testin
 				continue
 			}
 			module := strings.Split(strings.TrimPrefix(importPath, "github.com/domainry/"), "/")[0]
-			// Public deterministic libraries are reusable across module boundaries.
-			library := importPath == "github.com/domainry/domainry-tools/timeutil" || importPath == "github.com/domainry/domainry-tools/calculation" || importPath == "github.com/domainry/domainry-knowledge/artifact" || importPath == "github.com/domainry/domainry-knowledge/extraction"
-			if !strings.HasSuffix(module, "-sdk") && module != "domainry-foundation" && !library && !strings.HasSuffix(importPath, "/contract") {
+			if !strings.HasSuffix(module, "-sdk") && module != "domainry-foundation" && !strings.HasSuffix(importPath, "/contract") {
 				t.Errorf("%s imports another service implementation %s; depend on its public contract", path, importPath)
 			}
 			if strings.Contains(importPath, "/internal/") {

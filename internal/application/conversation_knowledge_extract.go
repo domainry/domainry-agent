@@ -8,7 +8,7 @@ import (
 	"unicode/utf8"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-knowledge/extraction"
+	"github.com/domainry/domainry-agent-sdk/extraction"
 )
 
 func (h *knowledgeConversationHost) invokeExtraction(ctx context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {

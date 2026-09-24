@@ -9,7 +9,7 @@ import (
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	"github.com/domainry/domainry-tools/timeutil"
+	"github.com/domainry/domainry-tools-sdk/timeutil"
 )
 
 type personalReceiptRepository struct {

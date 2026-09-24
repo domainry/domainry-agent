@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent-sdk/artifact"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	"github.com/domainry/domainry-knowledge/artifact"
 )
 
 func (s *ConversationStore) ApplyArtifactTool(ctx context.Context, in agentsdk.ConversationToolRequest, prepared persistence.ConversationArtifactToolMutation) (agentsdk.ConversationToolResult, error) {
