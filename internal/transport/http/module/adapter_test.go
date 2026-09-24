@@ -161,7 +161,7 @@ func TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(actions) != 141+len(agentsdk.ConversationToolActions()) || len(adapter.Routes()) != 23 {
+	if len(actions) != 140+len(agentsdk.ConversationToolActions()) || len(adapter.Routes()) != 23 {
 		t.Fatalf("actions=%d routes=%d", len(actions), len(adapter.Routes()))
 	}
 	conversation, err := NewConversationAdapter(conversationSurfaceStub{}, "runtime")
@@ -295,11 +295,6 @@ func actionRequestIdentity(actionKey string) identitysdk.RequestIdentity {
 // The projection check needs metadata only; invocation is covered separately.
 type conversationSurfaceStub struct{ agentsdk.ConversationService }
 
-type conversationSourceSurfaceStub struct {
-	agentsdk.ConversationService
-	request agentsdk.ConversationSourceVerificationRequest
-}
-
 type conversationProvenanceSurfaceStub struct {
 	agentsdk.ConversationService
 	publication agentsdk.ConversationProvenancePublication
@@ -328,35 +323,6 @@ func TestConversationProvenanceRouteUsesAuthenticatedOwnerAndTypedBody(t *testin
 	adapter.Handler().ServeHTTP(response, request)
 	if response.Code != http.StatusOK || service.publication.ClientID != "deck-turn:1" || service.authority != (agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime-owner", WorkspaceID: "workspace-a", UserID: "pm-a", RoleKey: "pm"}) {
 		t.Fatalf("status=%d body=%s publication=%#v authority=%#v", response.Code, response.Body.String(), service.publication, service.authority)
-	}
-}
-
-func (stub *conversationSourceSurfaceStub) VerifyConversationSources(_ context.Context, request agentsdk.ConversationSourceVerificationRequest) (agentsdk.ConversationSourceVerificationReceipt, error) {
-	stub.request = request
-	return agentsdk.ConversationSourceVerificationReceipt{
-		WorkspaceID: request.Reader.WorkspaceID, References: request.References, SourceIDs: request.SourceIDs,
-		VerifiedAt: time.Now().UTC(),
-	}, nil
-}
-
-func TestConversationSourceVerificationRouteOverwritesReaderAuthority(t *testing.T) {
-	service := &conversationSourceSurfaceStub{}
-	adapter, err := NewConversationAdapter(service, "runtime-owner")
-	if err != nil {
-		t.Fatal(err)
-	}
-	request := httptest.NewRequest(http.MethodPost, "/agent/conversation-sources/verify", strings.NewReader(`{
-		"references":[{"conversation_id":"conversation-a","run_id":"run-a","before_step":2}],
-		"source_ids":["conversation://conversation-a/turn/run-a"],
-		"reader":{"known":true,"runtime_id":"spoofed","workspace_id":"spoofed","user_id":"spoofed"}
-	}`))
-	request = request.WithContext(identitysdk.WithRequestIdentity(request.Context(), identitysdk.RequestIdentity{Principal: identitysdk.Principal{
-		Known: true, WorkspaceID: "workspace-a", UserID: "service-a", RoleKey: "delivery",
-	}}))
-	response := httptest.NewRecorder()
-	adapter.Handler().ServeHTTP(response, request)
-	if response.Code != http.StatusOK || service.request.Reader.RuntimeID != "runtime-owner" || service.request.Reader.WorkspaceID != "workspace-a" || service.request.Reader.UserID != "service-a" || service.request.Reader.RoleKey != "delivery" {
-		t.Fatalf("status=%d body=%s request=%+v", response.Code, response.Body.String(), service.request)
 	}
 }
 

@@ -220,8 +220,6 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			body = &in.LibraryMemberWrite
 		case "create":
 			body = &in.Create
-		case "sources_verify":
-			body = &in.SourceVerification
 		case "update":
 			body = &in.Update
 		case "send":
