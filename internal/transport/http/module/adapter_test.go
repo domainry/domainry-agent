@@ -304,7 +304,7 @@ func (stub *conversationSourceSurfaceStub) VerifyConversationSources(_ context.C
 	stub.request = request
 	return agentsdk.ConversationSourceVerificationReceipt{
 		WorkspaceID: request.Reader.WorkspaceID, References: request.References, SourceIDs: request.SourceIDs,
-		DecisionIDs: request.DecisionIDs, VerifiedAt: time.Now().UTC(),
+		VerifiedAt: time.Now().UTC(),
 	}, nil
 }
 
@@ -316,7 +316,7 @@ func TestConversationSourceVerificationRouteOverwritesReaderAuthority(t *testing
 	}
 	request := httptest.NewRequest(http.MethodPost, "/agent/conversation-sources/verify", strings.NewReader(`{
 		"references":[{"conversation_id":"conversation-a","run_id":"run-a","before_step":2}],
-		"source_ids":["source-a"],"decision_ids":["decision-a"],
+		"source_ids":["conversation://conversation-a/turn/run-a"],
 		"reader":{"known":true,"runtime_id":"spoofed","workspace_id":"spoofed","user_id":"spoofed"}
 	}`))
 	request = request.WithContext(identitysdk.WithRequestIdentity(request.Context(), identitysdk.RequestIdentity{Principal: identitysdk.Principal{

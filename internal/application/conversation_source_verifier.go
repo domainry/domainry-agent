@@ -15,6 +15,7 @@ func (service *ConversationService) VerifyConversationSources(ctx context.Contex
 	if err := request.Validate(); err != nil {
 		return agentsdk.ConversationSourceVerificationReceipt{}, conversationFailure("invalid", "source_verification_invalid")
 	}
+	references := make(map[agentsdk.ConversationRunReference]struct{}, len(request.References))
 	for _, reference := range request.References {
 		conversation, err := service.repo.Get(ctx, reference.ConversationID, request.Reader)
 		if err != nil {
@@ -30,12 +31,22 @@ func (service *ConversationService) VerifyConversationSources(ctx context.Contex
 		if run.ConversationID != reference.ConversationID || (reference.BeforeStep > 0 && reference.BeforeStep > len(run.Steps)+1) {
 			return agentsdk.ConversationSourceVerificationReceipt{}, conversationFailure("invalid", "source_run_boundary_invalid")
 		}
+		reference.BeforeStep = 0
+		references[reference] = struct{}{}
+	}
+	for _, sourceID := range request.SourceIDs {
+		reference, err := agentsdk.ParseConversationRunSourceID(sourceID)
+		if err != nil {
+			return agentsdk.ConversationSourceVerificationReceipt{}, conversationFailure("invalid", "source_identity_invalid")
+		}
+		if _, found := references[reference]; !found {
+			return agentsdk.ConversationSourceVerificationReceipt{}, conversationFailure("invalid", "source_run_mismatch")
+		}
 	}
 	return agentsdk.ConversationSourceVerificationReceipt{
 		WorkspaceID: request.Reader.WorkspaceID,
 		References:  append([]agentsdk.ConversationRunReference(nil), request.References...),
 		SourceIDs:   append([]string(nil), request.SourceIDs...),
-		DecisionIDs: append([]string(nil), request.DecisionIDs...),
 		VerifiedAt:  time.Now().UTC(),
 	}, nil
 }
