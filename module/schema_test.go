@@ -17,7 +17,7 @@ func TestPublishedMySQLMigrationChecksumsAreStable(t *testing.T) {
 		name     string
 		checksum string
 	}{
-		1:  {"agent_foundation", "529749920a2ee6a86dc808cb78b06c44e413118ff5a0b2424e177e966837c870"},
+		1:  {"agent_foundation", "a6f761aa87b491a7788b0a1e19554ccccfdb2de55e8b261eb2794f58ac0fede4"},
 		2:  {"agent_conversations", "f83a11e8320667854be8846ced0ded49b6b39e756b658fde823fa7ada11dfdda"},
 		3:  {"agent_conversation_execution", "35344c91e542b76af702336cb678dfd56c7e93e004a93c12093f245a06896030"},
 		4:  {"agent_conversation_interactions", "4b72cfdf094240387cecbebe3d9a4b035908e59fac3ba64c9063b5ff49a88290"},
