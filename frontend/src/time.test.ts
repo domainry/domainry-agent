@@ -15,3 +15,9 @@ test("numeric instants are interpreted as Unix milliseconds", () => {
   const millis = 1790294706789;
   assert.equal(formatLocalDateTime(millis), formatLocalDateTime(new Date(millis)));
 });
+
+test("missing or invalid instants do not display the Unix epoch", () => {
+  assert.equal(formatLocalDateTime(0), "—");
+  assert.equal(formatLocalDate(""), "—");
+  assert.equal(formatLocalTime("invalid"), "—");
+});

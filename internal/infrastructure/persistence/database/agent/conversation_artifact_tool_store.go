@@ -37,7 +37,7 @@ func (s *ConversationStore) ApplyArtifactTool(ctx context.Context, in agentsdk.C
 			if err != nil {
 				return zero, err
 			}
-			return agentsdk.ConversationToolResult{Status: "completed", ResourceID: args.ID, Content: conversationJSON(map[string]any{"export": value})}, nil
+			return agentsdk.ConversationToolResult{Status: "completed", ResourceID: args.ID, Content: conversationAPIJSON(map[string]any{"export": value})}, nil
 		}
 		if prepared.Write == nil || prepared.Export != nil {
 			return zero, conversationError("conflict", "tool_input_conflict")
@@ -106,7 +106,7 @@ func (s *ConversationStore) ApplyArtifactTool(ctx context.Context, in agentsdk.C
 		if err != nil {
 			return zero, err
 		}
-		return agentsdk.ConversationToolResult{Status: "completed", ResourceID: saved.Artifact.ID, Content: conversationJSON(map[string]any{"artifact": saved.Artifact})}, nil
+		return agentsdk.ConversationToolResult{Status: "completed", ResourceID: saved.Artifact.ID, Content: conversationAPIJSON(map[string]any{"artifact": saved.Artifact})}, nil
 	})
 }
 
@@ -132,7 +132,7 @@ func (s *ConversationStore) applyRemoteArtifactTool(ctx context.Context, in agen
 			if err != nil {
 				return zero, err
 			}
-			return agentsdk.ConversationToolResult{Status: "completed", ResourceID: args.ID, Content: conversationJSON(map[string]any{"export": value})}, nil
+			return agentsdk.ConversationToolResult{Status: "completed", ResourceID: args.ID, Content: conversationAPIJSON(map[string]any{"export": value})}, nil
 		}
 		if prepared.Write == nil || prepared.Export != nil {
 			return zero, conversationError("conflict", "tool_input_conflict")
@@ -199,7 +199,7 @@ func (s *ConversationStore) applyRemoteArtifactTool(ctx context.Context, in agen
 		if err != nil {
 			return zero, err
 		}
-		return agentsdk.ConversationToolResult{Status: "completed", ResourceID: saved.Artifact.ID, Content: conversationJSON(map[string]any{"artifact": saved.Artifact})}, nil
+		return agentsdk.ConversationToolResult{Status: "completed", ResourceID: saved.Artifact.ID, Content: conversationAPIJSON(map[string]any{"artifact": saved.Artifact})}, nil
 	})
 }
 

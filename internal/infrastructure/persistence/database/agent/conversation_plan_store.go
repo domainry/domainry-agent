@@ -317,7 +317,7 @@ func (s *ConversationStore) ApplyConversationTaskPlanTool(ctx context.Context, i
 		if err = conversationCAS(ctx, tx, statement, args, err); err != nil {
 			return sdk.ConversationToolResult{}, err
 		}
-		return sdk.ConversationToolResult{Status: "completed", ResourceID: taskID, Content: conversationJSON(map[string]any{"plan": prepared})}, nil
+		return sdk.ConversationToolResult{Status: "completed", ResourceID: taskID, Content: conversationAPIJSON(map[string]any{"plan": prepared})}, nil
 	})
 }
 

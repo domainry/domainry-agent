@@ -237,11 +237,11 @@ func (s *ConversationStore) applyPersonalMemory(ctx context.Context, tx *sql.Tx,
 	if err := s.writeMemory(ctx, tx, in, claim.Authority, &memory, true); err != nil {
 		return result, err
 	}
-	return agentsdk.ConversationToolResult{Status: "completed", ResourceID: memory.ID, Content: conversationJSON(map[string]any{"memory": memory})}, nil
+	return agentsdk.ConversationToolResult{Status: "completed", ResourceID: memory.ID, Content: conversationAPIJSON(map[string]any{"memory": memory})}, nil
 }
 
 func (s *ConversationStore) personalMemoryToolSource(ctx context.Context, tx *sql.Tx, claim persistence.ConversationClaim) (agentsdk.ConversationMemorySource, error) {
-	source := agentsdk.ConversationMemorySource{Kind: "user_request", ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, CapturedAt: time.Now().UTC()}
+	source := agentsdk.ConversationMemorySource{Kind: "user_request", ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, CapturedAt: time.Now().UTC().Truncate(time.Millisecond)}
 	if claim.Run.BackgroundTask != nil {
 		source.TaskID = claim.Run.BackgroundTask.TaskID
 	}

@@ -224,7 +224,7 @@ func (s *ConversationStore) ApplyConversationTaskTool(ctx context.Context, in ag
 		}
 		return agentsdk.ConversationToolResult{
 			Completion: "accepted", Status: "completed", ResourceID: prepared.ID,
-			Content: conversationJSON(map[string]any{"task": conversationTaskReceipt(prepared)}),
+			Content: conversationAPIJSON(map[string]any{"task": conversationTaskReceipt(prepared)}),
 		}, nil
 	})
 	return result, err

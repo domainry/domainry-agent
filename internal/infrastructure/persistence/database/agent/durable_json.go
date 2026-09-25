@@ -6,26 +6,24 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"sync"
 	"time"
 )
 
 var durableJSONTimeType = reflect.TypeOf(time.Time{})
 var durableJSONRawMessageType = reflect.TypeOf(json.RawMessage{})
 var durableJSONUnmarshalerType = reflect.TypeOf((*json.Unmarshaler)(nil)).Elem()
+var durableJSONMarshalerType = reflect.TypeOf((*json.Marshaler)(nil)).Elem()
+var durableJSONEncodeTimeCache sync.Map
+var durableJSONDecodeTimeCache sync.Map
 
 // marshalDurableJSON keeps Go/domain time.Time values while ensuring their
 // durable JSON representation is always a UTC Unix-millisecond number.
 func marshalDurableJSON(value any) ([]byte, error) {
-	raw, err := json.Marshal(value)
-	if err != nil {
-		return nil, err
+	if !durableJSONNeedsTime(reflect.TypeOf(value), true) {
+		return json.Marshal(value)
 	}
-	document, err := decodeDurableJSONDocument(raw)
-	if err != nil {
-		return nil, err
-	}
-	document = encodeDurableJSONTimes(reflect.ValueOf(value), document)
-	return json.Marshal(document)
+	return json.Marshal(encodeDurableJSONValue(reflect.ValueOf(value)))
 }
 
 // unmarshalDurableJSON is intentionally strict: time.Time destinations accept
@@ -34,32 +32,31 @@ func unmarshalDurableJSON(raw []byte, destination any) error {
 	if destination == nil || reflect.TypeOf(destination).Kind() != reflect.Pointer {
 		return fmt.Errorf("durable JSON destination must be a pointer")
 	}
-	normalized, err := normalizeDurableJSONRaw(reflect.TypeOf(destination).Elem(), json.RawMessage(raw))
+	target := reflect.TypeOf(destination).Elem()
+	if !durableJSONNeedsTime(target, false) {
+		return json.Unmarshal(raw, destination)
+	}
+	normalized, err := normalizeDurableJSONRaw(target, json.RawMessage(raw))
 	if err != nil {
 		return err
 	}
 	return json.Unmarshal(normalized, destination)
 }
 
-func decodeDurableJSONDocument(raw []byte) (any, error) {
-	decoder := json.NewDecoder(bytes.NewReader(raw))
-	decoder.UseNumber()
-	var document any
-	if err := decoder.Decode(&document); err != nil {
-		return nil, err
-	}
-	return document, nil
-}
-
-func encodeDurableJSONTimes(value reflect.Value, document any) any {
+// encodeDurableJSONValue converts only declared Go time.Time values before
+// serialization. Raw JSON belongs to its producer and is never inspected.
+func encodeDurableJSONValue(value reflect.Value) any {
 	for value.IsValid() && (value.Kind() == reflect.Interface || value.Kind() == reflect.Pointer) {
 		if value.IsNil() {
-			return document
+			return nil
 		}
 		value = value.Elem()
 	}
 	if !value.IsValid() {
-		return document
+		return nil
+	}
+	if !durableJSONNeedsTime(value.Type(), true) {
+		return value.Interface()
 	}
 	if value.Type() == durableJSONRawMessageType {
 		return value.Interface().(json.RawMessage)
@@ -71,64 +68,156 @@ func encodeDurableJSONTimes(value reflect.Value, document any) any {
 		}
 		return instant.UTC().UnixMilli()
 	}
+	if value.Type().Implements(durableJSONMarshalerType) {
+		return value.Interface()
+	}
 	switch value.Kind() {
 	case reflect.Struct:
-		object, ok := document.(map[string]any)
-		if !ok {
-			return document
-		}
-		typeValue := value.Type()
-		for index := 0; index < value.NumField(); index++ {
-			fieldType := typeValue.Field(index)
-			if fieldType.PkgPath != "" {
-				continue
-			}
-			if fieldType.Anonymous && fieldType.Tag.Get("json") == "" {
-				if normalized, ok := encodeDurableJSONTimes(value.Field(index), object).(map[string]any); ok {
-					object = normalized
-				}
-				continue
-			}
-			name, included := durableJSONFieldName(fieldType)
-			if !included {
-				continue
-			}
-			if child, exists := object[name]; exists {
-				object[name] = encodeDurableJSONTimes(value.Field(index), child)
-			}
-		}
-		return object
+		return encodeDurableJSONStruct(value)
 	case reflect.Slice, reflect.Array:
 		if value.Type().Elem().Kind() == reflect.Uint8 {
-			return document
+			return value.Interface()
 		}
-		items, ok := document.([]any)
-		if !ok {
-			return document
+		if value.Kind() == reflect.Slice && value.IsNil() {
+			return nil
 		}
-		for index := 0; index < value.Len() && index < len(items); index++ {
-			items[index] = encodeDurableJSONTimes(value.Index(index), items[index])
+		items := make([]any, value.Len())
+		for index := 0; index < value.Len(); index++ {
+			items[index] = encodeDurableJSONValue(value.Index(index))
 		}
 		return items
 	case reflect.Map:
-		object, ok := document.(map[string]any)
-		if !ok || value.Type().Key().Kind() != reflect.String {
-			return document
+		if value.Type().Key().Kind() != reflect.String {
+			return value.Interface()
 		}
+		if value.IsNil() {
+			return nil
+		}
+		object := make(map[string]any, value.Len())
 		iterator := value.MapRange()
 		for iterator.Next() {
-			key := iterator.Key().String()
-			if child, exists := object[key]; exists {
-				object[key] = encodeDurableJSONTimes(iterator.Value(), child)
-			}
+			object[iterator.Key().String()] = encodeDurableJSONValue(iterator.Value())
 		}
 		return object
 	default:
-		return document
+		return value.Interface()
+	}
+}
+
+func encodeDurableJSONStruct(value reflect.Value) map[string]any {
+	for value.IsValid() && (value.Kind() == reflect.Interface || value.Kind() == reflect.Pointer) {
+		if value.IsNil() {
+			return nil
+		}
+		value = value.Elem()
+	}
+	if !value.IsValid() || value.Kind() != reflect.Struct {
+		return nil
+	}
+	object := make(map[string]any)
+	typeValue := value.Type()
+	for index := 0; index < value.NumField(); index++ {
+		fieldType := typeValue.Field(index)
+		if fieldType.PkgPath != "" {
+			continue
+		}
+		if fieldType.Anonymous && fieldType.Tag.Get("json") == "" {
+			for key, child := range encodeDurableJSONStruct(value.Field(index)) {
+				object[key] = child
+			}
+			continue
+		}
+		name, included := durableJSONFieldName(fieldType)
+		if !included || durableJSONOmitEmpty(fieldType) && durableJSONEmpty(value.Field(index)) {
+			continue
+		}
+		object[name] = encodeDurableJSONValue(value.Field(index))
+	}
+	return object
+}
+
+// Inspect declared Go types, never JSON field names or opaque raw bytes.
+// Dynamic interfaces are traversed on write; on read they carry no declared
+// time.Time destination and can use the standard decoder unchanged.
+func durableJSONNeedsTime(target reflect.Type, forWrite bool) bool {
+	if target == nil {
+		return false
+	}
+	cache := &durableJSONDecodeTimeCache
+	if forWrite {
+		cache = &durableJSONEncodeTimeCache
+	}
+	if cached, ok := cache.Load(target); ok {
+		return cached.(bool)
+	}
+	result := durableJSONNeedsTimeType(target, forWrite, map[reflect.Type]bool{})
+	cache.Store(target, result)
+	return result
+}
+
+func durableJSONNeedsTimeType(target reflect.Type, forWrite bool, seen map[reflect.Type]bool) bool {
+	if target == nil || target == durableJSONRawMessageType {
+		return false
+	}
+	if target == durableJSONTimeType {
+		return true
+	}
+	if target.Kind() == reflect.Pointer {
+		return durableJSONNeedsTimeType(target.Elem(), forWrite, seen)
+	}
+	if forWrite && target.Implements(durableJSONMarshalerType) {
+		return false
+	}
+	if !forWrite && reflect.PointerTo(target).Implements(durableJSONUnmarshalerType) {
+		return false
+	}
+	if seen[target] {
+		return true
+	}
+	seen[target] = true
+	defer delete(seen, target)
+	switch target.Kind() {
+	case reflect.Interface:
+		return forWrite
+	case reflect.Struct:
+		for index := 0; index < target.NumField(); index++ {
+			field := target.Field(index)
+			if field.PkgPath == "" {
+				if _, included := durableJSONFieldName(field); included && durableJSONNeedsTimeType(field.Type, forWrite, seen) {
+					return true
+				}
+			}
+		}
+	case reflect.Slice, reflect.Array, reflect.Map:
+		return durableJSONNeedsTimeType(target.Elem(), forWrite, seen)
+	}
+	return false
+}
+
+func durableJSONOmitEmpty(field reflect.StructField) bool {
+	for _, option := range strings.Split(field.Tag.Get("json"), ",")[1:] {
+		if option == "omitempty" || option == "omitzero" {
+			return true
+		}
+	}
+	return false
+}
+
+func durableJSONEmpty(value reflect.Value) bool {
+	switch value.Kind() {
+	case reflect.Array, reflect.Map, reflect.Slice, reflect.String:
+		return value.Len() == 0
+	case reflect.Bool, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr, reflect.Float32, reflect.Float64, reflect.Interface, reflect.Pointer:
+		return value.IsZero()
+	default:
+		return false
 	}
 }
 
 func normalizeDurableJSONRaw(target reflect.Type, raw json.RawMessage) (json.RawMessage, error) {
+	if !durableJSONNeedsTime(target, false) {
+		return raw, nil
+	}
 	for target.Kind() == reflect.Pointer {
 		if bytes.Equal(bytes.TrimSpace(raw), []byte("null")) {
 			return raw, nil
@@ -232,97 +321,6 @@ func normalizeDurableJSONRaw(target reflect.Type, raw json.RawMessage) (json.Raw
 		return json.Marshal(object)
 	default:
 		return raw, nil
-	}
-}
-
-func decodeDurableJSONTimes(target reflect.Type, document any) (any, error) {
-	for target.Kind() == reflect.Pointer {
-		if document == nil {
-			return nil, nil
-		}
-		target = target.Elem()
-	}
-	if target == durableJSONTimeType {
-		number, ok := document.(json.Number)
-		if !ok {
-			return nil, fmt.Errorf("durable time must be a Unix-millisecond number")
-		}
-		millis, err := number.Int64()
-		if err != nil {
-			return nil, fmt.Errorf("durable time must be an integer: %w", err)
-		}
-		if millis == 0 {
-			return "0001-01-01T00:00:00Z", nil
-		}
-		return time.UnixMilli(millis).UTC().Format(time.RFC3339Nano), nil
-	}
-	switch target.Kind() {
-	case reflect.Struct:
-		object, ok := document.(map[string]any)
-		if !ok {
-			return document, nil
-		}
-		for index := 0; index < target.NumField(); index++ {
-			field := target.Field(index)
-			if field.PkgPath != "" {
-				continue
-			}
-			if field.Anonymous && field.Tag.Get("json") == "" {
-				normalized, err := decodeDurableJSONTimes(field.Type, object)
-				if err != nil {
-					return nil, err
-				}
-				if updated, ok := normalized.(map[string]any); ok {
-					object = updated
-				}
-				continue
-			}
-			name, included := durableJSONFieldName(field)
-			if !included {
-				continue
-			}
-			child, exists := object[name]
-			if !exists {
-				continue
-			}
-			normalized, err := decodeDurableJSONTimes(field.Type, child)
-			if err != nil {
-				return nil, fmt.Errorf("decode durable JSON field %s: %w", name, err)
-			}
-			object[name] = normalized
-		}
-		return object, nil
-	case reflect.Slice, reflect.Array:
-		if target.Elem().Kind() == reflect.Uint8 {
-			return document, nil
-		}
-		items, ok := document.([]any)
-		if !ok {
-			return document, nil
-		}
-		for index := range items {
-			normalized, err := decodeDurableJSONTimes(target.Elem(), items[index])
-			if err != nil {
-				return nil, err
-			}
-			items[index] = normalized
-		}
-		return items, nil
-	case reflect.Map:
-		object, ok := document.(map[string]any)
-		if !ok || target.Key().Kind() != reflect.String {
-			return document, nil
-		}
-		for key, child := range object {
-			normalized, err := decodeDurableJSONTimes(target.Elem(), child)
-			if err != nil {
-				return nil, err
-			}
-			object[key] = normalized
-		}
-		return object, nil
-	default:
-		return document, nil
 	}
 }
 

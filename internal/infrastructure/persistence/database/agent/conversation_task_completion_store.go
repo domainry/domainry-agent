@@ -163,7 +163,7 @@ func (s *ConversationStore) ApplyConversationTaskCompletionTool(ctx context.Cont
 		if err = s.insertTaskCompletion(ctx, tx, owner, taskID, submit.ClientID, storedConversationTaskCompletion{RequestHash: requestHash, Completion: prepared, Task: row.task}); err != nil {
 			return sdk.ConversationToolResult{}, err
 		}
-		return sdk.ConversationToolResult{Status: "completed", ResourceID: taskID, Content: conversationJSON(map[string]any{"completion": prepared})}, nil
+		return sdk.ConversationToolResult{Status: "completed", ResourceID: taskID, Content: conversationAPIJSON(map[string]any{"completion": prepared})}, nil
 	})
 }
 

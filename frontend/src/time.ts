@@ -19,31 +19,30 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }
 const timeFormatter = new Intl.DateTimeFormat(undefined, { timeStyle: "medium" });
 
 function parseInstant(value: InstantValue): Date | undefined {
+  if (value === 0 || value === "") return undefined;
   const parsed = value instanceof Date ? value : new Date(value);
   return Number.isNaN(parsed.getTime()) ? undefined : parsed;
 }
 
-function fallback(value: InstantValue): string {
-  return value instanceof Date ? value.toISOString() : String(value);
-}
+function fallback(): string { return "—"; }
 
 // Deliberately omit timeZone: Intl then uses the user's real browser/OS zone
 // and locale-specific date ordering, clock style, and zone naming.
 export function formatLocalDateTime(value: InstantValue, options?: LocalDateTimeOptions): string {
   const parsed = parseInstant(value);
-  if (!parsed) return fallback(value);
+  if (!parsed) return fallback();
   return options ? new Intl.DateTimeFormat(undefined, { ...defaultDateTimeOptions, ...options }).format(parsed) : dateTimeFormatter.format(parsed);
 }
 
 export function formatLocalDate(value: InstantValue, options?: LocalDateTimeOptions): string {
   const parsed = parseInstant(value);
-  if (!parsed) return fallback(value);
+  if (!parsed) return fallback();
   return options ? new Intl.DateTimeFormat(undefined, options).format(parsed) : dateFormatter.format(parsed);
 }
 
 export function formatLocalTime(value: InstantValue): string {
   const parsed = parseInstant(value);
-  return parsed ? timeFormatter.format(parsed) : fallback(value);
+  return parsed ? timeFormatter.format(parsed) : fallback();
 }
 
 export function browserTimeZone(): string {

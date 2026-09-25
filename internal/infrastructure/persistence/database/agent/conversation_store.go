@@ -154,6 +154,10 @@ func artifactSHA(value string) bool {
 	return err == nil && len(raw) == 32 && strings.ToLower(value) == value
 }
 func conversationJSON(v any) []byte { b, _ := marshalDurableJSON(v); return b }
+func conversationAPIJSON(v any) []byte {
+	b, _ := json.Marshal(v)
+	return b
+}
 func conversationError(class, code string) error {
 	return &agentsdk.Error{Class: class, Code: "agent.conversation." + code}
 }

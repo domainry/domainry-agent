@@ -272,7 +272,38 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 		if err = host.db.QueryRowContext(context.Background(), q, args...).Scan(&data); err != nil {
 			return record, err
 		}
-		err = json.Unmarshal(data, &record)
+		var stored struct {
+			Document struct {
+				ID        string `json:"id"`
+				LibraryID string `json:"library_id"`
+				Filename  string `json:"filename"`
+				SHA256    string `json:"sha256"`
+				State     string `json:"state"`
+				ErrorCode string `json:"error_code"`
+				Revision  int64  `json:"revision"`
+				CreatedAt int64  `json:"created_at"`
+				UpdatedAt int64  `json:"updated_at"`
+			} `json:"document"`
+			Actor              agentsdk.ConversationAuthority `json:"actor"`
+			RemoteID           string                         `json:"remote_id"`
+			BodyRef            string                         `json:"body_ref"`
+			PutStarted         bool                           `json:"put_started"`
+			DeleteAcknowledged bool                           `json:"delete_acknowledged"`
+		}
+		err = json.Unmarshal(data, &stored)
+		if err == nil && (stored.Document.CreatedAt <= 0 || stored.Document.UpdatedAt <= 0) {
+			err = fmt.Errorf("document storage instants must be Unix-millisecond numbers")
+		}
+		record.Document = agentsdk.KnowledgeDocument{
+			ID: stored.Document.ID, LibraryID: stored.Document.LibraryID, Filename: stored.Document.Filename,
+			SHA256: stored.Document.SHA256, State: stored.Document.State, ErrorCode: stored.Document.ErrorCode,
+			Revision: stored.Document.Revision,
+		}
+		record.Actor = stored.Actor
+		record.RemoteID = stored.RemoteID
+		record.BodyRef = stored.BodyRef
+		record.PutStarted = stored.PutStarted
+		record.DeleteAcknowledged = stored.DeleteAcknowledged
 		if err == nil && (record.Actor.RuntimeID != options.RuntimeID || record.Document.SHA256 != digest || record.Document.Filename != filename) {
 			err = fmt.Errorf("record is not this run's owned synthetic original")
 		}

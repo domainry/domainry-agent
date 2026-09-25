@@ -681,10 +681,11 @@ func unmarshalPeerDetail(raw []byte, out *sdk.ConversationDelegationDetail) erro
 
 func waitPeerVerificationRun(t *testing.T, b *browser, path string) sdk.ConversationRun {
 	t.Helper()
-	// The Identity/source checks traverse both Agents' recorded work. Allow
-	// race instrumentation overhead without changing production time limits.
+	// The Identity/source checks traverse both Agents' recorded work and page
+	// large immutable results. Whole-package runs can exceed 90 seconds here;
+	// this bound remains below the production run's 300-second budget.
 	var current sdk.ConversationRun
-	for deadline := time.Now().Add(90 * time.Second); time.Now().Before(deadline); {
+	for deadline := time.Now().Add(180 * time.Second); time.Now().Before(deadline); {
 		current = sdk.ConversationRun{}
 		if err := json.Unmarshal(b.call("GET", path, "", 200).Body.Bytes(), &current); err != nil {
 			t.Fatal(err)
