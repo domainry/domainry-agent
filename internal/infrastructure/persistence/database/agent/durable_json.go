@@ -11,6 +11,7 @@ import (
 
 var durableJSONTimeType = reflect.TypeOf(time.Time{})
 var durableJSONRawMessageType = reflect.TypeOf(json.RawMessage{})
+var durableJSONUnmarshalerType = reflect.TypeOf((*json.Unmarshaler)(nil)).Elem()
 
 // marshalDurableJSON keeps Go/domain time.Time values while ensuring their
 // durable JSON representation is always a UTC Unix-millisecond number.
@@ -156,6 +157,9 @@ func normalizeDurableJSONRaw(target reflect.Type, raw json.RawMessage) (json.Raw
 			return json.RawMessage(`"0001-01-01T00:00:00Z"`), nil
 		}
 		return json.Marshal(time.UnixMilli(millis).UTC().Format(time.RFC3339Nano))
+	}
+	if reflect.PointerTo(target).Implements(durableJSONUnmarshalerType) {
+		return raw, nil
 	}
 	switch target.Kind() {
 	case reflect.Struct:

@@ -13,7 +13,7 @@ import (
 )
 
 func (s *ConversationStore) verifyDelegationDelivery(ctx context.Context, db conversationDB, d sdk.ConversationDelegation, delivery sdk.ConversationDelegationDelivery, review *sdk.ConversationDeliveryReview, actor *sdk.ConversationToolRequest, a sdk.ConversationAuthority) (sdk.ConversationDeliveryVerification, error) {
-	out := sdk.ConversationDeliveryVerification{DeliveryDigest: conversationHash(delivery), BriefVersion: d.Brief.Version, AgreementRevision: d.AgreementRevision, ActorID: a.UserID, Blockers: []string{}, CheckedAt: time.Now().UTC()}
+	out := sdk.ConversationDeliveryVerification{DeliveryDigest: conversationHash(delivery), BriefVersion: d.Brief.Version, AgreementRevision: d.AgreementRevision, ActorID: a.UserID, Blockers: []string{}, CheckedAt: time.Now().UTC().Truncate(time.Millisecond)}
 	if review != nil && review.DeliveryDigest != out.DeliveryDigest {
 		return out, conversationError("conflict", "delivery_changed")
 	}
