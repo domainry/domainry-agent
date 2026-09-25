@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"strings"
 	"time"
@@ -169,7 +168,7 @@ func (s *ConversationStore) acknowledgeExternalMessages(ctx context.Context, tx 
 			return err
 		}
 		var message agentsdk.ConversationAgentMessage
-		if err = json.Unmarshal(raw, &message); err != nil {
+		if err = unmarshalDurableJSON(raw, &message); err != nil {
 			return err
 		}
 		ready, err := s.peerMessageReady(ctx, tx, message, a)

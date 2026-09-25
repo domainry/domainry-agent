@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"slices"
 	"sort"
@@ -268,7 +267,7 @@ func (s *ConversationStore) SupersedeConversationParticipantMessage(ctx context.
 			return err
 		}
 		var m sdk.ConversationAgentMessage
-		if err = json.Unmarshal(raw, &m); err != nil {
+		if err = unmarshalDurableJSON(raw, &m); err != nil {
 			return err
 		}
 		if m.ParticipantUserID == "" && m.SenderUserID == "" {

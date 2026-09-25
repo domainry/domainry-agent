@@ -43,7 +43,7 @@ func runningAssessedTask(t *testing.T, repo *ConversationStore, suffix string, b
 func applyTaskCompletion(t *testing.T, repo *ConversationStore, claim persistence.ConversationClaim, step int, submit sdk.ConversationTaskCompletionSubmit) sdk.ConversationToolResult {
 	t.Helper()
 	definition := sdk.ConversationTaskCompletionSubmitTool()
-	arguments, _ := json.Marshal(submit)
+	arguments, _ := marshalDurableJSON(submit)
 	input := executionStoreInput()
 	input.IdempotencyKey = fmt.Sprintf("completion-step-%d", step)
 	input.MaxArgumentBytes = 256 * 1024

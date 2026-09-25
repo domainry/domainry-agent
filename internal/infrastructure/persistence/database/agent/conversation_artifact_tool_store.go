@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/artifact"
@@ -27,7 +26,7 @@ func (s *ConversationStore) ApplyArtifactTool(ctx context.Context, in agentsdk.C
 				Version int64  `json:"version"`
 				Format  string `json:"format"`
 			}
-			if json.Unmarshal([]byte(call.Call.Arguments), &args) != nil || prepared.Export == nil || prepared.Write != nil {
+			if unmarshalDurableJSON([]byte(call.Call.Arguments), &args) != nil || prepared.Export == nil || prepared.Write != nil {
 				return zero, conversationError("conflict", "tool_input_conflict")
 			}
 			write := *prepared.Export
@@ -58,7 +57,7 @@ func (s *ConversationStore) ApplyArtifactTool(ctx context.Context, in agentsdk.C
 		switch call.Call.Name {
 		case "artifact_create":
 			var args agentsdk.ConversationArtifactCreate
-			if json.Unmarshal([]byte(call.Call.Arguments), &args) != nil || write.ExpectedVersion != 0 || write.Record.Artifact.ID != "" || write.Record.Artifact.Title != args.Title || len(write.Record.Sources.Runs) != 1 || write.Record.Artifact.SourceConversationID != in.ConversationID || write.Record.Artifact.SourceRunID != in.RunID {
+			if unmarshalDurableJSON([]byte(call.Call.Arguments), &args) != nil || write.ExpectedVersion != 0 || write.Record.Artifact.ID != "" || write.Record.Artifact.Title != args.Title || len(write.Record.Sources.Runs) != 1 || write.Record.Artifact.SourceConversationID != in.ConversationID || write.Record.Artifact.SourceRunID != in.RunID {
 				return zero, conversationError("conflict", "tool_input_conflict")
 			}
 			raw, hash, err := artifact.Encode(args.Content)
@@ -70,7 +69,7 @@ func (s *ConversationStore) ApplyArtifactTool(ctx context.Context, in agentsdk.C
 				ID string `json:"id"`
 				agentsdk.ConversationArtifactEdit
 			}
-			if json.Unmarshal([]byte(call.Call.Arguments), &args) != nil || args.ID != write.Record.Artifact.ID || args.ExpectedVersion != write.ExpectedVersion {
+			if unmarshalDurableJSON([]byte(call.Call.Arguments), &args) != nil || args.ID != write.Record.Artifact.ID || args.ExpectedVersion != write.ExpectedVersion {
 				return zero, conversationError("conflict", "tool_input_conflict")
 			}
 			previous, err := s.knowledgeArtifacts.ArtifactRecordInTransaction(ctx, tx, args.ID, args.ExpectedVersion, claim.Authority)
@@ -122,7 +121,7 @@ func (s *ConversationStore) applyRemoteArtifactTool(ctx context.Context, in agen
 				Version int64  `json:"version"`
 				Format  string `json:"format"`
 			}
-			if json.Unmarshal([]byte(call.Call.Arguments), &args) != nil || prepared.Export == nil || prepared.Write != nil {
+			if unmarshalDurableJSON([]byte(call.Call.Arguments), &args) != nil || prepared.Export == nil || prepared.Write != nil {
 				return zero, conversationError("conflict", "tool_input_conflict")
 			}
 			write := *prepared.Export
@@ -153,7 +152,7 @@ func (s *ConversationStore) applyRemoteArtifactTool(ctx context.Context, in agen
 		switch call.Call.Name {
 		case "artifact_create":
 			var args agentsdk.ConversationArtifactCreate
-			if json.Unmarshal([]byte(call.Call.Arguments), &args) != nil || write.ExpectedVersion != 0 || write.Record.Artifact.ID != "" || write.Record.Artifact.Title != args.Title || len(write.Record.Sources.Runs) != 1 || write.Record.Artifact.SourceConversationID != in.ConversationID || write.Record.Artifact.SourceRunID != in.RunID {
+			if unmarshalDurableJSON([]byte(call.Call.Arguments), &args) != nil || write.ExpectedVersion != 0 || write.Record.Artifact.ID != "" || write.Record.Artifact.Title != args.Title || len(write.Record.Sources.Runs) != 1 || write.Record.Artifact.SourceConversationID != in.ConversationID || write.Record.Artifact.SourceRunID != in.RunID {
 				return zero, conversationError("conflict", "tool_input_conflict")
 			}
 			raw, hash, err := artifact.Encode(args.Content)
@@ -165,7 +164,7 @@ func (s *ConversationStore) applyRemoteArtifactTool(ctx context.Context, in agen
 				ID string `json:"id"`
 				agentsdk.ConversationArtifactEdit
 			}
-			if json.Unmarshal([]byte(call.Call.Arguments), &args) != nil || args.ID != write.Record.Artifact.ID || args.ExpectedVersion != write.ExpectedVersion {
+			if unmarshalDurableJSON([]byte(call.Call.Arguments), &args) != nil || args.ID != write.Record.Artifact.ID || args.ExpectedVersion != write.ExpectedVersion {
 				return zero, conversationError("conflict", "tool_input_conflict")
 			}
 			previous, err := s.knowledgeMutations.ArtifactRecord(ctx, args.ID, args.ExpectedVersion, claim.Authority)

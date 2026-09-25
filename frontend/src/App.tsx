@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { formatLocalDate } from "./time.ts";
 import { RunDialog } from "./RunDialog";
 import { repairRequest } from "./execution-outcome.ts";
 import type { ToolView } from "./execution-state.ts";
@@ -521,10 +522,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                       ? "已归档"
                       : item.active_run_id
                         ? run?.conversation_id === item.id ? labels[run.status] : "处理中"
-                        : new Date(item.updated_at).toLocaleDateString(
-                            "zh-CN",
-                            { month: "long", day: "numeric" },
-                          )}
+                        : formatLocalDate(item.updated_at, { month: "long", day: "numeric" })}
                   </small>
                 </span>
                 {item.active_run_id && <span className="live-dot" />}

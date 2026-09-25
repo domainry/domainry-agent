@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"strings"
 	"time"
@@ -178,7 +177,7 @@ func (s *ConversationStore) applyPersonalMemory(ctx context.Context, tx *sql.Tx,
 		CorrectionReason string   `json:"correction_reason"`
 		ExpectedRevision int64    `json:"expected_revision"`
 	}
-	if err := json.Unmarshal([]byte(call.Call.Arguments), &args); err != nil {
+	if err := unmarshalDurableJSON([]byte(call.Call.Arguments), &args); err != nil {
 		return result, conversationError("bad_request", "memory_invalid")
 	}
 	if call.Call.Name == "memory_forget" {
@@ -258,7 +257,7 @@ func (s *ConversationStore) personalMemoryToolSource(ctx context.Context, tx *sq
 		return source, err
 	}
 	var message agentsdk.ConversationMessage
-	if err = json.Unmarshal(raw, &message); err != nil {
+	if err = unmarshalDurableJSON(raw, &message); err != nil {
 		return source, err
 	}
 	if message.Role != "user" || message.RunID != claim.Run.ID {

@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-orm/query"
@@ -51,7 +50,7 @@ func (s *ConversationStore) dependencyGoalDelegations(ctx context.Context, db co
 		var raw []byte
 		var d sdk.ConversationDelegation
 		if err = rows.Scan(&key, &raw); err == nil {
-			err = json.Unmarshal(raw, &d)
+			err = unmarshalDurableJSON(raw, &d)
 		}
 		if err != nil {
 			break
@@ -89,7 +88,7 @@ func (s *ConversationStore) dependencyGoalDelegations(ctx context.Context, db co
 		var owner sdk.ConversationAuthority
 		err = db.QueryRowContext(ctx, q, args...).Scan(&raw)
 		if err == nil {
-			if err := json.Unmarshal(raw, &owner); err != nil || conversationAuthority(owner) != nil || conversationOwner(owner) != item.key {
+			if err := unmarshalDurableJSON(raw, &owner); err != nil || conversationAuthority(owner) != nil || conversationOwner(owner) != item.key {
 				return nil, conversationError("forbidden", "dependency_source_unavailable")
 			}
 			if sameConversationWorkspace(owner, realm) {

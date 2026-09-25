@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-orm/query"
 	"slices"
@@ -31,7 +30,7 @@ func (s *ConversationStore) ConversationAgentMessages(ctx context.Context, id st
 		if err = rows.Scan(&raw); err != nil {
 			return nil, err
 		}
-		if err = json.Unmarshal(raw, &message); err != nil {
+		if err = unmarshalDurableJSON(raw, &message); err != nil {
 			return nil, err
 		}
 		out = append(out, message)
@@ -105,7 +104,7 @@ func (s *ConversationStore) SendConversationAgentMessage(ctx context.Context, id
 			var raw []byte
 			var message agentsdk.ConversationAgentMessage
 			if err = rows.Scan(&raw); err == nil {
-				err = json.Unmarshal(raw, &message)
+				err = unmarshalDurableJSON(raw, &message)
 			}
 			if err != nil {
 				rows.Close()

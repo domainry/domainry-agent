@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"strings"
 	"time"
 
@@ -13,7 +12,7 @@ import (
 )
 
 func (s *AgentTaskRunStore) CreateInteractiveRun(ctx context.Context, run agentmodel.AgentInteractiveRun) (agentmodel.AgentInteractiveRun, bool, error) {
-	payload, err := json.Marshal(run)
+	payload, err := marshalDurableJSON(run)
 	if err != nil {
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
@@ -61,7 +60,7 @@ func scanInteractiveRun(row *sql.Row) (agentmodel.AgentInteractiveRun, bool, err
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
 	var run agentmodel.AgentInteractiveRun
-	if err := json.Unmarshal(payload, &run); err != nil {
+	if err := unmarshalDurableJSON(payload, &run); err != nil {
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
 	return run, true, nil
@@ -97,7 +96,7 @@ func (s *AgentTaskRunStore) ListInteractiveRuns(ctx context.Context, workspaceID
 		if err := rows.Scan(&payload); err != nil {
 			return nil, err
 		}
-		if err := json.Unmarshal(payload, &run); err != nil {
+		if err := unmarshalDurableJSON(payload, &run); err != nil {
 			return nil, err
 		}
 		runs = append(runs, run)
@@ -110,7 +109,7 @@ func (s *AgentTaskRunStore) SaveInteractiveRun(ctx context.Context, run agentmod
 	if err != nil || !found || current.Revision != expectedRevision {
 		return false, err
 	}
-	payload, err := json.Marshal(run)
+	payload, err := marshalDurableJSON(run)
 	if err != nil {
 		return false, err
 	}
@@ -145,7 +144,7 @@ func (s *AgentTaskRunStore) CommitInteractiveTaskHandoff(ctx context.Context, ru
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
 	var current agentmodel.AgentInteractiveRun
-	if err := json.Unmarshal(payload, &current); err != nil {
+	if err := unmarshalDurableJSON(payload, &current); err != nil {
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
 	if current.TaskRunID != "" {
@@ -154,7 +153,7 @@ func (s *AgentTaskRunStore) CommitInteractiveTaskHandoff(ctx context.Context, ru
 	if current.Revision != expectedRevision || current.Status != agentmodel.AgentInteractiveRunRunning || current.WorkspaceID != task.WorkspaceID || task.InteractiveRunID != current.ID {
 		return agentmodel.AgentInteractiveRun{}, false, agentError("conflict", "agent.interactive.handoff_conflict")
 	}
-	taskPayload, err := json.Marshal(task)
+	taskPayload, err := marshalDurableJSON(task)
 	if err != nil {
 		return agentmodel.AgentInteractiveRun{}, false, err
 	}
@@ -174,7 +173,7 @@ func (s *AgentTaskRunStore) CommitInteractiveTaskHandoff(ctx context.Context, ru
 	now := time.Now().UTC()
 	current.Status, current.RouteType, current.RoutedTargetKey, current.RoutedTargetVersion = agentmodel.AgentInteractiveRunHandedOff, run.RouteType, run.RoutedTargetKey, run.RoutedTargetVersion
 	current.ProcessID, current.TaskRunID, current.UpdatedAt, current.CompletedAt, current.Revision = task.ProcessID, task.ID, now, &now, current.Revision+1
-	updated, _ := json.Marshal(current)
+	updated, _ := marshalDurableJSON(current)
 	update, updateArgs, buildErr := interactiveRunUpdateBuilder(s.store, current, updated, run.UpdatedAt.UnixMilli()).Build()
 	if buildErr != nil {
 		return agentmodel.AgentInteractiveRun{}, false, buildErr

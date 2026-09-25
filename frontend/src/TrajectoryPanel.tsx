@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { formatLocalDateTime } from "./time.ts";
 import { Download, GitBranch, RefreshCw, Scale } from "lucide-react";
 import {
   exportConversationTrajectory,
@@ -57,7 +58,7 @@ export function TrajectoryPanel({ conversationID, runID, onFork }: { conversatio
     {trajectory && <>
       <dl className="trajectory-summary">
         <dt>稳定边界</dt><dd>事件序号 {trajectory.boundary_event_seq}</dd>
-        <dt>录制时间</dt><dd>{new Date(trajectory.recorded_at).toLocaleString()}</dd>
+        <dt>录制时间</dt><dd>{formatLocalDateTime(trajectory.recorded_at)}</dd>
         <dt>内容</dt><dd>{trajectory.requests.length} 次模型请求 · {trajectory.responses.length} 次录制响应 · {trajectory.tools.length} 个工具调用</dd>
       </dl>
       <div className="trajectory-actions">

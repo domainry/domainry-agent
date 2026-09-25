@@ -37,7 +37,7 @@ func runningScheduledPlanTask(t *testing.T, repo *ConversationStore) (sdk.Conver
 
 func applyPlanVersion(t *testing.T, repo *ConversationStore, claim persistence.ConversationClaim, number int, update sdk.ConversationPlanUpdate, previous *sdk.ConversationPlan, mutate func(*sdk.ConversationPlan)) (sdk.ConversationToolResult, error) {
 	t.Helper()
-	arguments, _ := json.Marshal(update)
+	arguments, _ := marshalDurableJSON(update)
 	definition := sdk.ConversationPlanUpdateTool()
 	input := executionStoreInput()
 	input.IdempotencyKey = fmt.Sprintf("plan-step-%d", number)

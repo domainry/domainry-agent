@@ -2,7 +2,6 @@ package agent
 
 import (
 	"database/sql"
-	"encoding/json"
 	"strings"
 	"testing"
 	"time"
@@ -67,7 +66,7 @@ func TestAssignmentAuthorityKeepsCrossSubjectOriginalLedgerAndPrivateDTO(t *test
 	if err != nil || original != executor {
 		t.Fatal("reading role replaced original task proof", original, err)
 	}
-	raw, _ := json.Marshal(assignments)
+	raw, _ := marshalDurableJSON(assignments)
 	if strings.Contains(string(raw), "execution_authority") || strings.Contains(string(raw), executor.RoleKey) {
 		t.Fatal("internal routing leaked through public history", string(raw))
 	}

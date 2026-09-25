@@ -36,7 +36,7 @@ func validStoredTaskCompletion(record sdk.ConversationTaskCompletionRecord) bool
 			return false
 		}
 	}
-	raw, err := json.Marshal(record)
+	raw, err := marshalDurableJSON(record)
 	return err == nil && len(raw) <= 256*1024
 }
 
@@ -110,7 +110,7 @@ func (s *ConversationStore) ApplyConversationTaskCompletionTool(ctx context.Cont
 	definition := sdk.ConversationTaskCompletionSubmitTool()
 	return s.applyLocalTool(ctx, in, []sdk.ConversationToolDefinition{definition}, func(tx *sql.Tx, claim persistence.ConversationClaim, call persistence.ConversationToolExecution) (sdk.ConversationToolResult, error) {
 		var submit sdk.ConversationTaskCompletionSubmit
-		if call.Call.Name != definition.Key || json.Unmarshal([]byte(call.Call.Arguments), &submit) != nil || !personalMemoryKey(submit.ClientID) {
+		if call.Call.Name != definition.Key || unmarshalDurableJSON([]byte(call.Call.Arguments), &submit) != nil || !personalMemoryKey(submit.ClientID) {
 			return sdk.ConversationToolResult{}, conversationError("bad_request", "task_completion_invalid")
 		}
 		run, err := s.runRow(ctx, tx, claim.Run.ConversationID, claim.Run.ID, claim.Authority)
@@ -182,7 +182,7 @@ func (s *ConversationStore) ReviewConversationTaskCompletion(ctx context.Context
 		var raw []byte
 		if err = tx.QueryRowContext(ctx, statement, args...).Scan(&raw); err == nil {
 			var saved storedConversationTaskCompletion
-			if json.Unmarshal(raw, &saved) != nil || saved.RequestHash != requestHash {
+			if unmarshalDurableJSON(raw, &saved) != nil || saved.RequestHash != requestHash {
 				return conversationError("conflict", "task_completion_idempotency_conflict")
 			}
 			out, replayed = saved.Task, true
@@ -272,7 +272,7 @@ func (s *ConversationStore) ConversationTaskCompletionHistory(ctx context.Contex
 		var raw []byte
 		var saved storedConversationTaskCompletion
 		if err = rows.Scan(&raw); err == nil {
-			err = json.Unmarshal(raw, &saved)
+			err = unmarshalDurableJSON(raw, &saved)
 		}
 		if err != nil {
 			return out, err

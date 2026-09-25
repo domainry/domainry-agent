@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"slices"
 	"strings"
 	"time"
@@ -30,7 +29,7 @@ func (s *ConversationStore) executionPublications(ctx context.Context, db conver
 		if err := rows.Scan(&raw); err != nil {
 			return nil, err
 		}
-		if err := json.Unmarshal(raw, &release); err != nil {
+		if err := unmarshalDurableJSON(raw, &release); err != nil {
 			return nil, err
 		}
 		if release.Purpose == "execution" {
@@ -139,7 +138,7 @@ func (s *ConversationStore) PublishConversationDelegationExecution(ctx context.C
 				var raw []byte
 				var release persistence.ConversationSourceRelease
 				if err = rows.Scan(&owner, &key, &raw); err == nil {
-					err = json.Unmarshal(raw, &release)
+					err = unmarshalDurableJSON(raw, &release)
 				}
 				if err != nil {
 					break

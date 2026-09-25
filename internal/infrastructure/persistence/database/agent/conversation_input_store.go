@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
@@ -30,7 +29,7 @@ func (s *ConversationStore) ModelInput(ctx context.Context, claim agentpersisten
 		err = tx.QueryRowContext(ctx, q, args...).Scan(&raw)
 		if err == nil {
 			found = true
-			return json.Unmarshal(raw, &out)
+			return unmarshalDurableJSON(raw, &out)
 		}
 		if !errors.Is(err, sql.ErrNoRows) {
 			return err

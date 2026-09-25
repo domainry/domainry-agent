@@ -112,7 +112,7 @@ func validStoredConversationPlan(plan sdk.ConversationPlan) bool {
 			}
 		}
 	}
-	raw, err := json.Marshal(plan)
+	raw, err := marshalDurableJSON(plan)
 	return err == nil && len(raw) <= 256*1024
 }
 
@@ -244,7 +244,7 @@ func (s *ConversationStore) ApplyConversationTaskPlanTool(ctx context.Context, i
 	definition := sdk.ConversationPlanUpdateTool()
 	return s.applyLocalTool(ctx, in, []sdk.ConversationToolDefinition{definition}, func(tx *sql.Tx, claim persistence.ConversationClaim, call persistence.ConversationToolExecution) (sdk.ConversationToolResult, error) {
 		var update sdk.ConversationPlanUpdate
-		if call.Call.Name != definition.Key || json.Unmarshal([]byte(call.Call.Arguments), &update) != nil || !personalMemoryKey(update.ClientID) {
+		if call.Call.Name != definition.Key || unmarshalDurableJSON([]byte(call.Call.Arguments), &update) != nil || !personalMemoryKey(update.ClientID) {
 			return sdk.ConversationToolResult{}, conversationError("bad_request", "plan_invalid")
 		}
 		run, err := s.runRow(ctx, tx, claim.Run.ConversationID, claim.Run.ID, claim.Authority)
@@ -349,7 +349,7 @@ func (s *ConversationStore) ConversationTaskPlans(ctx context.Context, taskID st
 		var raw []byte
 		var plan sdk.ConversationPlan
 		if err = rows.Scan(&raw); err == nil {
-			err = json.Unmarshal(raw, &plan)
+			err = unmarshalDurableJSON(raw, &plan)
 		}
 		if err != nil {
 			return out, err
@@ -382,7 +382,7 @@ func (s *ConversationStore) ConversationTaskPlan(ctx context.Context, taskID str
 		return sdk.ConversationPlan{}, err
 	}
 	var plan sdk.ConversationPlan
-	if err = json.Unmarshal(raw, &plan); err != nil {
+	if err = unmarshalDurableJSON(raw, &plan); err != nil {
 		return sdk.ConversationPlan{}, err
 	}
 	return plan, nil
@@ -403,9 +403,9 @@ func (s *ConversationStore) supersedeConversationTaskPlan(ctx context.Context, t
 	if task.Plan == nil {
 		return nil
 	}
-	raw, _ := json.Marshal(task.Plan)
+	raw, _ := marshalDurableJSON(task.Plan)
 	var plan sdk.ConversationPlan
-	if json.Unmarshal(raw, &plan) != nil {
+	if unmarshalDurableJSON(raw, &plan) != nil {
 		return conversationError("conflict", "plan_invalid")
 	}
 	conversationID, runID := conversationTaskPlanScope(task, plan.Source)
@@ -459,9 +459,9 @@ func (s *ConversationStore) closeConversationTaskPlan(ctx context.Context, tx *s
 	if task.Plan == nil {
 		return nil
 	}
-	raw, _ := json.Marshal(task.Plan)
+	raw, _ := marshalDurableJSON(task.Plan)
 	var plan sdk.ConversationPlan
-	if json.Unmarshal(raw, &plan) != nil {
+	if unmarshalDurableJSON(raw, &plan) != nil {
 		return conversationError("conflict", "plan_invalid")
 	}
 	conversationID, runID := conversationTaskPlanScope(task, plan.Source)

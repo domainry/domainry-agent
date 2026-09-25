@@ -118,7 +118,7 @@ func (s SubjectLifecycle) PreviewSubject(ctx context.Context, workspaceID, subje
 		}
 		counts[key] = count
 	}
-	return json.Marshal(counts)
+	return marshalDurableJSON(counts)
 }
 
 func (s SubjectLifecycle) ExportSubjectForRequest(ctx context.Context, _ string, workspaceID, subjectID string) (json.RawMessage, error) {
@@ -167,7 +167,7 @@ func (s SubjectLifecycle) ExportSubjectForRequest(ctx context.Context, _ string,
 			export[key] = items
 		}
 	}
-	return json.Marshal(map[string]any{"records": export})
+	return marshalDurableJSON(map[string]any{"records": export})
 }
 
 func (s SubjectLifecycle) payloads(ctx context.Context, table string, predicate query.Predicate) ([]json.RawMessage, error) {
@@ -216,7 +216,7 @@ func (s SubjectLifecycle) EraseSubjectForRequest(ctx context.Context, requestID,
 		var stored string
 		if scanErr := tx.QueryRowContext(ctx, lookup, args...).Scan(&stored); scanErr == nil {
 			var step lifecyclemodel.SubjectExecutionStep
-			if json.Unmarshal([]byte(stored), &step) != nil || step.WorkspaceID != a.WorkspaceID || step.RequestID != requestID || step.Owner != "agent" || step.Operation != "erase" || !json.Valid(step.Payload) {
+			if unmarshalDurableJSON([]byte(stored), &step) != nil || step.WorkspaceID != a.WorkspaceID || step.RequestID != requestID || step.Owner != "agent" || step.Operation != "erase" || !json.Valid(step.Payload) {
 				return fmt.Errorf("Agent shared subject execution step is invalid")
 			}
 			receipt = append(json.RawMessage(nil), step.Payload...)
@@ -290,14 +290,14 @@ func (s SubjectLifecycle) EraseSubjectForRequest(ctx context.Context, requestID,
 			return err
 		}
 		completedAt := time.Now().UTC()
-		receipt, _ = json.Marshal(map[string]any{"request_id": requestID, "changed": changed, "completed_at": completedAt})
-		step, marshalErr := json.Marshal(lifecyclemodel.SubjectExecutionStep{WorkspaceID: a.WorkspaceID, RequestID: requestID, Owner: "agent", Operation: "erase", Payload: append(json.RawMessage(nil), receipt...), CompletedAt: completedAt})
+		receipt, _ = marshalDurableJSON(map[string]any{"request_id": requestID, "changed": changed, "completed_at": completedAt})
+		step, marshalErr := marshalDurableJSON(lifecyclemodel.SubjectExecutionStep{WorkspaceID: a.WorkspaceID, RequestID: requestID, Owner: "agent", Operation: "erase", Payload: append(json.RawMessage(nil), receipt...), CompletedAt: completedAt})
 		if marshalErr != nil {
 			return marshalErr
 		}
 		statement, insertArgs, buildErr := query.NewWorkspaceInsertBuilder(s.store.Renderer(), sharedSubjectStepsTable, a.WorkspaceID).
 			Columns("request_id", "owner", "operation", "payload_json", "completed_at").
-			Values(requestID, "agent", "erase", string(step), completedAt.Format(time.RFC3339Nano)).Build()
+			Values(requestID, "agent", "erase", string(step), completedAt.UnixMilli()).Build()
 		if buildErr != nil {
 			return buildErr
 		}

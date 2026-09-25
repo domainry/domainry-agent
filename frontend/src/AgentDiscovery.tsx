@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { formatLocalDate, formatLocalTime } from './time.ts';
 import { request, type MessagePage, type MessageRecord } from './api.ts';
 import { describeError } from './errors.ts';
 import { Button } from './components/ui/button';
@@ -13,10 +14,10 @@ export function AgentAvailability({value:v}:{value?:AgentCandidate}) {
   {!!v.missing_tools.length&&<p>缺少工具：{v.missing_tools.join('、')}</p>}{!!v.missing_skills.length&&<p>缺少 Skill：{v.missing_skills.join('、')}</p>}{!!v.unavailable_tools.length&&<p>不可用工具：{v.unavailable_tools.join('、')}</p>}
   <p>{v.cost.known?`预估模型费用：${v.cost.amount.toLocaleString(undefined,{maximumSignificantDigits:4})} ${v.cost.currency}`:'预估模型费用：未知'}</p>
   <small className="subtle">{v.cost.basis==='historical_mean_per_run'?'按同任务类型、同配置版本的历史单次运行用量估计':'按本次填写的总用量估计'}；{v.cost.uncertainty}</small>
-  {v.cost.price&&<small className="subtle">价格依据：{v.cost.price.basis} · {new Date(v.cost.price.updated_at).toLocaleDateString()}</small>}
+  {v.cost.price&&<small className="subtle">价格依据：{v.cost.price.basis} · {formatLocalDate(v.cost.price.updated_at)}</small>}
   {v.history.runs>0&&<p>近期同配置记录：{v.history.completed_runs}/{v.history.runs} 次运行完成；{v.history.accepted_deliveries}/{v.history.reviewed_deliveries} 项交付验收通过</p>}
   {v.history.reviewed_deliveries>0&&<small className="subtle">验收通过率 {(v.history.acceptance_rate*100).toFixed(0)}%{v.history.acceptance_rate_known?'，已进入排序依据':'，样本少于 3 项，仅作观察'} · 平均协调时间 {(v.history.mean_coordination_ms/1000).toFixed(1)} 秒</small>}
-  <small className="subtle">核实于 {new Date(v.checked_at).toLocaleTimeString()} · 接单时重新检查</small>
+  <small className="subtle">核实于 {formatLocalTime(v.checked_at)} · 接单时重新检查</small>
  </div>;
 }
 

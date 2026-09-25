@@ -24,7 +24,7 @@ func (s *ConversationStore) collaborationReplay(ctx context.Context, tx *sql.Tx,
 	if receipt.Status != sharedoperation.StatusSucceeded {
 		return false, conversationError("conflict", "mutation_in_progress")
 	}
-	return true, json.Unmarshal(receipt.Result, out)
+	return true, unmarshalDurableJSON(receipt.Result, out)
 }
 
 func (s *ConversationStore) collaborationReceipt(ctx context.Context, a agentsdk.ConversationAuthority, key string, request any, out any) (bool, error) {
@@ -39,7 +39,7 @@ func (s *ConversationStore) collaborationReceipt(ctx context.Context, a agentsdk
 	if receipt.Status != sharedoperation.StatusSucceeded {
 		return false, conversationError("conflict", "mutation_in_progress")
 	}
-	return true, json.Unmarshal(receipt.Result, out)
+	return true, unmarshalDurableJSON(receipt.Result, out)
 }
 
 func (s *ConversationStore) saveCollaborationMutation(ctx context.Context, tx *sql.Tx, a agentsdk.ConversationAuthority, key string, request, result any) error {
@@ -64,7 +64,7 @@ func (s *ConversationStore) ownedConversationAgent(ctx context.Context, db conve
 	if err != nil {
 		return out, err
 	}
-	err = json.Unmarshal(raw, &out)
+	err = unmarshalDurableJSON(raw, &out)
 	if err == nil {
 		out.OwnerUserID = a.UserID
 		out.Shared = false
@@ -96,7 +96,7 @@ func (s *ConversationStore) ConversationAgents(ctx context.Context, a agentsdk.C
 		if err = rows.Scan(&raw); err != nil {
 			return nil, err
 		}
-		if err = json.Unmarshal(raw, &item); err != nil {
+		if err = unmarshalDurableJSON(raw, &item); err != nil {
 			return nil, err
 		}
 		out = append(out, item)

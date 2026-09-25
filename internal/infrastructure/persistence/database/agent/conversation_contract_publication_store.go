@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"math"
 	"time"
 
@@ -33,7 +32,7 @@ func (s *ConversationStore) contractPublicationRecord(ctx context.Context, db co
 	} else if err != nil {
 		return out, err
 	}
-	if err = json.Unmarshal(raw, &out.Agreement); err != nil {
+	if err = unmarshalDurableJSON(raw, &out.Agreement); err != nil {
 		return out, err
 	}
 	if out.Agreement.Revision != revision {
@@ -126,7 +125,7 @@ func (s *ConversationStore) ConversationContractPublicationHistory(ctx context.C
 		if err = rows.Scan(&raw); err != nil {
 			return out, err
 		}
-		if err = json.Unmarshal(raw, &item); err != nil {
+		if err = unmarshalDurableJSON(raw, &item); err != nil {
 			return out, err
 		}
 		out.Items = append(out.Items, item)

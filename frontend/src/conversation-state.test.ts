@@ -123,7 +123,7 @@ test("todo date-only deadlines preserve the user's calendar day and precise time
   assert.equal(todoDeadline({ due_date: "2026-09-11", timezone: "America/Los_Angeles" }), "2026-09-11 · America/Los_Angeles");
   assert.equal(todoDeadline({ timezone: "UTC" }), "未设截止日期");
   const instant = "2026-09-11T00:30:00Z";
-  assert.equal(todoDeadline({ due_at: instant, timezone: "America/Los_Angeles" }), new Date(instant).toLocaleString(undefined, { timeZone: "America/Los_Angeles", timeZoneName: "short" }));
+  assert.equal(todoDeadline({ due_at: instant, timezone: "America/Los_Angeles" }), new Date(instant).toLocaleString(undefined, { timeZoneName: "short" }));
 });
 
 test("waiting snapshots retain questions and reject cross-run or stale response events", () => {

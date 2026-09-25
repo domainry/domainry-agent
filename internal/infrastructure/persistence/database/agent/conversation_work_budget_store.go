@@ -70,7 +70,7 @@ func (s *ConversationStore) readConversationWorkLedger(ctx context.Context, db c
 	if err != nil {
 		return out, false, err
 	}
-	if err = json.Unmarshal(raw, &out); err != nil {
+	if err = unmarshalDurableJSON(raw, &out); err != nil {
 		return out, false, err
 	}
 	if out.Reservations == nil {
@@ -360,7 +360,7 @@ func (s *ConversationStore) StartConversationWorkStep(ctx context.Context, claim
 
 func conversationWorkCallFingerprint(call sdk.ConversationToolCall) string {
 	var arguments any
-	if json.Unmarshal([]byte(call.Arguments), &arguments) != nil {
+	if unmarshalDurableJSON([]byte(call.Arguments), &arguments) != nil {
 		arguments = call.Arguments
 	}
 	return conversationHash([]any{call.Name, arguments})

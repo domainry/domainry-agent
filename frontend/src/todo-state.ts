@@ -1,3 +1,5 @@
+import { formatLocalDateTime } from "./time.ts";
+
 export type Todo = {
   id: string; title: string; description?: string; status: "open" | "completed";
   due_date?: string; due_at?: string; timezone: string; revision: number;
@@ -9,7 +11,9 @@ export type TodoBatch = { batch_id: string; items: Todo[] };
 export function todoDeadline(todo: Pick<Todo, "due_date" | "due_at" | "timezone">) {
   if (todo.due_date) return `${todo.due_date} · ${todo.timezone}`;
   if (todo.due_at) {
-    try { return new Date(todo.due_at).toLocaleString(undefined, { timeZone: todo.timezone, timeZoneName: "short" }); } catch { return `${todo.due_at} · ${todo.timezone}`; }
+    // due_at is an absolute instant. Display it in the actual browser/OS zone;
+    // todo.timezone remains creation context, not a display override.
+    return formatLocalDateTime(todo.due_at, { timeZoneName: "short" });
   }
   return "未设截止日期";
 }

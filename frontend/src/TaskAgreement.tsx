@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+import { formatLocalDateTime } from "./time.ts";
 import { request } from "./api.ts";
 import { describeError } from "./errors.ts";
 import { Button } from "./components/ui/button";
@@ -77,7 +78,7 @@ export function TaskAgreement({ task, acting, setActing, onUpdated, onError, onR
         <AgreementValue label="目标" source={taskBriefFieldSource(brief, "goal")}><p>{brief.goal}</p></AgreementValue>
         <AgreementValue label="交付物" source={taskBriefFieldSource(brief, "deliverable")}><p>{brief.deliverable}</p></AgreementValue>
         <AgreementValue label="使用者" source={taskBriefFieldSource(brief, "audience")}><p>{brief.audience || "未指定"}</p></AgreementValue>
-        <AgreementValue label="截止时间" source={brief.due_at ? taskBriefFieldSource(brief, "due_at") : "未设置"}><p>{brief.due_at ? new Date(brief.due_at).toLocaleString() : "未设置截止时间"}</p></AgreementValue>
+        <AgreementValue label="截止时间" source={brief.due_at ? taskBriefFieldSource(brief, "due_at") : "未设置"}><p>{brief.due_at ? formatLocalDateTime(brief.due_at) : "未设置截止时间"}</p></AgreementValue>
 		<AgreementValue label="完成条件" source={taskBriefFieldSource(brief, "completion_conditions")}><ul>{brief.completion_conditions.map((item, index) => <li key={`${index}:${item}`}>{item}{brief.verification_rules?.some(rule => rule.condition === index) && <small className="subtle"> · 程序核对</small>}</li>)}</ul></AgreementValue>
         <AgreementValue label="约束" source={taskBriefFieldSource(brief, "constraints")}><p>{brief.constraints.join("；") || "无"}</p></AgreementValue>
         <AgreementValue label="假设" source={taskBriefFieldSource(brief, "assumptions")}><p>{brief.assumptions.join("；") || "无"}</p></AgreementValue>

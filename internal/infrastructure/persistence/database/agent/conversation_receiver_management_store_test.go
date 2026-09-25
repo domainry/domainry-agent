@@ -1,7 +1,6 @@
 package agent
 
 import (
-	"encoding/json"
 	"strings"
 	"testing"
 	"time"
@@ -97,7 +96,7 @@ func receiverReviewToolFixture(t *testing.T, repo *ConversationStore, receiver s
 		t.Fatal("wrong actual peer claim", claim, err)
 	}
 	update := sdk.ConversationDelegationUpdate{ClientID: "receiver-agent-review", ExpectedRevision: d.Revision, Action: "review_delivery", Review: peerAcceptanceReview(d), Reason: "Receiver Agent reviewed current delivery"}
-	arguments, err := json.Marshal(sdk.ConversationDelegationToolUpdate{ID: d.ID, Update: update})
+	arguments, err := marshalDurableJSON(sdk.ConversationDelegationToolUpdate{ID: d.ID, Update: update})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -300,7 +300,7 @@ func TestPersonalMemoryStrictRevisionsAndDeleteReceipts(t *testing.T) {
 		if operation.tool == "memory_save" {
 			arguments["title"], arguments["content"], arguments["enabled"] = m.Title, m.Content, operation.enabled
 		}
-		raw, _ := json.Marshal(arguments)
+		raw, _ := marshalDurableJSON(arguments)
 		claim, request := personalMutationFixture(t, repo, "revision-"+string(rune('a'+index)), operation.tool, string(raw), true)
 		result, err := repo.ApplyPersonalTool(t.Context(), request)
 		if err != nil || result.Status != operation.status {
@@ -364,7 +364,7 @@ func TestPersonalMemoryChangesRetainSourceCorrectionAndDeleteTombstone(t *testin
 			t.Fatal(err)
 		}
 		var memory agentsdk.ConversationMemory
-		if json.Unmarshal(raw, &memory) != nil || memory.Revision != revision {
+		if unmarshalDurableJSON(raw, &memory) != nil || memory.Revision != revision {
 			t.Fatalf("invalid change payload revision=%d payload=%s", revision, raw)
 		}
 		operations = append(operations, operation)

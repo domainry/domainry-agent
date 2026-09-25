@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -23,7 +22,7 @@ func RegisterAgentTaskWorkerScope(ctx context.Context, store *Store, executor mo
 	if store == nil {
 		return fmt.Errorf("agent task worker scope store unavailable")
 	}
-	return store.registerWorkerScope(ctx, executor, workspaceID, updatedAt.UTC().Format(time.RFC3339Nano))
+	return store.registerWorkerScope(ctx, executor, workspaceID, updatedAt.UTC())
 }
 
 func NewAgentTaskRunStore(store *Store) *AgentTaskRunStore {
@@ -34,7 +33,7 @@ func NewAgentTaskRunStore(store *Store) *AgentTaskRunStore {
 }
 
 func (s *AgentTaskRunStore) Create(ctx context.Context, run agentmodel.AgentTaskRun) (agentmodel.AgentTaskRun, bool, error) {
-	payload, err := json.Marshal(run)
+	payload, err := marshalDurableJSON(run)
 	if err != nil {
 		return agentmodel.AgentTaskRun{}, false, err
 	}
@@ -88,7 +87,7 @@ func (s *AgentTaskRunStore) scanRun(row rowScanner) (agentmodel.AgentTaskRun, bo
 		return agentmodel.AgentTaskRun{}, false, err
 	}
 	var run agentmodel.AgentTaskRun
-	if err := json.Unmarshal(payload, &run); err != nil {
+	if err := unmarshalDurableJSON(payload, &run); err != nil {
 		return agentmodel.AgentTaskRun{}, false, err
 	}
 	return run, true, nil

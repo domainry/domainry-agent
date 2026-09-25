@@ -44,7 +44,7 @@ func (r *Registrar) Prepare(ctx context.Context) error {
 		schema.Column("name", schema.TextKey(191)).NotNull(),
 		schema.Column("checksum", schema.TextKey(64)).NotNull(),
 		schema.Column("dirty", schema.Boolean()).NotNull(),
-		schema.Column("applied_at", schema.TextKey(40)).NotNull(),
+		schema.Column("applied_at", schema.BigInt()).NotNull(),
 	).PrimaryKey("owner", "version").Build()
 	if err != nil {
 		return err
@@ -107,7 +107,7 @@ func (r *Registrar) ApplyOwnedMigration(ctx context.Context, owner string, versi
 	if !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
-	statement, args, err = query.NewInsertBuilder(r.Renderer, "_schema_migrations").Columns("owner", "version", "name", "checksum", "dirty", "applied_at").Values(owner, version, name, checksum, true, "").Build()
+	statement, args, err = query.NewInsertBuilder(r.Renderer, "_schema_migrations").Columns("owner", "version", "name", "checksum", "dirty", "applied_at").Values(owner, version, name, checksum, true, int64(0)).Build()
 	if err != nil {
 		return err
 	}
@@ -117,7 +117,7 @@ func (r *Registrar) ApplyOwnedMigration(ctx context.Context, owner string, versi
 	if err = apply(ctx); err != nil {
 		return fmt.Errorf("apply %s/%d: %w", owner, version, err)
 	}
-	statement, args, err = query.NewUpdateBuilder(r.Renderer, "_schema_migrations").Set("dirty", false).Set("applied_at", time.Now().UTC().Format(time.RFC3339Nano)).Where(predicate).Build()
+	statement, args, err = query.NewUpdateBuilder(r.Renderer, "_schema_migrations").Set("dirty", false).Set("applied_at", time.Now().UTC().UnixMilli()).Where(predicate).Build()
 	if err != nil {
 		return err
 	}

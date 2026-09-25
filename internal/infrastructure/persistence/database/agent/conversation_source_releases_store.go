@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
@@ -136,7 +135,7 @@ func (s *ConversationStore) ConversationSourceReleases(ctx context.Context, ref 
 		if err := rows.Scan(&raw); err != nil {
 			return nil, err
 		}
-		if err := json.Unmarshal(raw, &item); err != nil {
+		if err := unmarshalDurableJSON(raw, &item); err != nil {
 			return nil, err
 		}
 		items = append(items, item)

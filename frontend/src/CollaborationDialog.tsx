@@ -1,4 +1,5 @@
 import { ContractPublicationSection, ContractPublicationHistorySection } from './ContractPublication.tsx';
+import { formatLocalDateTime } from './time.ts';
 import type { CollaborationAuthorization } from './collaboration-state.ts';
 import { DelegationParticipants } from './DelegationParticipants.tsx';
 import type { DelegationParticipant } from './collaboration-state.ts';
@@ -120,7 +121,7 @@ function AssignmentDetails({value:d,name,onRun,onSource}:{value:Delegation;name:
  return <details className="peer-dependencies"><summary>接单与转交记录（{d.assignments.length} 次）</summary>
   <ol aria-label="接单历史">{d.assignments.map(item=><li key={item.number}>
    <strong>第 {item.number} 次 · {name(item.agent_id)}{item.conversation_id===d.conversation_id?' · 当前接收方':''}</strong><p>{item.reason}</p>
-   <small>{new Date(item.created_at).toLocaleString()} · {item.actor_id} · Agent 配置 {item.agent_revision}{item.execution_subject&&` · 执行用户 ${item.execution_subject.user_id}`}</small>
+   <small>{formatLocalDateTime(item.created_at)} · {item.actor_id} · Agent 配置 {item.agent_revision}{item.execution_subject&&` · 执行用户 ${item.execution_subject.user_id}`}</small>
    <div className="todo-toolbar">
     {d.access?.execution_read&&ownAssignment(item.conversation_id)&&<Button variant="ghost" onClick={()=>onSource(item.conversation_id)}>查看第 {item.number} 次接单会话</Button>}
     {d.access?.execution_read&&d.handoff?.runs.filter(ref=>ref.conversation_id===item.conversation_id).map(ref=><Button variant="ghost" key={ref.run_id} onClick={()=>open(ref)}>查看原执行记录</Button>)}
@@ -194,7 +195,7 @@ function DelegationDetail({value:d,page,items,name,onRefresh,onRun,onSource,onAr
  {canReadContractPublicationHistory(d,sessionUserID())&&<ContractPublicationHistorySection value={d}/>}
  <AssignmentDetails value={d} name={name} onRun={onRun} onSource={onSource}/>
  <DelegationExecutions value={d} canShare={canShare} onRefresh={onRefresh}/>
- {d.access?.manage&&d.access.execution_read&&!!outcomeTargets.length&&<section className="task-waiting" aria-label="原操作结果核查"><h4>原操作结果待核查</h4><p>先查询原操作回执。核查完成后，按当前要求继续需要单独操作。</p>{outcomeTargets.map(({step,call})=><div key={`${step}:${call.id}`}><p>第 {step+1} 步 · {call.name}{call.outcome_inspection&&<small> · 上次核查 {new Date(call.outcome_inspection.checked_at).toLocaleString()}，结果尚未明确</small>}</p><Button variant="outline" disabled={busy} onClick={()=>inspectOutcome(step,call.id)}>{busy?'正在核查…':'核查原操作结果'}</Button></div>)}</section>}
+ {d.access?.manage&&d.access.execution_read&&!!outcomeTargets.length&&<section className="task-waiting" aria-label="原操作结果核查"><h4>原操作结果待核查</h4><p>先查询原操作回执。核查完成后，按当前要求继续需要单独操作。</p>{outcomeTargets.map(({step,call})=><div key={`${step}:${call.id}`}><p>第 {step+1} 步 · {call.name}{call.outcome_inspection&&<small> · 上次核查 {formatLocalDateTime(call.outcome_inspection.checked_at)}，结果尚未明确</small>}</p><Button variant="outline" disabled={busy} onClick={()=>inspectOutcome(step,call.id)}>{busy?'正在核查…':'核查原操作结果'}</Button></div>)}</section>}
  {d.access?.execution_read&&d.task&&<>{d.task.access_error?<p role="status" className="subtle">执行详情当前不可读取，委派状态和获准的交付仍可查看。</p>:<><TaskDiagnostics task={d.task}/>{d.task.plan&&<TaskPlanSnapshot plan={d.task.plan} onRun={onRun} onArtifact={onArtifact}/>}<p>{d.task.progress.steps} 个步骤 · {d.task.progress.tool_calls} 次工具调用</p>{d.task.waiting&&<div className="task-waiting"><strong>需要你处理</strong><p>{d.task.waiting.question}</p></div>}{d.task.result&&<div className="task-result"><strong>实际执行结果</strong><p>{d.task.result.preview}</p></div>}<div className="todo-toolbar">{d.task.execution_run_id&&<Button onClick={()=>onRun(d.conversation_id,d.task!.execution_run_id!)}>{d.task.waiting?'处理等待事项':'查看实时执行与工具调用'}</Button>}{d.task.artifacts?.map(a=><Button key={a.id} variant="outline" onClick={()=>onArtifact(a.id,a.version)}>{a.title}</Button>)}</div></>}</>}
  {d.access?.delivery_read&&d.delivery&&<section className="task-result"><h4>交付 · 需求 v{d.delivery.brief_version} / 约定 {d.delivery.agreement_revision||1}</h4>{!deliveryIsCurrent(d)&&<p className="text-destructive">这是旧要求下的交付，需更新后重新验收。</p>}<p>{d.delivery.summary}</p>{d.delivery.data!==undefined&&<pre>{JSON.stringify(d.delivery.data,null,2)}</pre>}{!!d.delivery.unresolved?.length&&<p>未解决：{d.delivery.unresolved.join('；')}</p>}{d.access?.execution_read&&d.delivery.evidence?.map(ref=><Button variant="ghost" key={ref.run_id} onClick={()=>onRun(ref.conversation_id,ref.run_id)}>查看执行证据</Button>)}</section>}
  {canRepublishDelivery(d,sessionUserID(),canShare)&&<DeliveryPublicationSection value={d} onRefresh={onRefresh}/>}

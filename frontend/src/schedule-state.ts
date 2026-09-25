@@ -1,3 +1,5 @@
+import { formatLocalDateTime } from "./time.ts";
+
 export type ScheduleRule = {
   type: "daily_at" | "weekly_at" | "monthly_at";
   time_of_day: string;
@@ -42,7 +44,7 @@ export const scheduleStatusLabel = (status: SchedulePlan["status"]) =>
 const weekdays: Record<string, string> = { monday: "周一", tuesday: "周二", wednesday: "周三", thursday: "周四", friday: "周五", saturday: "周六", sunday: "周日" };
 
 export function scheduleTriggerLabel(plan: SchedulePlan) {
-  if (plan.trigger.type === "once") return `${new Date(plan.trigger.at).toLocaleString()}（一次）`;
+  if (plan.trigger.type === "once") return `${formatLocalDateTime(plan.trigger.at)}（一次）`;
   const rule = plan.trigger.schedule;
   if (rule.type === "daily_at") return `每天 ${rule.time_of_day}`;
   if (rule.type === "weekly_at") return `每${weekdays[rule.day_of_week || ""] || rule.day_of_week} ${rule.time_of_day}`;

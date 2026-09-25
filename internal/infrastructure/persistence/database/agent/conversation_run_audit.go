@@ -2,7 +2,6 @@ package agent
 
 import (
 	"context"
-	"encoding/json"
 	"math"
 	"strings"
 	"time"
@@ -34,12 +33,12 @@ type conversationRunAuditData struct {
 }
 
 func conversationUsageInteger(value any) (int64, bool) {
-	raw, err := json.Marshal(value)
+	raw, err := marshalDurableJSON(value)
 	if err != nil {
 		return 0, false
 	}
 	var number float64
-	if json.Unmarshal(raw, &number) != nil || number < 0 || number > math.MaxInt64 || math.Trunc(number) != number {
+	if unmarshalDurableJSON(raw, &number) != nil || number < 0 || number > math.MaxInt64 || math.Trunc(number) != number {
 		return 0, false
 	}
 	return int64(number), true
@@ -50,8 +49,8 @@ func conversationNestedUsage(usage map[string]any, path ...string) (int64, bool)
 	for _, key := range path {
 		object, ok := value.(map[string]any)
 		if !ok {
-			raw, err := json.Marshal(value)
-			if err != nil || json.Unmarshal(raw, &object) != nil {
+			raw, err := marshalDurableJSON(value)
+			if err != nil || unmarshalDurableJSON(raw, &object) != nil {
 				return 0, false
 			}
 		}
@@ -124,12 +123,12 @@ func (s *ConversationStore) projectConversationRunAudit(ctx context.Context, run
 		if err = rows.Scan(&raw); err != nil {
 			return err
 		}
-		if err = json.Unmarshal(raw, &event); err != nil {
+		if err = unmarshalDurableJSON(raw, &event); err != nil {
 			return err
 		}
 		var data conversationRunAuditData
-		encoded, _ := json.Marshal(event.Data)
-		_ = json.Unmarshal(encoded, &data)
+		encoded, _ := marshalDurableJSON(event.Data)
+		_ = unmarshalDurableJSON(encoded, &data)
 		entry := agentsdk.ConversationRunAuditEvent{Seq: event.Seq, Step: data.Step, Attempt: data.Attempt, ModelAttempt: data.ModelAttempt, RetryDelayMilliseconds: data.RetryDelay, CallID: data.CallID, Tool: data.Tool, ActionKey: data.ActionKey, AuthorizationRevision: data.Revision, ErrorCode: data.ErrorCode, OccurredAt: event.CreatedAt}
 		include := true
 		switch {

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { formatLocalDateTime } from "./time.ts";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Textarea } from "./components/ui/textarea";
@@ -125,7 +126,7 @@ export function ArtifactDialog({ conversationID = "", initial, onClose, onSource
     {loading && <p role="status">正在读取成果…</p>}
     {value && <section className="artifact-detail" aria-label="成果内容">
       <div className="todo-toolbar"><h3>{value.artifact.title}</h3><select aria-label="成果版本" disabled={disabled || editing} value={selected?.version || 0} onChange={event => selectArtifact({ id: value.artifact.id, version: Number(event.target.value) })}><option value={0}>最新版本</option>{!versions.items.some(item => item.version === value.artifact.version) && <option value={value.artifact.version}>版本 {value.artifact.version}</option>}{versions.items.map(item => <option key={item.version} value={item.version}>版本 {item.version}</option>)}</select><span className="subtle">当前显示版本 {value.artifact.version}</span></div>
-      <p className="subtle">更新于 {new Date(value.artifact.updated_at).toLocaleString()} · {(value.artifact.bytes / 1024).toFixed(1)} KB</p>
+      <p className="subtle">更新于 {formatLocalDateTime(value.artifact.updated_at)} · {(value.artifact.bytes / 1024).toFixed(1)} KB</p>
       {value.artifact.source_conversation_id && <div className="todo-toolbar" aria-label="成果来源关联">
         <span className="subtle">来源关联</span>
         {onSource && <Button type="button" variant="ghost" size="sm" disabled={disabled || editing} onClick={() => onSource(value.artifact.source_conversation_id!)}>来源会话</Button>}

@@ -153,7 +153,7 @@ func artifactSHA(value string) bool {
 	raw, err := hex.DecodeString(value)
 	return err == nil && len(raw) == 32 && strings.ToLower(value) == value
 }
-func conversationJSON(v any) []byte { b, _ := json.Marshal(v); return b }
+func conversationJSON(v any) []byte { b, _ := marshalDurableJSON(v); return b }
 func conversationError(class, code string) error {
 	return &agentsdk.Error{Class: class, Code: "agent.conversation." + code}
 }
@@ -239,7 +239,7 @@ func (s *ConversationStore) get(ctx context.Context, db conversationDB, id strin
 	if err != nil {
 		return c, err
 	}
-	err = json.Unmarshal(raw, &c)
+	err = unmarshalDurableJSON(raw, &c)
 	return c, err
 }
 func (s *ConversationStore) save(ctx context.Context, tx *sql.Tx, c agentsdk.Conversation, expected int64, a agentsdk.ConversationAuthority) error {
@@ -277,7 +277,7 @@ func (s *ConversationStore) Create(ctx context.Context, in agentsdk.Conversation
 		if oldHash != hash {
 			return old, conversationError("conflict", "idempotency_conflict")
 		}
-		err = json.Unmarshal(raw, &old)
+		err = unmarshalDurableJSON(raw, &old)
 		return old, err
 	}
 	if old, err := lookup(); err == nil {
@@ -344,7 +344,7 @@ func (s *ConversationStore) List(ctx context.Context, in agentsdk.ConversationQu
 		if err = rows.Scan(&raw); err != nil {
 			return out, err
 		}
-		if err = json.Unmarshal(raw, &c); err != nil {
+		if err = unmarshalDurableJSON(raw, &c); err != nil {
 			return out, err
 		}
 		n++
@@ -456,7 +456,7 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 		if err = conversationExec(ctx, tx, q, args, e); err != nil {
 			return err
 		}
-		receipt, _ = json.Marshal(map[string]any{"request_id": requestID, "conversation_id": id, "revision": revision, "completed_at": time.Now().UTC()})
+		receipt, _ = marshalDurableJSON(map[string]any{"request_id": requestID, "conversation_id": id, "revision": revision, "completed_at": time.Now().UTC()})
 		return s.store.operations.Complete(sharedoperation.WithExecutor(ctx, tx), sharedoperation.Completion{ID: command.ID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind, IdempotencyKey: command.IdempotencyKey, RequestFingerprint: command.RequestFingerprint, Result: receipt, CompletedAt: time.Now().UTC()})
 	})
 	return receipt, err
@@ -493,7 +493,7 @@ func (s *ConversationStore) Messages(ctx context.Context, id string, in agentsdk
 		if err = rows.Scan(&raw); err != nil {
 			return out, err
 		}
-		if err = json.Unmarshal(raw, &m); err != nil {
+		if err = unmarshalDurableJSON(raw, &m); err != nil {
 			return out, err
 		}
 		if len(out.Items) == limit {
@@ -534,7 +534,7 @@ func (s *ConversationStore) History(ctx context.Context, id string, after, throu
 		if err = rows.Scan(&raw); err != nil {
 			return nil, err
 		}
-		if err = json.Unmarshal(raw, &m); err != nil {
+		if err = unmarshalDurableJSON(raw, &m); err != nil {
 			return nil, err
 		}
 		out = append(out, m)

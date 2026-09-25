@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"time"
 
@@ -78,7 +77,7 @@ func (s *ConversationStore) readDisagreement(ctx context.Context, db conversatio
 		}
 		return out, err
 	}
-	err = json.Unmarshal(raw, &out)
+	err = unmarshalDurableJSON(raw, &out)
 	return out, err
 }
 
@@ -233,7 +232,7 @@ func (s *ConversationStore) disagreementNotice(ctx context.Context, tx *sql.Tx, 
 		if err = rows.Scan(&raw); err != nil {
 			break
 		}
-		if err = json.Unmarshal(raw, &m); err != nil {
+		if err = unmarshalDurableJSON(raw, &m); err != nil {
 			break
 		}
 		if m.DisagreementID == value.ID {
@@ -314,7 +313,7 @@ func (s *ConversationStore) ConversationDisagreementHistory(ctx context.Context,
 		if err = rows.Scan(&raw); err != nil {
 			return out, err
 		}
-		if err = json.Unmarshal(raw, &item); err != nil {
+		if err = unmarshalDurableJSON(raw, &item); err != nil {
 			return out, err
 		}
 		out.Items = append(out.Items, item)

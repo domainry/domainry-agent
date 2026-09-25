@@ -2,7 +2,6 @@ package agent
 
 import (
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"strings"
 	"testing"
@@ -55,7 +54,7 @@ func TestSourceReleasesPersistOnlyExplicitReferencesAndBoundedPrefixes(t *testin
 	lifecycle := NewSubjectLifecycle(repo.store, producer.RuntimeID)
 	preview, err := lifecycle.PreviewSubject(t.Context(), producer.WorkspaceID, producer.UserID)
 	var counts map[string]int64
-	if err != nil || json.Unmarshal(preview, &counts) != nil || counts[conversationSourceReleaseTable] != 1 {
+	if err != nil || unmarshalDurableJSON(preview, &counts) != nil || counts[conversationSourceReleaseTable] != 1 {
 		t.Fatal("producer preview omitted issued source releases", string(preview), err)
 	}
 	if _, err := lifecycle.EraseSubjectForRequest(t.Context(), "erase-source-producer", producer.WorkspaceID, producer.UserID, nil); err != nil {
@@ -294,7 +293,7 @@ func TestSourceReleasesSameUserDifferentRolesPersistOriginalExecutionProvenance(
 	if err != nil || snapshot.Authority != issuer {
 		t.Fatal("snapshot inherited the reader role instead of original execution", snapshot.Authority, err)
 	}
-	if raw, err := json.Marshal(snapshot); err != nil || strings.Contains(string(raw), issuer.RoleKey) {
+	if raw, err := marshalDurableJSON(snapshot); err != nil || strings.Contains(string(raw), issuer.RoleKey) {
 		t.Fatal("internal routing authority leaked into snapshot JSON", string(raw), err)
 	}
 	launch, found, err := repo.LaunchConversationTask(t.Context(), issuer.RuntimeID)

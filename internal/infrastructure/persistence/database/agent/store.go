@@ -65,7 +65,7 @@ const (
 	agentTaskWorkerScopeRecoveryPolicy = "durable_due_scan"
 )
 
-func (s *Store) registerWorkerScope(ctx context.Context, executor modulehost.Executor, workspaceID, updatedAt string) error {
+func (s *Store) registerWorkerScope(ctx context.Context, executor modulehost.Executor, workspaceID string, updatedAt time.Time) error {
 	workspaceID = strings.TrimSpace(workspaceID)
 	if workspaceID == "" {
 		return fmt.Errorf("Agent workspace is required")
@@ -73,11 +73,10 @@ func (s *Store) registerWorkerScope(ctx context.Context, executor modulehost.Exe
 	if executor == nil {
 		executor = s.Database()
 	}
-	value, err := time.Parse(time.RFC3339Nano, strings.TrimSpace(updatedAt))
-	if err != nil {
-		return fmt.Errorf("Agent worker scope timestamp is invalid: %w", err)
+	if updatedAt.IsZero() {
+		return fmt.Errorf("Agent worker scope timestamp is invalid")
 	}
-	return s.workerScopes.Register(ctx, executor, sharedworkerscope.NewIdentity(agentTaskWorkerQueueKind, workspaceID), value)
+	return s.workerScopes.Register(ctx, executor, sharedworkerscope.NewIdentity(agentTaskWorkerQueueKind, workspaceID), updatedAt.UTC())
 }
 
 func (s *Store) workerScopePage(ctx context.Context, limit int) ([]string, error) {

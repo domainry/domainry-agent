@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"slices"
 
@@ -59,7 +58,7 @@ func (s *ConversationStore) shareParticipantPublishedRoots(ctx context.Context, 
 			var raw []byte
 			var release persistence.ConversationSourceRelease
 			if err = rows.Scan(&raw); err == nil {
-				err = json.Unmarshal(raw, &release)
+				err = unmarshalDurableJSON(raw, &release)
 			}
 			if err != nil {
 				break
@@ -121,7 +120,7 @@ func (s *ConversationStore) shareParticipantDeliveryHistory(ctx context.Context,
 		var raw []byte
 		var record sdk.ConversationDeliveryRecord
 		if err = rows.Scan(&raw); err == nil {
-			err = json.Unmarshal(raw, &record)
+			err = unmarshalDurableJSON(raw, &record)
 		}
 		if err != nil {
 			break

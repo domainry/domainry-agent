@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { formatLocalDateTime, formatLocalTime } from "./time.ts";
 import { active, request, runPath, watchRun, type ConversationRecord, type Run } from "./api";
 import { liveStepText } from "./execution-state";
 import { waiting } from "./interaction-state";
@@ -65,8 +66,8 @@ export function RunDialog({ conversationID, runID, onClose, onResume, onRepair, 
           {run.agent?.owner_user_id && <><dt>配置所有者</dt><dd>{run.agent.owner_user_id}</dd></>}
           {run.agent?.execution_subject && <><dt>执行用户</dt><dd>{run.agent.execution_subject.user_id} · 工作空间 {run.agent.execution_subject.workspace_id}</dd></>}
           {run.correlation_id && <><dt>关联 ID</dt><dd><code>{run.correlation_id}</code></dd></>}
-          {run.started_at && <><dt>开始时间</dt><dd>{new Date(run.started_at).toLocaleString()}</dd></>}
-          {run.completed_at && <><dt>结束时间</dt><dd>{new Date(run.completed_at).toLocaleString()}</dd></>}
+          {run.started_at && <><dt>开始时间</dt><dd>{formatLocalDateTime(run.started_at)}</dd></>}
+          {run.completed_at && <><dt>结束时间</dt><dd>{formatLocalDateTime(run.completed_at)}</dd></>}
           <dt>排队耗时</dt><dd>{durationLabel(run.queue_duration_ms)}</dd>
           <dt>执行耗时</dt><dd>{durationLabel(run.duration_ms)}</dd>
           {run.model && <><dt>模型</dt><dd>{run.model}</dd></>}
@@ -76,13 +77,13 @@ export function RunDialog({ conversationID, runID, onClose, onResume, onRepair, 
         </dl>
         {run.error_code && <p role="alert" className="text-destructive text-sm">{errorMessage(run.error_code)}</p>}
         {run.access_error && <p role="alert" className="text-destructive text-sm">{errorMessage(run.access_error)}</p>}
-        {!run.access_error&&!!run.model_attempts?.length&&<section className="run-audit" aria-label="模型请求尝试"><h3>模型请求尝试</h3><ol>{run.model_attempts.map(item=><li key={`${item.run_attempt}:${item.step}:${item.number}`}><div><strong>{item.step===-1?'回复':item.step<0?'上下文摘要':`步骤 ${item.step+1}`} · 第 {item.number} 次</strong><span>{item.status==='retry_scheduled'?'等待重试':item.status==='completed'?'已完成':item.status==='failed'?'失败':'请求中'}</span></div><small className="subtle">{item.error_code||''}{item.retry_at?` · ${new Date(item.retry_at).toLocaleTimeString()} 重试`:''}{item.retry_delay_ms?` · 等待 ${durationLabel(item.retry_delay_ms)}`:''}</small></li>)}</ol></section>}
+        {!run.access_error&&!!run.model_attempts?.length&&<section className="run-audit" aria-label="模型请求尝试"><h3>模型请求尝试</h3><ol>{run.model_attempts.map(item=><li key={`${item.run_attempt}:${item.step}:${item.number}`}><div><strong>{item.step===-1?'回复':item.step<0?'上下文摘要':`步骤 ${item.step+1}`} · 第 {item.number} 次</strong><span>{item.status==='retry_scheduled'?'等待重试':item.status==='completed'?'已完成':item.status==='failed'?'失败':'请求中'}</span></div><small className="subtle">{item.error_code||''}{item.retry_at?` · ${formatLocalTime(item.retry_at)} 重试`:''}{item.retry_delay_ms?` · 等待 ${durationLabel(item.retry_delay_ms)}`:''}</small></li>)}</ol></section>}
         {!run.access_error && run.context && !run.steps?.length && <ContextDiagnostic context={run.context} />}
         {!run.access_error && (run.steps?.length || ["failed", "cancelled"].includes(run.status) ? <ExecutionActivity run={run} executionID={delegationID} onResume={!delegationID&&onResume ? () => { onResume(run); onClose(); } : undefined} onRepair={!delegationID&&onRepair ? (step, call, label) => onRepair(run, step, call, label) : undefined} recoveryDisabled={recoveryDisabled} repairDisabled={repairDisabled} /> : <p className="subtle">这次处理没有已保存的工具调用记录。</p>)}
         {!run.access_error && run.interaction?.status === "pending" && <InteractionCard key={run.interaction.id + ":" + run.interaction.revision} interaction={run.interaction} onRun={setRun} onRefresh={() => setRefresh(value => value + 1)} />}
         {liveStepText(run) && <section aria-label={run.status === "completed" ? "已保存的回复" : "未完成的回复"}><p className="subtle">{run.status === "completed" ? "已保存的回复" : "未完成的回复"}</p><KnowledgeResponse text={liveStepText(run)} citations={runCitations(run)} /></section>}
         {!delegationID && !run.access_error && run.status === "completed" && <TrajectoryPanel conversationID={conversationID} runID={runID} onFork={onFork} />}
-        {!run.access_error && run.audit?.length ? <section className="run-audit" aria-label="运行审计"><h3>运行审计</h3><ol>{run.audit.map(event => <li key={event.seq}><div><strong>{auditEventLabel(event)}</strong><time dateTime={event.occurred_at}>{new Date(event.occurred_at).toLocaleString()}</time></div><small className="subtle">序号 {event.seq}{event.attempt ? ` · 运行尝试 ${event.attempt}` : ""}{event.model_attempt?` · 模型尝试 ${event.model_attempt}`:''}{event.retry_delay_ms?` · 等待 ${durationLabel(event.retry_delay_ms)}`:''}{event.authorization_revision ? ` · 授权版本 ${event.authorization_revision}` : ""}{event.actor_id ? ` · 操作人 ${event.actor_id}` : ""}{event.duration_ms !== undefined ? ` · ${durationLabel(event.duration_ms)}` : ""}{event.error_code ? ` · ${event.error_code}` : ""}</small></li>)}</ol>{run.audit_complete === false && <p className="subtle">这里只显示本次运行的部分审计记录；完整原始事件仍可按序读取。</p>}</section> : null}
+        {!run.access_error && run.audit?.length ? <section className="run-audit" aria-label="运行审计"><h3>运行审计</h3><ol>{run.audit.map(event => <li key={event.seq}><div><strong>{auditEventLabel(event)}</strong><time dateTime={event.occurred_at}>{formatLocalDateTime(event.occurred_at)}</time></div><small className="subtle">序号 {event.seq}{event.attempt ? ` · 运行尝试 ${event.attempt}` : ""}{event.model_attempt?` · 模型尝试 ${event.model_attempt}`:''}{event.retry_delay_ms?` · 等待 ${durationLabel(event.retry_delay_ms)}`:''}{event.authorization_revision ? ` · 授权版本 ${event.authorization_revision}` : ""}{event.actor_id ? ` · 操作人 ${event.actor_id}` : ""}{event.duration_ms !== undefined ? ` · ${durationLabel(event.duration_ms)}` : ""}{event.error_code ? ` · ${event.error_code}` : ""}</small></li>)}</ol>{run.audit_complete === false && <p className="subtle">这里只显示本次运行的部分审计记录；完整原始事件仍可按序读取。</p>}</section> : null}
       </>}
     </DialogContent>
   </Dialog>;

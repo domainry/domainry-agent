@@ -130,7 +130,7 @@ func TestConversationExecutionFreezesEachStepAndNeverReplaysCompletedWrites(t *t
 	if err != nil {
 		t.Fatal(err)
 	}
-	raw, _ := json.Marshal(events)
+	raw, _ := marshalDurableJSON(events)
 	if json.Valid(raw) == false {
 		t.Fatal("invalid events")
 	}

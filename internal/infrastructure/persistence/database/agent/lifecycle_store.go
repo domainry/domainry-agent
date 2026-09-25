@@ -111,7 +111,7 @@ func (s LifecycleStore) listConversationLifecycleCandidates(ctx context.Context,
 			_ = rows.Close()
 			return nil, err
 		}
-		if json.Unmarshal(row.raw, &conversation) != nil || conversation.WorkspaceID != workspaceID {
+		if unmarshalDurableJSON(row.raw, &conversation) != nil || conversation.WorkspaceID != workspaceID {
 			continue
 		}
 		scanned = append(scanned, row)
@@ -208,12 +208,12 @@ func (s LifecycleStore) conversationLifecyclePayload(ctx context.Context, owner,
 	if len(plans) > 0 {
 		graph["task_plan_history"] = plans
 	}
-	return json.Marshal(graph)
+	return marshalDurableJSON(graph)
 }
 
 func agentLifecycleEligible(kind string, payload []byte) bool {
 	var value map[string]any
-	if json.Unmarshal(payload, &value) != nil {
+	if unmarshalDurableJSON(payload, &value) != nil {
 		return false
 	}
 	switch kind {
@@ -265,7 +265,7 @@ func (s LifecycleStore) deleteConversationLifecycleCandidate(ctx context.Context
 		var conversation struct {
 			WorkspaceID string `json:"workspace_id"`
 		}
-		if json.Unmarshal(raw, &conversation) != nil || conversation.WorkspaceID != workspaceID {
+		if unmarshalDurableJSON(raw, &conversation) != nil || conversation.WorkspaceID != workspaceID {
 			return nil
 		}
 		statement, args, buildErr := query.NewDeleteBuilder(s.store.Renderer(), "_agent_conversations").Where(query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("conversation_id", candidate.ResourceID), query.Equal("revision", candidate.Revision))).Build()

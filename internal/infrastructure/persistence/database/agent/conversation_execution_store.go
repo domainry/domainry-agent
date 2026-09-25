@@ -97,7 +97,7 @@ func (s *ConversationStore) payloadRead(ctx context.Context, db conversationDB, 
 	if err != nil {
 		return false, err
 	}
-	return true, json.Unmarshal(raw, out)
+	return true, unmarshalDurableJSON(raw, out)
 }
 
 func (s *ConversationStore) executionRead(ctx context.Context, db conversationDB, kind string, predicate query.Predicate, out any) (bool, error) {
@@ -105,7 +105,7 @@ func (s *ConversationStore) executionRead(ctx context.Context, db conversationDB
 }
 
 func (s *ConversationStore) executionWrite(ctx context.Context, tx *sql.Tx, kind string, claim persistence.ConversationClaim, number int, callID string, payload any, insert bool) error {
-	raw, err := json.Marshal(payload)
+	raw, err := marshalDurableJSON(payload)
 	if err != nil || len(raw) > 4*1024*1024 {
 		return conversationError("bad_request", "execution_payload_invalid")
 	}
@@ -237,7 +237,7 @@ func validateExecutionResult(step persistence.ConversationExecutionStep, result 
 	for _, call := range message.ToolCalls {
 		var args map[string]json.RawMessage
 		size += len(call.Arguments)
-		if !executionText(call.ID, 256, true) || !allowed[call.Name] || seen[call.ID] || json.Unmarshal([]byte(call.Arguments), &args) != nil || args == nil || size > step.Input.MaxArgumentBytes {
+		if !executionText(call.ID, 256, true) || !allowed[call.Name] || seen[call.ID] || unmarshalDurableJSON([]byte(call.Arguments), &args) != nil || args == nil || size > step.Input.MaxArgumentBytes {
 			return conversationError("bad_request", "step_result_invalid")
 		}
 		seen[call.ID] = true
@@ -350,7 +350,7 @@ func (s *ConversationStore) executionSubtools(ctx context.Context, db conversati
 		if err = rows.Scan(&raw); err != nil {
 			return nil, err
 		}
-		if err = json.Unmarshal(raw, &record); err != nil {
+		if err = unmarshalDurableJSON(raw, &record); err != nil {
 			return nil, err
 		}
 		if record.ParentCallID == parentCallID && parentCallID != "" {
@@ -398,7 +398,7 @@ func (s *ConversationStore) executionSubtoolCount(ctx context.Context, db conver
 		if err = rows.Scan(&raw); err != nil {
 			return 0, err
 		}
-		if err = json.Unmarshal(raw, &record); err != nil {
+		if err = unmarshalDurableJSON(raw, &record); err != nil {
 			return 0, err
 		}
 		if record.ParentCallID != "" {
@@ -439,7 +439,7 @@ func (s *ConversationStore) executionTopLevelCallCount(ctx context.Context, db c
 		if err = rows.Scan(&raw); err != nil {
 			return 0, err
 		}
-		if err = json.Unmarshal(raw, &step); err != nil {
+		if err = unmarshalDurableJSON(raw, &step); err != nil {
 			return 0, err
 		}
 		if step.Result != nil {
@@ -720,7 +720,7 @@ func (s *ConversationStore) finishExecutionToolReceipt(ctx context.Context, tx *
 	var citations []agentsdk.ConversationCitation
 	if result.Status == "completed" && (out.Call.Name == "knowledge_search" || out.Call.Name == "knowledge_read" || out.Call.Name == "knowledge_extract" || out.Call.Name == "attachment_search" || out.Call.Name == "attachment_read") {
 		var evidence agentsdk.ConversationKnowledgeResult
-		if json.Unmarshal(result.Content, &evidence) == nil {
+		if unmarshalDurableJSON(result.Content, &evidence) == nil {
 			citations = evidence.Citations
 		}
 	}

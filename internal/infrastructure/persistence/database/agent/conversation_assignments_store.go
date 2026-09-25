@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"sort"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
@@ -25,7 +24,7 @@ func (s *ConversationStore) conversationAssignments(ctx context.Context, db conv
 		var raw []byte
 		var v sdk.ConversationDelegationAssignment
 		if err = rows.Scan(&raw); err == nil {
-			err = json.Unmarshal(raw, &v)
+			err = unmarshalDurableJSON(raw, &v)
 		}
 		if err != nil {
 			break
@@ -115,7 +114,7 @@ func (s *ConversationStore) prepareDelegationHandoff(ctx context.Context, tx *sq
 			var raw []byte
 			var run sdk.ConversationRun
 			if err = rows.Scan(&raw); err == nil {
-				err = json.Unmarshal(raw, &run)
+				err = unmarshalDurableJSON(raw, &run)
 			}
 			if err != nil {
 				break
@@ -153,7 +152,7 @@ func (s *ConversationStore) prepareDelegationHandoff(ctx context.Context, tx *sq
 				var raw []byte
 				var call persistence.ConversationToolExecution
 				if err = rows.Scan(&raw); err == nil {
-					err = json.Unmarshal(raw, &call)
+					err = unmarshalDurableJSON(raw, &call)
 				}
 				if err != nil {
 					break

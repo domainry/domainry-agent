@@ -1,7 +1,6 @@
 package agent
 
 import (
-	"encoding/json"
 	"strings"
 	"testing"
 	"time"
@@ -99,7 +98,7 @@ func TestConversationTaskAgreementPersistsCurrentGoalAndStartsANewRun(t *testing
 		t.Fatal(err)
 	}
 	var mutation conversationTaskAgreementUpdateRecord
-	if err = json.Unmarshal(raw, &mutation); err != nil || mutation.Update.Reason != "预算耗尽后缩小目标并重试" {
+	if err = unmarshalDurableJSON(raw, &mutation); err != nil || mutation.Update.Reason != "预算耗尽后缩小目标并重试" {
 		t.Fatalf("agreement audit=%+v err=%v", mutation, err)
 	}
 	if _, err = repo.ResumeQueuedConversationTask(t.Context(), receipt.Task.ID, authority); err != nil {

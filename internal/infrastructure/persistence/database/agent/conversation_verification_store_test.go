@@ -129,7 +129,7 @@ func TestPeerVerificationRequiresIndependentCurrentReviewAndRetainsHistory(t *te
 	if d.Status != "delivered" || d.Verification == nil || d.Verification.Ready || d.Verification.Checks[0].Method != "recipient" {
 		t.Fatalf("recipient accepted itself: %+v", d)
 	}
-	arguments, _ := json.Marshal(map[string]any{"id": d.ID, "update": map[string]any{"expected_revision": d.Revision, "action": "review_delivery", "reason": "Unrelated review", "review": peerAcceptanceReview(d)}})
+	arguments, _ := marshalDurableJSON(map[string]any{"id": d.ID, "update": map[string]any{"expected_revision": d.Revision, "action": "review_delivery", "reason": "Unrelated review", "review": peerAcceptanceReview(d)}})
 	_, unrelated := personalMutationFixture(t, repo, "unrelated-reviewer", "delegation_update", string(arguments), false)
 	if _, err = repo.UpdateConversationDelegation(t.Context(), d.ID, sdk.ConversationDelegationUpdate{ClientID: "wrong-reviewer", ExpectedRevision: d.Revision, Action: "review_delivery", Reason: "Unrelated review", Review: peerAcceptanceReview(d), ToolRequest: &unrelated}, a); err == nil || !strings.Contains(err.Error(), "delegation_actor_invalid") {
 		t.Fatal("unrelated Agent reviewed another delegation", err)

@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"strings"
 	"time"
@@ -27,7 +26,7 @@ func (s *ConversationStore) Summary(ctx context.Context, id string, a agentsdk.C
 	if err = s.store.Database().QueryRowContext(ctx, q, args...).Scan(&raw); err != nil {
 		return out, err
 	}
-	err = json.Unmarshal(raw, &out)
+	err = unmarshalDurableJSON(raw, &out)
 	return out, err
 }
 func (s *ConversationStore) SaveSummary(ctx context.Context, claim agentpersistence.ConversationClaim, summary agentsdk.ConversationSummary) error {
@@ -66,7 +65,7 @@ func (s *ConversationStore) SaveSummary(ctx context.Context, claim agentpersiste
 			return err
 		}
 		var boundary agentsdk.ConversationMessage
-		if err = json.Unmarshal(raw, &boundary); err != nil {
+		if err = unmarshalDurableJSON(raw, &boundary); err != nil {
 			return err
 		}
 		if boundary.Role != "assistant" {
@@ -109,7 +108,7 @@ func (s *ConversationStore) memories(ctx context.Context, db conversationDB, a a
 		if err = rows.Scan(&raw); err != nil {
 			return nil, err
 		}
-		if err = json.Unmarshal(raw, &m); err != nil {
+		if err = unmarshalDurableJSON(raw, &m); err != nil {
 			return nil, err
 		}
 		out = append(out, normalizeStoredConversationMemory(m))
@@ -203,7 +202,7 @@ func (s *ConversationStore) writeMemory(ctx context.Context, tx *sql.Tx, in agen
 		return err
 	}
 	if exists {
-		if err = json.Unmarshal(raw, &old); err != nil {
+		if err = unmarshalDurableJSON(raw, &old); err != nil {
 			return err
 		}
 		old = normalizeStoredConversationMemory(old)
@@ -241,7 +240,7 @@ func (s *ConversationStore) writeMemory(ctx context.Context, tx *sql.Tx, in agen
 			return conversationError("conflict", "memory_id_reused")
 		}
 	}
-	now := time.Now().UTC()
+	now := time.Now().UTC().Truncate(time.Millisecond)
 	correction := old.Correction
 	if strings.TrimSpace(in.CorrectionReason) != "" {
 		correction = &agentsdk.ConversationMemoryCorrection{PreviousRevision: old.Revision, Reason: strings.TrimSpace(in.CorrectionReason)}
@@ -301,12 +300,12 @@ func (s *ConversationStore) deleteMemory(ctx context.Context, tx *sql.Tx, id str
 		return err
 	}
 	var deleted agentsdk.ConversationMemory
-	if err = json.Unmarshal(raw, &deleted); err != nil {
+	if err = unmarshalDurableJSON(raw, &deleted); err != nil {
 		return err
 	}
 	deleted = normalizeStoredConversationMemory(deleted)
 	deleted.Revision++
-	deleted.UpdatedAt = time.Now().UTC()
+	deleted.UpdatedAt = time.Now().UTC().Truncate(time.Millisecond)
 	if err = s.appendMemoryChange(ctx, tx, a, "delete", deleted); err != nil {
 		return err
 	}

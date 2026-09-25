@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
@@ -107,7 +106,7 @@ func (s *ConversationStore) conversationDelegationRoot(ctx context.Context, tx *
 			return "", err
 		}
 		var d agentsdk.ConversationDelegation
-		if err = json.Unmarshal(raw, &d); err != nil {
+		if err = unmarshalDurableJSON(raw, &d); err != nil {
 			return "", err
 		}
 		if len(ancestry) > 0 {
@@ -222,7 +221,7 @@ func (s *ConversationStore) controlDelegationTask(ctx context.Context, tx *sql.T
 				var raw []byte
 				var call persistence.ConversationToolExecution
 				if err = rows.Scan(&raw); err == nil {
-					err = json.Unmarshal(raw, &call)
+					err = unmarshalDurableJSON(raw, &call)
 				}
 				if err != nil {
 					rows.Close()
@@ -315,7 +314,7 @@ func (s *ConversationStore) peerAgentCapacity(ctx context.Context, tx *sql.Tx, r
 		if err = rows.Scan(&raw); err != nil {
 			return false, err
 		}
-		if err = json.Unmarshal(raw, &item); err != nil {
+		if err = unmarshalDurableJSON(raw, &item); err != nil {
 			return false, err
 		}
 		if item.Agent != nil && item.Agent.ID == agent.ID {

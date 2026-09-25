@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
@@ -57,7 +56,7 @@ func (s *ConversationStore) assignmentExecutionAuthority(ctx context.Context, db
 	} else if err != nil {
 		return sdk.ConversationAuthority{}, err
 	} else {
-		if err := json.Unmarshal(raw, &record); err != nil {
+		if err := unmarshalDurableJSON(raw, &record); err != nil {
 			return sdk.ConversationAuthority{}, err
 		}
 		if assignmentFactHash(record.ConversationDelegationAssignment) != assignmentFactHash(assignment) {

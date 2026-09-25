@@ -146,7 +146,7 @@ func TestIssuerSubjectExitStopsForeignWorkerAndKeepsCounterpartPrivateData(t *te
 	lifecycle := NewSubjectLifecycle(repo.store, issuer.RuntimeID)
 	preview, err := lifecycle.PreviewSubject(t.Context(), issuer.WorkspaceID, issuer.UserID)
 	var counts map[string]int64
-	if err != nil || json.Unmarshal(preview, &counts) != nil || counts[conversationDelegationSubjectTable] != 1 || counts[conversationPeerLinkTable] < 2 {
+	if err != nil || unmarshalDurableJSON(preview, &counts) != nil || counts[conversationDelegationSubjectTable] != 1 || counts[conversationPeerLinkTable] < 2 {
 		t.Fatal("preview omitted collaboration indexes", string(preview), err)
 	}
 	exported, err := lifecycle.ExportSubjectForRequest(t.Context(), "export", issuer.WorkspaceID, issuer.UserID)

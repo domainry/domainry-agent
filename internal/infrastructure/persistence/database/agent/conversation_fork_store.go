@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"strings"
 	"time"
@@ -17,7 +16,7 @@ func validConversationForkSeed(seed persistence.ConversationForkSeed) bool {
 	if seed.Version != agentsdk.ConversationTrajectoryVersion || !personalMemoryKey(seed.Source.ConversationID) || !personalMemoryKey(seed.Source.RunID) || seed.Source.BeforeStep != 0 || seed.BoundaryEventSeq < 1 || len(seed.SourceSHA256) != 64 || seed.CreatedAt.IsZero() || len(seed.Messages) == 0 || len(seed.Messages) > 4096 {
 		return false
 	}
-	raw, err := json.Marshal(seed)
+	raw, err := marshalDurableJSON(seed)
 	if err != nil || len(raw) > 4*1024*1024 {
 		return false
 	}
@@ -51,7 +50,7 @@ func (s *ConversationStore) ForkConversation(ctx context.Context, in agentsdk.Co
 		var raw []byte
 		var savedHash string
 		if err = tx.QueryRowContext(ctx, lookup, args...).Scan(&raw, &savedHash); err == nil {
-			if savedHash != requestHash || json.Unmarshal(raw, &out) != nil || out.Fork == nil || out.Fork.ConversationID != seed.Source.ConversationID || out.Fork.RunID != seed.Source.RunID || out.Fork.BoundaryEventSeq != seed.BoundaryEventSeq {
+			if savedHash != requestHash || unmarshalDurableJSON(raw, &out) != nil || out.Fork == nil || out.Fork.ConversationID != seed.Source.ConversationID || out.Fork.RunID != seed.Source.RunID || out.Fork.BoundaryEventSeq != seed.BoundaryEventSeq {
 				return conversationError("conflict", "idempotency_conflict")
 			}
 			var stored []byte
@@ -60,7 +59,7 @@ func (s *ConversationStore) ForkConversation(ctx context.Context, in agentsdk.Co
 				return buildErr
 			}
 			var storedSeed persistence.ConversationForkSeed
-			if scanErr := tx.QueryRowContext(ctx, q, values...).Scan(&stored); scanErr != nil || json.Unmarshal(stored, &storedSeed) != nil || conversationHash(storedSeed) != conversationHash(seed) {
+			if scanErr := tx.QueryRowContext(ctx, q, values...).Scan(&stored); scanErr != nil || unmarshalDurableJSON(stored, &storedSeed) != nil || conversationHash(storedSeed) != conversationHash(seed) {
 				return conversationError("conflict", "fork_snapshot_changed")
 			}
 			return nil
@@ -113,7 +112,7 @@ func (s *ConversationStore) ConversationForkSeed(ctx context.Context, conversati
 	if err != nil {
 		return out, false, err
 	}
-	if err = json.Unmarshal(raw, &out); err != nil || !validConversationForkSeed(out) {
+	if err = unmarshalDurableJSON(raw, &out); err != nil || !validConversationForkSeed(out) {
 		return out, false, conversationError("conflict", "fork_snapshot_changed")
 	}
 	return out, true, nil

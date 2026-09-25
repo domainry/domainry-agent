@@ -47,19 +47,19 @@ func scanConversationRun(row interface{ Scan(...any) error }) (conversationRunRo
 		return v, err
 	}
 	hash := v.Run.RequestHash
-	if err = json.Unmarshal(raw, &v.Run); err != nil {
+	if err = unmarshalDurableJSON(raw, &v.Run); err != nil {
 		return v, err
 	}
 	var envelope struct {
 		BackgroundTask map[string]json.RawMessage `json:"background_task"`
 	}
-	if json.Unmarshal(raw, &envelope) == nil {
+	if unmarshalDurableJSON(raw, &envelope) == nil {
 		requirements := envelope.BackgroundTask["requirements"]
 		v.HasRequirementsSnapshot = len(requirements) > 0 && string(requirements) != "null"
 	}
 	v.Run.RequestHash = hash
 	v.Run.LastEventSeq = v.EventSeq
-	err = json.Unmarshal(authority, &v.Authority)
+	err = unmarshalDurableJSON(authority, &v.Authority)
 	return v, err
 }
 func (s *ConversationStore) runRow(ctx context.Context, db conversationDB, id, runID string, a agentsdk.ConversationAuthority) (conversationRunRow, error) {
@@ -544,7 +544,7 @@ func (s *ConversationStore) Events(ctx context.Context, id, runID string, after 
 		if err = rows.Scan(&raw); err != nil {
 			return out, err
 		}
-		if err = json.Unmarshal(raw, &e); err != nil {
+		if err = unmarshalDurableJSON(raw, &e); err != nil {
 			return out, err
 		}
 		out.Items = append(out.Items, e)

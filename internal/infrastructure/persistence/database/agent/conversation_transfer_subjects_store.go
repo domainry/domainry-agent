@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
@@ -51,7 +50,7 @@ func (s *ConversationStore) validateTransferContractPublications(ctx context.Con
 			var raw []byte
 			var release persistence.ConversationSourceRelease
 			if err = rows.Scan(&raw); err == nil {
-				err = json.Unmarshal(raw, &release)
+				err = unmarshalDurableJSON(raw, &release)
 			}
 			if err != nil {
 				break
@@ -118,7 +117,7 @@ func (s *ConversationStore) validateTransferExecutionPublications(ctx context.Co
 				var raw []byte
 				var release persistence.ConversationSourceRelease
 				if err = rows.Scan(&raw); err == nil {
-					err = json.Unmarshal(raw, &release)
+					err = unmarshalDurableJSON(raw, &release)
 				}
 				if err != nil {
 					break

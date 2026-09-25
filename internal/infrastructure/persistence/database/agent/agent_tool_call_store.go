@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -38,7 +37,7 @@ func (s *AgentTaskRunStore) BeginAgentToolCall(ctx context.Context, start agentp
 		return "", 0, agentError("conflict", "agent.task.tool_fence_rejected")
 	}
 	var run agentmodel.AgentTaskRun
-	if err := json.Unmarshal(payload, &run); err != nil {
+	if err := unmarshalDurableJSON(payload, &run); err != nil {
 		return "", 0, err
 	}
 	usedCost := 0
@@ -65,7 +64,7 @@ func (s *AgentTaskRunStore) BeginAgentToolCall(ctx context.Context, start agentp
 	run.Evidence.Authorization = append(run.Evidence.Authorization, start.Authorization)
 	run.Evidence.ToolInvocationRefs = append(run.Evidence.ToolInvocationRefs, ref)
 	run.Evidence.ToolInvocations = append(run.Evidence.ToolInvocations, agentmodel.AgentTaskToolInvocationEvidence{Ref: ref, Tool: start.Tool, InputHash: start.InputHash, Status: "running", Authorization: start.Authorization, StartedAt: run.UpdatedAt, CostUnits: start.CostUnits})
-	updated, _ := json.Marshal(run)
+	updated, _ := marshalDurableJSON(run)
 	update, updateArgs, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), agentRunTable, start.WorkspaceID).
 		Set("payload_json", updated).Set("updated_at", run.UpdatedAt.UnixMilli()).Where(agentTaskLeasePredicate(start.TaskRunID, start.Owner, start.FencingToken)).Build()
 	if buildErr != nil {
@@ -109,7 +108,7 @@ func (s *AgentTaskRunStore) FinishAgentToolCall(ctx context.Context, finish agen
 		return agentError("conflict", "agent.task.tool_fence_rejected")
 	}
 	var run agentmodel.AgentTaskRun
-	if err := json.Unmarshal(payload, &run); err != nil {
+	if err := unmarshalDurableJSON(payload, &run); err != nil {
 		return err
 	}
 	now := time.Now().UTC()
@@ -137,7 +136,7 @@ func (s *AgentTaskRunStore) FinishAgentToolCall(ctx context.Context, finish agen
 	}
 	run.UpdatedAt = now
 	run.Revision++
-	updated, _ := json.Marshal(run)
+	updated, _ := marshalDurableJSON(run)
 	update, updateArgs, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), agentRunTable, finish.WorkspaceID).
 		Set("payload_json", updated).Set("updated_at", now.UnixMilli()).Where(agentTaskLeasePredicate(finish.TaskRunID, finish.Owner, finish.FencingToken)).Build()
 	if buildErr != nil {

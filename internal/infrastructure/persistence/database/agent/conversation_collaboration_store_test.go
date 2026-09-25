@@ -1,7 +1,6 @@
 package agent
 
 import (
-	"encoding/json"
 	"fmt"
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
@@ -214,7 +213,7 @@ func TestPeerCapacityCycleAndSchemaMetadata(t *testing.T) {
 	}
 	for _, tool := range sdk.ConversationCollaborationTools() {
 		var schema map[string]any
-		if json.Unmarshal(tool.InputSchema, &schema) != nil {
+		if unmarshalDurableJSON(tool.InputSchema, &schema) != nil {
 			t.Fatal("schema invalid")
 		}
 	}
@@ -234,7 +233,7 @@ func TestPeerInboxSkipsMoreThanOnePageOfPausedWork(t *testing.T) {
 				t.Fatal(err)
 			}
 		}
-		raw, _ := json.Marshal(n)
+		raw, _ := marshalDurableJSON(n)
 		_, err = repo.SendConversationAgentMessage(t.Context(), d.ID, sdk.ConversationAgentMessageSend{ClientID: "pending-" + string(raw), ToAgentID: d.ToAgentID, Content: "wait", BriefVersion: 1}, "", a)
 		if err != nil {
 			t.Fatal(err)

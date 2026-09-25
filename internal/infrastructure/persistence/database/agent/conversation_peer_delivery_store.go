@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"slices"
 	"strings"
@@ -80,7 +79,7 @@ func (s *ConversationStore) preparePeerMessageDelivery(ctx context.Context, tx *
 		return conversationError("conflict", "peer_question_unavailable")
 	}
 	var question sdk.ConversationAgentMessage
-	if err = json.Unmarshal(raw, &question); err != nil {
+	if err = unmarshalDurableJSON(raw, &question); err != nil {
 		return err
 	}
 	if question.Kind != "question" || question.Superseded || question.AnsweredByID != "" || question.BriefVersion != d.Brief.Version || max(1, question.AgreementRevision) != d.AgreementRevision {
@@ -122,7 +121,7 @@ func (s *ConversationStore) preparePeerMessageDelivery(ctx context.Context, tx *
 		var payload []byte
 		var candidate sdk.ConversationAgentMessage
 		if err = rows.Scan(&id, &payload); err == nil {
-			err = json.Unmarshal(payload, &candidate)
+			err = unmarshalDurableJSON(payload, &candidate)
 		}
 		if err != nil {
 			rows.Close()
@@ -171,7 +170,7 @@ func (s *ConversationStore) supersedePeerMessages(ctx context.Context, tx *sql.T
 		if err = rows.Scan(&raw); err != nil {
 			break
 		}
-		if err = json.Unmarshal(raw, &m); err != nil {
+		if err = unmarshalDurableJSON(raw, &m); err != nil {
 			break
 		}
 		participantRevoked := false

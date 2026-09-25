@@ -130,7 +130,7 @@ func TestConversationTaskEffectReceiptLaunchAndCompletionAreDurable(t *testing.T
 	repo := newTestConversationStore(t, store)
 	budget := agentsdk.ConversationTaskBudget{MaxSteps: 3, MaxToolCalls: 2, MaxOutputBytes: 1024, TimeoutSeconds: 30}
 	start := agentsdk.ConversationTaskStart{Goal: "核对发布", Input: "build 42", AllowedTools: []string{"time_now"}, Budget: budget}
-	arguments, err := json.Marshal(start)
+	arguments, err := marshalDurableJSON(start)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -290,7 +290,7 @@ func TestConversationTaskChildCountIsBoundedPerSourceRun(t *testing.T) {
 	repo := newTestConversationStore(t, store)
 	budget := agentsdk.ConversationTaskBudget{MaxSteps: 1, MaxToolCalls: 1, MaxOutputBytes: 256, TimeoutSeconds: 1}
 	start := agentsdk.ConversationTaskStart{Goal: "第五个子任务", Input: "", AllowedTools: []string{}, Budget: budget}
-	arguments, _ := json.Marshal(start)
+	arguments, _ := marshalDurableJSON(start)
 	_, request := personalMutationFixture(t, repo, "task-child-limit", "task_start", string(arguments), true)
 	now := time.Now().UTC().Truncate(time.Millisecond)
 	for index := 0; index < agentsdk.ConversationTaskMaxChildrenPerRun; index++ {
@@ -315,7 +315,7 @@ func TestConversationTaskFailureTracksTerminalRun(t *testing.T) {
 	repo := newTestConversationStore(t, store)
 	budget := agentsdk.ConversationTaskBudget{MaxSteps: 1, MaxToolCalls: 1, MaxOutputBytes: 256, TimeoutSeconds: 1}
 	start := agentsdk.ConversationTaskStart{Goal: "失败验证", Input: "", AllowedTools: []string{}, Budget: budget}
-	arguments, _ := json.Marshal(start)
+	arguments, _ := marshalDurableJSON(start)
 	claim, request := personalMutationFixture(t, repo, "task-failure", "task_start", string(arguments), true)
 	prepared := agentsdk.ConversationTask{Goal: start.Goal, Input: start.Input, Budget: budget, SourceConversationID: request.ConversationID, SourceRunID: request.RunID, ToolScope: []agentsdk.ConversationTaskToolScope{}}
 	result, err := repo.ApplyConversationTaskTool(t.Context(), request, prepared)
@@ -368,7 +368,7 @@ func TestConversationTaskReconciliationResumeKeepsTaskRunning(t *testing.T) {
 	definition := input.Tools[0]
 	budget := agentsdk.ConversationTaskBudget{MaxSteps: 2, MaxToolCalls: 1, MaxOutputBytes: 1024, TimeoutSeconds: 30}
 	start := agentsdk.ConversationTaskStart{Goal: "核查外部结果", Input: "结果未知时先核查", AllowedTools: []string{definition.Key}, Budget: budget}
-	arguments, _ := json.Marshal(start)
+	arguments, _ := marshalDurableJSON(start)
 	parent, request := personalMutationFixture(t, repo, "task-reconciliation", "task_start", string(arguments), true)
 	prepared := agentsdk.ConversationTask{Goal: start.Goal, Input: start.Input, Budget: budget, SourceConversationID: request.ConversationID, SourceRunID: request.RunID, ToolScope: []agentsdk.ConversationTaskToolScope{{Key: definition.Key, Version: definition.Version, ActionKey: definition.ActionKey, DefinitionHash: conversationHash(definition)}}}
 	result, err := repo.ApplyConversationTaskTool(t.Context(), request, prepared)

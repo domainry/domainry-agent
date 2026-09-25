@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { formatLocalDateTime } from "./time.ts";
 import { request, runPath, type Run } from "./api.ts";
 import { ApiError, describeError } from "./errors.ts";
 import { sessionScope } from "./session.ts";
@@ -89,7 +90,7 @@ export function InteractionCard({ interaction, onRun, onRefresh }: { interaction
       {!!interaction.choices?.length && <div className="interaction-actions">{interaction.choices.map(choice => <Button type="button" variant={answer === choice ? "default" : "outline"} size="sm" key={choice} disabled={busy || !!pending} onClick={() => setAnswer(choice)}>{choice}</Button>)}</div>}
       <label>补充信息<textarea aria-label="补充信息" value={answer} disabled={busy || !!pending} onChange={event => setAnswer(event.target.value)} rows={3} placeholder="选择建议或输入你的回答" /></label>
     </>}
-    {interaction.kind !== "reconciliation" && <small className="subtle">有效期至 {new Date(interaction.expires_at).toLocaleString(undefined, {timeZoneName: "short"})}；提交后从当前步骤继续。</small>}
+    {interaction.kind !== "reconciliation" && <small className="subtle">有效期至 {formatLocalDateTime(interaction.expires_at, {timeZoneName: "short"})}；提交后从当前步骤继续。</small>}
     {pending && !busy && <small className="subtle">上次提交的结果尚未确认。重试将提交相同内容。</small>}
     {storageUnavailable && <small className="subtle">浏览器存储不可用，请在当前页面重试；刷新后先核对服务端状态。</small>}
     {error && <p role="alert" className="text-destructive">{error}</p>}

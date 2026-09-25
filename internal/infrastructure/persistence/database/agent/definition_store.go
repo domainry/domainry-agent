@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -55,7 +54,7 @@ func (s DefinitionStore) SyncDefinitions(ctx context.Context, snapshot agentpers
 		if seed.key == "" {
 			return fmt.Errorf("Agent %s definition key is required", seed.kind)
 		}
-		raw, err := json.Marshal(seed.payload)
+		raw, err := marshalDurableJSON(seed.payload)
 		if err != nil {
 			return err
 		}
@@ -89,31 +88,31 @@ func (s DefinitionStore) DefinitionSnapshot(ctx context.Context) (agentpersisten
 		switch value.ResourceType {
 		case "skill":
 			var item agentsdk.SkillSchema
-			if err := json.Unmarshal(value.Payload, &item); err != nil {
+			if err := unmarshalDurableJSON(value.Payload, &item); err != nil {
 				return result, err
 			}
 			result.Skills = append(result.Skills, item)
 		case "agent":
 			var item agentsdk.AgentSchema
-			if err := json.Unmarshal(value.Payload, &item); err != nil {
+			if err := unmarshalDurableJSON(value.Payload, &item); err != nil {
 				return result, err
 			}
 			result.Agents = append(result.Agents, item)
 		case "agent_task":
 			var item agentsdk.AgentTaskDefinition
-			if err := json.Unmarshal(value.Payload, &item); err != nil {
+			if err := unmarshalDurableJSON(value.Payload, &item); err != nil {
 				return result, err
 			}
 			result.Tasks = append(result.Tasks, item)
 		case "agent_entrypoint":
 			var item agentsdk.AgentEntrypointAssignment
-			if err := json.Unmarshal(value.Payload, &item); err != nil {
+			if err := unmarshalDurableJSON(value.Payload, &item); err != nil {
 				return result, err
 			}
 			result.Entrypoints = append(result.Entrypoints, item)
 		case "agent_service_principal":
 			var item agentsdk.AgentServicePrincipalBinding
-			if err := json.Unmarshal(value.Payload, &item); err != nil {
+			if err := unmarshalDurableJSON(value.Payload, &item); err != nil {
 				return result, err
 			}
 			result.Principals = append(result.Principals, item)
@@ -121,7 +120,7 @@ func (s DefinitionStore) DefinitionSnapshot(ctx context.Context) (agentpersisten
 			return result, fmt.Errorf("unsupported Agent definition kind %q", value.ResourceType)
 		}
 	}
-	raw, _ := json.Marshal(struct {
+	raw, _ := marshalDurableJSON(struct {
 		Skills      []agentsdk.SkillSchema
 		Agents      []agentsdk.AgentSchema
 		Tasks       []agentsdk.AgentTaskDefinition

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"sort"
 	"strings"
@@ -40,11 +39,11 @@ func scanConversationTask(row interface{ Scan(...any) error }) (conversationTask
 		}
 		return out, err
 	}
-	if err := json.Unmarshal(raw, &out.task); err != nil {
+	if err := unmarshalDurableJSON(raw, &out.task); err != nil {
 		return out, err
 	}
 	normalizeConversationTaskGoal(&out.task)
-	if err := json.Unmarshal(authority, &out.authority); err != nil {
+	if err := unmarshalDurableJSON(authority, &out.authority); err != nil {
 		return out, err
 	}
 	if planID.Valid || schedulerRunID.Valid || scheduledFor.Valid {
@@ -158,7 +157,7 @@ func (s *ConversationStore) ApplyConversationTaskTool(ctx context.Context, in ag
 	definition := agentsdk.BackgroundTaskConversationTool()
 	result, err := s.applyLocalTool(ctx, in, []agentsdk.ConversationToolDefinition{definition}, func(tx *sql.Tx, claim agentpersistence.ConversationClaim, call agentpersistence.ConversationToolExecution) (agentsdk.ConversationToolResult, error) {
 		var start agentsdk.ConversationTaskStart
-		if call.Call.Name != definition.Key || json.Unmarshal([]byte(call.Call.Arguments), &start) != nil {
+		if call.Call.Name != definition.Key || unmarshalDurableJSON([]byte(call.Call.Arguments), &start) != nil {
 			return agentsdk.ConversationToolResult{}, conversationError("bad_request", "task_start_invalid")
 		}
 		expectedBrief := agentsdk.DefaultConversationTaskBrief(start.Goal)
@@ -509,7 +508,7 @@ func (s *ConversationStore) ConversationTasks(ctx context.Context, in agentsdk.C
 	filters := []query.Predicate{conversationTaskKindPredicate(conversationTaskKindTask), query.Equal("owner_key", owner), query.LessThanOrEqual("created_at", cursor.Cutoff)}
 	if in.Cursor != "" {
 		raw, err := base64.RawURLEncoding.DecodeString(in.Cursor)
-		if err != nil || json.Unmarshal(raw, &cursor) != nil || cursor.Owner != owner || cursor.Query != hash || !personalMemoryKey(cursor.ID) || cursor.Created < 1 || cursor.Cutoff < cursor.Created {
+		if err != nil || unmarshalDurableJSON(raw, &cursor) != nil || cursor.Owner != owner || cursor.Query != hash || !personalMemoryKey(cursor.ID) || cursor.Created < 1 || cursor.Cutoff < cursor.Created {
 			return out, conversationError("bad_request", "task_cursor_invalid")
 		}
 		filters = append(filters, query.Or(query.LessThan("created_at", cursor.Created), query.And(query.Equal("created_at", cursor.Created), query.LessThan("task_id", cursor.ID))))
@@ -549,7 +548,7 @@ func (s *ConversationStore) ConversationTasks(ctx context.Context, in agentsdk.C
 		return out, err
 	}
 	if !out.Complete {
-		raw, _ := json.Marshal(cursor)
+		raw, _ := marshalDurableJSON(cursor)
 		out.NextCursor = base64.RawURLEncoding.EncodeToString(raw)
 	}
 	return out, nil

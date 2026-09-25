@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"sort"
 	"time"
 
@@ -69,7 +68,7 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 			if err = rows.Scan(&raw, &expires, &rowOwner); err != nil {
 				break
 			}
-			if err = json.Unmarshal(raw, &run); err != nil {
+			if err = unmarshalDurableJSON(raw, &run); err != nil {
 				break
 			}
 			id := "default"
@@ -111,7 +110,7 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 			if err = rows.Scan(&raw, &rowOwner); err != nil {
 				break
 			}
-			if err = json.Unmarshal(raw, &task); err != nil {
+			if err = unmarshalDurableJSON(raw, &task); err != nil {
 				break
 			}
 			id := "default"
@@ -152,7 +151,7 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 			if err = rows.Scan(&raw); err != nil {
 				break
 			}
-			if err = json.Unmarshal(raw, &run); err != nil {
+			if err = unmarshalDurableJSON(raw, &run); err != nil {
 				break
 			}
 			history = append(history, run)

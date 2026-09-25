@@ -38,7 +38,7 @@ func subjectIndexRecords(rows *sql.Rows, columns []string) ([]json.RawMessage, e
 			}
 			item[column] = value
 		}
-		raw, err := json.Marshal(item)
+		raw, err := marshalDurableJSON(item)
 		if err != nil {
 			return nil, err
 		}
@@ -69,7 +69,7 @@ func (s *ConversationStore) eraseSubjectCollaboration(ctx context.Context, tx *s
 		var raw []byte
 		var d sdk.ConversationDelegation
 		if err = rows.Scan(&raw); err == nil {
-			err = json.Unmarshal(raw, &d)
+			err = unmarshalDurableJSON(raw, &d)
 		}
 		if err != nil {
 			break
@@ -106,10 +106,10 @@ func (s *ConversationStore) eraseSubjectCollaboration(ctx context.Context, tx *s
 		var sourceRaw, executionRaw []byte
 		var source, executor sdk.ConversationAuthority
 		if err = rows.Scan(&ownerKey, &id, &sourceRaw, &executionRaw); err == nil {
-			err = json.Unmarshal(sourceRaw, &source)
+			err = unmarshalDurableJSON(sourceRaw, &source)
 		}
 		if err == nil {
-			err = json.Unmarshal(executionRaw, &executor)
+			err = unmarshalDurableJSON(executionRaw, &executor)
 		}
 		if err != nil {
 			break
@@ -217,7 +217,7 @@ func (s *ConversationStore) supersedeSubjectExitMessages(ctx context.Context, tx
 		var item pending
 		var raw []byte
 		if err = rows.Scan(&item.owner, &item.id, &raw); err == nil {
-			err = json.Unmarshal(raw, &item.message)
+			err = unmarshalDurableJSON(raw, &item.message)
 		}
 		if err != nil {
 			break
@@ -258,7 +258,7 @@ func (s *ConversationStore) eraseSubjectDelegationReleases(ctx context.Context, 
 		var raw []byte
 		var release persistence.ConversationSourceRelease
 		if err = rows.Scan(&k.owner, &k.id, &raw); err == nil {
-			err = json.Unmarshal(raw, &release)
+			err = unmarshalDurableJSON(raw, &release)
 		}
 		if err != nil {
 			break

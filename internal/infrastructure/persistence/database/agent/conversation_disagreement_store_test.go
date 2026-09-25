@@ -166,7 +166,7 @@ func TestPeerDisagreementDecisionCannotImpersonateIssuerAndNoticesTrackExactRevi
 	decision.OwnerAgentID = d.ToAgentID
 	decision.NextAction = "Recompute Q1"
 	request := sdk.ConversationDelegationUpdate{ClientID: "forged", ExpectedRevision: d.Revision, Action: "disagreement", Reason: "Impersonate issuer", Disagreement: &sdk.ConversationDisagreementChange{Operation: "decide", ID: d.Disagreements[0].ID, ExpectedRevision: 1, Decision: &decision}}
-	raw, _ := json.Marshal(map[string]any{"id": d.ID, "update": map[string]any{"expected_revision": d.Revision, "action": "disagreement", "reason": request.Reason, "disagreement": request.Disagreement}})
+	raw, _ := marshalDurableJSON(map[string]any{"id": d.ID, "update": map[string]any{"expected_revision": d.Revision, "action": "disagreement", "reason": request.Reason, "disagreement": request.Disagreement}})
 	_, actor := personalMutationFixture(t, repo, "unrelated", "delegation_update", string(raw), false)
 	request.ToolRequest = &actor
 	if _, err = repo.UpdateConversationDelegation(t.Context(), d.ID, request, a); err == nil || !strings.Contains(err.Error(), "delegation_actor_invalid") {

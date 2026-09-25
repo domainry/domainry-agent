@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"strings"
 	"time"
@@ -71,7 +70,7 @@ func (s *ConversationStore) SearchHistory(ctx context.Context, in agentsdk.Conve
 	if in.Cursor != "" {
 		raw, err := base64.RawURLEncoding.DecodeString(in.Cursor)
 		var cursor historyCursor
-		if err != nil || json.Unmarshal(raw, &cursor) != nil || cursor.Owner != owner || cursor.Query != hash || len(cursor.Before) > 96 || cursor.Before == "" {
+		if err != nil || unmarshalDurableJSON(raw, &cursor) != nil || cursor.Owner != owner || cursor.Query != hash || len(cursor.Before) > 96 || cursor.Before == "" {
 			return out, conversationError("bad_request", "history_cursor_invalid")
 		}
 		predicate = query.And(predicate, query.LessThan("reference_id", cursor.Before))
@@ -103,7 +102,7 @@ func (s *ConversationStore) SearchHistory(ctx context.Context, in agentsdk.Conve
 		if err = rows.Scan(&raw); err != nil {
 			return out, err
 		}
-		if err = json.Unmarshal(raw, &message); err != nil {
+		if err = unmarshalDurableJSON(raw, &message); err != nil {
 			return out, err
 		}
 		scanned++
@@ -139,6 +138,6 @@ func (s *ConversationStore) HistoryMessage(ctx context.Context, conversationID, 
 		}
 		return out, err
 	}
-	err = json.Unmarshal(raw, &out)
+	err = unmarshalDurableJSON(raw, &out)
 	return out, err
 }

@@ -71,7 +71,7 @@ func TestConversationRunDetailProjectsBoundedAuditMetricsUsageAndDurations(t *te
 	if authorization == nil || authorization.Status != "granted" || authorization.Revision != "auth-r7" || authorization.Checks != 1 {
 		t.Fatalf("authorization=%+v", authorization)
 	}
-	raw, _ := json.Marshal(detail.Audit)
+	raw, _ := marshalDurableJSON(detail.Audit)
 	if strings.Contains(string(raw), "secret_argument") || strings.Contains(string(raw), "secret_result") {
 		t.Fatalf("audit leaked tool payload: %s", raw)
 	}
@@ -129,7 +129,7 @@ func TestOrdinaryConversationProjectsSafeInitialContextAndCacheUsage(t *testing.
 	if err != nil {
 		t.Fatal(err)
 	}
-	raw, _ := json.Marshal(events)
+	raw, _ := marshalDurableJSON(events)
 	if !strings.Contains(string(raw), "context.assembled") || strings.Contains(string(raw), "private-project-instruction-body") || strings.Contains(string(raw), strings.Repeat("c", 64)) || strings.Contains(string(raw), strings.Repeat("d", 64)) {
 		t.Fatal("context event is missing or leaked frozen source internals", string(raw))
 	}

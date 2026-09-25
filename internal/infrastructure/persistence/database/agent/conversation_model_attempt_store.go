@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
@@ -63,7 +62,7 @@ func (s *ConversationStore) FailConversationModelAttempt(ctx context.Context, cl
 	if !validConversationModelAttemptStep(step) || number < 1 {
 		return conversationError("bad_request", "model_attempt_invalid")
 	}
-	if raw, err := json.Marshal(details.Usage); err != nil || len(raw) > 256*1024 {
+	if raw, err := marshalDurableJSON(details.Usage); err != nil || len(raw) > 256*1024 {
 		return conversationError("bad_request", "model_usage_invalid")
 	}
 	return s.transaction(ctx, func(tx *sql.Tx) error {
@@ -99,7 +98,7 @@ func (s *ConversationStore) CompleteConversationModelAttempt(ctx context.Context
 	if !validConversationModelAttemptStep(step) || number < 1 {
 		return conversationError("bad_request", "model_attempt_invalid")
 	}
-	if raw, err := json.Marshal(usage); err != nil || len(raw) > 256*1024 {
+	if raw, err := marshalDurableJSON(usage); err != nil || len(raw) > 256*1024 {
 		return conversationError("bad_request", "model_usage_invalid")
 	}
 	return s.transaction(ctx, func(tx *sql.Tx) error {

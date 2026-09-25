@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { formatLocalDateTime } from "./time.ts";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Textarea } from "./components/ui/textarea";
@@ -95,7 +96,7 @@ export function TodoDialog({ conversationID, onClose, onSource }: { conversation
     </form>}
     <div className="todo-list" aria-label="待办列表">
       {loading ? <p className="subtle">正在读取待办…</p> : !page.items.length ? <p className="subtle">当前没有匹配的事项。</p> : page.items.map((todo, index) => <div className="todo-card" key={todo.id}>
-        {(index === 0 || page.items[index - 1].batch_id !== todo.batch_id) && <small className="subtle">{new Date(todo.created_at).toLocaleString()} 创建的事项</small>}
+        {(index === 0 || page.items[index - 1].batch_id !== todo.batch_id) && <small className="subtle">{formatLocalDateTime(todo.created_at)} 创建的事项</small>}
         <div className="todo-heading"><input type="checkbox" aria-label={`完成事项 ${todo.title}`} checked={todo.status === "completed"} disabled={disabled} onChange={event => change(todo, { status: event.target.checked ? "completed" : "open" }, event.target.checked ? "完成事项" : "重新打开事项")} /><strong data-completed={todo.status === "completed"}>第 {todo.position} 项 · {todo.title}</strong></div>
         {todo.description && <p>{todo.description}</p>}<small>{todoDeadline(todo)}</small>
         <div className="interaction-actions"><Button type="button" variant="ghost" size="sm" disabled={disabled} onClick={() => edit(todo)}>修改</Button>{todo.source_conversation_id && <Button type="button" variant="ghost" size="sm" onClick={() => onSource(todo.source_conversation_id!)}>来源会话</Button>}<Button type="button" variant="ghost" size="sm" disabled={disabled} onClick={() => void apply({ path: `/agent/todos/${todo.id}`, method: "DELETE", body: { client_id: crypto.randomUUID(), expected_revision: todo.revision }, label: `删除“${todo.title}”` })}>删除</Button></div>

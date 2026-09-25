@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
@@ -28,7 +27,7 @@ func (s *ConversationStore) ownedConversationDelegation(ctx context.Context, db 
 	} else if err != nil {
 		return out, err
 	}
-	err = json.Unmarshal(raw, &out)
+	err = unmarshalDurableJSON(raw, &out)
 	out.OwnerUserID = a.UserID
 	normalizeAgreement(&out)
 	return out, err
@@ -78,7 +77,7 @@ func (s *ConversationStore) ConversationDelegations(ctx context.Context, convers
 		if err = rows.Scan(&raw); err != nil {
 			return nil, err
 		}
-		if err = json.Unmarshal(raw, &item); err != nil {
+		if err = unmarshalDurableJSON(raw, &item); err != nil {
 			return nil, err
 		}
 		item.OwnerUserID = a.UserID

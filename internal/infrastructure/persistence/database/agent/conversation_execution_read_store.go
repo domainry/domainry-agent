@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"encoding/base64"
-	"encoding/json"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
@@ -54,7 +53,7 @@ func (s *ConversationStore) ReadExecutionCalls(ctx context.Context, in agentsdk.
 	if in.Cursor != "" {
 		var previous executionReadCursor
 		raw, err := base64.RawURLEncoding.DecodeString(in.Cursor)
-		if err != nil || json.Unmarshal(raw, &previous) != nil || previous.Owner != cursor.Owner || previous.Query != cursor.Query || previous.Step < 0 || previous.Step >= 256 || len(previous.CallKey) != 64 {
+		if err != nil || unmarshalDurableJSON(raw, &previous) != nil || previous.Owner != cursor.Owner || previous.Query != cursor.Query || previous.Step < 0 || previous.Step >= 256 || len(previous.CallKey) != 64 {
 			return out, conversationError("bad_request", "execution_cursor_invalid")
 		}
 		if previous.EventSeq != cursor.EventSeq {
@@ -81,7 +80,7 @@ func (s *ConversationStore) ReadExecutionCalls(ctx context.Context, in agentsdk.
 		if err = rows.Scan(&raw, &cursor.CallKey); err != nil {
 			break
 		}
-		if err = json.Unmarshal(raw, &call); err != nil {
+		if err = unmarshalDurableJSON(raw, &call); err != nil {
 			break
 		}
 		cursor.Step = call.Step

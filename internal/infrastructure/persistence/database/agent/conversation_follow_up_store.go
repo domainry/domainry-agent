@@ -45,7 +45,7 @@ func parseConversationFollowUpReport(raw string) (agentsdk.ConversationFollowUpR
 	observation := report.Observation
 	if json.Valid([]byte(observation)) {
 		var value any
-		if json.Unmarshal([]byte(observation), &value) == nil {
+		if unmarshalDurableJSON([]byte(observation), &value) == nil {
 			var compact bytes.Buffer
 			encoder := json.NewEncoder(&compact)
 			encoder.SetEscapeHTML(false)
@@ -203,7 +203,7 @@ func scanConversationFollowUpEvent(row interface{ Scan(...any) error }) (convers
 	if err != nil {
 		return result, err
 	}
-	err = json.Unmarshal(payload, &result.Event)
+	err = unmarshalDurableJSON(payload, &result.Event)
 	return result, err
 }
 

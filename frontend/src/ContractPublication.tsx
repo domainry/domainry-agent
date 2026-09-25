@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { formatLocalDateTime } from './time.ts';
 import { Button } from './components/ui/button';
 import { request } from './api.ts';
 import { describeError } from './errors.ts';
@@ -48,5 +49,5 @@ export function ContractPublicationHistorySection({value:d}:{value:Delegation}) 
   try {const next=await request<ContractPublicationHistory>(`${peerPath(d.id)}/contract-publications${before?`?before_revision=${before}`:''}`,'GET',undefined,controller.signal);if(!controller.signal.aborted)setHistory(previous=>before&&previous?{...next,items:[...previous.items,...next.items]}:next);}
   catch(e){if(!controller.signal.aborted){setHistory(null);setError(describeError(e));}}
  }
- return <section className="peer-dependencies" aria-label="约定共享记录"><Button variant="ghost" onClick={()=>void load()}>查看约定共享记录</Button>{history&&<><ol>{history.items.map(item=><li key={item.revision}>约定 {item.agreement_revision} · {item.publisher.user_id}／{item.publisher.role_key||'默认角色'} → {item.recipient_user_id} · {new Date(item.published_at).toLocaleString()}<p>{item.reason}</p></li>)}</ol>{!history.items.length&&<p>还没有重新共享记录。</p>}{!history.complete&&history.next_before&&<Button variant="ghost" onClick={()=>void load(history.next_before)}>更早共享记录</Button>}<Button variant="ghost" onClick={clear}>收起共享记录</Button></>}{error&&<p role="alert" className="text-destructive">{error}</p>}</section>;
+ return <section className="peer-dependencies" aria-label="约定共享记录"><Button variant="ghost" onClick={()=>void load()}>查看约定共享记录</Button>{history&&<><ol>{history.items.map(item=><li key={item.revision}>约定 {item.agreement_revision} · {item.publisher.user_id}／{item.publisher.role_key||'默认角色'} → {item.recipient_user_id} · {formatLocalDateTime(item.published_at)}<p>{item.reason}</p></li>)}</ol>{!history.items.length&&<p>还没有重新共享记录。</p>}{!history.complete&&history.next_before&&<Button variant="ghost" onClick={()=>void load(history.next_before)}>更早共享记录</Button>}<Button variant="ghost" onClick={clear}>收起共享记录</Button></>}{error&&<p role="alert" className="text-destructive">{error}</p>}</section>;
 }

@@ -53,7 +53,7 @@ func TestCrossOwnerContractRepublicationKeepsUpstreamPublisherAndRecipientAudien
 	input := executionStoreInput()
 	input.Tools = []sdk.ConversationToolDefinition{definition}
 	var arguments map[string]json.RawMessage
-	if err := json.Unmarshal(conversationJSON(in.Request), &arguments); err != nil {
+	if err := unmarshalDurableJSON(conversationJSON(in.Request), &arguments); err != nil {
 		t.Fatal(err)
 	}
 	delete(arguments, "client_id")

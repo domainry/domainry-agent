@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -86,14 +85,14 @@ func (s *AgentTaskRunStore) claimAgentTaskRunOnce(ctx context.Context, workspace
 		return agentpersistence.AgentTaskClaim{}, false, err
 	}
 	var run agentmodel.AgentTaskRun
-	if err := json.Unmarshal(payload, &run); err != nil {
+	if err := unmarshalDurableJSON(payload, &run); err != nil {
 		return agentpersistence.AgentTaskClaim{}, false, err
 	}
 	token, expires := priorToken+1, now.Add(duration)
 	run.Status, run.Attempt, run.Revision, run.UpdatedAt = agentmodel.AgentTaskRunRunning, run.Attempt+1, run.Revision+1, now
 	run.Lease = agentmodel.AgentTaskLease{Owner: owner, FencingToken: token, ExpiresAt: expires}
 	run.Attempts = append(run.Attempts, agentmodel.AgentTaskAttempt{Number: run.Attempt, StartedAt: now})
-	updatedPayload, _ := json.Marshal(run)
+	updatedPayload, _ := marshalDurableJSON(run)
 	update, updateArgs, buildErr := agentTaskClaimUpdate(s.store, workspaceID, runID, owner, token, priorToken, expires, now, updatedPayload)
 	if buildErr != nil {
 		return agentpersistence.AgentTaskClaim{}, false, buildErr
@@ -135,14 +134,14 @@ func (s *AgentTaskRunStore) claimNextOnce(ctx context.Context, workspaceID strin
 		return agentpersistence.AgentTaskClaim{}, false, err
 	}
 	var run agentmodel.AgentTaskRun
-	if err := json.Unmarshal(payload, &run); err != nil {
+	if err := unmarshalDurableJSON(payload, &run); err != nil {
 		return agentpersistence.AgentTaskClaim{}, false, err
 	}
 	token, expires := priorToken+1, now.Add(duration)
 	run.Status, run.Attempt, run.Revision, run.UpdatedAt = agentmodel.AgentTaskRunRunning, run.Attempt+1, run.Revision+1, now
 	run.Lease = agentmodel.AgentTaskLease{Owner: owner, FencingToken: token, ExpiresAt: expires}
 	run.Attempts = append(run.Attempts, agentmodel.AgentTaskAttempt{Number: run.Attempt, StartedAt: now})
-	updatedPayload, _ := json.Marshal(run)
+	updatedPayload, _ := marshalDurableJSON(run)
 	update, updateArgs, buildErr := agentTaskClaimUpdate(s.store, workspaceID, runID, owner, token, priorToken, expires, now, updatedPayload)
 	if buildErr != nil {
 		return agentpersistence.AgentTaskClaim{}, false, buildErr

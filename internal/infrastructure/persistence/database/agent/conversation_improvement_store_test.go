@@ -14,8 +14,8 @@ func improvementSkill(version, body string) sdk.SkillSchema {
 
 func improvementCandidate(id, version, baseline string, skill, baselineSkill sdk.SkillSchema, feedback string) sdk.ConversationImprovementCandidate {
 	now := time.Now().UTC().Truncate(time.Millisecond)
-	raw, _ := json.Marshal(skill)
-	baselineRaw, _ := json.Marshal(baselineSkill)
+	raw, _ := marshalDurableJSON(skill)
+	baselineRaw, _ := marshalDurableJSON(baselineSkill)
 	return sdk.ConversationImprovementCandidate{ID: id, Kind: "skill", TargetKey: skill.Key, Version: version, BaselineVersion: baseline, BaselineProposal: baselineRaw, FeedbackIDs: []string{feedback}, Proposal: raw, Reason: "Observed revision", Status: "candidate", Revision: 1, CreatedAt: now, UpdatedAt: now}
 }
 

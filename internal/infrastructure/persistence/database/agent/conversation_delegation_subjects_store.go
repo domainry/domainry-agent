@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"time"
 
@@ -43,10 +42,10 @@ func (s *ConversationStore) delegationSubjects(ctx context.Context, db conversat
 	} else if err != nil {
 		return out, false, err
 	}
-	if err = json.Unmarshal(source, &out.source); err != nil {
+	if err = unmarshalDurableJSON(source, &out.source); err != nil {
 		return out, false, err
 	}
-	if err = json.Unmarshal(execution, &out.execution); err != nil {
+	if err = unmarshalDurableJSON(execution, &out.execution); err != nil {
 		return out, false, err
 	}
 	if conversationAuthority(out.source) != nil || conversationAuthority(out.execution) != nil || !sameConversationWorkspace(a, out.source) || !sameConversationWorkspace(a, out.execution) || conversationOwner(out.source) != sourceKey || conversationOwner(out.execution) != executionKey {

@@ -34,7 +34,7 @@ func (s *ConversationStore) PublishedConversationSkills(ctx context.Context, a a
 			return nil, err
 		}
 		var definition agentsdk.SkillSchema
-		if json.Unmarshal(raw, &definition) != nil || definition.Version != version {
+		if unmarshalDurableJSON(raw, &definition) != nil || definition.Version != version {
 			return nil, conversationError("unavailable", "skill_configuration_invalid")
 		}
 		published := time.UnixMilli(updated).UTC()
@@ -84,7 +84,7 @@ func (s *ConversationStore) ConversationSkillVersion(ctx context.Context, key, v
 		return out, err
 	}
 	var candidate agentsdk.ConversationImprovementCandidate
-	if json.Unmarshal(raw, &candidate) != nil || json.Unmarshal(candidate.Proposal, &out.Definition) != nil {
+	if unmarshalDurableJSON(raw, &candidate) != nil || unmarshalDurableJSON(candidate.Proposal, &out.Definition) != nil {
 		return out, conversationError("unavailable", "skill_configuration_invalid")
 	}
 	out.Digest, out.State, out.Revision = conversationHash(out.Definition), status, revision
@@ -116,7 +116,7 @@ func (s *ConversationStore) CreateConversationCapabilityFeedback(ctx context.Con
 			if hash != conversationHash(request) {
 				return conversationError("conflict", "idempotency_conflict")
 			}
-			return json.Unmarshal(raw, &out)
+			return unmarshalDurableJSON(raw, &out)
 		}
 		if !errors.Is(err, sql.ErrNoRows) {
 			return err
@@ -145,7 +145,7 @@ func (s *ConversationStore) ConversationCapabilityFeedbacks(ctx context.Context,
 			return nil, err
 		}
 		var feedback agentsdk.ConversationCapabilityFeedback
-		if err := json.Unmarshal(raw, &feedback); err != nil {
+		if err := unmarshalDurableJSON(raw, &feedback); err != nil {
 			return nil, err
 		}
 		out = append(out, feedback)
@@ -170,7 +170,7 @@ func (s *ConversationStore) CreateConversationImprovementCandidate(ctx context.C
 			if hash != conversationHash(request) {
 				return conversationError("conflict", "idempotency_conflict")
 			}
-			return json.Unmarshal(raw, &out)
+			return unmarshalDurableJSON(raw, &out)
 		}
 		if !errors.Is(err, sql.ErrNoRows) {
 			return err
@@ -196,7 +196,7 @@ func (s *ConversationStore) conversationImprovementCandidate(ctx context.Context
 	if err != nil {
 		return out, err
 	}
-	return out, json.Unmarshal(raw, &out)
+	return out, unmarshalDurableJSON(raw, &out)
 }
 
 func (s *ConversationStore) ConversationImprovementCandidate(ctx context.Context, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationImprovementCandidate, error) {
@@ -226,7 +226,7 @@ func (s *ConversationStore) ConversationImprovementCandidates(ctx context.Contex
 		if err := rows.Scan(&raw); err != nil {
 			return nil, err
 		}
-		if err := json.Unmarshal(raw, &item); err != nil {
+		if err := unmarshalDurableJSON(raw, &item); err != nil {
 			return nil, err
 		}
 		out = append(out, item)
@@ -251,7 +251,7 @@ func (s *ConversationStore) ensureImprovementBaselineSnapshot(ctx context.Contex
 	err = tx.QueryRowContext(ctx, q, args...).Scan(&raw)
 	if err == nil {
 		var existing agentsdk.ConversationImprovementCandidate
-		if json.Unmarshal(raw, &existing) != nil || existing.ID == current.ID || conversationHash(existing.Proposal) != conversationHash(current.BaselineProposal) || existing.Evaluation == nil || !existing.Evaluation.Passed {
+		if unmarshalDurableJSON(raw, &existing) != nil || existing.ID == current.ID || conversationHash(existing.Proposal) != conversationHash(current.BaselineProposal) || existing.Evaluation == nil || !existing.Evaluation.Passed {
 			return conversationError("conflict", "improvement_baseline_changed")
 		}
 		return nil
@@ -385,7 +385,7 @@ func (s *ConversationStore) RollbackConversationImprovement(ctx context.Context,
 			return err
 		}
 		var target agentsdk.ConversationImprovementCandidate
-		if json.Unmarshal(raw, &target) != nil || target.Evaluation == nil || !target.Evaluation.Passed {
+		if unmarshalDurableJSON(raw, &target) != nil || target.Evaluation == nil || !target.Evaluation.Passed {
 			return conversationError("conflict", "improvement_evaluation_required")
 		}
 		now := time.Now().UTC().Truncate(time.Millisecond)

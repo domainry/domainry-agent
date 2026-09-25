@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { formatLocalDateTime } from "./time.ts";
 import { Button } from "./components/ui/button";
 import { request } from "./api.ts";
 import { describeError } from "./errors.ts";
@@ -8,7 +9,7 @@ type PlanLinks = { onRun: (conversationID: string, runID: string) => void; onArt
 
 function PlanSteps({ plan, onRun, onArtifact }: { plan: ConversationPlan } & PlanLinks) {
   return <>
-    <p className="subtle">{plan.reason} · {new Date(plan.created_at).toLocaleString()}</p>
+    <p className="subtle">{plan.reason} · {formatLocalDateTime(plan.created_at)}</p>
     <ol className="task-plan-steps">{plan.steps.map(step => <li key={step.id} className={`plan-${step.status}`}>
       <div className="task-plan-step-heading"><span className="agent-label">{taskPlanStatusLabel(step.status)}</span><strong>{step.title}</strong><small>{step.id}</small></div>
       {!!step.depends_on.length && <p><span>依赖：</span>{step.depends_on.join("、")}</p>}

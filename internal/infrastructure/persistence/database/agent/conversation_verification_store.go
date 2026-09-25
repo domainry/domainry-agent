@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"time"
 
@@ -160,7 +159,7 @@ func (s *ConversationStore) ConversationDeliveryHistory(ctx context.Context, id 
 		if err = rows.Scan(&raw); err != nil {
 			return out, err
 		}
-		if err = json.Unmarshal(raw, &entry); err != nil {
+		if err = unmarshalDurableJSON(raw, &entry); err != nil {
 			return out, err
 		}
 		out.Items = append(out.Items, entry)

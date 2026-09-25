@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"strings"
 	"time"
@@ -34,7 +33,7 @@ func (s *ConversationStore) readConversationTaskAgreementUpdate(ctx context.Cont
 		return conversationTaskAgreementUpdateRecord{}, false, err
 	}
 	var out conversationTaskAgreementUpdateRecord
-	if err = json.Unmarshal(raw, &out); err != nil {
+	if err = unmarshalDurableJSON(raw, &out); err != nil {
 		return out, false, err
 	}
 	normalizeConversationTaskGoal(&out.Task)
@@ -87,7 +86,7 @@ func validStoredConversationTaskBrief(brief sdk.ConversationTaskBrief) bool {
 	if brief.DueAt != nil && !seen["due_at"] {
 		return false
 	}
-	raw, err := json.Marshal(brief)
+	raw, err := marshalDurableJSON(brief)
 	return err == nil && len(raw) <= 8192
 }
 

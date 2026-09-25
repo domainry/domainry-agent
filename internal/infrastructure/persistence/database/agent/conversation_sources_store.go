@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
@@ -54,7 +53,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 		err = tx.QueryRowContext(ctx, q, args...).Scan(&raw)
 		if err == nil {
 			out.Input = &agentsdk.ConversationModelRequest{}
-			if err = json.Unmarshal(raw, out.Input); err != nil {
+			if err = unmarshalDurableJSON(raw, out.Input); err != nil {
 				return err
 			}
 		} else if !errors.Is(err, sql.ErrNoRows) {
@@ -82,7 +81,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 			if err = stepRows.Scan(&number, &raw); err != nil {
 				return err
 			}
-			if err = json.Unmarshal(raw, &step); err != nil {
+			if err = unmarshalDurableJSON(raw, &step); err != nil {
 				return err
 			}
 			out.Steps = append(out.Steps, step)
@@ -103,7 +102,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 			if err = tx.QueryRowContext(ctx, q, args...).Scan(&raw); err != nil {
 				return err
 			}
-			if err = json.Unmarshal(raw, &message); err != nil {
+			if err = unmarshalDurableJSON(raw, &message); err != nil {
 				return err
 			}
 			out.FinalMessage = &message
@@ -125,7 +124,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 			if err = rows.Scan(&raw); err != nil {
 				return err
 			}
-			if err = json.Unmarshal(raw, &call); err != nil {
+			if err = unmarshalDurableJSON(raw, &call); err != nil {
 				return err
 			}
 			out.Calls = append(out.Calls, call)
@@ -151,7 +150,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 			if err = peers.Scan(&raw); err != nil {
 				return err
 			}
-			if err = json.Unmarshal(raw, &m); err != nil {
+			if err = unmarshalDurableJSON(raw, &m); err != nil {
 				return err
 			}
 			out.Peers = append(out.Peers, m)
@@ -174,7 +173,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 			if err = sources.Scan(&value.Step, &raw); err != nil {
 				return err
 			}
-			if err = json.Unmarshal(raw, &value.Sources); err != nil {
+			if err = unmarshalDurableJSON(raw, &value.Sources); err != nil {
 				return err
 			}
 			if len(out.StepSources) >= 256 || len(value.Sources) > 64 {

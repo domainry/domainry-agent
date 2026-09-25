@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"math"
 	"time"
 
@@ -40,7 +39,7 @@ func (s *ConversationStore) deliveryPublicationRecord(ctx context.Context, db co
 	} else if err != nil {
 		return out, err
 	}
-	err = json.Unmarshal(raw, &out)
+	err = unmarshalDurableJSON(raw, &out)
 	return out, err
 }
 

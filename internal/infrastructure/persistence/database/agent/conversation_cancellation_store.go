@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
@@ -28,7 +27,7 @@ func (s *ConversationStore) interruptConversationWrites(ctx context.Context, tx 
 		var raw []byte
 		var call persistence.ConversationToolExecution
 		if err = rows.Scan(&raw); err == nil {
-			err = json.Unmarshal(raw, &call)
+			err = unmarshalDurableJSON(raw, &call)
 		}
 		if err != nil {
 			rows.Close()

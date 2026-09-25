@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { formatLocalDateTime } from "./time.ts";
 import { request } from "./api.ts";
 import { describeError } from "./errors.ts";
 import { Button } from "./components/ui/button";
@@ -104,7 +105,7 @@ export function TaskCompletion({ task, acting, setActing, onUpdated, onError, on
       </form>}
     </>}
     <div className="todo-toolbar"><Button type="button" size="sm" variant="ghost" disabled={historyBusy} onClick={() => void loadHistory()}>查看验收历史</Button>{history && <Button type="button" size="sm" variant="ghost" onClick={() => setHistory(null)}>收起历史</Button>}</div>
-    {history && <ol className="peer-messages" aria-label="任务验收历史">{history.items.map(item => <li key={item.revision}><details><summary>v{item.revision} · {kinds[item.kind] || item.kind} · {new Date(item.recorded_at).toLocaleString()}</summary><p>{item.submission.summary}</p><CompletionChecks record={item} onRun={onRun} /></details></li>)}</ol>}
+    {history && <ol className="peer-messages" aria-label="任务验收历史">{history.items.map(item => <li key={item.revision}><details><summary>v{item.revision} · {kinds[item.kind] || item.kind} · {formatLocalDateTime(item.recorded_at)}</summary><p>{item.submission.summary}</p><CompletionChecks record={item} onRun={onRun} /></details></li>)}</ol>}
     {history && !history.complete && <Button type="button" variant="outline" disabled={historyBusy} onClick={() => void loadHistory(history.next_before || 0)}>更早的验收记录</Button>}
   </section>;
 }

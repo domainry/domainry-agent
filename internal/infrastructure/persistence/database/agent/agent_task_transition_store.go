@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"time"
 
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
@@ -37,7 +36,7 @@ func (s *AgentTaskRunStore) Heartbeat(ctx context.Context, workspaceID, runID st
 		return agentpersistence.AgentTaskHeartbeatResult{}, err
 	}
 	run.Lease.ExpiresAt, run.UpdatedAt, run.Revision = expires, now, run.Revision+1
-	payload, _ := json.Marshal(run)
+	payload, _ := marshalDurableJSON(run)
 	persist, persistArgs, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), agentRunTable, workspaceID).
 		Set("payload_json", payload).Where(agentTaskLeasePredicate(runID, owner, token)).Build()
 	if buildErr != nil {
@@ -67,7 +66,7 @@ func (s *AgentTaskRunStore) SaveRunning(ctx context.Context, run agentmodel.Agen
 		return err
 	}
 	var current agentmodel.AgentTaskRun
-	if err := json.Unmarshal(currentPayload, &current); err != nil {
+	if err := unmarshalDurableJSON(currentPayload, &current); err != nil {
 		return err
 	}
 
@@ -78,7 +77,7 @@ func (s *AgentTaskRunStore) SaveRunning(ctx context.Context, run agentmodel.Agen
 	if run.Revision <= current.Revision {
 		run.Revision = current.Revision + 1
 	}
-	payload, err := json.Marshal(run)
+	payload, err := marshalDurableJSON(run)
 	if err != nil {
 		return err
 	}
@@ -108,7 +107,7 @@ func mergeAgentAuthorizationEvidence(current, incoming []agentmodel.AgentAuthori
 	seen := make(map[string]struct{}, len(current)+len(incoming))
 	for _, values := range [][]agentmodel.AgentAuthorizationEvidence{current, incoming} {
 		for _, value := range values {
-			raw, _ := json.Marshal(value)
+			raw, _ := marshalDurableJSON(value)
 			key := string(raw)
 			if _, found := seen[key]; found {
 				continue
@@ -137,7 +136,7 @@ func (s *AgentTaskRunStore) SaveWaitingApproval(ctx context.Context, run agentmo
 		return err
 	}
 	var current agentmodel.AgentTaskRun
-	if err := json.Unmarshal(payload, &current); err != nil {
+	if err := unmarshalDurableJSON(payload, &current); err != nil {
 		return err
 	}
 	if current.Revision != expectedRevision {
@@ -152,7 +151,7 @@ func (s *AgentTaskRunStore) SaveWaitingApproval(ctx context.Context, run agentmo
 	if current.Approval.ProposalID != run.Approval.ProposalID {
 		return agentError("conflict", "agent.task.approval_state_conflict")
 	}
-	payload, err = json.Marshal(run)
+	payload, err = marshalDurableJSON(run)
 	if err != nil {
 		return err
 	}
@@ -194,13 +193,13 @@ func (s *AgentTaskRunStore) SaveTerminalOverride(ctx context.Context, run agentm
 		return err
 	}
 	var current agentmodel.AgentTaskRun
-	if err := json.Unmarshal(payload, &current); err != nil {
+	if err := unmarshalDurableJSON(payload, &current); err != nil {
 		return err
 	}
 	if current.Revision != expectedRevision {
 		return agentError("conflict", "agent.task.override_state_conflict")
 	}
-	payload, err = json.Marshal(run)
+	payload, err = marshalDurableJSON(run)
 	if err != nil {
 		return err
 	}
@@ -236,7 +235,7 @@ func (s *AgentTaskRunStore) RequestCancel(ctx context.Context, workspaceID, runI
 	if run.Status == agentmodel.AgentTaskRunPending || run.Status == agentmodel.AgentTaskRunRetryScheduled {
 		run.Status, run.CompletedAt = agentmodel.AgentTaskRunCancelled, &now
 	}
-	payload, _ := json.Marshal(run)
+	payload, _ := marshalDurableJSON(run)
 	statement, args, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), agentRunTable, workspaceID).
 		Set("status", string(run.Status)).Set("payload_json", payload).Set("updated_at", now.UnixMilli()).Where(query.And(
 		agentRunKindPredicate(agentRunKindTask), query.Equal("run_id", runID), query.Equal("updated_at", previousUpdatedAt.UnixMilli()),
@@ -276,10 +275,10 @@ func (s *AgentTaskRunStore) SaveOperationalTransition(ctx context.Context, run a
 		return err
 	}
 	var current agentmodel.AgentTaskRun
-	if json.Unmarshal(currentPayload, &current) != nil || current.Revision != expectedRevision {
+	if unmarshalDurableJSON(currentPayload, &current) != nil || current.Revision != expectedRevision {
 		return agentError("conflict", "agent.task.operation_state_conflict")
 	}
-	payload, err := json.Marshal(run)
+	payload, err := marshalDurableJSON(run)
 	if err != nil {
 		return err
 	}

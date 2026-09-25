@@ -1,4 +1,5 @@
 import type { Run } from "./api.ts";
+import { formatLocalDateTime } from "./time.ts";
 import { webResult } from "./WebResult.tsx";
 import { accountWriteResult } from "./AccountWriteResult.tsx";
 import { isAccountWrite } from "./account-write-state.ts";
@@ -131,10 +132,10 @@ export function ExecutionActivity({run, onResume, onRepair, recoveryDisabled, re
           {call.access_error&&<p role="status" className="subtle">这项调用尚无可验证的成功回执，参数和结果暂不可查看。</p>}
           <dl className="tool-audit">
             {call.reused_from&&<><dt>复用原回执</dt><dd>本次未重新提交操作 · 原执行 {call.reused_from.run_id} · 第 {call.reused_from.step+1} 步</dd></>}
-            {call.outcome_inspection&&<><dt>原回执核查</dt><dd>{call.outcome_inspection.status==='reading'?'查询中':call.outcome_inspection.status==='completed'?'已取得明确回执':'结果尚未明确'} · {new Date(call.outcome_inspection.checked_at).toLocaleString()} · {call.outcome_inspection.actor_id}</dd></>}
+            {call.outcome_inspection&&<><dt>原回执核查</dt><dd>{call.outcome_inspection.status==='reading'?'查询中':call.outcome_inspection.status==='completed'?'已取得明确回执':'结果尚未明确'} · {formatLocalDateTime(call.outcome_inspection.checked_at)} · {call.outcome_inspection.actor_id}</dd></>}
             <dt>调用耗时</dt><dd>{call.reused_from ? "本次未调用外部服务" : call.started_at ? durationLabel(call.duration_ms) : "未报告"}</dd>
             {call.authorization && <><dt>授权结果</dt><dd>{call.reused_from && call.authorization.status === "confirmation_required" ? "新操作需确认；本次复用原回执" : ({granted:"已授权", confirmation_required:"需要确认", denied:"已拒绝", failed:"检查失败"} as Record<string,string>)[call.authorization.status] || call.authorization.status} · 检查 {call.authorization.checks} 次{call.authorization.revision ? ` · 版本 ${call.authorization.revision}` : ""}</dd></>}
-            {call.confirmation && <><dt>确认结果</dt><dd>{({approved:"已批准", rejected:"已拒绝", pending:"等待确认", resolved:"已解决"} as Record<string,string>)[call.confirmation.status] || call.confirmation.status}{call.confirmation.responded_by ? ` · ${call.confirmation.responded_by}` : ""}{call.confirmation.responded_at ? ` · ${new Date(call.confirmation.responded_at).toLocaleString()}` : ""}</dd></>}
+            {call.confirmation && <><dt>确认结果</dt><dd>{({approved:"已批准", rejected:"已拒绝", pending:"等待确认", resolved:"已解决"} as Record<string,string>)[call.confirmation.status] || call.confirmation.status}{call.confirmation.responded_by ? ` · ${call.confirmation.responded_by}` : ""}{call.confirmation.responded_at ? ` · ${formatLocalDateTime(call.confirmation.responded_at)}` : ""}</dd></>}
           </dl>
           {call.resource_id && <small className="subtle">结果引用：{call.resource_id}</small>}
 		  <CodeSubcalls calls={call.subcalls || []} executionID={executionID} />

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { formatLocalDateTime } from "./time.ts";
 import { Brain, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -67,7 +68,7 @@ export function MemoryDialog({ source, conversationID, onClose, onSaved }: { sou
     {error && <p role="alert" className="text-destructive text-sm">{error}</p>}
     {savedNotice && <p role="status" className="composer-notice">{savedNotice}</p>}
     <div className="memory-list">{loading ? <p className="subtle">正在读取记忆…</p> : items.length ? items.map((memory) => <div className="memory-card" key={memory.id}>
-      <div><div className="memory-card-heading"><strong>{memory.title}</strong><span>{kindLabels[memory.kind]} · {scopeLabels[memory.scope.kind]}</span></div><p>{memory.content}</p><small className="subtle">更新于 {new Date(memory.updated_at).toLocaleString()}{memory.applies_to.length ? ` · 适用于 ${memory.applies_to.join("、")}` : ""}{memory.uncertainty ? ` · 限制：${memory.uncertainty}` : ""}{memory.source?.message_id ? ` · 来源消息 ${memory.source.message_id}` : ""}{memory.correction ? ` · 修正自 v${memory.correction.previous_revision}：${memory.correction.reason}` : ""}</small></div>
+      <div><div className="memory-card-heading"><strong>{memory.title}</strong><span>{kindLabels[memory.kind]} · {scopeLabels[memory.scope.kind]}</span></div><p>{memory.content}</p><small className="subtle">更新于 {formatLocalDateTime(memory.updated_at)}{memory.applies_to.length ? ` · 适用于 ${memory.applies_to.join("、")}` : ""}{memory.uncertainty ? ` · 限制：${memory.uncertainty}` : ""}{memory.source?.message_id ? ` · 来源消息 ${memory.source.message_id}` : ""}{memory.correction ? ` · 修正自 v${memory.correction.previous_revision}：${memory.correction.reason}` : ""}</small></div>
       <Switch aria-label={`启用记忆 ${memory.title}`} checked={memory.enabled} disabled={busy} onCheckedChange={(enabled) => void mutate(async () => { const updated = await request<Memory>(`/agent/conversations/memories/${memory.id}`, "PUT", writeBody(memory, enabled)); setItems((value) => value.map((item) => item.id === updated.id ? updated : item)); if (editing?.id === updated.id) setEditing(updated); })}/>
       <Button variant="ghost" size="icon-sm" aria-label={`编辑记忆 ${memory.title}`} disabled={busy} onClick={() => edit(memory)}><Pencil size={15}/></Button>
       <Button variant="ghost" size="icon-sm" aria-label={`删除记忆 ${memory.title}`} disabled={busy} onClick={() => void mutate(async () => { await request(`/agent/conversations/memories/${memory.id}?expected_revision=${memory.revision}`, "DELETE"); setItems((value) => value.filter((item) => item.id !== memory.id)); if (editing?.id === memory.id) reset(); })}><Trash2 size={15}/></Button>

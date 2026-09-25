@@ -1,7 +1,6 @@
 package agent
 
 import (
-	"encoding/json"
 	"strings"
 	"time"
 
@@ -48,8 +47,8 @@ func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind strin
 			StartedAt              time.Time      `json:"started_at"`
 			CompletedAt            *time.Time     `json:"completed_at"`
 		}
-		raw, err := json.Marshal(data)
-		if err != nil || json.Unmarshal(raw, &event) != nil || !validConversationModelAttemptStep(event.Step) || event.Attempt != run.Attempt || event.ModelAttempt < 1 {
+		raw, err := marshalDurableJSON(data)
+		if err != nil || unmarshalDurableJSON(raw, &event) != nil || !validConversationModelAttemptStep(event.Step) || event.Attempt != run.Attempt || event.ModelAttempt < 1 {
 			return conversationError("bad_request", "model_attempt_event_invalid")
 		}
 		index := conversationModelAttemptIndex(*run, event.Step, event.Attempt)
@@ -109,8 +108,8 @@ func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind strin
 			Attempt int                               `json:"attempt"`
 			Context *agentsdk.ConversationContextView `json:"context"`
 		}
-		raw, err := json.Marshal(data)
-		if err != nil || json.Unmarshal(raw, &event) != nil || event.Attempt != run.Attempt || event.Context == nil {
+		raw, err := marshalDurableJSON(data)
+		if err != nil || unmarshalDurableJSON(raw, &event) != nil || event.Attempt != run.Attempt || event.Context == nil {
 			return conversationError("bad_request", "context_event_invalid")
 		}
 		run.Context = event.Context
@@ -161,8 +160,8 @@ func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind strin
 		Usage           map[string]any                        `json:"usage"`
 		Context         *agentsdk.ConversationContextView     `json:"context"`
 	}
-	raw, err := json.Marshal(data)
-	if err != nil || json.Unmarshal(raw, &event) != nil || event.Step < 0 || event.Step >= 256 || event.Attempt != run.Attempt {
+	raw, err := marshalDurableJSON(data)
+	if err != nil || unmarshalDurableJSON(raw, &event) != nil || event.Step < 0 || event.Step >= 256 || event.Attempt != run.Attempt {
 		return conversationError("bad_request", "step_event_invalid")
 	}
 	index := -1

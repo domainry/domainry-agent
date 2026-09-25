@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
@@ -32,7 +31,7 @@ func (s *ConversationStore) ConversationPeerInbox(ctx context.Context, conversat
 			if err = rows.Scan(&raw); err != nil {
 				break
 			}
-			if err = json.Unmarshal(raw, &m); err != nil {
+			if err = unmarshalDurableJSON(raw, &m); err != nil {
 				break
 			}
 			candidates = append(candidates, m)
@@ -87,7 +86,7 @@ func (s *ConversationStore) consumeConversationPeerInbox(ctx context.Context, tx
 			return err
 		}
 		var message agentsdk.ConversationAgentMessage
-		if err = json.Unmarshal(raw, &message); err != nil {
+		if err = unmarshalDurableJSON(raw, &message); err != nil {
 			return err
 		}
 		if message.ParticipantUserID != "" {
@@ -155,13 +154,13 @@ func (s *ConversationStore) launchConversationPeerMessage(ctx context.Context, r
 				var raw, authority, agent []byte
 				var item pending
 				if err = rows.Scan(&raw, &authority, &agent); err == nil {
-					err = json.Unmarshal(raw, &item.message)
+					err = unmarshalDurableJSON(raw, &item.message)
 				}
 				if err == nil {
-					err = json.Unmarshal(authority, &item.authority)
+					err = unmarshalDurableJSON(authority, &item.authority)
 				}
 				if err == nil {
-					err = json.Unmarshal(agent, &item.agent)
+					err = unmarshalDurableJSON(agent, &item.agent)
 				}
 				if err != nil {
 					rows.Close()
