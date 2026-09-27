@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"sync"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 )
@@ -17,10 +18,25 @@ import (
 // conversation model. It keeps task durability in Agent while avoiding a
 // second, separately configured Agent HTTP service for one-shot structured
 // extraction tasks.
-type ModelTaskRunner struct{ model agentsdk.ConversationModel }
+type ModelTaskRunner struct {
+	model      agentsdk.ConversationModel
+	mu         sync.RWMutex
+	invokeTool ModelTaskToolInvoker
+}
+
+// ModelTaskToolInvoker stays on the Agent application boundary. The model may
+// propose arguments, but only the current task credential and host authorize
+// and execute a read; credentials and authorization evidence never reach it.
+type ModelTaskToolInvoker func(context.Context, agentsdk.TaskRequest, agentsdk.ConversationToolCall, map[string]any) (any, error)
 
 func NewModelTaskRunner(model agentsdk.ConversationModel) *ModelTaskRunner {
 	return &ModelTaskRunner{model: model}
+}
+
+func (r *ModelTaskRunner) BindToolInvoker(invoke ModelTaskToolInvoker) {
+	r.mu.Lock()
+	r.invokeTool = invoke
+	r.mu.Unlock()
 }
 
 func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskRequest) (agentsdk.TaskResult, error) {
@@ -73,17 +89,12 @@ func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskReques
 	}); ok {
 		modelRequest.ModelIdentity = source.ConversationModelIdentity()
 	}
+	if len(request.AllowedTools) != 0 {
+		return r.startWithAuthorizedReadTools(ctx, request, modelRequest)
+	}
 	result, err := r.model.GenerateConversation(ctx, modelRequest)
 	if err != nil {
-		failure := taskModelFailure("provider", "agent.task.model_failed", false)
-		if details, ok := err.(agentsdk.ConversationModelFailureProvider); ok {
-			modelFailure := details.ConversationModelFailureDetails()
-			failure.ErrorCode, failure.Retryable, failure.Usage = modelFailure.ErrorCode, modelFailure.Retryable, modelFailure.Usage
-			if strings.TrimSpace(failure.ErrorCode) == "" {
-				failure.ErrorCode = "agent.task.model_failed"
-			}
-		}
-		return failure, err
+		return taskModelProviderFailure(err), err
 	}
 	output, err := decodeTaskModelOutput(result.Content, maxOutputBytes)
 	if err != nil {
@@ -127,6 +138,18 @@ func decodeTaskModelOutput(content string, maxBytes int) (map[string]any, error)
 
 func taskModelFailure(class, code string, retryable bool) agentsdk.TaskResult {
 	return agentsdk.TaskResult{Status: agentsdk.ProviderRunFailed, ErrorClass: class, ErrorCode: code, Retryable: retryable}
+}
+
+func taskModelProviderFailure(err error) agentsdk.TaskResult {
+	failure := taskModelFailure("provider", "agent.task.model_failed", false)
+	if details, ok := err.(agentsdk.ConversationModelFailureProvider); ok {
+		modelFailure := details.ConversationModelFailureDetails()
+		failure.ErrorCode, failure.Retryable, failure.Usage = modelFailure.ErrorCode, modelFailure.Retryable, modelFailure.Usage
+		if strings.TrimSpace(failure.ErrorCode) == "" {
+			failure.ErrorCode = "agent.task.model_failed"
+		}
+	}
+	return failure
 }
 
 var _ agentsdk.TaskRunner = (*ModelTaskRunner)(nil)

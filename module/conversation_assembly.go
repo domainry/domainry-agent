@@ -40,6 +40,21 @@ type conversationAssembly struct {
 	options             ConversationOptions
 }
 
+func bindHostExecutionRuntimes(options *ConversationOptions, model agentsdk.ConversationModel, host modulehost.ConversationApplicationHost) {
+	if options == nil || host == nil {
+		return
+	}
+	if _, capable := model.(agentsdk.ConversationAgentModel); !capable {
+		return
+	}
+	if code, ok := host.(modulehost.ConversationCodeHost); ok && options.CodeRuntime == nil {
+		options.CodeRuntime = code.ConversationCodeRuntime()
+	}
+	if coding, ok := host.(modulehost.ConversationCodingHost); ok && options.CodingRuntime == nil {
+		options.CodingRuntime = coding.ConversationCodingRuntime()
+	}
+}
+
 // This is startup-only assembly. The host binds before publishing the service;
 // no running conversation service or frozen execution input is hot-swapped.
 func (b *binding) openConversations(a *conversationAssembly, host modulehost.ConversationApplicationHost) error {
@@ -65,12 +80,6 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 		if lifecycle, ok := host.(modulehost.ConversationLifecycleHost); ok {
 			options.LifecycleExtensions = append(options.LifecycleExtensions, lifecycle.ConversationLifecycleExtensions()...)
 		}
-		if code, ok := host.(modulehost.ConversationCodeHost); ok && options.CodeRuntime == nil {
-			options.CodeRuntime = code.ConversationCodeRuntime()
-		}
-		if coding, ok := host.(modulehost.ConversationCodingHost); ok && options.CodingRuntime == nil {
-			options.CodingRuntime = coding.ConversationCodingRuntime()
-		}
 		if options.ExecutionAuthorizer == nil {
 			options.ExecutionAuthorizer, _ = host.ConversationAuthorizer().(agentsdk.ConversationExecutionAuthorizer)
 		}
@@ -88,6 +97,11 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 					return err
 				}
 			}
+			// Runtime advertises optional execution worlds independently of this
+			// Agent's model. A management-only conversation surface (for example
+			// Knowledge libraries) must not inherit an unusable code Runtime: code
+			// and coding execution both require a tool-capable model and ToolHost.
+			bindHostExecutionRuntimes(&options, a.model, host)
 			if options.Business == nil {
 				options.Business = host.ConversationBusinessSource()
 			}

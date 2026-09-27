@@ -18,6 +18,8 @@ import (
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-agent/definition"
 	"github.com/domainry/domainry-agent/internal/execution"
+	"github.com/domainry/domainry-foundation/apperror"
+	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
 
 type taskLocator struct{ workspaceID, runID string }
@@ -828,6 +830,16 @@ func errorCode(err error, fallback string) string {
 	type coded interface{ ErrorCode() string }
 	if value, ok := err.(coded); ok && strings.TrimSpace(value.ErrorCode()) != "" {
 		return strings.TrimSpace(value.ErrorCode())
+	}
+	var appError *apperror.AppError
+	if errors.As(err, &appError) {
+		if code := strings.TrimSpace(appError.ErrorCode()); code != "" {
+			return code
+		}
+	}
+	var identityError *identitysdk.Error
+	if errors.As(err, &identityError) && strings.TrimSpace(identityError.Code) != "" {
+		return strings.TrimSpace(identityError.Code)
 	}
 	return strings.TrimSpace(fallback)
 }

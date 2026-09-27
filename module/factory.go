@@ -260,10 +260,13 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		}
 	}
 	taskRunner := agentsdk.TaskRunner(runner)
+	var localTaskModelRunner *provider.ModelTaskRunner
 	if taskModel != nil {
-		taskRunner = provider.NewModelTaskRunner(taskModel)
+		localTaskModelRunner = provider.NewModelTaskRunner(taskModel)
+		taskRunner = localTaskModelRunner
 	}
 	binding := newBinding(runner, taskRunner, store, agentsdk.DeploymentModeModule)
+	binding.localTaskModelRunner = localTaskModelRunner
 	opened := false
 	defer func() {
 		if !opened {
@@ -428,6 +431,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 type binding struct {
 	assemblyMu           sync.Mutex
 	runner               *provider.Runner
+	localTaskModelRunner *provider.ModelTaskRunner
 	taskExecution        *agentapplication.TaskExecutionService
 	definitions          agentpersistence.DefinitionRepository
 	state                agentpersistence.AgentStateRepository
@@ -534,6 +538,22 @@ func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
 	})
 	if err != nil {
 		return err
+	}
+	if b.localTaskModelRunner != nil {
+		tools := agentapplication.NewTaskToolService(b.taskState, ledger, host.TaskAgent())
+		b.localTaskModelRunner.BindToolInvoker(func(ctx context.Context, request agentsdk.TaskRequest, call agentsdk.ConversationToolCall, input map[string]any) (any, error) {
+			result, invokeErr := tools.Invoke(ctx, agentapplication.TaskToolInvocation{
+				Credential: request.ExecutionCredential, WorkspaceID: request.WorkspaceID, TaskRunID: request.TaskRunID,
+				Tool: call.Name, IdempotencyKey: request.IdempotencyKey + ":" + call.ID, Input: input,
+			})
+			if invokeErr != nil {
+				return nil, invokeErr
+			}
+			if result.Status != "executed" {
+				return nil, fmt.Errorf("Agent task read tool did not execute")
+			}
+			return result.Output, nil
+		})
 	}
 	if b.pendingConversations != nil {
 		if err := b.openConversations(b.pendingConversations, conversationHost); err != nil {

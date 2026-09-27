@@ -2,6 +2,7 @@ package application
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"sync/atomic"
@@ -10,7 +11,21 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
+	"github.com/domainry/domainry-foundation/apperror"
+	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
+
+func TestTaskWorkerPreservesRuntimeAuthorizationErrorCode(t *testing.T) {
+	if code := errorCode(&apperror.AppError{Kind: apperror.KindForbidden, Code: "agent.authorization.capability_revoked"}, "agent.task.authorization_failed"); code != "agent.authorization.capability_revoked" {
+		t.Fatalf("Runtime authorization reason was hidden: %s", code)
+	}
+	if code := errorCode(errors.New("uncoded"), "agent.task.authorization_failed"); code != "agent.task.authorization_failed" {
+		t.Fatalf("uncoded error lost fallback: %s", code)
+	}
+	if code := errorCode(&identitysdk.Error{Code: "identity.application_scope_required"}, "agent.task.authorization_failed"); code != "identity.application_scope_required" {
+		t.Fatalf("Identity denial reason was hidden: %s", code)
+	}
+}
 
 func TestTaskCompletionValidatesTheFullOutputContract(t *testing.T) {
 	var schema map[string]any
