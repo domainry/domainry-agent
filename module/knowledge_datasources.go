@@ -99,7 +99,7 @@ func assembleKnowledgeDatasources(options *ConversationOptions, configured []Kno
 	}
 	keyPattern := regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$`)
 	for _, entry := range configured {
-		if !keyPattern.MatchString(entry.Key) || strings.TrimSpace(entry.Name) == "" || len(entry.Name) > 128 || len(entry.Description) > 1024 || entry.Knowledge.PermissionIDs != nil || entry.Knowledge.AuthorizeWorkspace != nil || entry.Knowledge.DocumentPermissionIDs != nil {
+		if !keyPattern.MatchString(entry.Key) || strings.TrimSpace(entry.Name) == "" || len(entry.Name) > 128 || len(entry.Description) > 1024 || entry.Knowledge.PermissionIDs != nil || entry.Knowledge.AuthorizeWorkspace != nil || entry.Knowledge.DocumentPermissionIDs != nil || entry.Knowledge.ReadPermissionIDs != nil {
 			return fmt.Errorf("invalid fixed knowledge datasource configuration")
 		}
 		if _, exists := out.entries[entry.Key]; exists {

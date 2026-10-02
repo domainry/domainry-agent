@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
@@ -216,7 +217,7 @@ func (a *attachmentLiveAudit) verifyCleanup(ctx context.Context, r persistence.C
 	a.mu.Lock()
 	doc, permission, conversation, uploads, deletes, lost := a.doc, a.permission, a.conversation, a.uploads, a.deletes, a.lostUpload
 	a.mu.Unlock()
-	if uploads != 1 || deletes != 1 || !lost || r.Source.DocID != doc || r.Source.PermissionID != permission {
+	if uploads != 1 || deletes != 1 || !lost || r.Source.DocID != doc || !slices.Equal(r.Source.DocumentPermissionIDs, []string{permission}) {
 		return errors.New("attachment lifecycle identity/count mismatch")
 	}
 	source, actor, err := a.readSource([]string{permission})

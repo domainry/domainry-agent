@@ -29,6 +29,9 @@ type attachmentKnowledgeTestPolicy struct{}
 func (attachmentKnowledgeTestPolicy) AuthorizeConversationAttachment(context.Context, string, agentsdk.ConversationAuthority) error {
 	return nil
 }
+func (attachmentKnowledgeTestPolicy) ResolveConversationAttachmentPermissions(context.Context, agentsdk.ConversationAuthority) (agentsdk.ConversationAttachmentPermissionScope, error) {
+	return agentsdk.ConversationAttachmentPermissionScope{OrganizationIDs: []string{"org-a"}}, nil
+}
 func (attachmentKnowledgeTestPolicy) AuthorizeConversationTool(context.Context, agentsdk.ConversationToolRequest) (agentsdk.ConversationToolAuthorization, error) {
 	return agentsdk.ConversationToolAuthorization{Granted: true}, nil
 }
@@ -40,8 +43,8 @@ type attachmentKnowledgeTestSource struct {
 func (attachmentKnowledgeTestSource) AttachmentKnowledgeSourceIdentity() string {
 	return strings.Repeat("a", 64)
 }
-func (s attachmentKnowledgeTestSource) ResolveAttachmentKnowledge(context.Context, string, agentsdk.ConversationAuthority) (agentsdk.ConversationAttachmentKnowledgeScope, error) {
-	return agentsdk.ConversationAttachmentKnowledgeScope{Source: s, PermissionID: "scope:private"}, nil
+func (s attachmentKnowledgeTestSource) ResolveAttachmentKnowledge(context.Context, string, agentsdk.ConversationAuthority, agentsdk.ConversationAttachmentPermissionScope) (agentsdk.ConversationAttachmentKnowledgeScope, error) {
+	return agentsdk.ConversationAttachmentKnowledgeScope{Source: s, DocumentPermissionIDs: []string{"scope:private"}, ReadPermissionIDs: []string{"scope:org", "scope:private", "scope:user", "scope:workspace"}}, nil
 }
 func (s attachmentKnowledgeTestSource) KnowledgeDocumentSourceIdentity() string {
 	return s.AttachmentKnowledgeSourceIdentity()
@@ -62,7 +65,7 @@ func TestAttachmentReceiptRejectsTamperingAndStaysScoped(t *testing.T) {
 	a := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
 	conversation, id := "conv_"+strings.Repeat("a", 32), "att_"+strings.Repeat("b", 32)
 	source := attachmentKnowledgeTestSource{}
-	repo := &attachmentKnowledgeTestRepository{record: persistence.ConversationAttachmentRecord{Attachment: agentsdk.ConversationAttachment{ID: id, ConversationID: conversation, Filename: "original.xlsx", State: "ready", SHA256: strings.Repeat("c", 64)}, Source: &persistence.ConversationAttachmentSource{DocID: "remote", Identity: source.KnowledgeDocumentSourceIdentity(), AccessPolicySHA256: source.KnowledgeDocumentAccessPolicySHA256(), PermissionID: "scope:private"}, Index: &persistence.ConversationAttachmentIndex{Actor: a, IndexObserved: true}}}
+	repo := &attachmentKnowledgeTestRepository{record: persistence.ConversationAttachmentRecord{Attachment: agentsdk.ConversationAttachment{ID: id, ConversationID: conversation, Filename: "original.xlsx", State: "ready", SHA256: strings.Repeat("c", 64)}, Source: &persistence.ConversationAttachmentSource{DocID: "remote", Identity: source.KnowledgeDocumentSourceIdentity(), AccessPolicySHA256: source.KnowledgeDocumentAccessPolicySHA256(), DocumentPermissionIDs: []string{"scope:private"}}, Index: &persistence.ConversationAttachmentIndex{Actor: a, IndexObserved: true}}}
 	service := &ConversationService{runtimeID: a.RuntimeID, repo: repo, options: ConversationOptions{KnowledgeRuntime: knowledge.NewServiceRuntime(repo), AttachmentAuthorizer: attachmentKnowledgeTestPolicy{}, PersonalAuthorizer: attachmentKnowledgeTestPolicy{}, AttachmentKnowledge: []agentsdk.ConversationAttachmentKnowledgeBinding{{WorkspaceID: a.WorkspaceID, Knowledge: source}}}}
 	definition, _ := attachmentKnowledgeTool("attachment_read")
 	in := agentsdk.ConversationToolRequest{Authority: a, ConversationID: conversation, Definition: definition, Call: agentsdk.ConversationToolCall{Name: definition.Key, Arguments: `{"attachment_id":"` + id + `"}`}}

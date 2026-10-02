@@ -26,8 +26,8 @@ type noAttachmentDeleteRecovery struct {
 	agentsdk.ConversationAttachmentKnowledge
 }
 
-func (s noAttachmentDeleteRecovery) ResolveAttachmentKnowledge(ctx context.Context, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationAttachmentKnowledgeScope, error) {
-	out, err := s.ConversationAttachmentKnowledge.ResolveAttachmentKnowledge(ctx, id, a)
+func (s noAttachmentDeleteRecovery) ResolveAttachmentKnowledge(ctx context.Context, id string, a agentsdk.ConversationAuthority, permissions agentsdk.ConversationAttachmentPermissionScope) (agentsdk.ConversationAttachmentKnowledgeScope, error) {
+	out, err := s.ConversationAttachmentKnowledge.ResolveAttachmentKnowledge(ctx, id, a, permissions)
 	if err == nil {
 		out.Source = noDeleteRecoverySource{out.Source}
 	}

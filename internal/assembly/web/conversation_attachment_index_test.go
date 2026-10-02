@@ -11,6 +11,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
@@ -65,6 +66,23 @@ func readSharedConversationAttachmentRecord(ctx context.Context, database *sql.D
 	return readSharedAttachmentRecord(ctx, database, id)
 }
 
+func validAttachmentReadPermissions(ids []string, documentPermission string) bool {
+	// Direct visibility probes intentionally present only the document grant;
+	// normal attachment reads present the principal's full identity set.
+	if slices.Equal(ids, []string{documentPermission}) {
+		return true
+	}
+	if len(ids) < 3 || !slices.IsSorted(ids) || !slices.Contains(ids, documentPermission) {
+		return false
+	}
+	for i, id := range ids {
+		if !strings.HasPrefix(id, "scope:agent:attachment:") || i > 0 && ids[i-1] == id {
+			return false
+		}
+	}
+	return true
+}
+
 func TestPrivateAttachmentIndexIdentityHTTPAndFullHostRestart(t *testing.T) {
 	runPrivateAttachmentIndexIdentityHTTP(t, nil, "")
 }
@@ -111,13 +129,13 @@ func runPrivateAttachmentIndexIdentityHTTP(t *testing.T, live *agentmodule.Knowl
 		_ = json.NewDecoder(r.Body).Decode(&in)
 		if r.URL.Path == "/v1/kb/search" {
 			hits := []any{}
-			if remote != "" && len(in.Permissions) == 1 && in.Permissions[0] == permission {
+			if remote != "" && validAttachmentReadPermissions(in.Permissions, permission) {
 				hits = append(hits, map[string]any{"doc_id": remote, "body": "附件检索验收片段，来自 Connector。"})
 			}
 			_ = json.NewEncoder(w).Encode(map[string]any{"hits": hits})
 			return
 		}
-		if remote == "" || in.ID != remote || len(in.Permissions) != 1 || in.Permissions[0] != permission {
+		if remote == "" || in.ID != remote || !validAttachmentReadPermissions(in.Permissions, permission) {
 			io.WriteString(w, `{"err_code":1004}`)
 			return
 		}

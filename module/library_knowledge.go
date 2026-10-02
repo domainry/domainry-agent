@@ -140,7 +140,7 @@ func assembleLibraryKnowledge(options *ConversationOptions, configured []Knowled
 }
 
 func bindLibraryPermissions(binding *KnowledgeLibraryConfig, runtimeID string) error {
-	if binding.Knowledge.DocumentPermissionIDs != nil {
+	if binding.Knowledge.DocumentPermissionIDs != nil || binding.Knowledge.ReadPermissionIDs != nil {
 		return fmt.Errorf("configure fixed library permissions through PermissionIDs only")
 	}
 	if binding.ManageDocuments {

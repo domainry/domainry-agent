@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -96,4 +97,30 @@ func (h *Host) knowledgePermissionIDs(ctx context.Context, a agentsdk.Conversati
 	}
 	sort.Strings(ids)
 	return ids, nil
+}
+
+// ResolveConversationAttachmentPermissions projects only live Identity
+// organization membership. User and workspace identities are taken from the
+// already authenticated ConversationAuthority by the Knowledge provider.
+func (h *Host) ResolveConversationAttachmentPermissions(ctx context.Context, a agentsdk.ConversationAuthority) (agentsdk.ConversationAttachmentPermissionScope, error) {
+	var zero agentsdk.ConversationAttachmentPermissionScope
+	denied := &agentsdk.Error{Class: "forbidden", Code: "agent.conversation.attachment_access_denied"}
+	resolution, known, err := h.resolveConversationPrincipal(ctx, a)
+	if err != nil {
+		return zero, err
+	}
+	if !known {
+		return zero, denied
+	}
+	ids := append([]string{resolution.AccessBundle.Subject.OrgID}, resolution.AccessBundle.Subject.OrgScopeIDs...)
+	ids = append(ids, resolution.AccessBundle.Subject.SupportOrgID)
+	ids = append(ids, resolution.AccessBundle.Subject.SupportOrgScopeIDs...)
+	out := ids[:0]
+	for _, id := range ids {
+		if strings.TrimSpace(id) != "" {
+			out = append(out, id)
+		}
+	}
+	sort.Strings(out)
+	return agentsdk.ConversationAttachmentPermissionScope{OrganizationIDs: slices.Compact(out)}, nil
 }

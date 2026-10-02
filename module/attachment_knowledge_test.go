@@ -1,6 +1,7 @@
 package module
 
 import (
+	"slices"
 	"strings"
 	"testing"
 
@@ -25,8 +26,9 @@ func TestAttachmentKnowledgeConfigurationOwnsPrivateScopeAndRejectsKBReuse(t *te
 	}
 	source := options.AttachmentKnowledge[0].Knowledge
 	a := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "w", UserID: "alice"}
+	permissions := agentsdk.ConversationAttachmentPermissionScope{OrganizationIDs: []string{"org-b", "org-a", "org-a"}}
 	conversation := "conv_" + strings.Repeat("a", 32)
-	first, err := source.ResolveAttachmentKnowledge(t.Context(), conversation, a)
+	first, err := source.ResolveAttachmentKnowledge(t.Context(), conversation, a, permissions)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,11 +36,11 @@ func TestAttachmentKnowledgeConfigurationOwnsPrivateScopeAndRejectsKBReuse(t *te
 		t.Fatal("upstream limit lost")
 	}
 	for _, other := range []agentsdk.ConversationAuthority{{Known: true, RuntimeID: "foreign", WorkspaceID: "w", UserID: "alice"}, {Known: true, RuntimeID: "runtime", WorkspaceID: "foreign", UserID: "alice"}, {RuntimeID: "runtime", WorkspaceID: "w", UserID: "alice"}} {
-		if _, err = source.ResolveAttachmentKnowledge(t.Context(), conversation, other); err == nil {
+		if _, err = source.ResolveAttachmentKnowledge(t.Context(), conversation, other, permissions); err == nil {
 			t.Fatal("foreign authority accepted")
 		}
 	}
-	if _, err = source.ResolveAttachmentKnowledge(t.Context(), "forged", a); err == nil {
+	if _, err = source.ResolveAttachmentKnowledge(t.Context(), "forged", a, permissions); err == nil {
 		t.Fatal("invalid parent locator accepted")
 	}
 	rotated := values[0]
@@ -48,8 +50,8 @@ func TestAttachmentKnowledgeConfigurationOwnsPrivateScopeAndRejectsKBReuse(t *te
 	if err != nil {
 		t.Fatal(err)
 	}
-	resolved, err := other.ResolveAttachmentKnowledge(t.Context(), conversation, a)
-	if err != nil || resolved.PermissionID != first.PermissionID || resolved.Source.KnowledgeDocumentAccessPolicySHA256() != first.Source.KnowledgeDocumentAccessPolicySHA256() || other.AttachmentKnowledgeSourceIdentity() != source.AttachmentKnowledgeSourceIdentity() {
+	resolved, err := other.ResolveAttachmentKnowledge(t.Context(), conversation, a, permissions)
+	if err != nil || !slices.Equal(resolved.DocumentPermissionIDs, first.DocumentPermissionIDs) || !slices.Equal(resolved.ReadPermissionIDs, first.ReadPermissionIDs) || len(first.DocumentPermissionIDs) != 1 || len(first.ReadPermissionIDs) != 5 || resolved.Source.KnowledgeDocumentAccessPolicySHA256() != first.Source.KnowledgeDocumentAccessPolicySHA256() || other.AttachmentKnowledgeSourceIdentity() != source.AttachmentKnowledgeSourceIdentity() {
 		t.Fatal("key rotation or URL alias changed private identity", err)
 	}
 	for _, kind := range []string{"default", "library", "catalog", "attachment"} {

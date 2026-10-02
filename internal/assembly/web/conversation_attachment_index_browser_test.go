@@ -93,7 +93,7 @@ func TestPrivateAttachmentIndexBrowserRecovery(t *testing.T) {
 			io.WriteString(w, `{"err_code":1004}`)
 			return
 		}
-		if remote == "" || in.ID != remote || len(in.Permissions) != 1 || in.Permissions[0] != permission {
+		if remote == "" || in.ID != remote || !validAttachmentReadPermissions(in.Permissions, permission) {
 			io.WriteString(w, `{"err_code":1004}`)
 			return
 		}
