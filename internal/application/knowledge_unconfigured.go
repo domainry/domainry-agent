@@ -232,6 +232,10 @@ func (unconfiguredKnowledge) UploadKnowledgeDocument(ctx context.Context, librar
 	var zero1 agentsdk.KnowledgeDocument
 	return zero1, &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.knowledge_not_configured"}
 }
+func (unconfiguredKnowledge) UploadKnowledgeDocumentForSource(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUpload, source agentsdk.KnowledgeDocumentSourceAccess, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
+	var zero1 agentsdk.KnowledgeDocument
+	return zero1, &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.knowledge_not_configured"}
+}
 func (unconfiguredKnowledge) WakeAttachmentIndex() {
 }
 func (unconfiguredKnowledge) WakeKnowledgeDocuments() {

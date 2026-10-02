@@ -102,7 +102,7 @@ func TestDeferredConversationModuleRecoversOnlyAfterBusinessHostBinding(t *testi
 		if !strings.Contains(last, "客户乙") {
 			t.Errorf("business read was not available: %s", last)
 		}
-		return (&executionModel{}).answerResult(), nil
+		return (&executionModel{}).answerResult(in), nil
 	}}
 	options := agentmodule.Options{ConversationProvider: model, ConversationOptions: agentmodule.ConversationOptions{Workers: 1, Poll: 10 * time.Millisecond}}
 	opened, err := newAgentModuleFactory(options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, deferredModuleHost{host})

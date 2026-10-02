@@ -9,6 +9,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent/internal/application"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
+	actioncontract "github.com/domainry/domainry-foundation/action"
 )
 
 func (b *binding) BindConversationHost(host modulehost.ConversationApplicationHost) error {
@@ -59,12 +60,19 @@ func bindHostExecutionRuntimes(options *ConversationOptions, model agentsdk.Conv
 // no running conversation service or frozen execution input is hot-swapped.
 func (b *binding) openConversations(a *conversationAssembly, host modulehost.ConversationApplicationHost) error {
 	options := a.options
+	var boundToolActions []actioncontract.ActionDefinition
 	if host != nil {
 		if options.PersonalAuthorizer == nil {
 			options.PersonalAuthorizer = host.ConversationAuthorizer()
 		}
 		if options.LibraryAuthorizer == nil {
 			options.LibraryAuthorizer, _ = host.ConversationAuthorizer().(agentsdk.KnowledgeLibraryAuthorizer)
+		}
+		if options.SourceAuthorizer == nil {
+			options.SourceAuthorizer, _ = host.ConversationAuthorizer().(agentsdk.KnowledgeDocumentSourceAuthorizer)
+		}
+		if options.AttachmentAuthorizer == nil {
+			options.AttachmentAuthorizer, _ = host.ConversationAuthorizer().(agentsdk.ConversationAttachmentAuthorizer)
 		}
 		if options.ExecutionAuthorizer == nil {
 			options.ExecutionAuthorizer, _ = options.PersonalAuthorizer.(agentsdk.ConversationExecutionAuthorizer)
@@ -86,6 +94,30 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 		if options.ExecutionAuthorizer == nil {
 			return fmt.Errorf("Agent conversation application host requires current execution authorization")
 		}
+		// Tool definitions are part of the product's authorization contract, not
+		// a side effect of having a model provider configured. Publish their
+		// Actions during host binding even for a management-only conversation
+		// surface; actual tool assembly and execution still require a tool-capable
+		// model below.
+		if composer, ok := host.(modulehost.ConversationToolComposer); ok {
+			var err error
+			var definitions []agentsdk.ConversationToolDefinition
+			options, definitions, err = conversationassembly.ComposeHostTools(options, composer)
+			if err != nil {
+				return err
+			}
+			boundToolActions, err = agentsdk.ConversationToolAuthorizationActions(definitions)
+			if err != nil {
+				return fmt.Errorf("compile host conversation tool authorization: %w", err)
+			}
+			staticActions, staticErr := agentsdk.AgentAuthorizationActions()
+			if staticErr != nil {
+				return staticErr
+			}
+			if _, err = mergeAuthorizationActions(staticActions, boundToolActions); err != nil {
+				return err
+			}
+		}
 		if _, capable := a.model.(agentsdk.ConversationAgentModel); capable {
 			if options.ToolAvailability == nil {
 				options.ToolAvailability, _ = host.(agentsdk.ConversationToolAvailability)
@@ -105,13 +137,6 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 			if options.Business == nil {
 				options.Business = host.ConversationBusinessSource()
 			}
-			if composer, ok := host.(modulehost.ConversationToolComposer); ok {
-				var err error
-				options, err = conversationassembly.ComposeHostTools(options, composer)
-				if err != nil {
-					return err
-				}
-			}
 		}
 	}
 	if a.model != nil && options.ExecutionAuthorizer == nil {
@@ -127,5 +152,6 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 		return err
 	}
 	b.conversations, b.conversationAdapter = service, adapter
+	b.conversationToolActions = cloneActionDefinitions(boundToolActions)
 	return nil
 }

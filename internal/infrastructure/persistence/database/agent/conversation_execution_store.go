@@ -694,6 +694,10 @@ func (s *ConversationStore) finishExecutionToolReceipt(ctx context.Context, tx *
 	if out.Definition.MaxOutputBytes < 1 || len(result.Content) > out.Definition.MaxOutputBytes {
 		return conversationError("bad_request", "tool_result_exceeded")
 	}
+	toolCitations, validCitations := conversationToolResultCitations(result)
+	if !validCitations {
+		return conversationError("bad_request", "tool_result_invalid")
+	}
 	if result.Completion != "" && (out.Definition.Effect != "write" || result.Completion != "accepted" || result.Status != "completed") {
 		return conversationError("bad_request", "tool_result_invalid")
 	}
@@ -718,16 +722,44 @@ func (s *ConversationStore) finishExecutionToolReceipt(ctx context.Context, tx *
 	}
 	preview := historyPrefix(string(result.Content), 2048)
 	var citations []agentsdk.ConversationCitation
+	citations = append(citations, toolCitations...)
 	if result.Status == "completed" && (out.Call.Name == "knowledge_search" || out.Call.Name == "knowledge_read" || out.Call.Name == "knowledge_extract" || out.Call.Name == "attachment_search" || out.Call.Name == "attachment_read") {
 		var evidence agentsdk.ConversationKnowledgeResult
 		if unmarshalDurableJSON(result.Content, &evidence) == nil {
-			citations = evidence.Citations
+			citations = append(citations, evidence.Citations...)
 		}
 	}
 	if err = s.event(ctx, tx, &row, "tool."+out.State, map[string]any{"step": number, "call_id": callID, "tool": out.Call.Name, "status": result.Status, "effect": out.Definition.Effect, "completion": result.Completion, "error_code": result.ErrorCode, "resource_id": result.ResourceID, "result_preview": preview, "result_reference": reference, "result_truncated": len(preview) < len(result.Content), "citations": citations, "attempt": row.Run.Attempt, "parent_call_id": out.ParentCallID, "dispatch_index": out.DispatchIndex}); err != nil {
 		return err
 	}
 	return s.saveRun(ctx, tx, row, old)
+}
+
+func conversationToolResultCitations(result agentsdk.ConversationToolResult) ([]agentsdk.ConversationCitation, bool) {
+	if len(result.Citations) == 0 {
+		return nil, true
+	}
+	if result.Status != "completed" || len(result.Citations) > 100 {
+		return nil, false
+	}
+	out := make([]agentsdk.ConversationCitation, 0, len(result.Citations))
+	seen := make(map[string]bool, len(result.Citations))
+	for _, citation := range result.Citations {
+		id, source, operation := strings.TrimSpace(citation.ID), strings.TrimSpace(citation.Source), strings.TrimSpace(citation.Operation)
+		objectKey, recordID := strings.TrimSpace(citation.ObjectKey), strings.TrimSpace(citation.RecordID)
+		title, excerpt := strings.TrimSpace(citation.Title), strings.TrimSpace(citation.Excerpt)
+		if id != citation.ID || source != citation.Source || operation != citation.Operation || objectKey != citation.ObjectKey || recordID != citation.RecordID || title != citation.Title || excerpt != citation.Excerpt ||
+			id == "" || len(id) > 255 || source == "" || len(source) > 255 || operation == "" || len(operation) > 128 || len(objectKey) > 128 || len(recordID) > 256 || (objectKey == "") != (recordID == "") ||
+			len(title) > 512 || len(excerpt) > 4096 || !utf8.ValidString(id+source+operation+objectKey+recordID+title+excerpt) || strings.ContainsRune(id+source+operation+objectKey+recordID+title+excerpt, 0) || seen[id] {
+			return nil, false
+		}
+		seen[id] = true
+		out = append(out, agentsdk.ConversationCitation{
+			ID: id, Source: source, Operation: operation, ObjectKey: objectKey, RecordID: recordID,
+			Title: title, Excerpt: excerpt,
+		})
+	}
+	return out, true
 }
 
 var _ persistence.ConversationExecutionRepository = (*ConversationStore)(nil)

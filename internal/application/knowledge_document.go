@@ -19,6 +19,10 @@ func (s *ConversationService) UploadKnowledgeDocument(ctx context.Context, libra
 	return s.knowledgeService().UploadKnowledgeDocument(ctx, library, in, a)
 }
 
+func (s *ConversationService) UploadKnowledgeDocumentForSource(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUpload, source agentsdk.KnowledgeDocumentSourceAccess, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
+	return s.knowledgeService().UploadKnowledgeDocumentForSource(ctx, library, in, source, a)
+}
+
 func (s *ConversationService) uploadKnowledgeDocument(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUpload, origin *persistence.KnowledgeAttachmentOrigin, documentOrigin *persistence.KnowledgeDocumentOrigin, recheck func() error, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
 	return s.knowledgeService().UploadDocumentContent(ctx, library, in, origin, documentOrigin, recheck, a)
 }

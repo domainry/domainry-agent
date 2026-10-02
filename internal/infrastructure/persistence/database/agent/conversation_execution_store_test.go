@@ -9,10 +9,33 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	persistence "github.com/domainry/domainry-agent-sdk/persistence"
+	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
 
 func executionStoreInput() agentsdk.ConversationStepRequest {
 	return agentsdk.ConversationStepRequest{ModelIdentity: agentsdk.ConversationModelIdentity{Provider: "test", Protocol: "chat_completions", Model: "model", Fingerprint: "frozen-model"}, IdempotencyKey: "step-0", MaxOutputBytes: 1024, MaxArgumentBytes: 1024, MaxToolCalls: 4, Messages: []agentsdk.ConversationStepMessage{{Role: "user", Content: "Create two things"}}, Tools: []agentsdk.ConversationToolDefinition{{Key: "create_thing", Version: "1", InputSchema: json.RawMessage(`{"type":"object"}`), OutputSchema: json.RawMessage(`{"type":"object"}`), ActionKey: "things.create", Effect: "write", Idempotency: "key", MaxOutputBytes: 1024, TimeoutMillis: 1000}}}
+}
+
+func TestConversationToolResultCitationsAreBoundedAndProjected(t *testing.T) {
+	valid := agentsdk.ConversationToolResult{Status: "completed", Citations: []toolsdk.Citation{{
+		ID: "crm-account-1-version-2", Source: "aurora_crm", Operation: "crm_get_account_context",
+		ObjectKey: "account", RecordID: "account-1", Title: "星河制造", Excerpt: `{"industry":"制造"}`,
+	}}}
+	projected, ok := conversationToolResultCitations(valid)
+	if !ok || len(projected) != 1 || projected[0].Source != "aurora_crm" || projected[0].ObjectKey != "account" || projected[0].RecordID != "account-1" || projected[0].Excerpt != `{"industry":"制造"}` {
+		t.Fatalf("projected citations=%#v valid=%t", projected, ok)
+	}
+	invalid := []agentsdk.ConversationToolResult{
+		{Status: "failed", Citations: valid.Citations},
+		{Status: "completed", Citations: []toolsdk.Citation{{ID: "duplicate", Source: "aurora_crm", Operation: "read"}, {ID: "duplicate", Source: "aurora_crm", Operation: "read"}}},
+		{Status: "completed", Citations: []toolsdk.Citation{{ID: "missing-record", Source: "aurora_crm", Operation: "read", ObjectKey: "account"}}},
+		{Status: "completed", Citations: []toolsdk.Citation{{ID: " padded ", Source: "aurora_crm", Operation: "read"}}},
+	}
+	for index, result := range invalid {
+		if _, accepted := conversationToolResultCitations(result); accepted {
+			t.Fatalf("invalid citations[%d] were accepted: %#v", index, result)
+		}
+	}
 }
 
 func TestConversationExecutionFreezesEachStepAndNeverReplaysCompletedWrites(t *testing.T) {

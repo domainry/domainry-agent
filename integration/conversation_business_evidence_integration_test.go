@@ -68,7 +68,7 @@ func TestBusinessHostProofPersistsAcrossModelFailureAndServiceReconstruction(t *
 			if string(frozen) != string(mustJSON(in)) {
 				t.Error("frozen input changed on resume")
 			}
-			return (&executionModel{}).answerResult(), nil
+			return (&executionModel{}).answerResult(in), nil
 		default:
 			return agentsdk.ConversationStepResult{}, fmt.Errorf("unexpected model call")
 		}

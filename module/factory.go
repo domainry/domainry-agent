@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -99,7 +100,8 @@ func OptionsFromEnvironment() Options {
 		taskAPIKey = os.Getenv("AGENT_PROVIDER_API_KEY")
 	}
 	conversation := ConversationOptions{
-		Workers: positiveEnvironmentInteger("AGENT_CONVERSATION_WORKERS"), MaxParallelTools: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_PARALLEL_TOOLS"),
+		ContextBytes: positiveEnvironmentInteger("AGENT_CONVERSATION_CONTEXT_BYTES"),
+		Workers:      positiveEnvironmentInteger("AGENT_CONVERSATION_WORKERS"), MaxParallelTools: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_PARALLEL_TOOLS"),
 		MaxQueuedPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_USER"), MaxQueuedPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE"),
 		MaxRunningPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_RUNNING_PER_USER"), MaxRunningPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE"),
 		RunTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_RUN_TIMEOUT"), ExternalCallTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT"),
@@ -429,29 +431,30 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 }
 
 type binding struct {
-	assemblyMu           sync.Mutex
-	runner               *provider.Runner
-	localTaskModelRunner *provider.ModelTaskRunner
-	taskExecution        *agentapplication.TaskExecutionService
-	definitions          agentpersistence.DefinitionRepository
-	state                agentpersistence.AgentStateRepository
-	runs                 agentpersistence.AgentTaskRunRepository
-	lifecycle            agentpersistence.AgentLifecycleRepository
-	lifecycleSubjects    []lifecyclecontract.SubjectExecutionHandler
-	knowledgeBinding     knowledgemodulehost.ModuleBinding
-	knowledgeSaaSBinding knowledgesaashost.Binding
-	todoBinding          todomodulehost.ModuleBinding
-	todoSaaSBinding      todosaashost.Binding
-	dialogState          agentsdk.AgentDialogStateService
-	taskState            agentpersistence.AgentTaskStateService
-	interactive          agentpersistence.AgentInteractiveStateService
-	adapters             []modulehttp.Adapter
-	mode                 agentsdk.DeploymentMode
-	conversations        *agentapplication.ConversationService
-	conversationAdapter  modulehttp.Adapter
-	pendingConversations *conversationAssembly
-	applicationHostBound bool
-	closed               bool
+	assemblyMu              sync.Mutex
+	runner                  *provider.Runner
+	localTaskModelRunner    *provider.ModelTaskRunner
+	taskExecution           *agentapplication.TaskExecutionService
+	definitions             agentpersistence.DefinitionRepository
+	state                   agentpersistence.AgentStateRepository
+	runs                    agentpersistence.AgentTaskRunRepository
+	lifecycle               agentpersistence.AgentLifecycleRepository
+	lifecycleSubjects       []lifecyclecontract.SubjectExecutionHandler
+	knowledgeBinding        knowledgemodulehost.ModuleBinding
+	knowledgeSaaSBinding    knowledgesaashost.Binding
+	todoBinding             todomodulehost.ModuleBinding
+	todoSaaSBinding         todosaashost.Binding
+	dialogState             agentsdk.AgentDialogStateService
+	taskState               agentpersistence.AgentTaskStateService
+	interactive             agentpersistence.AgentInteractiveStateService
+	adapters                []modulehttp.Adapter
+	mode                    agentsdk.DeploymentMode
+	conversations           *agentapplication.ConversationService
+	conversationAdapter     modulehttp.Adapter
+	pendingConversations    *conversationAssembly
+	conversationToolActions []actioncontract.ActionDefinition
+	applicationHostBound    bool
+	closed                  bool
 }
 
 func newBinding(r *provider.Runner, taskRunner agentsdk.TaskRunner, store *agentstore.Store, m agentsdk.DeploymentMode) *binding {
@@ -494,8 +497,13 @@ func (b *binding) AuthorizationActions() ([]actioncontract.ActionDefinition, err
 	}
 	b.assemblyMu.Lock()
 	adapters := append([]modulehttp.Adapter(nil), b.adapters...)
+	conversationToolActions := cloneActionDefinitions(b.conversationToolActions)
 	applicationHostBound := b.applicationHostBound
 	b.assemblyMu.Unlock()
+	definitions, err = mergeAuthorizationActions(definitions, conversationToolActions)
+	if err != nil {
+		return nil, err
+	}
 	mounted := map[string]bool{}
 	for _, adapter := range adapters {
 		for _, route := range adapter.Routes() {
@@ -511,6 +519,34 @@ func (b *binding) AuthorizationActions() ([]actioncontract.ActionDefinition, err
 		if definition.HTTP == nil || mounted[definition.Key] || (!applicationHostBound && definition.Key == agentsdk.ActionAgentTaskRunsStart) {
 			result = append(result, definition)
 		}
+	}
+	return result, nil
+}
+
+func cloneActionDefinitions(definitions []actioncontract.ActionDefinition) []actioncontract.ActionDefinition {
+	result := make([]actioncontract.ActionDefinition, 0, len(definitions))
+	for _, definition := range definitions {
+		result = append(result, actioncontract.CloneDefinition(definition))
+	}
+	return result
+}
+
+func mergeAuthorizationActions(base, additions []actioncontract.ActionDefinition) ([]actioncontract.ActionDefinition, error) {
+	result := make([]actioncontract.ActionDefinition, 0, len(base)+len(additions))
+	seen := make(map[string]actioncontract.ActionDefinition, len(base)+len(additions))
+	for _, source := range append(cloneActionDefinitions(base), additions...) {
+		definition, err := actioncontract.NormalizeDefinition(source)
+		if err != nil {
+			return nil, fmt.Errorf("normalize Agent authorization Action %q: %w", source.Key, err)
+		}
+		if previous, duplicate := seen[definition.Key]; duplicate {
+			if reflect.DeepEqual(previous, definition) {
+				continue
+			}
+			return nil, fmt.Errorf("Agent authorization Action %q has conflicting definitions", definition.Key)
+		}
+		seen[definition.Key] = definition
+		result = append(result, actioncontract.CloneDefinition(definition))
 	}
 	return result, nil
 }

@@ -120,7 +120,7 @@ func TestBusinessRelationToolTraversesAndReauthorizesThroughSaaS(t *testing.T) {
 						if !strings.Contains(last, "business_response_invalid") || strings.Contains(last, "PRIVATE-") || strings.Contains(last, "OTHER-SOURCE") {
 							t.Error("malformed result disclosed", last)
 						}
-						return (&executionModel{}).answerResult(), nil
+						return (&executionModel{}).answerResult(in), nil
 					}
 					if !strings.Contains(last, "actual-relation-page-2") {
 						t.Error("relation cursor missing")
@@ -130,7 +130,7 @@ func TestBusinessRelationToolTraversesAndReauthorizesThroughSaaS(t *testing.T) {
 					if !strings.Contains(last, "关联订单2") {
 						t.Error("second relation page missing")
 					}
-					return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "查到关联订单1和关联订单2。"}, FinishReason: "stop"}, nil
+					return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: citedToolAnswer(in, "查到关联订单1和关联订单2。")}, FinishReason: "stop"}, nil
 				}
 			}}
 			service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})

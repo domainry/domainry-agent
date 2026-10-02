@@ -421,6 +421,15 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 			if err = s.checkRunSources(ctx, agentsdk.ConversationRunReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID}, claim.Authority); err != nil {
 				return agentsdk.ConversationModelResult{}, err
 			}
+			if claim.Run.BackgroundTask == nil {
+				currentRun, runErr := s.repo.Run(ctx, claim.Run.ConversationID, claim.Run.ID, claim.Authority)
+				if runErr != nil {
+					return agentsdk.ConversationModelResult{}, runErr
+				}
+				if citationErr := requireConversationAnswerCitation(currentRun, result.Message.Content); citationErr != nil {
+					return agentsdk.ConversationModelResult{}, citationErr
+				}
+			}
 			// Step deltas were persisted as they arrived. Commit the final text
 			// to the existing run draft so the established finish transaction
 			// and legacy message readers retain exactly one final answer.
@@ -461,12 +470,17 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 		for index, call := range result.Message.ToolCalls {
 			output := outputs[index]
 			ref := &agentsdk.ConversationResultReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, Step: number, CallID: call.ID, SHA256: conversationDigest(output)}
+			citationInstruction := ""
+			if claim.Run.BackgroundTask == nil && len(output.Citations) > 0 {
+				citationInstruction = conversationCitationInstruction
+			}
 			// Providers serialize Content, not the internal ResultReference field.
 			// Expose the server-issued reference without changing the saved receipt.
 			raw, err := json.Marshal(struct {
 				agentsdk.ConversationToolResult
-				Reference *agentsdk.ConversationResultReference `json:"reference"`
-			}{output, ref})
+				Reference           *agentsdk.ConversationResultReference `json:"reference"`
+				CitationInstruction string                                `json:"citation_instruction,omitempty"`
+			}{output, ref, citationInstruction})
 			if err != nil {
 				return agentsdk.ConversationModelResult{}, err
 			}

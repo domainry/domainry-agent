@@ -50,9 +50,12 @@ func TestHostToolCompositionPreservesEarlierAssemblyAndErrors(t *testing.T) {
 				}
 				return final, nil
 			}}
-			options, err := ComposeHostTools(options, composer)
+			options, definitions, err := ComposeHostTools(options, composer)
 			if err != nil {
 				t.Fatal(err)
+			}
+			if len(definitions) != 0 {
+				t.Fatalf("definitions=%+v", definitions)
 			}
 			got, err := options.AssembleTools(base)
 			if failure == "" && (err != nil || got != final) || failure != "" && (!errors.Is(err, wantError) || got != nil) {
@@ -75,9 +78,20 @@ func TestHostToolDefinitionsRejectAmbiguityBeforeAssembly(t *testing.T) {
 		for _, key := range keys {
 			definitions = append(definitions, sdk.ConversationToolDefinition{Key: key})
 		}
-		_, err := ComposeHostTools(application.ConversationOptions{ToolDefinitions: []sdk.ConversationToolDefinition{{Key: "existing"}}}, hostComposer{definitions: definitions})
+		_, _, err := ComposeHostTools(application.ConversationOptions{ToolDefinitions: []sdk.ConversationToolDefinition{{Key: "existing"}}}, hostComposer{definitions: definitions})
 		if err == nil {
 			t.Fatalf("ambiguous definitions accepted: %v", keys)
 		}
+	}
+}
+
+func TestHostToolCompositionReturnsThePublishedDefinitions(t *testing.T) {
+	want := []sdk.ConversationToolDefinition{{Key: "crm_search_accounts", ActionKey: sdk.ConversationToolActionPrefix + "crm_search_accounts"}}
+	_, got, err := ComposeHostTools(application.ConversationOptions{}, hostComposer{definitions: want})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("definitions=%+v", got)
 	}
 }

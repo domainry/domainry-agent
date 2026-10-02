@@ -159,6 +159,7 @@ func (h *businessConversationHost) InvokeConversationTool(ctx context.Context, i
 		return personalToolFailure("business_unavailable"), nil
 	}
 	var output any
+	citationObjectKey := ""
 	switch definition.Key {
 	case "business_catalog":
 		var query agentsdk.ConversationBusinessCatalogQuery
@@ -188,6 +189,7 @@ func (h *businessConversationHost) InvokeConversationTool(ctx context.Context, i
 	case "query_records":
 		var query agentsdk.ConversationBusinessQuery
 		_ = json.Unmarshal([]byte(in.Call.Arguments), &query)
+		citationObjectKey = query.ObjectKey
 		if query.Page == 0 && query.Cursor == "" {
 			query.Page = 1
 		}
@@ -212,9 +214,11 @@ func (h *businessConversationHost) InvokeConversationTool(ctx context.Context, i
 			return personalToolFailure("business_response_invalid"), nil
 		}
 		output = page
+		citationObjectKey = page.ObjectKey
 	case "get_record":
 		var query agentsdk.ConversationBusinessGet
 		_ = json.Unmarshal([]byte(in.Call.Arguments), &query)
+		citationObjectKey = query.ObjectKey
 		var record agentsdk.ConversationBusinessRecord
 		record, err = h.source.GetBusinessRecord(ctx, query, in.Authority)
 		if err == nil && (record.ID != query.RecordID || !validBusinessRecords([]agentsdk.ConversationBusinessRecord{record}, query.Fields)) {
@@ -245,7 +249,12 @@ func (h *businessConversationHost) InvokeConversationTool(ctx context.Context, i
 			return personalToolFailure("business_source_changed"), nil
 		}
 	}
-	return personalToolResult(evidence)
+	result, err := personalToolResult(evidence)
+	if err != nil {
+		return agentsdk.ConversationToolResult{}, err
+	}
+	result.Citations = businessResultCitations(source, definition.Key, citationObjectKey, output)
+	return result, nil
 }
 
 func (h *businessConversationHost) ReconcileConversationTool(ctx context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {
@@ -278,6 +287,10 @@ func (h *businessConversationHost) AuthorizeConversationToolResult(ctx context.C
 	var evidence agentsdk.ConversationBusinessEvidence
 	source := h.source.BusinessSourceIdentity()
 	if json.Unmarshal(result.Content, &evidence) != nil || evidence.Version != 1 || evidence.Operation != in.Call.Name || evidence.Source != source || evidence.ScopeSHA256 != businessEvidenceScope(source, in.Authority) || conversationDigest(evidence.Input) != conversationDigest(json.RawMessage(in.Call.Arguments)) || !json.Valid(evidence.Data) {
+		return conversationFailure("conflict", "business_response_invalid")
+	}
+	expectedCitations, citationErr := businessEvidenceCitations(evidence)
+	if citationErr != nil || !businessCitationsEqual(result.Citations, expectedCitations) {
 		return conversationFailure("conflict", "business_response_invalid")
 	}
 	var err error

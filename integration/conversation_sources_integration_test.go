@@ -291,7 +291,7 @@ func TestSummarySourceChangesRebuildFromOriginalMessagesAndRetainUserConstraints
 		}
 		return sourceAnswer("已记录本轮讨论。"), nil
 	}
-	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{Knowledge: knowledge, ToolHost: personal, PersonalAuthorizer: policy})
+	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{Knowledge: knowledge, ToolHost: personal, PersonalAuthorizer: policy, ContextBytes: 64 * 1024})
 	if err != nil {
 		t.Fatal(err)
 	}

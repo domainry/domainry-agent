@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"strings"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 )
@@ -20,6 +21,14 @@ func modelContentText(blocks []agentsdk.ConversationContentBlock) string {
 }
 
 func validateModelContent(role, content string, blocks []agentsdk.ConversationContentBlock, imageInput bool) error {
+	return validateModelContentMode(role, content, blocks, imageInput, true)
+}
+
+func validateModelContentForSizing(role, content string, blocks []agentsdk.ConversationContentBlock, imageInput bool) error {
+	return validateModelContentMode(role, content, blocks, imageInput, false)
+}
+
+func validateModelContentMode(role, content string, blocks []agentsdk.ConversationContentBlock, imageInput, requireData bool) error {
 	if !validModelText(content) || len(blocks) > 16 {
 		return fmt.Errorf("invalid conversation message content")
 	}
@@ -35,23 +44,49 @@ func validateModelContent(role, content string, blocks []agentsdk.ConversationCo
 			}
 		case "image":
 			attachments++
-			if role != "user" || !imageInput || attachments > agentsdk.TaskAttachmentMaxCount || block.Text != "" || block.File != nil || block.Image == nil || len(block.Image.Data) == 0 || int64(len(block.Image.Data)) != block.Image.Bytes || block.Image.Revision < 1 ||
-				(block.Image.ContentType != "image/png" && block.Image.ContentType != "image/jpeg" && block.Image.ContentType != "image/gif" && block.Image.ContentType != "image/webp") ||
-				(block.Image.Detail != "auto" && block.Image.Detail != "low" && block.Image.Detail != "high") {
-				return fmt.Errorf("invalid image content block")
+			if role != "user" || !imageInput || attachments > agentsdk.TaskAttachmentMaxCount || block.Text != "" || block.File != nil || block.Image == nil {
+				return fmt.Errorf("invalid image content block envelope")
 			}
-			digest := sha256.Sum256(block.Image.Data)
-			if hex.EncodeToString(digest[:]) != block.Image.SHA256 {
-				return fmt.Errorf("image content hash mismatch")
+			if block.Image.Bytes < 1 || block.Image.Bytes > agentsdk.ConversationAttachmentMaxBytes {
+				return fmt.Errorf("invalid image content block size")
+			}
+			if (requireData && len(block.Image.Data) == 0) || (len(block.Image.Data) > 0 && int64(len(block.Image.Data)) != block.Image.Bytes) {
+				return fmt.Errorf("invalid image content block bytes: got=%d want=%d", len(block.Image.Data), block.Image.Bytes)
+			}
+			if block.Image.Revision < 1 {
+				return fmt.Errorf("invalid image content block revision")
+			}
+			if block.Image.ContentType != "image/png" && block.Image.ContentType != "image/jpeg" && block.Image.ContentType != "image/gif" && block.Image.ContentType != "image/webp" {
+				return fmt.Errorf("invalid image content block type")
+			}
+			if block.Image.Detail != "auto" && block.Image.Detail != "low" && block.Image.Detail != "high" {
+				return fmt.Errorf("invalid image content block detail")
+			}
+			if decoded, err := hex.DecodeString(block.Image.SHA256); err != nil || len(decoded) != sha256.Size {
+				return fmt.Errorf("invalid image content hash")
+			}
+			if len(block.Image.Data) > 0 {
+				digest := sha256.Sum256(block.Image.Data)
+				if hex.EncodeToString(digest[:]) != block.Image.SHA256 {
+					return fmt.Errorf("image content hash mismatch")
+				}
 			}
 		case "file":
 			attachments++
-			if role != "user" || !imageInput || attachments > agentsdk.TaskAttachmentMaxCount || block.Text != "" || block.Image != nil || block.File == nil || len(block.File.Data) == 0 || int64(len(block.File.Data)) != block.File.Bytes || block.File.Revision < 1 || block.File.ContentType != "application/pdf" || block.File.Filename == "" {
+			if role != "user" || !imageInput || attachments > agentsdk.TaskAttachmentMaxCount || block.Text != "" || block.Image != nil || block.File == nil || block.File.Bytes < 1 || block.File.Bytes > agentsdk.ConversationAttachmentMaxBytes || block.File.Revision < 1 || block.File.ContentType != "application/pdf" || block.File.Filename == "" {
 				return fmt.Errorf("invalid file content block")
 			}
-			digest := sha256.Sum256(block.File.Data)
-			if hex.EncodeToString(digest[:]) != block.File.SHA256 {
-				return fmt.Errorf("file content hash mismatch")
+			if (requireData && len(block.File.Data) == 0) || (len(block.File.Data) > 0 && int64(len(block.File.Data)) != block.File.Bytes) {
+				return fmt.Errorf("invalid file content block bytes")
+			}
+			if decoded, err := hex.DecodeString(block.File.SHA256); err != nil || len(decoded) != sha256.Size {
+				return fmt.Errorf("invalid file content hash")
+			}
+			if len(block.File.Data) > 0 {
+				digest := sha256.Sum256(block.File.Data)
+				if hex.EncodeToString(digest[:]) != block.File.SHA256 {
+					return fmt.Errorf("file content hash mismatch")
+				}
 			}
 		default:
 			return fmt.Errorf("unsupported content block")
@@ -65,6 +100,21 @@ func validateModelContent(role, content string, blocks []agentsdk.ConversationCo
 }
 
 func encodeModelContent(protocol, content string, blocks []agentsdk.ConversationContentBlock) any {
+	return encodeModelContentMode(protocol, content, blocks, false)
+}
+
+func encodeModelContentForSizing(protocol, content string, blocks []agentsdk.ConversationContentBlock) any {
+	return encodeModelContentMode(protocol, content, blocks, true)
+}
+
+func encodeModelData(data []byte, declared int64, sizing bool) string {
+	if sizing && len(data) == 0 {
+		return strings.Repeat("A", base64.StdEncoding.EncodedLen(int(declared)))
+	}
+	return base64.StdEncoding.EncodeToString(data)
+}
+
+func encodeModelContentMode(protocol, content string, blocks []agentsdk.ConversationContentBlock, sizing bool) any {
 	if len(blocks) == 0 {
 		return content
 	}
@@ -80,24 +130,26 @@ func encodeModelContent(protocol, content string, blocks []agentsdk.Conversation
 		}
 		if block.Type == "file" {
 			file := block.File
-			fileData := "data:" + file.ContentType + ";base64," + base64.StdEncoding.EncodeToString(file.Data)
+			encoded := encodeModelData(file.Data, file.Bytes, sizing)
+			fileData := "data:" + file.ContentType + ";base64," + encoded
 			switch protocol {
 			case ConversationProtocolChat:
 				out = append(out, map[string]any{"type": "file", "file": map[string]any{"filename": file.Filename, "file_data": fileData}})
 			case ConversationProtocolMessages:
-				out = append(out, map[string]any{"type": "document", "source": map[string]any{"type": "base64", "media_type": file.ContentType, "data": base64.StdEncoding.EncodeToString(file.Data)}})
+				out = append(out, map[string]any{"type": "document", "source": map[string]any{"type": "base64", "media_type": file.ContentType, "data": encoded}})
 			case ConversationProtocolResponses:
 				out = append(out, map[string]any{"type": "input_file", "filename": file.Filename, "file_data": fileData})
 			}
 			continue
 		}
 		image := block.Image
-		dataURL := "data:" + image.ContentType + ";base64," + base64.StdEncoding.EncodeToString(image.Data)
+		encoded := encodeModelData(image.Data, image.Bytes, sizing)
+		dataURL := "data:" + image.ContentType + ";base64," + encoded
 		switch protocol {
 		case ConversationProtocolChat:
 			out = append(out, map[string]any{"type": "image_url", "image_url": map[string]any{"url": dataURL, "detail": image.Detail}})
 		case ConversationProtocolMessages:
-			out = append(out, map[string]any{"type": "image", "source": map[string]any{"type": "base64", "media_type": image.ContentType, "data": base64.StdEncoding.EncodeToString(image.Data)}})
+			out = append(out, map[string]any{"type": "image", "source": map[string]any{"type": "base64", "media_type": image.ContentType, "data": encoded}})
 		case ConversationProtocolResponses:
 			out = append(out, map[string]any{"type": "input_image", "image_url": dataURL, "detail": image.Detail})
 		}

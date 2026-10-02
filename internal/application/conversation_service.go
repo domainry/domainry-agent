@@ -49,6 +49,7 @@ type ConversationOptions struct {
 	LibraryKnowledge                                           []LibraryKnowledgeBinding
 	KnowledgeDatasources                                       agentsdk.KnowledgeDatasourceCatalog
 	LibraryAuthorizer                                          agentsdk.KnowledgeLibraryAuthorizer
+	SourceAuthorizer                                           agentsdk.KnowledgeDocumentSourceAuthorizer
 	AttachmentAuthorizer                                       agentsdk.ConversationAttachmentAuthorizer
 	AttachmentKnowledge                                        []agentsdk.ConversationAttachmentKnowledgeBinding
 	Business                                                   agentsdk.ConversationBusinessSource
@@ -101,6 +102,22 @@ type ConversationService struct {
 	lifecycleManifest   *agentsdk.ConversationLifecycleManifest
 }
 
+func applyConversationContextDefault(options *ConversationOptions) {
+	if options.ContextBytes != 0 {
+		return
+	}
+	options.ContextBytes = 64 * 1024
+	// The complete frozen tool catalog is part of every step request. The
+	// historical 64 KiB chat default can be almost entirely consumed by a
+	// current business catalog before the first result is appended, leaving no
+	// recoverable room for a second model turn. Match the product/module default
+	// for tool-capable services while retaining the bounded 64 KiB compaction
+	// contract for plain conversations. Explicit host limits are unchanged.
+	if options.ToolHost != nil || options.Business != nil || len(options.AttachmentKnowledge) > 0 || options.CodeRuntime != nil || options.CodingRuntime != nil {
+		options.ContextBytes = 8 * 1024 * 1024
+	}
+}
+
 func NewConversationService(repo agentpersistence.ConversationRepository, model agentsdk.ConversationModel, runtimeID string, options ConversationOptions) (*ConversationService, error) {
 	if repo == nil || strings.TrimSpace(runtimeID) == "" || len(runtimeID) > 255 {
 		return nil, fmt.Errorf("conversation repository and runtime identity are required")
@@ -123,9 +140,7 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	if err := validateAttachmentKnowledge(&options); err != nil {
 		return nil, err
 	}
-	if options.ContextBytes == 0 {
-		options.ContextBytes = 65536
-	}
+	applyConversationContextDefault(&options)
 	if options.MaxInputBytes == 0 {
 		options.MaxInputBytes = 16384
 	}
@@ -1056,7 +1071,7 @@ func conversationModelFailureCode(err error, fallback string) string {
 			return code
 		case "source_access_unavailable", "source_reference_invalid", "source_read_unavailable", "source_limit_exceeded", "source_snapshot_changed", "delegation_source_not_released", "dependency_source_unavailable":
 			return code
-		case "agent_changed", "agent_disabled", "agent_snapshot_invalid", "agent_model_unavailable", "agent_model_capabilities_invalid", "reasoning_effort_unsupported", "delegation_superseded", "model_changed", "lifecycle_changed", "lifecycle_extension_failed", "execution_limit", "execution_context_exceeded", "tool_catalog_invalid", "tool_access_denied", "tool_unavailable", "tool_availability_failed", "tool_changed", "tool_confirmation_required", "tool_result_uncertain", "tool_result_invalid", "interaction_unavailable", "interaction_closed", "interaction_expired", "interaction_access_denied", "question_must_be_separate":
+		case "agent_changed", "agent_disabled", "agent_snapshot_invalid", "agent_model_unavailable", "agent_model_capabilities_invalid", "reasoning_effort_unsupported", "delegation_superseded", "model_changed", "lifecycle_changed", "lifecycle_extension_failed", "execution_limit", "execution_context_exceeded", "tool_catalog_invalid", "tool_access_denied", "tool_unavailable", "tool_availability_failed", "tool_changed", "tool_confirmation_required", "tool_result_uncertain", "tool_result_invalid", "answer_citation_required", "interaction_unavailable", "interaction_closed", "interaction_expired", "interaction_access_denied", "question_must_be_separate":
 			return code
 		case "execution_reference_invalid", "execution_reference_changed", "execution_read_unavailable", "result_reference_invalid", "result_reference_changed", "result_not_found", "result_read_unavailable", "tool_call_not_found", "run_not_found":
 			return code

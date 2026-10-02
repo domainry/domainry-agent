@@ -103,8 +103,25 @@ func (m *executionModel) StreamConversationStep(ctx context.Context, in agentsdk
 func (*executionModel) callResult(arguments string) agentsdk.ConversationStepResult {
 	return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", ToolCalls: []agentsdk.ConversationToolCall{{ID: "call-one", Name: "create_item", Arguments: arguments}}}, FinishReason: "tool_calls", Model: "tool-model", Usage: map[string]any{"total_tokens": 10}}
 }
-func (*executionModel) answerResult() agentsdk.ConversationStepResult {
-	return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "已创建事项。"}, FinishReason: "stop", Model: "tool-model", Usage: map[string]any{"total_tokens": 5}}
+func (*executionModel) answerResult(requests ...agentsdk.ConversationStepRequest) agentsdk.ConversationStepResult {
+	content := "已创建事项。"
+	if len(requests) > 0 {
+		content = citedToolAnswer(requests[len(requests)-1], content)
+	}
+	return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: content}, FinishReason: "stop", Model: "tool-model", Usage: map[string]any{"total_tokens": 5}}
+}
+
+func citedToolAnswer(in agentsdk.ConversationStepRequest, content string) string {
+	for index := len(in.Messages) - 1; index >= 0; index-- {
+		if in.Messages[index].Role != "tool" {
+			continue
+		}
+		var result agentsdk.ConversationToolResult
+		if json.Unmarshal([]byte(in.Messages[index].Content), &result) == nil && result.Status == "completed" && len(result.Citations) > 0 && result.Citations[0].ID != "" {
+			return content + " [[cite:" + result.Citations[0].ID + "]]"
+		}
+	}
+	return content
 }
 
 type executionHost struct {

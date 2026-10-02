@@ -133,3 +133,31 @@ func TestConversationImageInputRejectsMissingCapabilityAndTamperedBytes(t *testi
 		t.Fatal("assistant image input was accepted")
 	}
 }
+
+func TestConversationImageReferenceCanBeSizedBeforeAuthorizedHydration(t *testing.T) {
+	data, _ := base64.StdEncoding.DecodeString(conversationImagePNG)
+	digest := sha256.Sum256(data)
+	model, err := NewConversationModel(ConversationModelConfig{Protocol: ConversationProtocolChat, URL: "https://example.test/v1", Model: "vision", ImageInput: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := executionTestRequest(model)
+	request.ModelCapabilities = model.ConversationModelCapabilities()
+	request.Messages[1].Content = "describe"
+	request.Messages[1].ContentBlocks = []agentsdk.ConversationContentBlock{
+		{Type: "text", Text: "describe"},
+		{Type: "image", Image: &agentsdk.ConversationImageReference{ContentType: "image/png", Bytes: int64(len(data)), SHA256: hex.EncodeToString(digest[:]), Revision: 1, Detail: "auto"}},
+	}
+	referenceBytes, err := model.ConversationStepInputBytes(request)
+	if err != nil || referenceBytes < 1 {
+		t.Fatal("stored image reference could not be sized", referenceBytes, err)
+	}
+	if _, err = model.stepPayload(request); err == nil {
+		t.Fatal("stored image reference reached the provider without authorized bytes")
+	}
+	request.Messages[1].ContentBlocks[1].Image.Data = data
+	hydratedBytes, err := model.ConversationStepInputBytes(request)
+	if err != nil || hydratedBytes != referenceBytes {
+		t.Fatalf("reference sizing drifted after hydration: reference=%d hydrated=%d err=%v", referenceBytes, hydratedBytes, err)
+	}
+}

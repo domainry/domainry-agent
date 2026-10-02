@@ -1,11 +1,12 @@
 package application
 
 import (
-	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"strings"
+
+	agentsdk "github.com/domainry/domainry-agent-sdk"
 )
 
-const conversationCitationInstruction = " When a knowledge result supplies citations, cite its exact ID as [[cite:ID]] next to the supported claim. Use only IDs from completed knowledge results obtained in this run. Never invent a citation ID or quote a truncated excerpt as a complete document. If no structured citations are supplied, preserve only actually supplied source details without inventing verified citation markers."
+const conversationCitationInstruction = " Cite source-backed final answers with an exact [[cite:ID]] supplied by a completed tool; never invent IDs. Uncited source-backed answers are rejected."
 
 // Message projections contain only source IDs actually cited in that reply.
 // Other retrieved documents remain available in the corresponding tool record.
@@ -27,4 +28,22 @@ func conversationCitations(run agentsdk.ConversationRun, text string) []agentsdk
 		}
 	}
 	return out
+}
+
+func conversationHasCitableEvidence(run agentsdk.ConversationRun) bool {
+	for _, step := range run.Steps {
+		for _, call := range step.Calls {
+			if call.Status == "completed" && len(call.Citations) > 0 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func requireConversationAnswerCitation(run agentsdk.ConversationRun, text string) error {
+	if conversationHasCitableEvidence(run) && len(conversationCitations(run, text)) == 0 {
+		return conversationFailure("conflict", "answer_citation_required")
+	}
+	return nil
 }

@@ -10,15 +10,15 @@ import (
 
 // ComposeHostTools runs during deferred host binding. Application execution
 // receives only the resulting neutral tool host and published definitions.
-func ComposeHostTools(options application.ConversationOptions, composer modulehost.ConversationToolComposer) (application.ConversationOptions, error) {
-	definitions := composer.ConversationToolDefinitions()
+func ComposeHostTools(options application.ConversationOptions, composer modulehost.ConversationToolComposer) (application.ConversationOptions, []sdk.ConversationToolDefinition, error) {
+	definitions := append([]sdk.ConversationToolDefinition(nil), composer.ConversationToolDefinitions()...)
 	seen := map[string]bool{}
 	for _, d := range options.ToolDefinitions {
 		seen[d.Key] = true
 	}
 	for _, d := range definitions {
 		if d.Key == "" || seen[d.Key] {
-			return options, fmt.Errorf("duplicate or empty host tool definition: %s", d.Key)
+			return options, nil, fmt.Errorf("duplicate or empty host tool definition: %s", d.Key)
 		}
 		seen[d.Key] = true
 	}
@@ -34,5 +34,5 @@ func ComposeHostTools(options application.ConversationOptions, composer moduleho
 		}
 		return composer.AssembleConversationTools(base)
 	}
-	return options, nil
+	return options, definitions, nil
 }

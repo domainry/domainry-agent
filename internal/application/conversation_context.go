@@ -104,7 +104,7 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 		}
 		citationInstruction := false
 		for _, definition := range definitions {
-			if !citationInstruction && (definition.Key == "knowledge_search" || definition.Key == "knowledge_read" || definition.Key == "attachment_search" || definition.Key == "attachment_read") {
+			if claim.Run.BackgroundTask == nil && !citationInstruction && (definition.Key == "knowledge_search" || definition.Key == "knowledge_read" || definition.Key == "attachment_search" || definition.Key == "attachment_read") {
 				base[0].Content += conversationCitationInstruction
 				citationInstruction = true
 			}

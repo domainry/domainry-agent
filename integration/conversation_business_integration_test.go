@@ -80,7 +80,7 @@ func TestBusinessCursorPaginationContinuesWithoutInventedPageNumbers(t *testing.
 			if !strings.Contains(in.Messages[len(in.Messages)-1].Content, "record-2") {
 				t.Error("second cursor page rejected")
 			}
-			return (&executionModel{}).answerResult(), nil
+			return (&executionModel{}).answerResult(in), nil
 		}
 	}}
 	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: personalReadAuthorizer{}, Business: source})
@@ -246,7 +246,7 @@ func TestBusinessToolsPreserveScopePaginationAndEvidenceAcrossRestart(t *testing
 			if !bytes.Equal(expected, mustJSON(in)) {
 				t.Error("recovery changed the frozen input")
 			}
-			return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "客户乙的已授权余额为 9007199254740993。"}, FinishReason: "stop"}, nil
+			return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: citedToolAnswer(in, "客户乙的已授权余额为 9007199254740993。")}, FinishReason: "stop"}, nil
 		default:
 			t.Error("unexpected model call")
 			return agentsdk.ConversationStepResult{}, fmt.Errorf("unexpected")
@@ -364,7 +364,7 @@ func TestBusinessSaaSReadAndRevocation(t *testing.T) {
 			if !strings.Contains(in.Messages[len(in.Messages)-1].Content, "客户乙") {
 				t.Error("actual record missing from model input")
 			}
-			return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "客户名称为客户乙。"}, FinishReason: "stop"}, nil
+			return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: citedToolAnswer(in, "客户名称为客户乙。")}, FinishReason: "stop"}, nil
 		}
 	}}
 	service, err := conversationassembly.NewService(repo, model, a.RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: policy, Business: source})

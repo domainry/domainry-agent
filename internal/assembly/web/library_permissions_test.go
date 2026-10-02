@@ -77,6 +77,15 @@ func (m libraryPermissionModel) StreamConversationStep(_ context.Context, in age
 	var result agentsdk.ConversationToolResult
 	var evidence agentsdk.ConversationKnowledgeResult
 	if json.Unmarshal([]byte(last.Content), &result) != nil || result.Status != "completed" || json.Unmarshal(result.Content, &evidence) != nil {
+		for i := len(in.Messages) - 2; i >= 0; i-- {
+			var previous agentsdk.ConversationToolResult
+			var previousEvidence agentsdk.ConversationKnowledgeResult
+			if in.Messages[i].Role != "tool" || json.Unmarshal([]byte(in.Messages[i].Content), &previous) != nil || previous.Status != "completed" || json.Unmarshal(previous.Content, &previousEvidence) != nil || len(previousEvidence.Citations) == 0 {
+				continue
+			}
+			citation := previousEvidence.Citations[0]
+			return answer("指定文档不可用；本次检索仅找到 " + citation.Excerpt + " [[cite:" + citation.ID + "]]。")
+		}
 		return answer("资料不可用。")
 	}
 	if last.ToolCallID == "search" {
@@ -356,15 +365,20 @@ func runLibraryPermissionIdentity(t *testing.T, config provider.KnowledgeConfig,
 		var messages agentsdk.ConversationMessagePage
 		_ = json.Unmarshal(client.call("GET", base+"/messages", "", 200).Body.Bytes(), &messages)
 		found := false
+		expectEvidence := allow || (len(documents) > 0 && !revokedWhileRunning)
 		for _, message := range messages.Items {
-			if !allow && message.Role == "assistant" && len(message.Citations) > 0 {
-				t.Fatalf("%s returned unauthorized citations", name)
+			if !allow && message.Role == "assistant" {
+				for _, citation := range message.Citations {
+					if len(documents) == 0 || citation.DocumentID != fixtures[index].DocumentID {
+						t.Fatalf("%s returned unauthorized citation: %#v", name, citation)
+					}
+				}
 			}
 			if message.Role == "assistant" && strings.Contains(message.Content, fixtures[index].Marker) && len(message.Citations) > 0 {
 				found = true
 			}
 		}
-		if found != allow {
+		if found != expectEvidence {
 			t.Fatalf("%s evidence visibility mismatch: %t", name, found)
 		}
 		if !allow {

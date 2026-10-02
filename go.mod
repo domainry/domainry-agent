@@ -3,7 +3,7 @@ module github.com/domainry/domainry-agent
 go 1.26.0
 
 require (
-	github.com/domainry/domainry-agent-sdk v0.1.32
+	github.com/domainry/domainry-agent-sdk v0.1.33
 	github.com/domainry/domainry-connector-sdk v0.1.3
 	github.com/domainry/domainry-connectors v0.1.5
 	github.com/domainry/domainry-foundation v0.1.41
@@ -73,16 +73,37 @@ require (
 require (
 	github.com/domainry/domainry-todo v0.1.13
 	github.com/domainry/domainry-tools v0.1.11
-	github.com/domainry/domainry-tools-sdk v0.1.10
+	github.com/domainry/domainry-tools-sdk v0.1.11
 )
 
 require (
 	github.com/domainry/domainry-integration v0.1.30
 	github.com/domainry/domainry-integration-sdk v0.1.12
-	github.com/domainry/domainry-knowledge v0.1.26
-	github.com/domainry/domainry-knowledge-sdk v0.1.8
+	github.com/domainry/domainry-knowledge v0.1.28
+	github.com/domainry/domainry-knowledge-sdk v0.1.10
 	github.com/domainry/domainry-report-sdk v0.1.16
 	github.com/domainry/domainry-todo-sdk v0.1.6
+)
+
+require (
+	github.com/aws/aws-sdk-go-v2 v1.47.1 // indirect
+	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.20 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.33.6 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.20.6 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.20.1 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.4 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.4 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.5.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.19 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.11.5 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.14.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.20.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.113.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/signin v1.10.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.38.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.43.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.51.1 // indirect
+	github.com/aws/smithy-go v1.28.1 // indirect
 )
 
 require (
