@@ -3,14 +3,14 @@ module github.com/domainry/domainry-agent
 go 1.26.0
 
 require (
-	github.com/domainry/domainry-agent-sdk v0.1.36
+	github.com/domainry/domainry-agent-sdk v0.1.38
 	github.com/domainry/domainry-connector-sdk v0.1.8
 	github.com/domainry/domainry-connectors v0.1.10
 	github.com/domainry/domainry-foundation v0.1.44
-	github.com/domainry/domainry-identity v0.2.42
-	github.com/domainry/domainry-identity-bridge v0.1.8
+	github.com/domainry/domainry-identity v0.2.43
+	github.com/domainry/domainry-identity-bridge v0.1.10
 	github.com/domainry/domainry-identity-sdk v0.1.22
-	github.com/domainry/domainry-lifecycle-sdk v0.1.20
+	github.com/domainry/domainry-lifecycle-sdk v0.1.22
 	github.com/domainry/domainry-orm v0.1.33
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3
@@ -25,10 +25,10 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.20.0 // indirect
 	github.com/crewjam/saml v0.5.1 // indirect
-	github.com/domainry/domainry-audit v0.1.28
-	github.com/domainry/domainry-audit-sdk v0.1.12 // indirect
+	github.com/domainry/domainry-audit v0.1.29
+	github.com/domainry/domainry-audit-sdk v0.1.13 // indirect
 	github.com/domainry/domainry-data-exchange-sdk v0.3.12 // indirect
-	github.com/domainry/domainry-metadata v0.1.20
+	github.com/domainry/domainry-metadata v0.1.21
 	github.com/domainry/domainry-metadata-sdk v0.1.9
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
@@ -71,18 +71,18 @@ require (
 )
 
 require (
-	github.com/domainry/domainry-todo v0.1.13
-	github.com/domainry/domainry-tools v0.1.12
-	github.com/domainry/domainry-tools-sdk v0.1.13
+	github.com/domainry/domainry-todo v0.1.15
+	github.com/domainry/domainry-tools v0.1.14
+	github.com/domainry/domainry-tools-sdk v0.1.15
 )
 
 require (
-	github.com/domainry/domainry-integration v0.1.35
-	github.com/domainry/domainry-integration-sdk v0.1.15
-	github.com/domainry/domainry-knowledge v0.1.29
-	github.com/domainry/domainry-knowledge-sdk v0.1.11
-	github.com/domainry/domainry-report-sdk v0.1.16
-	github.com/domainry/domainry-todo-sdk v0.1.6
+	github.com/domainry/domainry-integration v0.1.37
+	github.com/domainry/domainry-integration-sdk v0.1.16
+	github.com/domainry/domainry-knowledge v0.1.31
+	github.com/domainry/domainry-knowledge-sdk v0.1.13
+	github.com/domainry/domainry-report-sdk v0.1.18
+	github.com/domainry/domainry-todo-sdk v0.1.8
 )
 
 require (
@@ -108,6 +108,6 @@ require (
 )
 
 require (
-	github.com/domainry/domainry-notification-sdk v0.1.9 // indirect
-	github.com/domainry/domainry-scheduler-sdk v0.1.14
+	github.com/domainry/domainry-notification-sdk v0.1.13 // indirect
+	github.com/domainry/domainry-scheduler-sdk v0.1.15
 )
