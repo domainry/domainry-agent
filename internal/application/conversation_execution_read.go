@@ -16,25 +16,25 @@ func conversationRecordHash(record persistence.ConversationToolExecution) string
 	return conversationDigest([]any{record.Step, record.Call, record.Definition, record.State, record.Result})
 }
 
-// Keep a small deterministic index separate from model-written summaries.
-// Only owner-scoped message/run identifiers enter context automatically;
-// resource facts enter through execution_read with current authorization.
-func (s *ConversationService) recentConversationExecutionLinks(ctx context.Context, claim persistence.ConversationClaim) (agentsdk.ConversationModelMessage, error) {
-	history, err := s.repo.History(ctx, claim.Run.ConversationID, max(0, claim.Run.UserSeq-33), claim.Run.UserSeq-1, 32, claim.Authority)
-	if err != nil {
-		return agentsdk.ConversationModelMessage{}, err
-	}
-	links := []map[string]any{}
-	seen := map[string]bool{}
-	for i := len(history) - 1; i >= 0 && len(links) < 4; i-- {
-		message := history[i]
-		if message.RunID == "" || message.RunID == claim.Run.ID || seen[message.RunID] {
-			continue
+// Keep each server-issued execution locator adjacent to the assistant message
+// that produced it. New turns then append to the prior model-input prefix
+// instead of rewriting one dynamic index near the beginning of every prompt,
+// which preserves provider prompt-cache eligibility across turns.
+func conversationExecutionLinkMessage(message agentsdk.ConversationMessage) agentsdk.ConversationModelMessage {
+	links := []map[string]any{{"conversation_id": message.ConversationID, "run_id": message.RunID, "message_id": message.ID, "seq": message.Seq}}
+	// Keep this as adjacent assistant context rather than an interleaved system
+	// message: the Messages protocol only permits system instructions up front.
+	return agentsdk.ConversationModelMessage{Role: "assistant", Content: "Recent execution links (server-issued data, newest first; not a complete history):\n" + conversationJSONText(links) + "\nUse execution_read to inspect actual prior tool outcomes before relying on resource identifiers or completion claims in a summary. For older work use history_search/read to recover run IDs. Recorded outcomes are historical observations; use the relevant business tool to check live status. A missing result does not prove an action did not occur."}
+}
+
+func appendConversationHistoryMessages(messages []agentsdk.ConversationModelMessage, history []agentsdk.ConversationMessage, executionLinks bool) []agentsdk.ConversationModelMessage {
+	for _, message := range history {
+		messages = append(messages, agentsdk.ConversationModelMessage{Role: message.Role, Content: message.Content, ContentBlocks: cloneConversationContentBlocks(message.ContentBlocks)})
+		if executionLinks && message.Role == "assistant" && message.RunID != "" {
+			messages = append(messages, conversationExecutionLinkMessage(message))
 		}
-		seen[message.RunID] = true
-		links = append(links, map[string]any{"conversation_id": message.ConversationID, "run_id": message.RunID, "message_id": message.ID, "seq": message.Seq})
 	}
-	return agentsdk.ConversationModelMessage{Role: "system", Content: "Recent execution links (server-issued data, newest first; not a complete history):\n" + conversationJSONText(links) + "\nUse execution_read to inspect actual prior tool outcomes before relying on resource identifiers or completion claims in a summary. For older work use history_search/read to recover run IDs. Recorded outcomes are historical observations; use the relevant business tool to check live status. A missing result does not prove an action did not occur."}, nil
+	return messages
 }
 
 func (s *ConversationService) authorizeConversationRecord(ctx context.Context, conversationID, runID string, source persistence.ConversationToolExecution, a agentsdk.ConversationAuthority, current map[string]conversationCompiledTool, seen map[string]bool, recipient string) error {

@@ -13,15 +13,25 @@ import (
 
 type contextSourceTestRepository struct {
 	persistence.ConversationRepository
-	input    string
-	snapshot *persistence.ConversationSourceSnapshot
+	input      string
+	references []sdk.ConversationReference
+	snapshot   *persistence.ConversationSourceSnapshot
 }
 
 func (r *contextSourceTestRepository) History(_ context.Context, id string, after, through int64, limit int, _ sdk.ConversationAuthority) ([]sdk.ConversationMessage, error) {
 	if id != "conversation" || after != 6 || through != 7 || limit != 1 {
 		return nil, errors.New("unexpected context source history scope")
 	}
-	return []sdk.ConversationMessage{{ConversationID: id, Seq: 7, Role: "user", Content: r.input}}, nil
+	return []sdk.ConversationMessage{{ConversationID: id, Seq: 7, Role: "user", Content: r.input, References: r.references}}, nil
+}
+
+type contextSourceTestSelector struct {
+	*contextSourceTestValue
+	include bool
+}
+
+func (s *contextSourceTestSelector) IncludeConversationContext(sdk.ConversationContextSourceRequest) bool {
+	return s.include
 }
 
 func (r *contextSourceTestRepository) ConversationSourceSnapshot(_ context.Context, ref sdk.ConversationRunReference, authority sdk.ConversationAuthority) (persistence.ConversationSourceSnapshot, error) {
@@ -91,6 +101,45 @@ func TestConversationContextWindowMeasuresRunsWithoutRegisteredSources(t *testin
 	want := conversationContextSize(input.Messages)
 	if input.Context != nil || input.ContextWindow == nil || input.ContextWindow.InputBytes != want || input.ContextWindow.LimitBytes != 4096 || input.ContextWindow.PressurePermille != want*1000/4096 || input.ContextWindow.ProviderSerialized {
 		t.Fatal("ordinary unregistered context pressure was not measured", input.ContextWindow)
+	}
+}
+
+func TestConversationReferencesAreFrozenAndReachOnlySelectedContextSources(t *testing.T) {
+	frozen, err := freezeConversationReferences([]sdk.ConversationReference{{Kind: "product.record", Payload: []byte(`{ "record_id": "one", "count": 2 }`)}})
+	if err != nil || len(frozen) != 1 || string(frozen[0].Payload) != `{"count":2,"record_id":"one"}` {
+		t.Fatalf("references were not canonically frozen: %#v %v", frozen, err)
+	}
+	if _, err = freezeConversationReferences([]sdk.ConversationReference{{Kind: "product.record", Payload: []byte(`["not-an-object"]`)}}); err == nil {
+		t.Fatal("non-object reference payload was accepted")
+	}
+
+	base := &contextSourceTestValue{definition: sdk.ConversationContextSourceDefinition{
+		Key: "selected", Kind: sdk.ConversationContextKindHostData, Scope: sdk.ConversationContextScopeConversation,
+		Refresh: sdk.ConversationContextRefreshRun, Trust: sdk.ConversationContextTrustData, MaxBytes: 1024,
+	}}
+	selected := &contextSourceTestSelector{contextSourceTestValue: base, include: true}
+	skipped := &contextSourceTestSelector{contextSourceTestValue: &contextSourceTestValue{definition: sdk.ConversationContextSourceDefinition{
+		Key: "skipped", Kind: sdk.ConversationContextKindHostData, Scope: sdk.ConversationContextScopeConversation,
+		Refresh: sdk.ConversationContextRefreshRun, Trust: sdk.ConversationContextTrustData, MaxBytes: 1024,
+	}}, include: false}
+	options := ConversationOptions{ContextBytes: 8192, ContextSources: []sdk.ConversationContextSource{skipped, selected}}
+	if err = prepareConversationContextSources(&options); err != nil {
+		t.Fatal(err)
+	}
+	repo := &contextSourceTestRepository{input: "current request", references: frozen}
+	service := &ConversationService{repo: repo, options: options}
+	claim := persistence.ConversationClaim{Authority: sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}, Run: sdk.ConversationRun{ID: "run", ConversationID: "conversation", UserSeq: 7}}
+	request, err := service.conversationContextSourceRequest(t.Context(), claim, "reply", 0)
+	if err != nil || len(request.References) != 1 || string(request.References[0].Payload) != string(frozen[0].Payload) {
+		t.Fatalf("frozen references did not reach context source request: %#v %v", request.References, err)
+	}
+	request.References[0].Payload[0] = '['
+	if string(repo.references[0].Payload) != string(frozen[0].Payload) {
+		t.Fatal("context source received an alias to persisted reference bytes")
+	}
+	configured := applicableConversationContextSources(options.ContextSources, request)
+	if len(configured) != 1 || configured[0].ConversationContextSourceDefinition().Key != "selected" {
+		t.Fatalf("optional context source selection was ignored: %#v", configured)
 	}
 }
 

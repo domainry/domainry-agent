@@ -50,6 +50,12 @@ func TestConversationRunDetailProjectsBoundedAuditMetricsUsageAndDurations(t *te
 	if err = repo.FinishExecutionTool(t.Context(), claim, 0, call.ID, agentsdk.ConversationToolResult{Status: "completed", Content: json.RawMessage(`{"secret_result":"must-not-enter-audit"}`)}); err != nil {
 		t.Fatal(err)
 	}
+	if err = repo.AppendEvent(t.Context(), claim, "context.compacted", map[string]any{"attempt": claim.Run.Attempt, "kind": "history_summary", "from_seq": 1, "through_seq": 2, "messages": 2, "before_bytes": 62000, "after_bytes": 18000}); err != nil {
+		t.Fatal(err)
+	}
+	if err = repo.AppendEvent(t.Context(), claim, "context.tools_compacted", map[string]any{"attempt": claim.Run.Attempt, "kind": "execution_context", "step": 0, "results": 1, "intervals": 1, "before_bytes": 70000, "after_bytes": 49000}); err != nil {
+		t.Fatal(err)
+	}
 	if err = repo.Finish(t.Context(), claim, agentsdk.ConversationModelResult{Model: "fixture-model", Usage: map[string]any{"input_tokens": float64(7), "output_tokens": float64(3)}}, "model_stopped_after_tool"); err != nil {
 		t.Fatal(err)
 	}
@@ -63,6 +69,9 @@ func TestConversationRunDetailProjectsBoundedAuditMetricsUsageAndDurations(t *te
 	}
 	if detail.Metrics.Steps != 1 || detail.Metrics.ModelCalls != 1 || detail.Metrics.ToolCalls != 1 || detail.Metrics.ToolAttempts != 1 || detail.Metrics.AuthorizationChecks != 1 {
 		t.Fatalf("metrics=%+v", detail.Metrics)
+	}
+	if detail.Metrics.ContextCompactions != 2 || detail.Metrics.HistoryCompactions != 1 || detail.Metrics.CompactedMessages != 2 || detail.Metrics.CompactedResults != 1 || detail.Metrics.CompactedIntervals != 1 || len(detail.Compactions) != 2 || detail.Compactions[0].Kind != "history_summary" || detail.Compactions[0].BeforeBytes != 62000 || detail.Compactions[1].Kind != "execution_context" || detail.Compactions[1].AfterBytes != 49000 {
+		t.Fatalf("compaction projection=%+v metrics=%+v", detail.Compactions, detail.Metrics)
 	}
 	if detail.Steps[0].Usage["input_tokens"] == nil || detail.Steps[0].StartedAt == nil || detail.Steps[0].CompletedAt == nil || detail.Steps[0].Calls[0].StartedAt == nil || detail.Steps[0].Calls[0].CompletedAt == nil {
 		t.Fatalf("step audit=%+v", detail.Steps[0])

@@ -269,8 +269,8 @@ func (s *ConversationStore) CreateConversationDelegation(ctx context.Context, in
 		if task.MaxInputBytes > 0 && len(agentsdk.ConversationTaskPrompt(task)) > task.MaxInputBytes {
 			return conversationError("bad_request", "task_input_exceeded")
 		}
-		conversation := agentsdk.Conversation{ID: conversationID, DelegationID: id, AgentID: in.Agent.ID, Title: in.Request.Brief.Goal, RuntimeID: executor.RuntimeID, WorkspaceID: executor.WorkspaceID, UserID: executor.UserID, Revision: 1, CreatedAt: now, UpdatedAt: now}
-		q, args, err := query.NewInsertBuilder(s.store.Renderer(), "_agent_conversations").Columns("owner_key", "conversation_id", "client_id", "request_hash", "title", "updated_at", "archived", "revision", "payload_json").Values(conversationOwner(executor), conversationID, id, conversationHash(out), conversation.Title, now.UnixMilli(), 0, 1, conversationJSON(conversation)).Build()
+		conversation := agentsdk.Conversation{ID: conversationID, DelegationID: id, AgentID: in.Agent.ID, Title: in.Request.Brief.Goal, TitleOrigin: agentsdk.ConversationTitleOriginUser, TitleStatus: agentsdk.ConversationTitleStatusReady, RuntimeID: executor.RuntimeID, WorkspaceID: executor.WorkspaceID, UserID: executor.UserID, Revision: 1, CreatedAt: now, UpdatedAt: now}
+		q, args, err := query.NewInsertBuilder(s.store.Renderer(), "_agent_conversations").Columns("owner_key", "conversation_id", "client_id", "request_hash", "binding_kind", "binding_key", "binding_hash", "title", "updated_at", "archived", "revision", "payload_json").Values(conversationOwner(executor), conversationID, id, conversationHash(out), "", "", conversationID, conversation.Title, now.UnixMilli(), 0, 1, conversationJSON(conversation)).Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}

@@ -36,7 +36,13 @@ type chatEnvelope struct {
 
 func decodeChat(raw []byte) (agentsdk.ConversationModelResult, error) {
 	var v chatEnvelope
-	if json.Unmarshal(raw, &v) != nil || presentJSON(v.Error) || len(v.Choices) != 1 || v.Choices[0].FinishReason != "stop" || v.Choices[0].Message.Role != "assistant" {
+	if json.Unmarshal(raw, &v) != nil || presentJSON(v.Error) || len(v.Choices) != 1 || v.Choices[0].Message.Role != "assistant" {
+		return agentsdk.ConversationModelResult{}, fmt.Errorf("incomplete conversation chat response")
+	}
+	if v.Choices[0].FinishReason == "length" {
+		return agentsdk.ConversationModelResult{}, conversationOutputTruncated(v.Usage)
+	}
+	if v.Choices[0].FinishReason != "stop" {
 		return agentsdk.ConversationModelResult{}, fmt.Errorf("incomplete conversation chat response")
 	}
 	text, err := v.Choices[0].Message.text()
@@ -59,7 +65,13 @@ type messagesEnvelope struct {
 
 func decodeMessages(raw []byte) (agentsdk.ConversationModelResult, error) {
 	var v messagesEnvelope
-	if json.Unmarshal(raw, &v) != nil || v.Type != "message" || v.Role != "assistant" || v.StopReason != "end_turn" {
+	if json.Unmarshal(raw, &v) != nil || v.Type != "message" || v.Role != "assistant" {
+		return agentsdk.ConversationModelResult{}, fmt.Errorf("incomplete conversation Messages response")
+	}
+	if v.StopReason == "max_tokens" {
+		return agentsdk.ConversationModelResult{}, conversationOutputTruncated(v.Usage)
+	}
+	if v.StopReason != "end_turn" {
 		return agentsdk.ConversationModelResult{}, fmt.Errorf("incomplete conversation Messages response")
 	}
 	var text strings.Builder

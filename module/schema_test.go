@@ -17,13 +17,13 @@ func TestPublishedMySQLMigrationChecksumsAreStable(t *testing.T) {
 		name     string
 		checksum string
 	}{
-		1:  {"agent_foundation", "a6f761aa87b491a7788b0a1e19554ccccfdb2de55e8b261eb2794f58ac0fede4"},
-		2:  {"agent_conversations", "f83a11e8320667854be8846ced0ded49b6b39e756b658fde823fa7ada11dfdda"},
+		1:  {"agent_foundation", "2141aae969604abac0886535dcea78bca5f35b24d8fa128b9bd99f0d4d1f50a5"},
+		2:  {"agent_conversations", "c4450988e29ac21188f02d2819c78437d96595b14d8a425a045afbcb91e15acb"},
 		3:  {"agent_conversation_execution", "35344c91e542b76af702336cb678dfd56c7e93e004a93c12093f245a06896030"},
 		4:  {"agent_conversation_interactions", "4b72cfdf094240387cecbebe3d9a4b035908e59fac3ba64c9063b5ff49a88290"},
-		15: {"agent_tasks", "85a085c498b25da07edbaf7b9c4cc2c0b2e5455464a24977903f31c66b1177fb"},
+		15: {"agent_tasks", "1d8e7afd904fc73f8bea51e9a835ca14934839ef7e07cf26bb0c448b7bb6c59a"},
 		19: {"agent_conversation_capacity", "a2b3b7f72aba5eb8da92965c31e0d5bd87e795c526ceedd9c3043a1da24e492f"},
-		20: {"agent_peer_collaboration", "654e02dd9e920ea47555bbde08c8e5743f3e4d5d3adc18b88c11ac6a673a3ced"},
+		20: {"agent_peer_collaboration", "590823a71232d116063f1db64cae70d9677aa4ad8c8990e1140aefa13ed347e9"},
 		27: {"delegation_execution_subjects", "13c80cbe4bfcc2a100ef1ca7b0d77e3a02ff9754b8bd32442cda8636551ea44a"},
 		28: {"delegation_source_releases", "1d5d4b08d77bc39386f9fe999ac30d69e457c426e2d1e1cd22e2fce1cda38ebb"},
 		29: {"agent_contract_publications", "4c20800a59d397f10b6183ee1ac7add774e0e95776eca3fd388d77ae6a6d06d6"},

@@ -82,8 +82,10 @@ func (s *ConversationStore) ForkConversation(ctx context.Context, in agentsdk.Co
 		}
 		now := time.Now().UTC().Truncate(time.Millisecond)
 		origin := &agentsdk.ConversationForkOrigin{ConversationID: seed.Source.ConversationID, RunID: seed.Source.RunID, BoundaryEventSeq: seed.BoundaryEventSeq, CreatedAt: now}
-		out = agentsdk.Conversation{ID: conversationID("conv_"), AgentID: in.AgentID, Fork: origin, Title: strings.TrimSpace(in.Title), RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, UserID: a.UserID, MemoryEnabled: source.MemoryEnabled, Revision: 1, CreatedAt: now, UpdatedAt: now}
-		q, values, err := query.NewInsertBuilder(s.store.Renderer(), "_agent_conversations").Columns("owner_key", "conversation_id", "client_id", "request_hash", "title", "updated_at", "archived", "revision", "payload_json").Values(conversationOwner(a), out.ID, in.ClientID, requestHash, strings.ToLower(out.Title), now.UnixMilli(), 0, 1, conversationJSON(out)).Build()
+		title := strings.TrimSpace(in.Title)
+		titleOrigin, titleStatus := conversationTitleState(title)
+		out = agentsdk.Conversation{ID: conversationID("conv_"), AgentID: in.AgentID, Fork: origin, Title: title, TitleOrigin: titleOrigin, TitleStatus: titleStatus, RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, UserID: a.UserID, MemoryEnabled: source.MemoryEnabled, Revision: 1, CreatedAt: now, UpdatedAt: now}
+		q, values, err := query.NewInsertBuilder(s.store.Renderer(), "_agent_conversations").Columns("owner_key", "conversation_id", "client_id", "request_hash", "binding_kind", "binding_key", "binding_hash", "title", "updated_at", "archived", "revision", "payload_json").Values(conversationOwner(a), out.ID, in.ClientID, requestHash, "", "", out.ID, strings.ToLower(out.Title), now.UnixMilli(), 0, 1, conversationJSON(out)).Build()
 		if err = conversationExec(ctx, tx, q, values, err); err != nil {
 			return err
 		}

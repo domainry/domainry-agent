@@ -3,15 +3,15 @@ module github.com/domainry/domainry-agent
 go 1.26.0
 
 require (
-	github.com/domainry/domainry-agent-sdk v0.1.34
-	github.com/domainry/domainry-connector-sdk v0.1.3
-	github.com/domainry/domainry-connectors v0.1.5
-	github.com/domainry/domainry-foundation v0.1.41
+	github.com/domainry/domainry-agent-sdk v0.1.36
+	github.com/domainry/domainry-connector-sdk v0.1.8
+	github.com/domainry/domainry-connectors v0.1.10
+	github.com/domainry/domainry-foundation v0.1.43
 	github.com/domainry/domainry-identity v0.2.33
 	github.com/domainry/domainry-identity-bridge v0.1.8
-	github.com/domainry/domainry-identity-sdk v0.1.18
+	github.com/domainry/domainry-identity-sdk v0.1.19
 	github.com/domainry/domainry-lifecycle-sdk v0.1.20
-	github.com/domainry/domainry-orm v0.1.32
+	github.com/domainry/domainry-orm v0.1.33
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3
 	golang.org/x/sys v0.47.0
@@ -72,13 +72,13 @@ require (
 
 require (
 	github.com/domainry/domainry-todo v0.1.13
-	github.com/domainry/domainry-tools v0.1.11
-	github.com/domainry/domainry-tools-sdk v0.1.11
+	github.com/domainry/domainry-tools v0.1.12
+	github.com/domainry/domainry-tools-sdk v0.1.13
 )
 
 require (
-	github.com/domainry/domainry-integration v0.1.30
-	github.com/domainry/domainry-integration-sdk v0.1.12
+	github.com/domainry/domainry-integration v0.1.35
+	github.com/domainry/domainry-integration-sdk v0.1.15
 	github.com/domainry/domainry-knowledge v0.1.29
 	github.com/domainry/domainry-knowledge-sdk v0.1.11
 	github.com/domainry/domainry-report-sdk v0.1.16
@@ -86,6 +86,7 @@ require (
 )
 
 require (
+	cloud.google.com/go/compute/metadata v0.9.0 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.47.1 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.20 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.33.6 // indirect

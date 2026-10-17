@@ -95,7 +95,7 @@ func (f *accountWriteProductFixture) counts() map[string]int {
 }
 func (f *accountWriteProductFixture) connect(b *browser) integration.ConnectionAccount {
 	f.t.Helper()
-	scopes := []string{accountCalendarWriteScope, accountMailWriteScope}
+	scopes := accountOAuthScopes(accountCalendarWriteScope, accountMailWriteScope)
 	b.call("PUT", "/integration/oauth-applications/write-google", accountJSON(integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Google 写入验收", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: scopes, Enabled: true}), 200)
 	s := accountDecode[integration.OAuthAuthorizationSession](f.t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "write-google", Scope: integration.ConnectionAccountScopePersonal, Name: "日程与邮件验收账号", Scopes: scopes}), 200))
 	u, _ := url.Parse(f.callback(s.AuthorizationURL, "connect"))

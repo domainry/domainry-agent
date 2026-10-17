@@ -50,6 +50,10 @@ func (s *ConversationService) conversationModelDescriptor(key string) (agentsdk.
 		key = "default"
 	}
 	model := s.conversationModelByKey(key)
+	return describeConversationModel(key, model)
+}
+
+func describeConversationModel(key string, model agentsdk.ConversationModel) (agentsdk.ConversationModelDescriptor, error) {
 	if model == nil {
 		return agentsdk.ConversationModelDescriptor{}, conversationFailure("bad_request", "agent_model_unavailable")
 	}
@@ -122,6 +126,9 @@ func (s *ConversationService) selectConversationTaskModel(ctx context.Context, s
 }
 
 func (s *ConversationService) currentConversationModelDescriptor(ctx context.Context) (agentsdk.ConversationModelDescriptor, error) {
+	if model, ok := ctx.Value(conversationRunPlanningModelContextKey{}).(agentsdk.ConversationModel); ok {
+		return describeConversationModel("planning", model)
+	}
 	if selection := selectedConversationModel(ctx); selection != nil {
 		return agentsdk.ConversationModelDescriptor{Key: selection.Key, Identity: selection.Identity, Capabilities: canonicalConversationModelCapabilities(selection.Capabilities), DefaultReasoningEffort: selection.ReasoningEffort}, nil
 	}

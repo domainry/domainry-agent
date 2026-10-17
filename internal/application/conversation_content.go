@@ -1,8 +1,11 @@
 package application
 
 import (
+	"bytes"
 	"context"
 	"encoding/hex"
+	"encoding/json"
+	"io"
 	"regexp"
 	"strings"
 
@@ -11,6 +14,12 @@ import (
 )
 
 const conversationImageMaxCount = 4
+
+const (
+	conversationReferenceMaxCount  = 32
+	conversationReferenceMaxBytes  = 16 * 1024
+	conversationReferencesMaxBytes = 64 * 1024
+)
 
 var conversationImageAttachmentID = regexp.MustCompile(`^att_[a-f0-9]{32}$`)
 
@@ -50,9 +59,51 @@ func cloneConversationContentBlocks(in []agentsdk.ConversationContentBlock) []ag
 	return out
 }
 
+func cloneConversationReferences(in []agentsdk.ConversationReference) []agentsdk.ConversationReference {
+	out := make([]agentsdk.ConversationReference, len(in))
+	for index, reference := range in {
+		out[index] = reference
+		out[index].Payload = append([]byte(nil), reference.Payload...)
+	}
+	return out
+}
+
+func freezeConversationReferences(in []agentsdk.ConversationReference) ([]agentsdk.ConversationReference, error) {
+	if len(in) > conversationReferenceMaxCount {
+		return nil, conversationFailure("bad_request", "message_references_invalid")
+	}
+	out := make([]agentsdk.ConversationReference, 0, len(in))
+	total := 0
+	for _, reference := range in {
+		if !conversationKey(reference.Kind) || len(reference.Payload) == 0 || len(reference.Payload) > conversationReferenceMaxBytes {
+			return nil, conversationFailure("bad_request", "message_references_invalid")
+		}
+		decoder := json.NewDecoder(bytes.NewReader(reference.Payload))
+		decoder.UseNumber()
+		var payload map[string]any
+		if err := decoder.Decode(&payload); err != nil || payload == nil {
+			return nil, conversationFailure("bad_request", "message_references_invalid")
+		}
+		var trailing any
+		if decoder.Decode(&trailing) != io.EOF {
+			return nil, conversationFailure("bad_request", "message_references_invalid")
+		}
+		frozen, err := json.Marshal(payload)
+		if err != nil || len(frozen) > conversationReferenceMaxBytes {
+			return nil, conversationFailure("bad_request", "message_references_invalid")
+		}
+		total += len(reference.Kind) + len(frozen)
+		if total > conversationReferencesMaxBytes {
+			return nil, conversationFailure("bad_request", "message_references_invalid")
+		}
+		out = append(out, agentsdk.ConversationReference{Kind: reference.Kind, Payload: frozen})
+	}
+	return out, nil
+}
+
 func (s *ConversationService) freezeConversationSendContent(ctx context.Context, conversationID string, in agentsdk.ConversationSend, a agentsdk.ConversationAuthority) (agentsdk.ConversationSend, error) {
 	if len(in.Content) == 0 {
-		if !conversationText(in.Message, s.options.MaxInputBytes, true) {
+		if !conversationText(in.Message, s.options.MaxInputBytes, len(in.References) == 0) {
 			return in, conversationFailure("bad_request", "message_invalid")
 		}
 		return in, nil

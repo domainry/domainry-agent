@@ -258,6 +258,12 @@ func boolNumber(v bool) int {
 	}
 	return 0
 }
+func conversationTitleState(title string) (string, string) {
+	if title == "" {
+		return agentsdk.ConversationTitleOriginUnset, agentsdk.ConversationTitleStatusPending
+	}
+	return agentsdk.ConversationTitleOriginUser, agentsdk.ConversationTitleStatusReady
+}
 func (s *ConversationStore) Create(ctx context.Context, in agentsdk.ConversationCreate, a agentsdk.ConversationAuthority) (agentsdk.Conversation, error) {
 	var c agentsdk.Conversation
 	if err := conversationAuthority(a); err != nil {
@@ -265,6 +271,9 @@ func (s *ConversationStore) Create(ctx context.Context, in agentsdk.Conversation
 	}
 	if in.ClientID == "" || len(in.ClientID) > 96 {
 		return c, conversationError("bad_request", "client_id_required")
+	}
+	if in.Binding != nil && (!personalMemoryKey(in.Binding.Kind) || !personalMemoryKey(in.Binding.Key)) {
+		return c, conversationError("bad_request", "binding_invalid")
 	}
 	hash := conversationHash(in)
 	lookup := func() (agentsdk.Conversation, error) {
@@ -289,9 +298,45 @@ func (s *ConversationStore) Create(ctx context.Context, in agentsdk.Conversation
 	} else if !errors.Is(err, sql.ErrNoRows) {
 		return c, err
 	}
+	bindingKind, bindingKey, bindingHash := "", "", ""
+	lookupBinding := func() (agentsdk.Conversation, error) {
+		var old agentsdk.Conversation
+		var raw []byte
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversations").Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("binding_hash", bindingHash))).Build()
+		if err != nil {
+			return old, err
+		}
+		if err = s.store.Database().QueryRowContext(ctx, q, args...).Scan(&raw); err != nil {
+			return old, err
+		}
+		err = unmarshalDurableJSON(raw, &old)
+		return old, err
+	}
+	if in.Binding != nil {
+		bindingKind, bindingKey = in.Binding.Kind, in.Binding.Key
+		bindingHash = conversationHash([]string{bindingKind, bindingKey})
+		if old, err := lookupBinding(); err == nil {
+			if old.Archived {
+				return c, conversationError("conflict", "binding_archived")
+			}
+			if old.AgentID != in.AgentID || old.MemoryEnabled != in.MemoryEnabled {
+				return c, conversationError("conflict", "binding_conflict")
+			}
+			return old, nil
+		} else if !errors.Is(err, sql.ErrNoRows) {
+			return c, err
+		}
+	}
 	now := time.Now().UTC().Truncate(time.Millisecond)
-	c = agentsdk.Conversation{ID: conversationID("conv_"), AgentID: in.AgentID, Title: in.Title, RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, UserID: a.UserID, MemoryEnabled: in.MemoryEnabled, Revision: 1, CreatedAt: now, UpdatedAt: now}
-	q, args, err := query.NewInsertBuilder(s.store.Renderer(), "_agent_conversations").Columns("owner_key", "conversation_id", "client_id", "request_hash", "title", "updated_at", "archived", "revision", "payload_json").Values(conversationOwner(a), c.ID, in.ClientID, hash, strings.ToLower(c.Title), now.UnixMilli(), 0, 1, conversationJSON(c)).Build()
+	titleOrigin, titleStatus := conversationTitleState(in.Title)
+	c = agentsdk.Conversation{ID: conversationID("conv_"), AgentID: in.AgentID, Title: in.Title, TitleOrigin: titleOrigin, TitleStatus: titleStatus, RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, UserID: a.UserID, MemoryEnabled: in.MemoryEnabled, Revision: 1, CreatedAt: now, UpdatedAt: now}
+	if in.Binding != nil {
+		binding := *in.Binding
+		c.Binding = &binding
+	} else {
+		bindingHash = c.ID
+	}
+	q, args, err := query.NewInsertBuilder(s.store.Renderer(), "_agent_conversations").Columns("owner_key", "conversation_id", "client_id", "request_hash", "binding_kind", "binding_key", "binding_hash", "title", "updated_at", "archived", "revision", "payload_json").Values(conversationOwner(a), c.ID, in.ClientID, hash, bindingKind, bindingKey, bindingHash, strings.ToLower(c.Title), now.UnixMilli(), 0, 1, conversationJSON(c)).Build()
 	if err = conversationExec(ctx, s.store.Database(), q, args, err); err != nil {
 		if old, replayErr := lookup(); replayErr == nil {
 			return old, nil
@@ -299,6 +344,14 @@ func (s *ConversationStore) Create(ctx context.Context, in agentsdk.Conversation
 			var conflict *agentsdk.Error
 			if errors.As(replayErr, &conflict) && conflict.Class == "conflict" {
 				return c, replayErr
+			}
+		}
+		if in.Binding != nil {
+			if old, bindingErr := lookupBinding(); bindingErr == nil {
+				if old.Archived || old.AgentID != in.AgentID || old.MemoryEnabled != in.MemoryEnabled {
+					return c, conversationError("conflict", "binding_conflict")
+				}
+				return old, nil
 			}
 		}
 		return c, err
@@ -327,8 +380,25 @@ func (s *ConversationStore) List(ctx context.Context, in agentsdk.ConversationQu
 		p = append(p, query.Or(query.LessThan("updated_at", n), query.And(query.Equal("updated_at", n), query.LessThan("conversation_id", id))))
 	}
 	if in.Search != "" {
-		term := strings.NewReplacer("~", "~~", "%", "~%", "_", "~_").Replace(strings.ToLower(in.Search))
-		p = append(p, query.LikeEscaped("title", "%"+term+"%"))
+		normalized := strings.ToLower(strings.Join(strings.Fields(in.Search), " "))
+		term := strings.NewReplacer("~", "~~", "%", "~%", "_", "~_").Replace(normalized)
+		messages := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).
+			Columns("conversation_id").
+			Where(query.And(
+				query.Equal("owner_key", conversationOwner(a)),
+				query.Equal("item_kind", conversationItemMessage),
+				query.LikeEscaped("search_text", "%"+term+"%"),
+			))
+		p = append(p, query.Or(
+			query.LikeEscaped("title", "%"+term+"%"),
+			query.InSubquery("conversation_id", messages),
+		))
+	}
+	if in.BindingKind != "" || in.BindingKey != "" {
+		if !personalMemoryKey(in.BindingKind) || !personalMemoryKey(in.BindingKey) {
+			return out, conversationError("bad_request", "binding_invalid")
+		}
+		p = append(p, query.Equal("binding_kind", in.BindingKind), query.Equal("binding_key", in.BindingKey))
 	}
 	limit := conversationLimit(in.Limit)
 	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversations").Columns("payload_json").Where(query.And(p...)).OrderBy(query.Descending("updated_at"), query.Descending("conversation_id")).Limit(limit + 1).Build()
@@ -376,6 +446,8 @@ func (s *ConversationStore) Update(ctx context.Context, id string, in agentsdk.C
 		}
 		if in.Title != nil {
 			c.Title = *in.Title
+			c.TitleOrigin = agentsdk.ConversationTitleOriginUser
+			c.TitleStatus = agentsdk.ConversationTitleStatusReady
 		}
 		if in.Archived != nil {
 			c.Archived = *in.Archived
@@ -547,6 +619,56 @@ func (s *ConversationStore) History(ctx context.Context, id string, after, throu
 }
 
 func (s *ConversationStore) insertMessage(ctx context.Context, tx *sql.Tx, m agentsdk.ConversationMessage, a agentsdk.ConversationAuthority) error {
-	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationItemTable).Columns("owner_key", "conversation_id", "item_kind", "item_key", "reference_id", "run_id", "seq", "payload_json").Values(conversationOwner(a), m.ConversationID, conversationItemMessage, strconv.FormatInt(m.Seq, 10), m.ID, m.RunID, m.Seq, conversationJSON(m)).Build()
+	q, args, err := query.NewInsertBuilder(s.store.Renderer(), conversationItemTable).Columns("owner_key", "conversation_id", "item_kind", "item_key", "reference_id", "run_id", "seq", "search_text", "payload_json").Values(conversationOwner(a), m.ConversationID, conversationItemMessage, strconv.FormatInt(m.Seq, 10), m.ID, m.RunID, m.Seq, conversationMessageSearchText(m), conversationJSON(m)).Build()
 	return conversationExec(ctx, tx, q, args, err)
+}
+
+func conversationMessageSearchText(m agentsdk.ConversationMessage) string {
+	// Assistant output may contain protected source material whose visibility is
+	// reauthorized when history is read. Index only user-authored text so list
+	// search cannot become a side channel after source access is revoked.
+	if m.Role != "user" {
+		return ""
+	}
+	parts := make([]string, 0, 1+len(m.ContentBlocks))
+	if value := strings.TrimSpace(m.Content); value != "" {
+		parts = append(parts, value)
+	}
+	for _, block := range m.ContentBlocks {
+		if value := strings.TrimSpace(block.Text); value != "" {
+			parts = append(parts, value)
+		}
+		if block.Image != nil && strings.TrimSpace(block.Image.Filename) != "" {
+			parts = append(parts, block.Image.Filename)
+		}
+		if block.File != nil && strings.TrimSpace(block.File.Filename) != "" {
+			parts = append(parts, block.File.Filename)
+		}
+	}
+	return strings.ToLower(strings.Join(strings.Fields(strings.Join(parts, "\n")), " "))
+}
+
+func automaticConversationTitle(m agentsdk.ConversationMessage) string {
+	candidates := []string{m.Content}
+	for _, block := range m.ContentBlocks {
+		candidates = append(candidates, block.Text)
+		if block.Image != nil {
+			candidates = append(candidates, block.Image.Filename)
+		}
+		if block.File != nil {
+			candidates = append(candidates, block.File.Filename)
+		}
+	}
+	for _, candidate := range candidates {
+		value := strings.Join(strings.Fields(candidate), " ")
+		if value == "" {
+			continue
+		}
+		runes := []rune(value)
+		if len(runes) > 48 {
+			return string(runes[:48]) + "…"
+		}
+		return value
+	}
+	return ""
 }

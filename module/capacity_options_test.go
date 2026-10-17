@@ -29,6 +29,8 @@ func TestOptionsFromEnvironmentLoadsConversationCapacityLimits(t *testing.T) {
 }
 
 func TestOptionsFromEnvironmentLoadsTaskModel(t *testing.T) {
+	t.Setenv("AGENT_CONVERSATION_MAX_OUTPUT_TOKENS", "16384")
+	t.Setenv("AGENT_TASK_MODEL_MAX_OUTPUT_TOKENS", "32768")
 	t.Setenv("AGENT_TASK_MODEL_PROVIDER", "gateway")
 	t.Setenv("AGENT_TASK_MODEL_PROTOCOL", "responses")
 	t.Setenv("AGENT_TASK_MODEL_BASE_URL", "https://models.example.test")
@@ -40,6 +42,9 @@ func TestOptionsFromEnvironmentLoadsTaskModel(t *testing.T) {
 	t.Setenv("AGENT_TASK_MODEL_REASONING_EFFORTS", "low, high")
 	t.Setenv("AGENT_TASK_MODEL_REASONING_EFFORT", "high")
 	options := OptionsFromEnvironment()
+	if options.ConversationMaxOutputTokens != 16384 || options.TaskModelMaxOutputTokens != 32768 {
+		t.Fatalf("configured output budgets were dropped: conversation=%d task=%d", options.ConversationMaxOutputTokens, options.TaskModelMaxOutputTokens)
+	}
 	if options.TaskModelProviderName != "gateway" || options.TaskModelProtocol != "responses" || options.TaskModelBaseURL != "https://models.example.test" || options.TaskModelAPIKey != "shared-secret" || options.TaskModelName != "vision-model" || options.TaskModelContextTokenLimit != 128000 || !options.TaskModelImageInput || !options.TaskModelStructuredOutput || len(options.TaskModelReasoningEfforts) != 2 || options.TaskModelDefaultReasoningEffort != "high" {
 		t.Fatalf("task model options=%+v", options)
 	}

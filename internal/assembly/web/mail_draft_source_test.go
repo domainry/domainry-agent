@@ -31,7 +31,7 @@ func TestMailDraftDoesNotAdoptReplacementAccount(t *testing.T) {
 	draft := drafts.Items[0]
 	current := accountDecode[integration.ConnectionAccount](t, b.call("GET", "/integration/connection-accounts/"+original.Key, "", 200))
 	b.call("POST", "/integration/connection-accounts/"+original.Key+"/revoke", accountJSON(map[string]string{"expected_updated_at": current.UpdatedAt}), 200)
-	session := accountDecode[integration.OAuthAuthorizationSession](t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "mail-google", Scope: integration.ConnectionAccountScopePersonal, Name: "替代邮箱", Scopes: []string{mailReadScope}}), 200))
+	session := accountDecode[integration.OAuthAuthorizationSession](t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "mail-google", Scope: integration.ConnectionAccountScopePersonal, Name: "替代邮箱", Scopes: accountOAuthScopes(mailReadScope)}), 200))
 	callback, _ := url.Parse(f.callback(session.AuthorizationURL, "connect"))
 	done := accountDecode[integration.OAuthAuthorizationSession](t, b.call("POST", "/integration/oauth-authorizations/callback", accountJSON(integration.OAuthAuthorizationCallback{State: callback.Query().Get("state"), Code: callback.Query().Get("code")}), 200))
 	if done.Account == nil || done.Account.Key == original.Key {

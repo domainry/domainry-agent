@@ -131,8 +131,11 @@ func (s *executionStream) complete(reason string) error {
 	if s.finished {
 		return fmt.Errorf("duplicate model step completion")
 	}
+	if reason == "length" || reason == "max_tokens" {
+		return conversationOutputTruncated(s.usage)
+	}
 	if reason != "stop" && reason != "tool_calls" {
-		return fmt.Errorf("model step truncated or unsupported finish")
+		return fmt.Errorf("model step unsupported finish")
 	}
 	calls, err := s.orderedCalls()
 	if err != nil {

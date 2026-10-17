@@ -245,6 +245,11 @@ button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visib
 
 /* Tool output, sources, personal data and run details */
 .execution-activity { width: 100%; margin: 8px 0 14px; display: grid; gap: 10px; }
+.compaction-notices { display: grid; gap: 8px; }
+.compaction-notice { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 6px 10px; border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--color-border)); border-radius: 10px; background: color-mix(in srgb, var(--primary) 7%, var(--background)); padding: 9px 11px; font-size: 12px; }
+.compaction-notice strong { color: var(--foreground); white-space: nowrap; }
+.compaction-notice span { color: var(--color-muted-foreground); }
+.compaction-notice time { color: var(--color-muted-foreground); white-space: nowrap; }
 .execution-step { display: grid; gap: 5px; }
 .context-diagnostic { border: 1px solid var(--color-border); border-radius: 10px; background: color-mix(in srgb, var(--muted) 65%, transparent); padding: 8px 11px; font-size: 12px; overflow-wrap: anywhere; }
 .context-diagnostic summary { cursor: pointer; display: flex; justify-content: space-between; gap: 10px; }
@@ -563,6 +568,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visib
 	.trajectory-panel > header, .trajectory-records summary { display: grid; }
 	.trajectory-compare { grid-template-columns: minmax(0, 1fr); }
 	.trajectory-compare h4 { grid-column: auto; }
+	.compaction-notice { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }

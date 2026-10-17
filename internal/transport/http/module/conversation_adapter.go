@@ -129,7 +129,7 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 				parseErr = err
 			}
 		}
-		in.Query = agentsdk.ConversationQuery{Search: q.Get("search"), BeforeID: q.Get("before_id"), IncludeArchived: archived, Limit: in.Limit}
+		in.Query = agentsdk.ConversationQuery{Search: q.Get("search"), BeforeID: q.Get("before_id"), IncludeArchived: archived, Limit: in.Limit, BindingKind: q.Get("binding_kind"), BindingKey: q.Get("binding_key")}
 		in.TodoQuery = agentsdk.ConversationTodoQuery{Query: q.Get("query"), Status: q.Get("status"), SourceConversationID: q.Get("source_conversation_id"), BatchID: q.Get("batch_id"), Cursor: q.Get("cursor"), Limit: in.Limit}
 		in.TaskQuery = agentsdk.ConversationTaskQuery{Query: q.Get("query"), Status: q.Get("status"), SourceConversationID: q.Get("source_conversation_id"), Cursor: q.Get("cursor"), Limit: in.Limit}
 		in.ArtifactQuery = agentsdk.ConversationArtifactQuery{Query: q.Get("query"), SourceConversationID: q.Get("source_conversation_id"), Cursor: q.Get("cursor"), Limit: in.Limit}
@@ -388,7 +388,11 @@ func (s *conversationAdapter) stream(w http.ResponseWriter, r *http.Request, in 
 	w.Header().Set("X-Accel-Buffering", "no")
 	deadline := time.NewTimer(30 * time.Second)
 	defer deadline.Stop()
-	ticker := time.NewTicker(250 * time.Millisecond)
+	// Durable events are committed one delta at a time. Poll quickly enough for
+	// the browser to receive separate network flushes instead of one large batch;
+	// the frontend can then render at the browser's natural frame rate without
+	// blocking SSE consumption to fake a typewriter effect.
+	ticker := time.NewTicker(50 * time.Millisecond)
 	defer ticker.Stop()
 	for {
 		for _, event := range page.Items {

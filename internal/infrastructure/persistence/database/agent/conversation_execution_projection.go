@@ -5,6 +5,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
 
 func conversationExecutionTool(calls []agentsdk.ConversationToolView, callID string) *agentsdk.ConversationToolView {
@@ -35,6 +36,17 @@ func interruptConversationTools(calls []agentsdk.ConversationToolView) {
 // The run projection and its event are written in the same transaction. A
 // reconnect can start at LastEventSeq without losing in-progress tool text.
 func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind string, data map[string]any) error {
+	if kind == "run.planning.started" || kind == "run.planning.completed" || kind == "run.planning.failed" {
+		var event struct {
+			Attempt   int       `json:"attempt"`
+			UpdatedAt time.Time `json:"updated_at"`
+		}
+		raw, err := marshalDurableJSON(data)
+		if err != nil || unmarshalDurableJSON(raw, &event) != nil || event.Attempt != run.Attempt || event.UpdatedAt.IsZero() {
+			return conversationError("bad_request", "run_planning_event_invalid")
+		}
+		return nil
+	}
 	if kind == "model.attempt.started" || kind == "model.attempt.failed" || kind == "model.retry.scheduled" || kind == "model.attempt.completed" {
 		var event struct {
 			Step                   int            `json:"step"`
@@ -59,10 +71,12 @@ func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind strin
 			run.ModelAttempts = append(run.ModelAttempts, agentsdk.ConversationModelAttempt{Step: event.Step, RunAttempt: event.Attempt, Number: event.ModelAttempt, Status: "started", StartedAt: event.StartedAt})
 			if event.Step == -1 {
 				run.DraftText, run.DraftBytes = "", 0
+				run.DraftMessageID, run.DraftMessageSeq = "", 0
 			} else if event.Step >= 0 {
 				if step := conversationRunStep(run, event.Step); step != nil {
 					step.Attempt, step.ModelAttempts, step.Status = event.Attempt, event.ModelAttempt, "generating"
 					step.Text, step.Calls, step.ToolExecution, step.ParallelToolCalls = "", []agentsdk.ConversationToolView{}, "", 0
+					step.MessageID, step.MessageSeq = "", 0
 					step.RetryAt, step.RetryDelayMilliseconds, step.LastModelError = nil, 0, ""
 				} else {
 					return conversationError("conflict", "step_event_order")
@@ -115,7 +129,146 @@ func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind strin
 		run.Context = event.Context
 		return nil
 	}
+	if kind == "run.plan.created" {
+		var event struct {
+			Attempt   int                                `json:"attempt"`
+			Key       string                             `json:"key"`
+			Label     string                             `json:"label"`
+			Stages    []agentsdk.ConversationRunPlanStep `json:"stages"`
+			UpdatedAt time.Time                          `json:"updated_at"`
+		}
+		raw, err := marshalDurableJSON(data)
+		if err != nil || unmarshalDurableJSON(raw, &event) != nil || event.Attempt != run.Attempt || !executionText(event.Key, 96, true) || !executionText(event.Label, 160, true) || len(event.Stages) < 1 || len(event.Stages) > 32 || event.UpdatedAt.IsZero() {
+			return conversationError("bad_request", "run_plan_invalid")
+		}
+		seen := map[string]bool{}
+		for _, stage := range event.Stages {
+			validBinding := stage.Binding.Kind == "model" && len(stage.Binding.Tools) == 0 && stage.Binding.ProgressKey == "" ||
+				stage.Binding.Kind == "tool_progress" && len(stage.Binding.Tools) == 1 && executionText(stage.Binding.ProgressKey, 64, true) ||
+				stage.Binding.Kind == "tool" && len(stage.Binding.Tools) > 0 && len(stage.Binding.Tools) <= 16 && stage.Binding.ProgressKey == ""
+			if !executionText(stage.Key, 96, true) || seen[stage.Key] || !executionText(stage.Label, 160, true) || !executionText(stage.Detail, 512, false) || !validBinding || stage.CallID != "" {
+				return conversationError("bad_request", "run_plan_invalid")
+			}
+			for _, tool := range stage.Binding.Tools {
+				if !executionText(tool, 64, true) {
+					return conversationError("bad_request", "run_plan_invalid")
+				}
+			}
+			seen[stage.Key] = true
+		}
+		if run.Plan != nil {
+			if conversationHash(run.Plan) != conversationHash(agentsdk.ConversationRunPlan{Key: event.Key, Label: event.Label, Steps: event.Stages, CreatedAt: event.UpdatedAt, UpdatedAt: event.UpdatedAt}) {
+				return conversationError("conflict", "run_plan_changed")
+			}
+			return nil
+		}
+		plan := &agentsdk.ConversationRunPlan{Key: event.Key, Label: event.Label, CreatedAt: event.UpdatedAt, UpdatedAt: event.UpdatedAt}
+		for index, stage := range event.Stages {
+			stage.Index, stage.Total, stage.Status, stage.UpdatedAt = index+1, len(event.Stages), "planned", event.UpdatedAt
+			plan.Steps = append(plan.Steps, stage)
+		}
+		run.Plan = plan
+		return nil
+	}
+	if kind == "run.progress" {
+		var event struct {
+			Attempt     int       `json:"attempt"`
+			ProgressKey string    `json:"progress_key"`
+			CallID      string    `json:"call_id"`
+			Status      string    `json:"status"`
+			Detail      string    `json:"detail"`
+			UpdatedAt   time.Time `json:"updated_at"`
+		}
+		raw, err := marshalDurableJSON(data)
+		if err != nil || unmarshalDurableJSON(raw, &event) != nil {
+			return conversationError("bad_request", "run_progress_invalid")
+		}
+		validStatus := event.Status == "started" || event.Status == "waiting_user" || event.Status == "waiting_confirmation" || event.Status == "completed" || event.Status == "skipped" || event.Status == "failed"
+		if event.Attempt != run.Attempt || run.Plan == nil || !executionText(event.ProgressKey, 96, true) || !executionText(event.CallID, 128, false) || !executionText(event.Detail, 512, false) || !validStatus || event.UpdatedAt.IsZero() {
+			return conversationError("bad_request", "run_progress_invalid")
+		}
+		for index := range run.Plan.Steps {
+			step := &run.Plan.Steps[index]
+			if step.Key != event.ProgressKey {
+				continue
+			}
+			if step.Binding.Kind == "model" {
+				if event.CallID != "" {
+					return conversationError("conflict", "run_progress_call_invalid")
+				}
+			} else if event.Status == "skipped" {
+				if event.CallID != "" || step.CallID != "" {
+					return conversationError("conflict", "run_progress_call_invalid")
+				}
+			} else if event.CallID == "" || step.CallID != "" && step.CallID != event.CallID {
+				return conversationError("conflict", "run_progress_call_invalid")
+			}
+			if step.Status == event.Status {
+				if step.Binding.Kind != "model" && step.CallID == "" {
+					step.CallID = event.CallID
+				}
+				if event.Detail != "" {
+					step.Detail = event.Detail
+				}
+				step.UpdatedAt, run.Plan.UpdatedAt = event.UpdatedAt, event.UpdatedAt
+				return nil
+			}
+			if step.Status == "completed" || step.Status == "skipped" || step.Status == "failed" {
+				return nil
+			}
+			switch event.Status {
+			case "started":
+				if step.Status != "planned" && step.Status != "waiting_user" && step.Status != "waiting_confirmation" {
+					return conversationError("conflict", "run_progress_order")
+				}
+				for previous := 0; previous < index; previous++ {
+					if run.Plan.Steps[previous].Status != "completed" && run.Plan.Steps[previous].Status != "skipped" {
+						return conversationError("conflict", "run_progress_order")
+					}
+				}
+			case "waiting_user", "waiting_confirmation":
+				if step.Status != "started" {
+					return conversationError("conflict", "run_progress_order")
+				}
+			case "completed", "failed":
+				if step.Status != "started" && step.Status != "waiting_user" && step.Status != "waiting_confirmation" {
+					return conversationError("conflict", "run_progress_order")
+				}
+			case "skipped":
+				if step.Status != "planned" {
+					return conversationError("conflict", "run_progress_order")
+				}
+			}
+			step.Status, step.UpdatedAt = event.Status, event.UpdatedAt
+			if event.Detail != "" {
+				step.Detail = event.Detail
+			}
+			if step.Binding.Kind != "model" && step.CallID == "" {
+				step.CallID = event.CallID
+			}
+			run.Plan.UpdatedAt = event.UpdatedAt
+			return nil
+		}
+		return conversationError("conflict", "run_progress_not_planned")
+	}
 	if kind == "run.cancelled" || kind == "run.failed" {
+		if run.Plan != nil {
+			for index := range run.Plan.Steps {
+				step := &run.Plan.Steps[index]
+				if step.Status == agentsdk.ConversationRunProgressCompleted || step.Status == agentsdk.ConversationRunProgressSkipped || step.Status == agentsdk.ConversationRunProgressFailed {
+					continue
+				}
+				// Cancellation is an intentional terminal outcome (including a
+				// user's rejection), so no remaining plan step should look failed.
+				// A failed run marks only work that had actually started as failed;
+				// untouched future work is skipped.
+				wasPlanned := step.Status == agentsdk.ConversationRunProgressPlanned
+				step.Status = agentsdk.ConversationRunProgressSkipped
+				if kind == "run.failed" && !wasPlanned {
+					step.Status = agentsdk.ConversationRunProgressFailed
+				}
+			}
+		}
 		for i := range run.Steps {
 			step := &run.Steps[i]
 			if step.Status == "generating" || step.Status == "failed" && step.LastModelError != "" {
@@ -154,6 +307,10 @@ func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind strin
 		ResultTruncated bool                                  `json:"result_truncated"`
 		ResultReference *agentsdk.ConversationResultReference `json:"result_reference"`
 		Citations       []agentsdk.ConversationCitation       `json:"citations"`
+		ProgressKey     string                                `json:"progress_key"`
+		Detail          string                                `json:"detail"`
+		UpdatedAt       time.Time                             `json:"updated_at"`
+		Stages          []toolsdk.ProgressStep                `json:"stages"`
 		Calls           []agentsdk.ConversationToolCall       `json:"calls"`
 		ParallelWidth   int                                   `json:"parallel_width"`
 		ParallelCalls   int                                   `json:"parallel_calls"`
@@ -191,6 +348,7 @@ func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind strin
 	case "step.attempt.started":
 		step.Attempt = event.Attempt
 		step.Text = ""
+		step.MessageID, step.MessageSeq = "", 0
 		step.Calls = []agentsdk.ConversationToolView{}
 		step.ToolExecution = ""
 		step.ParallelToolCalls = 0
@@ -251,6 +409,76 @@ func projectConversationExecutionEvent(run *agentsdk.ConversationRun, kind strin
 			return nil
 		}
 		return conversationError("conflict", "step_call_missing")
+	case "tool.plan.created":
+		call := conversationExecutionTool(step.Calls, event.CallID)
+		if call == nil {
+			return conversationError("conflict", "step_call_missing")
+		}
+		if len(event.Stages) < 1 || len(event.Stages) > 32 || event.UpdatedAt.IsZero() {
+			return conversationError("bad_request", "tool_plan_invalid")
+		}
+		seen := map[string]bool{}
+		for _, stage := range event.Stages {
+			if !executionText(stage.Key, 64, true) || !executionText(stage.Label, 160, true) || !executionText(stage.Detail, 512, false) || seen[stage.Key] {
+				return conversationError("bad_request", "tool_plan_invalid")
+			}
+			seen[stage.Key] = true
+		}
+		if len(call.Progress) > 0 {
+			if len(call.Progress) != len(event.Stages) {
+				return conversationError("conflict", "tool_plan_changed")
+			}
+			for index, stage := range event.Stages {
+				if call.Progress[index].Key != stage.Key || call.Progress[index].Label != stage.Label || call.Progress[index].Detail != stage.Detail || call.Progress[index].Optional != stage.Optional || call.Progress[index].Index != index+1 || call.Progress[index].Total != len(event.Stages) {
+					return conversationError("conflict", "tool_plan_changed")
+				}
+			}
+			return nil
+		}
+		for index, stage := range event.Stages {
+			call.Progress = append(call.Progress, agentsdk.ConversationToolProgressView{Key: stage.Key, Label: stage.Label, Detail: stage.Detail, Optional: stage.Optional, Index: index + 1, Total: len(event.Stages), Status: toolsdk.ProgressStatusPlanned, UpdatedAt: event.UpdatedAt})
+		}
+		return nil
+	case "tool.progress":
+		call := conversationExecutionTool(step.Calls, event.CallID)
+		if call == nil {
+			return conversationError("conflict", "step_call_missing")
+		}
+		if !executionText(event.ProgressKey, 64, true) || !executionText(event.Detail, 512, false) || event.UpdatedAt.IsZero() || event.Status != toolsdk.ProgressStatusStarted && event.Status != toolsdk.ProgressStatusCompleted && event.Status != toolsdk.ProgressStatusSkipped && event.Status != toolsdk.ProgressStatusFailed {
+			return conversationError("bad_request", "tool_progress_invalid")
+		}
+		for index := range call.Progress {
+			progress := &call.Progress[index]
+			if progress.Key != event.ProgressKey {
+				continue
+			}
+			if progress.Status == event.Status {
+				progress.Detail, progress.UpdatedAt = event.Detail, event.UpdatedAt
+				return nil
+			}
+			if (progress.Status == toolsdk.ProgressStatusCompleted || progress.Status == toolsdk.ProgressStatusSkipped || progress.Status == toolsdk.ProgressStatusFailed) && event.Status == toolsdk.ProgressStatusStarted {
+				return nil
+			}
+			if event.Status == toolsdk.ProgressStatusStarted {
+				if progress.Status != "planned" {
+					return conversationError("conflict", "tool_progress_order")
+				}
+				for previous := 0; previous < index; previous++ {
+					if call.Progress[previous].Status != toolsdk.ProgressStatusCompleted && call.Progress[previous].Status != toolsdk.ProgressStatusSkipped {
+						return conversationError("conflict", "tool_progress_order")
+					}
+				}
+			} else if event.Status == toolsdk.ProgressStatusSkipped {
+				if !progress.Optional || progress.Status != "planned" {
+					return conversationError("conflict", "tool_progress_order")
+				}
+			} else if progress.Status != toolsdk.ProgressStatusStarted {
+				return conversationError("conflict", "tool_progress_order")
+			}
+			progress.Detail, progress.Status, progress.UpdatedAt = event.Detail, event.Status, event.UpdatedAt
+			return nil
+		}
+		return conversationError("conflict", "tool_progress_not_planned")
 	case "tool.queued", "tool.started", "tool.completed", "tool.uncertain", "tool.waiting":
 		call := conversationExecutionTool(step.Calls, event.CallID)
 		if call == nil && event.ParentCallID != "" {

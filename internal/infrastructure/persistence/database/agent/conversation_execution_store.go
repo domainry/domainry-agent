@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"sort"
 	"strings"
 	"time"
@@ -13,6 +14,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	persistence "github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-orm/query"
+	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
 
 const (
@@ -22,44 +24,69 @@ const (
 	conversationRunStepKindSources = "step_sources"
 )
 
-func validConversationStepContext(input *agentsdk.ConversationStepRequest) bool {
+func conversationStepContextValidationIssue(input *agentsdk.ConversationStepRequest) string {
 	if input.ContextWindow != nil {
 		window := input.ContextWindow
 		if window.LimitBytes < 4096 || window.InputBytes < 1 || window.InputBytes > window.LimitBytes || window.PressurePermille < 0 || window.PressurePermille > 1000 || window.PressurePermille != min(1000, window.InputBytes*1000/window.LimitBytes) {
-			return false
+			return "context_window"
 		}
 	}
 	if input.Compaction != nil {
 		value := input.Compaction
 		if value.Version != 1 || value.Results < 0 || value.Intervals < 0 || value.Results+value.Intervals < 1 || value.BeforeBytes < 1 || value.AfterBytes < 1 || value.AfterBytes >= value.BeforeBytes {
-			return false
+			return "compaction"
 		}
 	}
 	if input.Context == nil {
 		for _, message := range input.Messages {
 			if message.ContextSourceKey != "" {
-				return false
+				return "context_source_without_manifest"
 			}
 		}
-		return true
+		return ""
 	}
 	manifest := input.Context
 	if manifest.Version != 1 || len(manifest.Sources) < 1 || len(manifest.Sources) > 32 || len(manifest.Changes) > 64 || manifest.RefreshedAt.IsZero() || len(manifest.StablePrefixHash) != 64 || len(manifest.DynamicHash) != 64 || input.ContextWindow == nil {
-		return false
+		return "context_manifest"
 	}
 	seen := map[string]bool{}
 	for _, reference := range manifest.Sources {
-		if !personalMemoryKey(reference.Key) || seen[reference.Key] || reference.MessageIndex < 0 || reference.MessageIndex >= len(input.Messages) || input.Messages[reference.MessageIndex].ContextSourceKey != reference.Key || conversationHash(input.Messages[reference.MessageIndex].Content) != reference.MessageHash || len(reference.DefinitionHash) != 64 || len(reference.ContentHash) != 64 || len(reference.MessageHash) != 64 || strings.TrimSpace(reference.Version) == "" || len(reference.Version) > 256 || reference.UpdatedAt.IsZero() || len(reference.Sources) > 64 {
-			return false
+		switch {
+		case !personalMemoryKey(reference.Key):
+			return "context_source_key"
+		case seen[reference.Key]:
+			return "context_source_duplicate"
+		case reference.MessageIndex < 0 || reference.MessageIndex >= len(input.Messages):
+			return "context_source_message_index"
+		case input.Messages[reference.MessageIndex].ContextSourceKey != reference.Key:
+			return "context_source_message_key"
+		case conversationHash(input.Messages[reference.MessageIndex].Content) != reference.MessageHash:
+			return "context_source_message_hash"
+		case len(reference.DefinitionHash) != 64:
+			return "context_source_definition_hash"
+		case len(reference.ContentHash) != 64:
+			return "context_source_content_hash"
+		case len(reference.MessageHash) != 64:
+			return "context_source_reference_message_hash"
+		case strings.TrimSpace(reference.Version) == "" || len(reference.Version) > 256:
+			return "context_source_version"
+		case reference.UpdatedAt.IsZero() || reference.UpdatedAt.UnixMilli() == 0:
+			return "context_source_updated_at"
+		case len(reference.Sources) > 64:
+			return "context_source_dependencies"
 		}
 		seen[reference.Key] = true
 	}
 	for _, change := range manifest.Changes {
 		if !seen[change.Key] || strings.TrimSpace(change.PreviousVersion) == "" || strings.TrimSpace(change.CurrentVersion) == "" || change.PreviousVersion == change.CurrentVersion || change.ChangedAt.IsZero() {
-			return false
+			return "context_change"
 		}
 	}
-	return true
+	return ""
+}
+
+func validConversationStepContext(input *agentsdk.ConversationStepRequest) bool {
+	return conversationStepContextValidationIssue(input) == ""
 }
 
 func conversationContextView(window *agentsdk.ConversationContextWindow, manifest *agentsdk.ConversationContextManifest, compaction *agentsdk.ConversationContextCompaction) *agentsdk.ConversationContextView {
@@ -157,7 +184,25 @@ func (s *ConversationStore) ExecutionStep(ctx context.Context, claim persistence
 		if input == nil {
 			return nil
 		}
-		if len(input.Messages) == 0 || !validStoredConversationStepMessages(input.Messages, claim.Run.ConversationID) || storedConversationStepMessagesHaveImages(input.Messages) && !input.ModelCapabilities.ImageInput || input.ModelIdentity.Fingerprint == "" || input.IdempotencyKey == "" || input.MaxToolCalls < 1 || input.MaxToolCalls > 64 || input.MaxOutputBytes < 1 || input.MaxArgumentBytes < 1 || input.MaxParallelTools < 0 || input.MaxParallelTools > 16 || !validConversationStepContext(input) {
+		messagesValid := validStoredConversationStepMessages(input.Messages, claim.Run.ConversationID)
+		imagesSupported := !storedConversationStepMessagesHaveImages(input.Messages) || input.ModelCapabilities.ImageInput
+		contextIssue := conversationStepContextValidationIssue(input)
+		if len(input.Messages) == 0 || !messagesValid || !imagesSupported || input.ModelIdentity.Fingerprint == "" || input.IdempotencyKey == "" || input.MaxToolCalls < 1 || input.MaxToolCalls > 64 || input.MaxOutputBytes < 1 || input.MaxArgumentBytes < 1 || input.MaxParallelTools < 0 || input.MaxParallelTools > 16 || contextIssue != "" {
+			slog.Error("conversation step input rejected",
+				"conversation_id", claim.Run.ConversationID,
+				"run_id", claim.Run.ID,
+				"step", number,
+				"message_count", len(input.Messages),
+				"messages_valid", messagesValid,
+				"images_supported", imagesSupported,
+				"model_fingerprint_present", input.ModelIdentity.Fingerprint != "",
+				"idempotency_key_present", input.IdempotencyKey != "",
+				"max_tool_calls", input.MaxToolCalls,
+				"max_output_bytes", input.MaxOutputBytes,
+				"max_argument_bytes", input.MaxArgumentBytes,
+				"max_parallel_tools", input.MaxParallelTools,
+				"context_issue", contextIssue,
+			)
 			return conversationError("bad_request", "step_input_invalid")
 		}
 		if number > 0 {
@@ -207,7 +252,7 @@ func (s *ConversationStore) ExecutionStep(ctx context.Context, claim persistence
 		found = true
 		old := row
 		if info := input.Compaction; info != nil {
-			if err = s.event(ctx, tx, &row, "context.tools_compacted", map[string]any{"step": number, "version": info.Version, "results": info.Results, "intervals": info.Intervals, "before_bytes": info.BeforeBytes, "after_bytes": info.AfterBytes}); err != nil {
+			if err = s.event(ctx, tx, &row, "context.tools_compacted", map[string]any{"attempt": claim.Run.Attempt, "kind": agentsdk.ConversationCompactionKindExecutionContext, "step": number, "version": info.Version, "results": info.Results, "intervals": info.Intervals, "before_bytes": info.BeforeBytes, "after_bytes": info.AfterBytes}); err != nil {
 				return err
 			}
 		}
@@ -674,6 +719,18 @@ func (s *ConversationStore) finishExecutionTool(ctx context.Context, tx *sql.Tx,
 	return s.finishExecutionToolReceipt(ctx, tx, claim, number, callID, result, row)
 }
 
+func conversationToolProgressFinished(plan []toolsdk.ProgressStep, progress []agentsdk.ConversationToolProgressView) bool {
+	if len(progress) != len(plan) {
+		return false
+	}
+	for index, stage := range plan {
+		if progress[index].Key != stage.Key || progress[index].Status != toolsdk.ProgressStatusCompleted && !(stage.Optional && progress[index].Status == toolsdk.ProgressStatusSkipped) {
+			return false
+		}
+	}
+	return true
+}
+
 // Only the public receipt method accepts a cancelled run. Transactional local
 // mutations keep using finishExecutionTool and its strict live-lease check.
 func (s *ConversationStore) finishExecutionToolReceipt(ctx context.Context, tx *sql.Tx, claim persistence.ConversationClaim, number int, callID string, result agentsdk.ConversationToolResult, row conversationRunRow) error {
@@ -700,6 +757,16 @@ func (s *ConversationStore) finishExecutionToolReceipt(ctx context.Context, tx *
 	}
 	if result.Completion != "" && (out.Definition.Effect != "write" || result.Completion != "accepted" || result.Status != "completed") {
 		return conversationError("bad_request", "tool_result_invalid")
+	}
+	if result.Status == "completed" && len(out.Definition.ExecutionPlan) > 0 {
+		step := conversationRunStep(&row.Run, number)
+		if step == nil {
+			return conversationError("conflict", "step_call_missing")
+		}
+		call := conversationExecutionTool(step.Calls, callID)
+		if call == nil || !conversationToolProgressFinished(out.Definition.ExecutionPlan, call.Progress) {
+			return conversationError("conflict", "tool_progress_incomplete")
+		}
 	}
 	out.Result = &result
 	out.State = "completed"

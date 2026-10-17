@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"io"
 	"net"
@@ -41,9 +42,16 @@ func conversationFailureWithDetails(err error, details agentsdk.ConversationMode
 	return &conversationModelFailure{err: err, details: details}
 }
 
+func conversationOutputTruncated(usage map[string]any) error {
+	return conversationFailureWithDetails(
+		&agentsdk.Error{Class: "unavailable", Code: "agent.conversation.model_output_truncated"},
+		agentsdk.ConversationModelFailureDetails{ErrorCode: "model_output_truncated", Usage: cloneConversationUsage(usage)},
+	)
+}
+
 // Stable, content-free error codes cross the provider/application boundary.
 // Raw response bodies, endpoint URLs and credentials are never persisted.
-func conversationHTTPError(status int, retryAfter time.Duration) error {
+func conversationHTTPError(status int, retryAfter time.Duration, responseBody ...[]byte) error {
 	code := "provider_failed"
 	retryable := false
 	switch status {
@@ -59,6 +67,9 @@ func conversationHTTPError(status int, retryAfter time.Duration) error {
 		retryable = true
 	case http.StatusBadRequest, http.StatusNotFound, http.StatusUnprocessableEntity:
 		code = "provider_request_invalid"
+		if len(responseBody) > 0 && conversationImageInputRejected(responseBody[0]) {
+			code = "model_image_input_unsupported"
+		}
 	default:
 		if status >= 500 {
 			code = "provider_unavailable"
@@ -67,6 +78,28 @@ func conversationHTTPError(status int, retryAfter time.Duration) error {
 	}
 	err := &agentsdk.Error{Class: "unavailable", Code: "agent.conversation." + code, Retryable: retryable}
 	return conversationFailureWithDetails(err, agentsdk.ConversationModelFailureDetails{Retryable: retryable, RetryAfter: retryAfter, ErrorCode: code})
+}
+
+// conversationImageInputRejected intentionally recognizes only a small set of
+// provider messages. The response body is never returned or persisted.
+func conversationImageInputRejected(raw []byte) bool {
+	if len(raw) == 0 || len(raw) > 8192 {
+		return false
+	}
+	var envelope struct {
+		Error any `json:"error"`
+	}
+	if json.Unmarshal(raw, &envelope) != nil {
+		return false
+	}
+	encoded, err := json.Marshal(envelope.Error)
+	if err != nil {
+		return false
+	}
+	message := strings.ToLower(string(encoded))
+	mentionsImage := strings.Contains(message, "image_url") || strings.Contains(message, "input_image") || strings.Contains(message, "image input")
+	unsupported := strings.Contains(message, "unknown parameter") || strings.Contains(message, "not supported") || strings.Contains(message, "unsupported")
+	return mentionsImage && unsupported
 }
 func conversationNetworkError(err error) error {
 	if errors.Is(err, context.Canceled) {

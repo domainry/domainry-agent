@@ -40,6 +40,7 @@ import (
 )
 
 type ConversationOptions = agentapplication.ConversationOptions
+type ConversationModelConfig = provider.ConversationModelConfig
 type KnowledgeConfig = provider.KnowledgeConfig
 type KnowledgeResponseMapping = provider.KnowledgeResponseMapping
 type KnowledgeCitationMapping = provider.KnowledgeCitationMapping
@@ -61,16 +62,19 @@ type Options struct {
 	ConversationURL, ConversationAPIKey, ConversationModel string
 	ConversationProviderName, ConversationProtocol         string
 	ConversationContextTokenLimit                          int
+	ConversationMaxOutputTokens                            int
 	ConversationImageInput, ConversationStructuredOutput   bool
 	ConversationDisableProtocolContinuation                bool
 	ConversationReasoningEfforts                           []string
 	ConversationDefaultReasoningEffort                     string
 	ConversationProvider                                   agentsdk.ConversationModel
 	ConversationOptions                                    ConversationOptions
+	ConversationPlanningModelConfig                        ConversationModelConfig
 	TaskModelBaseURL                                       string
 	TaskModelURL, TaskModelAPIKey, TaskModelName           string
 	TaskModelProviderName, TaskModelProtocol               string
 	TaskModelContextTokenLimit                             int
+	TaskModelMaxOutputTokens                               int
 	TaskModelImageInput, TaskModelStructuredOutput         bool
 	TaskModelDisableProtocolContinuation                   bool
 	TaskModelReasoningEfforts                              []string
@@ -100,8 +104,9 @@ func OptionsFromEnvironment() Options {
 		taskAPIKey = os.Getenv("AGENT_PROVIDER_API_KEY")
 	}
 	conversation := ConversationOptions{
-		ContextBytes: positiveEnvironmentInteger("AGENT_CONVERSATION_CONTEXT_BYTES"),
-		Workers:      positiveEnvironmentInteger("AGENT_CONVERSATION_WORKERS"), MaxParallelTools: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_PARALLEL_TOOLS"),
+		RunPlanningTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_PLANNING_TIMEOUT"),
+		ContextBytes:       positiveEnvironmentInteger("AGENT_CONVERSATION_CONTEXT_BYTES"),
+		Workers:            positiveEnvironmentInteger("AGENT_CONVERSATION_WORKERS"), MaxParallelTools: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_PARALLEL_TOOLS"),
 		MaxQueuedPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_USER"), MaxQueuedPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE"),
 		MaxRunningPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_RUNNING_PER_USER"), MaxRunningPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE"),
 		RunTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_RUN_TIMEOUT"), ExternalCallTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT"),
@@ -124,12 +129,14 @@ func OptionsFromEnvironment() Options {
 		ConversationProviderName:                model.Provider,
 		ConversationProtocol:                    model.Protocol,
 		ConversationContextTokenLimit:           model.ContextTokenLimit,
+		ConversationMaxOutputTokens:             model.MaxOutputTokens,
 		ConversationImageInput:                  model.ImageInput,
 		ConversationStructuredOutput:            model.StructuredOutput,
 		ConversationDisableProtocolContinuation: model.DisableProtocolContinuation,
 		ConversationReasoningEfforts:            append([]string(nil), model.ReasoningEfforts...),
 		ConversationDefaultReasoningEffort:      model.DefaultReasoningEffort,
 		ConversationOptions:                     conversation,
+		ConversationPlanningModelConfig:         provider.ConversationPlanningModelConfigFromEnvironment(),
 		TaskModelBaseURL:                        os.Getenv("AGENT_TASK_MODEL_BASE_URL"),
 		TaskModelURL:                            os.Getenv("AGENT_TASK_MODEL_URL"),
 		TaskModelAPIKey:                         taskAPIKey,
@@ -137,6 +144,7 @@ func OptionsFromEnvironment() Options {
 		TaskModelProviderName:                   os.Getenv("AGENT_TASK_MODEL_PROVIDER"),
 		TaskModelProtocol:                       os.Getenv("AGENT_TASK_MODEL_PROTOCOL"),
 		TaskModelContextTokenLimit:              taskContextLimit,
+		TaskModelMaxOutputTokens:                positiveEnvironmentInteger("AGENT_TASK_MODEL_MAX_OUTPUT_TOKENS"),
 		TaskModelImageInput:                     strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_TASK_MODEL_IMAGE_INPUT")), "true"),
 		TaskModelStructuredOutput:               strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_TASK_MODEL_STRUCTURED_OUTPUT")), "true"),
 		TaskModelDisableProtocolContinuation:    strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_TASK_MODEL_PROTOCOL_CONTINUATION")), "false"),
@@ -246,7 +254,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	}
 	runner := provider.New(provider.Config{BaseURL: f.options.BaseURL, APIKey: f.options.APIKey, AgentID: f.options.AgentID, Timeout: f.options.Timeout, Client: f.options.Client})
 	conversationModel := f.options.ConversationProvider
-	conversationModelConfig := provider.ConversationModelConfig{Provider: f.options.ConversationProviderName, Protocol: f.options.ConversationProtocol, BaseURL: f.options.ConversationBaseURL, URL: f.options.ConversationURL, APIKey: f.options.ConversationAPIKey, Model: f.options.ConversationModel, ContextTokenLimit: f.options.ConversationContextTokenLimit, ImageInput: f.options.ConversationImageInput, StructuredOutput: f.options.ConversationStructuredOutput, DisableProtocolContinuation: f.options.ConversationDisableProtocolContinuation, ReasoningEfforts: append([]string(nil), f.options.ConversationReasoningEfforts...), DefaultReasoningEffort: f.options.ConversationDefaultReasoningEffort, Client: f.options.Client}
+	conversationModelConfig := provider.ConversationModelConfig{Provider: f.options.ConversationProviderName, Protocol: f.options.ConversationProtocol, BaseURL: f.options.ConversationBaseURL, URL: f.options.ConversationURL, APIKey: f.options.ConversationAPIKey, Model: f.options.ConversationModel, MaxOutputTokens: f.options.ConversationMaxOutputTokens, ContextTokenLimit: f.options.ConversationContextTokenLimit, ImageInput: f.options.ConversationImageInput, StructuredOutput: f.options.ConversationStructuredOutput, DisableProtocolContinuation: f.options.ConversationDisableProtocolContinuation, ReasoningEfforts: append([]string(nil), f.options.ConversationReasoningEfforts...), DefaultReasoningEffort: f.options.ConversationDefaultReasoningEffort, Client: f.options.Client}
 	if conversationModel == nil && conversationModelConfig.Configured() {
 		conversationModel, err = provider.NewConversationModel(conversationModelConfig)
 		if err != nil {
@@ -254,7 +262,7 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		}
 	}
 	taskModel := f.options.TaskModelProvider
-	taskModelConfig := provider.ConversationModelConfig{Provider: f.options.TaskModelProviderName, Protocol: f.options.TaskModelProtocol, BaseURL: f.options.TaskModelBaseURL, URL: f.options.TaskModelURL, APIKey: f.options.TaskModelAPIKey, Model: f.options.TaskModelName, ContextTokenLimit: f.options.TaskModelContextTokenLimit, ImageInput: f.options.TaskModelImageInput, StructuredOutput: f.options.TaskModelStructuredOutput, DisableProtocolContinuation: f.options.TaskModelDisableProtocolContinuation, ReasoningEfforts: append([]string(nil), f.options.TaskModelReasoningEfforts...), DefaultReasoningEffort: f.options.TaskModelDefaultReasoningEffort, Client: f.options.Client}
+	taskModelConfig := provider.ConversationModelConfig{Provider: f.options.TaskModelProviderName, Protocol: f.options.TaskModelProtocol, BaseURL: f.options.TaskModelBaseURL, URL: f.options.TaskModelURL, APIKey: f.options.TaskModelAPIKey, Model: f.options.TaskModelName, MaxOutputTokens: f.options.TaskModelMaxOutputTokens, ContextTokenLimit: f.options.TaskModelContextTokenLimit, ImageInput: f.options.TaskModelImageInput, StructuredOutput: f.options.TaskModelStructuredOutput, DisableProtocolContinuation: f.options.TaskModelDisableProtocolContinuation, ReasoningEfforts: append([]string(nil), f.options.TaskModelReasoningEfforts...), DefaultReasoningEffort: f.options.TaskModelDefaultReasoningEffort, Client: f.options.Client}
 	if taskModel == nil && taskModelConfig.Configured() {
 		taskModel, err = provider.NewConversationModel(taskModelConfig)
 		if err != nil {
@@ -276,6 +284,16 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		}
 	}()
 	conversationOptions := f.options.ConversationOptions
+	if conversationOptions.RunPlanningModel == nil && f.options.ConversationPlanningModelConfig.Configured() {
+		config := f.options.ConversationPlanningModelConfig
+		if config.Client == nil {
+			config.Client = f.options.Client
+		}
+		conversationOptions.RunPlanningModel, err = provider.NewConversationModel(config)
+		if err != nil {
+			return nil, fmt.Errorf("configure conversation planning model: %w", err)
+		}
+	}
 	if f.options.TaskAttachmentStorage != nil {
 		if err := binding.taskExecution.ConfigureAttachments(f.options.TaskAttachmentStorage, app.RuntimeID); err != nil {
 			return nil, err

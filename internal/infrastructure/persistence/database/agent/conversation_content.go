@@ -2,6 +2,7 @@ package agent
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"regexp"
 	"strings"
 
@@ -9,6 +10,24 @@ import (
 )
 
 var storedConversationImageID = regexp.MustCompile(`^att_[a-f0-9]{32}$`)
+
+func validStoredConversationReferences(references []agentsdk.ConversationReference) bool {
+	if len(references) > 32 {
+		return false
+	}
+	total := 0
+	for _, reference := range references {
+		var payload map[string]any
+		if !personalMemoryKey(reference.Kind) || len(reference.Payload) == 0 || len(reference.Payload) > 16*1024 || json.Unmarshal(reference.Payload, &payload) != nil || payload == nil {
+			return false
+		}
+		total += len(reference.Kind) + len(reference.Payload)
+		if total > 64*1024 {
+			return false
+		}
+	}
+	return true
+}
 
 func storedConversationImageType(value string) bool {
 	switch value {

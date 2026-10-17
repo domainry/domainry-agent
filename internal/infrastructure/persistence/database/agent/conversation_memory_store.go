@@ -40,7 +40,7 @@ func (s *ConversationStore) SaveSummary(ctx context.Context, claim agentpersiste
 		if err != nil {
 			return err
 		}
-		if claim.Run.BackgroundTask == nil && c.ActiveRunID != claim.Run.ID || c.SummaryID != summary.PreviousID || summary.ConversationID != c.ID || summary.ThroughSeq >= claim.Run.UserSeq || summary.ThroughSeq <= 0 {
+		if claim.Run.BackgroundTask == nil && c.ActiveRunID != claim.Run.ID || c.SummaryID != summary.PreviousID || summary.ConversationID != c.ID || summary.FromSeq <= 0 || summary.FromSeq > summary.ThroughSeq || summary.Messages < 1 || summary.ThroughSeq >= claim.Run.UserSeq || summary.BeforeBytes < 1 || summary.AfterBytes < 1 || !summary.Rebuild && summary.AfterBytes >= summary.BeforeBytes {
 			return conversationError("conflict", "summary_stale")
 		}
 		if summary.PreviousID != "" {
@@ -79,7 +79,15 @@ func (s *ConversationStore) SaveSummary(ctx context.Context, claim agentpersiste
 		if err = s.save(ctx, tx, c, c.Revision, claim.Authority); err != nil {
 			return err
 		}
-		if err = s.event(ctx, tx, &v, "context.compacted", map[string]any{"summary_id": summary.ID, "through_seq": summary.ThroughSeq}); err != nil {
+		kind := agentsdk.ConversationCompactionKindHistorySummary
+		if summary.Rebuild {
+			kind = agentsdk.ConversationCompactionKindHistoryRebuild
+		}
+		if err = s.event(ctx, tx, &v, "context.compacted", map[string]any{
+			"attempt": claim.Run.Attempt, "kind": kind, "summary_id": summary.ID,
+			"from_seq": summary.FromSeq, "through_seq": summary.ThroughSeq, "messages": summary.Messages,
+			"before_bytes": summary.BeforeBytes, "after_bytes": summary.AfterBytes, "rebuild": summary.Rebuild,
+		}); err != nil {
 			return err
 		}
 		return s.saveRun(ctx, tx, v, old)

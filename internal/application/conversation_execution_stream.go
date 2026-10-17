@@ -77,7 +77,11 @@ func (s *ConversationService) streamConversationExecutionStep(ctx context.Contex
 		if !valid {
 			callbackErr = fmt.Errorf("invalid execution preview event")
 		} else if event.Type == "tool.started" || event.Delta != "" {
-			callbackErr = s.repo.AppendEvent(streamCtx, claim, "step."+event.Type, map[string]any{"step": step.Number, "attempt": claim.Run.Attempt, "index": event.Index, "call_id": event.CallID, "name": event.Name, "offset": event.Offset, "delta": event.Delta})
+			data := map[string]any{"step": step.Number, "attempt": claim.Run.Attempt, "index": event.Index, "call_id": event.CallID, "name": event.Name, "offset": event.Offset, "delta": event.Delta}
+			if event.Type == "text.delta" {
+				data["public_answer"] = true
+			}
+			callbackErr = s.repo.AppendEvent(streamCtx, claim, "step."+event.Type, data)
 		}
 		if callbackErr != nil {
 			cancel()

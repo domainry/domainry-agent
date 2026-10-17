@@ -4,7 +4,7 @@ import { DraftStore } from "./drafts.ts";
 import { ApiError, errorMessage } from "./errors.ts";
 import { request } from "./api.ts";
 import { sessionFetch, setSession, type AppSession } from "./session.ts";
-import { applyExecutionEvent, liveStepText, type ExecutionEvent } from "./execution-state.ts";
+import { applyExecutionEvent, executionEventNames, liveStepText, type ExecutionEvent } from "./execution-state.ts";
 import type { Run } from "./api.ts";
 import { applyInteractionEvent, resumable, waiting, type Interaction } from "./interaction-state.ts";
 import { parseTodoMutation, todoDeadline } from "./todo-state.ts";
@@ -188,6 +188,71 @@ test("tool argument fragments stay previews and reconnect resumes Unicode byte o
   assert.throws(()=>apply("step.text.delta",{step:1,attempt:1,offset:0,delta:"旧响应"}));
 });
 
+test("tool progress is projected from the durable plan without mutating the source snapshot", () => {
+  const initial: Run = {id:"run",conversation_id:"chat",status:"running",attempt:1,user_seq:1,draft_bytes:0,last_event_seq:0,steps:[{number:0,attempt:1,status:"tools",text:"",calls:[{id:"plan",name:"custom_process",arguments:"{}",status:"running"}]}]};
+  const plan: ExecutionEvent = {seq:1,type:"tool.plan.created",data:{step:0,attempt:1,call_id:"plan",updated_at:"2026-10-14T08:00:00Z",stages:[{key:"lookup",label:"查询记录",detail:"等待查询"},{key:"enrich",label:"补充结果",optional:true}]}};
+  assert.equal(executionEventNames.includes("tool.plan.created"),true);
+  assert.equal(executionEventNames.includes("tool.progress"),true);
+  const planned = applyExecutionEvent(initial,plan);
+  assert.equal(initial.steps![0].calls[0].progress,undefined);
+  assert.deepEqual(planned.steps![0].calls[0].progress,[
+    {key:"lookup",label:"查询记录",detail:"等待查询",index:1,total:2,status:"planned",updated_at:"2026-10-14T08:00:00Z"},
+    {key:"enrich",label:"补充结果",detail:undefined,optional:true,index:2,total:2,status:"planned",updated_at:"2026-10-14T08:00:00Z"},
+  ]);
+  const duplicate = applyExecutionEvent(planned,{...plan,seq:2});
+  assert.deepEqual(duplicate.steps![0].calls[0].progress,planned.steps![0].calls[0].progress);
+  assert.throws(()=>applyExecutionEvent(planned,{...plan,seq:2,data:{...plan.data!,stages:[{key:"lookup",label:"另一个计划"},{key:"enrich",label:"补充结果",optional:true}]}}));
+});
+
+test("tool progress enforces stage order and cannot regress a terminal stage", () => {
+  const base: Run = {id:"run",conversation_id:"chat",status:"running",attempt:1,user_seq:1,draft_bytes:0,last_event_seq:1,steps:[{number:0,attempt:1,status:"tools",text:"",calls:[{id:"plan",name:"custom_process",arguments:"{}",status:"running",progress:[
+    {key:"lookup",label:"查询记录",index:1,total:2,status:"planned",updated_at:"2026-10-14T08:00:00Z"},
+    {key:"enrich",label:"补充结果",optional:true,index:2,total:2,status:"planned",updated_at:"2026-10-14T08:00:00Z"},
+  ]}]}]};
+  const progress = (seq:number,key:string,status:string,detail:string): ExecutionEvent => ({seq,type:"tool.progress",data:{step:0,attempt:1,call_id:"plan",progress_key:key,status,detail,updated_at:`2026-10-14T08:00:0${seq}Z`}});
+  assert.throws(()=>applyExecutionEvent(base,progress(2,"enrich","started","正在补充")));
+  assert.throws(()=>applyExecutionEvent(base,progress(2,"missing","started","未知阶段")));
+  assert.throws(()=>applyExecutionEvent(base,progress(2,"lookup","completed","跳过开始")));
+  const started = applyExecutionEvent(base,progress(2,"lookup","started","正在查询"));
+  const duplicate = applyExecutionEvent(started,progress(3,"lookup","started","仍在查询"));
+  assert.equal(duplicate.steps![0].calls[0].progress![0].detail,"仍在查询");
+  const completed = applyExecutionEvent(duplicate,progress(4,"lookup","completed","查询完成"));
+  const skipped = applyExecutionEvent(completed,progress(5,"enrich","skipped","无需补充"));
+  assert.equal(skipped.steps![0].calls[0].progress![1].status,"skipped");
+  assert.throws(()=>applyExecutionEvent(base,progress(2,"lookup","skipped","不能跳过")));
+  const lateStarted = applyExecutionEvent(completed,progress(5,"lookup","started","迟到的开始事件"));
+  assert.equal(lateStarted.steps![0].calls[0].progress![0].status,"completed");
+  assert.equal(lateStarted.steps![0].calls[0].progress![0].detail,"查询完成");
+  assert.throws(()=>applyExecutionEvent(completed,progress(5,"lookup","failed","迟到的失败事件")));
+});
+
+test("a rehydrated run snapshot continues later tool progress events", () => {
+  const snapshot = JSON.parse(JSON.stringify({id:"run",conversation_id:"chat",status:"running",attempt:1,user_seq:1,draft_bytes:0,last_event_seq:2,steps:[{number:0,attempt:1,status:"tools",text:"",calls:[{id:"plan",name:"custom_process",arguments:"{}",status:"running",progress:[
+    {key:"lookup",label:"查询记录",detail:"正在查询",index:1,total:2,status:"started",updated_at:"2026-10-14T08:00:02Z"},
+    {key:"decision",label:"形成决策",index:2,total:2,status:"planned",updated_at:"2026-10-14T08:00:00Z"},
+  ]}]}]})) as Run;
+  const completed = applyExecutionEvent(snapshot,{seq:3,type:"tool.progress",data:{step:0,attempt:1,call_id:"plan",progress_key:"lookup",status:"completed",detail:"查询完成",updated_at:"2026-10-14T08:00:03Z"}});
+  const continued = applyExecutionEvent(completed,{seq:4,type:"tool.progress",data:{step:0,attempt:1,call_id:"plan",progress_key:"decision",status:"started",detail:"正在决策",updated_at:"2026-10-14T08:00:04Z"}});
+  assert.deepEqual(continued.steps![0].calls[0].progress?.map(item=>item.status),["completed","started"]);
+  assert.equal(snapshot.steps![0].calls[0].progress?.[0].status,"started");
+});
+
+test("run-plan events advance in order and cannot reset a durable terminal snapshot", () => {
+  const created: ExecutionEvent = {seq:1,type:"run.plan.created",data:{attempt:1,key:"generic",label:"å¤çè¯·æ±",updated_at:"2026-10-14T08:00:00Z",stages:[
+    {key:"understand",label:"çè§£è¯·æ±",binding:{kind:"model"}},
+    {key:"lookup",label:"æ¥è¯¢èµæ",binding:{kind:"tool",tools:["custom_lookup"]}},
+  ]}};
+  const empty: Run = {id:"run",conversation_id:"chat",status:"running",attempt:1,user_seq:1,draft_bytes:0,last_event_seq:0};
+  const planned=applyExecutionEvent(empty,created);
+  assert.throws(()=>applyExecutionEvent(planned,{seq:2,type:"run.progress",data:{attempt:1,progress_key:"lookup",call_id:"call-1",status:"started",updated_at:"2026-10-14T08:00:01Z"}}));
+  const started=applyExecutionEvent(planned,{seq:2,type:"run.progress",data:{attempt:1,progress_key:"understand",status:"started",updated_at:"2026-10-14T08:00:01Z"}});
+  const completed=applyExecutionEvent(started,{seq:3,type:"run.progress",data:{attempt:1,progress_key:"understand",status:"completed",updated_at:"2026-10-14T08:00:02Z"}});
+  const late=applyExecutionEvent(completed,{seq:4,type:"run.progress",data:{attempt:1,progress_key:"understand",status:"started",updated_at:"2026-10-14T08:00:03Z"}});
+  assert.equal(late.plan!.steps[0].status,"completed");
+  const replayed=applyExecutionEvent(late,{...created,seq:5});
+  assert.equal(replayed.plan!.steps[0].status,"completed");
+});
+
 test("code-mode subcalls stream under their parent and cancellation keeps their distinct outcomes", () => {
   let run: Run = {id:"run",conversation_id:"chat",status:"running",attempt:1,user_seq:1,draft_bytes:0,last_event_seq:0,steps:[{number:0,attempt:1,status:"tools",text:"",calls:[{id:"parent",name:"run_code",arguments:"{}",status:"running"}]}]};
   run=applyExecutionEvent(run,{seq:1,type:"tool.queued",data:{step:0,attempt:1,parent_call_id:"parent",dispatch_index:0,call_id:"child",tool:"lookup",effect:"read"}});
@@ -247,6 +312,21 @@ test("context diagnostics retain source versions, pressure, compaction and provi
   assert.equal(completed.steps![0].context?.cache_read_input_tokens,800);
   assert.equal(completed.steps![0].context?.cache_creation_input_tokens,120);
   assert.deepEqual(completed.steps![0].usage,{input_tokens:1200,input_tokens_details:{cached_tokens:800},cache_creation_input_tokens:120});
+});
+
+test("history and execution compactions become explicit durable run notices", () => {
+  const run: Run = {id:"run",conversation_id:"chat",status:"running",attempt:2,user_seq:21,draft_bytes:0,last_event_seq:0};
+  assert.equal(executionEventNames.includes("context.compacted"), true);
+  assert.equal(executionEventNames.includes("context.tools_compacted"), true);
+  const history = applyExecutionEvent(run,{seq:1,type:"context.compacted",created_at:"2026-10-15T08:00:00Z",data:{attempt:2,kind:"history_summary",from_seq:1,through_seq:12,messages:8,before_bytes:62000,after_bytes:18000}});
+  assert.deepEqual(history.compactions,[{kind:"history_summary",step:-1,from_seq:1,through_seq:12,messages:8,before_bytes:62000,after_bytes:18000,rebuild:false,occurred_at:"2026-10-15T08:00:00Z"}]);
+  const execution = applyExecutionEvent(history,{seq:2,type:"context.tools_compacted",created_at:"2026-10-15T08:00:01Z",data:{attempt:2,kind:"execution_context",step:1,results:2,intervals:1,before_bytes:70000,after_bytes:49000}});
+  assert.equal(execution.compactions?.length,2);
+  assert.deepEqual(execution.compactions?.[1],{kind:"execution_context",step:1,results:2,intervals:1,before_bytes:70000,after_bytes:49000,occurred_at:"2026-10-15T08:00:01Z"});
+  const rebuilt = applyExecutionEvent(execution,{seq:3,type:"context.compacted",created_at:"2026-10-15T08:00:02Z",data:{attempt:2,kind:"history_rebuild",from_seq:1,through_seq:12,messages:8,before_bytes:18000,after_bytes:19000,rebuild:true}});
+  assert.deepEqual(rebuilt.compactions?.[2],{kind:"history_rebuild",step:-1,from_seq:1,through_seq:12,messages:8,before_bytes:18000,after_bytes:19000,rebuild:true,occurred_at:"2026-10-15T08:00:02Z"});
+  assert.throws(()=>applyExecutionEvent(run,{seq:1,type:"context.compacted",created_at:"2026-10-15T08:00:00Z",data:{attempt:2,kind:"history_summary",from_seq:1,through_seq:12,messages:8,before_bytes:18000,after_bytes:62000}}));
+  assert.throws(()=>applyExecutionEvent(run,{seq:1,type:"context.compacted",created_at:"2026-10-15T08:00:00Z",data:{attempt:2,kind:"history_rebuild",from_seq:1,through_seq:12,messages:8,before_bytes:18000,after_bytes:19000}}));
 });
 const storage = () => {
   const values = new Map<string, string>();

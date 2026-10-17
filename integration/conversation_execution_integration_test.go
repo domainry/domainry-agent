@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	application "github.com/domainry/domainry-agent/internal/application"
+	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
 
 type executionModel struct {
@@ -36,8 +38,8 @@ type retryingExecutionModel struct {
 	calls []time.Time
 }
 
-func (*retryingExecutionModel) GenerateConversation(context.Context, agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
-	return agentsdk.ConversationModelResult{}, fmt.Errorf("unexpected text-only model call")
+func (*retryingExecutionModel) GenerateConversation(_ context.Context, request agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
+	return executionTestPlan(request)
 }
 func (*retryingExecutionModel) ConversationModelIdentity() agentsdk.ConversationModelIdentity {
 	return agentsdk.ConversationModelIdentity{Provider: "test", Protocol: "responses", Model: "reasoner", Fingerprint: "retry-model-v1"}
@@ -78,8 +80,15 @@ func (m *retryingExecutionModel) StreamConversationStep(_ context.Context, in ag
 	}
 }
 
-func (*executionModel) GenerateConversation(context.Context, agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
-	return agentsdk.ConversationModelResult{}, fmt.Errorf("unexpected text-only model call")
+func (*executionModel) GenerateConversation(_ context.Context, request agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
+	return executionTestPlan(request)
+}
+
+func executionTestPlan(request agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
+	if request.Purpose != "summary" || len(request.Messages) == 0 || !strings.HasSuffix(request.IdempotencyKey, ":plan") {
+		return agentsdk.ConversationModelResult{}, fmt.Errorf("unexpected text-only model call")
+	}
+	return agentsdk.ConversationModelResult{Content: `{"label":"Create item","steps":[{"label":"Understand request","detail":"Determine the requested item","kind":"model"},{"label":"Create item","detail":"Create the confirmed item","kind":"tool","tool":"create_item"},{"label":"Report result","detail":"Return the execution result","kind":"model"}]}`, Model: "tool-model"}, nil
 }
 func (*executionModel) ConversationModelIdentity() agentsdk.ConversationModelIdentity {
 	return agentsdk.ConversationModelIdentity{Provider: "test", Protocol: "chat_completions", Model: "tool-model", Fingerprint: "stable-test-model"}
@@ -132,6 +141,8 @@ type executionHost struct {
 	uncertain                       bool
 	idempotency                     string
 	revokeAfterInvoke               bool
+	progress                        bool
+	incompleteProgress              bool
 }
 
 func (h *executionHost) ConversationTools(context.Context, agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, error) {
@@ -139,7 +150,11 @@ func (h *executionHost) ConversationTools(context.Context, agentsdk.Conversation
 	if strategy == "" {
 		strategy = "key"
 	}
-	return []agentsdk.ConversationToolDefinition{{Key: "create_item", Version: "1", Description: "Create a personal item", InputSchema: json.RawMessage(`{"type":"object","properties":{"title":{"type":"string","minLength":1}},"required":["title"],"additionalProperties":false}`), OutputSchema: json.RawMessage(`{"type":"object","properties":{"id":{"type":"string"}},"required":["id"],"additionalProperties":false}`), ActionKey: "items.create", Effect: "write", Idempotency: strategy, MaxOutputBytes: 1024, TimeoutMillis: 1000}}, nil
+	definition := agentsdk.ConversationToolDefinition{Key: "create_item", Version: "1", Description: "Create a personal item", InputSchema: json.RawMessage(`{"type":"object","properties":{"title":{"type":"string","minLength":1}},"required":["title"],"additionalProperties":false}`), OutputSchema: json.RawMessage(`{"type":"object","properties":{"id":{"type":"string"}},"required":["id"],"additionalProperties":false}`), ActionKey: "items.create", Effect: "write", Idempotency: strategy, MaxOutputBytes: 1024, TimeoutMillis: 1000}
+	if h.progress {
+		definition.ExecutionPlan = []toolsdk.ProgressStep{{Key: "lookup", Label: "查询记录", Detail: "等待查询"}}
+	}
+	return []agentsdk.ConversationToolDefinition{definition}, nil
 }
 func (h *executionHost) AuthorizeConversationTool(_ context.Context, request agentsdk.ConversationToolRequest) (agentsdk.ConversationToolAuthorization, error) {
 	h.mu.Lock()
@@ -147,7 +162,17 @@ func (h *executionHost) AuthorizeConversationTool(_ context.Context, request age
 	h.authorizes++
 	return agentsdk.ConversationToolAuthorization{Granted: h.allowed && request.Authority.UserID == conversationAuthority().UserID, Revision: "authorization-1"}, nil
 }
-func (h *executionHost) InvokeConversationTool(_ context.Context, request agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {
+func (h *executionHost) InvokeConversationTool(ctx context.Context, request agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {
+	if h.progress {
+		if err := toolsdk.ReportProgress(ctx, toolsdk.Progress{Key: "lookup", Detail: "正在查询", Status: "started"}); err != nil {
+			return agentsdk.ConversationToolResult{}, err
+		}
+		if !h.incompleteProgress {
+			if err := toolsdk.ReportProgress(ctx, toolsdk.Progress{Key: "lookup", Detail: "查询完成", Status: "completed"}); err != nil {
+				return agentsdk.ConversationToolResult{}, err
+			}
+		}
+	}
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	h.invokes++
@@ -159,6 +184,128 @@ func (h *executionHost) InvokeConversationTool(_ context.Context, request agents
 		return agentsdk.ConversationToolResult{}, fmt.Errorf("connection lost after effect")
 	}
 	return agentsdk.ConversationToolResult{Status: "completed", Content: json.RawMessage(`{"id":"created-id"}`), ResourceID: "created-id"}, nil
+}
+
+func TestConversationExecutionRejectsACompletedResultWithAnIncompletePlan(t *testing.T) {
+	repo := conversationRepository(t)
+	host := &executionHost{allowed: true, progress: true, incompleteProgress: true}
+	model := &executionModel{}
+	model.step = func(_ int, _ agentsdk.ConversationStepRequest) (agentsdk.ConversationStepResult, error) {
+		return model.callResult(`{"title":"one"}`), nil
+	}
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, RunPlanningEnabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer service.Close()
+	a := conversationAuthority()
+	c, err := service.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "incomplete-tool-progress"}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	run, err := service.Send(t.Context(), c.ID, agentsdk.ConversationSend{ClientMessageID: "one", Message: "Create one"}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	final := waitConversation(t, service, c.ID, run.ID)
+	if final.Status != "failed" || final.ErrorCode != "tool_progress_incomplete" || len(final.Steps) != 1 || final.Steps[0].Calls[0].Progress[0].Status != "started" {
+		t.Fatalf("run accepted an incomplete execution plan: %+v", final)
+	}
+}
+
+func TestConversationExecutionKeepsEveryPublicModelResponseAcrossTools(t *testing.T) {
+	repo := conversationRepository(t)
+	host := &executionHost{allowed: true}
+	model := &executionModel{}
+	model.step = func(number int, in agentsdk.ConversationStepRequest) (agentsdk.ConversationStepResult, error) {
+		if number == 1 {
+			out := model.callResult(`{"title":"one"}`)
+			out.Message.Content = "先执行所需操作。"
+			return out, nil
+		}
+		return model.answerResult(in), nil
+	}
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, RunPlanningEnabled: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer service.Close()
+	a := conversationAuthority()
+	c, err := service.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "all-public-messages"}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	run, err := service.Send(t.Context(), c.ID, agentsdk.ConversationSend{ClientMessageID: "one", Message: "Create one"}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	final := waitConversation(t, service, c.ID, run.ID)
+	messages, err := service.Messages(t.Context(), c.ID, agentsdk.ConversationMessageQuery{}, a)
+	if err != nil || final.Status != "completed" || len(messages.Items) != 3 || messages.Items[1].Content != "先执行所需操作。" || messages.Items[2].Content != "已创建事项。" || messages.Items[1].ID == messages.Items[2].ID || messages.Items[2].ID != final.AssistantMessageID {
+		t.Fatalf("a tool boundary erased/duplicated a public response: final=%+v messages=%+v err=%v", final, messages, err)
+	}
+	events, err := service.Events(t.Context(), c.ID, run.ID, 0, 100, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	visible := 0
+	for _, event := range events.Items {
+		if event.Type == "step.text.delta" {
+			if event.Data["public_answer"] != true || event.Data["message_id"] == "" {
+				t.Fatal("normal assistant text was withheld before a tool call", event)
+			}
+			visible++
+		}
+	}
+	if visible != 2 {
+		t.Fatalf("expected both public generations, got %d", visible)
+	}
+}
+
+func TestConversationExecutionPersistsToolProgressBeforeCompletion(t *testing.T) {
+	repo := conversationRepository(t)
+	host := &executionHost{allowed: true, progress: true}
+	model := &executionModel{}
+	model.step = func(number int, in agentsdk.ConversationStepRequest) (agentsdk.ConversationStepResult, error) {
+		if number == 1 {
+			return model.callResult(`{"title":"one"}`), nil
+		}
+		return model.answerResult(in), nil
+	}
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer service.Close()
+	a := conversationAuthority()
+	c, err := service.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "tool-progress"}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	run, err := service.Send(t.Context(), c.ID, agentsdk.ConversationSend{ClientMessageID: "one", Message: "Create one"}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	final := waitConversation(t, service, c.ID, run.ID)
+	progress := final.Steps[0].Calls[0].Progress
+	if len(progress) != 1 || progress[0].Status != "completed" || progress[0].Detail != "查询完成" {
+		t.Fatalf("progress projection=%+v", progress)
+	}
+	events, err := service.Events(t.Context(), c.ID, run.ID, 0, 100, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	planEvents, progressEvents := 0, 0
+	for _, event := range events.Items {
+		if event.Type == "tool.plan.created" {
+			planEvents++
+		} else if event.Type == "tool.progress" {
+			progressEvents++
+		}
+	}
+	if planEvents != 1 || progressEvents != 2 {
+		t.Fatalf("tool plan events=%d progress events=%d events=%+v", planEvents, progressEvents, events.Items)
+	}
 }
 
 func TestConversationExecutionReauthorizesToolDataBeforeNextModelRequest(t *testing.T) {
@@ -220,14 +367,23 @@ func TestConversationExecutionRetriesModelWithoutReplayingMessageStreamOrTool(t 
 	}
 	deadline := time.Now().Add(2 * time.Second)
 	observedWait := false
+	var lastSnapshot agentsdk.ConversationRun
 	for time.Now().Before(deadline) {
 		snapshot, readErr := service.Run(t.Context(), conversation.ID, run.ID, authority)
 		if readErr != nil {
 			t.Fatal(readErr)
 		}
-		if len(snapshot.ModelAttempts) > 0 && snapshot.ModelAttempts[0].Status == "retry_scheduled" {
+		lastSnapshot = snapshot
+		var firstExecutionAttempt *agentsdk.ConversationModelAttempt
+		for index := range snapshot.ModelAttempts {
+			if snapshot.ModelAttempts[index].Step == 0 && snapshot.ModelAttempts[index].Number == 1 {
+				firstExecutionAttempt = &snapshot.ModelAttempts[index]
+				break
+			}
+		}
+		if firstExecutionAttempt != nil && firstExecutionAttempt.Status == "retry_scheduled" {
 			observedWait = true
-			if len(snapshot.Steps) != 1 || snapshot.Steps[0].Text != "" || snapshot.Steps[0].Status != "retry_wait" || snapshot.ModelAttempts[0].ErrorCode != "provider_network" || snapshot.ModelAttempts[0].Usage["input_tokens"] != float64(3) || snapshot.ModelAttempts[0].RetryAt == nil {
+			if len(snapshot.Steps) != 1 || snapshot.Steps[0].Text != "" || snapshot.Steps[0].Status != "retry_wait" || firstExecutionAttempt.ErrorCode != "provider_network" || firstExecutionAttempt.Usage["input_tokens"] != float64(3) || firstExecutionAttempt.RetryAt == nil {
 				t.Fatalf("failed stream or retry evidence was not projected safely: %+v", snapshot)
 			}
 			break
@@ -235,10 +391,16 @@ func TestConversationExecutionRetriesModelWithoutReplayingMessageStreamOrTool(t 
 		time.Sleep(2 * time.Millisecond)
 	}
 	if !observedWait {
-		t.Fatal("persisted retry wait was not observable")
+		t.Fatalf("persisted retry wait was not observable: %+v", lastSnapshot)
 	}
 	final := waitConversation(t, service, conversation.ID, run.ID)
-	if final.Status != "completed" || len(final.Steps) != 2 || final.Steps[1].Text != "retry completed" || len(final.ModelAttempts) != 3 || final.Metrics.ModelRetries != 1 {
+	executionAttempts := 0
+	for _, attempt := range final.ModelAttempts {
+		if attempt.Step >= 0 {
+			executionAttempts++
+		}
+	}
+	if final.Status != "completed" || len(final.Steps) != 2 || final.Steps[1].Text != "retry completed" || executionAttempts != 3 || final.Metrics.ModelRetries != 1 {
 		t.Fatalf("retry did not complete with durable attempts: %+v", final)
 	}
 	model.mu.Lock()
@@ -254,8 +416,8 @@ func TestConversationExecutionRetriesModelWithoutReplayingMessageStreamOrTool(t 
 		t.Fatalf("tool effect was replayed: invokes=%d", invokes)
 	}
 	messages, err := service.Messages(t.Context(), conversation.ID, agentsdk.ConversationMessageQuery{}, authority)
-	if err != nil || len(messages.Items) != 2 || messages.Items[0].Content != "create once" || messages.Items[1].Content != "retry completed" {
-		t.Fatalf("failed stream or duplicate user message reached history: %+v err=%v", messages, err)
+	if err != nil || len(messages.Items) != 3 || messages.Items[0].Content != "create once" || messages.Items[1].Content != "failed fragment" || messages.Items[1].Generation == nil || messages.Items[1].Generation.Status != "interrupted" || messages.Items[2].Content != "retry completed" || messages.Items[2].Generation.Status != "completed" || messages.Items[1].ID == messages.Items[2].ID {
+		t.Fatalf("retry lost a public message, duplicated a user message or rewrote a previous generation: %+v err=%v", messages, err)
 	}
 }
 func (h *executionHost) ReconcileConversationTool(_ context.Context, request agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {

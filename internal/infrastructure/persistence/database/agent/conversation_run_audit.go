@@ -14,6 +14,7 @@ const conversationRunAuditLimit = 4096
 
 type conversationRunAuditData struct {
 	ActorID        string                            `json:"actor_id"`
+	Kind           string                            `json:"kind"`
 	Step           int                               `json:"step"`
 	Attempt        int                               `json:"attempt"`
 	ModelAttempt   int                               `json:"model_attempt"`
@@ -30,6 +31,14 @@ type conversationRunAuditData struct {
 	ParallelWidth  int                               `json:"parallel_width"`
 	ParallelBatch  int                               `json:"parallel_batch"`
 	Context        *agentsdk.ConversationContextView `json:"context"`
+	FromSeq        int64                             `json:"from_seq"`
+	ThroughSeq     int64                             `json:"through_seq"`
+	Messages       int                               `json:"messages"`
+	Results        int                               `json:"results"`
+	Intervals      int                               `json:"intervals"`
+	BeforeBytes    int                               `json:"before_bytes"`
+	AfterBytes     int                               `json:"after_bytes"`
+	Rebuild        bool                              `json:"rebuild"`
 }
 
 func conversationUsageInteger(value any) (int64, bool) {
@@ -102,6 +111,7 @@ func (s *ConversationStore) projectConversationRunAudit(ctx context.Context, run
 	run.CorrelationID = run.ID
 	run.Metrics = agentsdk.ConversationRunMetrics{Steps: len(run.Steps)}
 	run.Audit = []agentsdk.ConversationRunAuditEvent{}
+	run.Compactions = []agentsdk.ConversationCompactionNotice{}
 	run.AuditComplete = true
 	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").
 		Where(query.And(conversationItemScope(a, run.ConversationID, conversationItemRunEvent), query.Equal("run_id", run.ID))).OrderBy(query.Ascending("seq")).Build()
@@ -141,6 +151,27 @@ func (s *ConversationStore) projectConversationRunAudit(ctx context.Context, run
 					run.Metrics.ContextLimitBytes = max(run.Metrics.ContextLimitBytes, data.Context.Window.LimitBytes)
 				}
 			}
+		case event.Type == "context.compacted":
+			entry.Type, entry.Step = "context", -1
+			kind := data.Kind
+			if kind == agentsdk.ConversationCompactionKindHistoryRebuild {
+				entry.Status = "history_rebuilt"
+				run.Metrics.HistoryRebuilds++
+				run.Metrics.RebuiltMessages += data.Messages
+			} else {
+				kind = agentsdk.ConversationCompactionKindHistorySummary
+				entry.Status = "history_compacted"
+				run.Metrics.ContextCompactions++
+				run.Metrics.HistoryCompactions++
+				run.Metrics.CompactedMessages += data.Messages
+			}
+			run.Compactions = append(run.Compactions, agentsdk.ConversationCompactionNotice{Kind: kind, Step: -1, FromSeq: data.FromSeq, ThroughSeq: data.ThroughSeq, Messages: data.Messages, BeforeBytes: data.BeforeBytes, AfterBytes: data.AfterBytes, Rebuild: data.Rebuild, OccurredAt: event.CreatedAt})
+		case event.Type == "context.tools_compacted":
+			entry.Type, entry.Status = "context", "execution_compacted"
+			run.Compactions = append(run.Compactions, agentsdk.ConversationCompactionNotice{Kind: agentsdk.ConversationCompactionKindExecutionContext, Step: data.Step, Results: data.Results, Intervals: data.Intervals, BeforeBytes: data.BeforeBytes, AfterBytes: data.AfterBytes, OccurredAt: event.CreatedAt})
+			run.Metrics.ContextCompactions++
+			run.Metrics.CompactedResults += data.Results
+			run.Metrics.CompactedIntervals += data.Intervals
 		case event.Type == "run.queued":
 			entry.Type, entry.Status = "run", "queued"
 		case event.Type == "run.started":
@@ -169,11 +200,6 @@ func (s *ConversationStore) projectConversationRunAudit(ctx context.Context, run
 				if data.Context.Window != nil {
 					run.Metrics.PeakContextBytes = max(run.Metrics.PeakContextBytes, data.Context.Window.InputBytes)
 					run.Metrics.ContextLimitBytes = max(run.Metrics.ContextLimitBytes, data.Context.Window.LimitBytes)
-				}
-				if data.Context.Compaction != nil {
-					run.Metrics.ContextCompactions++
-					run.Metrics.CompactedResults += data.Context.Compaction.Results
-					run.Metrics.CompactedIntervals += data.Context.Compaction.Intervals
 				}
 			}
 		case event.Type == "step.attempt.started":

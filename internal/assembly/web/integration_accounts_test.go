@@ -40,6 +40,11 @@ import (
 const accountInitial = "Initial-Accounts-Test!2"
 const accountChanged = "Changed-Accounts-Test!3"
 const accountScope = "https://www.googleapis.com/auth/calendar.readonly"
+const accountIdentityScope = "openid"
+
+func accountOAuthScopes(scopes ...string) []string {
+	return append([]string{accountIdentityScope}, scopes...)
+}
 
 // This deployment fixture composes only public module/SDK entry points. Identity,
 // Integration persistence and the Google provider are real; the token issuer is local.
@@ -124,9 +129,10 @@ func (tr accountTransport) RoundTripHTTP(ctx context.Context, in connector.HTTPR
 			}
 			return connector.HTTPResponse{}, errors.New("unexpected provider endpoint")
 		}
+		token := strings.TrimPrefix(strings.Join(in.SecretHeaders["Authorization"], ""), "Bearer ")
 		f.mu.Lock()
 		f.probes++
-		granted := f.tokenGrants[strings.TrimPrefix(strings.Join(in.SecretHeaders["Authorization"], ""), "Bearer ")]
+		granted := f.tokenGrants[token]
 		f.mu.Unlock()
 		allowed := false
 		for _, scope := range strings.Fields(granted) {
@@ -135,7 +141,9 @@ func (tr accountTransport) RoundTripHTTP(ctx context.Context, in connector.HTTPR
 		if !allowed {
 			return connector.HTTPResponse{StatusCode: 403, Body: []byte(`{"error":{"code":403,"message":"insufficient scope"}}`)}, nil
 		}
-		return connector.HTTPResponse{StatusCode: 200, Body: []byte(`{"id":"fixture-user"}`)}, nil
+		identity := strings.TrimPrefix(token, "fixture-access-")
+		body, _ := json.Marshal(map[string]any{"id": identity, "email": identity + "@example.test", "verified_email": true})
+		return connector.HTTPResponse{StatusCode: 200, Body: body}, nil
 	}
 	form, err := url.ParseQuery(string(in.Body))
 	if err != nil {
@@ -370,7 +378,7 @@ func TestExternalAccountsCurrentIdentityOwnershipAndRestart(t *testing.T) {
 	admin.call("POST", "/auth/refresh", `{}`, 200)
 	admin.call("GET", "/integration/connections", "", 404)
 	admin.call("GET", "/integration/secrets", "", 404)
-	app := integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Work Google", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: []string{accountScope, "openid"}, Enabled: true}
+	app := integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Work Google", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: accountOAuthScopes(accountScope), Enabled: true}
 	saved := admin.call("PUT", "/integration/oauth-applications/work-google", accountJSON(app), 200)
 	if strings.Contains(saved.Body.String(), "fixture-client-secret") {
 		t.Fatal("write-only secret returned")
@@ -384,7 +392,7 @@ func TestExternalAccountsCurrentIdentityOwnershipAndRestart(t *testing.T) {
 	user.call("GET", "/integration/oauth-applications", "", 403)
 	user.call("POST", "/app/product/account-setup", `{}`, 403)
 	start := func(b *browser, scope integration.ConnectionAccountScope) integration.OAuthAuthorizationSession {
-		return accountDecode[integration.OAuthAuthorizationSession](t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "work-google", Name: "Personal work", Scope: scope, Scopes: []string{accountScope, "openid"}}), 200))
+		return accountDecode[integration.OAuthAuthorizationSession](t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "work-google", Name: "Personal work", Scope: scope, Scopes: accountOAuthScopes(accountScope)}), 200))
 	}
 	session := start(user, integration.ConnectionAccountScopePersonal)
 	admin.call("GET", "/integration/oauth-authorizations/"+session.ID, "", 400)
@@ -450,7 +458,7 @@ func TestExternalAccountsCurrentIdentityOwnershipAndRestart(t *testing.T) {
 	user.call("POST", "/integration/connection-accounts/"+sharedDone.Account.Key+"/revoke", accountJSON(map[string]string{"expected_updated_at": sharedDone.Account.UpdatedAt}), 400)
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	if f.exchanges != 2 || f.probes != 1 {
+	if f.exchanges != 2 || f.probes != 3 {
 		t.Fatal("unexpected provider dispatch counts", f.exchanges, f.probes)
 	}
 }

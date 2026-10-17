@@ -1,4 +1,4 @@
-import type { Run } from "./api.ts";
+import type { CompactionNotice, Run } from "./api.ts";
 import { formatLocalDateTime } from "./time.ts";
 import { webResult } from "./WebResult.tsx";
 import { accountWriteResult } from "./AccountWriteResult.tsx";
@@ -104,12 +104,30 @@ export function ContextDiagnostic({context}: {context: ContextView}) {
     {(context.cache_read_input_tokens || context.cache_creation_input_tokens) ? <p className="subtle">模型报告缓存：命中 {context.cache_read_input_tokens || 0} token · 新建 {context.cache_creation_input_tokens || 0} token</p> : null}
   </details>;
 }
+function CompactionNotices({notices}: {notices: CompactionNotice[]}) {
+  if (!notices.length) return null;
+  return <div className="compaction-notices" aria-label="上下文管理通知">{notices.map((notice, index) => {
+    const reduction = `${notice.before_bytes.toLocaleString()} → ${notice.after_bytes.toLocaleString()} 字节`;
+    const detail = notice.kind === "history_rebuild"
+      ? `因历史来源权限发生变化，已从原始消息重建 ${notice.messages || 0} 条消息的安全摘要；模型上下文重新计算为 ${reduction}。原消息仍保留。`
+      : notice.kind === "history_summary"
+      ? `已将 ${notice.messages || 0} 条较早消息（序号 ${notice.from_seq}–${notice.through_seq}）整理为摘要，模型上下文从 ${reduction}。原消息仍保留，可在聊天记录中查看。`
+      : `第 ${notice.step + 1} 步已压缩 ${notice.results || 0} 个工具结果和 ${notice.intervals || 0} 个执行区间，上下文从 ${reduction}。完整结果仍保留，可按引用读取。`;
+    return <div className="compaction-notice" role="status" key={`${notice.kind}:${notice.step}:${notice.through_seq || 0}:${index}`}>
+      <strong>{notice.kind === "history_rebuild" ? "历史摘要已重建" : notice.kind === "history_summary" ? "历史上下文已压缩" : "执行上下文已压缩"}</strong>
+      <span>{detail}</span>
+      <time dateTime={notice.occurred_at}>{formatLocalDateTime(notice.occurred_at)}</time>
+    </div>;
+  })}</div>;
+}
 export function ExecutionActivity({run, onResume, onRepair, recoveryDisabled, repairDisabled,executionID}: {run: Run; onResume?: () => void; onRepair?: (step: number, call: ToolView, label: string) => void; recoveryDisabled?: boolean; repairDisabled?: boolean;executionID?:string}) {
   if (run.access_error) return null;
   const steps = run.steps?.filter(step => step.context || step.calls.length || ["generating", "interrupted"].includes(step.status)) || [];
-  if (!steps.length && !["failed", "cancelled"].includes(run.status)) return null;
+  const compactions = run.compactions || [];
+  if (!steps.length && !compactions.length && !["failed", "cancelled"].includes(run.status)) return null;
   const recovery = recoveryTarget(run);
-  return <div className="execution-activity" aria-label="工具执行记录">
+  return <div className="execution-activity" aria-label="上下文与工具执行记录">
+    <CompactionNotices notices={compactions} />
     <ExecutionOutcome run={run} />
     {recovery && recovery.step === undefined && onResume && <RecoveryButton target={recovery} disabled={recoveryDisabled} onResume={onResume} />}
     {run.status === "cancelled" && <p role="status" className="subtle">已停止后续处理。已完成或已受理的业务操作会保留；结果待核查的操作不能视为已撤销。可在处理记录中刷新查看回执。</p>}

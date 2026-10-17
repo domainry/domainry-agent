@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"path/filepath"
 	"sync"
@@ -16,6 +17,112 @@ import (
 
 func conversationTestAuthority() agentsdk.ConversationAuthority {
 	return agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user", RoleKey: "member"}
+}
+
+func TestConversationSearchIndexExcludesAssistantOutput(t *testing.T) {
+	if indexed := conversationMessageSearchText(agentsdk.ConversationMessage{Role: "assistant", Content: "protected result"}); indexed != "" {
+		t.Fatalf("assistant output entered the conversation list search index: %q", indexed)
+	}
+	if indexed := conversationMessageSearchText(agentsdk.ConversationMessage{Role: "user", Content: "  Find\n  renewal   risk "}); indexed != "find renewal risk" {
+		t.Fatalf("user message search text was not normalized: %q", indexed)
+	}
+}
+
+func TestConversationFirstMessageGeneratesTitleAndHistoryIsSearchable(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := newTestConversationStore(t, store)
+	authority := conversationTestAuthority()
+	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "automatic-title"}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if conversation.Title != "" || conversation.TitleOrigin != agentsdk.ConversationTitleOriginUnset || conversation.TitleStatus != agentsdk.ConversationTitleStatusPending {
+		t.Fatalf("untitled conversation must remain locale-neutral and pending: %#v", conversation)
+	}
+	message := "  Review   the renewal pipeline and next steps  "
+	if _, err = repo.Enqueue(t.Context(), conversation.ID, agentsdk.ConversationSend{ClientMessageID: "automatic-title-message", Message: message}, authority); err != nil {
+		t.Fatal(err)
+	}
+	conversation, err = repo.Get(t.Context(), conversation.ID, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if conversation.Title != "Review the renewal pipeline and next steps" || conversation.TitleOrigin != agentsdk.ConversationTitleOriginGenerated || conversation.TitleStatus != agentsdk.ConversationTitleStatusReady {
+		t.Fatalf("first message did not generate the durable title: %#v", conversation)
+	}
+	page, err := repo.List(t.Context(), agentsdk.ConversationQuery{Search: "RENEWAL PIPELINE"}, authority)
+	if err != nil || len(page.Items) != 1 || page.Items[0].ID != conversation.ID {
+		t.Fatalf("message history was not searchable: %#v %v", page, err)
+	}
+}
+
+func TestConversationExplicitTitleIsNotReplacedByFirstMessage(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := newTestConversationStore(t, store)
+	authority := conversationTestAuthority()
+	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "explicit-title", Title: "Quarterly planning"}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if conversation.TitleOrigin != agentsdk.ConversationTitleOriginUser || conversation.TitleStatus != agentsdk.ConversationTitleStatusReady {
+		t.Fatalf("explicit title state was not persisted: %#v", conversation)
+	}
+	if _, err = repo.Enqueue(t.Context(), conversation.ID, agentsdk.ConversationSend{ClientMessageID: "explicit-title-message", Message: "This message must not become the title"}, authority); err != nil {
+		t.Fatal(err)
+	}
+	conversation, err = repo.Get(t.Context(), conversation.ID, authority)
+	if err != nil || conversation.Title != "Quarterly planning" || conversation.TitleOrigin != agentsdk.ConversationTitleOriginUser {
+		t.Fatalf("first message replaced an explicit title: %#v %v", conversation, err)
+	}
+	var indexed string
+	if err = store.Database().QueryRowContext(t.Context(), `SELECT search_text FROM _agent_conversation_items WHERE conversation_id = ? AND item_kind = 'message'`, conversation.ID).Scan(&indexed); err != nil || indexed != "this message must not become the title" {
+		t.Fatalf("message search text was not indexed: %q %v", indexed, err)
+	}
+	page, err := repo.List(t.Context(), agentsdk.ConversationQuery{Search: "must   not become"}, authority)
+	if err != nil || len(page.Items) != 1 || page.Items[0].ID != conversation.ID {
+		t.Fatalf("message body search did not find the conversation: %#v %v", page, err)
+	}
+}
+
+func TestConversationMessageReferencesArePersistedIndependentlyFromVisibleText(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := newTestConversationStore(t, store)
+	authority := conversationTestAuthority()
+	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "references"}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	reference := agentsdk.ConversationReference{Kind: "product.record", Payload: json.RawMessage(`{"record_id":"record-1"}`)}
+	if _, err = repo.Enqueue(t.Context(), conversation.ID, agentsdk.ConversationSend{ClientMessageID: "reference-message", Message: "visible request", References: []agentsdk.ConversationReference{reference}}, authority); err != nil {
+		t.Fatal(err)
+	}
+	messages, err := repo.Messages(t.Context(), conversation.ID, agentsdk.ConversationMessageQuery{}, authority)
+	if err != nil || len(messages.Items) != 1 || messages.Items[0].Content != "visible request" || len(messages.Items[0].References) != 1 || string(messages.Items[0].References[0].Payload) != string(reference.Payload) {
+		t.Fatalf("message reference was not persisted independently: %#v %v", messages.Items, err)
+	}
+}
+
+func TestConversationBindingIsAStableOwnerScopedIdentity(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := newTestConversationStore(t, store)
+	authority := conversationTestAuthority()
+	binding := &agentsdk.ConversationProductBinding{Kind: "product.record", Key: "account:one"}
+	created, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "bound-one", Title: "Original title", Binding: binding}, authority)
+	if err != nil || created.Binding == nil || *created.Binding != *binding {
+		t.Fatalf("bound conversation was not created: %#v %v", created, err)
+	}
+	reused, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "bound-two", Title: "A presentation title is not identity", Binding: binding}, authority)
+	if err != nil || reused.ID != created.ID {
+		t.Fatalf("the same binding created a duplicate conversation: %#v %v", reused, err)
+	}
+	page, err := repo.List(t.Context(), agentsdk.ConversationQuery{BindingKind: binding.Kind, BindingKey: binding.Key}, authority)
+	if err != nil || len(page.Items) != 1 || page.Items[0].ID != created.ID {
+		t.Fatalf("binding lookup did not return the bound conversation: %#v %v", page, err)
+	}
+	other, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "ordinary"}, authority)
+	if err != nil || other.ID == created.ID || other.Binding != nil {
+		t.Fatalf("ordinary conversations were constrained by bindings: %#v %v", other, err)
+	}
 }
 func requireConversationCode(t *testing.T, err error, code string) {
 	t.Helper()
@@ -104,6 +211,31 @@ func TestConversationAtomicIdempotencyAndOwnerIsolation(t *testing.T) {
 	second, err := repo.List(ctx, agentsdk.ConversationQuery{Limit: 1, BeforeID: first.NextCursor}, a)
 	if err != nil || len(second.Items) != 1 || second.Items[0].ID == first.Items[0].ID {
 		t.Fatalf("pagination %+v %v", second, err)
+	}
+}
+
+func TestConversationEnqueuePublishesReceiptBeforeWorkerPlans(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := newTestConversationStore(t, store)
+	ctx := t.Context()
+	a := conversationTestAuthority()
+	c, err := repo.Create(ctx, agentsdk.ConversationCreate{ClientID: "planned-run"}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	run, err := repo.Enqueue(ctx, c.ID, agentsdk.ConversationSend{ClientMessageID: "planned-message", Message: "处理这个请求"}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if run.Plan != nil {
+		t.Fatalf("queued run must be planned by the claimed worker: %+v", run.Plan)
+	}
+	events, err := repo.Events(ctx, c.ID, run.ID, 0, 10, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(events.Items) != 1 || events.Items[0].Type != "run.queued" {
+		t.Fatalf("run receipt must be durable before worker planning: %+v", events.Items)
 	}
 }
 
@@ -201,8 +333,8 @@ func TestConversationRestartLeaseFenceAndFrozenInput(t *testing.T) {
 		t.Fatal(err)
 	}
 	messages, err := repo.Messages(ctx, c.ID, agentsdk.ConversationMessageQuery{}, a)
-	if err != nil || len(messages.Items) != 2 || messages.Items[1].Content != "done" {
-		t.Fatalf("late reply committed %+v %v", messages, err)
+	if err != nil || len(messages.Items) != 3 || messages.Items[1].Content != "durable partial" || messages.Items[1].Generation.Status != "interrupted" || messages.Items[2].Content != "done" {
+		t.Fatalf("partial response was lost or a fenced late reply committed %+v %v", messages, err)
 	}
 	cursor := int64(0)
 	terminal := false
@@ -273,8 +405,8 @@ func TestConversationDraftCommitReplayAndAttemptFence(t *testing.T) {
 	requireConversationCode(t, repo.AppendDelta(ctx, claim, 0, "您好"), "delta_conflict")
 	requireConversationCode(t, repo.AppendDelta(ctx, claim, 8, "gap"), "delta_offset_invalid")
 	messages, err := repo.Messages(ctx, c.ID, agentsdk.ConversationMessageQuery{}, a)
-	if err != nil || len(messages.Items) != 1 {
-		t.Fatal("draft leaked into history", err)
+	if err != nil || len(messages.Items) != 2 || messages.Items[1].Content != "你好" || messages.Items[1].Generation == nil || messages.Items[1].Generation.Status != "generating" {
+		t.Fatal("public in-flight response was not retained", err)
 	}
 	cancelled, err := repo.Cancel(ctx, c.ID, run.ID, a)
 	if err != nil || cancelled.DraftText != "你好" {
@@ -301,7 +433,7 @@ func TestConversationDraftCommitReplayAndAttemptFence(t *testing.T) {
 		t.Fatal("completed draft not promoted", err)
 	}
 	messages, err = repo.Messages(ctx, c.ID, agentsdk.ConversationMessageQuery{}, a)
-	if err != nil || len(messages.Items) != 2 || messages.Items[1].Content != "done" {
+	if err != nil || len(messages.Items) != 3 || messages.Items[1].Content != "你好" || messages.Items[1].Generation.Status != "interrupted" || messages.Items[2].Content != "done" || messages.Items[2].Generation.Status != "completed" || messages.Items[1].ID == messages.Items[2].ID {
 		t.Fatal("incorrect history after resume", err)
 	}
 	events, err := repo.Events(ctx, c.ID, run.ID, snapshot.LastEventSeq, 100, a)

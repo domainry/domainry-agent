@@ -303,6 +303,8 @@ const messages: Record<string, string> = {
   provider_request_invalid:
     "模型配置或请求不被支持，请检查所选模型与协议是否匹配。",
   provider_failed: "模型未能完成回复，已输出的草稿会保留，可以重新生成。",
+  model_output_truncated: "模型在生成完整结果前达到了输出上限，本次未完成。",
+  run_plan_model_invalid: "模型返回的执行计划格式无效，本次未开始执行。",
   context_failed: "整理历史上下文失败，原始消息仍然保留，可以重新生成。",
   knowledge_access_denied: "无法访问知识库，请检查工作区绑定、API Key 和文档权限。",
   knowledge_source_retired: "此回复依赖已停用的文件解析结果，请通过资料库重新查阅原文件。",

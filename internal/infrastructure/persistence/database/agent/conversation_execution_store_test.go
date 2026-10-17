@@ -324,6 +324,15 @@ func TestConversationExecutionContextSnapshotValidationAndCacheProjection(t *tes
 	if validConversationStepContext(&badCompaction) {
 		t.Fatal("non-shrinking context compaction was accepted")
 	}
+	reservedTimestamp := input
+	reservedTimestamp.Context = &agentsdk.ConversationContextManifest{
+		Version: input.Context.Version, StablePrefixHash: input.Context.StablePrefixHash, DynamicHash: input.Context.DynamicHash, RefreshedAt: input.Context.RefreshedAt,
+		Sources: append([]agentsdk.ConversationContextSourceReference(nil), input.Context.Sources...),
+	}
+	reservedTimestamp.Context.Sources[0].UpdatedAt = time.Unix(0, 0).UTC()
+	if validConversationStepContext(&reservedTimestamp) {
+		t.Fatal("durable zero timestamp sentinel was accepted as a context source update time")
+	}
 
 	view := &agentsdk.ConversationContextView{
 		Window:  input.ContextWindow,

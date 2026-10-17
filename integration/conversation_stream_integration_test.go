@@ -129,8 +129,8 @@ func TestConversationModelToPersistedBrowserStreamAndDisconnectReplay(t *testing
 				t.Fatalf("delta was not persisted before SSE: %+v %v", snapshot, err)
 			}
 			history, err := svc.Messages(ctx, c.ID, agentsdk.ConversationMessageQuery{}, a)
-			if err != nil || len(history.Items) != 1 {
-				t.Fatal("unfinished assistant message in history", err)
+			if err != nil || len(history.Items) != 2 || history.Items[1].Content != "先到文字" || history.Items[1].Generation == nil || history.Items[1].Generation.Status != "generating" {
+				t.Fatal("unfinished public response was not persisted before SSE delivery", err)
 			}
 			response.Body.Close() // Browser disconnect must not cancel the durable run.
 			finish <- struct{}{}
@@ -183,8 +183,8 @@ func TestConversationModelToPersistedBrowserStreamAndDisconnectReplay(t *testing
 				t.Fatal("cancel did not close provider request")
 			}
 			history, err = svc.Messages(ctx, c.ID, agentsdk.ConversationMessageQuery{}, a)
-			if err != nil || len(history.Items) != 3 || history.Items[2].Role != "user" {
-				t.Fatal("cancelled draft entered history", err)
+			if err != nil || len(history.Items) != 4 || history.Items[2].Role != "user" || history.Items[3].Content != "先到文字" || history.Items[3].Generation.Status != "interrupted" {
+				t.Fatal("cancelled public response was lost or presented as completed", err)
 			}
 		})
 	}

@@ -47,6 +47,9 @@ func (s *ConversationService) collaborationRepository() (persistence.Conversatio
 }
 
 func (s *ConversationService) conversationModel(ctx context.Context) agentsdk.ConversationModel {
+	if model, ok := ctx.Value(conversationRunPlanningModelContextKey{}).(agentsdk.ConversationModel); ok {
+		return model
+	}
 	if selection := selectedConversationModel(ctx); selection != nil {
 		return s.conversationModelByKey(selection.Key)
 	}

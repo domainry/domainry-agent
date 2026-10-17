@@ -9,6 +9,8 @@ export type ConversationRecord = {
 	fork?: { conversation_id: string; run_id: string; boundary_event_seq: number; created_at: string };
   id: string;
   title: string;
+  title_origin: "unset" | "generated" | "user";
+  title_status: "pending" | "ready" | "failed";
   archived: boolean;
   memory_enabled: boolean;
   last_seq: number;
@@ -32,6 +34,9 @@ export type MessageRecord = {
 };
 export type ImageReference = { source?: RunReference; attachment_id: string; conversation_id: string; filename: string; content_type: string; bytes: number; sha256: string; revision: number; detail?: "auto" | "low" | "high" };
 export type ContentBlock = { type: "text"; text: string } | { type: "image"; image: ImageReference };
+export type RunPlanStep = { key:string;label:string;detail?:string;optional?:boolean;binding:{kind:string;tools?:string[];progress_key?:string};call_id?:string;index:number;total:number;status:string;updated_at:string };
+export type RunPlan = { key:string;label:string;steps:RunPlanStep[];created_at:string;updated_at:string };
+export type CompactionNotice = { kind:"history_summary"|"history_rebuild"|"execution_context";step:number;from_seq?:number;through_seq?:number;messages?:number;results?:number;intervals?:number;before_bytes:number;after_bytes:number;rebuild?:boolean;occurred_at:string };
 export type Run = {
 	agent?: {id:string;revision:number;owner_user_id?:string;execution_subject?:ExecutionSubject};
 	access_error?: string;
@@ -44,14 +49,16 @@ export type Run = {
   draft_bytes: number;
   last_event_seq: number;
   error_code?: string;
+  plan?: RunPlan;
   steps?: StepView[];
   interaction?: Interaction;
   model?: string;
   usage?: Record<string, unknown>;
   model_attempts?: {step:number;run_attempt:number;number:number;status:string;error_code?:string;retry_at?:string;retry_delay_ms?:number;usage?:Record<string,unknown>;started_at:string;completed_at?:string}[];
+  compactions?: CompactionNotice[];
   context?: ContextView;
   correlation_id?: string;
-  metrics?: { steps: number; model_calls: number; model_retries:number; tool_calls: number; tool_attempts: number; parallel_tool_batches: number; parallel_tool_calls: number; peak_parallel_tools: number; authorization_checks: number; confirmation_decisions: number; context_compactions: number; compacted_results: number; compacted_intervals: number; peak_context_bytes: number; context_limit_bytes: number; cache_read_input_tokens: number; cache_creation_input_tokens: number };
+  metrics?: { steps: number; model_calls: number; model_retries:number; tool_calls: number; tool_attempts: number; parallel_tool_batches: number; parallel_tool_calls: number; peak_parallel_tools: number; authorization_checks: number; confirmation_decisions: number; context_compactions: number; history_compactions:number; history_rebuilds:number; compacted_messages:number; rebuilt_messages:number; compacted_results: number; compacted_intervals: number; peak_context_bytes: number; context_limit_bytes: number; cache_read_input_tokens: number; cache_creation_input_tokens: number };
   audit?: RunAuditEvent[];
   audit_complete?: boolean;
   started_at?: string;
@@ -286,8 +293,6 @@ export function watchRun(
       "run.queued",
       "run.started",
       "message.delta",
-      "context.compacted",
-      "context.tools_compacted",
       "run.completed",
       "run.cancelled",
       "run.failed",

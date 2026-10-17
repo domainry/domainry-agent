@@ -278,6 +278,9 @@ func conversationLifecycleModelPurpose(step int) string {
 	if step == -1 {
 		return "reply"
 	}
+	if step == conversationPlanningModelStep {
+		return "planning"
+	}
 	if step < -1 {
 		return "summary"
 	}

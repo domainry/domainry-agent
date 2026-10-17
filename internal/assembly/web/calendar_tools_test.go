@@ -225,8 +225,9 @@ func (f *calendarProductFixture) model(w http.ResponseWriter, r *http.Request) {
 func (f *calendarProductFixture) connect(b *browser) integration.ConnectionAccount {
 	f.t.Helper()
 	b.call("POST", "/app/product/account-setup", `{}`, 200)
-	b.call("PUT", "/integration/oauth-applications/calendar-google", accountJSON(integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Google Calendar", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: []string{accountScope}, Enabled: true}), 200)
-	s := accountDecode[integration.OAuthAuthorizationSession](f.t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "calendar-google", Scope: integration.ConnectionAccountScopePersonal, Name: "个人日历", Scopes: []string{accountScope}}), 200))
+	scopes := accountOAuthScopes(accountScope)
+	b.call("PUT", "/integration/oauth-applications/calendar-google", accountJSON(integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Google Calendar", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: scopes, Enabled: true}), 200)
+	s := accountDecode[integration.OAuthAuthorizationSession](f.t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "calendar-google", Scope: integration.ConnectionAccountScopePersonal, Name: "个人日历", Scopes: scopes}), 200))
 	u, _ := url.Parse(f.callback(s.AuthorizationURL, "connect"))
 	done := accountDecode[integration.OAuthAuthorizationSession](f.t, b.call("POST", "/integration/oauth-authorizations/callback", accountJSON(integration.OAuthAuthorizationCallback{State: u.Query().Get("state"), Code: u.Query().Get("code")}), 200))
 	if done.Account == nil {

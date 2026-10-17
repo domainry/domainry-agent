@@ -70,6 +70,26 @@ func TestConversationRetryDetails(t *testing.T) {
 		}
 	}
 }
+
+func TestConversationImageInputRejectionIsSafelyClassified(t *testing.T) {
+	tests := [][]byte{
+		[]byte(`{"error":{"message":"unknown parameter: messages.0.content.1.image_url"}}`),
+		[]byte(`{"error":{"message":"image input is not supported by the configured executor"}}`),
+	}
+	for _, body := range tests {
+		err := conversationHTTPError(http.StatusBadRequest, 0, body)
+		var failure *agentsdk.Error
+		if !errors.As(err, &failure) || failure.Code != "agent.conversation.model_image_input_unsupported" {
+			t.Fatalf("wrong image rejection category: %v", err)
+		}
+		if strings.Contains(err.Error(), "messages.0") || strings.Contains(err.Error(), "configured executor") {
+			t.Fatalf("provider response leaked: %v", err)
+		}
+	}
+	if err := conversationHTTPError(http.StatusBadRequest, 0, []byte(`{"error":{"message":"invalid max_tokens"}}`)); err.Error() != "agent.conversation.provider_request_invalid" {
+		t.Fatalf("unrelated validation error was reclassified: %v", err)
+	}
+}
 func TestConversationNetworkFailureCategories(t *testing.T) {
 	for _, tc := range []struct {
 		err  error

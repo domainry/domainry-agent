@@ -118,17 +118,19 @@ func conversationRepositoryWithArtifactContent(t *testing.T, wrap func(sharedart
 func waitConversation(t *testing.T, s agentsdk.ConversationService, id, run string) agentsdk.ConversationRun {
 	t.Helper()
 	deadline := time.Now().Add(5 * time.Second)
+	var last agentsdk.ConversationRun
 	for time.Now().Before(deadline) {
 		r, err := s.Run(t.Context(), id, run, conversationAuthority())
 		if err != nil {
 			t.Fatal(err)
 		}
+		last = r
 		if r.Terminal() {
 			return r
 		}
 		time.Sleep(5 * time.Millisecond)
 	}
-	t.Fatal("conversation did not finish")
+	t.Fatalf("conversation did not finish: %+v", last)
 	return agentsdk.ConversationRun{}
 }
 

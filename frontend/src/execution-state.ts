@@ -11,11 +11,22 @@ export type ContextView = {
   cache_read_input_tokens?: number;
   cache_creation_input_tokens?: number;
 };
+export type ToolProgressView = {
+  key: string;
+  label: string;
+  detail?: string;
+  optional?: boolean;
+  index: number;
+  total: number;
+  status: "planned" | "started" | "completed" | "skipped" | "failed";
+  updated_at: string;
+};
 export type ToolView = {
 	parent_call_id?: string; dispatch_index?: number; subcalls?: ToolView[];
 	access_error?:string;
 	 reused_from?: ResultReference;
   outcome_inspection?: { status: string; actor_id: string; checked_at: string };
+  progress?: ToolProgressView[];
   effect?: "read" | "write"; completion?: "accepted";
   citations?: Citation[];
   id: string; name: string; arguments: string; status: string;
@@ -34,6 +45,7 @@ export type StepView = {
 };
 export type ExecutionEvent = {
   seq: number; type: string;
+	 created_at?: string;
 	 data?: {
 	 parent_call_id?: string; dispatch_index?: number;
 	 reference?: ResultReference;
@@ -50,18 +62,27 @@ export type ExecutionEvent = {
     error_code?: string; resource_id?: string;
     result_preview?: string; result_truncated?: boolean; result_reference?: ResultReference | null;
     context?: ContextView;
+		kind?: "history_summary" | "history_rebuild" | "execution_context";
+		from_seq?: number; through_seq?: number; messages?: number; results?: number; intervals?: number; before_bytes?: number; after_bytes?: number; rebuild?: boolean;
+    progress_key?: string; detail?: string; updated_at?: string;
+    key?: string; label?: string;
+    stages?: { key: string; label: string; detail?: string; optional?: boolean; binding?: { kind: string; tools?: string[]; progress_key?: string } }[];
   };
 };
 export const executionEventNames = [
-  "context.assembled",
+  "run.plan.created", "run.progress",
+  "context.assembled", "context.compacted", "context.tools_compacted",
   "model.attempt.started", "model.attempt.failed", "model.retry.scheduled", "model.attempt.completed",
   "step.started", "step.attempt.started", "step.text.delta", "step.tool.started",
   "step.tool.arguments.delta", "step.completed", "tool.queued", "tool.started", "tool.completed", "tool.uncertain", "tool.waiting",
   "tool.inspection.started", "tool.inspection.completed",
+  "tool.plan.created", "tool.progress",
   "tool.receipt.reused",
 ];
 const bytes = (text: string) => new TextEncoder().encode(text).length;
-const cloneTool = (call: ToolView): ToolView => ({...call, subcalls: call.subcalls?.map(cloneTool)});
+const cloneTool = (call: ToolView): ToolView => ({...call, progress: call.progress?.map(item => ({...item})), subcalls: call.subcalls?.map(cloneTool)});
+const validExecutionText = (value: unknown, limit: number, required: boolean) =>
+  typeof value === "string" && bytes(value) <= limit && !value.includes("\0") && (!required || value.trim() !== "");
 function findTool(calls: ToolView[], id?: string): ToolView | undefined {
   if (!id) return undefined;
   for (const call of calls) {
@@ -87,9 +108,60 @@ export function applyExecutionEvent(run: Run, event: ExecutionEvent): Run {
   }))};
   if (!executionEventNames.includes(event.type)) return run;
   const data = event.data || {};
+  if (event.type === "context.compacted") {
+		const rebuild = data.kind === "history_rebuild";
+		if (data.attempt !== run.attempt || data.kind !== "history_summary" && !rebuild || rebuild !== (data.rebuild === true) || !Number.isSafeInteger(data.from_seq) || data.from_seq! < 1 || !Number.isSafeInteger(data.through_seq) || data.through_seq! < data.from_seq! || !Number.isSafeInteger(data.messages) || data.messages! < 1 || !Number.isSafeInteger(data.before_bytes) || !Number.isSafeInteger(data.after_bytes) || data.after_bytes! < 1 || !rebuild && data.after_bytes! >= data.before_bytes! || !validExecutionText(event.created_at, 128, true)) throw new Error("Invalid history compaction event");
+		const kind = rebuild ? "history_rebuild" : "history_summary";
+		return {...run, compactions:[...(run.compactions || []), {kind,step:-1,from_seq:data.from_seq,through_seq:data.through_seq,messages:data.messages,before_bytes:data.before_bytes!,after_bytes:data.after_bytes!,rebuild,occurred_at:event.created_at!}]};
+	}
+	if (event.type === "context.tools_compacted") {
+		if (data.attempt !== run.attempt || data.kind !== "execution_context" || !Number.isSafeInteger(data.step) || data.step! < 0 || !Number.isSafeInteger(data.results) || data.results! < 0 || !Number.isSafeInteger(data.intervals) || data.intervals! < 0 || data.results! + data.intervals! < 1 || !Number.isSafeInteger(data.before_bytes) || !Number.isSafeInteger(data.after_bytes) || data.after_bytes! < 1 || data.after_bytes! >= data.before_bytes! || !validExecutionText(event.created_at, 128, true)) throw new Error("Invalid execution compaction event");
+		return {...run, compactions:[...(run.compactions || []), {kind:"execution_context",step:data.step!,results:data.results,intervals:data.intervals,before_bytes:data.before_bytes!,after_bytes:data.after_bytes!,occurred_at:event.created_at!}]};
+	}
   if (event.type === "context.assembled") {
     if (data.attempt !== run.attempt || !data.context) throw new Error("Invalid context event");
     return {...run, context: data.context};
+  }
+  if (event.type === "run.plan.created") {
+    if (data.attempt !== run.attempt || !validExecutionText(data.key,96,true) || !validExecutionText(data.label,160,true) || !Array.isArray(data.stages) || data.stages.length < 1 || data.stages.length > 32 || !validExecutionText(data.updated_at,128,true)) throw new Error("Invalid run plan");
+    // The durable snapshot wins over replayed creation events. Reinitializing
+    // here would visibly move a completed plan back to its first step.
+    if (run.plan) return run;
+    const keys=new Set<string>();
+    const steps=data.stages.map((stage,index)=>{
+      if(!validExecutionText(stage.key,96,true)||keys.has(stage.key)||!validExecutionText(stage.label,160,true)||!validExecutionText(stage.detail||"",512,false))throw new Error("Invalid run plan");
+      keys.add(stage.key);
+      return {...stage,binding:stage.binding||{kind:""},index:index+1,total:data.stages!.length,status:"planned",updated_at:data.updated_at!};
+    });
+    return {...run,plan:{key:data.key!,label:data.label!,steps,created_at:data.updated_at!,updated_at:data.updated_at!}};
+  }
+  if (event.type === "run.progress") {
+    const status=data.status;
+    if(data.attempt!==run.attempt||!run.plan||!validExecutionText(data.progress_key,96,true)||!validExecutionText(status,64,true)||!validExecutionText(data.call_id||"",128,false)||!validExecutionText(data.detail||"",512,false)||!validExecutionText(data.updated_at,128,true)||!status||!["started","waiting_user","waiting_confirmation","completed","skipped","failed"].includes(status))throw new Error("Invalid run progress");
+    const steps=run.plan.steps.map(step=>({...step}));const index=steps.findIndex(item=>item.key===data.progress_key);const step=steps[index];
+    if(!step)throw new Error("Missing run plan step");
+    if(step.binding.kind==="model"){
+      if(data.call_id)throw new Error("Invalid run progress call");
+    }else if(status==="skipped"){
+      if(data.call_id||step.call_id)throw new Error("Invalid run progress call");
+    }else if(!data.call_id||step.call_id&&step.call_id!==data.call_id)throw new Error("Invalid run progress call");
+    if(step.status===status){
+      if(step.binding.kind!=="model"&&!step.call_id)step.call_id=data.call_id;
+      if(data.detail)step.detail=data.detail;
+      step.updated_at=data.updated_at!;
+      return {...run,plan:{...run.plan,steps,updated_at:data.updated_at!}};
+    }
+    if(["completed","skipped","failed"].includes(step.status))return run;
+    if(status==="started"){
+      if(!["planned","waiting_user","waiting_confirmation"].includes(step.status)||steps.slice(0,index).some(previous=>previous.status!=="completed"&&previous.status!=="skipped"))throw new Error("Invalid run progress order");
+    }else if(status==="waiting_user"||status==="waiting_confirmation"){
+      if(step.status!=="started")throw new Error("Invalid run progress order");
+    }else if(status==="completed"||status==="failed"){
+      if(!["started","waiting_user","waiting_confirmation"].includes(step.status))throw new Error("Invalid run progress order");
+    }else if(status==="skipped"&&step.status!=="planned")throw new Error("Invalid run progress order");
+    step.status=status;if(data.detail)step.detail=data.detail;step.updated_at=data.updated_at!;
+    if(step.binding.kind!=="model"&&!step.call_id)step.call_id=data.call_id;
+    return {...run,plan:{...run.plan,steps,updated_at:data.updated_at!}};
   }
   if (event.type.startsWith("model.")) {
     if (!Number.isInteger(data.step) || data.step! < -257 || data.step! >= 256 || data.attempt !== run.attempt || !Number.isInteger(data.model_attempt) || data.model_attempt! < 1) throw new Error("Invalid model attempt event");
@@ -124,6 +196,59 @@ export function applyExecutionEvent(run: Run, event: ExecutionEvent): Run {
     steps.push(step);
   }
   switch (event.type) {
+    case "tool.plan.created": {
+      const call = findTool(step.calls, data.call_id);
+      const stages = data.stages;
+      if (!call || !Array.isArray(stages) || stages.length < 1 || stages.length > 32 || !validExecutionText(data.updated_at, 128, true)) throw new Error("Invalid tool progress plan");
+      const keys = new Set<string>();
+      for (const stage of stages) {
+        if (!validExecutionText(stage.key, 64, true) || !validExecutionText(stage.label, 160, true) || !validExecutionText(stage.detail || "", 512, false) || keys.has(stage.key)) throw new Error("Invalid tool progress plan");
+        keys.add(stage.key);
+      }
+      if (call.progress?.length) {
+        if (call.progress.length !== stages.length || stages.some((stage, index) => {
+          const current = call.progress![index];
+          return current.key !== stage.key || current.label !== stage.label || (current.detail || "") !== (stage.detail || "") || Boolean(current.optional) !== (stage.optional === true) || current.index !== index + 1 || current.total !== stages.length;
+        })) throw new Error("Tool progress plan changed");
+        break;
+      }
+      call.progress = stages.map((stage, index) => ({
+        key: stage.key,
+        label: stage.label,
+        detail: stage.detail || undefined,
+        ...(stage.optional === true ? {optional: true} : {}),
+        index: index + 1,
+        total: stages.length,
+        status: "planned",
+        updated_at: data.updated_at!,
+      }));
+      break;
+    }
+    case "tool.progress": {
+      const call = findTool(step.calls, data.call_id);
+      const status = data.status;
+      if (!call || !validExecutionText(data.progress_key, 64, true) || !validExecutionText(data.detail || "", 512, false) || !validExecutionText(data.updated_at, 128, true) || status !== "started" && status !== "completed" && status !== "skipped" && status !== "failed") throw new Error("Invalid tool progress");
+      const index = call.progress?.findIndex(item => item.key === data.progress_key) ?? -1;
+      if (index < 0) throw new Error("Tool progress was not planned");
+      const progress = call.progress![index];
+      if (progress.status === status) {
+        progress.detail = data.detail || undefined;
+        progress.updated_at = data.updated_at!;
+        break;
+      }
+      if ((progress.status === "completed" || progress.status === "skipped" || progress.status === "failed") && status === "started") break;
+      if (status === "started") {
+		if (progress.status !== "planned" || call.progress!.slice(0, index).some(previous => previous.status !== "completed" && previous.status !== "skipped")) throw new Error("Invalid tool progress order");
+	  } else if (status === "skipped") {
+		if (!progress.optional || progress.status !== "planned") throw new Error("Invalid tool progress order");
+      } else if (progress.status !== "started") {
+        throw new Error("Invalid tool progress order");
+      }
+      progress.detail = data.detail || undefined;
+      progress.status = status;
+      progress.updated_at = data.updated_at!;
+      break;
+    }
     case "tool.receipt.reused": {
       const call=findTool(step.calls, data.call_id);
       if (!call || !data.reference) throw new Error("Invalid reused receipt");

@@ -43,14 +43,30 @@ type ConversationModelConfig struct {
 }
 
 func ConversationModelConfigFromEnvironment() ConversationModelConfig {
-	contextLimit, _ := strconv.Atoi(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_CONTEXT_TOKENS")))
+	return conversationModelConfigFromEnvironment("AGENT_CONVERSATION")
+}
+
+func ConversationPlanningModelConfigFromEnvironment() ConversationModelConfig {
+	return conversationModelConfigFromEnvironment("AGENT_CONVERSATION_PLANNING")
+}
+
+func conversationModelConfigFromEnvironment(prefix string) ConversationModelConfig {
+	contextLimit, _ := strconv.Atoi(strings.TrimSpace(os.Getenv(prefix + "_CONTEXT_TOKENS")))
+	outputTokens := 0
+	if raw := strings.TrimSpace(os.Getenv(prefix + "_MAX_OUTPUT_TOKENS")); raw != "" {
+		var err error
+		outputTokens, err = strconv.Atoi(raw)
+		if err != nil || outputTokens <= 0 {
+			outputTokens = -1
+		}
+	}
 	efforts := []string{}
-	for _, value := range strings.Split(os.Getenv("AGENT_CONVERSATION_REASONING_EFFORTS"), ",") {
+	for _, value := range strings.Split(os.Getenv(prefix+"_REASONING_EFFORTS"), ",") {
 		if value = strings.TrimSpace(value); value != "" {
 			efforts = append(efforts, value)
 		}
 	}
-	c := ConversationModelConfig{Provider: os.Getenv("AGENT_CONVERSATION_PROVIDER"), Protocol: os.Getenv("AGENT_CONVERSATION_PROTOCOL"), BaseURL: os.Getenv("AGENT_CONVERSATION_BASE_URL"), URL: os.Getenv("AGENT_CONVERSATION_MODEL_URL"), APIKey: os.Getenv("AGENT_CONVERSATION_MODEL_API_KEY"), Model: os.Getenv("AGENT_CONVERSATION_MODEL"), MaxOutputTokens: 4096, ContextTokenLimit: contextLimit, ImageInput: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_IMAGE_INPUT")), "true"), StructuredOutput: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_STRUCTURED_OUTPUT")), "true"), DisableProtocolContinuation: strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_PROTOCOL_CONTINUATION")), "false"), ReasoningEfforts: efforts, DefaultReasoningEffort: os.Getenv("AGENT_CONVERSATION_REASONING_EFFORT")}
+	c := ConversationModelConfig{Provider: os.Getenv(prefix + "_PROVIDER"), Protocol: os.Getenv(prefix + "_PROTOCOL"), BaseURL: os.Getenv(prefix + "_BASE_URL"), URL: os.Getenv(prefix + "_MODEL_URL"), APIKey: os.Getenv(prefix + "_MODEL_API_KEY"), Model: os.Getenv(prefix + "_MODEL"), MaxOutputTokens: outputTokens, ContextTokenLimit: contextLimit, ImageInput: strings.EqualFold(strings.TrimSpace(os.Getenv(prefix+"_IMAGE_INPUT")), "true"), StructuredOutput: strings.EqualFold(strings.TrimSpace(os.Getenv(prefix+"_STRUCTURED_OUTPUT")), "true"), DisableProtocolContinuation: strings.EqualFold(strings.TrimSpace(os.Getenv(prefix+"_PROTOCOL_CONTINUATION")), "false"), ReasoningEfforts: efforts, DefaultReasoningEffort: os.Getenv(prefix + "_REASONING_EFFORT")}
 	if strings.EqualFold(strings.TrimSpace(c.Provider), ConversationProviderGateway) && strings.TrimSpace(c.APIKey) == "" {
 		c.APIKey = os.Getenv("AGENT_PROVIDER_API_KEY")
 	}
@@ -229,8 +245,9 @@ func (m *ConversationModel) sendConversationPayload(ctx context.Context, payload
 	}
 	if resp.StatusCode/100 != 2 {
 		retryAfter := parseConversationRetryAfter(resp.Header.Get("Retry-After"), time.Now())
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 8193))
 		resp.Body.Close()
-		return nil, conversationHTTPError(resp.StatusCode, retryAfter)
+		return nil, conversationHTTPError(resp.StatusCode, retryAfter, body)
 	}
 	return resp, nil
 }

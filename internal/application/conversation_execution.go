@@ -46,7 +46,15 @@ func compileConversationTools(definitions []agentsdk.ConversationToolDefinition)
 		}
 		invalidParallelism := (def.Parallelism != "" && def.Parallelism != toolsdk.ToolParallelismIndependentRead) ||
 			(def.Parallelism == toolsdk.ToolParallelismIndependentRead && def.Effect != "read")
-		if _, duplicate := out[def.Key]; duplicate || !name.MatchString(def.Key) || !conversationText(def.Version, 128, true) || !conversationText(def.Description, 4096, true) || !conversationText(def.ActionKey, 255, true) || def.TimeoutMillis < 1 || def.TimeoutMillis > 300000 || def.MaxOutputBytes < 1 || def.MaxOutputBytes > 1024*1024 || def.Effect != "read" && def.Effect != "write" || def.Idempotency != "natural" && def.Idempotency != "key" && def.Idempotency != "reconcile" || def.Effect == "write" && def.Idempotency == "natural" || invalidParallelism {
+		invalidPlan := len(def.ExecutionPlan) > 32
+		progressKeys := map[string]bool{}
+		for _, progress := range def.ExecutionPlan {
+			if !name.MatchString(progress.Key) || progressKeys[progress.Key] || !conversationText(progress.Label, 160, true) || !conversationText(progress.Detail, 512, false) {
+				invalidPlan = true
+			}
+			progressKeys[progress.Key] = true
+		}
+		if _, duplicate := out[def.Key]; duplicate || !name.MatchString(def.Key) || !conversationText(def.Version, 128, true) || !conversationText(def.Description, 4096, true) || !conversationText(def.ActionKey, 255, true) || def.TimeoutMillis < 1 || def.TimeoutMillis > 300000 || def.MaxOutputBytes < 1 || def.MaxOutputBytes > 1024*1024 || def.Effect != "read" && def.Effect != "write" || def.Idempotency != "natural" && def.Idempotency != "key" && def.Idempotency != "reconcile" || def.Effect == "write" && def.Idempotency == "natural" || invalidParallelism || invalidPlan {
 			return nil, conversationFailure("unavailable", "tool_catalog_invalid")
 		}
 		var inputObject map[string]any
@@ -254,6 +262,13 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 	if err != nil {
 		return agentsdk.ConversationModelResult{}, err
 	}
+	if claim.Run.Plan != nil {
+		planMessage, planErr := conversationRunPlanExecutionMessage(claim.Run.Plan)
+		if planErr != nil {
+			return agentsdk.ConversationModelResult{}, planErr
+		}
+		messages = conversationMessagesWithRunPlanControl(messages, planMessage)
+	}
 	for _, message := range messages {
 		// Older tool-enabled runs injected search data without a revalidation
 		// receipt. Require a new run instead of replaying it after an upgrade.
@@ -362,6 +377,9 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 						return agentsdk.ConversationModelResult{}, err
 					}
 				}
+				if attemptErr := s.appendConversationRunProgress(ctx, claim, "model", "", "", "", agentsdk.ConversationRunProgressStarted, ""); attemptErr != nil {
+					return agentsdk.ConversationModelResult{}, attemptErr
+				}
 				attempt, attemptErr := s.beginConversationModelAttempt(ctx, claim, number)
 				if attemptErr != nil {
 					if workBudget != nil {
@@ -408,6 +426,9 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 					}
 					return agentsdk.ConversationModelResult{}, err
 				}
+				if err = s.appendConversationRunProgress(ctx, claim, "model", "", "", "", agentsdk.ConversationRunProgressCompleted, ""); err != nil {
+					return agentsdk.ConversationModelResult{}, err
+				}
 				if err = s.completeConversationModelAttempt(ctx, claim, attempt, result.Usage); err != nil {
 					return agentsdk.ConversationModelResult{}, err
 				}
@@ -418,6 +439,21 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 		result := step.Result
 		executionUsageAdd(usage, result.Usage)
 		if result.FinishReason == "stop" {
+			currentRun, runErr := s.repo.Run(ctx, claim.Run.ConversationID, claim.Run.ID, claim.Authority)
+			if runErr != nil {
+				return agentsdk.ConversationModelResult{}, runErr
+			}
+			if continuation, pending := conversationRunPlanContinuationMessage(currentRun.Plan); pending {
+				// A provider may try to answer after only part of a persisted plan.
+				// Retain that public response and explicitly continue the same
+				// durable run. The execution budget bounds repeated non-compliance.
+				messages = append(append([]agentsdk.ConversationStepMessage(nil), step.Input.Messages...), result.Message)
+				messages = conversationMessagesWithRunPlanControl(messages, continuation)
+				continue
+			}
+			if err = s.finishConversationRunPlanForModelStop(ctx, claim); err != nil {
+				return agentsdk.ConversationModelResult{}, err
+			}
 			if err = s.checkRunSources(ctx, agentsdk.ConversationRunReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID}, claim.Authority); err != nil {
 				return agentsdk.ConversationModelResult{}, err
 			}
@@ -430,9 +466,9 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 					return agentsdk.ConversationModelResult{}, citationErr
 				}
 			}
-			// Step deltas were persisted as they arrived. Commit the final text
-			// to the existing run draft so the established finish transaction
-			// and legacy message readers retain exactly one final answer.
+			// Each generation's deltas already own a stable durable message.
+			// The finish transaction reuses the terminal generation's identity;
+			// earlier model responses remain separate messages.
 			if err = s.repo.AppendDelta(ctx, claim, 0, result.Message.Content); err != nil {
 				return agentsdk.ConversationModelResult{}, err
 			}
@@ -500,6 +536,13 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 				messages = append(messages, agentsdk.ConversationStepMessage{Role: "user", Content: answer.Answer})
 			}
 		}
+		currentRun, runErr := s.repo.Run(ctx, claim.Run.ConversationID, claim.Run.ID, claim.Authority)
+		if runErr != nil {
+			return agentsdk.ConversationModelResult{}, runErr
+		}
+		if stateMessage, ok := conversationRunPlanStateMessage(currentRun.Plan); ok {
+			messages = conversationMessagesWithRunPlanControl(messages, stateMessage)
+		}
 	}
 	return agentsdk.ConversationModelResult{}, conversationFailure("rate_limited", "execution_limit")
 }
@@ -507,6 +550,12 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 func (s *ConversationService) executeConversationTools(ctx context.Context, claim persistence.ConversationClaim, step persistence.ConversationExecutionStep, calls []agentsdk.ConversationToolCall) ([]agentsdk.ConversationToolResult, error) {
 	results := make([]agentsdk.ConversationToolResult, len(calls))
 	width := agentsdk.ConversationParallelReadWidth(step.Input.Tools, calls, step.Input.MaxParallelTools)
+	if claim.Run.Plan != nil {
+		// A persisted plan is an ordered user-visible contract. Even independently
+		// safe reads are executed in the declared order so their started/completed
+		// events cannot race or make later steps appear before earlier ones.
+		width = 1
+	}
 	if width < 2 {
 		for index, call := range calls {
 			result, err := s.executeConversationTool(ctx, claim, step, call)
@@ -648,6 +697,67 @@ func (s *ConversationService) executionToolAuthorizer(name string) agentsdk.Conv
 	return s.options.ToolHost
 }
 
+func appendConversationToolSourceAttachments(attachments []agentsdk.ConversationSourceAttachment, seen map[string]bool, messages []agentsdk.ConversationStepMessage, conversationID string) []agentsdk.ConversationSourceAttachment {
+	for _, message := range messages {
+		if message.Role != "user" {
+			continue
+		}
+		for _, block := range message.ContentBlocks {
+			image := block.Image
+			if block.Type != "image" || image == nil || image.Source != nil || image.ConversationID != conversationID || seen[image.AttachmentID] {
+				continue
+			}
+			seen[image.AttachmentID] = true
+			attachments = append(attachments, agentsdk.ConversationSourceAttachment{
+				ConversationID: image.ConversationID,
+				AttachmentID:   image.AttachmentID,
+				Filename:       image.Filename,
+				ContentType:    image.ContentType,
+				Bytes:          image.Bytes,
+				SHA256:         image.SHA256,
+				Revision:       image.Revision,
+			})
+		}
+	}
+	return attachments
+}
+
+func (s *ConversationService) conversationToolSourceAttachments(ctx context.Context, claim persistence.ConversationClaim, messages []agentsdk.ConversationStepMessage) ([]agentsdk.ConversationSourceAttachment, error) {
+	seen := map[string]bool{}
+	candidates := appendConversationToolSourceAttachments(nil, seen, messages, claim.Run.ConversationID)
+	for after := int64(0); after < claim.Run.UserSeq; {
+		history, err := s.repo.History(ctx, claim.Run.ConversationID, after, claim.Run.UserSeq, 1000, claim.Authority)
+		if err != nil {
+			return nil, err
+		}
+		if len(history) == 0 {
+			break
+		}
+		stepMessages := make([]agentsdk.ConversationStepMessage, 0, len(history))
+		for _, message := range history {
+			stepMessages = append(stepMessages, agentsdk.ConversationStepMessage{Role: message.Role, ContentBlocks: message.ContentBlocks})
+		}
+		candidates = appendConversationToolSourceAttachments(candidates, seen, stepMessages, claim.Run.ConversationID)
+		next := history[len(history)-1].Seq
+		if next <= after {
+			break
+		}
+		after = next
+	}
+	attachments := make([]agentsdk.ConversationSourceAttachment, 0, len(candidates))
+	for _, candidate := range candidates {
+		current, err := s.Attachment(ctx, claim.Run.ConversationID, candidate.AttachmentID, claim.Authority)
+		if err != nil {
+			continue
+		}
+		if current.State == "deleting" || current.State == "deleted" || current.ID != candidate.AttachmentID || current.ConversationID != candidate.ConversationID || current.Filename != candidate.Filename || current.ContentType != candidate.ContentType || current.Bytes != candidate.Bytes || current.SHA256 != candidate.SHA256 || current.Revision < candidate.Revision {
+			continue
+		}
+		attachments = append(attachments, candidate)
+	}
+	return attachments, nil
+}
+
 func (s *ConversationService) executeConversationToolWithParent(ctx context.Context, claim persistence.ConversationClaim, step persistence.ConversationExecutionStep, call agentsdk.ConversationToolCall, parentCallID string, dispatchIndex int) (agentsdk.ConversationToolResult, error) {
 	if err := s.authorizeConversationClaim(ctx, claim, "tool"); err != nil {
 		return agentsdk.ConversationToolResult{}, err
@@ -674,7 +784,11 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 	if conversationDigest(compiled.definition) != conversationDigest(frozen) {
 		return agentsdk.ConversationToolResult{}, conversationFailure("conflict", "tool_changed")
 	}
-	request := agentsdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, CorrelationID: claim.Run.ID, Step: step.Number, Call: call, Definition: frozen, LeaseOwner: claim.Owner, Fence: claim.Fence}
+	sourceAttachments, err := s.conversationToolSourceAttachments(ctx, claim, step.Input.Messages)
+	if err != nil {
+		return agentsdk.ConversationToolResult{}, err
+	}
+	request := agentsdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, CorrelationID: claim.Run.ID, Step: step.Number, Call: call, Definition: frozen, LeaseOwner: claim.Owner, Fence: claim.Fence, SourceAttachments: sourceAttachments}
 	interaction, hasInteraction, err := s.toolInteraction(ctx, claim, step.Number, call, frozen)
 	if err != nil {
 		return agentsdk.ConversationToolResult{}, err
@@ -694,6 +808,18 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 	}
 	argumentError := validateToolJSON(compiled.input, []byte(call.Arguments))
 	validArguments := argumentError == nil
+	planRejected := false
+	if validArguments && parentCallID == "" {
+		if err = s.appendConversationRunProgress(ctx, claim, "tool", call.Name, "", call.ID, agentsdk.ConversationRunProgressStarted, ""); err != nil {
+			if !conversationRunPlanRejectableProgressError(err) {
+				return agentsdk.ConversationToolResult{}, err
+			}
+			planRejected = true
+		}
+	}
+	if planRejected {
+		return s.rejectConversationToolOutsidePlan(ctx, repo, claim, step, call, frozen, authorization)
+	}
 	if validArguments && frozen.Effect == "write" && claim.Run.BackgroundTask != nil && claim.Run.BackgroundTask.Handoff != nil {
 		if reuse, ok := s.repo.(persistence.ConversationDelegationTransferRepository); ok {
 			result, found, e := reuse.ReuseConversationDelegationEffect(ctx, claim, step.Number, call, frozen)
@@ -714,6 +840,11 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 		if parentCallID == "" {
 			operations = s.confirmationOperations(ctx, claim, step, call.ID)
 		}
+		if parentCallID == "" {
+			if err = s.appendConversationRunProgress(ctx, claim, "tool", call.Name, "", call.ID, agentsdk.ConversationRunProgressWaitingConfirmation, ""); err != nil {
+				return agentsdk.ConversationToolResult{}, err
+			}
+		}
 		return agentsdk.ConversationToolResult{}, s.waitConversation(ctx, claim, persistence.ConversationWait{Step: step.Number, CallID: call.ID, Kind: "confirmation", Question: "请确认是否执行此操作；执行参数如下。", OperationCallIDs: operations})
 	}
 	if validArguments && call.Name == "ask_user" {
@@ -732,6 +863,11 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 				Choices  []string `json:"choices"`
 			}
 			_ = json.Unmarshal([]byte(call.Arguments), &args)
+			if parentCallID == "" {
+				if err = s.appendConversationRunProgress(ctx, claim, "tool", call.Name, "", call.ID, agentsdk.ConversationRunProgressWaitingUser, ""); err != nil {
+					return agentsdk.ConversationToolResult{}, err
+				}
+			}
 			return agentsdk.ConversationToolResult{}, s.waitConversation(ctx, claim, persistence.ConversationWait{Step: step.Number, CallID: call.ID, Kind: "input", Question: args.Question, Choices: args.Choices})
 		}
 	}
@@ -780,6 +916,18 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 		}
 		s.dispatchConversationToolResultLifecycle(ctx, claim, step, call, frozen, *record.Result)
 		return *record.Result, nil
+	}
+	if len(frozen.ExecutionPlan) > 0 {
+		if err = s.repo.AppendEvent(ctx, claim, "tool.plan.created", map[string]any{
+			"step":       step.Number,
+			"attempt":    claim.Run.Attempt,
+			"call_id":    call.ID,
+			"tool":       call.Name,
+			"stages":     frozen.ExecutionPlan,
+			"updated_at": time.Now().UTC(),
+		}); err != nil {
+			return agentsdk.ConversationToolResult{}, err
+		}
 	}
 	var result agentsdk.ConversationToolResult
 	if !validArguments {
@@ -835,6 +983,23 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 			return agentsdk.ConversationToolResult{}, err
 		}
 		toolCtx, cancel := s.externalCallContext(ctx, time.Duration(frozen.TimeoutMillis)*time.Millisecond)
+		toolCtx = toolsdk.WithProgressReporter(toolCtx, func(progressCtx context.Context, progress toolsdk.Progress) error {
+			if parentCallID == "" {
+				if progressErr := s.appendConversationRunProgress(progressCtx, claim, "tool_progress", call.Name, progress.Key, call.ID, progress.Status, progress.Detail); progressErr != nil {
+					return progressErr
+				}
+			}
+			return s.repo.AppendEvent(progressCtx, claim, "tool.progress", map[string]any{
+				"step":         step.Number,
+				"attempt":      claim.Run.Attempt,
+				"call_id":      call.ID,
+				"tool":         call.Name,
+				"progress_key": progress.Key,
+				"detail":       progress.Detail,
+				"status":       progress.Status,
+				"updated_at":   time.Now().UTC(),
+			})
+		})
 		if replayed && (record.State == "uncertain" || frozen.Idempotency == "reconcile") {
 			result, err = s.options.ToolHost.ReconcileConversationTool(toolCtx, request)
 		} else {
@@ -872,6 +1037,16 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 		receiptCancel()
 		return agentsdk.ConversationToolResult{}, err
 	}
+	planStatus := agentsdk.ConversationRunProgressFailed
+	if result.Status == "completed" {
+		planStatus = agentsdk.ConversationRunProgressCompleted
+	}
+	if parentCallID == "" {
+		if err = s.appendConversationRunProgress(receiptCtx, claim, "tool", call.Name, "", call.ID, planStatus, ""); err != nil {
+			receiptCancel()
+			return agentsdk.ConversationToolResult{}, err
+		}
+	}
 	s.dispatchConversationToolResultLifecycle(receiptCtx, claim, step, call, frozen, result)
 	receiptCancel()
 	if err = ctx.Err(); err != nil {
@@ -880,5 +1055,43 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 	if result.Status == "uncertain" {
 		return agentsdk.ConversationToolResult{}, s.waitConversation(ctx, claim, persistence.ConversationWait{Step: step.Number, CallID: call.ID, Kind: "reconciliation", Question: "外部操作的结果尚未确认。继续时将查询实际结果，已完成的操作不会重新执行。"})
 	}
+	return result, nil
+}
+
+func conversationRunPlanRejectableProgressError(err error) bool {
+	var failure *agentsdk.Error
+	if !errors.As(err, &failure) {
+		return false
+	}
+	return failure.Code == "agent.conversation.run_plan_progress_order" || failure.Code == "agent.conversation.run_plan_step_missing"
+}
+
+func (s *ConversationService) rejectConversationToolOutsidePlan(
+	ctx context.Context,
+	repo persistence.ConversationExecutionRepository,
+	claim persistence.ConversationClaim,
+	step persistence.ConversationExecutionStep,
+	call agentsdk.ConversationToolCall,
+	definition agentsdk.ConversationToolDefinition,
+	authorization agentsdk.ConversationToolAuthorization,
+) (agentsdk.ConversationToolResult, error) {
+	record, replayed, err := repo.BeginExecutionTool(ctx, claim, step.Number, call.ID, authorization)
+	if err != nil {
+		return agentsdk.ConversationToolResult{}, err
+	}
+	if replayed && record.Result != nil {
+		return *record.Result, nil
+	}
+	result := agentsdk.ConversationToolResult{
+		Status:    "failed",
+		ErrorCode: "run_plan_step_unexpected",
+		Content:   json.RawMessage(`{"error":"run_plan_step_unexpected","instruction":"Use the current persisted plan state and execute the next planned step without repeating completed work."}`),
+	}
+	receiptCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
+	defer cancel()
+	if err = repo.FinishExecutionTool(receiptCtx, claim, step.Number, call.ID, result); err != nil {
+		return agentsdk.ConversationToolResult{}, err
+	}
+	s.dispatchConversationToolResultLifecycle(receiptCtx, claim, step, call, definition, result)
 	return result, nil
 }

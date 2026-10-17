@@ -100,8 +100,8 @@ func (f *mailProductFixture) connect(b *browser, basic bool) integration.Connect
 	if basic {
 		scope, applicationKey = mailBasicScope, "mail-google-basic"
 	}
-	b.call("PUT", "/integration/oauth-applications/"+applicationKey, accountJSON(integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Google Mail", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: []string{mailReadScope, mailBasicScope}, Enabled: true}), 200)
-	s := accountDecode[integration.OAuthAuthorizationSession](f.t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: applicationKey, Scope: integration.ConnectionAccountScopePersonal, Name: "个人邮件", Scopes: []string{scope}}), 200))
+	b.call("PUT", "/integration/oauth-applications/"+applicationKey, accountJSON(integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Google Mail", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: accountOAuthScopes(mailReadScope, mailBasicScope), Enabled: true}), 200)
+	s := accountDecode[integration.OAuthAuthorizationSession](f.t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: applicationKey, Scope: integration.ConnectionAccountScopePersonal, Name: "个人邮件", Scopes: accountOAuthScopes(scope)}), 200))
 	u, _ := url.Parse(f.callback(s.AuthorizationURL, "connect"))
 	done := accountDecode[integration.OAuthAuthorizationSession](f.t, b.call("POST", "/integration/oauth-authorizations/callback", accountJSON(integration.OAuthAuthorizationCallback{State: u.Query().Get("state"), Code: u.Query().Get("code")}), 200))
 	if done.Account == nil {

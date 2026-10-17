@@ -1,11 +1,8 @@
 package application
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"strings"
-	"unicode/utf8"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	toolsdk "github.com/domainry/domainry-tools-sdk"
@@ -69,52 +66,9 @@ func businessResultCitations(source, operation, objectKey string, output any) []
 }
 
 func businessRecordCitations(source, operation, objectKey string, records []agentsdk.ConversationBusinessRecord) []toolsdk.Citation {
-	if len(records) == 0 {
-		return nil
-	}
-	source, operation, objectKey = strings.TrimSpace(source), strings.TrimSpace(operation), strings.TrimSpace(objectKey)
-	if len(source) > 255 {
-		source = "business:" + conversationDigest(source)[:32]
-	}
-	values := make([]toolsdk.Citation, 0, len(records))
-	for _, record := range records {
-		raw, _ := json.Marshal(record.Data)
-		digest := sha256.Sum256([]byte(strings.Join([]string{source, operation, objectKey, record.ID, record.Version, string(raw)}, "\x00")))
-		values = append(values, toolsdk.Citation{
-			ID: "business_" + hex.EncodeToString(digest[:16]), Source: source, Operation: operation,
-			ObjectKey: objectKey, RecordID: record.ID, Title: businessCitationTitle(record), Excerpt: businessCitationExcerpt(raw),
-		})
-	}
-	return values
-}
-
-func businessCitationTitle(record agentsdk.ConversationBusinessRecord) string {
-	for _, key := range []string{"name", "subject", "title"} {
-		var value string
-		if json.Unmarshal(record.Data[key], &value) == nil && strings.TrimSpace(value) != "" {
-			return businessCitationText(strings.TrimSpace(value), 512)
-		}
-	}
-	return ""
-}
-
-func businessCitationExcerpt(raw []byte) string {
-	return strings.TrimSpace(businessCitationText(string(raw), 3072))
-}
-
-func businessCitationText(value string, maxBytes int) string {
-	if len(value) <= maxBytes {
-		return value
-	}
-	value = value[:maxBytes]
-	for !utf8.ValidString(value) {
-		value = value[:len(value)-1]
-	}
-	return value
+	return agentsdk.ConversationBusinessRecordCitations(source, operation, objectKey, records, 0)
 }
 
 func businessCitationsEqual(left, right []toolsdk.Citation) bool {
-	leftRaw, leftErr := json.Marshal(left)
-	rightRaw, rightErr := json.Marshal(right)
-	return leftErr == nil && rightErr == nil && string(leftRaw) == string(rightRaw)
+	return agentsdk.ConversationCitationsEqual(left, right)
 }

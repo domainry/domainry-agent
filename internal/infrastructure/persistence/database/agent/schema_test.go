@@ -82,7 +82,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 				t.Fatal("Agent migration still owns the shared Worker Scope table")
 			}
 			conversationItems := byVersion[2]
-			for _, fragment := range []string{conversationItemTable, "item_kind", "subject_id", "idx_agent_conversation_item_sequence_v2", "idx_agent_conversation_item_run_v2", "idx_agent_conversation_item_subject_v2"} {
+			for _, fragment := range []string{conversationItemTable, "item_kind", "subject_id", "search_text", "idx_agent_conversation_item_sequence_v2", "idx_agent_conversation_item_run_v2", "idx_agent_conversation_item_subject_v2"} {
 				if !strings.Contains(conversationItems, fragment) {
 					t.Fatalf("missing typed conversation item field/index %s", fragment)
 				}

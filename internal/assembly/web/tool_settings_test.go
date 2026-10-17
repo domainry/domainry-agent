@@ -185,15 +185,15 @@ func TestToolSettingsCurrentIdentityCatalogConnectionAndRestart(t *testing.T) {
 		t.Fatal(answer)
 	}
 	b.call("POST", "/app/product/account-setup", `{}`, 200)
-	app := integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Google", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: []string{accountScope}, Enabled: true}
+	app := integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Google", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: accountOAuthScopes(accountScope), Enabled: true}
 	b.call("PUT", "/integration/oauth-applications/work-google", accountJSON(app), 200)
-	session := accountDecode[integration.OAuthAuthorizationSession](t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "work-google", Scope: integration.ConnectionAccountScopePersonal, Name: "personal", Scopes: []string{accountScope}}), 200))
+	session := accountDecode[integration.OAuthAuthorizationSession](t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "work-google", Scope: integration.ConnectionAccountScopePersonal, Name: "personal", Scopes: accountOAuthScopes(accountScope)}), 200))
 	callback, _ := url.Parse(f.callback(session.AuthorizationURL, "connect"))
 	done := accountDecode[integration.OAuthAuthorizationSession](t, b.call("POST", "/integration/oauth-authorizations/callback", accountJSON(integration.OAuthAuthorizationCallback{State: callback.Query().Get("state"), Code: callback.Query().Get("code")}), 200))
-	if done.Account.Readiness == nil || done.Account.Readiness.Test == nil || done.Account.Readiness.Test.Allowed {
-		t.Fatal("calendar-only grant incorrectly enables profile probe")
+	if done.Account.Readiness == nil || done.Account.Readiness.Test == nil || !done.Account.Readiness.Test.Allowed {
+		t.Fatal("OAuth identity scope did not enable the required profile probe")
 	}
-	b.call("POST", "/integration/connection-accounts/"+done.Account.Key+"/test", `{}`, 400)
+	b.call("POST", "/integration/connection-accounts/"+done.Account.Key+"/test", `{}`, 200)
 	if v := settingList(t, b)["time_now"]; !v.Available {
 		t.Fatal("authorized grant not composed", v)
 	}
@@ -221,7 +221,7 @@ func TestToolSettingsCurrentIdentityCatalogConnectionAndRestart(t *testing.T) {
 	if v := settingList(t, user)["time_now"]; v.Available {
 		t.Fatal("foreign personal account visible", v)
 	}
-	shared := accountDecode[integration.OAuthAuthorizationSession](t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "work-google", Scope: integration.ConnectionAccountScopeWorkspace, Name: "shared", Scopes: []string{accountScope}}), 200))
+	shared := accountDecode[integration.OAuthAuthorizationSession](t, b.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "work-google", Scope: integration.ConnectionAccountScopeWorkspace, Name: "shared", Scopes: accountOAuthScopes(accountScope)}), 200))
 	sharedCallback, _ := url.Parse(f.callback(shared.AuthorizationURL, "connect"))
 	b.call("POST", "/integration/oauth-authorizations/callback", accountJSON(integration.OAuthAuthorizationCallback{State: sharedCallback.Query().Get("state"), Code: sharedCallback.Query().Get("code")}), 200)
 	if v := settingList(t, user)["time_now"]; v.Available {

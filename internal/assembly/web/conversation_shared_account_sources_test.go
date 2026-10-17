@@ -493,8 +493,9 @@ func connectSharedSourceOAuth(t *testing.T, f *accountFixture, owner *browser, f
 		grant = accountMailWriteScope
 	}
 	key := "shared-source-" + family + "-" + string(scope)
-	owner.call("PUT", "/integration/oauth-applications/"+key, accountJSON(integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Source sharing fixture", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: []string{grant}, Enabled: true}), 200)
-	session := accountDecode[integration.OAuthAuthorizationSession](t, owner.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: key, Scope: scope, Name: "Original source fixture", Scopes: []string{grant}}), 200))
+	scopes := accountOAuthScopes(grant)
+	owner.call("PUT", "/integration/oauth-applications/"+key, accountJSON(integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Source sharing fixture", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: scopes, Enabled: true}), 200)
+	session := accountDecode[integration.OAuthAuthorizationSession](t, owner.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: key, Scope: scope, Name: "Original source fixture", Scopes: scopes}), 200))
 	u, err := url.Parse(f.callback(session.AuthorizationURL, "connect"))
 	if err != nil {
 		t.Fatal(err)

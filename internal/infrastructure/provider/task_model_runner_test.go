@@ -98,7 +98,7 @@ func TestModelTaskRunnerFailsClosedWhenReadGatewayOrObjectScopeIsMissing(t *test
 func (m *recordingTaskModel) GenerateConversation(_ context.Context, request agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
 	m.request = request
 	return agentsdk.ConversationModelResult{
-		Content: `{"title":"田中太郎","kind":"business_card"}`,
+		Content: `{"title":"采购合同","kind":"document"}`,
 		Model:   "vision-test-model",
 		Usage:   map[string]any{"input_tokens": 42},
 	}, nil
@@ -116,7 +116,7 @@ func TestModelTaskRunnerSendsImageAndPDFAsNativeModelInputs(t *testing.T) {
 		TaskRunID:      "run-1",
 		WorkspaceID:    "workspace-1",
 		IdempotencyKey: "request-1",
-		Input:          map[string]any{"scene": "business_card"},
+		Input:          map[string]any{"document_type": "contract"},
 		Task: agentsdk.AgentTaskDefinition{
 			Instruction:  "Extract the fields for the selected scene.",
 			OutputSchema: map[string]any{"type": "object", "required": []any{"title", "kind"}},
@@ -125,14 +125,14 @@ func TestModelTaskRunnerSendsImageAndPDFAsNativeModelInputs(t *testing.T) {
 			},
 		},
 		Attachments: []agentsdk.TaskAttachment{
-			{ID: "att-image", Filename: "card.png", ContentType: "image/png", Bytes: int64(len(imageData)), SHA256: hex.EncodeToString(imageDigest[:]), Detail: "high", Data: imageData},
+			{ID: "att-image", Filename: "scan.png", ContentType: "image/png", Bytes: int64(len(imageData)), SHA256: hex.EncodeToString(imageDigest[:]), Detail: "high", Data: imageData},
 			{ID: "att-pdf", Filename: "document.pdf", ContentType: "application/pdf", Bytes: int64(len(pdfData)), SHA256: hex.EncodeToString(pdfDigest[:]), Data: pdfData},
 		},
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if result.Status != agentsdk.ProviderRunCompleted || result.Output["title"] != "田中太郎" || result.Model != "vision-test-model" {
+	if result.Status != agentsdk.ProviderRunCompleted || result.Output["title"] != "采购合同" || result.Model != "vision-test-model" {
 		t.Fatalf("unexpected task result: %+v", result)
 	}
 	if len(model.request.Messages) != 2 {

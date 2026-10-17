@@ -204,8 +204,8 @@ func (s *ConversationStore) TransferConversationDelegation(ctx context.Context, 
 		if in.Request.ToolRequest != nil {
 			assignment.Source = &sdk.ConversationRunReference{ConversationID: in.Request.ToolRequest.ConversationID, RunID: in.Request.ToolRequest.RunID, BeforeStep: in.Request.ToolRequest.Step + 1}
 		}
-		conversation := sdk.Conversation{ID: conversationID, DelegationID: id, AgentID: in.Agent.ID, Title: d.Brief.Goal, RuntimeID: executor.RuntimeID, WorkspaceID: executor.WorkspaceID, UserID: executor.UserID, Revision: 1, CreatedAt: now, UpdatedAt: now}
-		q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversations").Columns("owner_key", "conversation_id", "client_id", "request_hash", "title", "updated_at", "archived", "revision", "payload_json").Values(conversationOwner(executor), conversationID, id+"-"+conversationHash(number)[:12], conversationHash(assignment), conversation.Title, now.UnixMilli(), 0, 1, conversationJSON(conversation)).Build()
+		conversation := sdk.Conversation{ID: conversationID, DelegationID: id, AgentID: in.Agent.ID, Title: d.Brief.Goal, TitleOrigin: sdk.ConversationTitleOriginUser, TitleStatus: sdk.ConversationTitleStatusReady, RuntimeID: executor.RuntimeID, WorkspaceID: executor.WorkspaceID, UserID: executor.UserID, Revision: 1, CreatedAt: now, UpdatedAt: now}
+		q, args, err = query.NewInsertBuilder(s.store.Renderer(), "_agent_conversations").Columns("owner_key", "conversation_id", "client_id", "request_hash", "binding_kind", "binding_key", "binding_hash", "title", "updated_at", "archived", "revision", "payload_json").Values(conversationOwner(executor), conversationID, id+"-"+conversationHash(number)[:12], conversationHash(assignment), "", "", conversationID, conversation.Title, now.UnixMilli(), 0, 1, conversationJSON(conversation)).Build()
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}

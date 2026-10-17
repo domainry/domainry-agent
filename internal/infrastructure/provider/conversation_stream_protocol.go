@@ -45,6 +45,9 @@ func (s *conversationStreamState) chat(event string, raw []byte, emit func(strin
 		return false, fmt.Errorf("unexpected conversation chat choice")
 	}
 	choice := v.Choices[0]
+	if choice.FinishReason == "length" {
+		return false, conversationOutputTruncated(s.usage)
+	}
 	if choice.FinishReason != "" && choice.FinishReason != "stop" {
 		return false, fmt.Errorf("conversation chat stream truncated or unsupported")
 	}
@@ -122,6 +125,10 @@ func (s *conversationStreamState) messages(event string, raw []byte, emit func(s
 		}
 		delete(s.blocks, v.Index)
 	case "message_delta":
+		if s.started && len(s.blocks) == 0 && !s.finished && v.Delta.StopReason == "max_tokens" {
+			s.mergeUsage(v.Usage)
+			return false, conversationOutputTruncated(s.usage)
+		}
 		if !s.started || len(s.blocks) > 0 || s.finished || v.Delta.StopReason != "end_turn" {
 			return false, fmt.Errorf("conversation Messages stream truncated or unsupported")
 		}

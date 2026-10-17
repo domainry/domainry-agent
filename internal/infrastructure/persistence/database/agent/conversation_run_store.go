@@ -92,6 +92,9 @@ func (s *ConversationStore) event(ctx context.Context, tx *sql.Tx, v *conversati
 	if err := projectConversationExecutionEvent(&v.Run, kind, data); err != nil {
 		return err
 	}
+	if err := s.recordGeneratedMessageEvent(ctx, tx, v, kind, data); err != nil {
+		return err
+	}
 	v.EventSeq++
 	v.Run.LastEventSeq = v.EventSeq
 	v.Run.UpdatedAt = time.Now().UTC()
@@ -102,7 +105,7 @@ func (s *ConversationStore) event(ctx context.Context, tx *sql.Tx, v *conversati
 }
 func (s *ConversationStore) Enqueue(ctx context.Context, id string, in agentsdk.ConversationSend, a agentsdk.ConversationAuthority) (agentsdk.ConversationRun, error) {
 	var out agentsdk.ConversationRun
-	if len(in.Content) > 0 && !validStoredConversationContent("user", in.Message, in.Content, id, false) {
+	if !validStoredConversationReferences(in.References) || len(in.Content) > 0 && !validStoredConversationContent("user", in.Message, in.Content, id, false) {
 		return out, conversationError("bad_request", "message_content_invalid")
 	}
 	err := s.transaction(ctx, func(tx *sql.Tx) error {
@@ -148,7 +151,14 @@ func (s *ConversationStore) Enqueue(ctx context.Context, id string, in agentsdk.
 			scope := *in.WriteScope
 			v.Run.WriteScope = &scope
 		}
-		m := agentsdk.ConversationMessage{ID: conversationID("msg_"), ConversationID: id, RunID: v.Run.ID, Seq: v.Run.UserSeq, Role: "user", Content: in.Message, ContentBlocks: in.Content, CreatedAt: now}
+		m := agentsdk.ConversationMessage{ID: conversationID("msg_"), ConversationID: id, RunID: v.Run.ID, Seq: v.Run.UserSeq, Role: "user", Content: in.Message, ContentBlocks: in.Content, References: in.References, CreatedAt: now}
+		if c.TitleOrigin == agentsdk.ConversationTitleOriginUnset && c.Title == "" {
+			if title := automaticConversationTitle(m); title != "" {
+				c.Title = title
+				c.TitleOrigin = agentsdk.ConversationTitleOriginGenerated
+				c.TitleStatus = agentsdk.ConversationTitleStatusReady
+			}
+		}
 		c.LastSeq = m.Seq
 		c.ActiveRunID = v.Run.ID
 		if err = s.save(ctx, tx, c, c.Revision, a); err != nil {
@@ -373,11 +383,18 @@ func (s *ConversationStore) Finish(ctx context.Context, claim agentpersistence.C
 				return conversationError("conflict", "draft_mismatch")
 			}
 			v.Run.Status = "completed"
-			m := agentsdk.ConversationMessage{ID: conversationID("msg_"), ConversationID: c.ID, RunID: v.Run.ID, Seq: c.LastSeq + 1, Role: "assistant", Content: result.Content, CreatedAt: time.Now().UTC()}
-			if v.Run.BackgroundTask != nil {
-				m.BackgroundTaskID = v.Run.BackgroundTask.TaskID
+			step := -1
+			if len(v.Run.Steps) != 0 {
+				step = v.Run.Steps[len(v.Run.Steps)-1].Number
 			}
-			if err = s.insertMessage(ctx, tx, m, v.Authority); err != nil {
+			generation := conversationMessageGeneration(v.Run, step)
+			generation.Status = "completed"
+			m, messageErr := s.generatedMessage(ctx, tx, &v, generation, result.Content)
+			if messageErr != nil {
+				return messageErr
+			}
+			c, err = s.get(ctx, tx, v.Run.ConversationID, v.Authority)
+			if err != nil {
 				return err
 			}
 			v.Run.AssistantMessageID = m.ID
@@ -462,8 +479,14 @@ func (s *ConversationStore) transitionRun(ctx context.Context, tx *sql.Tx, id, r
 		if i := v.Run.Interaction; i != nil && i.Kind != "reconciliation" && (i.Status == "cancelled" || i.Status == "expired" || i.Status == "rejected") {
 			return out, conversationError("conflict", "interaction_closed")
 		}
-		if !background && (c.ActiveRunID != "" && !(c.ActiveRunID == runID && v.Run.Status == "needs_reconciliation") || c.LastSeq != max(v.Run.UserSeq, v.Run.LastInputSeq)) {
-			return out, conversationError("conflict", "run_superseded")
+		if !background {
+			ownsTail, tailErr := s.generatedMessagesOwnTail(ctx, tx, v)
+			if tailErr != nil {
+				return out, tailErr
+			}
+			if c.ActiveRunID != "" && !(c.ActiveRunID == runID && v.Run.Status == "needs_reconciliation") || !ownsTail {
+				return out, conversationError("conflict", "run_superseded")
+			}
 		}
 		if err = s.checkConversationQueueCapacity(ctx, tx, a); err != nil {
 			return out, err

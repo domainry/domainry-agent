@@ -37,6 +37,7 @@ const eventStatuses: Record<string, string> = {
   prepared: "已准备", started: "已开始", granted: "已授权", denied: "已拒绝", authorization_failed: "授权检查失败",
   confirmation_required: "需要确认", pending: "等待处理", approved: "已批准", rejected: "已拒绝", resolved: "已解决",
   waiting_confirmation: "等待确认", waiting_user: "等待补充信息", needs_reconciliation: "等待核查", uncertain: "结果待核查",
+  history_compacted: "历史上下文已压缩", history_rebuilt: "历史摘要已重建", execution_compacted: "执行上下文已压缩",
 };
 export function auditEventLabel(event: RunAuditEvent) {
   const target = event.tool ? ` · ${event.tool}` : event.type !== "run" && event.step >= 0 ? ` · 第 ${event.step + 1} 步` : "";

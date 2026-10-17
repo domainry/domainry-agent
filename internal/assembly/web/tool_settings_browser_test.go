@@ -77,8 +77,8 @@ func TestToolSettingsBuiltBrowser(t *testing.T) {
 				f.grantSettings(admin, "admin", true)
 			case "/__acceptance/connect":
 				admin.call("POST", "/app/product/account-setup", `{}`, 200)
-				admin.call("PUT", "/integration/oauth-applications/work-google", accountJSON(integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Google", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: []string{accountScope}, Enabled: true}), 200)
-				session := accountDecode[integration.OAuthAuthorizationSession](t, admin.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "work-google", Scope: integration.ConnectionAccountScopePersonal, Name: "personal", Scopes: []string{accountScope}}), 200))
+				admin.call("PUT", "/integration/oauth-applications/work-google", accountJSON(integration.OAuthApplicationInput{ConnectorKey: "google_workspace", ProviderKey: "google", Name: "Google", ClientID: "fixture-client", ClientSecret: "fixture-client-secret", RedirectURI: "http://127.0.0.1:8091/oauth/callback", Scopes: accountOAuthScopes(accountScope), Enabled: true}), 200)
+				session := accountDecode[integration.OAuthAuthorizationSession](t, admin.call("POST", "/integration/oauth-authorizations", accountJSON(integration.OAuthAuthorizationInput{ApplicationKey: "work-google", Scope: integration.ConnectionAccountScopePersonal, Name: "personal", Scopes: accountOAuthScopes(accountScope)}), 200))
 				target, _ := url.Parse(f.callback(session.AuthorizationURL, "connect"))
 				done := accountDecode[integration.OAuthAuthorizationSession](t, admin.call("POST", "/integration/oauth-authorizations/callback", accountJSON(integration.OAuthAuthorizationCallback{State: target.Query().Get("state"), Code: target.Query().Get("code")}), 200))
 				account = done.Account

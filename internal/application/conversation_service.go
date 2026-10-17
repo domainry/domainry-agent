@@ -41,6 +41,19 @@ type ConversationOptions struct {
 	// filtering and before workers start. Deployment owns the resulting policy;
 	// the engine does not depend on a settings implementation or its database.
 	BindToolPolicy func(toolsdk.Catalog, toolsdk.Availability) (toolsdk.Availability, error)
+	// RunPlanningEnabled opts a deployment into the built-in model-backed
+	// semantic planner. Planning is explicit because it adds a model call and a
+	// persisted execution contract to every tool-enabled run.
+	RunPlanningEnabled bool
+	// RunPlanner replaces the built-in planner and also enables planning when
+	// supplied. Returned plans remain subject to Agent validation and
+	// execution-owned progress.
+	RunPlanner agentsdk.ConversationRunPlanner
+	// RunPlanningModel isolates the default planner's provider, protocol and
+	// generation budget from execution. It never replaces the reply model.
+	RunPlanningModel agentsdk.ConversationModel
+	// RunPlanningTimeout bounds the whole planning attempt/retry sequence.
+	RunPlanningTimeout time.Duration
 
 	CollaborationAuthorizer                                    agentsdk.ConversationCollaborationAuthorizer
 	ExecutionAuthorizer                                        agentsdk.ConversationExecutionAuthorizer
@@ -164,6 +177,12 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	}
 	if options.ExternalCallTimeout == 0 {
 		options.ExternalCallTimeout = min(2*time.Minute, options.RunTimeout)
+	}
+	if options.RunPlanningTimeout == 0 {
+		options.RunPlanningTimeout = 10 * time.Second
+	}
+	if options.RunPlanningTimeout < time.Millisecond || options.RunPlanningTimeout > 5*time.Minute {
+		return nil, fmt.Errorf("invalid conversation planning timeout")
 	}
 	if options.MaxModelAttempts == 0 {
 		options.MaxModelAttempts = 3
@@ -385,6 +404,11 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 		}
 	}
 	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, wake: make(chan struct{}, options.Workers), taskWake: make(chan struct{}, 1), followUpWake: make(chan struct{}, 1), active: map[string]conversationActive{}, lifecycleExtensions: lifecycleExtensions, lifecycleManifest: lifecycleManifest}
+	if options.RunPlanningModel != nil {
+		if _, err := describeConversationModel("planning", options.RunPlanningModel); err != nil {
+			return nil, fmt.Errorf("invalid conversation planning model: %w", err)
+		}
+	}
 	if model != nil {
 		if _, err := s.conversationModelDescriptor("default"); err != nil {
 			return nil, fmt.Errorf("invalid default conversation model: %w", err)
@@ -568,9 +592,10 @@ func (s *ConversationService) Create(ctx context.Context, in agentsdk.Conversati
 	if !conversationKey(in.ClientID) || !conversationText(in.Title, 512, false) {
 		return agentsdk.Conversation{}, conversationFailure("bad_request", "create_invalid")
 	}
-	if strings.TrimSpace(in.Title) == "" {
-		in.Title = "新会话"
+	if in.Binding != nil && (!conversationKey(in.Binding.Kind) || !conversationKey(in.Binding.Key)) {
+		return agentsdk.Conversation{}, conversationFailure("bad_request", "binding_invalid")
 	}
+	in.Title = strings.TrimSpace(in.Title)
 	if in.AgentID != "" {
 		if !conversationKey(in.AgentID) {
 			return agentsdk.Conversation{}, conversationFailure("bad_request", "agent_invalid")
@@ -589,9 +614,10 @@ func (s *ConversationService) List(ctx context.Context, in agentsdk.Conversation
 	if err := s.authorize(a); err != nil {
 		return agentsdk.ConversationPage{}, err
 	}
-	if !conversationText(in.Search, 512, false) || len(in.BeforeID) > 256 || in.Limit < 0 || in.Limit > 100 {
+	if !conversationText(in.Search, 512, false) || len(in.BeforeID) > 256 || in.Limit < 0 || in.Limit > 100 || (in.BindingKind == "") != (in.BindingKey == "") || in.BindingKind != "" && (!conversationKey(in.BindingKind) || !conversationKey(in.BindingKey)) {
 		return agentsdk.ConversationPage{}, conversationFailure("bad_request", "query_invalid")
 	}
+	in.Search = strings.Join(strings.Fields(in.Search), " ")
 	page, err := s.repo.List(ctx, in, a)
 	if err != nil {
 		return page, err
@@ -629,6 +655,10 @@ func (s *ConversationService) Update(ctx context.Context, id string, in agentsdk
 	}
 	if in.ExpectedRevision < 1 || in.Title != nil && !conversationText(*in.Title, 512, true) {
 		return agentsdk.Conversation{}, conversationFailure("bad_request", "update_invalid")
+	}
+	if in.Title != nil {
+		title := strings.TrimSpace(*in.Title)
+		in.Title = &title
 	}
 	return s.repo.Update(ctx, id, in, a)
 }
@@ -680,6 +710,7 @@ func (s *ConversationService) Send(ctx context.Context, id string, in agentsdk.C
 		return agentsdk.ConversationRun{}, err
 	}
 	in.ExecutionAgent = nil
+	in.ExecutionLifecycle = nil
 	conversation, err := s.repo.Get(ctx, id, a)
 	if err != nil {
 		return agentsdk.ConversationRun{}, err
@@ -695,6 +726,10 @@ func (s *ConversationService) Send(ctx context.Context, id string, in agentsdk.C
 	if err != nil {
 		return agentsdk.ConversationRun{}, err
 	}
+	in.References, err = freezeConversationReferences(in.References)
+	if err != nil {
+		return agentsdk.ConversationRun{}, err
+	}
 	in, err = s.freezeConversationSendContent(ctx, id, in, a)
 	if err != nil {
 		return agentsdk.ConversationRun{}, err
@@ -702,13 +737,13 @@ func (s *ConversationService) Send(ctx context.Context, id string, in agentsdk.C
 	in.ExecutionLifecycle = cloneConversationLifecycleManifest(s.lifecycleManifest)
 	if _, err = s.dispatchConversationLifecycle(ctx, agentsdk.ConversationLifecycleEvent{
 		Stage: agentsdk.ConversationLifecycleInputAdmitting, Authority: a, ConversationID: id,
-		Input: &agentsdk.ConversationLifecycleInput{ClientMessageID: in.ClientMessageID, Message: in.Message, Content: cloneConversationContentBlocks(in.Content)},
+		Input: &agentsdk.ConversationLifecycleInput{ClientMessageID: in.ClientMessageID, Message: in.Message, Content: cloneConversationContentBlocks(in.Content), References: cloneConversationReferences(in.References)},
 	}); err != nil {
 		return agentsdk.ConversationRun{}, err
 	}
 	out, err := s.repo.Enqueue(ctx, id, in, a)
 	if err == nil {
-		s.dispatchConversationInputReceivedLifecycle(ctx, out, a, agentsdk.ConversationLifecycleInput{ClientMessageID: in.ClientMessageID, Message: in.Message, Content: cloneConversationContentBlocks(in.Content)})
+		s.dispatchConversationInputReceivedLifecycle(ctx, out, a, agentsdk.ConversationLifecycleInput{ClientMessageID: in.ClientMessageID, Message: in.Message, Content: cloneConversationContentBlocks(in.Content), References: cloneConversationReferences(in.References)})
 		s.signal()
 		out = s.projectConversationRun(ctx, out, a)
 	}
@@ -952,6 +987,9 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 	if selectionErr != nil {
 		err = selectionErr
 	}
+	if err == nil && claim.Run.Plan != nil && len(claim.Run.Plan.Steps) > 0 && claim.Run.Plan.Steps[0].Binding.Kind == "model" {
+		err = s.appendConversationRunProgress(ctx, claim, "model", "", "", "", agentsdk.ConversationRunProgressStarted, "")
+	}
 	if err == nil {
 		// History sources are flattened before their final input check. Keep
 		// this admitted run's exact contract scope throughout execution so
@@ -999,6 +1037,9 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 	if err == nil && conversationContextSize(input.Messages) > s.conversationContextLimit(ctx) {
 		err = fmt.Errorf("frozen context exceeds current configured budget")
 	}
+	if err == nil && s.options.ToolHost != nil && (s.options.RunPlanningEnabled || s.options.RunPlanner != nil) {
+		claim, err = s.ensureConversationRunPlan(ctx, claim, input)
+	}
 	var result agentsdk.ConversationModelResult
 	code := ""
 	if err != nil {
@@ -1013,6 +1054,12 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 			return
 		}
 		if err != nil {
+			slog.Error("conversation execution failed",
+				"conversation_id", claim.Run.ConversationID,
+				"run_id", claim.Run.ID,
+				"attempt", claim.Run.Attempt,
+				"error", err,
+			)
 			code = conversationModelFailureCode(err, "provider_failed")
 		} else if !conversationText(result.Content, maxOutputBytes, true) {
 			code = "response_invalid"
@@ -1033,11 +1080,16 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 	if ctx.Err() != nil {
 		code = "execution_interrupted"
 	}
+	finishCtx, finishCancel := context.WithTimeout(context.WithoutCancel(parent), 5*time.Second)
+	defer finishCancel()
+	if finalizedCode, finalizeErr := s.finalizeConversationRunPlan(finishCtx, claim, code); finalizeErr != nil {
+		code = conversationModelFailureCode(finalizeErr, "run_plan_finalize_failed")
+	} else {
+		code = finalizedCode
+	}
 	if code != "" {
 		result = agentsdk.ConversationModelResult{}
 	}
-	finishCtx, finishCancel := context.WithTimeout(context.WithoutCancel(parent), 5*time.Second)
-	defer finishCancel()
 	if err := s.repo.Finish(finishCtx, claim, result, code); err != nil {
 		slog.Debug("conversation finish fenced or unavailable", "run_id", claim.Run.ID, "error", err)
 	} else {
@@ -1071,7 +1123,7 @@ func conversationModelFailureCode(err error, fallback string) string {
 			return code
 		case "source_access_unavailable", "source_reference_invalid", "source_read_unavailable", "source_limit_exceeded", "source_snapshot_changed", "delegation_source_not_released", "dependency_source_unavailable":
 			return code
-		case "agent_changed", "agent_disabled", "agent_snapshot_invalid", "agent_model_unavailable", "agent_model_capabilities_invalid", "reasoning_effort_unsupported", "delegation_superseded", "model_changed", "lifecycle_changed", "lifecycle_extension_failed", "execution_limit", "execution_context_exceeded", "tool_catalog_invalid", "tool_access_denied", "tool_unavailable", "tool_availability_failed", "tool_changed", "tool_confirmation_required", "tool_result_uncertain", "tool_result_invalid", "answer_citation_required", "interaction_unavailable", "interaction_closed", "interaction_expired", "interaction_access_denied", "question_must_be_separate":
+		case "agent_changed", "agent_disabled", "agent_snapshot_invalid", "agent_model_unavailable", "agent_model_capabilities_invalid", "reasoning_effort_unsupported", "delegation_superseded", "model_changed", "lifecycle_changed", "lifecycle_extension_failed", "execution_limit", "execution_context_exceeded", "tool_catalog_invalid", "tool_access_denied", "tool_unavailable", "tool_availability_failed", "tool_changed", "tool_confirmation_required", "tool_result_uncertain", "tool_result_invalid", "tool_progress_incomplete", "answer_citation_required", "interaction_unavailable", "interaction_closed", "interaction_expired", "interaction_access_denied", "question_must_be_separate", "run_plan_failed", "run_plan_incomplete", "run_plan_progress_order", "run_plan_step_missing", "run_progress_order":
 			return code
 		case "execution_reference_invalid", "execution_reference_changed", "execution_read_unavailable", "result_reference_invalid", "result_reference_changed", "result_not_found", "result_read_unavailable", "tool_call_not_found", "run_not_found":
 			return code
@@ -1081,7 +1133,7 @@ func conversationModelFailureCode(err error, fallback string) string {
 			return code
 		case "business_access_denied", "business_record_not_found", "business_request_invalid", "business_source_changed", "business_unavailable", "business_response_invalid":
 			return code
-		case "provider_access_denied", "provider_quota_exhausted", "provider_rate_limited", "provider_timeout", "provider_network", "provider_request_invalid", "provider_unavailable":
+		case "provider_access_denied", "provider_quota_exhausted", "provider_rate_limited", "provider_timeout", "provider_network", "provider_request_invalid", "provider_unavailable", "model_output_truncated", "run_plan_model_invalid", "run_plan_invalid", "run_plan_input_invalid", "run_plan_timeout":
 			return code
 		}
 	}

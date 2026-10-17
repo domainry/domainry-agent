@@ -180,7 +180,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
   const mutationLock = useRef(false);
   const [loading, setLoading] = useState(false);
   const status = session;
-  const [dialog, setDialog] = useState<"new" | "rename" | "delete" | null>(
+  const [dialog, setDialog] = useState<"rename" | "delete" | null>(
     null,
   );
   const [title, setTitle] = useState("");
@@ -372,6 +372,29 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
     setRecord(result);
     setRefresh((v) => v + 1);
   }
+  async function createConversation(initialTitle = "") {
+    await mutate(async () => {
+      const created = await request<ConversationRecord>(
+        "/agent/conversations",
+        "POST",
+        {
+          client_id: crypto.randomUUID(),
+          ...(initialTitle.trim() ? { title: initialTitle.trim() } : {}),
+          memory_enabled: false,
+        },
+      );
+      if (!selectedRef.current) {
+        drafts.write(created.id, drafts.read("").text);
+        drafts.remove("");
+      }
+      activate(created.id);
+      setRecord(created);
+      setSearch("");
+      setSearchInput("");
+      setCursors([""]);
+      setRefresh((v) => v + 1);
+    });
+  }
   async function submit(message: PromptInputMessage) {
     const text = message.text.trim();
 	const files = message.files;
@@ -436,8 +459,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
           className="new-chat"
           onClick={() => {
             setMobileNavigation(false);
-            setTitle("");
-            setDialog("new");
+            void createConversation();
           }}
           disabled={busy}
         >
@@ -455,8 +477,8 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
           }}
         >
           <Input
-            aria-label="搜索会话名称"
-            placeholder="搜索会话名称…"
+            aria-label="搜索会话名称或内容"
+            placeholder="搜索名称或对话内容…"
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
             maxLength={160}
@@ -674,7 +696,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                     { icon: PenLine, title: "打磨一份内容", description: "从初步想法，到成型的表达", prompt: "帮我起草一份工作文档，先确认读者、用途和我想表达的重点。", conversation: "内容创作", tone: "purple" },
                   ].map(item => <button key={item.title} type="button" className="suggestion-card" disabled={busy || loading || !!record?.archived || blocksConversation} onClick={() => {
                     setInput(item.prompt);
-                    if (!record) { setTitle(item.conversation); setDialog("new"); }
+                    if (!record) void createConversation(item.conversation);
                   }}><span className={`suggestion-icon ${item.tone}`}><item.icon size={20} strokeWidth={1.6} /></span><span className="suggestion-copy"><strong>{item.title}</strong><small>{item.description}</small></span><ArrowUpRight className="suggestion-arrow" size={16} /></button>)}
                 </div>
                 <div className="welcome-note"><span />每一次讨论，都可以接着往下走</div>
@@ -926,7 +948,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
         </div>
       </main>
       <Dialog
-        open={dialog === "new" || dialog === "rename"}
+        open={dialog === "rename"}
         onOpenChange={(open) => {
           if (!open && !busy) setDialog(null);
         }}
@@ -938,9 +960,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
             </p>
           )}
           <DialogHeader>
-            <DialogTitle>
-              {dialog === "new" ? "新建会话" : "重命名会话"}
-            </DialogTitle>
+            <DialogTitle>重命名会话</DialogTitle>
             <DialogDescription>
               给这次讨论取一个容易找到的名字。
             </DialogDescription>
@@ -950,26 +970,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
             onSubmit={(e) => {
               e.preventDefault();
               void mutate(async () => {
-                if (dialog === "new") {
-                  const created = await request<ConversationRecord>(
-                    "/agent/conversations",
-                    "POST",
-                    {
-                      client_id: crypto.randomUUID(),
-                      title: title.trim(),
-                      memory_enabled: false,
-                    },
-                  );
-                  if (!selectedRef.current) {
-                    drafts.write(created.id, drafts.read("").text);
-                    drafts.remove("");
-                  }
-                  activate(created.id);
-                  setRecord(created);
-                  setSearch("");
-                  setSearchInput("");
-                  setCursors([""]);
-                } else await update({ title: title.trim() });
+                await update({ title: title.trim() });
                 setDialog(null);
                 setRefresh((v) => v + 1);
               });
