@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 	"testing/fstest"
@@ -439,6 +440,29 @@ func TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndResta
 		}
 		if !dropWrite {
 			out = append(out, identity.ProjectRolePermission{PermissionKey: "requirements.save", DataScope: identity.DataScopeOwner})
+		}
+		existing := make(map[string]identity.ProjectRolePermission, len(permissions))
+		for _, permission := range permissions {
+			existing[permission.PermissionKey] = permission
+		}
+		changed := make([]identity.ProjectRolePermission, 0)
+		for _, permission := range out {
+			if current, ok := existing[permission.PermissionKey]; !ok || !reflect.DeepEqual(current, permission) {
+				changed = append(changed, permission)
+			}
+		}
+		if len(changed) > 0 {
+			publisher, ok := host.Identity.(identity.ProjectRolePermissionBundlePublisher)
+			if !ok {
+				t.Fatal("Identity project role permission bundle publisher unavailable")
+			}
+			if _, e = publisher.PublishProjectRolePermissionBundle(t.Context(), identity.ProjectRolePermissionBundleRequest{
+				Application: identity.ApplicationRef{WorkspaceID: identity.WorkspaceID(options.Host.WorkspaceID), ApplicationKey: identity.ApplicationKey(options.Host.ApplicationKey)}, SourceOwner: "agent:record_acceptance_fixture", RoleKey: roleAssignments[0].RoleID, ActorID: identity.SubjectID(actor.UserID),
+				Permissions: changed, BusinessReason: "Provision fixed record acceptance capabilities", OperationID: fmt.Sprintf("record-bundle-%s-%d", actor.UserID, time.Now().UnixNano()),
+			}); e != nil {
+				t.Fatal(e)
+			}
+			before = roleCall("GET", "", "")
 		}
 		raw, _ := json.Marshal(map[string]any{"permissions": out, "business_reason": "Isolated original record read capability acceptance"})
 		roleCall("PUT", string(raw), before.Header().Get("X-Resource-Hash"))

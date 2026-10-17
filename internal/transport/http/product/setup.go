@@ -1,18 +1,18 @@
 package product
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/apperror"
 	"github.com/domainry/domainry-foundation/requestcontext"
 	identity "github.com/domainry/domainry-identity-sdk"
-	identityhttp "github.com/domainry/domainry-identity-sdk/httpapi"
 )
 
 // SetupRoutes lets the signed-in administrator initialize product grants
@@ -88,24 +88,6 @@ func SetupRoutes(binding identity.Binding, runtime string, authorize func(contex
 	})
 }
 
-type capturedResponse struct {
-	headers http.Header
-	status  int
-	body    bytes.Buffer
-}
-
-func (w *capturedResponse) Header() http.Header { return w.headers }
-func (w *capturedResponse) WriteHeader(status int) {
-	if w.status == 0 {
-		w.status = status
-	}
-}
-func (w *capturedResponse) Write(p []byte) (int, error) {
-	if w.status == 0 {
-		w.status = 200
-	}
-	return w.body.Write(p)
-}
 func writeSetupError(w http.ResponseWriter, status int, code string) {
 	if status < 400 {
 		status = 500
@@ -163,16 +145,10 @@ func initializeAdministratorPermissions(w http.ResponseWriter, r *http.Request, 
 		writeSetupError(w, 401, "product.login_required")
 		return
 	}
-	mux := http.NewServeMux()
-	provider, ok := binding.(identityhttp.Provider)
+	publisher, ok := binding.(identity.ProjectRolePermissionBundlePublisher)
 	if !ok {
 		writeSetupError(w, 503, "product.setup_unavailable")
 		return
-	}
-	for _, adapter := range provider.HTTPAdapters() {
-		for _, route := range adapter.Routes() {
-			mux.Handle(route.Pattern(), adapter.Handler())
-		}
 	}
 	assignments, err := binding.Projection().ListUserRoleAssignments(requestcontext.WithWorkspaceID(r.Context(), current.Principal.WorkspaceID), identity.UserRoleAssignmentQuery{UserID: identity.SubjectID(current.Principal.UserID)})
 	if err != nil {
@@ -187,45 +163,37 @@ func initializeAdministratorPermissions(w http.ResponseWriter, r *http.Request, 
 		writeSetupError(w, 403, "product.administrator_required")
 		return
 	}
-	call := func(method string, body []byte, hash string) *capturedResponse {
-		req, err := http.NewRequestWithContext(identity.WithRequestIdentity(r.Context(), identity.RequestIdentity{}), method, "http://identity.internal/identity/roles/admin/permissions", bytes.NewReader(body))
-		if err != nil {
-			panic(err)
+	_, err = publisher.PublishProjectRolePermissionBundle(r.Context(), identity.ProjectRolePermissionBundleRequest{
+		Application: identity.ApplicationRef{WorkspaceID: identity.WorkspaceID(current.Principal.WorkspaceID), ApplicationKey: identity.ApplicationKey(key)},
+		SourceOwner: "application:" + strings.ToLower(strings.TrimSpace(key)),
+		RoleKey:     "admin", ActorID: identity.SubjectID(current.Principal.UserID), Permissions: grants,
+		BusinessReason: "Administrator enabled fixed product workspace capabilities",
+		OperationID:    fmt.Sprintf("product-setup-%d", time.Now().UnixNano()),
+	})
+	if err != nil {
+		status := http.StatusInternalServerError
+		var sdkError *identity.Error
+		var appError *apperror.AppError
+		switch {
+		case errors.As(err, &sdkError) && sdkError.StatusCode > 0:
+			status = sdkError.StatusCode
+		case errors.As(err, &sdkError):
+			status = http.StatusBadRequest
+		case errors.As(err, &appError):
+			switch appError.Kind {
+			case apperror.KindBadRequest:
+				status = http.StatusBadRequest
+			case apperror.KindForbidden:
+				status = http.StatusForbidden
+			case apperror.KindNotFound:
+				status = http.StatusNotFound
+			case apperror.KindConflict:
+				status = http.StatusConflict
+			case apperror.KindUnavailable:
+				status = http.StatusServiceUnavailable
+			}
 		}
-		req.Header.Set("Authorization", "Bearer "+current.AccessToken)
-		req.Header.Set("X-Workspace-ID", current.Principal.WorkspaceID)
-		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Expected-Schema-Hash", hash)
-		req.Header.Set("Idempotency-Key", fmt.Sprintf("product-setup-%d", time.Now().UnixNano()))
-		out := &capturedResponse{headers: make(http.Header)}
-		mux.ServeHTTP(out, req)
-		return out
-	}
-	prior := call("GET", nil, "")
-	if prior.status != 200 {
-		writeSetupError(w, prior.status, "product.setup_denied")
-		return
-	}
-	var permissions []identity.ProjectRolePermission
-	if json.Unmarshal(prior.body.Bytes(), &permissions) != nil {
-		writeSetupError(w, 500, "product.setup_unavailable")
-		return
-	}
-
-	keys := map[string]bool{}
-	for _, p := range permissions {
-		keys[p.PermissionKey] = true
-	}
-	for _, p := range grants {
-		if !keys[p.PermissionKey] {
-			permissions = append(permissions, p)
-			keys[p.PermissionKey] = true
-		}
-	}
-	raw, _ := json.Marshal(map[string]any{"permissions": permissions, "business_reason": "Administrator enabled product workspace capabilities"})
-	out := call("PUT", raw, prior.headers.Get("X-Resource-Hash"))
-	if out.status != 200 {
-		writeSetupError(w, out.status, "product.setup_failed")
+		writeSetupError(w, status, "product.setup_failed")
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")

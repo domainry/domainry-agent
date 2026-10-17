@@ -6,10 +6,10 @@ require (
 	github.com/domainry/domainry-agent-sdk v0.1.36
 	github.com/domainry/domainry-connector-sdk v0.1.8
 	github.com/domainry/domainry-connectors v0.1.10
-	github.com/domainry/domainry-foundation v0.1.43
-	github.com/domainry/domainry-identity v0.2.33
+	github.com/domainry/domainry-foundation v0.1.44
+	github.com/domainry/domainry-identity v0.2.42
 	github.com/domainry/domainry-identity-bridge v0.1.8
-	github.com/domainry/domainry-identity-sdk v0.1.19
+	github.com/domainry/domainry-identity-sdk v0.1.22
 	github.com/domainry/domainry-lifecycle-sdk v0.1.20
 	github.com/domainry/domainry-orm v0.1.33
 	github.com/jackc/pgx/v5 v5.10.0
@@ -25,11 +25,11 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.20.0 // indirect
 	github.com/crewjam/saml v0.5.1 // indirect
-	github.com/domainry/domainry-audit v0.1.26
-	github.com/domainry/domainry-audit-sdk v0.1.11 // indirect
-	github.com/domainry/domainry-data-exchange-sdk v0.3.11 // indirect
-	github.com/domainry/domainry-metadata v0.1.19
-	github.com/domainry/domainry-metadata-sdk v0.1.8
+	github.com/domainry/domainry-audit v0.1.28
+	github.com/domainry/domainry-audit-sdk v0.1.12 // indirect
+	github.com/domainry/domainry-data-exchange-sdk v0.3.12 // indirect
+	github.com/domainry/domainry-metadata v0.1.20
+	github.com/domainry/domainry-metadata-sdk v0.1.9
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect

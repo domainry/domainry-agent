@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -223,6 +224,29 @@ func mutateTestRolePermissions(t *testing.T, host *Host, b *browser, transform f
 		t.Fatal(err)
 	}
 	permissions := transform(previous)
+	existing := make(map[string]identitysdk.ProjectRolePermission, len(previous))
+	for _, permission := range previous {
+		existing[permission.PermissionKey] = permission
+	}
+	changed := make([]identitysdk.ProjectRolePermission, 0)
+	for _, permission := range permissions {
+		if current, ok := existing[permission.PermissionKey]; !ok || !reflect.DeepEqual(current, permission) {
+			changed = append(changed, permission)
+		}
+	}
+	if len(changed) > 0 {
+		publisher, ok := host.Identity.(identitysdk.ProjectRolePermissionBundlePublisher)
+		if !ok {
+			t.Fatal("Identity project role permission bundle publisher unavailable")
+		}
+		if _, err = publisher.PublishProjectRolePermissionBundle(t.Context(), identitysdk.ProjectRolePermissionBundleRequest{
+			Application: host.application, SourceOwner: "agent:acceptance_fixture", RoleKey: assignments[0].RoleID, ActorID: identitysdk.SubjectID(user),
+			Permissions: changed, BusinessReason: "Provision fixed Agent acceptance capabilities", OperationID: fmt.Sprintf("agent-acceptance-%d", time.Now().UnixNano()),
+		}); err != nil {
+			t.Fatal(err)
+		}
+		current = call("GET", "", "")
+	}
 	raw, _ := json.Marshal(map[string]any{"permissions": permissions, "business_reason": "Isolated Agent capability acceptance test"})
 	call("PUT", string(raw), current.Header().Get("X-Resource-Hash"))
 }
