@@ -117,6 +117,23 @@ func conversationNetworkError(err error) error {
 	return err
 }
 
+// A provider may return syntactically valid SSE transport but end one model
+// step with malformed or inconsistent protocol events. Retrying is safe here:
+// the model step has not completed and no business tool has been executed yet.
+// Preserve callback/storage errors and already-classified provider failures;
+// those have their own retry semantics.
+func conversationProtocolError(err error) error {
+	if err == nil || errors.Is(err, context.Canceled) {
+		return err
+	}
+	var classified agentsdk.ConversationModelFailureProvider
+	if errors.As(err, &classified) {
+		return err
+	}
+	coded := &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.provider_failed", Retryable: true}
+	return conversationFailureWithDetails(coded, agentsdk.ConversationModelFailureDetails{Retryable: true, ErrorCode: "provider_failed"})
+}
+
 func parseConversationRetryAfter(value string, now time.Time) time.Duration {
 	value = strings.TrimSpace(value)
 	if value == "" {

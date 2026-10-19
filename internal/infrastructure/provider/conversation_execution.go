@@ -135,6 +135,14 @@ func (m *ConversationModel) StreamConversationStep(ctx context.Context, in agent
 		}
 		return emit(event)
 	})
+	var callbackErr error
+	state.emit = func(event agentsdk.ConversationModelEvent) error {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		callbackErr = emit(event)
+		return callbackErr
+	}
 	err = readConversationSSE(ctx, resp.Body, func(event string, raw []byte) (bool, error) {
 		switch m.config.Protocol {
 		case ConversationProtocolChat:
@@ -146,6 +154,9 @@ func (m *ConversationModel) StreamConversationStep(ctx context.Context, in agent
 		}
 	})
 	if err != nil {
+		if callbackErr == nil && ctx.Err() == nil {
+			err = conversationProtocolError(err)
+		}
 		return agentsdk.ConversationStepResult{}, withConversationFailureUsage(err, state.usage)
 	}
 	result, err := state.result(m.config.Protocol)

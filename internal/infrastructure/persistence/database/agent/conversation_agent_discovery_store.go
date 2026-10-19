@@ -47,11 +47,12 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 		if err != nil {
 			return err
 		}
-		workspace := query.Or(owner, query.And(query.Equal("runtime_id", a.RuntimeID), query.Equal("workspace_id", conversationRunWorkspaceKey(a))))
+		runWorkspace := query.Or(owner, query.And(query.Equal("runtime_id", a.RuntimeID), query.Equal("workspace_id", conversationRunWorkspaceKey(a))))
+		taskWorkspace := query.Or(owner, query.And(query.Equal("runtime_id", a.RuntimeID), query.Equal("workspace_key", conversationRunWorkspaceKey(a))))
 		// Aggregate visible Agent load across workspace users, without exposing
 		// their task identities. Queued tasks and their runs are mutually
 		// exclusive in the launch transaction; default stays caller-scoped.
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns("payload_json", "lease_expires_at", "owner_key").Where(query.And(agentRunKindPredicate(agentRunKindConversation), workspace, query.Or(query.Equal("status", "queued"), query.Equal("status", "running"), query.Equal("status", "waiting_user"), query.Equal("status", "waiting_confirmation"), query.Equal("status", "needs_reconciliation")))).Build()
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), agentRunTable).Columns("payload_json", "lease_expires_at", "owner_key").Where(query.And(agentRunKindPredicate(agentRunKindConversation), runWorkspace, query.Or(query.Equal("status", "queued"), query.Equal("status", "running"), query.Equal("status", "waiting_user"), query.Equal("status", "waiting_confirmation"), query.Equal("status", "needs_reconciliation")))).Build()
 		if err != nil {
 			return err
 		}
@@ -95,7 +96,7 @@ func (s *ConversationStore) ConversationAgentObservations(ctx context.Context, a
 		if err != nil {
 			return err
 		}
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns("payload_json", "owner_key").Where(query.And(conversationTaskKindPredicate(conversationTaskKindTask), workspace, query.Equal("status", "queued"))).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns("payload_json", "owner_key").Where(query.And(conversationTaskKindPredicate(conversationTaskKindTask), taskWorkspace, query.Equal("status", "queued"))).Build()
 		if err != nil {
 			return err
 		}

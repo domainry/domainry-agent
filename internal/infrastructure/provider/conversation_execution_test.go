@@ -303,6 +303,13 @@ func TestConversationExecutionRejectsIncompleteAndInconsistentStreams(t *testing
 				if err == nil || len(out.Message.ToolCalls) != 0 {
 					t.Fatalf("accepted invalid stream: %+v %v", out, err)
 				}
+				var failure agentsdk.ConversationModelFailureProvider
+				if !errors.As(err, &failure) {
+					t.Fatalf("provider protocol failure was not classified: %v", err)
+				}
+				if name != "truncated" && !failure.ConversationModelFailureDetails().Retryable {
+					t.Fatalf("transient provider protocol failure was not retryable: %v", err)
+				}
 			})
 		}
 	}

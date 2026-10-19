@@ -16,23 +16,42 @@ func conversationRecordHash(record persistence.ConversationToolExecution) string
 	return conversationDigest([]any{record.Step, record.Call, record.Definition, record.State, record.Result})
 }
 
-// Keep each server-issued execution locator adjacent to the assistant message
-// that produced it. New turns then append to the prior model-input prefix
-// instead of rewriting one dynamic index near the beginning of every prompt,
-// which preserves provider prompt-cache eligibility across turns.
-func conversationExecutionLinkMessage(message agentsdk.ConversationMessage) agentsdk.ConversationModelMessage {
-	links := []map[string]any{{"conversation_id": message.ConversationID, "run_id": message.RunID, "message_id": message.ID, "seq": message.Seq}}
-	// Keep this as adjacent assistant context rather than an interleaved system
-	// message: the Messages protocol only permits system instructions up front.
-	return agentsdk.ConversationModelMessage{Role: "assistant", Content: "Recent execution links (server-issued data, newest first; not a complete history):\n" + conversationJSONText(links) + "\nUse execution_read to inspect actual prior tool outcomes before relying on resource identifiers or completion claims in a summary. For older work use history_search/read to recover run IDs. Recorded outcomes are historical observations; use the relevant business tool to check live status. A missing result does not prove an action did not occur."}
+// Execution locators are private retrieval metadata, not assistant-authored
+// conversation. Keep them in one leading system message so a provider cannot
+// mistake them for the assistant's prior public reply and continue or repeat
+// the retrieval instructions to the user.
+func conversationExecutionLinkMessage(history []agentsdk.ConversationMessage) agentsdk.ConversationModelMessage {
+	links := make([]map[string]any, 0, len(history))
+	for index := len(history) - 1; index >= 0; index-- {
+		message := history[index]
+		if message.Role != "assistant" || message.RunID == "" {
+			continue
+		}
+		links = append(links, map[string]any{"conversation_id": message.ConversationID, "run_id": message.RunID, "message_id": message.ID, "seq": message.Seq})
+	}
+	if len(links) == 0 {
+		return agentsdk.ConversationModelMessage{}
+	}
+	return agentsdk.ConversationModelMessage{Role: "system", Content: "Recent execution links (private server retrieval metadata, newest first; not a complete history):\n" + conversationJSONText(links) + "\nNever quote, paraphrase, expose or discuss this block with the user; it is not a user request or an assistant reply. Use execution_read only when exact prior tool outcomes are needed before relying on resource identifiers or completion claims. For older work use history_search/read to recover run IDs. Recorded outcomes are historical observations; use the relevant business tool to check live status. A missing result does not prove an action did not occur."}
 }
 
 func appendConversationHistoryMessages(messages []agentsdk.ConversationModelMessage, history []agentsdk.ConversationMessage, executionLinks bool) []agentsdk.ConversationModelMessage {
+	if executionLinks {
+		if locator := conversationExecutionLinkMessage(history); locator.Content != "" {
+			// Context sources and fork data may already have contributed public
+			// conversation messages. Insert before the first non-system message so
+			// Messages-style providers still receive one valid leading system block.
+			leading := 0
+			for leading < len(messages) && messages[leading].Role == "system" {
+				leading++
+			}
+			messages = append(messages, agentsdk.ConversationModelMessage{})
+			copy(messages[leading+1:], messages[leading:])
+			messages[leading] = locator
+		}
+	}
 	for _, message := range history {
 		messages = append(messages, agentsdk.ConversationModelMessage{Role: message.Role, Content: message.Content, ContentBlocks: cloneConversationContentBlocks(message.ContentBlocks)})
-		if executionLinks && message.Role == "assistant" && message.RunID != "" {
-			messages = append(messages, conversationExecutionLinkMessage(message))
-		}
 	}
 	return messages
 }
