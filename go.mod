@@ -3,7 +3,7 @@ module github.com/domainry/domainry-agent
 go 1.26.0
 
 require (
-	github.com/domainry/domainry-agent-sdk v0.1.46
+	github.com/domainry/domainry-agent-sdk v0.1.47
 	github.com/domainry/domainry-foundation v0.2.9
 	github.com/domainry/domainry-identity-sdk v0.1.27
 	github.com/domainry/domainry-lifecycle-sdk v0.1.25
@@ -22,7 +22,6 @@ require (
 	github.com/domainry/domainry-integration-sdk v0.1.19 // indirect
 	github.com/domainry/domainry-knowledge-sdk v0.1.19 // indirect
 	github.com/domainry/domainry-report-sdk v0.1.21 // indirect
-	github.com/domainry/domainry-todo-sdk v0.1.12 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
