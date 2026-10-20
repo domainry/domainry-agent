@@ -65,10 +65,8 @@ github.com/domainry/domainry-connectors v0.1.13 h1:pNkEXm2ySyrOWBvr+95rCH7kHI9pb
 github.com/domainry/domainry-connectors v0.1.13/go.mod h1:NhyPDMHM1wgkaYBGnWiupwulR3esRUYcUDTJ1HBr35g=
 github.com/domainry/domainry-data-exchange-sdk v0.3.13 h1:27L4u1ysgDMM13xID8Y1qs0vojtqZEgqftrQ55rWjW4=
 github.com/domainry/domainry-data-exchange-sdk v0.3.13/go.mod h1:k0g620qOQr1BsXnh/ThF8BRNW+J7N5+yjz2AayeYrPI=
-github.com/domainry/domainry-foundation v0.2.2 h1:XWugH7DFB4YU0mI5nBxSdNxg9C4AXaiw9haZIbzB+ss=
-github.com/domainry/domainry-foundation v0.2.2/go.mod h1:nCw272N/NTkHfJNWvAGL8vZybUtOpgw3ZyCIshRSqF4=
-github.com/domainry/domainry-foundation v0.2.5 h1:3FQwbJzuaxXJosZL+r5KXDnmpNyhZyXb/zqBZzQR+GY=
-github.com/domainry/domainry-foundation v0.2.5/go.mod h1:nCw272N/NTkHfJNWvAGL8vZybUtOpgw3ZyCIshRSqF4=
+github.com/domainry/domainry-foundation v0.2.6 h1:mmsetHOhRXL0GSN3JSMP7p5o3IOlnrG3dLEPEY6d75E=
+github.com/domainry/domainry-foundation v0.2.6/go.mod h1:nCw272N/NTkHfJNWvAGL8vZybUtOpgw3ZyCIshRSqF4=
 github.com/domainry/domainry-identity v0.2.46 h1:eRRW89fcookuO2MqyuCel0EeDQsoOC0wUZHhvgWGAIQ=
 github.com/domainry/domainry-identity v0.2.46/go.mod h1:5laIJsHFIrezLd08dDOu5eV9a1ByXjzZAfYFHS3nEjg=
 github.com/domainry/domainry-identity-bridge v0.1.12 h1:dzstnuC0LSrqNin8Qll0zRr74jvtcloKkzQ+pZbhUPM=
@@ -103,8 +101,6 @@ github.com/domainry/domainry-todo-sdk v0.1.10 h1:FMVIRpobipiWHFHFfesC+hApUjSDT20
 github.com/domainry/domainry-todo-sdk v0.1.10/go.mod h1:cVRWKvWrjIbwDX4EN+BgHQunHtW2eedRbMcsfbM0eCQ=
 github.com/domainry/domainry-tools v0.1.17 h1:mVoRd2CAEI471Cb8K/g2ProZbFOPsJX3AYZgifBTS1o=
 github.com/domainry/domainry-tools v0.1.17/go.mod h1:fqb7fTvzL2eo/27WWdcDPh2yfWuGeaaibrzY7+Z9Dh0=
-github.com/domainry/domainry-tools-sdk v0.1.17 h1:G+jCvnuDO3rAwg3WtYnY6HyTgqbbNbHdLEYqsSTL+y4=
-github.com/domainry/domainry-tools-sdk v0.1.17/go.mod h1:F0pJ1hKB6A5dYKaG3REOdaJ7ayB6WAn8utYHV3afhUs=
 github.com/domainry/domainry-tools-sdk v0.1.18 h1:AFpw3GzYEnfZxZKNw35f6X3hFsSJL9bjYf7Sqy80tn4=
 github.com/domainry/domainry-tools-sdk v0.1.18/go.mod h1:xq5m45XBmB4uJOWP8EPwbyrBdv2i0CVPjI/sMDF3ZlU=
 github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=

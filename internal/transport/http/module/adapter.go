@@ -372,7 +372,7 @@ func writeError(w http.ResponseWriter, err error) {
 			status = http.StatusServiceUnavailable
 		}
 	}
-	telemetry.RecordHTTPStatusError(w, status, code)
+	telemetry.RecordHTTPStatusError(w, status, code, err)
 	writeJSON(w, status, map[string]string{"code": code})
 }
 

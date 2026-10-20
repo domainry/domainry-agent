@@ -33,7 +33,7 @@ func writeRepositoryError(w http.ResponseWriter, err error) {
 			code, class, retryable = failure.Code, failure.Class, failure.Retryable
 		}
 	}
-	telemetry.RecordHTTPStatusError(w, status, code)
+	telemetry.RecordHTTPStatusError(w, status, code, err)
 	writeJSON(w, status, struct {
 		Code      string `json:"code"`
 		Class     string `json:"class"`
