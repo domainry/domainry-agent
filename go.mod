@@ -3,14 +3,14 @@ module github.com/domainry/domainry-agent
 go 1.26.0
 
 require (
-	github.com/domainry/domainry-agent-sdk v0.1.45
-	github.com/domainry/domainry-connector-sdk v0.1.9
-	github.com/domainry/domainry-connectors v0.1.13
+	github.com/domainry/domainry-agent-sdk v0.1.46
+	github.com/domainry/domainry-connector-sdk v0.1.11
+	github.com/domainry/domainry-connectors v0.1.16
 	github.com/domainry/domainry-foundation v0.2.9
-	github.com/domainry/domainry-identity v0.2.46
-	github.com/domainry/domainry-identity-bridge v0.1.12
-	github.com/domainry/domainry-identity-sdk v0.1.26
-	github.com/domainry/domainry-lifecycle-sdk v0.1.23
+	github.com/domainry/domainry-identity v0.2.52
+	github.com/domainry/domainry-identity-bridge v0.1.16
+	github.com/domainry/domainry-identity-sdk v0.1.27
+	github.com/domainry/domainry-lifecycle-sdk v0.1.25
 	github.com/domainry/domainry-orm v0.1.33
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3
@@ -25,11 +25,11 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.20.0 // indirect
 	github.com/crewjam/saml v0.5.1 // indirect
-	github.com/domainry/domainry-audit v0.1.31
-	github.com/domainry/domainry-audit-sdk v0.1.14 // indirect
-	github.com/domainry/domainry-data-exchange-sdk v0.3.13 // indirect
-	github.com/domainry/domainry-metadata v0.1.23
-	github.com/domainry/domainry-metadata-sdk v0.1.10
+	github.com/domainry/domainry-audit v0.1.37
+	github.com/domainry/domainry-audit-sdk v0.1.15 // indirect
+	github.com/domainry/domainry-data-exchange-sdk v0.3.14 // indirect
+	github.com/domainry/domainry-metadata v0.1.28
+	github.com/domainry/domainry-metadata-sdk v0.1.11
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -71,23 +71,23 @@ require (
 )
 
 require (
-	github.com/domainry/domainry-todo v0.1.18
-	github.com/domainry/domainry-tools v0.1.17
-	github.com/domainry/domainry-tools-sdk v0.1.18
+	github.com/domainry/domainry-todo v0.1.24
+	github.com/domainry/domainry-tools v0.1.22
+	github.com/domainry/domainry-tools-sdk v0.1.19
 )
 
 require (
-	github.com/domainry/domainry-integration v0.1.41
-	github.com/domainry/domainry-integration-sdk v0.1.18
-	github.com/domainry/domainry-knowledge v0.1.41
-	github.com/domainry/domainry-knowledge-sdk v0.1.18
-	github.com/domainry/domainry-report-sdk v0.1.19
-	github.com/domainry/domainry-todo-sdk v0.1.11
+	github.com/domainry/domainry-integration v0.1.48
+	github.com/domainry/domainry-integration-sdk v0.1.19
+	github.com/domainry/domainry-knowledge v0.1.42
+	github.com/domainry/domainry-knowledge-sdk v0.1.19
+	github.com/domainry/domainry-report-sdk v0.1.21
+	github.com/domainry/domainry-todo-sdk v0.1.12
 )
 
 require cloud.google.com/go/compute/metadata v0.9.0 // indirect
 
 require (
-	github.com/domainry/domainry-notification-sdk v0.1.14 // indirect
-	github.com/domainry/domainry-scheduler-sdk v0.1.16
+	github.com/domainry/domainry-notification-sdk v0.1.16 // indirect
+	github.com/domainry/domainry-scheduler-sdk v0.1.18
 )
