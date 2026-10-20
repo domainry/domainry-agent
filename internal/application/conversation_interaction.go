@@ -3,11 +3,11 @@ package application
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	persistence "github.com/domainry/domainry-agent-sdk/persistence"
+	workerplatform "github.com/domainry/domainry-foundation/worker"
 )
 
 var errConversationWaiting = errors.New("conversation execution is durably waiting")
@@ -134,35 +134,22 @@ func (s *ConversationService) Respond(ctx context.Context, id, runID string, res
 		if err := s.authorizeConversationExecution(ctx, id, runID, "respond", a); err != nil {
 			return agentsdk.ConversationRun{}, err
 		}
-		if err := s.checkRunSources(ctx, agentsdk.ConversationRunReference{ConversationID: id, RunID: runID}, a); err != nil {
-			return agentsdk.ConversationRun{}, conversationFailure("forbidden", "source_access_unavailable")
-		}
 	}
 	out, err := repo.RespondExecution(ctx, id, runID, response, a)
 	if err == nil {
 		s.signal()
-		out = s.projectConversationRun(ctx, out, a)
 	}
 	return out, err
 }
 
 func (s *ConversationService) expireConversationInteractions(ctx context.Context, repo persistence.ConversationInteractionRepository) {
 	defer s.wg.Done()
-	ticker := time.NewTicker(max(50*time.Millisecond, min(s.options.Poll, time.Minute)))
-	defer ticker.Stop()
-	failed := false
-	for {
-		_, err := repo.ExpireInteractions(ctx, s.runtimeID, 100)
-		if err != nil && !failed && ctx.Err() == nil {
-			slog.Warn("conversation interaction expiration unavailable")
-		}
-		failed = err != nil
-		select {
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-		}
-	}
+	interval := max(50*time.Millisecond, min(s.options.Poll, time.Minute))
+	done := workerplatform.StartNamedLoop(ctx, workerplatform.Identity{Owner: "agent", Name: "conversation_interaction_expiration"}, interval, func(tickCtx context.Context) (workerplatform.TickResult, error) {
+		processed, err := repo.ExpireInteractions(tickCtx, s.runtimeID, 100)
+		return workerplatform.TickResult{Worked: processed > 0, ProcessedCount: processed}, err
+	})
+	<-done
 }
 
 var _ agentsdk.ConversationInteractionService = (*ConversationService)(nil)

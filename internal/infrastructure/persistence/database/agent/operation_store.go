@@ -9,7 +9,7 @@ import (
 )
 
 func agentOperationCommand(kind, action, clientID string, input any, a agentsdk.ConversationAuthority) sharedoperation.Command {
-	key := conversationOwner(a) + ":" + conversationHash(clientID)
+	key := conversationHash([]string{conversationOwner(a), clientID})
 	id := "agent-operation:" + conversationHash([]string{a.WorkspaceID, kind, key})
 	return sharedoperation.Command{
 		ID: id, Scope: sharedoperation.Scope{WorkspaceID: a.WorkspaceID, ResourceType: "agent_owner", ResourceID: conversationOwner(a)},

@@ -355,11 +355,13 @@ func runPrivateAttachmentIndexIdentityHTTP(t *testing.T, live *agentmodule.Knowl
 	}
 	assertSource(true)
 	grant("attachment_read")
-	assertSource(false)
+	// The owner's saved conversation remains an immutable historical snapshot.
+	// Revoking the live tool permission blocks new reads without rewriting it.
+	assertSource(true)
 	grant("")
 	assertSource(true)
 	grant("attachments_download")
-	assertSource(false)
+	assertSource(true)
 	b.call("GET", path+"/"+att.ID+"/content", "", 403)
 	grant("")
 	if err := host.Close(context.Background()); err != nil {

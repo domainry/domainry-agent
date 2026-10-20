@@ -105,10 +105,10 @@ func TestKnowledgeToolsUseLiveIdentityDocumentPermissionsAndStoredResultChecks(t
 			}
 			answer("已读取有权限的费用规则。[[cite:" + evidence.Citations[0].ID + "]]")
 		case last.CallID == "old":
-			if !strings.Contains(last.Content, "knowledge_access_denied") || strings.Contains(last.Content, "PRIVATE-FINANCE-EVIDENCE") {
-				t.Error("revoked saved data reached model")
+			if !strings.Contains(last.Content, "PRIVATE-FINANCE-EVIDENCE") || strings.Contains(last.Content, "knowledge_access_denied") {
+				t.Error("owner's immutable saved result was rewritten after revocation")
 			}
-			answer("该资料权限已变化，当前无法读取。")
+			answer("已读取所有者会话中保存的历史结果；这不会重新访问资料源。")
 		default:
 			if strings.Contains(last.Content, "PRIVATE-FINANCE-EVIDENCE") {
 				t.Error("private source exposed without document grant")
@@ -220,25 +220,29 @@ func TestKnowledgeToolsUseLiveIdentityDocumentPermissionsAndStoredResultChecks(t
 	})
 	grant(false)
 	send("revoked", "重新读取刚才的原始结果")
+	revokedSearch := send("revoked-search", "查费用规则")
+	if len(revokedSearch.Steps) != 2 || len(revokedSearch.Steps[0].Calls[0].Citations) != 0 {
+		t.Fatal("revocation did not block a new Knowledge read", revokedSearch)
+	}
 	var restricted agentsdk.ConversationRun
 	_ = json.Unmarshal(b.call("GET", base+"/runs/"+private.ID, "", 200).Body.Bytes(), &restricted)
-	if restricted.AccessError == "" || restricted.DraftText != "" || len(restricted.Steps) != 0 || restricted.Interaction != nil {
-		t.Fatal("HTTP run view retained revoked source data")
+	if restricted.AccessError != "" || len(restricted.Steps) != 3 || len(restricted.Steps[1].Calls[0].Citations) != 1 {
+		t.Fatal("HTTP run view rewrote the owner's saved history", restricted)
 	}
-	blockedStream := b.call("GET", base+"/runs/"+private.ID+"/events/stream?scope="+b.scope, "", 403).Body.String()
-	if strings.Contains(blockedStream, "PRIVATE-FINANCE-EVIDENCE") || !strings.Contains(blockedStream, "source_access_unavailable") {
-		t.Fatal("HTTP SSE authorization did not protect saved events")
+	historicalStream := b.call("GET", base+"/runs/"+private.ID+"/events/stream?scope="+b.scope, "", 200).Body.String()
+	if !strings.Contains(historicalStream, citation.ID) {
+		t.Fatal("HTTP SSE rewrote the owner's saved events")
 	}
 	var page agentsdk.ConversationMessagePage
 	_ = json.Unmarshal(b.call("GET", base+"/messages", "", 200).Body.Bytes(), &page)
 	foundRestricted := false
 	for _, message := range page.Items {
 		if message.Role == "assistant" && message.RunID == private.ID {
-			foundRestricted = message.AccessError != "" && len(message.Citations) == 0
+			foundRestricted = message.AccessError == "" && len(message.Citations) == 1 && strings.Contains(message.Content, "[[cite:"+citation.ID+"]]")
 		}
 	}
 	if !foundRestricted {
-		t.Fatal("HTTP history did not mark the unavailable source")
+		t.Fatal("HTTP history rewrote the owner's saved citation")
 	}
 	grant(true)
 	var restored agentsdk.ConversationRun

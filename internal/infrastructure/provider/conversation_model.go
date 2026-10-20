@@ -24,6 +24,7 @@ const (
 	ConversationProtocolChat       = "chat_completions"
 	ConversationProtocolMessages   = "messages"
 	ConversationProtocolResponses  = "responses"
+	conversationIDHeader           = "x-conversation-id"
 )
 
 // URL is a complete endpoint override. BaseURL supplies a configured service
@@ -207,12 +208,12 @@ func (m *ConversationModel) request(ctx context.Context, in agentsdk.Conversatio
 		payload["max_output_tokens"] = m.config.MaxOutputTokens
 		payload["store"] = false
 	}
-	return m.sendConversationPayload(ctx, payload, in.IdempotencyKey, stream)
+	return m.sendConversationPayload(ctx, payload, in.IdempotencyKey, in.ConversationID, stream)
 }
 
 // Text and tool-capable requests share authentication, cancellation, redirect
 // policy and transport error handling; their wire contracts remain separate.
-func (m *ConversationModel) sendConversationPayload(ctx context.Context, payload map[string]any, idempotencyKey string, stream bool) (*http.Response, error) {
+func (m *ConversationModel) sendConversationPayload(ctx context.Context, payload map[string]any, idempotencyKey, conversationID string, stream bool) (*http.Response, error) {
 	raw, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
@@ -228,6 +229,9 @@ func (m *ConversationModel) sendConversationPayload(ctx context.Context, payload
 	}
 	if idempotencyKey != "" {
 		req.Header.Set("Idempotency-Key", idempotencyKey)
+	}
+	if m.config.Provider == ConversationProviderGateway && strings.TrimSpace(conversationID) != "" {
+		req.Header.Set(conversationIDHeader, strings.TrimSpace(conversationID))
 	}
 	if m.config.APIKey != "" {
 		if m.config.Provider == ConversationProviderGateway || m.config.Protocol == ConversationProtocolMessages {

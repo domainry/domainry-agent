@@ -38,7 +38,7 @@ func TestKnowledgeDatasourceCatalogIsolationAndImmutableConfiguration(t *testing
 		t.Fatal(err)
 	}
 	first, err := catalog.OpenKnowledgeDatasource(t.Context(), "approved", scope)
-	if err != nil || first.KnowledgeDocumentManagementReady() != nil || first.KnowledgeDocumentMaxBytes() != 10<<20 {
+	if err != nil || first.KnowledgeDocumentManagementReady() != nil || first.KnowledgeDocumentIndexMaximumBytes() != 10<<20 {
 		t.Fatal(err)
 	}
 	policy := first.KnowledgeDocumentAccessPolicySHA256()

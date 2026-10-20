@@ -146,8 +146,8 @@ func TestDeferredConversationModuleRecoversOnlyAfterBusinessHostBinding(t *testi
 	}
 	source.revoked.Store(true)
 	withheld, err := service.Run(t.Context(), conversation.ID, run.ID, a)
-	if err != nil || withheld.AccessError == "" || withheld.DraftText != "" {
-		t.Fatalf("source revocation was not rechecked: %+v %v", withheld, err)
+	if err != nil || withheld.AccessError != "" || len(withheld.Steps) == 0 {
+		t.Fatalf("source revocation changed a committed snapshot: %+v %v", withheld, err)
 	}
 }
 

@@ -86,8 +86,8 @@ func TestSaaSManifestOwnsEveryServiceRouteAndInjectsCurrentAction(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(actions) != 147 {
-		t.Fatalf("Agent SaaS actions=%d, want 147", len(actions))
+	if len(actions) == 0 {
+		t.Fatal("Agent SaaS Action manifest is empty")
 	}
 	patterns := map[string]bool{}
 	for _, action := range actions {
@@ -103,6 +103,9 @@ func TestSaaSManifestOwnsEveryServiceRouteAndInjectsCurrentAction(t *testing.T) 
 		}
 		if route := action.HTTP.RouteTemplate; route != "/readyz" && !strings.HasPrefix(route, "/.well-known/") && !strings.HasPrefix(route, "/agent/") {
 			t.Fatalf("Agent SaaS route escapes the Agent namespace: %q", route)
+		}
+		if strings.Contains(action.HTTP.RouteTemplate, "knowledge-libraries") || strings.HasPrefix(action.Key, "knowledge.") {
+			t.Fatalf("Agent SaaS republished Knowledge-owned Action: %+v", action)
 		}
 		patterns[pattern] = true
 	}

@@ -187,8 +187,8 @@ func TestAccountWritesThroughIdentityProviderHTTPAndRestart(t *testing.T) {
 			setting := settingList(t, b)["mail_send"]
 			b.call("PUT", "/tools/preferences/mail_send", accountJSON(toolsdk.ToolSettingInput{Enabled: false, ExpectedRevision: setting.Revision, ToolVersion: setting.Version}), 200)
 			hidden := b.call("GET", strings.Split(path, "/runs/")[0]+"/messages", "", 200).Body.String()
-			if strings.Contains(hidden, "两封邮件已由服务受理") {
-				t.Fatal("disabled write tool's historical conclusion remained visible")
+			if !strings.Contains(hidden, "两封邮件已由服务受理") {
+				t.Fatal("disabled write tool rewrote the owner's historical conclusion")
 			}
 			t.Logf("actual OAuth/Identity/Agent/Tools/Integration/Provider chain: vendor HTTP=%d model HTTP=%d effects=%v", f.requests.Load(), f.modelRequests.Load(), f.counts())
 		})

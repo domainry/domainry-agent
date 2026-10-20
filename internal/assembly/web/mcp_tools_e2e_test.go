@@ -289,8 +289,22 @@ func TestMCPToolsThroughAgentLedgerConfirmationAndRestart(t *testing.T) {
 	setting := settingList(t, browser)[toolsdk.MCPCallToolKey]
 	browser.call("PUT", "/tools/preferences/"+toolsdk.MCPCallToolKey, accountJSON(toolsdk.ToolSettingInput{Enabled: false, ExpectedRevision: setting.Revision, ToolVersion: setting.Version}), 200)
 	messagesPath := strings.Split(path, "/runs/")[0] + "/messages"
-	if visible := browser.call("GET", messagesPath, "", 200).Body.String(); strings.Contains(visible, "MCP 已确认找到记录 7") {
-		t.Fatal("disabled MCP result remained readable")
+	if visible := browser.call("GET", messagesPath, "", 200).Body.String(); !strings.Contains(visible, "MCP 已确认找到记录 7") {
+		t.Fatal("owner MCP history changed after the tool was disabled")
+	}
+	disabledConversation := accountDecode[sdk.Conversation](t, browser.call("POST", "/agent/conversations", accountJSON(map[string]string{"client_id": "mcp-disabled-flow"}), 200))
+	disabledRun := accountDecode[sdk.ConversationRun](t, browser.call("POST", "/agent/conversations/"+disabledConversation.ID+"/messages", accountJSON(map[string]string{"client_message_id": "disabled-start", "message": "再次使用 MCP 查找记录 7"}), 202))
+	disabledPath := "/agent/conversations/" + disabledConversation.ID + "/runs/" + disabledRun.ID
+	disabledRun = waitAccountWriteRun(t, browser, disabledPath, "completed")
+	if fixture.effects.Load() != before || disabledRun.Interaction != nil {
+		t.Fatalf("disabled MCP tool started a new effect: effects=%d run=%+v", fixture.effects.Load(), disabledRun)
+	}
+	for _, step := range disabledRun.Steps {
+		for _, call := range step.Calls {
+			if call.Name == toolsdk.MCPCallToolKey && call.Status == "completed" {
+				t.Fatal("disabled MCP call completed")
+			}
+		}
 	}
 	if fixture.modelRequests.Load() < 4 {
 		t.Fatalf("model sequence incomplete: %d", fixture.modelRequests.Load())

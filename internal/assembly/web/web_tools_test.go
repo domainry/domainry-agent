@@ -87,8 +87,8 @@ func TestWebProductIdentityReportSourcesAndRestart(t *testing.T) {
 		for _, m := range messages.Items {
 			if m.Role == "assistant" {
 				found = true
-				if m.AccessError == "" || strings.Contains(m.Content, "WEB-BODY") {
-					t.Fatal("retained source exposed")
+				if m.AccessError != "" || !strings.Contains(m.Content, "WEB-BODY") {
+					t.Fatal("owner's saved web answer was rewritten")
 				}
 			}
 		}

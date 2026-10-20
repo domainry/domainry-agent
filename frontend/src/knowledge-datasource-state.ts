@@ -14,12 +14,12 @@ export function parsePendingDatasource(raw: string | null): PendingDatasource | 
   } catch { return null; }
 }
 export async function readLibrarySources(library: string, after: string, signal: AbortSignal): Promise<LibrarySources> {
-  const page = await request<LibrarySources>(`/agent/knowledge-libraries/${encodeURIComponent(library)}/sources?${new URLSearchParams({ after, limit: "10" })}`, "GET", undefined, signal);
+  const page = await request<LibrarySources>(`/knowledge/libraries/${encodeURIComponent(library)}/sources?${new URLSearchParams({ after, limit: "10" })}`, "GET", undefined, signal);
   if (!page || page.library_id !== library || !Number.isSafeInteger(page.revision) || page.revision < 1 || !["unbound", "connected", "unavailable", "host_managed"].includes(page.status) || !Array.isArray(page.items) || page.items.length > 10 || page.items.some(item => !item || typeof item.key !== "string" || !sourceKey.test(item.key) || typeof item.name !== "string" || !item.name || typeof item.available !== "boolean") || typeof page.complete !== "boolean" || typeof page.can_bind !== "boolean" || new Set(page.items.map(item => item.key)).size !== page.items.length || page.current_key !== undefined && (typeof page.current_key !== "string" || !sourceKey.test(page.current_key)) || page.next_after !== undefined && (typeof page.next_after !== "string" || !sourceKey.test(page.next_after)) || (!page.complete && !page.next_after) || (page.complete && !!page.next_after)) throw new ApiError("agent.conversation.datasource_response_invalid");
   return page;
 }
 export async function bindLibrarySource(library: string, pending: PendingDatasource, signal: AbortSignal): Promise<KnowledgeLibrary> {
-  const result = await request<KnowledgeLibrary>(`/agent/knowledge-libraries/${encodeURIComponent(library)}/source`, "PUT", pending, signal);
+  const result = await request<KnowledgeLibrary>(`/knowledge/libraries/${encodeURIComponent(library)}/source`, "PUT", pending, signal);
   if (!result || result.id !== library || result.datasource_key !== pending.datasource_key || !result.knowledge_configured || !result.documents_configured || !Number.isSafeInteger(result.revision) || result.revision < 1) throw new ApiError("agent.conversation.datasource_response_invalid");
   return result;
 }

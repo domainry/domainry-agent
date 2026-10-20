@@ -163,9 +163,6 @@ func (s *ConversationService) readConversationContextSource(ctx context.Context,
 	if err = source.AuthorizeConversationContext(ctx, request, reference); err != nil {
 		return agentsdk.ConversationStepMessage{}, agentsdk.ConversationContextSourceReference{}, err
 	}
-	if _, err = s.sourceAudit(claim.Authority, claim.Run.ConversationID).sources(ctx, &agentsdk.ConversationSources{Version: 1, Runs: reference.Sources}); err != nil {
-		return agentsdk.ConversationStepMessage{}, agentsdk.ConversationContextSourceReference{}, err
-	}
 	return message, reference, nil
 }
 
@@ -295,9 +292,6 @@ func (s *ConversationService) refreshConversationContextSources(ctx context.Cont
 			if err = configured.AuthorizeConversationContext(ctx, request, previous); err != nil {
 				return input, err
 			}
-			if _, err = s.sourceAudit(claim.Authority, claim.Run.ConversationID).sources(ctx, &agentsdk.ConversationSources{Version: 1, Runs: previous.Sources}); err != nil {
-				return input, err
-			}
 			message, reference = input.Messages[index], previous
 		}
 		updatedMessages, updatedReferences = append(updatedMessages, message), append(updatedReferences, reference)
@@ -373,14 +367,8 @@ func (s *ConversationService) authorizeRegisteredConversationContextSources(ctx 
 }
 
 func (s *ConversationService) reauthorizeConversationContextSources(ctx context.Context, claim persistence.ConversationClaim, manifest *agentsdk.ConversationContextManifest, messages []agentsdk.ConversationStepMessage, purpose string, step int) error {
-	roots, err := s.authorizeRegisteredConversationContextSources(ctx, claim, manifest, messages, purpose, step)
-	if err != nil {
-		return err
-	}
-	if _, err = s.sourceAudit(claim.Authority, claim.Run.ConversationID).sources(ctx, &agentsdk.ConversationSources{Version: 1, Runs: roots}); err != nil {
-		return err
-	}
-	return nil
+	_, err := s.authorizeRegisteredConversationContextSources(ctx, claim, manifest, messages, purpose, step)
+	return err
 }
 
 func updateConversationContextHashes(input *agentsdk.ConversationStepRequest) {

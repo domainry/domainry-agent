@@ -250,8 +250,8 @@ func TestArtifactToolsThroughIdentityHTTP(t *testing.T) {
 	b.call("GET", path, "", 403)
 	var restricted agentsdk.ConversationRun
 	_ = json.Unmarshal(b.call("GET", base+"/runs/"+created.ID, "", 200).Body.Bytes(), &restricted)
-	if restricted.AccessError == "" || len(restricted.Steps) != 0 {
-		t.Fatal("revoked artifact still exposed in execution history")
+	if restricted.AccessError != "" || len(restricted.Steps) == 0 {
+		t.Fatal("artifact revocation rewrote the owner's execution history")
 	}
 	grant("")
 	// Seed additional content types for the optional real browser acceptance.

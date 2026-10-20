@@ -120,10 +120,13 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 				}
 			}
 			runSteps := byVersion[3]
-			for _, fragment := range []string{conversationRunStepTable, "record_kind", "step_no", "call_key"} {
+			for _, fragment := range []string{conversationRunStepTable, conversationStepInputTable, conversationToolCallTable, conversationToolCatalogTable, conversationStepSourceTable, "source_context_json", "tools_hash", "source_run_id", "step_no", "call_key"} {
 				if !strings.Contains(runSteps, fragment) {
 					t.Fatalf("missing unified Agent run-step field %s", fragment)
 				}
+			}
+			if strings.Contains(runSteps, "record_kind") {
+				t.Fatal("execution still mixes steps, calls and sources in one physical table")
 			}
 			for _, retired := range []string{"_agent_conversation_steps", "_agent_conversation_tool_calls", "_agent_conversation_step_sources"} {
 				if strings.Contains(runSteps+"\n"+byVersion[24], retired) {
@@ -143,7 +146,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 					t.Fatalf("Agent migration still owns Todo table %s", foreign)
 				}
 			}
-			for _, foreign := range []string{"_agent_artifacts", "_agent_artifact_versions", "_agent_artifact_mutations", "_agent_knowledge_libraries", "_agent_knowledge_library_members", "_agent_knowledge_documents", "_agent_knowledge_sources", "_agent_knowledge_document_sources", "_agent_knowledge_document_jobs", "_agent_knowledge_datasource_bindings", "_agent_attachment_knowledge_sources", "_agent_attachment_index_jobs", "_knowledge_owner_operation_receipts"} {
+			for _, foreign := range []string{"_knowledge_conversation_artifacts", "_knowledge_conversation_artifact_versions", "_knowledge_libraries", "_knowledge_library_members", "_knowledge_documents", "_knowledge_sources", "_knowledge_document_jobs", "_knowledge_attachment_index_jobs"} {
 				if strings.Contains(joinedAll, foreign) {
 					t.Fatalf("Agent migration still owns Knowledge table %s", foreign)
 				}

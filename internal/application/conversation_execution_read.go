@@ -56,7 +56,26 @@ func appendConversationHistoryMessages(messages []agentsdk.ConversationModelMess
 	return messages
 }
 
+// These reads come from repositories scoped to the authenticated owner's
+// workspace/conversation. Reading their immutable receipts does not reexecute
+// the original business tool. Explicit peer/publication reads use their own
+// authorization path, not this owner-only snapshot reader.
+func (s *ConversationService) authorizeOwnedExecutionSnapshot(ctx context.Context, conversationID string, source persistence.ConversationToolExecution, a agentsdk.ConversationAuthority, recipient string) error {
+	if recipient == conversationID {
+		return nil
+	}
+	if privateAttachmentCall(source.Call) || privateRemoteAttachmentCall(source.Call) {
+		return conversationFailure("forbidden", "attachment_conversation_mismatch")
+	}
+	return s.authorizeCollaborationConversation(ctx, conversationID, "execution_read", a)
+}
+
 func (s *ConversationService) authorizeConversationRecord(ctx context.Context, conversationID, runID string, source persistence.ConversationToolExecution, a agentsdk.ConversationAuthority, current map[string]conversationCompiledTool, seen map[string]bool, recipient string) error {
+	// Owner-scoped repositories have already authorized this snapshot read.
+	// Reading a committed result is not executing its original tool again.
+	if recipient == conversationID {
+		return nil
+	}
 	if recipient != "" && recipient != conversationID && (privateAttachmentCall(source.Call) || privateRemoteAttachmentCall(source.Call)) {
 		return conversationFailure("forbidden", "attachment_conversation_mismatch")
 	}
@@ -189,13 +208,9 @@ func (s *ConversationService) readConversationExecution(ctx context.Context, in 
 	if err != nil {
 		return executionReadFailure(err)
 	}
-	_, current, err := s.executionCatalog(ctx, in.Authority)
-	if err != nil {
-		return executionReadFailure(err)
-	}
 	out := agentsdk.ConversationExecutionReadResult{ConversationID: args.ConversationID, RunID: args.RunID, RunStatus: page.RunStatus, Items: []agentsdk.ConversationExecutionEntry{}, NextCursor: page.NextCursor, Complete: page.Complete}
 	for _, source := range page.Items {
-		if err = s.authorizeConversationRecord(ctx, args.ConversationID, args.RunID, source, in.Authority, current, map[string]bool{}, in.ConversationID); err != nil {
+		if err = s.authorizeOwnedExecutionSnapshot(ctx, args.ConversationID, source, in.Authority, in.ConversationID); err != nil {
 			var coded *agentsdk.Error
 			if errors.As(err, &coded) && (coded.Class == "forbidden" || coded.Class == "conflict" || coded.Class == "not_found") {
 				out.Omitted = true

@@ -20,9 +20,9 @@ type sourceAuditEntry struct {
 	err   error
 }
 
-// Per-read cache only. No authorization decision survives a public request or
-// a model call. Flattening inherited roots keeps ordinary follow-up turns from
-// forming an ever-growing chain of references to the same document lookup.
+// Explicit cross-agent releases retain their own current sharing/resource
+// boundary. This audit is not used for ordinary owner history, model inputs,
+// tool preflight or event pages. Its cache never outlives one scoped read.
 type conversationSourceAudit struct {
 	collaboration  map[string]agentsdk.ConversationCollaborationAccess
 	s              *ConversationService
@@ -32,7 +32,7 @@ type conversationSourceAudit struct {
 	records        map[string]bool
 	conversationID string                          // model consumer; empty only for explicit user reads
 	evidenceOwner  *agentsdk.ConversationAuthority // immutable ledger routing only
-	modelRecords   *conversationModelSourceRecords
+	productReads   map[string][]agentsdk.ConversationRunReference
 }
 
 func (s *ConversationService) sourceAudit(a agentsdk.ConversationAuthority, conversationID ...string) *conversationSourceAudit {
@@ -40,7 +40,7 @@ func (s *ConversationService) sourceAudit(a agentsdk.ConversationAuthority, conv
 	if len(conversationID) > 0 {
 		consumer = conversationID[0]
 	}
-	return &conversationSourceAudit{collaboration: map[string]agentsdk.ConversationCollaborationAccess{}, s: s, a: a, conversationID: consumer, cache: map[string]sourceAuditEntry{}, reading: map[agentsdk.ConversationRunReference]bool{}, records: map[string]bool{}}
+	return &conversationSourceAudit{collaboration: map[string]agentsdk.ConversationCollaborationAccess{}, s: s, a: a, conversationID: consumer, cache: map[string]sourceAuditEntry{}, reading: map[agentsdk.ConversationRunReference]bool{}, records: map[string]bool{}, productReads: map[string][]agentsdk.ConversationRunReference{}}
 }
 
 func mergeConversationSources(groups ...[]agentsdk.ConversationRunReference) []agentsdk.ConversationRunReference {
@@ -66,14 +66,19 @@ func mergeConversationSources(groups ...[]agentsdk.ConversationRunReference) []a
 	return out
 }
 
-func (audit *conversationSourceAudit) sources(ctx context.Context, sources *agentsdk.ConversationSources) ([]agentsdk.ConversationRunReference, error) {
+func (audit *conversationSourceAudit) sources(ctx context.Context, sources *agentsdk.ConversationSources) (roots []agentsdk.ConversationRunReference, err error) {
+	ctx, finish := audit.s.beginSourceAuthorizationEvaluation(ctx)
+	defer func() {
+		if checkErr := finish(); err == nil && checkErr != nil {
+			roots, err = nil, checkErr
+		}
+	}()
 	if sources == nil {
 		return nil, nil
 	}
 	if sources.Version != 1 || len(sources.Runs) > 256 || len(sources.Omitted) > 256 {
 		return nil, conversationFailure("unavailable", "source_reference_invalid")
 	}
-	var roots []agentsdk.ConversationRunReference
 	for _, ref := range sources.Runs {
 		part, err := audit.run(ctx, ref)
 		if err != nil {
@@ -111,6 +116,12 @@ func (audit *conversationSourceAudit) authorizeRegisteredContexts(ctx context.Co
 }
 
 func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.ConversationRunReference) (roots []agentsdk.ConversationRunReference, err error) {
+	ctx, finish := audit.s.beginSourceAuthorizationEvaluation(ctx)
+	defer func() {
+		if checkErr := finish(); err == nil && checkErr != nil {
+			roots, err = nil, checkErr
+		}
+	}()
 	if ref.BeforeStep < 0 || ref.BeforeStep > 257 {
 		return nil, conversationFailure("unavailable", "source_reference_invalid")
 	}
@@ -353,9 +364,6 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 		if ref.BeforeStep > 0 && call.Step+1 >= ref.BeforeStep {
 			continue
 		}
-		if audit.deferModelSourceRecord(ctx, ref, snapshot.Authority, call) {
-			continue
-		}
 		part, e := audit.record(ctx, ref, call)
 		if e != nil {
 			return nil, e
@@ -367,8 +375,13 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 	return roots, nil
 }
 
-func (audit *conversationSourceAudit) history(ctx context.Context, id string, through int64) ([]agentsdk.ConversationRunReference, error) {
-	var roots []agentsdk.ConversationRunReference
+func (audit *conversationSourceAudit) history(ctx context.Context, id string, through int64) (roots []agentsdk.ConversationRunReference, err error) {
+	ctx, finish := audit.s.beginSourceAuthorizationEvaluation(ctx)
+	defer func() {
+		if checkErr := finish(); err == nil && checkErr != nil {
+			roots, err = nil, checkErr
+		}
+	}()
 	var after int64
 	for page := 0; page < 256 && after < through; page++ {
 		messages, err := audit.s.repo.History(ctx, id, after, through, 1000, audit.evidenceAuthority(agentsdk.ConversationRunReference{ConversationID: id}))
@@ -468,7 +481,7 @@ func (audit *conversationSourceAudit) connectedTool(ctx context.Context, key str
 	return nil
 }
 
-func (audit *conversationSourceAudit) record(ctx context.Context, owner agentsdk.ConversationRunReference, record persistence.ConversationToolExecution) ([]agentsdk.ConversationRunReference, error) {
+func (audit *conversationSourceAudit) recordCurrent(ctx context.Context, owner agentsdk.ConversationRunReference, record persistence.ConversationToolExecution) ([]agentsdk.ConversationRunReference, error) {
 	if record.Result == nil || record.Result.Status != "completed" {
 		return nil, nil
 	}
@@ -925,29 +938,4 @@ func (s *ConversationService) checkRunSources(ctx context.Context, ref agentsdk.
 	defer cancel()
 	_, err := s.sourceAudit(a, ref.ConversationID).run(ctx, ref)
 	return err
-}
-
-func (s *ConversationService) projectConversationRun(ctx context.Context, run agentsdk.ConversationRun, a agentsdk.ConversationAuthority) agentsdk.ConversationRun {
-	if run.DraftText == "" && len(run.Steps) == 0 && run.Interaction == nil && run.Context == nil {
-		return run
-	}
-	if _, ok := s.repo.(persistence.ConversationSourceRepository); !ok {
-		return run
-	}
-	ctx, cancel := s.sourceAccessContext(ctx)
-	defer cancel()
-	if _, err := s.sourceAudit(a, run.ConversationID).run(ctx, agentsdk.ConversationRunReference{ConversationID: run.ConversationID, RunID: run.ID}); err != nil {
-		run.AccessError = sourceAccessCode(err)
-		run.DraftText = ""
-		run.DraftBytes = 0
-		run.Steps = nil
-		run.Context = nil
-		run.Interaction = nil
-		run.Audit = nil
-		run.AuditComplete = false
-		run.Usage = nil
-		run.Model = ""
-		run.Metrics = agentsdk.ConversationRunMetrics{}
-	}
-	return run
 }

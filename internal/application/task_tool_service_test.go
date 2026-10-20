@@ -122,7 +122,9 @@ func TestTaskExecutionNotifiesWorkflowAfterAgentTerminalState(t *testing.T) {
 		Reconciliation: agentmodel.AgentTaskReconciliation{Required: true, State: "workflow_callback_pending"},
 	}
 	state.run = run
-	service.notifyWorkflow(t.Context(), run)
+	if err := service.notifyWorkflow(t.Context(), run); err != nil {
+		t.Fatal(err)
+	}
 	if host.completion.TaskRunID != "task-1" || host.completion.ProcessID != "process-1" || host.completion.NodeInstanceID != "node-1" {
 		t.Fatalf("completion=%#v", host.completion)
 	}

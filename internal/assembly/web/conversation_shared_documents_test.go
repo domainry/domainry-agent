@@ -22,6 +22,7 @@ import (
 	webhttp "github.com/domainry/domainry-agent/internal/transport/http/web"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	identity "github.com/domainry/domainry-identity-sdk"
+	knowledgesdk "github.com/domainry/domainry-knowledge-sdk"
 )
 
 type sharedDocumentReaderModel struct{ peerWebModel }
@@ -122,7 +123,7 @@ func TestPeerSharedDocumentsUseExplicitKnowledgeCopyAndCurrentReadPermission(t *
 		}
 	}()
 	newBrowser := func() *browser {
-		h, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Files: fstest.MapFS{"index.html": {Data: []byte("chat")}}})
+		h, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Files: fstest.MapFS{"index.html": {Data: []byte("chat")}}, ModuleAdapters: knowledgeTestAdapters(t, host)})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -137,18 +138,13 @@ func TestPeerSharedDocumentsUseExplicitKnowledgeCopyAndCurrentReadPermission(t *
 		mutateTestRolePermissions(t, host, b, func(prior []identity.ProjectRolePermission) []identity.ProjectRolePermission {
 			out := []identity.ProjectRolePermission{}
 			for _, p := range prior {
-				if !strings.HasPrefix(p.PermissionKey, sdk.ConversationActionPrefix+"libraries_") && !strings.HasPrefix(p.PermissionKey, sdk.ConversationActionPrefix+"documents_") && !strings.HasPrefix(p.PermissionKey, sdk.ConversationActionPrefix+"attachments_") && !strings.HasPrefix(p.PermissionKey, sdk.ConversationToolActionPrefix+"knowledge_") {
+				if !strings.HasPrefix(p.PermissionKey, "knowledge.") && !strings.HasPrefix(p.PermissionKey, sdk.ConversationActionPrefix+"attachments_") && !strings.HasPrefix(p.PermissionKey, sdk.ConversationToolActionPrefix+"knowledge_") {
 					out = append(out, p)
 				}
 			}
+			out = appendKnowledgeRolePermissions(t, out, denied)
 			for _, d := range sdk.ConversationHTTPDefinitions() {
-				p := sdk.KnowledgeLibraryPermission(d.Operation)
-				if p == nil {
-					p = sdk.KnowledgeDocumentPermission(d.Operation)
-				}
-				if p == nil {
-					p = sdk.ConversationAttachmentPermission(d.Operation)
-				}
+				p := sdk.ConversationAttachmentPermission(d.Operation)
 				if p != nil && d.Operation != denied {
 					out = append(out, identity.ProjectRolePermission{PermissionKey: p.Key, DataScope: identity.DataScopeAll})
 				}
@@ -176,12 +172,12 @@ func TestPeerSharedDocumentsUseExplicitKnowledgeCopyAndCurrentReadPermission(t *
 		t.Fatalf("attachment upload: %d %s", w.Code, w.Body.String())
 	}
 	attachment := accountDecode[sdk.ConversationAttachment](t, w)
-	library := accountDecode[sdk.KnowledgeLibrary](t, b.call("POST", "/agent/knowledge-libraries", `{"client_id":"shared","kind":"shared","name":"委派共享资料库"}`, 200))
-	libraryPath := "/agent/knowledge-libraries/" + library.ID
+	library := accountDecode[sdk.KnowledgeLibrary](t, b.call("POST", "/knowledge/libraries", `{"client_id":"shared","kind":"shared","name":"委派共享资料库"}`, 201))
+	libraryPath := "/knowledge/libraries/" + library.ID
 	b.call("PUT", libraryPath+"/source", `{"datasource_key":"source","expected_revision":1}`, 200)
 	importBody := accountJSON(sdk.KnowledgeAttachmentImport{ClientID: "explicit-copy", ConversationID: source.ID, AttachmentID: attachment.ID, ExpectedRevision: attachment.Revision})
-	doc := accountDecode[sdk.KnowledgeDocument](t, b.call("POST", libraryPath+"/documents/from-attachment", importBody, 200))
-	if replay := accountDecode[sdk.KnowledgeDocument](t, b.call("POST", libraryPath+"/documents/from-attachment", importBody, 200)); replay.ID != doc.ID {
+	doc := accountDecode[sdk.KnowledgeDocument](t, b.call("POST", libraryPath+"/documents/import-attachment", importBody, 201))
+	if replay := accountDecode[sdk.KnowledgeDocument](t, b.call("POST", libraryPath+"/documents/import-attachment", importBody, 201)); replay.ID != doc.ID {
 		t.Fatal("import repeated copied file")
 	}
 	docPath := libraryPath + "/documents/" + doc.ID
@@ -210,7 +206,7 @@ func TestPeerSharedDocumentsUseExplicitKnowledgeCopyAndCurrentReadPermission(t *
 	setTestCollaborationPermissions(t, host, b, "view", "communicate", "receive", "execution_read")
 	b.call("POST", path+"/messages", accountJSON(in), 403)
 	setTestCollaborationPermissions(t, host, b, sdk.ConversationCollaborationOperations()...)
-	grant("documents_download")
+	grant(knowledgesdk.ActionDocumentsDownload)
 	b.call("POST", path+"/messages", accountJSON(in), 403)
 	grant("")
 	invalid := in
@@ -270,7 +266,7 @@ func TestPeerSharedDocumentsUseExplicitKnowledgeCopyAndCurrentReadPermission(t *
 	}
 	// A source revocation clears references and associated communication text,
 	// and blocks original execution history; the metadata view remains usable.
-	grant("documents_download")
+	grant(knowledgesdk.ActionDocumentsDownload)
 	setTestCollaborationPermissions(t, host, b, "view", "communicate", "share")
 	current := accountDecode[sdk.ConversationDelegationDetail](t, b.call("GET", path, "", 200))
 	for _, m := range current.Messages {
@@ -378,7 +374,7 @@ func exercisePeerSharedDocumentBrowser(t *testing.T, host *Host, b *browser, opt
 			}
 			if c.profile == "no-read" {
 				operations = []string{"view", "communicate", "share"}
-				grant("documents_download")
+				grant(knowledgesdk.ActionDocumentsDownload)
 			} else {
 				grant("")
 			}

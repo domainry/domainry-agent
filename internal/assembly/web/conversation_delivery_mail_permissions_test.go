@@ -173,10 +173,11 @@ func TestPeerDeliveryReadsMailWithoutToolExecutionPermission(t *testing.T) {
 		}
 	}
 	assertReadable()
-	// Even with collaboration execution_read, the direct raw-result endpoint
-	// still needs mail.read. Delivery source verification cannot authorize it.
+	// collaboration execution_read authorizes the owner's immutable saved
+	// receipt. Revoking mail.read still blocks every new provider operation;
+	// reading the receipt must not fetch the mailbox again.
 	setTestCollaborationPermissions(t, f.host, b, "view", "delivery_read", "execution_read")
-	b.call("POST", runPath+"/result", accountJSON(sdk.ConversationResultRead{Reference: ref, MaxBytes: 4096}), 403)
+	b.call("POST", runPath+"/result", accountJSON(sdk.ConversationResultRead{Reference: ref, MaxBytes: 4096}), 200)
 	setTestCollaborationPermissions(t, f.host, b, "view", "delivery_read")
 	// The same current user can read the delivery but a model-requested mail
 	// invocation is still rejected before any connector operation starts.
@@ -221,5 +222,5 @@ func TestPeerDeliveryReadsMailWithoutToolExecutionPermission(t *testing.T) {
 	if f.vendorCalls.Load() != 1 {
 		t.Fatal("revocation or source authorization made vendor calls")
 	}
-	t.Log("real mail HTTP once; delivery and receipt history readable after mail.read revocation and restart; raw execution denied; model invocation failed before vendor IO; tool disable, account data revocation and account revoke hide delivery")
+	t.Log("real mail HTTP once; delivery and receipt history survive mail.read revocation and restart; execution_read exposes only the immutable receipt; model invocation failed before vendor IO; tool disable, account data revocation and account revoke hide delivery")
 }

@@ -164,25 +164,11 @@ func TestConversationExecutionFreezesEachStepAndNeverReplaysCompletedWrites(t *t
 	if counts["step.started"] != 2 || counts["step.completed"] != 2 || counts["tool.started"] != 3 || counts["tool.completed"] != 2 || counts["tool.uncertain"] != 2 {
 		t.Fatalf("duplicate or missing committed events: %v", counts)
 	}
-	rows, err := store.Database().QueryContext(ctx, `SELECT record_kind, COUNT(*) FROM _agent_run_steps GROUP BY record_kind`)
-	if err != nil {
-		t.Fatal(err)
-	}
-	stored := map[string]int{}
-	for rows.Next() {
-		var kind string
+	for table, expected := range map[string]int{conversationRunStepTable: 2, conversationStepInputTable: 2, conversationToolCatalogTable: 1, conversationToolCallTable: 2, conversationStepSourceTable: 2} {
 		var count int
-		if err = rows.Scan(&kind, &count); err != nil {
-			rows.Close()
-			t.Fatal(err)
+		if err = store.Database().QueryRowContext(ctx, `SELECT COUNT(*) FROM `+table).Scan(&count); err != nil || count != expected {
+			t.Fatalf("split table %s rows=%d want=%d err=%v", table, count, expected, err)
 		}
-		stored[kind] = count
-	}
-	if err = rows.Close(); err != nil {
-		t.Fatal(err)
-	}
-	if stored[conversationRunStepKindStep] != 2 || stored[conversationRunStepKindTool] != 2 || stored[conversationRunStepKindSources] != 2 {
-		t.Fatalf("unified run-step kinds=%v", stored)
 	}
 	for _, retired := range []string{"_agent_conversation_steps", "_agent_conversation_tool_calls", "_agent_conversation_step_sources"} {
 		var count int

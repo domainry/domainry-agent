@@ -217,7 +217,7 @@ func TestExecutionCompactsStoredResultsAndResumesExactInput(t *testing.T) {
 	}
 }
 
-func TestResultReadReauthorizesOriginalAndNestedSourcesBeforeModel(t *testing.T) {
+func TestResultReadPreservesOriginalAndNestedOwnerSnapshots(t *testing.T) {
 	for _, nested := range []bool{false, true} {
 		t.Run(fmt.Sprintf("nested=%t", nested), func(t *testing.T) {
 			repo := conversationRepository(t)
@@ -263,12 +263,17 @@ func TestResultReadReauthorizesOriginalAndNestedSourcesBeforeModel(t *testing.T)
 				seed(&original, "nested-source")
 			}
 			host.mu.Lock()
-			host.revokeOnSourceRead = true
+			host.allowed = false
 			host.mu.Unlock()
 			model := &executionModel{}
 			model.step = func(number int, in agentsdk.ConversationStepRequest) (agentsdk.ConversationStepResult, error) {
 				if number > 1 {
-					t.Error("revoked source reached the next model request")
+					var result agentsdk.ConversationToolResult
+					last := in.Messages[len(in.Messages)-1]
+					if json.Unmarshal([]byte(last.Content), &result) != nil || result.Status != "completed" {
+						t.Error("owner snapshot was not returned", last.Content)
+					}
+					return executionAnswer("已读取历史结果，不代表当前业务状态。"), nil
 				}
 				return resultToolCall("tool_result_read", "read-private", agentsdk.ConversationResultRead{Reference: ref, MaxBytes: 256}), nil
 			}
@@ -286,20 +291,20 @@ func TestResultReadReauthorizesOriginalAndNestedSourcesBeforeModel(t *testing.T)
 				t.Fatal(err)
 			}
 			final := waitConversation(t, service, c.ID, run.ID)
-			if final.ErrorCode != "tool_access_denied" || len(final.Steps) == 0 || final.Steps[0].Calls[0].Status != "completed" {
-				t.Fatalf("original-source reauthorization missing: %+v", final)
+			if final.Status != "completed" || len(final.Steps) == 0 || final.Steps[0].Calls[0].Status != "completed" {
+				t.Fatalf("historical snapshot read failed: %+v", final)
 			}
 			model.mu.Lock()
 			calls := model.calls
 			model.mu.Unlock()
-			if calls != 1 {
+			if calls != 2 {
 				t.Fatalf("model requests=%d", calls)
 			}
 		})
 	}
 }
 
-func TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets(t *testing.T) {
+func TestResultReadKeepsReferenceIntegrityAndDoesNotReexecuteOriginalPermission(t *testing.T) {
 	repo := conversationRepository(t)
 	host := &resultHost{allowed: true, reader: true, payload: strings.Repeat("私有数据\n", 2000)}
 	seedModel := &executionModel{}
@@ -333,7 +338,7 @@ func TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets(t *te
 	}
 	full, _ := json.Marshal(stored.Result)
 	for _, tc := range []struct{ name, code string }{
-		{"hash", "result_reference_changed"}, {"missing", "result_not_found"}, {"version", "tool_changed"}, {"permission", "tool_access_denied"}, {"utf8", "result_offset_invalid"}, {"past_end", "result_offset_invalid"},
+		{"hash", "result_reference_changed"}, {"missing", "result_not_found"}, {"version", ""}, {"permission", ""}, {"utf8", "result_offset_invalid"}, {"past_end", "result_offset_invalid"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			args := agentsdk.ConversationResultRead{Reference: ref, MaxBytes: 256}
@@ -362,7 +367,11 @@ func TestResultReadRejectsStaleReferencesVersionsPermissionsAndUTF8Offsets(t *te
 				}
 				var result agentsdk.ConversationToolResult
 				last := in.Messages[len(in.Messages)-1]
-				if json.Unmarshal([]byte(last.Content), &result) != nil || result.Status != "failed" || result.ErrorCode != tc.code || strings.Contains(last.Content, "私有数据") {
+				expected := "failed"
+				if tc.code == "" {
+					expected = "completed"
+				}
+				if json.Unmarshal([]byte(last.Content), &result) != nil || result.Status != expected || result.ErrorCode != tc.code || tc.code != "" && strings.Contains(last.Content, "私有数据") {
 					t.Errorf("unexpected protected result: %s", last.Content)
 				}
 				return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "本次未读取到资料。"}, FinishReason: "stop"}, nil

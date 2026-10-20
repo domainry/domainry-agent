@@ -17,6 +17,7 @@ import (
 	webhttp "github.com/domainry/domainry-agent/internal/transport/http/web"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
+	knowledgesdk "github.com/domainry/domainry-knowledge-sdk"
 )
 
 type libraryKnowledgeWebModel struct{}
@@ -120,7 +121,7 @@ func TestLibraryKnowledgeIdentityMembershipHTTPAndRestart(t *testing.T) {
 		}
 	}()
 	newBrowser := func() *browser {
-		handler, e := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Files: fstest.MapFS{"index.html": {Data: []byte("chat")}}})
+		handler, e := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Files: fstest.MapFS{"index.html": {Data: []byte("chat")}}, ModuleAdapters: knowledgeTestAdapters(t, host)})
 		if e != nil {
 			t.Fatal(e)
 		}
@@ -133,15 +134,11 @@ func TestLibraryKnowledgeIdentityMembershipHTTPAndRestart(t *testing.T) {
 		mutateTestRolePermissions(t, host, a, func(previous []identitysdk.ProjectRolePermission) []identitysdk.ProjectRolePermission {
 			out := []identitysdk.ProjectRolePermission{}
 			for _, p := range previous {
-				if !strings.HasPrefix(p.PermissionKey, agentsdk.ConversationActionPrefix+"libraries_") && !strings.HasPrefix(p.PermissionKey, agentsdk.ConversationToolActionPrefix+"knowledge_") {
+				if !strings.HasPrefix(p.PermissionKey, "knowledge.") && !strings.HasPrefix(p.PermissionKey, agentsdk.ConversationToolActionPrefix+"knowledge_") {
 					out = append(out, p)
 				}
 			}
-			for _, op := range agentsdk.ConversationHTTPDefinitions() {
-				if p := agentsdk.KnowledgeLibraryPermission(op.Operation); p != nil {
-					out = append(out, identitysdk.ProjectRolePermission{PermissionKey: p.Key, DataScope: identitysdk.DataScopeAll})
-				}
-			}
+			out = appendKnowledgeRolePermissions(t, out, "")
 			for _, tool := range agentsdk.LibraryKnowledgeConversationTools() {
 				out = append(out, identitysdk.ProjectRolePermission{PermissionKey: tool.ActionKey, DataScope: identitysdk.DataScopeOwner})
 			}
@@ -156,8 +153,8 @@ func TestLibraryKnowledgeIdentityMembershipHTTPAndRestart(t *testing.T) {
 		}
 		return value
 	}
-	shared := decode(a.call("POST", "/agent/knowledge-libraries", `{"client_id":"shared","kind":"shared","name":"共享规则库"}`, 200).Body.Bytes())
-	private := decode(a.call("POST", "/agent/knowledge-libraries", `{"client_id":"private","kind":"personal","name":"个人规则库"}`, 200).Body.Bytes())
+	shared := decode(a.call("POST", "/knowledge/libraries", `{"client_id":"shared","kind":"shared","name":"共享规则库"}`, 201).Body.Bytes())
+	private := decode(a.call("POST", "/knowledge/libraries", `{"client_id":"private","kind":"personal","name":"个人规则库"}`, 201).Body.Bytes())
 	b := newBrowser()
 	b.login("system_administrator@example.com", initial)
 	b.changePassword(initial, changed)
@@ -182,7 +179,7 @@ func TestLibraryKnowledgeIdentityMembershipHTTPAndRestart(t *testing.T) {
 		b.login("system_administrator@example.com", changed)
 	}
 	reopen()
-	path := "/agent/knowledge-libraries/" + shared.ID
+	path := "/knowledge/libraries/" + shared.ID
 	if got := decode(a.call("GET", path, "", 200).Body.Bytes()); !got.KnowledgeConfigured {
 		t.Fatal("library binding absent in public status")
 	}
@@ -231,18 +228,22 @@ func TestLibraryKnowledgeIdentityMembershipHTTPAndRestart(t *testing.T) {
 	mutateTestRolePermissions(t, host, a, func(previous []identitysdk.ProjectRolePermission) []identitysdk.ProjectRolePermission {
 		out := []identitysdk.ProjectRolePermission{}
 		for _, p := range previous {
-			if p.PermissionKey != agentsdk.ConversationActionPrefix+"libraries_get" {
+			if p.PermissionKey != knowledgesdk.ActionLibrariesGet {
 				out = append(out, p)
 			}
 		}
 		return out
 	}, second)
 	before := sharedCalls.Load()
-	if body := b.call("GET", base+"/messages", "", 200).Body.String(); strings.Contains(body, "123.45") || strings.Contains(body, `"citations":[{`) {
-		t.Fatal("library member bypassed revoked Identity read action")
+	if body := b.call("GET", base+"/messages", "", 200).Body.String(); !strings.Contains(body, "123.45") || !strings.Contains(body, `"citations":[{`) {
+		t.Fatal("owner history changed after Identity read revocation")
 	}
 	if sharedCalls.Load() != before {
-		t.Fatal("revoked library action reached remote source")
+		t.Fatal("historical read reached remote source")
+	}
+	_, revokedIdentity := send(b, "identity-read-revoked")
+	if len(revokedIdentity.Steps) != 2 || sharedCalls.Load() != before {
+		t.Fatal("revoked Identity read action allowed a new source operation")
 	}
 	grant(second)
 	if body := b.call("GET", base+"/messages", "", 200).Body.String(); !strings.Contains(body, "123.45") {
@@ -250,22 +251,46 @@ func TestLibraryKnowledgeIdentityMembershipHTTPAndRestart(t *testing.T) {
 	}
 	shared = decode(a.call("DELETE", path+"/members/"+second+"?expected_revision="+fmt.Sprint(shared.Revision), "", 200).Body.Bytes())
 	before = sharedCalls.Load()
-	if body := b.call("GET", base+"/messages", "", 200).Body.String(); strings.Contains(body, "123.45") || strings.Contains(body, `"citations":[{`) {
-		t.Fatal("removed member read historical source")
+	if body := b.call("GET", base+"/messages", "", 200).Body.String(); !strings.Contains(body, "123.45") || !strings.Contains(body, `"citations":[{`) {
+		t.Fatal("owner history changed after membership removal")
 	}
 	if sharedCalls.Load() != before {
-		t.Fatal("removed member remote request")
+		t.Fatal("removed member historical read reached remote source")
+	}
+	_, removedMember := send(b, "member-removed")
+	if len(removedMember.Steps) != 2 || sharedCalls.Load() != before {
+		t.Fatal("removed member started a new source operation")
 	}
 	shared = decode(a.call("PUT", path+"/members/"+second, fmt.Sprintf(`{"role":"reader","expected_revision":%d}`, shared.Revision), 200).Body.Bytes())
 	if body := b.call("GET", base+"/messages", "", 200).Body.String(); !strings.Contains(body, "123.45") {
 		t.Fatal("restored member cannot read original reply")
 	}
 	setArchived := func(archived bool) {
-		shared = decode(a.call("PATCH", path, fmt.Sprintf(`{"name":"共享规则库","archived":%t,"expected_revision":%d}`, archived, shared.Revision), 200).Body.Bytes())
+		action := "restore"
+		if archived {
+			action = "archive"
+		}
+		shared = decode(a.call("POST", path+"/"+action, fmt.Sprintf(`{"expected_revision":%d}`, shared.Revision), 200).Body.Bytes())
 	}
 	setArchived(true)
-	if body := b.call("GET", base+"/messages", "", 200).Body.String(); strings.Contains(body, "123.45") {
-		t.Fatal("archived source remains readable")
+	historyBefore := sharedCalls.Load()
+	if body := b.call("GET", base+"/messages", "", 200).Body.String(); !strings.Contains(body, "123.45") {
+		t.Fatal("owner history changed after library archive")
+	}
+	if sharedCalls.Load() != historyBefore {
+		t.Fatal("archived owner history reread the remote source")
+	}
+	before = sharedCalls.Load()
+	_, archived := send(b, "library-archived")
+	if sharedCalls.Load() != before {
+		t.Fatalf("archived library started a new source operation: before=%d after=%d run=%+v", before, sharedCalls.Load(), archived)
+	}
+	for _, step := range archived.Steps {
+		for _, call := range step.Calls {
+			if len(call.Citations) != 0 {
+				t.Fatal("archived library produced new evidence")
+			}
+		}
 	}
 	setArchived(false)
 	a.call("POST", "/agent/conversations", `{"client_id":"library-ui","title":"资料库检索网页验收"}`, 200)

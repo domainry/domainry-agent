@@ -8,7 +8,6 @@ import (
 const (
 	conversationItemTable                  = "_agent_conversation_items"
 	conversationItemMessage                = "message"
-	conversationItemModelInput             = "model_input"
 	conversationItemSummary                = "summary"
 	conversationItemRunEvent               = "run_event"
 	conversationItemAgreement              = "task_agreement"

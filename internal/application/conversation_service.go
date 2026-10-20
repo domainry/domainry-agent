@@ -7,8 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	knowledge "github.com/domainry/domainry-knowledge-sdk/contract"
-	"log/slog"
 	"strings"
 	"sync"
 	"time"
@@ -18,6 +16,9 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent/definition"
 	"github.com/domainry/domainry-agent/internal/execution"
+	workerplatform "github.com/domainry/domainry-foundation/worker"
+	knowledgesdk "github.com/domainry/domainry-knowledge-sdk"
+	knowledge "github.com/domainry/domainry-knowledge-sdk/contract"
 	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
 
@@ -37,6 +38,15 @@ type ConversationOptions struct {
 	// Its base also offers ConversationConfirmationVerifier. Capture that port
 	// before adding wrappers when an extension requires durable exact approval.
 	AssembleTools func(agentsdk.ConversationToolHost) (agentsdk.ConversationToolHost, error)
+	// BeginToolCatalogScope optionally shares owner authorization facts within a
+	// synchronous catalog evaluation. The engine ends it before model/tool IO.
+	// This must not create a run-wide or cross-request authorization cache.
+	BeginToolCatalogScope func(context.Context) (context.Context, func())
+	// BeginSourceAuthorizationScope optionally shares an owner snapshot during
+	// one read-only provenance evaluation. Its finish MUST freshly validate the
+	// owner revision; a failure prevents data/model input from being released.
+	// The engine never spans a model call or business execution with this scope.
+	BeginSourceAuthorizationScope func(context.Context) (context.Context, func() error)
 	// BindToolPolicy receives the final Agent/Skill selection before availability
 	// filtering and before workers start. Deployment owns the resulting policy;
 	// the engine does not depend on a settings implementation or its database.
@@ -58,11 +68,16 @@ type ConversationOptions struct {
 	CollaborationAuthorizer                                    agentsdk.ConversationCollaborationAuthorizer
 	ExecutionAuthorizer                                        agentsdk.ConversationExecutionAuthorizer
 	DocumentStorage                                            agentsdk.KnowledgeDocumentStorage
+	DocumentSecurity                                           knowledge.DocumentSecurityScanner
 	DocumentPoll                                               time.Duration
+	DocumentWorkTimeout                                        time.Duration
+	DocumentUploadIdleTimeout                                  time.Duration
 	LibraryKnowledge                                           []LibraryKnowledgeBinding
 	KnowledgeDatasources                                       agentsdk.KnowledgeDatasourceCatalog
 	LibraryAuthorizer                                          agentsdk.KnowledgeLibraryAuthorizer
 	SourceAuthorizer                                           agentsdk.KnowledgeDocumentSourceAuthorizer
+	PrincipalDirectory                                         knowledgesdk.KnowledgePrincipalDirectory
+	AccessExplainer                                            knowledgesdk.KnowledgeAccessExplainer
 	AttachmentAuthorizer                                       agentsdk.ConversationAttachmentAuthorizer
 	AttachmentKnowledge                                        []agentsdk.ConversationAttachmentKnowledgeBinding
 	Business                                                   agentsdk.ConversationBusinessSource
@@ -113,6 +128,8 @@ type ConversationService struct {
 	active              map[string]conversationActive
 	lifecycleExtensions []conversationLifecycleBinding
 	lifecycleManifest   *agentsdk.ConversationLifecycleManifest
+	catalogCacheMu      sync.Mutex
+	catalogCache        map[string]conversationCatalogCacheEntry
 }
 
 func applyConversationContextDefault(options *ConversationOptions) {
@@ -745,7 +762,6 @@ func (s *ConversationService) Send(ctx context.Context, id string, in agentsdk.C
 	if err == nil {
 		s.dispatchConversationInputReceivedLifecycle(ctx, out, a, agentsdk.ConversationLifecycleInput{ClientMessageID: in.ClientMessageID, Message: in.Message, Content: cloneConversationContentBlocks(in.Content), References: cloneConversationReferences(in.References)})
 		s.signal()
-		out = s.projectConversationRun(ctx, out, a)
 	}
 	return out, err
 }
@@ -762,7 +778,13 @@ func (s *ConversationService) conversationExecutionAgentID(conversation agentsdk
 	}
 	return ""
 }
-func (s *ConversationService) Messages(ctx context.Context, id string, in agentsdk.ConversationMessageQuery, a agentsdk.ConversationAuthority) (agentsdk.ConversationMessagePage, error) {
+func (s *ConversationService) Messages(ctx context.Context, id string, in agentsdk.ConversationMessageQuery, a agentsdk.ConversationAuthority) (result agentsdk.ConversationMessagePage, err error) {
+	ctx, finish := s.beginSourceAuthorizationEvaluation(ctx)
+	defer func() {
+		if checkErr := finish(); err == nil && checkErr != nil {
+			result, err = agentsdk.ConversationMessagePage{}, checkErr
+		}
+	}()
 	if err := s.authorizeCollaborationConversation(ctx, id, "execution_read", a); err != nil {
 		return agentsdk.ConversationMessagePage{}, err
 	}
@@ -777,23 +799,12 @@ func (s *ConversationService) Messages(ctx context.Context, id string, in agents
 		return out, err
 	}
 	if _, ok := s.repo.(agentpersistence.ConversationSourceRepository); ok {
-		ctx, cancel := s.sourceAccessContext(ctx)
-		defer cancel()
-		audit := s.sourceAudit(a, id)
+		// This page is the owner's saved conversation, not a fresh business
+		// resource read. Keep its text/citations as historical observations;
+		// new CRM, Knowledge and attachment reads enforce their current policy.
 		for i, message := range out.Items {
 			out.Items[i].Citations = nil
-			if err := s.reauthorizeConversationMessageImages(ctx, message, a); err != nil {
-				out.Items[i].Content = unavailableHistory
-				out.Items[i].ContentBlocks = nil
-				out.Items[i].AccessError = sourceAccessCode(err)
-				continue
-			}
 			if message.Role != "assistant" || message.RunID == "" {
-				continue
-			}
-			if _, err := audit.run(ctx, agentsdk.ConversationRunReference{ConversationID: message.ConversationID, RunID: message.RunID}); err != nil {
-				out.Items[i].Content = unavailableHistory
-				out.Items[i].AccessError = sourceAccessCode(err)
 				continue
 			}
 			run, err := s.repo.Run(ctx, message.ConversationID, message.RunID, a)
@@ -813,9 +824,6 @@ func (s *ConversationService) Run(ctx context.Context, id, run string, a agentsd
 		return agentsdk.ConversationRun{}, err
 	}
 	out, err := s.repo.Run(ctx, id, run, a)
-	if err == nil {
-		out = s.projectConversationRun(ctx, out, a)
-	}
 	return out, err
 }
 func (s *ConversationService) Events(ctx context.Context, id, run string, after int64, limit int, a agentsdk.ConversationAuthority) (agentsdk.ConversationEventPage, error) {
@@ -832,13 +840,9 @@ func (s *ConversationService) Events(ctx context.Context, id, run string, after 
 	if err != nil {
 		return out, err
 	}
-	if _, ok := s.repo.(agentpersistence.ConversationSourceRepository); ok {
-		ctx, cancel := s.sourceAccessContext(ctx)
-		defer cancel()
-		if _, err := s.sourceAudit(a, id).run(ctx, agentsdk.ConversationRunReference{ConversationID: id, RunID: run}); err != nil {
-			return agentsdk.ConversationEventPage{}, conversationFailure("forbidden", sourceAccessCode(err))
-		}
-	}
+	// The repository gates both empty and nonempty pages by the current
+	// conversation/run owner. Events are persisted observations of operations
+	// already authorized at their source, not a reason to reopen old records.
 	return out, nil
 }
 func (s *ConversationService) Cancel(ctx context.Context, id, run string, a agentsdk.ConversationAuthority) (agentsdk.ConversationRun, error) {
@@ -860,7 +864,6 @@ func (s *ConversationService) Cancel(ctx context.Context, id, run string, a agen
 		s.mu.Unlock()
 	}
 	if err == nil {
-		out = s.projectConversationRun(ctx, out, a)
 		if out.Status == "cancelled" {
 			s.closeConversationCodingScope(ctx, a, id, run)
 			s.dispatchConversationTerminalLifecycle(ctx, out, a)
@@ -887,7 +890,6 @@ func (s *ConversationService) Resume(ctx context.Context, id, run string, a agen
 	out, err := s.repo.Resume(ctx, id, run, a)
 	if err == nil {
 		s.signal()
-		out = s.projectConversationRun(ctx, out, a)
 	}
 	return out, err
 }
@@ -923,24 +925,17 @@ func (s *ConversationService) DeleteMemory(ctx context.Context, id string, revis
 
 func (s *ConversationService) worker(ctx context.Context) {
 	defer s.wg.Done()
-	for ctx.Err() == nil {
-		claim, ok, err := s.repo.Claim(ctx, s.runtimeID, s.owner, s.options.Lease)
-		if err == nil && ok {
-			s.execute(ctx, claim)
-			continue
+	done := workerplatform.StartWakeableAdaptiveLoop(ctx, workerplatform.Identity{Owner: "agent", Name: "conversation_execution"}, s.options.Poll, max(30*time.Second, s.options.Poll*30), s.wake, func(tickCtx context.Context) (workerplatform.TickResult, error) {
+		claim, ok, err := s.repo.Claim(tickCtx, s.runtimeID, s.owner, s.options.Lease)
+		if err != nil || !ok {
+			return workerplatform.TickResult{}, err
 		}
-		if err != nil && ctx.Err() == nil {
-			slog.Warn("conversation claim failed", "error", err)
-		}
-		select {
-		case <-ctx.Done():
-			return
-		case <-s.wake:
-		case <-time.After(s.options.Poll):
-		}
-	}
+		err = s.execute(tickCtx, claim)
+		return workerplatform.TickResult{Worked: true, ProcessedCount: 1, Attempt: claim.Run.Attempt}, err
+	})
+	<-done
 }
-func (s *ConversationService) execute(parent context.Context, claim agentpersistence.ConversationClaim) {
+func (s *ConversationService) execute(parent context.Context, claim agentpersistence.ConversationClaim) error {
 	selectionErr := s.selectConversationLifecycle(claim.Run.Lifecycle)
 	if selectionErr == nil {
 		parent, selectionErr = s.selectConversationAgent(parent, claim.Run.Agent, claim.Authority)
@@ -1019,13 +1014,6 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 			err = conversationFailure("conflict", "model_changed")
 		}
 	}
-	if err == nil {
-		if found {
-			err = s.checkRunSources(ctx, agentsdk.ConversationRunReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID}, claim.Authority)
-		} else {
-			_, err = s.sourceAudit(claim.Authority, claim.Run.ConversationID).sources(ctx, input.Sources)
-		}
-	}
 	if err == nil && s.options.ToolHost == nil && input.Context != nil {
 		messages, messageErr := conversationStepMessages(input)
 		if messageErr != nil {
@@ -1051,15 +1039,9 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 			result, err = s.generateConversationReply(ctx, claim, input)
 		}
 		if errors.Is(err, errConversationWaiting) {
-			return
+			return nil
 		}
 		if err != nil {
-			slog.Error("conversation execution failed",
-				"conversation_id", claim.Run.ConversationID,
-				"run_id", claim.Run.ID,
-				"attempt", claim.Run.Attempt,
-				"error", err,
-			)
 			code = conversationModelFailureCode(err, "provider_failed")
 		} else if !conversationText(result.Content, maxOutputBytes, true) {
 			code = "response_invalid"
@@ -1070,7 +1052,7 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 	}
 	if parent.Err() != nil {
 		s.closeConversationCodingScope(context.WithoutCancel(parent), claim.Authority, claim.Run.ConversationID, claim.Run.ID)
-		return
+		return parent.Err()
 	} // release by lease expiry after graceful shutdown
 	if code == "" {
 		if err := s.authorizeConversationClaim(ctx, claim, "commit"); err != nil {
@@ -1090,8 +1072,8 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 	if code != "" {
 		result = agentsdk.ConversationModelResult{}
 	}
-	if err := s.repo.Finish(finishCtx, claim, result, code); err != nil {
-		slog.Debug("conversation finish fenced or unavailable", "run_id", claim.Run.ID, "error", err)
+	if finishErr := s.repo.Finish(finishCtx, claim, result, code); finishErr != nil {
+		return errors.Join(err, finishErr)
 	} else {
 		s.closeConversationCodingScope(finishCtx, claim.Authority, claim.Run.ConversationID, claim.Run.ID)
 		s.signalConversationTasks()
@@ -1103,6 +1085,7 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 		}
 		s.dispatchConversationTerminalLifecycle(finishCtx, finished, claim.Authority)
 	}
+	return err
 }
 
 var _ agentsdk.ConversationService = (*ConversationService)(nil)

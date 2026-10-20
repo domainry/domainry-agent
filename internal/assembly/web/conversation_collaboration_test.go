@@ -633,12 +633,13 @@ func TestPeerCollaborationHTTPExecutesIsolatedAgentAndAcceptsDelivery(t *testing
 		t.Fatal("revoked disagreement sources leaked", revoked.Disagreements)
 	}
 	b.call("GET", "/agent/delegations/"+d.ID+"/disagreements/"+d.Disagreements[0].ID, "", 403)
-	if revoked.Task == nil || revoked.Task.Result != nil {
-		t.Fatalf("revoked raw execution result leaked %+v", revoked.Task)
+	if revoked.Task == nil || revoked.Task.Result == nil {
+		t.Fatalf("owner execution history was rewritten after tool revocation: %+v", revoked.Task)
 	}
 	// The attested public clock receipt has an independent reading policy.
-	// Losing its execution grant hides raw execution but retains the submitted
-	// projection and its historical versions under current delivery_read.
+	// Losing the live tool grant blocks future calls without rewriting the
+	// owner's saved execution; the submitted projection and its historical
+	// versions remain independently governed by current delivery_read.
 	wantDelivery, _ := json.Marshal(restoredDelegation.Delivery)
 	actualDelivery, _ := json.Marshal(revoked.Delivery)
 	if revoked.Delivery == nil || revoked.Verification == nil || !revoked.Verification.Ready || string(wantDelivery) != string(actualDelivery) {

@@ -36,12 +36,24 @@ Personal and shared libraries have separate membership management. Optional
 host bindings connect each library to a dedicated remote KB, exposing a library
 catalog and scoped search/read with live membership and Identity checks. See
 [资料库权限与当前边界](docs/knowledge-permissions.md). Explicit managed bindings
-now expose document upload, status, download and deletion via Module/SaaS APIs,
-with durable indexing jobs and document-level filtering. The library dialog now
-supports file selection, indexing status, verified original downloads and deletion.
+now expose resumable 8 MiB document upload, status, download and deletion via Module/SaaS APIs,
+with durable indexing jobs and document-level filtering. The reusable Knowledge workspace
+supports file selection, acknowledged upload progress, indexing status, verified original downloads and deletion.
 Browser recovery, Identity revocation, host restart, citations and mobile deletion
 have passed with the actual host and protocol fixtures; see
 [文档网页验收](docs/testing-2026-09-10-library-documents-web.md).
+文档进入索引前始终经过 Knowledge 的隔离检查。默认实现是文件签名、
+OOXML 结构、活动内容和压缩膨胀门禁，不冒充完整杀毒。生产环境可为
+`cmd/domainry-agent-web` 配置 `AGENT_KNOWLEDGE_CLAMD_ADDRESS`，并可选设置
+`AGENT_KNOWLEDGE_CLAMD_NETWORK`（`tcp`／`tcp4`／`tcp6`／`unix`）和
+`AGENT_KNOWLEDGE_CLAMD_TIMEOUT`（默认 `20m`，最大 `2h`）和
+`AGENT_KNOWLEDGE_DOCUMENT_WORK_TIMEOUT`（默认 `30m`，最大 `2h`）。未完成的分片上传按
+`AGENT_KNOWLEDGE_DOCUMENT_UPLOAD_IDLE_TIMEOUT`（默认 `24h`，范围 `5m` 到 `720h`）回收，
+每个成功持久化的分片都会续期；此时原件先过
+结构门禁，再通过 ClamAV `INSTREAM` 流式扫描，任一步失败都不会进入 Builder。
+ClamAV 服务端的 `StreamMaxLength`、`MaxFileSize`、`MaxScanSize` 必须至少覆盖产品
+允许的原件大小（当前最高 1 GiB）；否则文档会保持隔离并显示
+`document_security_size_unsupported`，不会把未完整扫描的文件误判为安全。
 Explicit [附件另存](docs/testing-2026-09-10-attachment-library-copy.md) now creates an independent library copy after checking source and target permissions.
 Explicitly indexed private attachments now support Connector search/read in their
 originating conversation, with persisted citations opening authorized originals.

@@ -23,8 +23,8 @@ export function AttachmentLibrarySave({ attachment, disabled, onBusyChange, onOp
     const abort = new AbortController(); setLoading(true);
     const signal = AbortSignal.any([abort.signal, AbortSignal.timeout(15000)]);
     void Promise.all([
-      request<LibraryPage>(`/agent/knowledge-libraries?${new URLSearchParams({ after: cursor, limit: "20" })}`, "GET", undefined, signal),
-      pending ? request<KnowledgeLibrary>(`/agent/knowledge-libraries/${encodeURIComponent(pending.libraryID)}`, "GET", undefined, signal) : Promise.resolve(null),
+      request<LibraryPage>(`/knowledge/libraries?${new URLSearchParams({ after: cursor, limit: "20" })}`, "GET", undefined, signal),
+      pending ? request<KnowledgeLibrary>(`/knowledge/libraries/${encodeURIComponent(pending.libraryID)}`, "GET", undefined, signal) : Promise.resolve(null),
     ]).then(([value, previous]) => { if (!abort.signal.aborted) { setPage(value); if (previous) setTarget(previous); } }).catch(failure => { if (!abort.signal.aborted) { setPage({ items: [], complete: true }); setTarget(null); setError(describeError(failure)); } }).finally(() => { if (!abort.signal.aborted) setLoading(false); });
     return () => abort.abort();
   }, [opened, cursor, refresh, pending]);

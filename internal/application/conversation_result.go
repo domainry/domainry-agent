@@ -20,10 +20,22 @@ func resultReadAvailable(in agentsdk.ConversationStepRequest) bool {
 	return false
 }
 
-// The source's current definition and authorization are mandatory even when
-// the reader itself is permitted. Nested reads retain their original sources.
+// Read the exact immutable receipt under conversation ownership. Cross-
+// conversation releases retain their separate sharing and attachment boundary.
 func (s *ConversationService) authorizedConversationResult(ctx context.Context, ref agentsdk.ConversationResultReference, a agentsdk.ConversationAuthority, current map[string]conversationCompiledTool, seen map[string]bool, recipient string) (agentsdk.ConversationToolResult, error) {
 	var empty agentsdk.ConversationToolResult
+	source, err := s.conversationResultRecord(ctx, ref, a)
+	if err != nil {
+		return empty, err
+	}
+	if err = s.authorizeConversationRecord(ctx, ref.ConversationID, ref.RunID, source, a, current, seen, recipient); err != nil {
+		return empty, err
+	}
+	return *source.Result, nil
+}
+
+func (s *ConversationService) conversationResultRecord(ctx context.Context, ref agentsdk.ConversationResultReference, a agentsdk.ConversationAuthority) (persistence.ConversationToolExecution, error) {
+	var empty persistence.ConversationToolExecution
 	repo, ok := s.repo.(persistence.ConversationResultRepository)
 	if !ok {
 		return empty, conversationFailure("unavailable", "result_read_unavailable")
@@ -35,10 +47,7 @@ func (s *ConversationService) authorizedConversationResult(ctx context.Context, 
 	if source.Result == nil || source.State != "completed" || source.Call.ID != ref.CallID || source.Step != ref.Step || conversationDigest(source.Result) != ref.SHA256 {
 		return empty, conversationFailure("conflict", "result_reference_changed")
 	}
-	if err = s.authorizeConversationRecord(ctx, ref.ConversationID, ref.RunID, source, a, current, seen, recipient); err != nil {
-		return empty, err
-	}
-	return *source.Result, nil
+	return source, nil
 }
 
 func (s *ConversationService) readConversationToolResult(ctx context.Context, in agentsdk.ConversationToolRequest) agentsdk.ConversationToolResult {
@@ -86,15 +95,14 @@ func (s *ConversationService) readResultSlice(ctx context.Context, args agentsdk
 			return agentsdk.ConversationResultSlice{}, err
 		}
 	}
-	_, current, err := s.executionCatalog(ctx, a)
+	source, err := s.conversationResultRecord(ctx, args.Reference, a)
 	if err != nil {
 		return agentsdk.ConversationResultSlice{}, err
 	}
-	result, err := s.authorizedConversationResult(ctx, args.Reference, a, current, map[string]bool{}, recipient)
-	if err != nil {
+	if err := s.authorizeOwnedExecutionSnapshot(ctx, args.Reference.ConversationID, source, a, recipient); err != nil {
 		return agentsdk.ConversationResultSlice{}, err
 	}
-	return s.conversationResultSlice(args, result)
+	return s.conversationResultSlice(args, *source.Result)
 }
 
 // Shared pagination for ordinary execution readers and released deliveries.

@@ -7,6 +7,7 @@ import (
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
+	knowledgesdk "github.com/domainry/domainry-knowledge-sdk"
 	knowledge "github.com/domainry/domainry-knowledge-sdk/contract"
 )
 
@@ -20,7 +21,7 @@ type sharedDocumentOwner struct {
 
 func (o *sharedDocumentOwner) DocumentAccess(_ context.Context, library, op string, a sdk.ConversationAuthority) (persistence.KnowledgeDocumentRepository, error) {
 	o.reads++
-	if o.denied || a != o.a || library != o.doc.LibraryID || op != "documents_download" {
+	if o.denied || a != o.a || library != o.doc.LibraryID || op != knowledgesdk.ActionDocumentsDownload {
 		return nil, conversationFailure("forbidden", "document_access_denied")
 	}
 	return nil, nil

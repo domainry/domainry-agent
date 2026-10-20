@@ -156,5 +156,18 @@ func TestCompactedResultReadThroughIdentityHTTP(t *testing.T) {
 	read(agentsdk.ConversationResultRead{Reference: tampered}, 400)
 	b.call("POST", readPath, `{"reference":{},"authority":{"user_id":"another"}}`, 400)
 	grantPersonalTools(t, host, b, false)
-	read(agentsdk.ConversationResultRead{Reference: *ref}, 403)
+	var historical agentsdk.ConversationResultSlice
+	if err := json.Unmarshal(read(agentsdk.ConversationResultRead{Reference: *ref, MaxBytes: 4096}, 200), &historical); err != nil || historical.Reference != *ref || !strings.Contains(historical.JSONText, "result-memory-00") {
+		t.Fatal("owner historical result changed after tool revocation", err)
+	}
+	var denied agentsdk.ConversationRun
+	_ = json.Unmarshal(b.call("POST", base+"/messages", `{"client_message_id":"revoked","message":"重新检索个人记忆。"}`, 202).Body.Bytes(), &denied)
+	deadline = time.Now().Add(10 * time.Second)
+	for !denied.Terminal() && time.Now().Before(deadline) {
+		time.Sleep(5 * time.Millisecond)
+		_ = json.Unmarshal(b.call("GET", base+"/runs/"+denied.ID, "", 200).Body.Bytes(), &denied)
+	}
+	if denied.Status != "failed" || len(denied.Steps) == 0 || len(denied.Steps[0].Calls) != 0 || denied.Metrics.ToolCalls != 0 {
+		t.Fatalf("revoked tool started a new operation: %+v", denied)
+	}
 }

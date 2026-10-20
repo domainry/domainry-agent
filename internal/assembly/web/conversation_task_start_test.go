@@ -646,7 +646,7 @@ func TestScheduledTaskUsesCurrentIdentityAndWaitsForUserConfirmation(t *testing.
 		t.Fatal("revoked scheduled write was approved")
 	}
 	var artifactVersions int
-	if err = host.db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_artifact_versions`).Scan(&artifactVersions); err != nil || artifactVersions != 0 {
+	if err = host.db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _knowledge_conversation_artifact_versions`).Scan(&artifactVersions); err != nil || artifactVersions != 0 {
 		t.Fatalf("revoked confirmation created artifact versions: count=%d err=%v", artifactVersions, err)
 	}
 }
@@ -868,8 +868,8 @@ func TestTaskStartThroughIdentityHTTPWorkerRecoveryAndSQLite(t *testing.T) {
 	setArtifactPermissions("artifact_read")
 	var restricted agentsdk.ConversationTaskDetail
 	_ = json.Unmarshal(b.call("GET", "/agent/conversation-tasks/"+waitingTaskID, "", 200).Body.Bytes(), &restricted)
-	if restricted.AccessError == "" || restricted.Control.CanCancel || restricted.Control.CanResume || len(restricted.Artifacts) != 0 || restricted.Result != nil || len(restricted.Steps) != 0 {
-		t.Fatalf("revoked artifact source remained in task projection: %+v", restricted)
+	if restricted.AccessError == "" || restricted.Control.CanCancel || restricted.Control.CanResume || len(restricted.Artifacts) != 1 || restricted.Artifacts[0] != waitingDetail.Artifacts[0] || restricted.Result == nil || *restricted.Result != *waitingDetail.Result || len(restricted.Steps) != 2 {
+		t.Fatalf("owner task history changed after artifact permission revocation: %+v", restricted)
 	}
 	setArtifactPermissions("")
 	waitingDetail = agentsdk.ConversationTaskDetail{}

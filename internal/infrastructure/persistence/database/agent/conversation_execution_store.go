@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"log/slog"
 	"sort"
 	"strings"
 	"time"
@@ -18,10 +17,13 @@ import (
 )
 
 const (
-	conversationRunStepTable       = "_agent_run_steps"
-	conversationRunStepKindStep    = "step"
-	conversationRunStepKindTool    = "tool_call"
-	conversationRunStepKindSources = "step_sources"
+	conversationRunStepTable     = "_agent_run_steps"
+	conversationStepInputTable   = "_agent_step_inputs"
+	conversationToolCatalogTable = "_agent_tool_catalogs"
+	conversationToolCallTable    = "_agent_tool_calls"
+	conversationStepSourceTable  = "_agent_step_sources"
+	conversationRunStepKindStep  = "step"
+	conversationRunStepKindTool  = "tool_call"
 )
 
 func conversationStepContextValidationIssue(input *agentsdk.ConversationStepRequest) string {
@@ -107,10 +109,6 @@ func executionScope(claim persistence.ConversationClaim, number int) query.Predi
 	return query.And(conversationScope(claim.Authority, claim.Run.ConversationID), query.Equal("run_id", claim.Run.ID), query.Equal("step_no", number))
 }
 
-func conversationRunStepKindPredicate(kind string) query.Predicate {
-	return query.Equal("record_kind", kind)
-}
-
 func (s *ConversationStore) payloadRead(ctx context.Context, db conversationDB, table string, predicate query.Predicate, out any) (bool, error) {
 	q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("payload_json").Where(predicate).Build()
 	if err != nil {
@@ -128,10 +126,31 @@ func (s *ConversationStore) payloadRead(ctx context.Context, db conversationDB, 
 }
 
 func (s *ConversationStore) executionRead(ctx context.Context, db conversationDB, kind string, predicate query.Predicate, out any) (bool, error) {
-	return s.payloadRead(ctx, db, conversationRunStepTable, query.And(conversationRunStepKindPredicate(kind), predicate), out)
+	switch kind {
+	case conversationRunStepKindStep:
+		step, ok := out.(*persistence.ConversationExecutionStep)
+		if !ok {
+			return false, conversationError("bad_request", "step_target_invalid")
+		}
+		return s.readExecutionStepPolicy(ctx, db, predicate, step)
+	case conversationRunStepKindTool:
+		return s.payloadRead(ctx, db, conversationToolCallTable, predicate, out)
+	default:
+		return false, conversationError("bad_request", "execution_kind_invalid")
+	}
 }
 
 func (s *ConversationStore) executionWrite(ctx context.Context, tx *sql.Tx, kind string, claim persistence.ConversationClaim, number int, callID string, payload any, insert bool) error {
+	if kind == conversationRunStepKindStep {
+		step, ok := payload.(persistence.ConversationExecutionStep)
+		if !ok {
+			return conversationError("bad_request", "step_target_invalid")
+		}
+		return s.writeSplitExecutionStep(ctx, tx, claim, number, step, insert)
+	}
+	if kind != conversationRunStepKindTool {
+		return conversationError("bad_request", "execution_kind_invalid")
+	}
 	raw, err := marshalDurableJSON(payload)
 	if err != nil || len(raw) > 4*1024*1024 {
 		return conversationError("bad_request", "execution_payload_invalid")
@@ -140,14 +159,14 @@ func (s *ConversationStore) executionWrite(ctx context.Context, tx *sql.Tx, kind
 	if callID != "" {
 		callKey = conversationHash(callID)
 	}
-	p := query.And(conversationRunStepKindPredicate(kind), executionScope(claim, number), query.Equal("call_key", callKey))
-	columns := []string{"owner_key", "conversation_id", "run_id", "record_kind", "step_no", "call_key", "payload_json"}
-	values := []any{conversationOwner(claim.Authority), claim.Run.ConversationID, claim.Run.ID, kind, number, callKey, raw}
+	p := query.And(executionScope(claim, number), query.Equal("call_key", callKey))
+	columns := []string{"owner_key", "conversation_id", "run_id", "step_no", "call_key", "payload_json"}
+	values := []any{conversationOwner(claim.Authority), claim.Run.ConversationID, claim.Run.ID, number, callKey, raw}
 	if insert {
-		q, args, e := query.NewInsertBuilder(s.store.Renderer(), conversationRunStepTable).Columns(columns...).Values(values...).Build()
+		q, args, e := query.NewInsertBuilder(s.store.Renderer(), conversationToolCallTable).Columns(columns...).Values(values...).Build()
 		return conversationExec(ctx, tx, q, args, e)
 	}
-	q, args, e := query.NewUpdateBuilder(s.store.Renderer(), conversationRunStepTable).Set("payload_json", raw).Where(p).Build()
+	q, args, e := query.NewUpdateBuilder(s.store.Renderer(), conversationToolCallTable).Set("payload_json", raw).Where(p).Build()
 	return conversationCAS(ctx, tx, q, args, e)
 }
 
@@ -171,13 +190,23 @@ func (s *ConversationStore) ExecutionStep(ctx context.Context, claim persistence
 		if err != nil {
 			return err
 		}
-		found, err = s.executionRead(ctx, tx, conversationRunStepKindStep, executionScope(claim, number), &out)
+		found, err = s.readFrozenExecutionStep(ctx, tx, executionScope(claim, number), &out)
 		if err != nil {
 			return err
 		}
 		if found {
-			if input != nil && conversationHash(*input) != conversationHash(out.Input) {
-				return conversationError("conflict", "step_input_conflict")
+			if input != nil {
+				requested, err := frozenExecutionInputHash(*input)
+				if err != nil {
+					return err
+				}
+				saved, err := frozenExecutionInputHash(out.Input)
+				if err != nil {
+					return err
+				}
+				if requested != saved {
+					return conversationError("conflict", "step_input_conflict")
+				}
 			}
 			return nil
 		}
@@ -188,21 +217,6 @@ func (s *ConversationStore) ExecutionStep(ctx context.Context, claim persistence
 		imagesSupported := !storedConversationStepMessagesHaveImages(input.Messages) || input.ModelCapabilities.ImageInput
 		contextIssue := conversationStepContextValidationIssue(input)
 		if len(input.Messages) == 0 || !messagesValid || !imagesSupported || input.ModelIdentity.Fingerprint == "" || input.IdempotencyKey == "" || input.MaxToolCalls < 1 || input.MaxToolCalls > 64 || input.MaxOutputBytes < 1 || input.MaxArgumentBytes < 1 || input.MaxParallelTools < 0 || input.MaxParallelTools > 16 || contextIssue != "" {
-			slog.Error("conversation step input rejected",
-				"conversation_id", claim.Run.ConversationID,
-				"run_id", claim.Run.ID,
-				"step", number,
-				"message_count", len(input.Messages),
-				"messages_valid", messagesValid,
-				"images_supported", imagesSupported,
-				"model_fingerprint_present", input.ModelIdentity.Fingerprint != "",
-				"idempotency_key_present", input.IdempotencyKey != "",
-				"max_tool_calls", input.MaxToolCalls,
-				"max_output_bytes", input.MaxOutputBytes,
-				"max_argument_bytes", input.MaxArgumentBytes,
-				"max_parallel_tools", input.MaxParallelTools,
-				"context_issue", contextIssue,
-			)
 			return conversationError("bad_request", "step_input_invalid")
 		}
 		if number > 0 {
@@ -244,10 +258,8 @@ func (s *ConversationStore) ExecutionStep(ctx context.Context, claim persistence
 				return conversationError("bad_request", "source_reference_invalid")
 			}
 		}
-		if len(input.ContextSources) > 0 {
-			if err = s.executionWrite(ctx, tx, conversationRunStepKindSources, claim, number, "", input.ContextSources, true); err != nil {
-				return err
-			}
+		if err = s.writeStepSourceEdges(ctx, tx, claim, number, input.ContextSources); err != nil {
+			return err
 		}
 		found = true
 		old := row
@@ -378,8 +390,8 @@ func (s *ConversationStore) ExecutionTools(ctx context.Context, claim persistenc
 }
 
 func (s *ConversationStore) executionSubtools(ctx context.Context, db conversationDB, claim persistence.ConversationClaim, number int, parentCallID string) ([]persistence.ConversationToolExecution, error) {
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("payload_json").
-		Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindTool), executionScope(claim, number))).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationToolCallTable).Columns("payload_json").
+		Where(executionScope(claim, number)).Build()
 	if err != nil {
 		return nil, err
 	}
@@ -426,8 +438,8 @@ func (s *ConversationStore) ExecutionSubtools(ctx context.Context, claim persist
 }
 
 func (s *ConversationStore) executionSubtoolCount(ctx context.Context, db conversationDB, claim persistence.ConversationClaim) (int, error) {
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("payload_json").
-		Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindTool), conversationScope(claim.Authority, claim.Run.ConversationID), query.Equal("run_id", claim.Run.ID))).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationToolCallTable).Columns("payload_json").
+		Where(query.And(conversationScope(claim.Authority, claim.Run.ConversationID), query.Equal("run_id", claim.Run.ID))).Build()
 	if err != nil {
 		return 0, err
 	}
@@ -468,7 +480,7 @@ func (s *ConversationStore) ExecutionSubtoolCount(ctx context.Context, claim per
 
 func (s *ConversationStore) executionTopLevelCallCount(ctx context.Context, db conversationDB, claim persistence.ConversationClaim) (int, error) {
 	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("payload_json").
-		Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindStep), conversationScope(claim.Authority, claim.Run.ConversationID), query.Equal("run_id", claim.Run.ID))).Build()
+		Where(query.And(conversationScope(claim.Authority, claim.Run.ConversationID), query.Equal("run_id", claim.Run.ID))).Build()
 	if err != nil {
 		return 0, err
 	}

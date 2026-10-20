@@ -83,8 +83,8 @@ func TestConversationKnowledgeModuleRetrievesAndFreezesInputForResume(t *testing
 				t.Fatalf("resume: %+v", done)
 			}
 			first, second := <-inputs, <-inputs
-			if searches.Load() < 2 || !reflect.DeepEqual(first, second) {
-				t.Fatal("resume skipped current-source verification or changed frozen input")
+			if searches.Load() != 1 || !reflect.DeepEqual(first, second) {
+				t.Fatal("resume reopened a frozen source or changed the saved input")
 			}
 			if len(first.Messages) != 4 || !strings.Contains(first.Messages[1].Content, "BCRI-42") || !strings.Contains(first.Messages[1].Content, "guide") || !strings.Contains(first.Messages[2].Content, "PRIVATE_MEMORY_NOT_A_QUERY") {
 				t.Fatalf("knowledge, source or memory missing: %+v", first.Messages)

@@ -101,7 +101,7 @@ func (s *ConversationStore) BindArtifactPersistence(store sharedartifact.Managed
 }
 
 func (s *ConversationStore) Ready(ctx context.Context) error {
-	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_user_memories", conversationRunStepTable, conversationForkTable, interactionTable, conversationTaskTable, conversationPeerLinkTable, conversationAgentMessageTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
+	for _, table := range []string{"_agent_conversations", conversationItemTable, "_agent_user_memories", conversationRunStepTable, conversationStepInputTable, conversationToolCatalogTable, conversationToolCallTable, conversationStepSourceTable, conversationForkTable, interactionTable, conversationTaskTable, conversationPeerLinkTable, conversationAgentMessageTable, conversationDelegationSubjectTable, conversationSourceReleaseTable} {
 		q, args, err := query.NewSelectBuilder(s.store.Renderer(), table).Columns("owner_key").Limit(1).Build()
 		if err != nil {
 			return err
@@ -510,7 +510,7 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 		if err = conversationCAS(ctx, tx, q, args, e); err != nil {
 			return err
 		}
-		for _, table := range []string{conversationItemTable, conversationRunStepTable, conversationForkTable, interactionTable} {
+		for _, table := range []string{conversationItemTable, conversationRunStepTable, conversationStepInputTable, conversationToolCallTable, conversationStepSourceTable, conversationToolCatalogTable, conversationForkTable, interactionTable} {
 			q, args, e := query.NewDeleteBuilder(s.store.Renderer(), table).Where(conversationScope(a, id)).Build()
 			if err = conversationExec(ctx, tx, q, args, e); err != nil {
 				return err

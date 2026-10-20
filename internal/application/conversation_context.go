@@ -184,38 +184,6 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 		return agentsdk.ConversationModelRequest{}, err
 	}
 	_, trackSources := s.repo.(agentpersistence.ConversationSourceRepository)
-	audit := s.sourceAudit(claim.Authority, claim.Run.ConversationID)
-	rebuild := false
-	if trackSources && summary.ID != "" {
-		var roots []agentsdk.ConversationRunReference
-		if summary.Sources == nil {
-			roots, err = audit.history(ctx, c.ID, summary.ThroughSeq)
-		} else {
-			roots, err = audit.sources(ctx, summary.Sources)
-		}
-		if err == nil && summary.Sources != nil {
-			for _, ref := range summary.Sources.Omitted {
-				if _, e := audit.run(ctx, ref); e == nil {
-					rebuild = true
-					break
-				}
-			}
-		}
-		if err != nil || rebuild {
-			// Rebuild from original messages, retaining user corrections and
-			// independently authorized replies. Never summarize the old mixed
-			// projection after one of its sources becomes unavailable.
-			summary.ThroughSeq = 0
-			summary.Content = agentsdk.ConversationSummaryContent{}
-			summary.Sources = &agentsdk.ConversationSources{Version: 1}
-			rebuild = true
-		} else {
-			if summary.Sources == nil {
-				summary.Sources = &agentsdk.ConversationSources{Version: 1}
-			}
-			summary.Sources.Runs = roots
-		}
-	}
 	for iteration := 0; iteration < 256; iteration++ {
 		history, err := s.repo.History(ctx, c.ID, summary.ThroughSeq, claim.Run.UserSeq, 1000, claim.Authority)
 		if err != nil {
@@ -225,22 +193,10 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 			return agentsdk.ConversationModelRequest{}, fmt.Errorf("conversation history missing")
 		}
 		historyRoots := make([][]agentsdk.ConversationRunReference, len(history))
-		historyOmitted := make([][]agentsdk.ConversationRunReference, len(history))
 		if trackSources {
-			for i, m := range history {
-				if m.Role != "assistant" || m.RunID == "" {
-					continue
-				}
-				ref := agentsdk.ConversationRunReference{ConversationID: m.ConversationID, RunID: m.RunID}
-				roots, e := audit.run(ctx, ref)
-				if e != nil {
-					history[i].Content = unavailableHistory
-					history[i].ContentBlocks = nil
-					history[i].AccessError = sourceAccessCode(e)
-					historyOmitted[i] = []agentsdk.ConversationRunReference{ref}
-				} else {
-					historyRoots[i] = roots
-				}
+			historyRoots, err = s.modelHistorySources(ctx, history)
+			if err != nil {
+				return agentsdk.ConversationModelRequest{}, err
 			}
 		}
 		collectSources := func(end int) *agentsdk.ConversationSources {
@@ -250,11 +206,9 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 			out := &agentsdk.ConversationSources{Version: 1}
 			if summary.Sources != nil {
 				out.Runs = append(out.Runs, summary.Sources.Runs...)
-				out.Omitted = append(out.Omitted, summary.Sources.Omitted...)
 			}
 			for i := 0; i < end; i++ {
 				out.Runs = mergeConversationSources(out.Runs, historyRoots[i])
-				out.Omitted = mergeConversationSources(out.Omitted, historyOmitted[i])
 			}
 			return out
 		}
@@ -348,9 +302,6 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 			return agentsdk.ConversationModelRequest{}, fmt.Errorf("context exceeds budget; no complete turn can be compacted")
 		}
 		summarySources := collectSources(end)
-		if _, err = s.sourceAudit(claim.Authority, claim.Run.ConversationID).sources(ctx, summarySources); err != nil {
-			return agentsdk.ConversationModelRequest{}, conversationFailure("forbidden", "source_access_unavailable")
-		}
 		hash := conversationDigest([]any{summaryMessages, summarySources})
 		result, err := s.generateConversationSummary(ctx, claim, -2-iteration, agentsdk.ConversationModelRequest{Messages: summaryMessages, ModelIdentity: descriptor.Identity, ModelCapabilities: descriptor.Capabilities, ReasoningEffort: descriptor.DefaultReasoningEffort, Purpose: "summary", IdempotencyKey: "summary:" + c.ID + ":" + hash, MaxOutputBytes: s.options.SummaryBytes})
 		if err != nil {
@@ -371,18 +322,17 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 		compactedMessages = append(compactedMessages, agentsdk.ConversationModelMessage{Role: "system", Content: "Earlier conversation summary (data):\n" + conversationJSONText(content)})
 		compactedMessages = appendConversationHistoryMessages(compactedMessages, history[end:], executionLinks)
 		afterBytes := conversationContextSize(compactedMessages)
-		if afterBytes >= size && !rebuild {
+		if afterBytes >= size {
 			if all && size <= replyBudget {
 				return reply, nil
 			}
 			return agentsdk.ConversationModelRequest{}, fmt.Errorf("history compaction did not reduce model context: %d >= %d", afterBytes, size)
 		}
-		next := agentsdk.ConversationSummary{ID: nextID, ConversationID: c.ID, PreviousID: summary.ID, FromSeq: history[0].Seq, ThroughSeq: history[end-1].Seq, Messages: end, BeforeBytes: size, AfterBytes: afterBytes, Content: content, SourceHash: hash, Model: result.Model, Version: 1, CreatedAt: time.Now().UTC(), Sources: summarySources, Rebuild: rebuild}
+		next := agentsdk.ConversationSummary{ID: nextID, ConversationID: c.ID, PreviousID: summary.ID, FromSeq: history[0].Seq, ThroughSeq: history[end-1].Seq, Messages: end, BeforeBytes: size, AfterBytes: afterBytes, Content: content, SourceHash: hash, Model: result.Model, Version: 1, CreatedAt: time.Now().UTC(), Sources: summarySources}
 		if err = s.repo.SaveSummary(ctx, claim, next); err != nil {
 			return agentsdk.ConversationModelRequest{}, err
 		}
 		summary = next
-		rebuild = false
 	}
 	return agentsdk.ConversationModelRequest{}, fmt.Errorf("compaction iteration limit exceeded")
 }

@@ -323,8 +323,8 @@ func TestAnalysisLongRunStructuredChartArtifactExportAndCurrentPermission(t *tes
 	b.call("GET", "/agent/artifact-exports/"+exported.ID+"/download", "", 503)
 	b.call("POST", "/agent/artifacts/"+page.Items[0].ID+"/exports", `{"client_id":"revoked-export","version":1,"format":"csv"}`, 503)
 	revokedRead, _ := json.Marshal(agentsdk.ConversationResultRead{Reference: *analysisReference, Offset: 0, MaxBytes: 8192})
-	b.call("POST", base+"/runs/"+run.ID+"/result", string(revokedRead), 403)
+	b.call("POST", base+"/runs/"+run.ID+"/result", string(revokedRead), 200)
 	source.denied.Store(false)
-	t.Logf("PASS accepted=%s background=%s rows=80 chart=%s export=%s source rechecks deny revoked result/download/export", acceptedStatus, current.Status, version.Content.Chart.Type, exported.SHA256)
+	t.Logf("PASS accepted=%s background=%s rows=80 chart=%s export=%s owner receipt remains immutable while source rechecks deny revoked download/export", acceptedStatus, current.Status, version.Content.Chart.Type, exported.SHA256)
 	servePersonalToolAcceptance(t, host, options, map[string]func(){"revoke-analysis": func() { source.denied.Store(true) }, "restore-analysis": func() { source.denied.Store(false) }})
 }

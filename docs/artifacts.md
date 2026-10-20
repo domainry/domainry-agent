@@ -21,12 +21,12 @@ Agent SDK 新增 `ConversationArtifactService` 及其输入输出类型，覆盖
 
 ## 持久化
 
-迁移 6 `agent_conversation_artifacts` 保留成果定义、版本和命令回执；导出文件不再创建 Agent 私有表：
+Knowledge 模块的新建 schema version 1 保存成果定义与版本；命令回执使用 Foundation Operations，导出文件不创建 Agent 私有表：
 
 | 表 | 用途 |
 | --- | --- |
-| `_agent_artifacts` | 用户范围内的稳定成果 ID、最新版本及查询元数据 |
-| `_agent_artifact_versions` | 按成果 ID 和版本保存不可变正文、来源与元数据 |
+| `_knowledge_conversation_artifacts` | 用户范围内的稳定成果 ID、最新版本及查询元数据 |
+| `_knowledge_conversation_artifact_versions` | 按成果 ID 和版本保存不可变正文、来源与元数据 |
 | `_operations` | Foundation 统一维护的客户端幂等键、输入摘要及结果回执 |
 
 生成的 Markdown／CSV 文件统一登记为共享 `_artifacts` 中的
@@ -37,7 +37,7 @@ Runtime 的 Artifact 端口，不存在 `_agent_artifact_exports` 回退表或�
 会话上传附件同样登记为 `owner=agent, kind=attachment`，共享 Artifact 是文件
 名称、媒体类型、哈希、大小、Blob 引用和终态的唯一权威；主体与来源会话通过
 `_artifact_bindings` 关联。Agent 特有的索引状态及远端写入标记保存在 Artifact
-元数据中，保留的 `_agent_attachment_index_jobs` 同时承载远端索引恢复和终态
+元数据中，`_knowledge_attachment_index_jobs` 同时承载远端索引恢复和终态
 Blob 清理。`_agent_conversation_attachments` 与 `_agent_attachment_cleanup` 已
 删除，独立 Web 宿主也不再创建第二套 `.attachments` 内容目录。删除先将
 Artifact 置为不可下载的终态，再由带 fencing 的工作项幂等删除 Blob；任务执行

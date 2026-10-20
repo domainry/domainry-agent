@@ -219,7 +219,9 @@ func TestPeerScheduleDeliveryReadsSevenReceiptsAfterWriteRevocation(t *testing.T
 	}
 	assertRead()
 	ref := refs[0]
-	b.call("POST", fmt.Sprintf("/agent/conversations/%s/runs/%s/result", ref.ConversationID, ref.RunID), accountJSON(sdk.ConversationResultRead{Reference: ref}), 403)
+	// execution_read exposes the owner's immutable receipt without replaying a
+	// schedule mutation after the write grants were removed.
+	b.call("POST", fmt.Sprintf("/agent/conversations/%s/runs/%s/result", ref.ConversationID, ref.RunID), accountJSON(sdk.ConversationResultRead{Reference: ref}), 200)
 	setScheduleGrants(false, false)
 	if value := read(); value.Delivery != nil {
 		t.Fatal("revoked plan data permission disclosed delivery")

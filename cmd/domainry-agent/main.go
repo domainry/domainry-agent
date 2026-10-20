@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,6 +14,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/processhost"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	saashost "github.com/domainry/domainry-agent/internal/assembly/saas"
 	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
@@ -29,12 +29,19 @@ import (
 )
 
 func main() {
-	if err := run(); err != nil {
-		log.Fatal(err)
+	if run() != nil {
+		os.Exit(1)
 	}
 }
 
-func run() error {
+func run() (runErr error) {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	observability, err := processhost.Open(ctx, processhost.Config{ServiceName: "domainry-agent"})
+	if err != nil {
+		return err
+	}
+	defer func() { runErr = observability.Finish(context.Background(), nil, runErr) }()
 	driver := strings.ToLower(strings.TrimSpace(os.Getenv("AGENT_SAAS_DB_DRIVER")))
 	if driver == "" {
 		driver = "sqlite"
@@ -83,11 +90,10 @@ func run() error {
 	if address == "" {
 		address = ":8090"
 	}
-	httpServer := &http.Server{Addr: address, Handler: service.Handler(), ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 130 * time.Second, WriteTimeout: 130 * time.Second, IdleTimeout: 60 * time.Second}
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
+	httpServer := &http.Server{Addr: address, Handler: observability.Handler("public", service.Handler()), ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 130 * time.Second, WriteTimeout: 130 * time.Second, IdleTimeout: 60 * time.Second}
 	result := make(chan error, 1)
 	go func() { result <- httpServer.ListenAndServe() }()
+	observability.Started(ctx, map[string]any{"listener_group": "public"})
 	select {
 	case err := <-result:
 		if errors.Is(err, http.ErrServerClosed) {
@@ -95,6 +101,7 @@ func run() error {
 		}
 		return err
 	case <-ctx.Done():
+		observability.Stopping(context.Background(), map[string]any{"reason": "signal"})
 		shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 15*time.Second)
 		defer cancel()
 		return httpServer.Shutdown(shutdownCtx)

@@ -72,7 +72,7 @@ export async function sessionFetch(path: string, init: RequestInit): Promise<Res
   const expected = current;
   const started = generation;
   const headers = new Headers(init.headers);
-  if (expected?.mode === "identity" && (path.startsWith("/agent/") || path.startsWith("/app/product/") || path.startsWith("/integration/") || path.startsWith("/tools/"))) headers.set("X-Agent-Scope", expected.scope);
+  if (expected?.mode === "identity" && (path.startsWith("/agent/") || path.startsWith("/app/product/") || path.startsWith("/integration/") || path.startsWith("/knowledge/") || path.startsWith("/tools/"))) headers.set("X-Agent-Scope", expected.scope);
   let response = await fetch(path, { ...init, headers });
   if (response.status === 401 && expected?.mode === "identity") {
     try {

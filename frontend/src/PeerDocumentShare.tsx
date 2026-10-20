@@ -21,7 +21,7 @@ export function PeerDocumentPicker({ value, disabled, onChange }: { value: Knowl
     const abort = new AbortController(); setLoading(true); setError(''); setLibraries({ items: [], complete: true }); setDocuments({ items: [], complete: true });
     const signal = AbortSignal.any([abort.signal, AbortSignal.timeout(15000)]);
     void Promise.all([
-      request<LibraryPage>(`/agent/knowledge-libraries?${new URLSearchParams({ after: libCursor, limit: '20' })}`, 'GET', undefined, signal),
+      request<LibraryPage>(`/knowledge/libraries?${new URLSearchParams({ after: libCursor, limit: '20' })}`, 'GET', undefined, signal),
       library ? request<KnowledgeDocumentPage>(`${documentPath(library)}?${new URLSearchParams({ after: docCursor, limit: '20' })}`, 'GET', undefined, signal) : Promise.resolve({ items: [], complete: true }),
     ]).then(([libs, docs]) => { if (!abort.signal.aborted) { setLibraries(libs); setDocuments(docs); } }).catch(e => { if (!abort.signal.aborted) setError(describeError(e)); }).finally(() => { if (!abort.signal.aborted) setLoading(false); });
     return () => abort.abort();

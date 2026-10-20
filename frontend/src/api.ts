@@ -157,7 +157,10 @@ export async function request<T>(
       typeof data.code === "string"
         ? data.code
         : "request_failed";
-    throw new ApiError(code, response.status);
+    const conflict = typeof data === "object" && data !== null && "conflict" in data && typeof data.conflict === "object" && data.conflict !== null
+      ? data.conflict as { current_draft_revision: number; base_published_version: number; current_content_sha256: string; current_updated_at: string }
+      : undefined;
+    throw new ApiError(code, response.status, conflict);
   }
   return data as T;
 }

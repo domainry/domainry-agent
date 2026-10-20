@@ -112,7 +112,7 @@ func (s *ConversationService) compactConversationExecutionStep(ctx context.Conte
 		}
 		return in, nil
 	}
-	current, err := compileConversationTools(in.Tools)
+	current, err := s.compiledConversationTools(in.Tools)
 	if err != nil {
 		return in, err
 	}
@@ -241,7 +241,7 @@ func (s *ConversationService) compactConversationExecutionIntervals(ctx context.
 }
 
 func (s *ConversationService) compactConversationExecutionIntervalsWithLimit(ctx context.Context, claim persistence.ConversationClaim, in agentsdk.ConversationStepRequest, before int, contextLimit int) (agentsdk.ConversationStepRequest, bool, error) {
-	current, err := compileConversationTools(in.Tools)
+	current, err := s.compiledConversationTools(in.Tools)
 	if err != nil {
 		return in, false, err
 	}

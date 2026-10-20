@@ -14,6 +14,14 @@ func (s *ConversationService) libraryKnowledgeSource() (agentsdk.ConversationLib
 	return source, nil
 }
 
+func (s *ConversationService) conversationKnowledgeSource() (agentsdk.ConversationKnowledgeSource, error) {
+	source, ok := s.options.Knowledge.(agentsdk.ConversationKnowledgeSource)
+	if !ok || source == nil {
+		return nil, conversationFailure("unavailable", "knowledge_unavailable")
+	}
+	return source, nil
+}
+
 func (s *ConversationService) ListKnowledgeLibraries(ctx context.Context, after string, limit int, authority agentsdk.ConversationAuthority) (agentsdk.ConversationKnowledgeResult, error) {
 	source, err := s.libraryKnowledgeSource()
 	if err != nil {
@@ -39,7 +47,7 @@ func (s *ConversationService) ReadLibraryKnowledge(ctx context.Context, libraryI
 }
 
 func (s *ConversationService) SearchKnowledge(ctx context.Context, query string, authority agentsdk.ConversationAuthority) (agentsdk.ConversationKnowledgeResult, error) {
-	source, err := s.libraryKnowledgeSource()
+	source, err := s.conversationKnowledgeSource()
 	if err != nil {
 		return agentsdk.ConversationKnowledgeResult{}, err
 	}
@@ -47,7 +55,7 @@ func (s *ConversationService) SearchKnowledge(ctx context.Context, query string,
 }
 
 func (s *ConversationService) ReadKnowledge(ctx context.Context, documentID string, authority agentsdk.ConversationAuthority) (agentsdk.ConversationKnowledgeResult, error) {
-	source, err := s.libraryKnowledgeSource()
+	source, err := s.conversationKnowledgeSource()
 	if err != nil {
 		return agentsdk.ConversationKnowledgeResult{}, err
 	}
@@ -55,7 +63,7 @@ func (s *ConversationService) ReadKnowledge(ctx context.Context, documentID stri
 }
 
 func (s *ConversationService) RevalidateKnowledge(ctx context.Context, saved agentsdk.ConversationKnowledgeResult, authority agentsdk.ConversationAuthority) error {
-	source, err := s.libraryKnowledgeSource()
+	source, err := s.conversationKnowledgeSource()
 	if err != nil {
 		return err
 	}

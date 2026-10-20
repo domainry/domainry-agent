@@ -169,7 +169,7 @@ func (s LifecycleStore) conversationLifecycleActive(ctx context.Context, owner, 
 
 func (s LifecycleStore) conversationLifecyclePayload(ctx context.Context, owner, id string, conversation []byte) (json.RawMessage, error) {
 	graph := map[string]any{"conversation": json.RawMessage(append([]byte(nil), conversation...))}
-	for _, table := range []string{conversationItemTable, agentRunTable, conversationRunStepTable, interactionTable, conversationTaskTable, conversationForkTable} {
+	for _, table := range []string{conversationItemTable, agentRunTable, conversationRunStepTable, conversationToolCallTable, interactionTable, conversationTaskTable, conversationForkTable} {
 		predicate := query.And(query.Equal("owner_key", owner), query.Equal("conversation_id", id))
 		if table == agentRunTable {
 			predicate = query.And(agentRunKindPredicate(agentRunKindConversation), predicate)
@@ -200,6 +200,13 @@ func (s LifecycleStore) conversationLifecyclePayload(ctx context.Context, owner,
 		if len(items) > 0 {
 			graph[table] = items
 		}
+	}
+	execution, err := (&ConversationStore{store: s.store}).executionRetentionPayloads(ctx, s.store.Database(), owner, id)
+	if err != nil {
+		return nil, err
+	}
+	for table, items := range execution {
+		graph[table] = items
 	}
 	plans, err := (&ConversationStore{store: s.store}).conversationTaskPlanPayloadsForSource(ctx, s.store.Database(), owner, id)
 	if err != nil {
@@ -281,7 +288,7 @@ func (s LifecycleStore) deleteConversationLifecycleCandidate(ctx context.Context
 			return execErr
 		}
 		deleted = true
-		for _, table := range []string{conversationItemTable, agentRunTable, conversationRunStepTable, interactionTable, conversationForkTable} {
+		for _, table := range []string{conversationItemTable, agentRunTable, conversationRunStepTable, conversationStepInputTable, conversationToolCallTable, conversationStepSourceTable, conversationToolCatalogTable, interactionTable, conversationForkTable} {
 			predicate := query.And(query.Equal("owner_key", candidate.OwnerKey), query.Equal("conversation_id", candidate.ResourceID))
 			if table == agentRunTable {
 				predicate = query.And(agentRunKindPredicate(agentRunKindConversation), predicate)

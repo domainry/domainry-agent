@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -71,6 +72,16 @@ type knowledgeArguments struct {
 	LibraryID    string `json:"library_id"`
 	After        string `json:"after"`
 	Limit        int    `json:"limit"`
+}
+
+type conversationResultAuthorizationFailure interface {
+	error
+	ConversationResultAuthorizationFailed()
+}
+
+func resultAuthorizationFailed(err error) bool {
+	var failure conversationResultAuthorizationFailure
+	return errors.As(err, &failure)
 }
 
 func (h *knowledgeConversationHost) ConversationTools(ctx context.Context, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, error) {
@@ -151,6 +162,9 @@ func (h *knowledgeConversationHost) InvokeConversationTool(ctx context.Context, 
 	}
 
 	if err != nil {
+		if resultAuthorizationFailed(err) {
+			return agentsdk.ConversationToolResult{}, err
+		}
 		return personalToolFailure(conversationModelFailureCode(err, "knowledge_failed")), nil
 	}
 	return personalToolResult(evidence)

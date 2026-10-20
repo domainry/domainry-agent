@@ -32,7 +32,7 @@ func TestAttachmentKnowledgeConfigurationOwnsPrivateScopeAndRejectsKBReuse(t *te
 	if err != nil {
 		t.Fatal(err)
 	}
-	if first.Source.KnowledgeDocumentMaxBytes() != 10<<20 {
+	if first.Source.KnowledgeDocumentIndexMaximumBytes() != 10<<20 {
 		t.Fatal("upstream limit lost")
 	}
 	for _, other := range []agentsdk.ConversationAuthority{{Known: true, RuntimeID: "foreign", WorkspaceID: "w", UserID: "alice"}, {Known: true, RuntimeID: "runtime", WorkspaceID: "foreign", UserID: "alice"}, {RuntimeID: "runtime", WorkspaceID: "w", UserID: "alice"}} {

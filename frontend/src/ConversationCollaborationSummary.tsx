@@ -4,10 +4,11 @@ import { Button } from './components/ui/button';
 import { delegationAttentionReasons, delegationBusinessStage, delegationConditionProgress, delegationCurrentActivity, delegationOpenQuestions, type AgentPage, type CollaborationAuthorization, type Delegation } from './collaboration-state.ts';
 
 export function ConversationCollaborationSummary({conversationID,delegationID,userID,onOpen}:{conversationID:string;delegationID?:string;userID:string;onOpen:(delegationID:string)=>void}) {
- const [items,setItems]=useState<Delegation[]>([]),[agents,setAgents]=useState<AgentPage['items']>([]),[refresh,setRefresh]=useState(0),[loading,setLoading]=useState(false);
+ const [items,setItems]=useState<Delegation[]>([]),[agents,setAgents]=useState<AgentPage['items']>([]),[refresh,setRefresh]=useState(0),[loading,setLoading]=useState(false),[loaded,setLoaded]=useState(false);
  useEffect(()=>{
   if(!conversationID){setItems([]);return;}
-  const controller=new AbortController();setLoading(true);
+  const controller=new AbortController();
+  if(!loaded)setLoading(true);
   void (async()=>{
    try{
     const access=await request<CollaborationAuthorization>('/agent/collaboration-access','GET',undefined,controller.signal);
@@ -21,12 +22,15 @@ export function ConversationCollaborationSummary({conversationID,delegationID,us
     setItems(work.status==='fulfilled'?work.value.items.filter(item=>item.source_conversation_id===conversationID||item.conversation_id===conversationID||item.assignments?.some(assignment=>assignment.conversation_id===conversationID)||item.id===delegationID):[]);
     setAgents(directory.status==='fulfilled'?directory.value.items:[]);
    }catch{if(!controller.signal.aborted){setItems([]);setAgents([]);}}
-   finally{if(!controller.signal.aborted)setLoading(false);}
+   finally{if(!controller.signal.aborted){setLoaded(true);setLoading(false);}}
   })();
   return()=>controller.abort();
  },[conversationID,delegationID,refresh]);
  useEffect(()=>{if(!conversationID)return;const timer=window.setTimeout(()=>setRefresh(value=>value+1),3000);return()=>window.clearTimeout(timer);},[conversationID,refresh]);
- if(!items.length)return loading?<p className="collaboration-inline-loading" role="status">正在同步协作状态…</p>:null;
+ // Only the first read owns visible loading UI. Periodic revalidation keeps the
+ // last projection mounted so an empty collaboration set cannot shift the whole
+ // conversation in and out every three seconds.
+ if(!items.length)return !loaded&&loading?<p className="collaboration-inline-loading" role="status">正在同步协作状态…</p>:null;
  const name=(id:string)=>agents.find(agent=>agent.id===id)?.name||items.find(item=>item.from_agent_id===id)?.source_agent?.name||id;
  const attention=items.reduce((total,item)=>total+delegationAttentionReasons(item,userID).length,0);
  return <section className="collaboration-inline" aria-label="当前会话的 Agent 协作">

@@ -177,6 +177,8 @@ func TestPeerCollaborationPermissionsRecheckCurrentRoleAcrossEntrypoints(t *test
 		b.call("POST", endpoint, "{}", 403)
 	}
 	raw, _ = json.Marshal(sdk.ConversationResultRead{Reference: *saved, MaxBytes: 4096})
+	// Delegated execution remains a collaboration boundary: view alone cannot
+	// open an execution receipt owned by the delegated conversation.
 	b.call("POST", runPath+"/result", string(raw), 403)
 	var tasks sdk.ConversationTaskPage
 	json.Unmarshal(b.call("GET", "/agent/conversation-tasks", "", 200).Body.Bytes(), &tasks)
@@ -213,8 +215,9 @@ func TestPeerCollaborationPermissionsRecheckCurrentRoleAcrossEntrypoints(t *test
 	if d.Task == nil || d.Delivery != nil {
 		t.Fatalf("execution permission granted delivery access: %+v", d.Access)
 	}
-	// Reading a previously saved delegation_update payload rechecks delivery_read.
-	b.call("POST", runPath+"/result", string(raw), 403)
+	// The owner's exact saved receipt is historical; delivery_read gates the
+	// live delegation projection, not this immutable run result.
+	b.call("POST", runPath+"/result", string(raw), 200)
 	setTestCollaborationPermissions(t, host, b, "view", "manage")
 	decision("pause", 200)
 	if getDetail().Status != "paused" {

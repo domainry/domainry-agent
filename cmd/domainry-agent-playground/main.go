@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -17,6 +16,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/domainry/domainry-foundation/processhost"
 	"github.com/domainry/domainry-agent/internal/application"
 	persistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
@@ -28,11 +28,18 @@ import (
 )
 
 func main() {
-	if err := run(); err != nil {
-		log.Fatal(err)
+	if run() != nil {
+		os.Exit(1)
 	}
 }
-func run() error {
+func run() (runErr error) {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	observability, err := processhost.Open(ctx, processhost.Config{ServiceName: "domainry-agent-playground"})
+	if err != nil {
+		return err
+	}
+	defer func() { runErr = observability.Finish(context.Background(), nil, runErr) }()
 	config := provider.ConversationModelConfigFromEnvironment()
 	model, err := provider.NewConversationModel(config)
 	if err != nil {
@@ -109,12 +116,10 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	server := &http.Server{Handler: handler, ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 30 * time.Second, WriteTimeout: 40 * time.Second, IdleTimeout: 60 * time.Second}
-	fmt.Printf("Agent conversation: http://%s\nSQLite: %s\n", listener.Addr(), path)
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
+	server := &http.Server{Handler: observability.Handler("public", handler), ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 30 * time.Second, WriteTimeout: 40 * time.Second, IdleTimeout: 60 * time.Second}
 	done := make(chan error, 1)
 	go func() { done <- server.Serve(listener) }()
+	observability.Started(ctx, map[string]any{"listener_group": "public", "mode": "playground"})
 	select {
 	case err := <-done:
 		if errors.Is(err, http.ErrServerClosed) {
@@ -122,6 +127,7 @@ func run() error {
 		}
 		return err
 	case <-ctx.Done():
+		observability.Stopping(context.Background(), map[string]any{"reason": "signal"})
 		conversations.Close()
 		shutdown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()

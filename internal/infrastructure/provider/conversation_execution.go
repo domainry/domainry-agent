@@ -19,7 +19,7 @@ var conversationFunctionName = regexp.MustCompile(`^[a-zA-Z0-9_-]{1,64}$`)
 func (m *ConversationModel) ConversationModelIdentity() agentsdk.ConversationModelIdentity {
 	// The credential and HTTP client are deliberately excluded. Credential
 	// rotation does not change the meaning of an already frozen model step.
-	raw, _ := json.Marshal([]any{m.config.Provider, m.config.Protocol, m.config.URL, m.config.Model, m.config.MaxOutputTokens, m.ConversationModelCapabilities(), m.config.DefaultReasoningEffort, "conversation-step-v2"})
+	raw, _ := json.Marshal([]any{m.config.Provider, m.config.Protocol, m.config.URL, m.config.Model, m.config.MaxOutputTokens, m.ConversationModelCapabilities(), m.config.DefaultReasoningEffort, "conversation-step-v3"})
 	digest := sha256.Sum256(raw)
 	return agentsdk.ConversationModelIdentity{Provider: m.config.Provider, Protocol: m.config.Protocol, Model: m.config.Model, Fingerprint: hex.EncodeToString(digest[:])}
 }
@@ -120,7 +120,7 @@ func (m *ConversationModel) StreamConversationStep(ctx context.Context, in agent
 	if err != nil {
 		return agentsdk.ConversationStepResult{}, err
 	}
-	resp, err := m.sendConversationPayload(ctx, payload, in.IdempotencyKey, true)
+	resp, err := m.sendConversationPayload(ctx, payload, in.IdempotencyKey, in.ConversationID, true)
 	if err != nil {
 		return agentsdk.ConversationStepResult{}, err
 	}
@@ -204,11 +204,40 @@ func (m *ConversationModel) stepPayloadMode(in agentsdk.ConversationStepRequest,
 		}
 	}
 	if len(tools) > 0 {
+		if m.config.Protocol == ConversationProtocolMessages {
+			tools[len(tools)-1].(map[string]any)["cache_control"] = map[string]any{"type": "ephemeral"}
+		}
 		payload["tools"] = tools
 	}
 	items := make([]any, 0, len(in.Messages))
 	system := []string{}
+	systemBlocks := []any{}
+	stableSystemEnd := -1
+	prefixOpen := true
+	stableSources := map[string]bool{}
+	if in.Context != nil {
+		for _, reference := range in.Context.Sources {
+			stableSources[reference.Key] = reference.StablePrefix
+		}
+	}
+	definitions := map[string]agentsdk.ConversationToolDefinition{}
+	for _, tool := range in.Tools {
+		definitions[tool.Key] = tool
+	}
+	callNames := map[string]string{}
 	for _, message := range in.Messages {
+		for _, call := range message.ToolCalls {
+			callNames[call.ID] = call.Name
+		}
+		if message.Role == "tool" {
+			if definition, exists := definitions[callNames[message.ToolCallID]]; exists {
+				var projectionErr error
+				message.Content, projectionErr = projectModelToolContent(message.Content, definition)
+				if projectionErr != nil {
+					return nil, projectionErr
+				}
+			}
+		}
 		if err := validateContent(message.Role, message.Content, message.ContentBlocks, in.ModelCapabilities.ImageInput); err != nil {
 			return nil, err
 		}
@@ -244,8 +273,16 @@ func (m *ConversationModel) stepPayloadMode(in agentsdk.ConversationStepRequest,
 					return nil, fmt.Errorf("Messages requires leading system instructions")
 				}
 				system = append(system, message.Content)
+				systemBlocks = append(systemBlocks, map[string]any{"type": "text", "text": message.Content})
+				stable, registered := stableSources[message.ContextSourceKey]
+				if prefixOpen && (!registered || stable) {
+					stableSystemEnd = len(systemBlocks) - 1
+				} else {
+					prefixOpen = false
+				}
 				continue
 			}
+			prefixOpen = false
 			role := message.Role
 			blocks := []any{}
 			if message.Role == "tool" {
@@ -307,7 +344,10 @@ func (m *ConversationModel) stepPayloadMode(in agentsdk.ConversationStepRequest,
 	case ConversationProtocolMessages:
 		payload["messages"], payload["max_tokens"] = items, maxOutputTokens
 		if len(system) > 0 {
-			payload["system"] = strings.Join(system, "\n\n")
+			if stableSystemEnd >= 0 {
+				systemBlocks[stableSystemEnd].(map[string]any)["cache_control"] = map[string]any{"type": "ephemeral"}
+			}
+			payload["system"] = systemBlocks
 		}
 	case ConversationProtocolResponses:
 		payload["input"], payload["max_output_tokens"], payload["store"] = items, maxOutputTokens, false

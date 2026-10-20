@@ -257,27 +257,12 @@ func (h *collaborationToolHost) ReconcileConversationTool(ctx context.Context, i
 	return h.InvokeConversationTool(ctx, in)
 }
 
-func (h *collaborationToolHost) AuthorizeConversationToolResult(ctx context.Context, in agentsdk.ConversationToolRequest, result agentsdk.ConversationToolResult) (resultErr error) {
-	deferred, tracked := ctx.Value(conversationModelSourceRecordKey{}).(*conversationModelSourceRecord)
-	tracked = tracked && deferred.s == h.service && deferred.matchesRecord(in, result)
-	if tracked {
-		deferred.checked = false
-		defer func() {
-			if resultErr != nil {
-				deferred.failure = resultErr
-			}
-		}()
-	}
+func (h *collaborationToolHost) AuthorizeConversationToolResult(ctx context.Context, in agentsdk.ConversationToolRequest, result agentsdk.ConversationToolResult) error {
 	if _, peer := collaborationTool(in.Definition.Key); peer {
 		// A model consumer cannot use this route to turn a private source into
 		// shared context. Public user reads retain their separate owner checks.
 		record := persistence.ConversationToolExecution{Step: in.Step, Call: in.Call, Definition: in.Definition, Result: &result}
-		var sourceErr error
-		if tracked && deferred.matches(ctx, in, result) {
-			sourceErr = deferred.check(ctx)
-		} else {
-			_, sourceErr = h.service.sourceAudit(in.Authority, in.ConversationID).record(ctx, agentsdk.ConversationRunReference{ConversationID: in.ConversationID, RunID: in.RunID}, record)
-		}
+		_, sourceErr := h.service.sourceAudit(in.Authority, in.ConversationID).record(ctx, agentsdk.ConversationRunReference{ConversationID: in.ConversationID, RunID: in.RunID}, record)
 		if sourceErr != nil {
 			return sourceErr
 		}

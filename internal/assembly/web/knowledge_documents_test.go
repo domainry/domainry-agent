@@ -3,7 +3,10 @@ package web
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -20,6 +23,7 @@ import (
 	webhttp "github.com/domainry/domainry-agent/internal/transport/http/web"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
+	knowledgesdk "github.com/domainry/domainry-knowledge-sdk"
 )
 
 func TestKnowledgeDocumentsIdentityHTTPAndPersistentOriginal(t *testing.T) {
@@ -130,7 +134,7 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 		}
 	}()
 	newBrowser := func() *browser {
-		handler, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Files: fstest.MapFS{"index.html": {Data: []byte("chat")}}})
+		handler, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Files: fstest.MapFS{"index.html": {Data: []byte("chat")}}, ModuleAdapters: knowledgeTestAdapters(t, host)})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -143,18 +147,13 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 		mutateTestRolePermissions(t, host, b, func(prior []identitysdk.ProjectRolePermission) []identitysdk.ProjectRolePermission {
 			out := []identitysdk.ProjectRolePermission{}
 			for _, p := range prior {
-				if !strings.HasPrefix(p.PermissionKey, agentsdk.ConversationActionPrefix+"libraries_") && !strings.HasPrefix(p.PermissionKey, agentsdk.ConversationActionPrefix+"documents_") && !strings.HasPrefix(p.PermissionKey, agentsdk.ConversationActionPrefix+"attachments_") && !strings.HasPrefix(p.PermissionKey, agentsdk.ConversationToolActionPrefix+"knowledge_") {
+				if !strings.HasPrefix(p.PermissionKey, "knowledge.") && !strings.HasPrefix(p.PermissionKey, agentsdk.ConversationActionPrefix+"attachments_") && !strings.HasPrefix(p.PermissionKey, agentsdk.ConversationToolActionPrefix+"knowledge_") {
 					out = append(out, p)
 				}
 			}
+			out = appendKnowledgeRolePermissions(t, out, denied)
 			for _, d := range agentsdk.ConversationHTTPDefinitions() {
-				p := agentsdk.KnowledgeLibraryPermission(d.Operation)
-				if p == nil {
-					p = agentsdk.KnowledgeDocumentPermission(d.Operation)
-				}
-				if p == nil {
-					p = agentsdk.ConversationAttachmentPermission(d.Operation)
-				}
+				p := agentsdk.ConversationAttachmentPermission(d.Operation)
 				if p != nil && d.Operation != denied {
 					out = append(out, identitysdk.ProjectRolePermission{PermissionKey: p.Key, DataScope: identitysdk.DataScopeAll})
 				}
@@ -174,19 +173,23 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 	}
 	grant("")
 	var lib agentsdk.KnowledgeLibrary
-	if err := json.Unmarshal(b.call("POST", "/agent/knowledge-libraries", `{"client_id":"shared","kind":"shared","name":"共享资料"}`, 200).Body.Bytes(), &lib); err != nil {
+	if err := json.Unmarshal(b.call("POST", "/knowledge/libraries", `{"client_id":"shared","kind":"shared","name":"共享资料"}`, 201).Body.Bytes(), &lib); err != nil {
 		t.Fatal(err)
 	}
 	if lib.DocumentsConfigured {
 		t.Fatal("unbound library advertised document management")
 	}
-	path := "/agent/knowledge-libraries/" + lib.ID + "/documents"
+	path := "/knowledge/libraries/" + lib.ID + "/documents"
 	query := url.Values{"client_id": {"upload"}, "filename": {"资料.txt"}}.Encode()
 	raw := []byte("共享资料原件：123.45\n")
+	digest := sha256.Sum256(raw)
 	upload := func(q, origin string, want int) *httptest.ResponseRecorder {
 		t.Helper()
 		req := httptest.NewRequest("POST", "http://127.0.0.1:8091"+path+"?"+q, bytes.NewReader(raw))
 		req.Header.Set("Content-Type", "application/octet-stream")
+		req.Header.Set("Content-Range", fmt.Sprintf("bytes 0-%d/%d", len(raw)-1, len(raw)))
+		req.Header.Set("X-Knowledge-File-SHA256", hex.EncodeToString(digest[:]))
+		req.Header.Set("X-Knowledge-Chunk-SHA256", hex.EncodeToString(digest[:]))
 		req.Header.Set("Origin", origin)
 		req.Header.Set("X-Agent-Scope", b.scope)
 		for _, c := range b.cookies {
@@ -219,8 +222,8 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 	}
 
 	if dynamic {
-		sourcePath := "/agent/knowledge-libraries/" + lib.ID + "/sources"
-		bindPath := "/agent/knowledge-libraries/" + lib.ID + "/source"
+		sourcePath := "/knowledge/libraries/" + lib.ID + "/sources"
+		bindPath := "/knowledge/libraries/" + lib.ID + "/source"
 		var page agentsdk.KnowledgeLibrarySources
 		readSources := func() {
 			t.Helper()
@@ -240,13 +243,13 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 		b.call("GET", sourcePath+"?limit=1&limit=2", "", 400)
 		b.call("PUT", bindPath+"?permission_ids=all", `{"datasource_key":"first","expected_revision":1}`, 400)
 		b.call("PUT", bindPath, `{"datasource_key":"first","expected_revision":1,"permission_ids":["all"]}`, 400)
-		grant("libraries_bind_source")
+		grant(knowledgesdk.ActionSourcesBind)
 		readSources()
 		if page.CanBind || page.Items[0].Available {
 			t.Fatal("Identity denied but source offered")
 		}
 		b.call("PUT", bindPath, `{"datasource_key":"first","expected_revision":1}`, 403)
-		grant("libraries_sources")
+		grant(knowledgesdk.ActionSourcesList)
 		b.call("GET", sourcePath, "", 403)
 		grant("")
 		b.call("PUT", bindPath, `{"datasource_key":"unknown","expected_revision":1}`, 404)
@@ -271,17 +274,28 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 	} else {
 		reopen()
 	}
-	if err := json.Unmarshal(b.call("GET", "/agent/knowledge-libraries/"+lib.ID, "", 200).Body.Bytes(), &lib); err != nil || !lib.DocumentsConfigured || lib.DocumentMaxBytes != 10<<20 {
+	if err := json.Unmarshal(b.call("GET", "/knowledge/libraries/"+lib.ID, "", 200).Body.Bytes(), &lib); err != nil || !lib.DocumentsConfigured || lib.DocumentMaxBytes != agentsdk.KnowledgeDocumentMaximumBytes || lib.DocumentIndexMaxBytes != 10<<20 {
 		t.Fatal("managed document capability missing", err)
+	}
+	formatLimits := map[string]agentsdk.KnowledgeDocumentFormat{}
+	for _, format := range lib.DocumentFormats {
+		formatLimits[format.Extension] = format
+	}
+	if formatLimits[".mp4"].BuilderMaxBytes != 20<<20 || formatLimits[".mp4"].AssetMaxBytes != 20<<20 || formatLimits[".png"].EnrichmentMaxBytes != 8<<20 || formatLimits[".xlsx"].AnalysisOutputMaxBytes != 16<<20 {
+		t.Fatalf("Builder format limits were flattened into the Connector limit: %+v", formatLimits)
 	}
 	upload(query, "http://untrusted.example", 403)
 	upload(query+"&permission_ids=all", "http://127.0.0.1:8091", 400)
-	grant("documents_upload")
+	grant(knowledgesdk.ActionDocumentsUpload)
 	upload(query, "http://127.0.0.1:8091", 403)
 	grant("")
-	var doc agentsdk.KnowledgeDocument
-	if err := json.Unmarshal(upload(query, "http://127.0.0.1:8091", 200).Body.Bytes(), &doc); err != nil || doc.State != "queued" {
-		t.Fatal("upload claimed ready", doc, err)
+	var progress agentsdk.KnowledgeDocumentUploadProgress
+	if err := json.Unmarshal(upload(query, "http://127.0.0.1:8091", 200).Body.Bytes(), &progress); err != nil || !progress.Complete || progress.Document == nil {
+		t.Fatal("upload did not complete", progress, err)
+	}
+	doc := *progress.Document
+	if doc.State != "quarantined" || doc.SecurityStatus != "pending" {
+		t.Fatal("upload bypassed quarantine", doc)
 	}
 	statusPath, downloadPath := path+"/"+doc.ID, path+"/"+doc.ID+"/content"
 	for deadline := time.Now().Add(5 * time.Second); ; {
@@ -300,7 +314,7 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 	if !bytes.Equal(download.Body.Bytes(), raw) || download.Header().Get("Content-Type") != "application/octet-stream" || download.Header().Get("Cache-Control") != "private, no-store" || download.Header().Get("X-Content-Type-Options") != "nosniff" {
 		t.Fatal("unsafe original download")
 	}
-	grant("documents_download")
+	grant(knowledgesdk.ActionDocumentsDownload)
 	b.call("GET", downloadPath, "", 403)
 	grant("")
 	reopen()
@@ -314,10 +328,10 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 			t.Helper()
 			reopen()
 			var current agentsdk.KnowledgeLibrary
-			if e := json.Unmarshal(b.call("GET", "/agent/knowledge-libraries/"+lib.ID, "", 200).Body.Bytes(), &current); e != nil || current.DocumentsConfigured || current.KnowledgeConfigured || current.DatasourceKey != "first" {
+			if e := json.Unmarshal(b.call("GET", "/knowledge/libraries/"+lib.ID, "", 200).Body.Bytes(), &current); e != nil || current.DocumentsConfigured || current.KnowledgeConfigured || current.DatasourceKey != "first" {
 				t.Fatal("changed source remained active", e)
 			}
-			sourcePage := b.call("GET", "/agent/knowledge-libraries/"+lib.ID+"/sources", "", 200).Body.String()
+			sourcePage := b.call("GET", "/knowledge/libraries/"+lib.ID+"/sources", "", 200).Body.String()
 			if !strings.Contains(sourcePage, `"status":"unavailable"`) {
 				t.Fatal("unavailable source not explained")
 			}
@@ -339,7 +353,7 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 		assertUnavailable()
 		options.Agent.KnowledgeDatasources = originalSources
 		reopen()
-		if e := json.Unmarshal(b.call("GET", "/agent/knowledge-libraries/"+lib.ID, "", 200).Body.Bytes(), &lib); e != nil || !lib.DocumentsConfigured {
+		if e := json.Unmarshal(b.call("GET", "/knowledge/libraries/"+lib.ID, "", 200).Body.Bytes(), &lib); e != nil || !lib.DocumentsConfigured {
 			t.Fatal("restored config did not recover persisted binding", e)
 		}
 	}
@@ -349,7 +363,7 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 	}
 	b.call("GET", downloadPath, "", 404)
 	if os.Getenv("AGENT_TOOL_UI_ACCEPTANCE") == "1" {
-		b.call("POST", "/agent/knowledge-libraries", `{"client_id":"personal","kind":"personal","name":"个人资料"}`, 200)
+		b.call("POST", "/knowledge/libraries", `{"client_id":"personal","kind":"personal","name":"个人资料"}`, 201)
 		options.Agent.ConversationOptions.DocumentPoll = 200 * time.Millisecond
 		reopen()
 		mu.Lock()
@@ -358,10 +372,10 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 		controls := map[string]func(){
 			"restart_document_host":      reopen,
 			"revoke_extract":             func() { grant("knowledge_extract") },
-			"revoke_document_download":   func() { grant("documents_download") },
-			"revoke_document_list":       func() { grant("documents_list") },
-			"revoke_document_import":     func() { grant("documents_import_attachment") },
-			"revoke_document_transfer":   func() { grant("documents_transfer") },
+			"revoke_document_download":   func() { grant(knowledgesdk.ActionDocumentsDownload) },
+			"revoke_document_list":       func() { grant(knowledgesdk.ActionDocumentsList) },
+			"revoke_document_import":     func() { grant(knowledgesdk.ActionDocumentsImportAttachment) },
+			"revoke_document_transfer":   func() { grant(knowledgesdk.ActionDocumentsTransfer) },
 			"revoke_attachment_download": func() { grant("attachments_download") },
 			"restore_documents":          func() { grant("") },
 			"resume_document_indexing": func() {
@@ -386,12 +400,12 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 		}
 
 		if dynamic {
-			b.call("POST", "/agent/knowledge-libraries", `{"client_id":"browser-unbound","kind":"shared","name":"待连接共享资料"}`, 200)
+			b.call("POST", "/knowledge/libraries", `{"client_id":"browser-unbound","kind":"shared","name":"待连接共享资料"}`, 201)
 			catalog := options.Agent.KnowledgeDatasources
 			controls["remove_datasource_config"] = func() { options.Agent.KnowledgeDatasources = nil; reopen() }
 			controls["restore_datasource_config"] = func() { options.Agent.KnowledgeDatasources = catalog; reopen() }
-			controls["revoke_source_bind"] = func() { grant("libraries_bind_source") }
-			controls["revoke_source_list"] = func() { grant("libraries_sources") }
+			controls["revoke_source_bind"] = func() { grant(knowledgesdk.ActionSourcesBind) }
+			controls["revoke_source_list"] = func() { grant(knowledgesdk.ActionSourcesList) }
 		}
 		servePersonalToolAcceptanceWithHost(t, func() *Host { return host }, options, controls)
 		mu.Lock()

@@ -1,8 +1,12 @@
 package web
 
 import (
+	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -20,6 +24,7 @@ import (
 	webhttp "github.com/domainry/domainry-agent/internal/transport/http/web"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	identity "github.com/domainry/domainry-identity-sdk"
+	knowledgesdk "github.com/domainry/domainry-knowledge-sdk"
 	tools "github.com/domainry/domainry-tools-sdk"
 )
 
@@ -91,6 +96,7 @@ func TestPeerKnowledgeDeliveryReadsWithoutSearchReadOrExtractExecution(t *testin
 		if err != nil {
 			t.Fatal(err)
 		}
+		adapters = append(adapters, knowledgeTestAdapters(t, host)...)
 		h, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Model: "peer", Files: fstest.MapFS{"index.html": {Data: []byte("knowledge receipts")}}, ModuleAdapters: adapters, ApplicationRoutes: host.ToolSettingsSetupRoutes()})
 		if err != nil {
 			t.Fatal(err)
@@ -111,19 +117,11 @@ func TestPeerKnowledgeDeliveryReadsWithoutSearchReadOrExtractExecution(t *testin
 		mutateTestRolePermissions(t, host, b, func(prior []identity.ProjectRolePermission) []identity.ProjectRolePermission {
 			out := []identity.ProjectRolePermission{}
 			for _, p := range prior {
-				if !strings.HasPrefix(p.PermissionKey, sdk.ConversationActionPrefix+"libraries_") && !strings.HasPrefix(p.PermissionKey, sdk.ConversationActionPrefix+"documents_") && !strings.HasPrefix(p.PermissionKey, sdk.ConversationToolActionPrefix+"knowledge_") {
+				if !strings.HasPrefix(p.PermissionKey, "knowledge.") && !strings.HasPrefix(p.PermissionKey, sdk.ConversationToolActionPrefix+"knowledge_") {
 					out = append(out, p)
 				}
 			}
-			for _, d := range sdk.ConversationHTTPDefinitions() {
-				p := sdk.KnowledgeLibraryPermission(d.Operation)
-				if p == nil {
-					p = sdk.KnowledgeDocumentPermission(d.Operation)
-				}
-				if p != nil && d.Operation != denied {
-					out = append(out, identity.ProjectRolePermission{PermissionKey: p.Key, DataScope: identity.DataScopeAll})
-				}
-			}
+			out = appendKnowledgeRolePermissions(t, out, denied)
 			if execute {
 				for _, d := range append(sdk.LibraryKnowledgeConversationTools(), sdk.KnowledgeExtractionTool()) {
 					out = append(out, identity.ProjectRolePermission{PermissionKey: d.ActionKey, DataScope: identity.DataScopeOwner})
@@ -134,11 +132,17 @@ func TestPeerKnowledgeDeliveryReadsWithoutSearchReadOrExtractExecution(t *testin
 	}
 	grant(true, "")
 	b.call("POST", "/app/product/tool-settings-setup", "{}", 200)
-	library := accountDecode[sdk.KnowledgeLibrary](t, b.call("POST", "/agent/knowledge-libraries", `{"client_id":"receipt-library","kind":"shared","name":"成果来源资料库"}`, 200))
-	libraryPath := "/agent/knowledge-libraries/" + library.ID
+	library := accountDecode[sdk.KnowledgeLibrary](t, b.call("POST", "/knowledge/libraries", `{"client_id":"receipt-library","kind":"shared","name":"成果来源资料库"}`, 201))
+	libraryPath := "/knowledge/libraries/" + library.ID
 	b.call("PUT", libraryPath+"/source", `{"datasource_key":"source","expected_revision":1}`, 200)
-	req := httptest.NewRequest("POST", "http://127.0.0.1:8091"+libraryPath+"/documents?"+url.Values{"client_id": {"original"}, "filename": {"金额依据.txt"}}.Encode(), strings.NewReader("金额：123.45\n资料编号：R-2026\n"))
+	rawDocument := []byte("金额：123.45\n资料编号：R-2026\n")
+	documentDigest := sha256.Sum256(rawDocument)
+	documentHash := hex.EncodeToString(documentDigest[:])
+	req := httptest.NewRequest("POST", "http://127.0.0.1:8091"+libraryPath+"/documents?"+url.Values{"client_id": {"original"}, "filename": {"金额依据.txt"}}.Encode(), bytes.NewReader(rawDocument))
 	req.Header.Set("Content-Type", "application/octet-stream")
+	req.Header.Set("Content-Range", fmt.Sprintf("bytes 0-%d/%d", len(rawDocument)-1, len(rawDocument)))
+	req.Header.Set("X-Knowledge-File-SHA256", documentHash)
+	req.Header.Set("X-Knowledge-Chunk-SHA256", documentHash)
 	req.Header.Set("Origin", "http://127.0.0.1:8091")
 	req.Header.Set("X-Agent-Scope", b.scope)
 	for _, c := range b.cookies {
@@ -149,7 +153,11 @@ func TestPeerKnowledgeDeliveryReadsWithoutSearchReadOrExtractExecution(t *testin
 	if w.Code != 200 {
 		t.Fatalf("upload: %d %s", w.Code, w.Body.String())
 	}
-	doc := accountDecode[sdk.KnowledgeDocument](t, w)
+	progress := accountDecode[sdk.KnowledgeDocumentUploadProgress](t, w)
+	if !progress.Complete || progress.Document == nil {
+		t.Fatalf("upload incomplete: %+v", progress)
+	}
+	doc := *progress.Document
 	docPath := libraryPath + "/documents/" + doc.ID
 	for deadline := time.Now().Add(30 * time.Second); doc.State != "ready"; {
 		if time.Now().After(deadline) {
@@ -223,7 +231,7 @@ func TestPeerKnowledgeDeliveryReadsWithoutSearchReadOrExtractExecution(t *testin
 		b.call("GET", run, "", 403)
 		b.call("POST", run+"/result", accountJSON(sdk.ConversationResultRead{Reference: ref}), 403)
 	}
-	for _, denied := range []string{"documents_download", "libraries_get", "libraries_list"} {
+	for _, denied := range []string{knowledgesdk.ActionDocumentsDownload, knowledgesdk.ActionLibrariesGet, knowledgesdk.ActionLibrariesList} {
 		grant(false, denied)
 		if got := read(); got.Delivery != nil || got.Verification != nil {
 			t.Fatalf("source revocation %s kept delivery", denied)
@@ -249,7 +257,7 @@ func TestPeerKnowledgeDeliveryReadsWithoutSearchReadOrExtractExecution(t *testin
 	b.login("admin@example.com", changed)
 	assertRead()
 	exerciseKnowledgeDeliveryBrowser(t, host, b, options, conversation.ID, d.ID, func(allowed bool) {
-		denied := "documents_download"
+		denied := knowledgesdk.ActionDocumentsDownload
 		if allowed {
 			denied = ""
 		}

@@ -2,7 +2,6 @@ package integration_test
 
 import (
 	"encoding/json"
-	"errors"
 	"strings"
 	"testing"
 
@@ -160,20 +159,24 @@ func TestConversationTrajectoryReplayAndForkDoNotRepeatRecordedEffects(t *testin
 			return err
 		}},
 		{"fork", func() error {
-			_, err := trajectoryService.ForkConversation(t.Context(), source.ID, run.ID, agentsdk.ConversationForkRequest{ClientID: "revoked-fork", Title: "Must not exist"}, authority)
+			_, err := trajectoryService.ForkConversation(t.Context(), source.ID, run.ID, agentsdk.ConversationForkRequest{ClientID: "snapshot-fork", Title: "Historical snapshot"}, authority)
 			return err
 		}},
 	}
 	for _, check := range revoked {
 		err = check.call()
-		var denied *agentsdk.Error
-		if !errors.As(err, &denied) || denied.Code != "agent.conversation.tool_access_denied" {
+		if err != nil {
 			t.Fatalf("%s after source revocation err=%v", check.name, err)
 		}
 	}
 	page, err := service.List(t.Context(), agentsdk.ConversationQuery{IncludeArchived: true}, authority)
-	if err != nil || len(page.Items) != 2 {
-		t.Fatalf("revoked fork created a child: page=%+v err=%v", page, err)
+	if err != nil || len(page.Items) != 3 {
+		t.Fatalf("owner could not fork the immutable snapshot: page=%+v err=%v", page, err)
+	}
+	host.mu.Lock()
+	defer host.mu.Unlock()
+	if host.invokes != 1 {
+		t.Fatal("snapshot replay/fork repeated a revoked tool effect")
 	}
 }
 

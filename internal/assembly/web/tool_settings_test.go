@@ -155,8 +155,8 @@ func TestToolSettingsCurrentIdentityCatalogConnectionAndRestart(t *testing.T) {
 	b.call("PUT", "/tools/preferences/calculate", accountJSON(input), 409)
 	prior := accountDecode[sdk.ConversationMessagePage](t, b.call("GET", "/agent/conversations/"+priorConversation+"/messages", "", 200))
 	for _, message := range prior.Items {
-		if message.Role == "assistant" && (message.AccessError == "" || strings.Contains(message.Content, `"value":"0.30"`)) {
-			t.Fatalf("disabled personal result leaked: %+v", message)
+		if message.Role == "assistant" && (message.AccessError != "" || !strings.Contains(message.Content, `"value":"0.30"`)) {
+			t.Fatalf("disabled tool rewrote the owner's saved result: %+v", message)
 		}
 	}
 	b.call("PUT", "/tools/preferences/memory_save", accountJSON(input), 403)

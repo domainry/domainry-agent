@@ -117,7 +117,7 @@ func buildKnowledgeExtraction(ctx context.Context, args agentsdk.KnowledgeExtrac
 				excerpt := p.Content[start:end]
 				id = "kc_" + conversationDigest([]any{"knowledge_extract.v1", source.ScopeSHA256, source.LibraryID, source.DocumentID, out.PlanSHA256, span.Passage, start, end, excerpt})[:32]
 				references[span.Passage] = id
-				out.Citations = append(out.Citations, agentsdk.ConversationCitation{ID: id, Provider: "agent_knowledge_extract", KBID: source.KBID, LibraryID: source.LibraryID, Operation: "fetch", DocumentID: source.DocumentID, Title: p.Title, URL: p.URL, Location: p.Location, Excerpt: excerpt, ExcerptTruncated: start > 0 || end < len(p.Content)})
+				out.Citations = append(out.Citations, agentsdk.ConversationCitation{ID: id, Provider: "agent_knowledge_extract", KBID: source.KBID, LibraryID: source.LibraryID, Operation: "fetch", DocumentID: source.DocumentID, ChunkID: p.ChunkID, DocumentVersion: p.DocumentVersion, ContentSHA256: p.ContentSHA256, SourceRevision: p.SourceRevision, Score: p.Score, Title: p.Title, URL: p.URL, Location: p.Location, Excerpt: excerpt, ExcerptTruncated: start > 0 || end < len(p.Content)})
 			}
 			span.CitationID = id
 		}

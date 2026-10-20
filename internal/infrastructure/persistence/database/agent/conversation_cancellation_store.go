@@ -14,7 +14,7 @@ import (
 // effect failed, and completed/pending provider receipts remain authoritative.
 // The caller commits these events with the cancellation in one transaction.
 func (s *ConversationStore) interruptConversationWrites(ctx context.Context, tx *sql.Tx, row *conversationRunRow) error {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("payload_json").Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindTool), conversationScope(row.Authority, row.Run.ConversationID), query.Equal("run_id", row.Run.ID))).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationToolCallTable).Columns("payload_json").Where(query.And(conversationScope(row.Authority, row.Run.ConversationID), query.Equal("run_id", row.Run.ID))).Build()
 	if err != nil {
 		return err
 	}

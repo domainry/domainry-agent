@@ -166,7 +166,7 @@ func TestContextCompactionPersistsOnlyANetSmallerFrozenSnapshot(t *testing.T) {
 	}
 }
 
-func TestCompletedExecutionIntervalCompactionKeepsCorrectionsAndRequiresCurrentResultAccess(t *testing.T) {
+func TestCompletedExecutionIntervalCompactionKeepsCorrectionsAndImmutableResults(t *testing.T) {
 	definition := agentsdk.ConversationToolDefinition{
 		Key: "record_read", Version: "1", Description: "Read one record", ActionKey: "records.read", Effect: "read", Idempotency: "natural",
 		InputSchema: json.RawMessage(`{"type":"object"}`), OutputSchema: json.RawMessage(`{"type":"object"}`), TimeoutMillis: 1000, MaxOutputBytes: 65536,
@@ -239,12 +239,12 @@ func TestCompletedExecutionIntervalCompactionKeepsCorrectionsAndRequiresCurrentR
 			savedLatest = &compacted.Messages[index]
 		}
 	}
-	if savedLatest == nil || !reflect.DeepEqual(*savedLatest, latestMessage) || host.authorizations != 1 {
-		t.Fatal("latest result changed or archived result was not reauthorized", savedLatest, host.authorizations)
+	if savedLatest == nil || !reflect.DeepEqual(*savedLatest, latestMessage) || host.authorizations != 0 {
+		t.Fatal("latest result changed or compaction reauthorized old data", savedLatest, host.authorizations)
 	}
 
 	host.granted = false
-	if _, _, err = s.compactConversationExecutionIntervals(t.Context(), claim, input, len(raw)); err == nil || !strings.Contains(err.Error(), "tool_access_denied") {
-		t.Fatal("revoked result access did not block interval compaction", err)
+	if _, compacted, err := s.compactConversationExecutionIntervals(t.Context(), claim, input, len(raw)); err != nil || !compacted || host.authorizations != 0 {
+		t.Fatal("historical snapshot compaction queried revoked business access", err)
 	}
 }

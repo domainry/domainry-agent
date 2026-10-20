@@ -196,6 +196,20 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 		}
 		return importer.ImportConversationAttachment(ctx, r.LibraryID, r.DocumentImport, a)
 	}
+	if op == "documents_retry" {
+		retry, ok := s.(agentsdk.KnowledgeDocumentRetryService)
+		if !ok {
+			return nil, conversationFailure("unavailable", "document_retry_unavailable")
+		}
+		return retry.RetryKnowledgeDocument(ctx, r.LibraryID, r.DocumentID, r.Revision, a)
+	}
+	if op == "documents_reindex" {
+		reindex, ok := s.(agentsdk.KnowledgeDocumentReindexService)
+		if !ok {
+			return nil, conversationFailure("unavailable", "document_reindex_unavailable")
+		}
+		return reindex.ReindexKnowledgeDocument(ctx, r.LibraryID, r.DocumentID, r.Revision, a)
+	}
 	if strings.HasPrefix(op, "libraries_") {
 		libraries, ok := s.(agentsdk.KnowledgeLibraryService)
 		if !ok {

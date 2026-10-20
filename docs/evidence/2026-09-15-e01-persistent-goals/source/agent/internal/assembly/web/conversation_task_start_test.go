@@ -364,7 +364,7 @@ func TestScheduledTaskUsesCurrentIdentityAndWaitsForUserConfirmation(t *testing.
 		t.Fatal("revoked scheduled write was approved")
 	}
 	var artifactVersions int
-	if err = host.db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_artifact_versions`).Scan(&artifactVersions); err != nil || artifactVersions != 0 {
+	if err = host.db.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _knowledge_conversation_artifact_versions`).Scan(&artifactVersions); err != nil || artifactVersions != 0 {
 		t.Fatalf("revoked confirmation created artifact versions: count=%d err=%v", artifactVersions, err)
 	}
 }

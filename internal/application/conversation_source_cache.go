@@ -14,6 +14,7 @@ import (
 func (audit *conversationSourceAudit) childSourceAudit() *conversationSourceAudit {
 	child := audit.s.sourceAudit(audit.a, audit.conversationID)
 	child.cache, child.reading, child.records = audit.cache, audit.reading, audit.records
+	child.productReads = audit.productReads
 	return child
 }
 
@@ -29,6 +30,7 @@ func (audit *conversationSourceAudit) sourceCacheKey(ctx context.Context, ref sd
 	// completed delivery projection cannot authorize a raw history traversal.
 	raw, err := json.Marshal([]any{
 		ref, audit.a, audit.evidenceOwner, audit.conversationID,
+		audit.s.sourceEvaluationID(ctx),
 		[]any{scoped, scope.purpose, scope.delegationID, scope.roots},
 		[]any{released, release.reader, release.producer, release.active, release.purpose, release.delegationID, release.roots, origins},
 		ctx.Value(conversationSourceParentKey{}),

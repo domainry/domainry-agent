@@ -323,10 +323,10 @@ func (s *ConversationStore) conversationDelegationRemainingBudget(ctx context.Co
 			return remaining, err
 		}
 		for _, item := range []struct {
-			kind  string
+			table string
 			value *int
-		}{{conversationRunStepKindStep, &remaining.MaxSteps}, {conversationRunStepKindTool, &remaining.MaxToolCalls}} {
-			q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Projections(query.Project(query.CountAll())).Where(query.And(conversationRunStepKindPredicate(item.kind), conversationScope(executor, assignment.ConversationID))).Build()
+		}{{conversationRunStepTable, &remaining.MaxSteps}, {conversationToolCallTable, &remaining.MaxToolCalls}} {
+			q, args, err := query.NewSelectBuilder(s.store.Renderer(), item.table).Projections(query.Project(query.CountAll())).Where(conversationScope(executor, assignment.ConversationID)).Build()
 			if err != nil {
 				return remaining, err
 			}

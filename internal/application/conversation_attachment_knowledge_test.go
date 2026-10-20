@@ -52,8 +52,11 @@ func (s attachmentKnowledgeTestSource) KnowledgeDocumentSourceIdentity() string 
 func (attachmentKnowledgeTestSource) KnowledgeDocumentAccessPolicySHA256() string {
 	return strings.Repeat("b", 64)
 }
-func (attachmentKnowledgeTestSource) KnowledgeDocumentManagementReady() error { return nil }
-func (attachmentKnowledgeTestSource) KnowledgeDocumentMaxBytes() int64        { return 1024 }
+func (attachmentKnowledgeTestSource) KnowledgeDocumentManagementReady() error   { return nil }
+func (attachmentKnowledgeTestSource) KnowledgeDocumentIndexMaximumBytes() int64 { return 1024 }
+func (attachmentKnowledgeTestSource) KnowledgeDocumentFormats() []agentsdk.KnowledgeDocumentFormat {
+	return []agentsdk.KnowledgeDocumentFormat{{Extension: ".xlsx", ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ParserRoute: "structured"}}
+}
 func (attachmentKnowledgeTestSource) SearchKnowledgeDocumentPassages(context.Context, string, agentsdk.ConversationAuthority) ([]agentsdk.KnowledgeDocumentPassage, error) {
 	return []agentsdk.KnowledgeDocumentPassage{{DocumentID: "remote", Content: "Authorized Connector passage", Location: &agentsdk.DocumentLocation{Sheet: "Actual sheet", Row: 5, Cell: "B5"}}}, nil
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/domainry/domainry-foundation/apperror"
 	"github.com/domainry/domainry-foundation/requestcontext"
 	identity "github.com/domainry/domainry-identity-sdk"
+	knowledgesdk "github.com/domainry/domainry-knowledge-sdk"
 )
 
 // SetupRoutes lets the signed-in administrator initialize product grants
@@ -50,7 +51,7 @@ func SetupRoutes(binding identity.Binding, runtime string, authorize func(contex
 		}
 		add := func(k string) {
 			scope := identity.DataScopeOwner
-			if strings.HasPrefix(k, sdk.ConversationActionPrefix+"libraries_") || strings.HasPrefix(k, sdk.ConversationActionPrefix+"documents_") {
+			if strings.HasPrefix(k, "knowledge.") {
 				scope = identity.DataScopeAll
 			}
 			if !keys[k] {
@@ -73,14 +74,15 @@ func SetupRoutes(binding identity.Binding, runtime string, authorize func(contex
 		add(sdk.KnowledgeLibraryCatalogTool().ActionKey)
 		add(sdk.KnowledgeExtractionTool().ActionKey)
 		add(sdk.ConversationInteractionPermission().Key)
+		if actions, actionErr := knowledgesdk.AuthorizationActions(); actionErr == nil {
+			for _, action := range actions {
+				if action.Permission != nil {
+					add(action.Permission.Key)
+				}
+			}
+		}
 		for _, d := range sdk.ConversationHTTPDefinitions() {
 			if p := sdk.ConversationAttachmentPermission(d.Operation); p != nil {
-				add(p.Key)
-			}
-			if p := sdk.KnowledgeLibraryPermission(d.Operation); p != nil {
-				add(p.Key)
-			}
-			if p := sdk.KnowledgeDocumentPermission(d.Operation); p != nil {
 				add(p.Key)
 			}
 		}

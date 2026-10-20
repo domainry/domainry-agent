@@ -305,6 +305,7 @@ func (s *ConversationService) hydrateConversationBlocks(ctx context.Context, cla
 
 func (s *ConversationService) hydrateConversationModelRequest(ctx context.Context, claim persistence.ConversationClaim, in agentsdk.ConversationModelRequest) (agentsdk.ConversationModelRequest, error) {
 	out := in
+	out.ConversationID = claim.Run.ConversationID
 	out.Messages = append([]agentsdk.ConversationModelMessage(nil), in.Messages...)
 	for index := range out.Messages {
 		blocks, err := s.hydrateConversationBlocks(ctx, claim, in.Messages[index].ContentBlocks)
@@ -318,6 +319,7 @@ func (s *ConversationService) hydrateConversationModelRequest(ctx context.Contex
 
 func (s *ConversationService) hydrateConversationStepRequest(ctx context.Context, claim persistence.ConversationClaim, in agentsdk.ConversationStepRequest) (agentsdk.ConversationStepRequest, error) {
 	out := in
+	out.ConversationID = claim.Run.ConversationID
 	out.Messages = append([]agentsdk.ConversationStepMessage(nil), in.Messages...)
 	for index := range out.Messages {
 		blocks, err := s.hydrateConversationBlocks(ctx, claim, in.Messages[index].ContentBlocks)

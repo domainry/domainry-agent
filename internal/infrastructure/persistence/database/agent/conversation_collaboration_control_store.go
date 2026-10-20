@@ -209,7 +209,7 @@ func (s *ConversationStore) controlDelegationTask(ctx context.Context, tx *sql.T
 				return conversationError("conflict", "delegation_reconciliation_required")
 			}
 		} else {
-			q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("payload_json").Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindTool), conversationScope(a, d.ConversationID))).Build()
+			q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationToolCallTable).Columns("payload_json").Where(conversationScope(a, d.ConversationID)).Build()
 			if err != nil {
 				return err
 			}

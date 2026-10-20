@@ -52,12 +52,12 @@ func TestMailDraftDoesNotAdoptReplacementAccount(t *testing.T) {
 	}
 	messages := accountDecode[sdk.ConversationMessagePage](t, b.call("GET", "/agent/conversations/"+conversation+"/messages", "", 200))
 	for _, m := range messages.Items {
-		if m.Role == "assistant" && (m.AccessError == "" || strings.Contains(m.Content, "MAIL-BODY")) {
-			t.Fatal("replacement adopted old answer")
+		if m.Role == "assistant" && (m.AccessError != "" || !strings.Contains(m.Content, "MAIL-BODY")) {
+			t.Fatal("replacement rewrote the owner's saved answer")
 		}
 	}
 	if f.vendorCalls.Load() != before {
 		t.Fatal("historical source audit performed vendor IO")
 	}
-	t.Log("all four mail tools available on replacement account; both stored draft versions and original answer remain denied by mail source authorizer; zero vendor IO")
+	t.Log("all four mail tools available on replacement account; stored draft versions remain denied while the owner's saved answer remains immutable; zero vendor IO")
 }

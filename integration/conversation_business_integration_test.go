@@ -279,15 +279,8 @@ func TestBusinessToolsPreserveScopePaginationAndEvidenceAcrossRestart(t *testing
 	if _, err = service.Resume(t.Context(), c.ID, run.ID, a); err != nil {
 		t.Fatal(err)
 	}
-	if done := waitConversation(t, service, c.ID, run.ID); done.ErrorCode != "business_access_denied" {
-		t.Fatalf("revoked business evidence resumed: %+v", done)
-	}
-	source.revoked.Store(false)
-	if _, err = service.Resume(t.Context(), c.ID, run.ID, a); err != nil {
-		t.Fatal(err)
-	}
 	if done := waitConversation(t, service, c.ID, run.ID); done.Status != "completed" {
-		t.Fatalf("restored source failed: %+v", done)
+		t.Fatalf("immutable business evidence did not resume: %+v", done)
 	}
 	page, err := service.Messages(t.Context(), c.ID, agentsdk.ConversationMessageQuery{}, a)
 	if err != nil {
@@ -301,8 +294,8 @@ func TestBusinessToolsPreserveScopePaginationAndEvidenceAcrossRestart(t *testing
 	if err != nil {
 		t.Fatal(err)
 	}
-	if page.Items[1].AccessError == "" || strings.Contains(page.Items[1].Content, "客户乙") {
-		t.Fatal("revoked business facts retained in history")
+	if page.Items[1].AccessError != "" || !strings.Contains(page.Items[1].Content, "客户乙") {
+		t.Fatal("historical business facts were changed")
 	}
 	other := a
 	other.UserID = "other"
@@ -402,8 +395,8 @@ func TestBusinessSaaSReadAndRevocation(t *testing.T) {
 	}
 	source.revoked.Store(true)
 	page, err = api.Messages(t.Context(), c.ID, agentsdk.ConversationMessageQuery{}, a)
-	if err != nil || page.Items[1].AccessError == "" || strings.Contains(page.Items[1].Content, "客户乙") {
-		t.Fatal("SaaS history retained revoked data", err)
+	if err != nil || page.Items[1].AccessError != "" || !strings.Contains(page.Items[1].Content, "客户乙") {
+		t.Fatal("SaaS history changed a committed snapshot", err)
 	}
 	for _, dimension := range []string{"user", "workspace", "runtime"} {
 		other := a

@@ -299,14 +299,11 @@ func TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndResta
 	if len(inspectionRefs) != 6 {
 		t.Fatal("actual shared inspector tool set incomplete", inspectionRefs)
 	}
-	assertInspection := func(want bool) {
+	assertInspection := func() {
 		t.Helper()
 		var read agent.ConversationRun
-		if json.Unmarshal(call("GET", inspectionPath, nil, 200), &read) != nil || (read.AccessError == "") != want || want && len(read.Steps) != 7 || !want && len(read.Steps) != 0 {
-			t.Fatal("saved shared execution wrapper ignored current source rights", recordProductJSON(read))
-		}
-		if !want {
-			return
+		if json.Unmarshal(call("GET", inspectionPath, nil, 200), &read) != nil || read.AccessError != "" || len(read.Steps) != 7 {
+			t.Fatal("saved execution observation was not retained", recordProductJSON(read))
 		}
 		for _, ref := range inspectionRefs {
 			var full strings.Builder
@@ -328,7 +325,7 @@ func TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndResta
 			t.Logf("Exact original saved execution wrapper %s: original SHA-256 verified", ref.CallID)
 		}
 	}
-	assertInspection(true)
+	assertInspection()
 	assertDelivery := func(want int) {
 		t.Helper()
 		if want == 200 {
@@ -494,7 +491,7 @@ func TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndResta
 	mutate(false, true)
 	assertRead(true)
 	assertDelivery(200)
-	assertInspection(true)
+	assertInspection()
 	if _, e := selected.InvokeConversationTool(t.Context(), saveRequest); e == nil {
 		t.Fatal("read role granted write execution")
 	}
@@ -509,7 +506,7 @@ func TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndResta
 	mutate(true, true)
 	assertRead(false)
 	assertDelivery(403)
-	assertInspection(false)
+	assertInspection()
 	mutate(false, true)
 	assertRead(true)
 	if e := host.Close(context.Background()); e != nil {
@@ -521,7 +518,7 @@ func TestProductStructuredOriginalRecordResultsUseRealIdentityReadRightsAndResta
 	session()
 	assertRead(true)
 	assertDelivery(200)
-	assertInspection(true)
+	assertInspection()
 	if _, e := selected.InvokeConversationTool(t.Context(), saveRequest); e == nil {
 		t.Fatal("restart restored write grants")
 	}

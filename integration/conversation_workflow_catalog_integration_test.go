@@ -122,8 +122,8 @@ func TestWorkflowCatalogDiscoveryPersistsAndReauthorizesWithoutExecution(t *test
 			}
 			source.revoked.Store(true)
 			messages, err = service.Messages(t.Context(), c.ID, agentsdk.ConversationMessageQuery{}, a)
-			if err != nil || messages.Items[1].AccessError == "" || strings.Contains(messages.Items[1].Content, "reason") {
-				t.Fatal("revoked workflow schema retained", messages, err)
+			if err != nil || messages.Items[1].AccessError != "" || !strings.Contains(messages.Items[1].Content, "reason") {
+				t.Fatal("recorded workflow schema snapshot changed", messages, err)
 			}
 		})
 	}

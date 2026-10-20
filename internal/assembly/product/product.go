@@ -11,7 +11,6 @@ import (
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	identity "github.com/domainry/domainry-identity/module"
 	"io/fs"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -20,6 +19,8 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/domainry/domainry-foundation/processhost"
 )
 
 // Product is startup composition. No role-specific rules live in this host.
@@ -104,6 +105,9 @@ func OpenProduct(ctx context.Context, p Product, o ProductOptions) (*ProductHost
 	for pattern, handler := range h.ScheduleRoutes() {
 		routes[pattern] = handler
 	}
+	for pattern, handler := range h.KnowledgeBrowserRoutes() {
+		routes[pattern] = handler
+	}
 	adapters, err := h.IntegrationAdapters()
 	if err != nil {
 		h.Close(ctx)
@@ -126,7 +130,14 @@ func OpenProduct(ctx context.Context, p Product, o ProductOptions) (*ProductHost
 	}
 	return &ProductHost{Host: h, Handler: handler}, nil
 }
-func RunProduct(p Product, defaultAddress string) error {
+func RunProduct(p Product, defaultAddress string) (runErr error) {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer cancel()
+	observability, err := processhost.Open(ctx, processhost.Config{ServiceName: p.Key})
+	if err != nil {
+		return err
+	}
+	defer func() { runErr = observability.Finish(context.Background(), nil, runErr) }()
 	if strings.TrimSpace(os.Getenv("IDENTITY_ENDPOINT")) == "" {
 		for _, key := range []string{"AUTH_JWT_SECRET", "IDENTITY_DATA_SECRET_KEY", "AUTH_DEFAULT_PASSWORD"} {
 			if len(strings.TrimSpace(os.Getenv(key))) < 16 {
@@ -159,8 +170,6 @@ func RunProduct(p Product, defaultAddress string) error {
 	if _, err := os.Stat(filepath.Join(frontend, "index.html")); err != nil {
 		return fmt.Errorf("build product frontend first: %w", err)
 	}
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer cancel()
 	opts := module.OptionsFromEnvironment()
 	opts.ConversationEnabled = true
 	runtimeID := env("SAAS_RUNTIME_ID", p.Key)
@@ -197,7 +206,7 @@ func RunProduct(p Product, defaultAddress string) error {
 		return err
 	}
 	defer app.Close(context.Background())
-	server := &http.Server{Addr: address, Handler: app.Handler, ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 30 * time.Second, WriteTimeout: 60 * time.Second, IdleTimeout: 60 * time.Second}
+	server := &http.Server{Addr: address, Handler: observability.Handler("public", app.Handler), ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 30 * time.Second, WriteTimeout: 60 * time.Second, IdleTimeout: 60 * time.Second}
 	done := make(chan error, 1)
 	cert, key := os.Getenv("SAAS_TLS_CERT"), os.Getenv("SAAS_TLS_KEY")
 	if (cert == "") != (key == "") {
@@ -210,7 +219,7 @@ func RunProduct(p Product, defaultAddress string) error {
 			done <- server.ListenAndServe()
 		}
 	}()
-	log.Printf("%s: %s", p.Key, origin)
+	observability.Started(ctx, map[string]any{"listener_group": "public"})
 	select {
 	case err := <-done:
 		if errors.Is(err, http.ErrServerClosed) {
@@ -218,6 +227,7 @@ func RunProduct(p Product, defaultAddress string) error {
 		}
 		return err
 	case <-ctx.Done():
+		observability.Stopping(context.Background(), map[string]any{"reason": "signal"})
 		shutdown, stop := context.WithTimeout(context.Background(), 5*time.Second)
 		defer stop()
 		return server.Shutdown(shutdown)

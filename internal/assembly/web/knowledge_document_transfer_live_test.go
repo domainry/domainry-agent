@@ -166,7 +166,7 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 		if err != nil {
 			t.Fatal(err)
 		}
-		handler, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Files: fstest.MapFS{"index.html": {Data: []byte("transfer acceptance")}}})
+		handler, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Files: fstest.MapFS{"index.html": {Data: []byte("transfer acceptance")}}, ModuleAdapters: knowledgeTestAdapters(t, host)})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -191,21 +191,12 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 	}()
 	for _, user := range []string{a.readSession()["user_id"].(string), b.readSession()["user_id"].(string)} {
 		mutateTestRolePermissions(t, host, a, func(previous []identitysdk.ProjectRolePermission) []identitysdk.ProjectRolePermission {
-			out := append([]identitysdk.ProjectRolePermission(nil), previous...)
+			out := stripKnowledgeRolePermissions(previous)
 			seen := map[string]bool{}
 			for _, p := range out {
 				seen[p.PermissionKey] = true
 			}
-			for _, d := range agentsdk.ConversationHTTPDefinitions() {
-				p := agentsdk.KnowledgeLibraryPermission(d.Operation)
-				if p == nil {
-					p = agentsdk.KnowledgeDocumentPermission(d.Operation)
-				}
-				if p != nil && !seen[p.Key] {
-					out = append(out, identitysdk.ProjectRolePermission{PermissionKey: p.Key, DataScope: identitysdk.DataScopeAll})
-					seen[p.Key] = true
-				}
-			}
+			out = appendKnowledgeRolePermissions(t, out, "")
 			for _, tool := range agentsdk.LibraryKnowledgeConversationTools() {
 				if !seen[tool.ActionKey] {
 					out = append(out, identitysdk.ProjectRolePermission{PermissionKey: tool.ActionKey, DataScope: identitysdk.DataScopeOwner})
@@ -223,9 +214,9 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 		return l
 	}
 	libraries := []agentsdk.KnowledgeLibrary{
-		decodeLibrary(a.call("POST", "/agent/knowledge-libraries", `{"client_id":"personal-a","kind":"personal","name":"个人 A 合成验收"}`, 200).Body.Bytes()),
-		decodeLibrary(b.call("POST", "/agent/knowledge-libraries", `{"client_id":"personal-b","kind":"personal","name":"个人 B 合成验收"}`, 200).Body.Bytes()),
-		decodeLibrary(a.call("POST", "/agent/knowledge-libraries", `{"client_id":"shared","kind":"shared","name":"共享合成验收"}`, 200).Body.Bytes()),
+		decodeLibrary(a.call("POST", "/knowledge/libraries", `{"client_id":"personal-a","kind":"personal","name":"个人 A 合成验收"}`, 201).Body.Bytes()),
+		decodeLibrary(b.call("POST", "/knowledge/libraries", `{"client_id":"personal-b","kind":"personal","name":"个人 B 合成验收"}`, 201).Body.Bytes()),
+		decodeLibrary(a.call("POST", "/knowledge/libraries", `{"client_id":"shared","kind":"shared","name":"共享合成验收"}`, 201).Body.Bytes()),
 	}
 	owner := func(index int) *browser {
 		if index == 1 {
@@ -233,10 +224,10 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 		}
 		return a
 	}
-	base := func(index int) string { return "/agent/knowledge-libraries/" + libraries[index].ID + "/documents" }
+	base := func(index int) string { return "/knowledge/libraries/" + libraries[index].ID + "/documents" }
 	for i := range libraries {
 		body, _ := json.Marshal(agentsdk.KnowledgeLibrarySourceWrite{DatasourceKey: fmt.Sprintf("source-%d", i), ExpectedRevision: libraries[i].Revision})
-		libraries[i] = decodeLibrary(owner(i).call("PUT", "/agent/knowledge-libraries/"+libraries[i].ID+"/source", string(body), 200).Body.Bytes())
+		libraries[i] = decodeLibrary(owner(i).call("PUT", "/knowledge/libraries/"+libraries[i].ID+"/source", string(body), 200).Body.Bytes())
 		if !libraries[i].DocumentsConfigured {
 			t.Fatal("binding did not enable document management")
 		}
@@ -245,7 +236,7 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 	setMember := func(role string) {
 		t.Helper()
 		body, _ := json.Marshal(agentsdk.KnowledgeLibraryMemberWrite{Role: role, ExpectedRevision: libraries[2].Revision})
-		libraries[2] = decodeLibrary(a.call("PUT", "/agent/knowledge-libraries/"+libraries[2].ID+"/members/"+second, string(body), 200).Body.Bytes())
+		libraries[2] = decodeLibrary(a.call("PUT", "/knowledge/libraries/"+libraries[2].ID+"/members/"+second, string(body), 200).Body.Bytes())
 	}
 	setMember("reader")
 	report := map[string]any{"complete": false, "cleanup_verified": false, "synthetic": true, "real_verdent": real, "origin": config.BaseURL, "team_id": config.TeamID, "runtime_id": options.RuntimeID, "workspace_id": options.WorkspaceID, "database": options.DatabasePath, "marker": marker, "filename": filename, "sha256": digest, "libraries": libraries, "model": "deterministic"}
@@ -264,7 +255,7 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 		if err != nil {
 			return record, err
 		}
-		q, args, err := query.NewSelectBuilder(renderer, "_agent_knowledge_documents").Columns("payload_json").Where(query.And(query.Equal("document_id", id), query.Equal("library_id", libraries[index].ID))).Build()
+		q, args, err := query.NewSelectBuilder(renderer, "_knowledge_documents").Columns("payload_json").Where(query.And(query.Equal("document_id", id), query.Equal("library_id", libraries[index].ID))).Build()
 		if err != nil {
 			return record, err
 		}
@@ -314,6 +305,11 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 		req.Header.Set("Origin", "http://127.0.0.1:8091")
 		req.Header.Set("X-Agent-Scope", client.scope)
 		req.Header.Set("Content-Type", "application/octet-stream")
+		if method == http.MethodPost && len(data) > 0 {
+			req.Header.Set("Content-Range", fmt.Sprintf("bytes 0-%d/%d", len(data)-1, len(data)))
+			req.Header.Set("X-Knowledge-File-SHA256", digest)
+			req.Header.Set("X-Knowledge-Chunk-SHA256", digest)
+		}
 		for _, c := range client.cookies {
 			req.AddCookie(c)
 		}
@@ -373,12 +369,25 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 	decodeDocument := func(out *httptest.ResponseRecorder, index int) agentsdk.KnowledgeDocument {
 		t.Helper()
 		var d agentsdk.KnowledgeDocument
-		if out.Code != 200 || json.Unmarshal(out.Body.Bytes(), &d) != nil || d.LibraryID != libraries[index].ID || d.SHA256 != digest {
+		if out.Code != 201 || json.Unmarshal(out.Body.Bytes(), &d) != nil || d.LibraryID != libraries[index].ID || d.SHA256 != digest {
 			t.Fatalf("document operation failed HTTP %d", out.Code)
 		}
 		known[d.ID] = index
 		report["documents"] = known
 		save()
+		return d
+	}
+	decodeUpload := func(out *httptest.ResponseRecorder, index int) agentsdk.KnowledgeDocument {
+		t.Helper()
+		var progress agentsdk.KnowledgeDocumentUploadProgress
+		if out.Code != 200 || json.Unmarshal(out.Body.Bytes(), &progress) != nil || !progress.Complete || progress.Document == nil {
+			t.Fatalf("document upload failed HTTP %d: %s", out.Code, out.Body.String())
+		}
+		d := *progress.Document
+		if d.LibraryID != libraries[index].ID || d.SHA256 != digest {
+			t.Fatalf("document upload response mismatch: %+v", d)
+		}
+		known[d.ID] = index
 		return d
 	}
 	wait := func(id string, index int, state string) agentsdk.KnowledgeDocument {
@@ -464,13 +473,13 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 		}
 		return convPath
 	}
-	original := decodeDocument(request(a, "POST", base(0)+"?"+url.Values{"client_id": {"original"}, "filename": {filename}}.Encode(), raw), 0)
+	original := decodeUpload(request(a, "POST", base(0)+"?"+url.Values{"client_id": {"original"}, "filename": {filename}}.Encode(), raw), 0)
 	original = wait(original.ID, 0, "ready")
 	sourceWrite := writeFor(original.ID)
 	b.call("GET", base(0)+"/"+original.ID+"/content", "", 404)
 	copyInput := agentsdk.KnowledgeDocumentTransfer{ClientID: "copy-to-shared", SourceLibraryID: libraries[0].ID, SourceDocumentID: original.ID, ExpectedRevision: original.Revision, Mode: "copy"}
 	copyBody, _ := json.Marshal(copyInput)
-	copyDoc := decodeDocument(a.call("POST", base(2)+"/from-document", string(copyBody), 200), 2)
+	copyDoc := decodeDocument(a.call("POST", base(2)+"/transfer", string(copyBody), 201), 2)
 	copyDoc = wait(copyDoc.ID, 2, "ready")
 	sharedWrite := writeFor(copyDoc.ID)
 	if slices.Equal(permissions(sourceWrite), permissions(sharedWrite)) {
@@ -487,13 +496,13 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 	t.Log("Real product copy indexed; personal scope rejected by shared target, shared reader queried and downloaded")
 	moveInput := agentsdk.KnowledgeDocumentTransfer{ClientID: "move-to-personal-b", SourceLibraryID: libraries[2].ID, SourceDocumentID: copyDoc.ID, ExpectedRevision: copyDoc.Revision, Mode: "move"}
 	moveBody, _ := json.Marshal(moveInput)
-	b.call("POST", base(1)+"/from-document", string(moveBody), 403)
+	b.call("POST", base(1)+"/transfer", string(moveBody), 403)
 	setMember("editor")
-	moved := decodeDocument(b.call("POST", base(1)+"/from-document", string(moveBody), 200), 1)
+	moved := decodeDocument(b.call("POST", base(1)+"/transfer", string(moveBody), 201), 1)
 	a.call("GET", base(2)+"/"+copyDoc.ID+"/content", "", 404)
 	a.call("GET", base(1)+"/"+moved.ID+"/content", "", 404)
 	open(true)
-	replay := decodeDocument(b.call("POST", base(1)+"/from-document", string(moveBody), 200), 1)
+	replay := decodeDocument(b.call("POST", base(1)+"/transfer", string(moveBody), 201), 1)
 	if replay.ID != moved.ID {
 		t.Fatal("restart duplicated target")
 	}
@@ -508,20 +517,27 @@ func runKnowledgeDocumentTransferHTTP(t *testing.T, config provider.KnowledgeCon
 	queryDocument(b, "private-after-move", 1, moved.ID)
 	var history agentsdk.ConversationMessagePage
 	json.Unmarshal(b.call("GET", historyPath+"/messages", "", 200).Body.Bytes(), &history)
+	retained := false
 	for _, m := range history.Items {
-		if m.Role == "assistant" && (len(m.Citations) > 0 || strings.Contains(m.Content, marker)) {
-			t.Fatal("old shared evidence remained visible")
+		if m.Role != "assistant" || !strings.Contains(m.Content, marker) {
+			continue
 		}
+		for _, citation := range m.Citations {
+			retained = retained || citation.DocumentID == copyDoc.ID && citation.LibraryID == libraries[2].ID
+		}
+	}
+	if !retained {
+		t.Fatal("owner history changed after the shared source was moved")
 	}
 	wait(copyDoc.ID, 2, "deleted")
 	probe(sharedWrite, permissions(sharedWrite), false)
 	report["move_shared_to_personal_b"] = true
 	report["reader_move_denied"] = true
 	report["restart_receipt_and_originals"] = true
-	report["old_shared_history_hidden"] = true
+	report["old_shared_history_retained"] = true
 	report["target_acl_omitted_and_old_scope_denied"] = true
 	save()
-	t.Log("Move indexed after host restart; old shared download/history/remote scope denied, personal B target cited")
+	t.Log("Move indexed after host restart; old shared download/remote scope denied, owner history retained, personal B target cited")
 	if !cleanup() {
 		t.Fatal("owned transfer cleanup remains pending")
 	}

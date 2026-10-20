@@ -120,15 +120,8 @@ func TestKnowledgeToolsSearchReadFreezeAndRevalidateAcrossRestart(t *testing.T) 
 	if _, err = service.Resume(t.Context(), c.ID, run.ID, a); err != nil {
 		t.Fatal(err)
 	}
-	if done := waitConversation(t, service, c.ID, run.ID); done.ErrorCode != "knowledge_access_denied" {
-		t.Fatalf("revoked source replayed: %+v", done)
-	}
-	revoked.Store(false)
-	if _, err = service.Resume(t.Context(), c.ID, run.ID, a); err != nil {
-		t.Fatal(err)
-	}
 	if done := waitConversation(t, service, c.ID, run.ID); done.Status != "completed" || len(done.Steps) != 4 || len(done.Steps[2].Calls) != 1 || done.Steps[2].Calls[0].ResultReference == nil {
-		t.Fatalf("restored source did not resume the actual ledger: %+v", done)
+		t.Fatalf("saved source snapshot did not resume the actual ledger: %+v", done)
 	}
 }
 

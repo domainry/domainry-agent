@@ -45,8 +45,32 @@ func SchemaOwnership() []schemaownership.Table {
 		},
 		{
 			Name: conversationRunStepTable, Owner: MigrationOwner, WorkspaceScope: schemaownership.ScopeWorkspace,
-			RetentionClass: schemaownership.RetentionUserErase, PrimaryKey: []string{"owner_key", "conversation_id", "run_id", "record_kind", "step_no", "call_key"},
-			BoundedQueryPath: "owner/conversation/run plus record kind and ordered step identity",
+			RetentionClass: schemaownership.RetentionUserErase, PrimaryKey: []string{"owner_key", "conversation_id", "run_id", "step_no"},
+			BoundedQueryPath: "owner/conversation/run plus ordered step identity; hot results only",
+			DeletionPolicy:   conversationRetention,
+		},
+		{
+			Name: conversationStepInputTable, Owner: MigrationOwner, WorkspaceScope: schemaownership.ScopeWorkspace,
+			RetentionClass: schemaownership.RetentionUserErase, PrimaryKey: []string{"owner_key", "conversation_id", "run_id", "step_no"},
+			BoundedQueryPath: "owner/conversation/run plus immutable step request or source-only projection",
+			DeletionPolicy:   conversationRetention,
+		},
+		{
+			Name: conversationToolCatalogTable, Owner: MigrationOwner, WorkspaceScope: schemaownership.ScopeWorkspace,
+			RetentionClass: schemaownership.RetentionUserErase, PrimaryKey: []string{"owner_key", "conversation_id", "catalog_hash"},
+			BoundedQueryPath: "owner/conversation plus exact SHA-256 catalog identity",
+			DeletionPolicy:   conversationRetention,
+		},
+		{
+			Name: conversationToolCallTable, Owner: MigrationOwner, WorkspaceScope: schemaownership.ScopeWorkspace,
+			RetentionClass: schemaownership.RetentionUserErase, PrimaryKey: []string{"owner_key", "conversation_id", "run_id", "step_no", "call_key"},
+			BoundedQueryPath: "owner/conversation/run plus ordered step/call receipt identity",
+			DeletionPolicy:   conversationRetention,
+		},
+		{
+			Name: conversationStepSourceTable, Owner: MigrationOwner, WorkspaceScope: schemaownership.ScopeWorkspace,
+			RetentionClass: schemaownership.RetentionUserErase, PrimaryKey: []string{"owner_key", "conversation_id", "run_id", "step_no", "source_no"},
+			BoundedQueryPath: "owner/conversation/run/step plus source ordinal; at most 64 edges per step or 256 for initial input",
 			DeletionPolicy:   conversationRetention,
 		},
 		{

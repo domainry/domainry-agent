@@ -23,6 +23,7 @@ import (
 	webhttp "github.com/domainry/domainry-agent/internal/transport/http/web"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
+	knowledgesdk "github.com/domainry/domainry-knowledge-sdk"
 )
 
 type libraryPermissionFixture struct {
@@ -237,7 +238,7 @@ func runLibraryPermissionIdentity(t *testing.T, config provider.KnowledgeConfig,
 	var host *Host
 	var a, b *browser
 	newBrowser := func() *browser {
-		handler, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Files: fstest.MapFS{"index.html": {Data: []byte("permission test")}}})
+		handler, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Files: fstest.MapFS{"index.html": {Data: []byte("permission test")}}, ModuleAdapters: knowledgeTestAdapters(t, host)})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -278,15 +279,15 @@ func runLibraryPermissionIdentity(t *testing.T, config provider.KnowledgeConfig,
 		mutateTestRolePermissions(t, host, a, func(previous []identitysdk.ProjectRolePermission) []identitysdk.ProjectRolePermission {
 			out := []identitysdk.ProjectRolePermission{}
 			for _, p := range previous {
-				if !strings.HasPrefix(p.PermissionKey, agentsdk.ConversationActionPrefix+"libraries_") && !strings.HasPrefix(p.PermissionKey, agentsdk.ConversationToolActionPrefix+"knowledge_") {
+				if !strings.HasPrefix(p.PermissionKey, "knowledge.") && !strings.HasPrefix(p.PermissionKey, agentsdk.ConversationToolActionPrefix+"knowledge_") {
 					out = append(out, p)
 				}
 			}
-			for _, op := range agentsdk.ConversationHTTPDefinitions() {
-				if p := agentsdk.KnowledgeLibraryPermission(op.Operation); p != nil && (enabled || op.Operation != "libraries_get") {
-					out = append(out, identitysdk.ProjectRolePermission{PermissionKey: p.Key, DataScope: identitysdk.DataScopeAll})
-				}
+			denied := ""
+			if !enabled {
+				denied = knowledgesdk.ActionLibrariesGet
 			}
+			out = appendKnowledgeRolePermissions(t, out, denied)
 			for _, tool := range agentsdk.LibraryKnowledgeConversationTools() {
 				out = append(out, identitysdk.ProjectRolePermission{PermissionKey: tool.ActionKey, DataScope: identitysdk.DataScopeOwner})
 			}
@@ -302,9 +303,9 @@ func runLibraryPermissionIdentity(t *testing.T, config provider.KnowledgeConfig,
 		}
 		return out
 	}
-	personalA := decode(a.call("POST", "/agent/knowledge-libraries", `{"client_id":"personal-a","kind":"personal","name":"A 的个人资料"}`, 200).Body.Bytes())
-	personalB := decode(b.call("POST", "/agent/knowledge-libraries", `{"client_id":"personal-b","kind":"personal","name":"B 的个人资料"}`, 200).Body.Bytes())
-	shared := decode(a.call("POST", "/agent/knowledge-libraries", `{"client_id":"shared","kind":"shared","name":"共享权限验收资料"}`, 200).Body.Bytes())
+	personalA := decode(a.call("POST", "/knowledge/libraries", `{"client_id":"personal-a","kind":"personal","name":"A 的个人资料"}`, 201).Body.Bytes())
+	personalB := decode(b.call("POST", "/knowledge/libraries", `{"client_id":"personal-b","kind":"personal","name":"B 的个人资料"}`, 201).Body.Bytes())
+	shared := decode(a.call("POST", "/knowledge/libraries", `{"client_id":"shared","kind":"shared","name":"共享权限验收资料"}`, 201).Body.Bytes())
 	libraries := []agentsdk.KnowledgeLibrary{personalA, personalB, shared}
 	metadata := "/data"
 	for i, library := range libraries {
@@ -416,7 +417,7 @@ func runLibraryPermissionIdentity(t *testing.T, config provider.KnowledgeConfig,
 	send(b, "personal-b-owner", 1, false, true)
 	noOutbound("personal-isolation", func() { send(b, "b-cannot-read-a", 0, false, false); send(a, "a-cannot-read-b", 1, false, false) })
 	noOutbound("non-member", func() { send(b, "shared-non-member", 2, false, false) })
-	path := "/agent/knowledge-libraries/" + shared.ID
+	path := "/knowledge/libraries/" + shared.ID
 	member := func(role string) {
 		shared = decode(a.call("PUT", path+"/members/"+second, fmt.Sprintf(`{"role":%q,"expected_revision":%d}`, role, shared.Revision), 200).Body.Bytes())
 	}
@@ -446,13 +447,13 @@ func runLibraryPermissionIdentity(t *testing.T, config provider.KnowledgeConfig,
 	visible(true)
 	passed = append(passed, "host-restart")
 	grant(second, false)
-	noOutbound("identity-revocation", func() { visible(false) })
+	noOutbound("identity-revocation", func() { visible(true) })
 	passed = append(passed, "identity-revocation")
 	grant(second, true)
 	visible(true)
 	passed = append(passed, "identity-restored")
 	shared = decode(a.call("DELETE", path+"/members/"+second+"?expected_revision="+fmt.Sprint(shared.Revision), "", 200).Body.Bytes())
-	noOutbound("membership-revocation", func() { visible(false); send(b, "removed-member-new-request", 2, false, false) })
+	noOutbound("membership-revocation", func() { visible(true); send(b, "removed-member-new-request", 2, false, false) })
 	passed = append(passed, "membership-revocation")
 	member("editor")
 	visible(true)

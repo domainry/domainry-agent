@@ -221,6 +221,9 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	if err = h.registerKnowledgePermissions(ctx, options.KnowledgePermissions); err != nil {
 		return nil, err
 	}
+	if err = h.registerKnowledgeActionPermissions(ctx); err != nil {
+		return nil, err
+	}
 	if h.external {
 		publisher, ok := h.Identity.(identitysdk.ProjectRoleCatalogPublisher)
 		if !ok || len(options.ExternalRoles) == 0 {
@@ -258,6 +261,12 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 	}
 	if options.Agent.ConversationOptions.LibraryAuthorizer == nil {
 		options.Agent.ConversationOptions.LibraryAuthorizer = h
+	}
+	if options.Agent.ConversationOptions.PrincipalDirectory == nil {
+		options.Agent.ConversationOptions.PrincipalDirectory = h
+	}
+	if options.Agent.ConversationOptions.AccessExplainer == nil {
+		options.Agent.ConversationOptions.AccessExplainer = h
 	}
 	if options.Agent.KnowledgeFactory == nil && options.Agent.KnowledgeSaaSFactory == nil {
 		options.Agent.KnowledgeFactory = knowledgemodule.NewFactory()

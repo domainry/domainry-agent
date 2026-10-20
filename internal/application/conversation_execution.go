@@ -79,6 +79,8 @@ func validateToolJSON(schema *jsonschema.Schema, raw []byte) error {
 }
 
 func (s *ConversationService) executionCatalog(ctx context.Context, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, map[string]conversationCompiledTool, error) {
+	ctx, end := s.beginCatalogEvaluation(ctx)
+	defer end()
 	definitions, compiled, err := s.registeredExecutionCatalog(ctx, a)
 	if err != nil {
 		return nil, nil, err
@@ -89,6 +91,20 @@ func (s *ConversationService) executionCatalog(ctx context.Context, a agentsdk.C
 func (s *ConversationService) registeredExecutionCatalog(ctx context.Context, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, map[string]conversationCompiledTool, error) {
 	if s == nil || s.options.ToolHost == nil {
 		return nil, nil, conversationFailure("unavailable", "tool_host_unavailable")
+	}
+	ctx, end := s.beginCatalogEvaluation(ctx)
+	defer end()
+	if err := ctx.Err(); err != nil {
+		return nil, nil, err
+	}
+	memo, memoKey := s.catalogEvaluationCache(ctx, a)
+	if memo != nil {
+		memo.mu.Lock()
+		raw, found := memo.catalogs[memoKey]
+		memo.mu.Unlock()
+		if found {
+			return s.compileCatalogSnapshot(raw)
+		}
 	}
 	catalogCtx, cancel := s.externalCallContext(ctx, 30*time.Second)
 	definitions, err := s.options.ToolHost.ConversationTools(catalogCtx, a)
@@ -157,19 +173,20 @@ func (s *ConversationService) registeredExecutionCatalog(ctx context.Context, a 
 	}
 	// Freeze an owned copy; a host cannot later mutate the request snapshot by
 	// retaining the slice or RawMessage backing storage it returned.
+	definitions = append([]agentsdk.ConversationToolDefinition(nil), definitions...)
+	sort.Slice(definitions, func(i, j int) bool { return definitions[i].Key < definitions[j].Key })
 	raw, err := json.Marshal(definitions)
 	if err != nil {
 		return nil, nil, err
 	}
-	if err = json.Unmarshal(raw, &definitions); err != nil {
-		return nil, nil, err
+	if memo != nil {
+		memo.mu.Lock()
+		if !memo.closed {
+			memo.catalogs[memoKey] = raw
+		}
+		memo.mu.Unlock()
 	}
-	sort.Slice(definitions, func(i, j int) bool { return definitions[i].Key < definitions[j].Key })
-	compiled, err := compileConversationTools(definitions)
-	if err != nil {
-		return nil, nil, err
-	}
-	return definitions, compiled, nil
+	return s.compileCatalogSnapshot(raw)
 }
 
 func (s *ConversationService) availableExecutionCatalog(ctx context.Context, a agentsdk.ConversationAuthority, definitions []agentsdk.ConversationToolDefinition, compiled map[string]conversationCompiledTool) ([]agentsdk.ConversationToolDefinition, map[string]conversationCompiledTool, error) {
@@ -345,9 +362,6 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 				if err = s.reauthorizeExecutionInputs(ctx, claim, step); err != nil {
 					return agentsdk.ConversationModelResult{}, err
 				}
-				if _, err = s.sourceAudit(claim.Authority, claim.Run.ConversationID).sources(ctx, base.Sources); err != nil {
-					return agentsdk.ConversationModelResult{}, err
-				}
 				var workBudget persistence.ConversationWorkBudgetRepository
 				var workAccounting persistence.ConversationWorkAccountingRepository
 				if claim.Run.BackgroundTask != nil && claim.Run.BackgroundTask.DelegationID != "" {
@@ -452,9 +466,6 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 				continue
 			}
 			if err = s.finishConversationRunPlanForModelStop(ctx, claim); err != nil {
-				return agentsdk.ConversationModelResult{}, err
-			}
-			if err = s.checkRunSources(ctx, agentsdk.ConversationRunReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID}, claim.Authority); err != nil {
 				return agentsdk.ConversationModelResult{}, err
 			}
 			if claim.Run.BackgroundTask == nil {
@@ -596,14 +607,19 @@ func (s *ConversationService) executeConversationTools(ctx context.Context, clai
 	return results, nil
 }
 
-// A tool's result is sensitive data too. Recheck consumed results immediately
-// before every model request, including a frozen request resumed after failure.
-// Call-time checks alone do not cover revocation between model iterations.
-func (s *ConversationService) reauthorizeExecutionInputs(ctx context.Context, claim persistence.ConversationClaim, step persistence.ConversationExecutionStep) error {
+// Validate the current capability catalog and immutable execution receipts.
+// Recorded outputs are snapshots: never requery their historical business
+// dependencies. Every new tool invocation still goes through its live source API.
+func (s *ConversationService) reauthorizeExecutionInputs(ctx context.Context, claim persistence.ConversationClaim, step persistence.ConversationExecutionStep) (err error) {
+	ctx, finish := s.beginSourceAuthorizationEvaluation(ctx)
+	defer func() {
+		if checkErr := finish(); err == nil {
+			err = checkErr
+		}
+	}()
 	if err := s.reauthorizeConversationContextSources(ctx, claim, step.Input.Context, step.Input.Messages, "step", step.Number); err != nil {
 		return err
 	}
-	repo := s.repo.(persistence.ConversationExecutionRepository)
 	_, current, err := s.executionCatalogForRun(ctx, claim)
 	if err != nil {
 		return err
@@ -617,22 +633,21 @@ func (s *ConversationService) reauthorizeExecutionInputs(ctx context.Context, cl
 			return conversationFailure("conflict", "tool_changed")
 		}
 	}
-	var records []persistence.ConversationToolExecution
+	history, historyTools, err := s.executionHistory(ctx, claim, step.Number)
+	if err != nil {
+		return err
+	}
 	for number := 0; number < step.Number; number++ {
-		previous, exists, err := repo.ExecutionStep(ctx, claim, number, nil)
-		if err != nil {
-			return err
-		}
+		previous, exists := history[number]
 		if !exists || previous.Number != number || previous.Result == nil {
 			return conversationFailure("conflict", "tool_result_invalid")
 		}
-		stored, err := repo.ExecutionTools(ctx, claim, number)
-		if err != nil {
-			return err
-		}
+		stored := historyTools[number]
 		byID := map[string]persistence.ConversationToolExecution{}
 		for _, record := range stored {
-			byID[record.Call.ID] = record
+			if record.ParentCallID == "" {
+				byID[record.Call.ID] = record
+			}
 		}
 		for _, call := range previous.Result.Message.ToolCalls {
 			record, exists := byID[call.ID]
@@ -642,41 +657,14 @@ func (s *ConversationService) reauthorizeExecutionInputs(ctx context.Context, cl
 			if record.Step != number {
 				return conversationFailure("conflict", "tool_result_invalid")
 			}
-			records = append(records, record)
 			if call.Name == agentsdk.ConversationCodeToolKey {
-				codeRepository, ok := s.repo.(persistence.ConversationCodeExecutionRepository)
+				_, ok := s.repo.(persistence.ConversationCodeExecutionRepository)
 				if !ok {
 					return conversationFailure("unavailable", "code_runtime_unavailable")
 				}
-				children, childErr := codeRepository.ExecutionSubtools(ctx, claim, number, call.ID)
-				if childErr != nil {
-					return childErr
+				if err := validateConversationCodeReceipt(record, executionHistoryChildren(stored, call.ID)); err != nil {
+					return err
 				}
-				records = append(records, children...)
-			}
-		}
-	}
-	owner := agentsdk.ConversationRunReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID}
-	pending, err := s.checkModelRunSources(ctx, owner, claim.Authority, records)
-	if err != nil {
-		return err
-	}
-	seen := map[string]bool{}
-	for _, record := range records {
-		recordCtx := ctx
-		deferred := pending[conversationRecordHash(record)]
-		if deferred != nil {
-			recordCtx = context.WithValue(ctx, conversationModelSourceRecordKey{}, deferred)
-		}
-		if err = s.authorizeConversationRecord(recordCtx, claim.Run.ConversationID, claim.Run.ID, record, claim.Authority, current, seen, claim.Run.ConversationID); err != nil {
-			return err
-		}
-		if deferred != nil && deferred.failure != nil {
-			return deferred.failure
-		}
-		if deferred != nil && !deferred.checked {
-			if err = deferred.check(ctx); err != nil {
-				return err
 			}
 		}
 	}
@@ -760,9 +748,6 @@ func (s *ConversationService) conversationToolSourceAttachments(ctx context.Cont
 
 func (s *ConversationService) executeConversationToolWithParent(ctx context.Context, claim persistence.ConversationClaim, step persistence.ConversationExecutionStep, call agentsdk.ConversationToolCall, parentCallID string, dispatchIndex int) (agentsdk.ConversationToolResult, error) {
 	if err := s.authorizeConversationClaim(ctx, claim, "tool"); err != nil {
-		return agentsdk.ConversationToolResult{}, err
-	}
-	if err := s.checkRunSources(ctx, agentsdk.ConversationRunReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID}, claim.Authority); err != nil {
 		return agentsdk.ConversationToolResult{}, err
 	}
 	repo := s.repo.(persistence.ConversationExecutionRepository)
@@ -901,16 +886,14 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 	}
 	request.IdempotencyKey = record.IdempotencyKey
 	if replayed && record.State == "completed" && record.Result != nil {
-		// The action was just authorized above; also check the saved resource
-		// data and any nested references before returning a replayed result.
-		if err = s.authorizeStoredToolResult(ctx, request, *record.Result); err != nil {
-			return agentsdk.ConversationToolResult{}, err
-		}
-		if err = s.reauthorizeReadDependencies(ctx, agentsdk.ConversationRunReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID}, record, claim.Authority, current, map[string]bool{}, claim.Run.ConversationID); err != nil {
-			return agentsdk.ConversationToolResult{}, err
-		}
+		// Current tool capability was checked above. Return the exact committed
+		// receipt without rereading historical resources or repeating the effect.
 		if call.Name == agentsdk.ConversationCodeToolKey {
-			if err = s.reauthorizeConversationCodeResults(ctx, claim, step.Number, call.ID, *record.Result, current); err != nil {
+			children, readErr := s.repo.(persistence.ConversationCodeExecutionRepository).ExecutionSubtools(ctx, claim, step.Number, call.ID)
+			if readErr != nil {
+				return agentsdk.ConversationToolResult{}, readErr
+			}
+			if err = validateConversationCodeReceipt(record, children); err != nil {
 				return agentsdk.ConversationToolResult{}, err
 			}
 		}
@@ -930,6 +913,7 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 		}
 	}
 	var result agentsdk.ConversationToolResult
+	var resultAuthorizationErr error
 	if !validArguments {
 		result = conversationArgumentFailure(argumentError)
 	} else if call.Name == "ask_user" {
@@ -1007,12 +991,17 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 		}
 		cancel()
 		if err != nil {
-			result = agentsdk.ConversationToolResult{Status: "failed", ErrorCode: "tool_failed", Content: json.RawMessage(`{"error":"tool_failed"}`)}
-			if errors.Is(err, context.DeadlineExceeded) && ctx.Err() == nil {
+			code := "tool_failed"
+			if resultAuthorizationFailed(err) {
+				code = conversationModelFailureCode(err, "knowledge_access_denied")
+				resultAuthorizationErr = conversationFailure("forbidden", code)
+			}
+			result = agentsdk.ConversationToolResult{Status: "failed", ErrorCode: code, Content: json.RawMessage(`{"error":"` + code + `"}`)}
+			if resultAuthorizationErr == nil && errors.Is(err, context.DeadlineExceeded) && ctx.Err() == nil {
 				result.ErrorCode = "tool_timeout"
 				result.Content = json.RawMessage(`{"error":"tool_timeout"}`)
 			}
-			if ctx.Err() != nil {
+			if resultAuthorizationErr == nil && ctx.Err() != nil {
 				result.ErrorCode = "execution_interrupted"
 				result.Content = json.RawMessage(`{"error":"execution_interrupted"}`)
 			}
@@ -1028,6 +1017,11 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 			}
 		}
 	}
+	// A source that loses authorization after its external call marks that
+	// failure above. Preserve the exact receipt, but stop before any model or
+	// lifecycle consumer can observe it. Stored-result authorization remains a
+	// separate read/replay concern; repeating it here would refetch mutable
+	// sources and reject an otherwise valid fresh response as "changed".
 	// Stopping an HTTP request cannot undo a committed external effect. Preserve
 	// its actual receipt with a bounded context; storage still fences takeover,
 	// resume and deletion and only allows settlement of the cancelled invocation.
@@ -1036,6 +1030,10 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 	if err != nil {
 		receiptCancel()
 		return agentsdk.ConversationToolResult{}, err
+	}
+	if resultAuthorizationErr != nil {
+		receiptCancel()
+		return agentsdk.ConversationToolResult{}, resultAuthorizationErr
 	}
 	planStatus := agentsdk.ConversationRunProgressFailed
 	if result.Status == "completed" {

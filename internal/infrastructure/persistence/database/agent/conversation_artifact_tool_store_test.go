@@ -60,7 +60,7 @@ func TestArtifactToolEffectResultAndEventCommitTogether(t *testing.T) {
 			}
 			var count int
 			if name == "artifact_create" {
-				err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_artifact_versions`).Scan(&count)
+				err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _knowledge_conversation_artifact_versions`).Scan(&count)
 			} else {
 				err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _artifacts WHERE owner='agent' AND kind='generated'`).Scan(&count)
 			}

@@ -2,6 +2,7 @@ package remote
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +12,11 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentcontracttest "github.com/domainry/domainry-agent-sdk/contracttest"
 	"github.com/domainry/domainry-agent/server"
+	"github.com/domainry/domainry-foundation/requestcontext"
+	"github.com/domainry/domainry-foundation/telemetry"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/sdk/trace"
+	apiTrace "go.opentelemetry.io/otel/trace"
 )
 
 type host struct{ runtimeID string }
@@ -90,6 +96,40 @@ func TestSaaSFactoryValidatesDescriptorAndRunsProtocol(t *testing.T) {
 	interactive, err := opened.InteractiveRunner().Run(t.Context(), agentsdk.InteractiveRequest{RunID: "interactive-1", SessionID: "session-1", IdempotencyKey: "interactive-key", Message: "review", Context: agentsdk.GlobalContext{ContractVersion: agentsdk.GlobalAgentContextContractVersion, ContextRevision: "context-1", EntrypointKey: "assistant", AgentKey: "reviewer", Principal: agentsdk.PrincipalReference{WorkspaceID: "workspace", UserID: "user"}}, Candidates: []agentsdk.RouteCandidate{{RouteType: agentsdk.AgentRouteTask, TargetKey: "review"}}})
 	if err != nil || interactive.Handoff == nil || interactive.Handoff.TargetKey != "review" || provider.interactive.Context.ContextRevision != "context-1" || provider.interactive.Candidates[0].TargetKey != "review" {
 		t.Fatalf("interactive=%+v request=%+v err=%v", interactive, provider.interactive, err)
+	}
+}
+
+func TestSaaSFactoryPropagatesTraceAndCorrelationWithoutRequestIdentity(t *testing.T) {
+	provider := trace.NewTracerProvider()
+	previousProvider := otel.GetTracerProvider()
+	otel.SetTracerProvider(provider)
+	t.Cleanup(func() {
+		_ = provider.Shutdown(context.Background())
+		otel.SetTracerProvider(previousProvider)
+	})
+
+	service := httptest.NewServer(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
+		traceparent := request.Header.Get("traceparent")
+		if len(traceparent) != 55 || traceparent[3:35] != "4bf92f3577b34da6a3ce929d0e0e4736" {
+			t.Fatalf("traceparent=%q", traceparent)
+		}
+		if got := request.Header.Get(telemetry.CorrelationIDHeader); got != "correlation-a" {
+			t.Fatalf("correlation id=%q", got)
+		}
+		if got := request.Header.Get(telemetry.RequestIDHeader); got != "" {
+			t.Fatalf("request id crossed service boundary: %q", got)
+		}
+		response.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(response).Encode(agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: agentsdk.DeploymentModeSaaS, Capabilities: []string{agentsdk.CapabilityInteractiveRun}})
+	}))
+	t.Cleanup(service.Close)
+
+	traceID, _ := apiTrace.TraceIDFromHex("4bf92f3577b34da6a3ce929d0e0e4736")
+	spanID, _ := apiTrace.SpanIDFromHex("00f067aa0ba902b7")
+	ctx := apiTrace.ContextWithSpanContext(t.Context(), apiTrace.NewSpanContext(apiTrace.SpanContextConfig{TraceID: traceID, SpanID: spanID, TraceFlags: apiTrace.FlagsSampled}))
+	ctx = requestcontext.WithCorrelationID(ctx, "correlation-a")
+	if _, err := NewFactory(Options{BaseURL: service.URL, APIKey: "secret", Client: service.Client()}).OpenSaaS(ctx, agentsdk.ApplicationRef{RuntimeID: "runtime"}, newRemoteHost(t, "runtime")); err != nil {
+		t.Fatal(err)
 	}
 }
 

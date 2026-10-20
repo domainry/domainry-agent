@@ -96,6 +96,8 @@ func (s *ConversationService) conversationAgent(ctx context.Context, id string, 
 }
 
 func (s *ConversationService) ConversationAgents(ctx context.Context, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgentPage, error) {
+	ctx, end := s.beginCatalogEvaluation(ctx)
+	defer end()
 	page, err := s.conversationAgentDirectory(ctx, a)
 	if err != nil {
 		return page, err

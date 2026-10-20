@@ -52,12 +52,6 @@ func (h *Host) registerConversationToolPermissions(ctx context.Context) error {
 	permission := agentsdk.ConversationInteractionPermission()
 	definitions = append(definitions, identitysdk.PermissionDefinition{PermissionKey: permission.Key, ResourceKey: permission.ResourceKey, OperationKey: permission.OperationKey, Label: permission.Label, Category: permission.Category, SourceKind: "agent"})
 	for _, operation := range agentsdk.ConversationHTTPDefinitions() {
-		if p := agentsdk.KnowledgeLibraryPermission(operation.Operation); p != nil {
-			definitions = append(definitions, identitysdk.PermissionDefinition{PermissionKey: p.Key, ResourceKey: p.ResourceKey, OperationKey: p.OperationKey, Label: p.Label, Category: p.Category, SourceKind: "agent"})
-		}
-		if p := agentsdk.KnowledgeDocumentPermission(operation.Operation); p != nil {
-			definitions = append(definitions, identitysdk.PermissionDefinition{PermissionKey: p.Key, ResourceKey: p.ResourceKey, OperationKey: p.OperationKey, Label: p.Label, Category: p.Category, SourceKind: "agent"})
-		}
 		if permission := agentsdk.ConversationAttachmentPermission(operation.Operation); permission != nil {
 			definitions = append(definitions, identitysdk.PermissionDefinition{PermissionKey: permission.Key, ResourceKey: permission.ResourceKey, OperationKey: permission.OperationKey, Label: permission.Label, Category: permission.Category, SourceKind: "agent"})
 		}

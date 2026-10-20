@@ -13,6 +13,7 @@ import { ToolSettingsDialog } from "./ToolSettingsDialog";
 import { ExternalAccountsDialog } from "./ExternalAccountsDialog";
 import { loadAuthorization } from "./external-account-state.ts";
 import { KnowledgeLibraryDialog } from "./KnowledgeLibraryDialog";
+import { KnowledgeWorkspace } from "./KnowledgeWorkspace";
 import { AttachmentDialog } from "./AttachmentDialog";
 import { ExecutionActivity } from "./ExecutionActivity";
 import { KnowledgeResponse } from "./KnowledgeSources";
@@ -158,6 +159,8 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
   const [scheduleDialog, setScheduleDialog] = useState(false);
   const [artifactDialog, setArtifactDialog] = useState<false | true | { id: string; version: number }>(false);
   const [libraryDialog, setLibraryDialog] = useState(false);
+  const [libraryRefresh, setLibraryRefresh] = useState(0);
+  const [workspaceSection, setWorkspaceSection] = useState<"conversation" | "knowledge">("conversation");
   const [attachmentDialog, setAttachmentDialog] = useState(false);
   useEffect(() => setAttachmentDialog(false), [selectedId]);
   const [artifactWrite, setArtifactWrite] = useState(() => !!drafts.read(location.hash.slice(1)).artifactWrite);
@@ -169,6 +172,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [listLoading, setListLoading] = useState(true);
+  const listLoaded = useRef(false);
   const [listError, setListError] = useState("");
   const [notice, setNotice] = useState("");
   const [memoryDialog, setMemoryDialog] = useState<{
@@ -231,6 +235,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
   }
   function activate(id: string, inspectRunID = "") {
     setMobileNavigation(false);
+    setWorkspaceSection("conversation");
     selectedRef.current = id;
     location.hash = id;
     setSelectedId(id);
@@ -281,7 +286,10 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
   }, []);
   useEffect(() => {
     const controller = new AbortController();
-    setListLoading(true);
+    // Keep the current page mounted during background reconciliation. Replacing
+    // the entire sidebar with a loading label made every send and completion
+    // look like a page refresh even though the transport stayed on SSE.
+    if (!listLoaded.current) setListLoading(true);
     setListError("");
     request<ConversationPage>(
       `/agent/conversations?limit=15&search=${encodeURIComponent(search)}&include_archived=${archived}&before_id=${encodeURIComponent(cursor)}`,
@@ -290,7 +298,10 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
       controller.signal,
     )
       .then((page) => {
-        if (!controller.signal.aborted) setSessions(page);
+        if (!controller.signal.aborted) {
+          listLoaded.current = true;
+          setSessions(page);
+        }
       })
       .catch((e) => {
         if (!controller.signal.aborted) {
@@ -587,7 +598,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
           <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setTodoDialog(true); }}><Check size={17} />个人待办<span className="subtle">事项与截止日期</span></Button>
           <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setTaskDialog(true); }}><ListChecks size={17} />后台任务<span className="subtle">进度、等待与成果</span></Button>
           {session.mode === "identity" && <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setScheduleDialog(true); }}><CalendarClock size={17} />计划与提醒<span className="subtle">查看、修改与暂停</span></Button>}
-          <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setLibraryDialog(true); }}><FileText size={17} />资料库<span className="subtle">个人资料、共享成员</span></Button>
+          <Button className={`memory-link ${workspaceSection === "knowledge" ? "workspace-link-active" : ""}`} aria-current={workspaceSection === "knowledge" ? "page" : undefined} variant="ghost" onClick={() => { setMobileNavigation(false); setWorkspaceSection("knowledge"); }}><FileText size={17} />知识库<span className="subtle">检索、文档与资料库</span></Button>
           <Button className="memory-link" variant="ghost" onClick={() => { setMobileNavigation(false); setArtifactDialog(true); }}><FileText size={17} />我的成果<span className="subtle">文档、表格与下载</span></Button>
           <Button
             variant="ghost"
@@ -619,7 +630,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
           {navigation}
         </DialogContent>
       </Dialog> : navigation}
-      <main className="chat-panel">
+      {workspaceSection === "knowledge" ? <KnowledgeWorkspace key={libraryRefresh} navigation={narrow ? <Button ref={navigationButton} variant="ghost" size="icon-sm" aria-label="打开工作导航" aria-haspopup="dialog" aria-expanded={mobileNavigation} onClick={() => setMobileNavigation(true)}><Menu size={20} /></Button> : undefined} /> : <main className="chat-panel">
         <header className="chat-header">
           <div className="chat-heading">
             {narrow && <Button ref={navigationButton} variant="ghost" size="icon-sm" aria-label="打开工作导航" aria-haspopup="dialog" aria-expanded={mobileNavigation} onClick={() => setMobileNavigation(true)}><Menu size={20} /></Button>}
@@ -674,7 +685,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
                 : "历史记录与上下文会自动保存"}
           </span>
         </div>
-        {record&&<ConversationCollaborationSummary conversationID={record.id} delegationID={record.delegation_id} userID={session.user_id} onOpen={id=>{setCollaborationSelection(id);setCollaborationDialog(true);}}/>}
+        {record&&<ConversationCollaborationSummary key={record.id} conversationID={record.id} delegationID={record.delegation_id} userID={session.user_id} onOpen={id=>{setCollaborationSelection(id);setCollaborationDialog(true);}}/>}
         <Conversation
           key={`${selectedId}:${historyCursors.at(-1)}`}
           className="conversation-view"
@@ -946,7 +957,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
             对话与执行记录会自动保存，请核对重要结果。
           </p>
         </div>
-      </main>
+      </main>}
       <Dialog
         open={dialog === "rename"}
         onOpenChange={(open) => {
@@ -1037,7 +1048,7 @@ export default function App({ session, onLogout, accountBusy, accountError }: { 
       {scheduleDialog && <ScheduleDialog onClose={() => setScheduleDialog(false)} onAsk={prompt => { setScheduleDialog(false); setInputState(prompt); }} />}
       {toolSettings && <ToolSettingsDialog key={session.scope} session={session} onClose={() => { setToolSettings(false); refreshResultAccess(); }} />}
       {externalAccounts && <ExternalAccountsDialog session={session} onClose={() => { setExternalAccounts(false); refreshResultAccess(); }} />}
-      {libraryDialog && <KnowledgeLibraryDialog onClose={() => setLibraryDialog(false)} />}
+      {libraryDialog && <KnowledgeLibraryDialog onClose={() => { setLibraryDialog(false); setLibraryRefresh(value => value + 1); }} />}
       {artifactDialog && <ArtifactDialog conversationID={selectedId} initial={typeof artifactDialog === "object" ? artifactDialog : undefined} onClose={() => setArtifactDialog(false)} onSource={conversationID => { setArtifactDialog(false); activate(conversationID); }} onRun={(conversationID, runID) => { setArtifactDialog(false); activate(conversationID, runID); }} />}
       {attachmentDialog && record && <AttachmentDialog key={record.id} conversationID={record.id} archived={record.archived} onClose={() => setAttachmentDialog(false)} onOpenLibrary={() => { setAttachmentDialog(false); setLibraryDialog(true); }} />}
       {memoryDialog && (

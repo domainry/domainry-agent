@@ -171,8 +171,8 @@ func TestBusinessRelationToolTraversesAndReauthorizesThroughSaaS(t *testing.T) {
 				if err != nil || len(page.Items) != 2 {
 					t.Fatal(page, err)
 				}
-				if revoked == strings.Contains(page.Items[1].Content, "关联订单2") || revoked != (page.Items[1].AccessError != "") {
-					t.Fatal("historical relation permissions ignored", page)
+				if !strings.Contains(page.Items[1].Content, "关联订单2") || page.Items[1].AccessError != "" {
+					t.Fatal("historical relation snapshot changed", page)
 				}
 			}
 		})

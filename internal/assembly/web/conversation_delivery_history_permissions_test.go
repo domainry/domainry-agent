@@ -197,7 +197,9 @@ func TestPeerHistoryDeliveryReadsOriginalMessagesAndExecutionAfterToolRevocation
 		}
 	}
 	assertRead()
-	b.call("POST", "/agent/conversations/"+timeRef.ConversationID+"/runs/"+timeRef.RunID+"/result", accountJSON(sdk.ConversationResultRead{Reference: timeRef, MaxBytes: 4096}), 403)
+	// execution_read exposes the owner's exact immutable receipt without
+	// re-executing the now-disabled time tool.
+	b.call("POST", "/agent/conversations/"+timeRef.ConversationID+"/runs/"+timeRef.RunID+"/result", accountJSON(sdk.ConversationResultRead{Reference: timeRef, MaxBytes: 4096}), 200)
 	setTestCollaborationPermissions(t, host, b, "view", "delivery_read", "communicate")
 	if value := read(); value.Delivery != nil {
 		t.Fatal("same-delegation raw history ignored execution read revocation")

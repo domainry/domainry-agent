@@ -82,9 +82,9 @@ func TestConversationCatalogConnectionChangesAndFrozenResume(t *testing.T) {
 	if _, err = s.Resume(t.Context(), c.ID, run.ID, a); err != nil {
 		t.Fatal(err)
 	}
-	// The shared source audit now rejects every disabled tool before replaying
-	// its accepted result, including extension/local tools.
-	if got := waitConversation(t, s, c.ID, run.ID); got.Status != "failed" || got.ErrorCode != "tool_unavailable" {
+	// A disabled capability is absent from the current catalog. Recovery must
+	// reject the frozen tool contract, not reopen its historical result data.
+	if got := waitConversation(t, s, c.ID, run.ID); got.Status != "failed" || got.ErrorCode != "tool_access_denied" {
 		t.Fatalf("disconnected=%+v", got)
 	}
 	model.mu.Lock()

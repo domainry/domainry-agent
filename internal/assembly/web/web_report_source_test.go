@@ -50,12 +50,12 @@ func TestWebReportDoesNotAdoptReplacementConnection(t *testing.T) {
 	}
 	messages := accountDecode[sdk.ConversationMessagePage](t, b.call("GET", "/agent/conversations/"+conversation+"/messages", "", 200))
 	for _, m := range messages.Items {
-		if m.Role == "assistant" && (m.AccessError == "" || strings.Contains(m.Content, "WEB-BODY")) {
-			t.Fatal("replacement adopted old answer")
+		if m.Role == "assistant" && (m.AccessError != "" || !strings.Contains(m.Content, "WEB-BODY")) {
+			t.Fatal("replacement rewrote the owner's saved answer")
 		}
 	}
 	if f.vendorCalls.Load() != before {
 		t.Fatal("historical authorization made vendor request")
 	}
-	t.Log("replacement service has both tools; old report v1/v2 and answer denied without upstream I/O")
+	t.Log("replacement service has both tools; old reports remain denied while the owner's saved answer remains immutable without upstream I/O")
 }

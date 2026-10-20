@@ -132,11 +132,11 @@ func exerciseExecutionToolsHTTP(t *testing.T, executor, issuer, reader *browser,
 		t.Fatal("Agent result changed original receipt", result)
 	}
 	setScope("execution-tool-source-withdraw", []string{"view", "execution_read", "delivery_read"})
-	// A previously saved read wrapper remains subject to its original raw
-	// communication source rights; ordinary owner history cannot bypass it.
+	// A previously saved read wrapper is the reader's immutable historical
+	// observation. New collaboration reads still use the current source rights.
 	withdrawn := accountDecode[sdk.ConversationRun](t, reader.call("GET", runPath, "", 200))
-	if withdrawn.AccessError == "" || len(withdrawn.Steps) != 0 {
-		t.Fatal("recorded wrapper retained withdrawn source content", withdrawn.AccessError)
+	if withdrawn.AccessError != "" || len(withdrawn.Steps) == 0 {
+		t.Fatal("withdrawn source rights rewrote the recorded wrapper", withdrawn.AccessError)
 	}
 	setScope("execution-tool-source-restore", []string{"view", "execution_read", "communicate", "delivery_read"})
 	wrong := ref

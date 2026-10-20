@@ -6,7 +6,7 @@ test("preview accepts only managed document identities, never source URLs", () =
  const id = "kdoc_" + "a".repeat(32), libraryID = "lib_" + "b".repeat(32);
  const citation = { provider: "agent_library_documents", library_id: libraryID, doc_id: id, url: "https://untrusted.example/document.pdf" } as Citation;
  assert.deepEqual(citationFile(citation), { kind:"library", libraryID, id });
- assert.equal(previewPath(citationFile(citation)!), `/agent/knowledge-libraries/${libraryID}/documents/${id}/content`);
+ assert.equal(previewPath(citationFile(citation)!), `/knowledge/libraries/${libraryID}/documents/${id}/content`);
  assert.equal(citationFile({...citation,provider:"verdent"}),null);
  assert.equal(citationFile({...citation,doc_id:"../../secret"}),null);
  assert.throws(()=>previewPath({kind:"library",libraryID,id:"https://untrusted.example/file"}));

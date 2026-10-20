@@ -441,7 +441,6 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		}
 		if _, ok := h.repo.(persistence.ConversationSourceRepository); ok {
 			service := h.sourceService()
-			audit := service.sourceAudit(in.Authority, in.ConversationID)
 			items := make([]agentsdk.ConversationHistoryHit, 0, len(value.Items))
 			for _, hit := range value.Items {
 				if hit.ConversationID != in.ConversationID {
@@ -451,12 +450,6 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 							continue
 						}
 						return agentsdk.ConversationToolResult{}, err
-					}
-				}
-				if hit.Role == "assistant" {
-					if _, err := audit.historyReference(ctx, hit.ConversationID, hit.MessageID, hit.RunID); err != nil {
-						value.Omitted = true
-						continue
 					}
 				}
 				items = append(items, hit)
@@ -480,12 +473,6 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		message, err := h.history.HistoryMessage(ctx, args.ConversationID, args.MessageID, in.Authority)
 		if err != nil {
 			return agentsdk.ConversationToolResult{}, err
-		}
-		if _, ok := h.repo.(persistence.ConversationSourceRepository); ok && message.Role == "assistant" {
-			service := h.sourceService()
-			if _, err := service.sourceAudit(in.Authority, in.ConversationID).historyReference(ctx, message.ConversationID, message.ID, message.RunID); err != nil {
-				return personalToolFailure(sourceAccessCode(err)), nil
-			}
 		}
 		if args.MaxBytes == 0 {
 			args.MaxBytes = 4096

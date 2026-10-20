@@ -3,14 +3,14 @@ import test from "node:test";
 import { ApiError } from "./errors.ts";
 import { setSession, type AppSession } from "./session.ts";
 import { canTransferToLibrary, parsePendingTransfer } from "./document-transfer-state.ts";
-import { documentCanDownload, documentHash, documentLabel, documentMaxBytes, parsePendingDocument, parsePendingImport, readKnowledgeDocument, uploadKnowledgeDocument, type KnowledgeDocument } from "./knowledge-document-state.ts";
+import { documentCanDownload, documentHash, documentLabel, documentMaxBytes, documentUploadChunkBytes, parsePendingDocument, parsePendingImport, readKnowledgeDocument, uploadKnowledgeDocument, type KnowledgeDocument } from "./knowledge-document-state.ts";
 
 const a: AppSession = { mode: "identity", scope: "fixture/workspace/a", runtime_id: "fixture", workspace_id: "workspace", user_id: "a", name: "A", must_change_password: false, ready: true, model: "fixture" };
 const bytes = new TextEncoder().encode("immutable library original\n");
 const file = new File([bytes], "资料.txt", { type: "text/plain" });
 const sha256 = await documentHash(bytes.buffer);
 const pending = { clientID: "same-upload", filename: file.name, bytes: file.size, sha256 };
-const document: KnowledgeDocument = { id: "kdoc_" + "a".repeat(32), library_id: "lib_" + "b".repeat(32), filename: file.name, bytes: file.size, sha256, content_type: "text/plain", state: "queued", revision: 2, created_by_user_id: "a", created_at: "2026-09-10T00:00:00Z", updated_at: "2026-09-10T00:00:00Z" };
+const document: KnowledgeDocument = { id: "kdoc_" + "a".repeat(32), library_id: "lib_" + "b".repeat(32), filename: file.name, bytes: file.size, sha256, content_version: 1, index_generation: 1, content_type: "text/plain", state: "queued", processing_stage: "parse", security_status: "clean", revision: 2, created_by_user_id: "a", created_at: "2026-09-10T00:00:00Z", updated_at: "2026-09-10T00:00:00Z" };
 
 test("document upload retry receipts remain bounded and pending/indexed/deleting states stay distinct", () => {
   assert.deepEqual(parsePendingDocument(JSON.stringify(pending)), pending);
@@ -24,7 +24,7 @@ test("document upload retry receipts remain bounded and pending/indexed/deleting
   assert(!documentCanDownload({ ...document, state: "uploading" }));
 });
 
-test("document upload sends one binary request with its persisted identity and rejects unrelated receipts", async () => {
+test("document upload sends verified resumable chunks with its persisted identity and rejects unrelated receipts", async () => {
   const original = globalThis.fetch;
   try {
     setSession(a);
@@ -32,21 +32,55 @@ test("document upload sends one binary request with its persisted identity and r
     globalThis.fetch = (async (input, init) => {
       sends++;
       const url = new URL(String(input), "https://fixture.example");
-      assert.equal(url.pathname, `/agent/knowledge-libraries/${document.library_id}/documents`);
+      assert.equal(url.pathname, `/knowledge/libraries/${document.library_id}/documents`);
       assert.equal(url.searchParams.get("client_id"), pending.clientID);
       assert.equal(url.searchParams.get("filename"), file.name);
       assert.deepEqual([...url.searchParams.keys()], ["client_id", "filename"]);
-      assert.equal(init?.body, file);
+      assert(init?.body instanceof Blob);
+      assert.equal((init?.body as Blob).size, file.size);
       assert.equal(new Headers(init?.headers).get("X-Agent-Scope"), a.scope);
-      return Response.json(document);
+      assert.equal(new Headers(init?.headers).get("X-Knowledge-File-SHA256"), pending.sha256);
+      assert.equal(new Headers(init?.headers).get("X-Knowledge-Chunk-SHA256"), pending.sha256);
+      assert.equal(new Headers(init?.headers).get("Content-Range"), `bytes 0-${file.size - 1}/${file.size}`);
+      return Response.json({ next_offset: file.size, complete: true, document });
     }) as typeof fetch;
     const signal = new AbortController().signal;
     assert.equal((await uploadKnowledgeDocument(document.library_id, file, pending, signal)).id, document.id);
     assert.equal(sends, 1);
     for (const bad of [{ ...document, library_id: "lib_" + "c".repeat(32) }, { ...document, sha256: "c".repeat(64) }]) {
-      globalThis.fetch = async () => Response.json(bad);
+      globalThis.fetch = async () => Response.json({ next_offset: file.size, complete: true, document: bad });
       await assert.rejects(uploadKnowledgeDocument(document.library_id, file, pending, signal), (e: unknown) => e instanceof ApiError && e.code.endsWith("document_response_invalid"));
     }
+  } finally { globalThis.fetch = original; setSession(null); }
+});
+
+test("large document upload advances in fixed parts and reports acknowledged progress", async () => {
+  const original = globalThis.fetch;
+  try {
+    setSession(a);
+    const largeBytes = new Uint8Array(documentUploadChunkBytes + 3);
+    largeBytes.fill(7);
+    const largeFile = new File([largeBytes], "large.txt", { type: "text/plain" });
+    const largePending = { clientID: "large-upload", filename: largeFile.name, bytes: largeFile.size, sha256: await documentHash(largeBytes.buffer) };
+    const largeDocument = { ...document, filename: largeFile.name, bytes: largeFile.size, sha256: largePending.sha256 };
+    let sends = 0;
+    const progress: number[] = [];
+    globalThis.fetch = (async (_input, init) => {
+      const headers = new Headers(init?.headers);
+      const body = init?.body as Blob;
+      if (sends++ === 0) {
+        assert.equal(headers.get("Content-Range"), `bytes 0-${documentUploadChunkBytes - 1}/${largeFile.size}`);
+        assert.equal(body.size, documentUploadChunkBytes);
+        return Response.json({ next_offset: documentUploadChunkBytes, complete: false, document: { ...largeDocument, state: "uploading" } });
+      }
+      assert.equal(headers.get("Content-Range"), `bytes ${documentUploadChunkBytes}-${largeFile.size - 1}/${largeFile.size}`);
+      assert.equal(body.size, 3);
+      return Response.json({ next_offset: largeFile.size, complete: true, document: largeDocument });
+    }) as typeof fetch;
+    const result = await uploadKnowledgeDocument(largeDocument.library_id, largeFile, largePending, new AbortController().signal, uploaded => progress.push(uploaded));
+    assert.equal(result.id, largeDocument.id);
+    assert.equal(sends, 2);
+    assert.deepEqual(progress, [documentUploadChunkBytes, largeFile.size]);
   } finally { globalThis.fetch = original; setSession(null); }
 });
 

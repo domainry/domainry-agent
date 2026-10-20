@@ -5,7 +5,7 @@
 ## 实现
 
 - SDK 的 `KnowledgeLibraryService` 是可选扩展，挂在现有 Conversation Binding 上，与旧 Interactive / Task 不混用；公共契约、HTTP manifest 与可信 SaaS RPC 共用同一应用服务。自定义 Module / SaaS 宿主须配置 `ConversationOptions.LibraryAuthorizer`；Web 宿主默认装配 Identity 实现，权限只注册、不自动授予。
-- 第 9 个宿主迁移使用 ORM 建立 `_agent_knowledge_libraries` 和 `_agent_knowledge_library_members`；作用域为可信 Runtime / Workspace 的无歧义摘要，成员索引按用户与库排列。个人库 ID 按所有者稳定生成；共享库按所有者和请求标识生成，与个人库使用不同命名空间。
+- 当前 Knowledge 新建 schema version 1 使用 ORM 建立 `_knowledge_libraries` 和 `_knowledge_library_members`；作用域为可信 Runtime / Workspace 的无歧义摘要，成员索引按用户与库排列。个人库 ID 按所有者稳定生成；共享库按所有者和请求标识生成，与个人库使用不同命名空间。
 - 个人库每用户唯一且不能添加成员；共享库创建者初始为 manager，其他用户必须显式加入。reader / editor 可以读取库元数据；只有 manager 可以设置名称、说明、归档状态和成员。文档尚未归库，reader / editor 的文档能力仍待接入。
 - 更新设置和成员都要求期望库修订号，在同一可重试串行化事务中重查当前成员、检查最后一位 manager、增加修订并完成写入。并发移除两个 manager 最多成功一个。读者不能枚举成员名册；新成员需经过宿主验证为当前工作区有效主体，移除停用用户不要求其仍有效。
 - Web Identity 逐次解析主体与当前操作权限，以应用加载的库事实授权；存储独立限制成员范围。管理动作使用 `agent.conversations.libraries_*`。测试的 Identity 全工作区动作许可不替代库成员关系；未加入的用户仍不可访问库。当前列表接口要求集合级动作许可，精细的逐库 Identity 列表策略尚未专项验收。

@@ -253,8 +253,8 @@ func TestConversationCatalogIdentityHTTPConnectionsAndBrowser(t *testing.T) {
 	before = knowledgeCalls.Load()
 	var hidden agentsdk.ConversationMessagePage
 	_ = json.Unmarshal(b.call("GET", "/agent/conversations/"+searched+"/messages", "", 200).Body.Bytes(), &hidden)
-	if len(hidden.Items) != 2 || hidden.Items[1].AccessError == "" || strings.Contains(hidden.Items[1].Content, "取得验收资料") || knowledgeCalls.Load() != before {
-		t.Fatal("historical source revalidation bypassed disconnected tool policy")
+	if len(hidden.Items) != 2 || hidden.Items[1].AccessError != "" || !strings.Contains(hidden.Items[1].Content, "取得验收资料") || knowledgeCalls.Load() != before {
+		t.Fatal("disconnected tool policy rewrote history or performed source IO")
 	}
 	state.disconnected.Store(false)
 	c, run, _ = round("catalog-execution-switch", "执行前停用计算")

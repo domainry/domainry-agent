@@ -19,6 +19,7 @@ import (
 	"github.com/domainry/domainry-agent/definition"
 	"github.com/domainry/domainry-agent/internal/execution"
 	"github.com/domainry/domainry-foundation/apperror"
+	workerplatform "github.com/domainry/domainry-foundation/worker"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
 
@@ -213,7 +214,9 @@ func (s *TaskExecutionService) Poll(ctx context.Context, externalRunID, idempote
 		return taskFailure("request_contract", "agent.task.idempotency_mismatch", false), badRequest("agent.task.idempotency_mismatch")
 	}
 	if run.Status.Terminal() && run.ProcessID != "" && run.Reconciliation.Required && run.Reconciliation.State == "workflow_callback_pending" {
-		go s.notifyWorkflow(context.Background(), run)
+		if err := s.notifyWorkflow(ctx, run); err != nil {
+			return taskResultFromRun(run), err
+		}
 	}
 	return taskResultFromRun(run), nil
 }
@@ -268,75 +271,81 @@ func (s *TaskExecutionService) ResolveProposal(ctx context.Context, proposal age
 	}
 	if run.Status.Terminal() && run.ProcessID != "" {
 		run.Reconciliation = agentmodel.AgentTaskReconciliation{Required: true, State: "workflow_callback_pending", Reason: "workflow completion callback has not been acknowledged"}
-		s.notifyWorkflow(ctx, run)
+		return s.notifyWorkflow(ctx, run)
 	}
 	return nil
 }
 
 func (s *TaskExecutionService) loop(ctx context.Context) {
 	defer close(s.done)
-	ticker := time.NewTicker(5 * time.Second)
-	defer ticker.Stop()
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case locator := <-s.wakeups:
-			s.processLocator(ctx, locator)
-		case <-ticker.C:
-			s.processRecovery(ctx)
-		}
-	}
+	done := workerplatform.StartWakeableRecoveryLoop(ctx, workerplatform.Identity{Owner: "agent", Name: "task_execution"}, 5*time.Second, s.wakeups, s.processRecovery, s.processLocator)
+	<-done
 }
 
-func (s *TaskExecutionService) processLocator(ctx context.Context, locator taskLocator) {
+func (s *TaskExecutionService) processLocator(ctx context.Context, locator taskLocator) (workerplatform.TickResult, error) {
 	if s.taskHost() == nil {
-		return
+		return workerplatform.TickResult{}, nil
 	}
 	claim, found, err := s.state.ClaimTask(ctx, locator.workspaceID, locator.runID, s.workerID, s.leaseTTL)
-	if err != nil || !found {
-		return
+	if err != nil {
+		return workerplatform.TickResult{}, err
 	}
-	s.executeClaim(ctx, claim)
+	if !found {
+		return workerplatform.TickResult{}, nil
+	}
+	err = s.executeClaim(ctx, claim)
+	return workerplatform.TickResult{Worked: true, ProcessedCount: 1, Attempt: claim.Run.Attempt}, err
 }
 
-func (s *TaskExecutionService) processRecovery(ctx context.Context) {
+func (s *TaskExecutionService) processRecovery(ctx context.Context) (workerplatform.TickResult, error) {
 	if s.taskHost() == nil {
-		return
+		return workerplatform.TickResult{}, nil
 	}
+	result := workerplatform.TickResult{}
 	scope := agentpersistence.SystemScope{Kind: agentpersistence.AgentSystemScopeKindGlobal, Purpose: "agent_task_execution_recovery"}
 	claim, found, err := s.state.ClaimNextForWorker(ctx, scope, s.workerID, s.leaseTTL)
-	if err == nil && found {
-		s.executeClaim(ctx, claim)
+	if err != nil {
+		return result, err
+	}
+	if found {
+		if err := s.executeClaim(ctx, claim); err != nil {
+			return result, err
+		}
+		result.Worked = true
+		result.ProcessedCount++
+		result.Attempt = claim.Run.Attempt
 	}
 	terminal, listErr := s.state.ListForWorker(ctx, scope, agentpersistence.AgentTaskRunFilter{Statuses: []agentmodel.AgentTaskRunStatus{
 		agentmodel.AgentTaskRunSucceeded, agentmodel.AgentTaskRunManualReview, agentmodel.AgentTaskRunRejected,
 		agentmodel.AgentTaskRunNoResult, agentmodel.AgentTaskRunFailed, agentmodel.AgentTaskRunCancelled, agentmodel.AgentTaskRunDeadLetter,
 	}, Limit: 100})
 	if listErr != nil {
-		return
+		return result, listErr
 	}
 	for _, run := range terminal {
 		if run.ProcessID != "" && run.Reconciliation.Required && run.Reconciliation.State == "workflow_callback_pending" {
-			s.notifyWorkflow(ctx, run)
+			if err := s.notifyWorkflow(ctx, run); err != nil {
+				return result, err
+			}
+			result.Worked = true
+			result.ProcessedCount++
 		}
 	}
+	return result, nil
 }
 
-func (s *TaskExecutionService) executeClaim(parent context.Context, claim agentpersistence.AgentTaskClaim) {
+func (s *TaskExecutionService) executeClaim(parent context.Context, claim agentpersistence.AgentTaskClaim) error {
 	run := claim.Run
 	if run.CancelRequestedAt != nil {
-		s.cancelClaim(parent, run, claim.Lease)
-		return
+		return s.cancelClaim(parent, run, claim.Lease)
 	}
 	host := s.taskHost()
 	if host == nil {
-		return
+		return nil
 	}
 	authorization, err := authorizeTaskRun(parent, host, run)
 	if err != nil {
-		s.failClaim(parent, run, claim.Lease, "authorization", errorCode(err, "agent.task.authorization_failed"), false)
-		return
+		return errors.Join(err, s.failClaim(parent, run, claim.Lease, "authorization", errorCode(err, "agent.task.authorization_failed"), false))
 	}
 	credential, err := host.IssueTaskCredential(parent, modulehost.TaskCredentialRequest{
 		WorkspaceID: run.WorkspaceID, ProcessID: run.ProcessID, TaskRunID: run.ID,
@@ -344,8 +353,7 @@ func (s *TaskExecutionService) executeClaim(parent context.Context, claim agentp
 		TTLSeconds: taskCredentialTTL(run.TimeoutSeconds),
 	})
 	if err != nil {
-		s.failClaim(parent, run, claim.Lease, "credential", errorCode(err, "agent.task.credential_failed"), true)
-		return
+		return errors.Join(err, s.failClaim(parent, run, claim.Lease, "credential", errorCode(err, "agent.task.credential_failed"), true))
 	}
 	executionContext, cancel := context.WithCancel(parent)
 	if run.TimeoutSeconds > 0 {
@@ -368,21 +376,23 @@ func (s *TaskExecutionService) executeClaim(parent context.Context, claim agentp
 		if len(run.Attempts) > 0 {
 			run.Attempts[len(run.Attempts)-1].ExternalRunID = externalRunID
 		}
-		s.failClaim(parent, run, claim.Lease, "provider", valueOrDefault(result.ErrorCode, errorCode(executeErr, "agent.task.execution_failed")), providerRetryable(result, executeErr))
-		return
+		return errors.Join(executeErr, s.failClaim(parent, run, claim.Lease, "provider", valueOrDefault(result.ErrorCode, errorCode(executeErr, "agent.task.execution_failed")), providerRetryable(result, executeErr)))
 	}
 	completion, completionErr := taskCompletion(authorization, result, externalRunID, run.Evidence)
 	if completionErr != nil {
-		s.failClaim(parent, run, claim.Lease, "output_validation", errorCode(completionErr, "agent.task.output_invalid"), false)
-		return
+		return errors.Join(completionErr, s.failClaim(parent, run, claim.Lease, "output_validation", errorCode(completionErr, "agent.task.output_invalid"), false))
 	}
 	if run.ProcessID != "" {
 		completion.Reconciliation = agentmodel.AgentTaskReconciliation{Required: true, State: "workflow_callback_pending", Reason: "workflow completion callback has not been acknowledged"}
 	}
 	completed, err := s.state.Complete(parent, run, claim.Lease.Owner, claim.Lease.FencingToken, completion)
-	if err == nil && completed.ProcessID != "" {
-		s.notifyWorkflow(parent, completed)
+	if err != nil {
+		return err
 	}
+	if completed.ProcessID != "" {
+		return s.notifyWorkflow(parent, completed)
+	}
+	return nil
 }
 
 func (s *TaskExecutionService) runProvider(ctx context.Context, run agentmodel.AgentTaskRun, authorization modulehost.TaskAuthorization, credential string) (agentsdk.TaskResult, string, error) {
@@ -635,28 +645,30 @@ func (s *TaskExecutionService) heartbeat(ctx context.Context, run agentmodel.Age
 	}
 }
 
-func (s *TaskExecutionService) failClaim(ctx context.Context, run agentmodel.AgentTaskRun, lease agentmodel.AgentTaskLease, class, code string, retryable bool) {
+func (s *TaskExecutionService) failClaim(ctx context.Context, run agentmodel.AgentTaskRun, lease agentmodel.AgentTaskLease, class, code string, retryable bool) error {
 	next := time.Now().UTC().Add(time.Second * time.Duration(1<<min(run.Attempt, 10)))
 	if run.ProcessID != "" && (!retryable || run.Attempt >= run.MaxAttempts) {
 		run.Reconciliation = agentmodel.AgentTaskReconciliation{Required: true, State: "workflow_callback_pending", Reason: "workflow completion callback has not been acknowledged"}
 	}
 	failed, err := s.state.FailAttempt(ctx, run, lease.Owner, lease.FencingToken, class, code, retryable, next)
 	if err != nil {
-		return
+		return err
 	}
 	if failed.Status == agentmodel.AgentTaskRunRetryScheduled {
 		time.AfterFunc(time.Until(next), func() { s.Wake(failed.WorkspaceID, failed.ID) })
-		return
+		return nil
 	}
 	if failed.ProcessID != "" {
-		s.notifyWorkflow(ctx, failed)
+		return s.notifyWorkflow(ctx, failed)
 	}
+	return nil
 }
 
-func (s *TaskExecutionService) cancelClaim(ctx context.Context, run agentmodel.AgentTaskRun, lease agentmodel.AgentTaskLease) {
+func (s *TaskExecutionService) cancelClaim(ctx context.Context, run agentmodel.AgentTaskRun, lease agentmodel.AgentTaskLease) error {
 	externalID := latestProviderRunID(run)
+	var cancelErr error
 	if externalID != "" {
-		_, _ = s.provider.Cancel(ctx, externalID, run.IdempotencyKey)
+		_, cancelErr = s.provider.Cancel(ctx, externalID, run.IdempotencyKey)
 	}
 	completion := agentpersistence.AgentTaskRunCompletion{
 		Status: agentmodel.AgentTaskRunCancelled, Outcome: "cancelled", ErrorCode: "agent.task.cancelled",
@@ -666,24 +678,30 @@ func (s *TaskExecutionService) cancelClaim(ctx context.Context, run agentmodel.A
 		completion.Reconciliation = agentmodel.AgentTaskReconciliation{Required: true, State: "workflow_callback_pending", Reason: "workflow completion callback has not been acknowledged"}
 	}
 	completed, err := s.state.Complete(ctx, run, lease.Owner, lease.FencingToken, completion)
-	if err == nil && completed.ProcessID != "" {
-		s.notifyWorkflow(ctx, completed)
+	if err != nil {
+		return errors.Join(cancelErr, err)
 	}
+	if completed.ProcessID != "" {
+		return errors.Join(cancelErr, s.notifyWorkflow(ctx, completed))
+	}
+	return cancelErr
 }
 
-func (s *TaskExecutionService) notifyWorkflow(ctx context.Context, run agentmodel.AgentTaskRun) {
+func (s *TaskExecutionService) notifyWorkflow(ctx context.Context, run agentmodel.AgentTaskRun) error {
 	host := s.taskHost()
 	if host == nil || run.ProcessID == "" || !run.Status.Terminal() {
-		return
+		return nil
 	}
 	err := host.CompleteWorkflowTask(ctx, modulehost.WorkflowTaskCompletion{
 		WorkspaceID: run.WorkspaceID, TaskRunID: run.ID, ProcessID: run.ProcessID, NodeInstanceID: run.NodeInstanceID,
 		TaskKey: run.TaskKey, TaskVersion: run.TaskVersion, Identity: run.Identity,
 		Status: string(run.Status), Outcome: run.Outcome, Output: cloneTaskMap(run.Output), ErrorCode: run.LastErrorCode, Evidence: run.Evidence,
 	})
-	if err == nil {
-		_, _ = s.state.MarkWorkflowCompletionDelivered(ctx, run.WorkspaceID, run.ID)
+	if err != nil {
+		return err
 	}
+	_, err = s.state.MarkWorkflowCompletionDelivered(ctx, run.WorkspaceID, run.ID)
+	return err
 }
 
 func (s *TaskExecutionService) taskHost() modulehost.TaskHost {

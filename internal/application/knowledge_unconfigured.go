@@ -7,7 +7,7 @@ import (
 )
 
 // Unconfigured capabilities fail closed while the generic Agent remains usable.
-type unconfiguredKnowledge struct{}
+type unconfiguredKnowledge struct{ unconfiguredKnowledgePages }
 
 func (unconfiguredKnowledge) Artifact(ctx context.Context, id string, version int64, a agentsdk.ConversationAuthority) (agentsdk.ConversationArtifactVersion, error) {
 	var zero1 agentsdk.ConversationArtifactVersion
@@ -121,6 +121,14 @@ func (unconfiguredKnowledge) DeleteKnowledgeDocument(ctx context.Context, librar
 	var zero1 agentsdk.KnowledgeDocument
 	return zero1, &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.knowledge_not_configured"}
 }
+func (unconfiguredKnowledge) RetryKnowledgeDocument(ctx context.Context, library, id string, expected int64, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
+	var zero1 agentsdk.KnowledgeDocument
+	return zero1, &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.knowledge_not_configured"}
+}
+func (unconfiguredKnowledge) ReindexKnowledgeDocument(ctx context.Context, library, id string, expected int64, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
+	var zero1 agentsdk.KnowledgeDocument
+	return zero1, &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.knowledge_not_configured"}
+}
 func (unconfiguredKnowledge) DocumentAccess(ctx context.Context, library, op string, a agentsdk.ConversationAuthority) (persistence.KnowledgeDocumentRepository, error) {
 	var zero1 persistence.KnowledgeDocumentRepository
 	return zero1, &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.knowledge_not_configured"}
@@ -224,12 +232,12 @@ func (unconfiguredKnowledge) UploadAttachment(ctx context.Context, conversationI
 	var zero1 agentsdk.ConversationAttachment
 	return zero1, &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.knowledge_not_configured"}
 }
-func (unconfiguredKnowledge) UploadDocumentContent(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUpload, origin *persistence.KnowledgeAttachmentOrigin, documentOrigin *persistence.KnowledgeDocumentOrigin, recheck func() error, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
+func (unconfiguredKnowledge) UploadKnowledgeDocument(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUpload, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
 	var zero1 agentsdk.KnowledgeDocument
 	return zero1, &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.knowledge_not_configured"}
 }
-func (unconfiguredKnowledge) UploadKnowledgeDocument(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUpload, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
-	var zero1 agentsdk.KnowledgeDocument
+func (unconfiguredKnowledge) UploadKnowledgeDocumentChunk(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUploadChunk, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocumentUploadProgress, error) {
+	var zero1 agentsdk.KnowledgeDocumentUploadProgress
 	return zero1, &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.knowledge_not_configured"}
 }
 func (unconfiguredKnowledge) UploadKnowledgeDocumentForSource(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUpload, source agentsdk.KnowledgeDocumentSourceAccess, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {

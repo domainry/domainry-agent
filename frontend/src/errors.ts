@@ -159,11 +159,27 @@ const messages: Record<string, string> = {
   extraction_failed: "文档提取未完成，请核对来源后重试。",
   document_source_already_bound: "此知识源已被其他资料库使用，请刷新后重新选择。",
   document_management_unavailable: "此资料库暂未开放文档上传，请联系管理员连接支持入库的知识源。",
-  document_write_denied: "只有资料库编辑者或管理者可以上传和删除文档。",
+  document_write_denied: "只有资料库编辑者或管理者可以上传、重试或删除文档。",
+  document_retry_unavailable: "当前知识库服务没有启用文档任务重试。",
+  document_retry_not_available: "此文档当前没有可重试的失败阶段，请刷新查看最新状态。",
+  document_reindex_unavailable: "当前知识库服务没有启用文档重新索引。",
+  document_reindex_not_available: "此文档当前不能重新索引，请确认它已完成入库且没有其他清理任务。",
+  document_reindex_in_progress: "文档正在建立新索引，完成切换前不能删除。",
+  document_reindex_put_uncertain: "新索引提交结果待核查，系统不会盲目重复提交。",
+  document_reindex_put_unconfirmed: "暂时未能确认知识源收到新索引内容，系统会继续核查。",
+  document_reindex_failed: "新一代索引建立失败；当前索引仍可检索，可查看原因后重试。",
+  document_reindex_cleanup_uncertain: "新索引已切换，但旧索引清理结果待核查；当前检索不受影响。",
+  document_security_rejected: "文件已被安全检查拒绝，不能通过重试绕过隔离；请删除后上传安全版本。",
   document_upload_access_denied: "上传权限已变化，后台暂未推送此文件，请联系资料库管理者处理。",
   document_not_found: "文档不存在、已删除，或你已失去所在资料库的访问权限。",
   document_content_not_found: "原文件尚未保存、已停止访问或已经删除。",
   document_size_invalid: "请选择非空文件，且大小不超过此资料库显示的上传上限。",
+  document_chunk_invalid: "上传分片不符合要求，请重新选择同一文件继续上传。",
+  document_chunk_upload_unavailable: "当前文件存储尚未启用分片上传，请联系管理员核对知识库存储配置。",
+  document_chunk_state_invalid: "文件存储返回的上传进度无法核对，请重新选择同一文件继续上传。",
+  document_upload_offset_conflict: "服务端保存的上传进度与当前分片不一致，请重新选择同一文件以服务端进度继续。",
+  document_upload_content_conflict: "服务端已有分片与当前文件内容不一致，请删除未完成记录后重新上传。",
+  document_index_size_unsupported: "原文件已保存，但当前知识源的单次索引入口无法接收这么大的文件。",
   document_access_policy_changed: "资料库的访问配置已变更，文档索引处理已暂停，请联系管理员核对。",
   document_type_unsupported: "暂不支持这个文件格式，请选择 PDF、Word、Excel 或支持的文本文件。",
   document_invalid: "文件名称或上传参数无效，请检查后重试。",
@@ -383,11 +399,13 @@ export function errorMessage(code?: string, status?: number) {
 export class ApiError extends Error {
   code: string;
   status?: number;
-  constructor(code: string, status?: number) {
+  conflict?: { current_draft_revision: number; base_published_version: number; current_content_sha256: string; current_updated_at: string };
+  constructor(code: string, status?: number, conflict?: { current_draft_revision: number; base_published_version: number; current_content_sha256: string; current_updated_at: string }) {
     super(errorMessage(code, status));
     this.name = "ApiError";
     this.code = code;
     this.status = status;
+    this.conflict = conflict;
   }
 }
 export function describeError(error: unknown): string {

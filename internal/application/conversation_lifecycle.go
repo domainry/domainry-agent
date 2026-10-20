@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"sort"
 	"strings"
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
+	"github.com/domainry/domainry-foundation/logging"
+	"go.uber.org/zap"
 )
 
 type conversationLifecycleBinding struct {
@@ -245,7 +246,9 @@ func (s *ConversationService) dispatchConversationLifecycle(ctx context.Context,
 			if binding.snapshot.FailureMode == agentsdk.ConversationLifecycleFailureFailClosed && !conversationLifecyclePostEffectStage(event.Stage) {
 				return out, conversationFailure("unavailable", "lifecycle_extension_failed")
 			}
-			slog.Warn("conversation lifecycle extension failed", "extension", binding.snapshot.Key, "stage", event.Stage)
+			fields := []zap.Field{zap.String("extension", binding.snapshot.Key)}
+			fields = append(fields, logging.ErrorFields(err, logging.Failure{Stage: string(event.Stage), Dependency: "conversation_lifecycle_extension", Retryable: true})...)
+			logging.FromContext(ctx).Warn("dependency_call_failed", fields...)
 			continue
 		}
 		mergeConversationLifecycleDecision(&out, decision)

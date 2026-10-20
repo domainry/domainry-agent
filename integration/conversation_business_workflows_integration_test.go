@@ -196,7 +196,7 @@ func TestConversationWorkflowConfirmedStartRestartReconcileAndProgress(t *testin
 	}
 	source.revoked.Store(true)
 	page, err = service.Messages(t.Context(), c.ID, agentsdk.ConversationMessageQuery{}, a)
-	if err != nil || page.Items[2].AccessError == "" {
-		t.Fatal("revoked workflow remained visible", page, err)
+	if err != nil || page.Items[2].AccessError != "" {
+		t.Fatal("completed workflow receipt was hidden", page, err)
 	}
 }

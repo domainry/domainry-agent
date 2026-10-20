@@ -101,12 +101,12 @@ func TestBusinessHostProofPersistsAcrossModelFailureAndServiceReconstruction(t *
 	if done := waitConversation(t, service, c.ID, run.ID); done.Status != "completed" {
 		t.Fatal(done)
 	}
-	if source.seals.Load() != 1 || source.checks.Load() < 2 {
+	if source.seals.Load() != 1 || source.checks.Load() != 0 {
 		t.Fatalf("seal=%d checks=%d", source.seals.Load(), source.checks.Load())
 	}
 	source.revoked.Store(true)
 	page, err := service.Messages(t.Context(), c.ID, agentsdk.ConversationMessageQuery{}, a)
-	if err != nil || len(page.Items) != 2 || page.Items[1].AccessError == "" {
+	if err != nil || len(page.Items) != 2 || page.Items[1].AccessError != "" {
 		t.Fatal(page, err)
 	}
 }

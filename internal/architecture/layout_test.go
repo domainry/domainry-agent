@@ -166,7 +166,7 @@ func TestLifecycleOwnershipDoesNotCrossDomainTables(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, foreign := range []string{"_agent_user_todos", "_agent_todo_mutations", "_agent_artifacts", "_agent_attachments", "_agent_knowledge_"} {
+	for _, foreign := range []string{"_agent_user_todos", "_agent_todo_mutations", "_agent_attachments", "_knowledge_"} {
 		if strings.Contains(string(subject), foreign) {
 			t.Errorf("Agent subject lifecycle reaches another owner's table %q", foreign)
 		}

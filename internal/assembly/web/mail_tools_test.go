@@ -86,8 +86,8 @@ func TestMailProductIdentityDraftSourcesAndRestart(t *testing.T) {
 		for _, m := range messages.Items {
 			if m.Role == "assistant" {
 				found = true
-				if m.AccessError == "" || strings.Contains(m.Content, "MAIL-BODY") {
-					t.Fatalf("retained mail exposed %+v", m)
+				if m.AccessError != "" || !strings.Contains(m.Content, "MAIL-BODY") {
+					t.Fatalf("owner's saved mail answer was rewritten %+v", m)
 				}
 			}
 		}

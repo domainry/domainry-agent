@@ -14,6 +14,7 @@ import (
 	"github.com/domainry/domainry-foundation/requestcontext"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	"github.com/domainry/domainry-identity-sdk/authorization/evaluator"
+	knowledgesdk "github.com/domainry/domainry-knowledge-sdk"
 )
 
 const knowledgePermissionResource = "agent.knowledge_documents"
@@ -69,6 +70,48 @@ func (h *Host) registerKnowledgePermissions(ctx context.Context, bindings map[st
 	}
 	_, err = h.Identity.Permissions().Reconcile(ctx, request)
 	return err
+}
+
+func (h *Host) registerKnowledgeActionPermissions(ctx context.Context) error {
+	if h.identityBorrowed {
+		return nil
+	}
+	actions, err := knowledgesdk.AuthorizationActions()
+	if err != nil {
+		return err
+	}
+	definitions := make([]identitysdk.PermissionDefinition, 0, len(actions))
+	for _, action := range actions {
+		permission := action.Permission
+		if permission == nil {
+			continue
+		}
+		definitions = append(definitions, identitysdk.PermissionDefinition{
+			PermissionKey: permission.Key,
+			ResourceKey:   permission.ResourceKey,
+			OperationKey:  permission.OperationKey,
+			Label:         permission.Label,
+			Category:      permission.Category,
+			SourceKind:    action.SourceKind,
+		})
+	}
+	reader, ok := h.Identity.Permissions().(identitysdk.PermissionSnapshotReader)
+	if !ok {
+		return fmt.Errorf("Identity permission snapshot reader is required")
+	}
+	previous, err := reader.CurrentSourceSnapshot(ctx, identitysdk.PermissionSourceSnapshotRequest{Application: h.application, SourceOwner: knowledgesdk.AuthorizationOwner})
+	if err != nil {
+		return err
+	}
+	request, err := identitysdk.NewPermissionReconcileRequest(h.application, knowledgesdk.AuthorizationOwner, previous.SnapshotHash, definitions)
+	if err != nil {
+		return err
+	}
+	receipt, err := h.Identity.Permissions().Reconcile(ctx, request)
+	if err != nil {
+		return err
+	}
+	return receipt.ValidateFor(request)
 }
 
 func (h *Host) knowledgePermissionIDs(ctx context.Context, a agentsdk.ConversationAuthority) ([]string, error) {

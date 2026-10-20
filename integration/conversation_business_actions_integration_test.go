@@ -176,8 +176,8 @@ func TestBusinessActionConfirmationRestartDuplicateAndReconciliation(t *testing.
 	}
 	source.revoked.Store(true)
 	page, err = service.Messages(t.Context(), c.ID, agentsdk.ConversationMessageQuery{}, a)
-	if err != nil || page.Items[len(page.Items)-1].AccessError == "" {
-		t.Fatal("revoked action acknowledgement remained visible", err)
+	if err != nil || page.Items[len(page.Items)-1].AccessError != "" {
+		t.Fatal("completed action acknowledgement was hidden", err)
 	}
 }
 

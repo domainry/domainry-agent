@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"log/slog"
 	"slices"
 	"sort"
 	"strings"
@@ -13,6 +12,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	persistence "github.com/domainry/domainry-agent-sdk/persistence"
+	workerplatform "github.com/domainry/domainry-foundation/worker"
 )
 
 func (s *ConversationService) prepareConversationTask(ctx context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationTask, error) {
@@ -1124,31 +1124,21 @@ func (s *ConversationService) signalConversationFollowUps() {
 func (s *ConversationService) conversationFollowUpWorker(ctx context.Context, repo persistence.ConversationFollowUpEventRepository) {
 	defer s.wg.Done()
 	retry := max(s.options.Poll, time.Second)
-	for ctx.Err() == nil {
-		claim, found, err := repo.ClaimConversationFollowUpEvent(ctx, s.runtimeID, s.owner, s.options.Lease)
+	done := workerplatform.StartWakeableAdaptiveLoop(ctx, workerplatform.Identity{Owner: "agent", Name: "conversation_follow_up"}, retry, max(30*time.Second, retry*30), s.followUpWake, func(tickCtx context.Context) (workerplatform.TickResult, error) {
+		claim, found, err := repo.ClaimConversationFollowUpEvent(tickCtx, s.runtimeID, s.owner, s.options.Lease)
 		if err == nil && found {
-			publishCtx, cancel := s.externalCallContext(ctx, min(30*time.Second, s.options.RunTimeout))
+			publishCtx, cancel := s.externalCallContext(tickCtx, min(30*time.Second, s.options.RunTimeout))
 			err = s.options.FollowUpPublisher.PublishConversationFollowUp(publishCtx, claim.Event)
 			cancel()
 			if err == nil {
-				err = repo.CompleteConversationFollowUpEvent(ctx, claim)
+				err = repo.CompleteConversationFollowUpEvent(tickCtx, claim)
 			} else {
-				_ = repo.ReleaseConversationFollowUpEvent(context.WithoutCancel(ctx), claim)
-			}
-			if err == nil {
-				continue
+				err = errors.Join(err, repo.ReleaseConversationFollowUpEvent(context.WithoutCancel(tickCtx), claim))
 			}
 		}
-		if err != nil && !errors.Is(err, context.Canceled) && ctx.Err() == nil {
-			slog.Warn("conversation follow-up notification failed", "error", err)
-		}
-		select {
-		case <-ctx.Done():
-			return
-		case <-s.followUpWake:
-		case <-time.After(retry):
-		}
-	}
+		return workerplatform.TickResult{Worked: found, ProcessedCount: boolCount(found)}, err
+	})
+	<-done
 }
 
 func (s *ConversationService) conversationTaskWorker(ctx context.Context, repo persistence.ConversationTaskWorkerRepository) {
@@ -1159,38 +1149,29 @@ func (s *ConversationService) conversationTaskWorker(ctx context.Context, repo p
 	// without touching storage so it cannot compete with foreground SQLite
 	// writes. Only a storage failure needs a timed retry.
 	retry := max(s.options.Poll, time.Second)
-	for ctx.Err() == nil {
-		_, launched, err := repo.LaunchConversationTask(ctx, s.runtimeID)
+	done := workerplatform.StartWakeableAdaptiveLoop(ctx, workerplatform.Identity{Owner: "agent", Name: "conversation_task_launch"}, retry, max(30*time.Second, retry*30), s.taskWake, func(tickCtx context.Context) (workerplatform.TickResult, error) {
+		_, launched, err := repo.LaunchConversationTask(tickCtx, s.runtimeID)
 		if err == nil && !launched {
 			if peers, ok := s.repo.(persistence.ConversationCollaborationRepository); ok {
 				if lifecycle, ok := s.repo.(persistence.ConversationPeerLifecycleRepository); ok {
-					_, launched, err = lifecycle.LaunchConversationPeerMessageWithLifecycle(ctx, s.runtimeID, cloneConversationLifecycleManifest(s.lifecycleManifest))
+					_, launched, err = lifecycle.LaunchConversationPeerMessageWithLifecycle(tickCtx, s.runtimeID, cloneConversationLifecycleManifest(s.lifecycleManifest))
 				} else {
-					_, launched, err = peers.LaunchConversationPeerMessage(ctx, s.runtimeID)
+					_, launched, err = peers.LaunchConversationPeerMessage(tickCtx, s.runtimeID)
 				}
 			}
 		}
 		if err == nil && launched {
 			s.signal()
-			continue
+			return workerplatform.TickResult{Worked: true, ProcessedCount: 1}, nil
 		}
-		if err != nil && !errors.Is(err, context.Canceled) && ctx.Err() == nil {
-			slog.Warn("conversation task launch failed", "error", err)
-		}
-		if err == nil {
-			select {
-			case <-ctx.Done():
-				return
-			case <-s.taskWake:
-			case <-time.After(2 * time.Second):
-			}
-		} else {
-			select {
-			case <-ctx.Done():
-				return
-			case <-s.taskWake:
-			case <-time.After(retry):
-			}
-		}
+		return workerplatform.TickResult{}, err
+	})
+	<-done
+}
+
+func boolCount(value bool) int {
+	if value {
+		return 1
 	}
+	return 0
 }

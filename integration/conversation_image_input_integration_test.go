@@ -223,7 +223,10 @@ func TestConversationImageInputRechecksAttachmentPermissionBeforeModelCall(t *te
 		t.Fatalf("revoked image reached the model: %+v calls=%d", final, len(model.snapshot()))
 	}
 	messages, err := service.Messages(t.Context(), conversation.ID, agentsdk.ConversationMessageQuery{}, authority)
-	if err != nil || len(messages.Items) != 1 || len(messages.Items[0].ContentBlocks) != 0 || messages.Items[0].AccessError == "" {
-		t.Fatalf("revoked historical image remained readable: %+v %v", messages, err)
+	if err != nil || len(messages.Items) != 1 || len(messages.Items[0].ContentBlocks) == 0 || messages.Items[0].AccessError != "" {
+		t.Fatalf("historical message metadata changed: %+v %v", messages, err)
+	}
+	if _, err := service.DownloadAttachment(t.Context(), conversation.ID, attachment.ID, authority); err == nil {
+		t.Fatal("retained history metadata allowed an unauthorized new image download")
 	}
 }

@@ -574,27 +574,11 @@ button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visib
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
 
-.library-create, .library-detail, .library-members, .library-sources { display: grid; gap: 10px; min-width: 0; }
-.library-detail, .library-members { border-top: 1px solid var(--border); padding-top: 16px; }
-.library-member { display: flex; gap: 8px; align-items: center; min-width: 0; }
-.library-member > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.library-member small { display: block; color: var(--muted-foreground); }
-.library-members select { border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; background: var(--background); color: inherit; }
-.library-detail h3, .library-members h4, .library-sources h4 { font-weight: 600; overflow-wrap: anywhere; }
-
-.library-documents { display: grid; gap: 12px; min-width: 0; padding: 16px 0; border-block: 1px solid var(--border); }
-.library-documents h4 { font-weight: 600; overflow-wrap: anywhere; }
-.library-documents .attachment-list-heading { flex-wrap: wrap; gap: 8px; }
-.library-documents .interaction-actions { flex-wrap: wrap; }
-.library-documents .attachment-upload input[type="file"] { min-width: 0; max-width: 100%; }
-.library-documents .attachment-upload > button { max-width: 100%; white-space: normal; height: auto; min-height: 36px; }
-
 .attachment-library-save { display: grid; gap: 12px; min-width: 0; padding-top: 12px; border-top: 1px solid var(--border); }
-
-.library-sources { border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
-.library-sources button { font-size: 14px; }
 .run-status { font-size: 12px; }
-.library-sources .attachment-list strong, .library-sources .attachment-list small { white-space: normal; overflow-wrap: anywhere; }
+
+/* Knowledge is a first-class workspace, not a settings dialog. */
+.workspace-link-active { background: var(--card) !important; color: var(--primary) !important; box-shadow: inset 3px 0 var(--primary); }
 
 /* Source-based message tables retain readable controls at narrow widths. */
 .execution-tool summary small, .knowledge-sources small { font-size: 12px; }
@@ -608,34 +592,6 @@ button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visib
 .markdown-table th, .markdown-table td { border-bottom: 1px solid var(--border); padding: 8px 12px; text-align: left; }
 .markdown-table th { background: var(--muted); }
 .markdown-table > p { padding: 0 12px; }
-
-/* Read-only original-file viewers share the product dialog and authorization flow. */
-.file-preview-dialog { width: min(1180px, calc(100vw - 32px)) !important; max-width: none !important; height: min(900px, calc(100dvh - 32px)); display: flex !important; flex-direction: column; gap: 12px; overflow: hidden !important; }
-.file-preview-dialog > [data-slot="dialog-header"] { padding-right: 28px; flex: 0 0 auto; }
-.file-preview-dialog h2 { overflow-wrap: anywhere; }
-.file-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; flex-shrink: 0; }
-.file-toolbar label, .file-toolbar form { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.file-toolbar select, .file-toolbar input { border: 1px solid var(--border); background: var(--background); color: var(--foreground); border-radius: 8px; min-height: 36px; padding: 4px 8px; max-width: 230px; font: inherit; }
-.file-toolbar input { width: 90px; }
-.file-viewer { display: flex; flex-direction: column; gap: 12px; flex: 1; min-height: 0; min-width: 0; }
-.file-viewer > p { margin: 0; }
-.file-canvas { flex: 1; min-height: 0; overflow: auto; background: #f5f6f4; border: 1px solid #e2e6e1; border-radius: 8px; padding: 16px; }
-.file-canvas canvas { display: block; margin: 0 auto; box-shadow: 0 1px 8px #25332e18; max-width: none; }
-.word-frame { width: 100%; flex: 1; min-height: 0; border: 1px solid #e2e6e1; border-radius: 8px; background: #f5f6f4; }
-.spreadsheet-scroll { flex: 1; min-height: 80px; overflow: auto; border: 1px solid #e2e6e1; border-radius: 8px; background: white; }
-.spreadsheet-grid { border-collapse: separate; border-spacing: 0; table-layout: fixed; width: max-content; color: #25332e; font-size: 14px; }
-.spreadsheet-grid td, .spreadsheet-grid th { border-right: 1px solid #e2e6e1; border-bottom: 1px solid #e2e6e1; padding: 6px 10px; min-width: 48px; overflow: hidden; text-overflow: ellipsis; max-width: 600px; }
-.spreadsheet-grid thead th { position: sticky; top: 0; z-index: 2; background: #f5f6f4; text-align: center; font-weight: 500; }
-.spreadsheet-grid th:first-child { position: sticky; left: 0; background: #f5f6f4; z-index: 1; text-align: center; }
-.spreadsheet-grid td[data-selected="true"] { outline: 2px solid #285c4d; outline-offset: -2px; }
-.spreadsheet-value { max-height: 100px; overflow: auto; overflow-wrap: anywhere; background: #f5f6f4; padding: 8px; border-radius: 8px; font-size: 14px; }
-@media(max-width: 600px) {
- .file-preview-dialog { width: calc(100vw - 16px) !important; height: calc(100dvh - 16px); padding: 16px !important; gap: 8px; }
- .file-toolbar { gap: 6px; font-size: 13px; }
- .file-toolbar button { min-height: 40px; padding: 6px 10px; }
- .file-toolbar select, .file-toolbar input { font-size: 16px; max-width: 190px; }
- .file-canvas { padding: 8px; }
-}
 
 .external-accounts-dialog { width: min(740px, calc(100vw - 24px)); max-width: calc(100vw - 24px); min-width: 0; grid-template-columns: minmax(0, 1fr); }
 .external-accounts-dialog > *, .external-account-list > li > *, .external-scope-option > span { min-width: 0; overflow-wrap: anywhere; }

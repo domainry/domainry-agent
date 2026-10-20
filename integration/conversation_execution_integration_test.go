@@ -146,6 +146,11 @@ type executionHost struct {
 }
 
 func (h *executionHost) ConversationTools(context.Context, agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, error) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	if !h.allowed {
+		return nil, nil
+	}
 	strategy := h.idempotency
 	if strategy == "" {
 		strategy = "key"
@@ -308,13 +313,16 @@ func TestConversationExecutionPersistsToolProgressBeforeCompletion(t *testing.T)
 	}
 }
 
-func TestConversationExecutionReauthorizesToolDataBeforeNextModelRequest(t *testing.T) {
+func TestConversationExecutionRemovesRevokedToolsWithoutLosingCommittedReceipt(t *testing.T) {
 	repo := conversationRepository(t)
 	host := &executionHost{allowed: true, revokeAfterInvoke: true}
 	model := &executionModel{}
 	model.step = func(number int, in agentsdk.ConversationStepRequest) (agentsdk.ConversationStepResult, error) {
 		if number > 1 {
-			t.Error("revoked tool data reached model")
+			if len(in.Tools) != 0 {
+				t.Error("revoked tool definition entered the next model input")
+			}
+			return model.answerResult(in), nil
 		}
 		return model.callResult(`{"title":"one"}`), nil
 	}
@@ -333,11 +341,16 @@ func TestConversationExecutionReauthorizesToolDataBeforeNextModelRequest(t *test
 		t.Fatal(err)
 	}
 	final := waitConversation(t, service, c.ID, run.ID)
-	if final.ErrorCode != "tool_access_denied" {
+	if final.Status != "completed" || final.ErrorCode != "" {
 		t.Fatalf("run=%+v", final)
 	}
 	if len(final.Steps) != 2 || len(final.Steps[0].Calls) != 1 || final.Steps[0].Calls[0].Status != "completed" {
 		t.Fatal("completed effect lost from public execution snapshot")
+	}
+	host.mu.Lock()
+	defer host.mu.Unlock()
+	if host.invokes != 1 {
+		t.Fatal("revoked tool executed again", host.invokes)
 	}
 }
 
@@ -478,7 +491,7 @@ func TestConversationExecutionResumesAfterModelFailureWithoutRepeatingWrite(t *t
 	host.mu.Lock()
 	invokes, authorizes := host.invokes, host.authorizes
 	host.mu.Unlock()
-	if invokes != 1 || authorizes != 4 {
+	if invokes != 1 || authorizes != 2 {
 		t.Fatalf("write repeated or resume authorization skipped: %d %d", invokes, authorizes)
 	}
 	page, err := service.Messages(t.Context(), c.ID, agentsdk.ConversationMessageQuery{}, a)

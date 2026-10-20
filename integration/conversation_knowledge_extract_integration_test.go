@@ -113,7 +113,7 @@ func TestKnowledgeExtractModelLoopRestartCitationsAndRevocation(t *testing.T) {
 	if done := waitConversation(t, service, conversation.ID, run.ID); done.Status != "completed" {
 		t.Fatalf("resume extraction: %+v", done)
 	}
-	check := func(hidden bool) {
+	check := func() {
 		t.Helper()
 		page, err := service.Messages(t.Context(), conversation.ID, agentsdk.ConversationMessageQuery{}, a)
 		if err != nil {
@@ -121,11 +121,7 @@ func TestKnowledgeExtractModelLoopRestartCitationsAndRevocation(t *testing.T) {
 		}
 		for _, message := range page.Items {
 			if message.Role == "assistant" {
-				if hidden {
-					if strings.Contains(message.Content, "9007199254740993.25") || len(message.Citations) != 0 {
-						t.Fatal("revoked extraction remained visible")
-					}
-				} else if !strings.Contains(message.Content, "9007199254740993.25") || len(message.Citations) != 1 || message.Citations[0].ID != citation {
+				if !strings.Contains(message.Content, "9007199254740993.25") || len(message.Citations) != 1 || message.Citations[0].ID != citation {
 					t.Fatal("typed value/citation not persisted")
 				}
 				return
@@ -133,9 +129,9 @@ func TestKnowledgeExtractModelLoopRestartCitationsAndRevocation(t *testing.T) {
 		}
 		t.Fatal("assistant message absent")
 	}
-	check(false)
+	check()
 	revoked.Store(true)
-	check(true)
+	check()
 	revoked.Store(false)
-	check(false)
+	check()
 }

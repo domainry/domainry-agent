@@ -179,7 +179,7 @@ func runManagedPrivateDocumentIdentityHTTP(t *testing.T, dynamic bool, kind stri
 		if err != nil {
 			t.Fatal(err)
 		}
-		handler, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Files: fstest.MapFS{"index.html": {Data: []byte("private upload test")}}})
+		handler, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: options.RuntimeID, WorkspaceID: options.WorkspaceID, ApplicationKey: options.ApplicationKey, Origin: "http://127.0.0.1:8091", Files: fstest.MapFS{"index.html": {Data: []byte("private upload test")}}, ModuleAdapters: knowledgeTestAdapters(t, host)})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -198,30 +198,21 @@ func runManagedPrivateDocumentIdentityHTTP(t *testing.T, dynamic bool, kind stri
 		}
 	}()
 	mutateTestRolePermissions(t, host, b, func(prior []identitysdk.ProjectRolePermission) []identitysdk.ProjectRolePermission {
-		out := append([]identitysdk.ProjectRolePermission(nil), prior...)
-		for _, d := range agentsdk.ConversationHTTPDefinitions() {
-			p := agentsdk.KnowledgeLibraryPermission(d.Operation)
-			if p == nil {
-				p = agentsdk.KnowledgeDocumentPermission(d.Operation)
-			}
-			if p != nil {
-				out = append(out, identitysdk.ProjectRolePermission{PermissionKey: p.Key, DataScope: identitysdk.DataScopeAll})
-			}
-		}
+		out := appendKnowledgeRolePermissions(t, stripKnowledgeRolePermissions(prior), "")
 		for _, tool := range append(agentsdk.LibraryKnowledgeConversationTools(), agentsdk.KnowledgeExtractionTool()) {
 			out = append(out, identitysdk.ProjectRolePermission{PermissionKey: tool.ActionKey, DataScope: identitysdk.DataScopeOwner})
 		}
 		return out
 	})
 	var library agentsdk.KnowledgeLibrary
-	if err := json.Unmarshal(b.call("POST", "/agent/knowledge-libraries", `{"client_id":"library","kind":"`+kind+`","name":"合成私有上传验收"}`, 200).Body.Bytes(), &library); err != nil {
+	if err := json.Unmarshal(b.call("POST", "/knowledge/libraries", `{"client_id":"library","kind":"`+kind+`","name":"合成私有上传验收"}`, 201).Body.Bytes(), &library); err != nil {
 		t.Fatal(err)
 	}
 
 	if dynamic {
 		input := agentsdk.KnowledgeLibrarySourceWrite{DatasourceKey: "approved", ExpectedRevision: library.Revision}
 		raw, _ := json.Marshal(input)
-		path := "/agent/knowledge-libraries/" + library.ID + "/source"
+		path := "/knowledge/libraries/" + library.ID + "/source"
 		if err := json.Unmarshal(b.call("PUT", path, string(raw), 200).Body.Bytes(), &library); err != nil || !library.DocumentsConfigured || library.DatasourceKey != "approved" {
 			t.Fatal("dynamic binding did not activate immediately", err)
 		}
@@ -234,7 +225,7 @@ func runManagedPrivateDocumentIdentityHTTP(t *testing.T, dynamic bool, kind stri
 		open(true)
 	}
 
-	base := "/agent/knowledge-libraries/" + library.ID + "/documents"
+	base := "/knowledge/libraries/" + library.ID + "/documents"
 	var doc agentsdk.KnowledgeDocument
 	report := map[string]any{"origin": config.BaseURL, "team_id": config.TeamID, "kb_id": config.KBID, "runtime_id": options.RuntimeID, "workspace_id": options.WorkspaceID, "library_id": library.ID, "synthetic": true, "dynamic_binding": dynamic, "library_kind": kind, "marker": marker, "complete": false, "cleanup_verified": false, "model": "deterministic", "database": options.DatabasePath}
 	if format != "" {
@@ -255,7 +246,7 @@ func runManagedPrivateDocumentIdentityHTTP(t *testing.T, dynamic bool, kind stri
 		if err != nil {
 			return false
 		}
-		statement, args, err := query.NewSelectBuilder(renderer, "_agent_knowledge_documents").Columns("payload_json").Where(query.And(query.Equal("document_id", doc.ID), query.Equal("library_id", library.ID))).Build()
+		statement, args, err := query.NewSelectBuilder(renderer, "_knowledge_documents").Columns("payload_json").Where(query.And(query.Equal("document_id", doc.ID), query.Equal("library_id", library.ID))).Build()
 		if err != nil {
 			return false
 		}
@@ -450,7 +441,7 @@ func runManagedPrivateDocumentIdentityHTTP(t *testing.T, dynamic bool, kind stri
 	open(true)
 	if dynamic {
 		var current agentsdk.KnowledgeLibrary
-		_ = json.Unmarshal(b.call("GET", "/agent/knowledge-libraries/"+library.ID, "", 200).Body.Bytes(), &current)
+		_ = json.Unmarshal(b.call("GET", "/knowledge/libraries/"+library.ID, "", 200).Body.Bytes(), &current)
 		if current.KnowledgeConfigured || current.DocumentsConfigured || current.DatasourceKey != "approved" {
 			t.Fatal("removed catalog did not preserve unavailable binding")
 		}

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
+	knowledgesdk "github.com/domainry/domainry-knowledge-sdk"
 )
 
 // Sharing is a versioned reference, never an implicit library membership or an
@@ -20,7 +21,7 @@ func (s *ConversationService) checkSharedDocuments(ctx context.Context, refs []s
 	defer cancel()
 	owner := s.knowledgeService()
 	for _, ref := range refs {
-		if _, err := owner.DocumentAccess(ctx, ref.LibraryID, "documents_download", a); err != nil {
+		if _, err := owner.DocumentAccess(ctx, ref.LibraryID, knowledgesdk.ActionDocumentsDownload, a); err != nil {
 			return err
 		}
 		doc, err := owner.KnowledgeDocument(ctx, ref.LibraryID, ref.DocumentID, a)

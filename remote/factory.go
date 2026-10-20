@@ -22,6 +22,7 @@ import (
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
 	actioncontract "github.com/domainry/domainry-foundation/action"
 	"github.com/domainry/domainry-foundation/modulehttp"
+	"github.com/domainry/domainry-foundation/telemetry"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
 )
 
@@ -193,7 +194,7 @@ func newClient(options Options) *client {
 	if httpClient == nil {
 		httpClient = &http.Client{Timeout: timeout}
 	}
-	return &client{baseURL: strings.TrimRight(strings.TrimSpace(options.BaseURL), "/"), apiKey: strings.TrimSpace(options.APIKey), http: httpClient}
+	return &client{baseURL: strings.TrimRight(strings.TrimSpace(options.BaseURL), "/"), apiKey: strings.TrimSpace(options.APIKey), http: telemetry.InstrumentHTTPClient(httpClient, "github.com/domainry/domainry-agent/remote")}
 }
 func (c *client) descriptor(ctx context.Context) (agentsdk.Descriptor, error) {
 	var value agentsdk.Descriptor
@@ -291,6 +292,7 @@ func (c *client) call(ctx context.Context, method, path string, payload any, key
 		}
 		body = bytes.NewReader(raw)
 	}
+	ctx = telemetry.WithHTTPClientOperation(ctx, "agent.remote")
 	request, err := http.NewRequestWithContext(ctx, method, c.baseURL+path, body)
 	if err != nil {
 		return err

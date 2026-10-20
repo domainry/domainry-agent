@@ -51,6 +51,10 @@ func trajectoryResponse(requestIndex, step int, result agentsdk.ConversationStep
 	return out
 }
 
+type conversationExecutionSnapshotRepository interface {
+	ConversationExecutionSnapshot(context.Context, agentsdk.ConversationRunReference, agentsdk.ConversationAuthority) (persistence.ConversationSourceSnapshot, error)
+}
+
 func (s *ConversationService) conversationTrajectorySnapshot(ctx context.Context, conversationID, runID, consumer string, a agentsdk.ConversationAuthority) (agentsdk.ConversationTrajectory, persistence.ConversationSourceSnapshot, error) {
 	var empty persistence.ConversationSourceSnapshot
 	if err := s.authorizeCollaborationConversation(ctx, conversationID, "execution_read", a); err != nil {
@@ -62,17 +66,14 @@ func (s *ConversationService) conversationTrajectorySnapshot(ctx context.Context
 	if !conversationKey(conversationID) || !conversationKey(runID) {
 		return agentsdk.ConversationTrajectory{}, empty, conversationFailure("bad_request", "trajectory_reference_invalid")
 	}
-	repo, ok := s.repo.(persistence.ConversationSourceRepository)
+	repo, ok := s.repo.(conversationExecutionSnapshotRepository)
 	if !ok {
 		return agentsdk.ConversationTrajectory{}, empty, conversationFailure("unavailable", "trajectory_unavailable")
 	}
 	ref := agentsdk.ConversationRunReference{ConversationID: conversationID, RunID: runID}
 	readCtx, cancel := s.sourceAccessContext(ctx)
 	defer cancel()
-	if _, err := s.sourceAudit(a, consumer).run(readCtx, ref); err != nil {
-		return agentsdk.ConversationTrajectory{}, empty, err
-	}
-	snapshot, err := repo.ConversationSourceSnapshot(readCtx, ref, a)
+	snapshot, err := repo.ConversationExecutionSnapshot(readCtx, ref, a)
 	if err != nil {
 		return agentsdk.ConversationTrajectory{}, empty, err
 	}

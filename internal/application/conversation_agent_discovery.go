@@ -51,6 +51,8 @@ func validateAgentRequirements(r agentsdk.ConversationAgentRequirements) error {
 }
 
 func (s *ConversationService) MatchConversationAgents(ctx context.Context, in agentsdk.ConversationAgentMatchRequest, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgentMatchPage, error) {
+	ctx, end := s.beginCatalogEvaluation(ctx)
+	defer end()
 	var out agentsdk.ConversationAgentMatchPage
 	if err := s.authorize(a); err != nil {
 		return out, err

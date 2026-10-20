@@ -102,6 +102,13 @@ func attachmentAuditHeader(headers map[string][]string, name string) string {
 	return ""
 }
 
+func attachmentAuditRequestHeader(request connector.HTTPRequest, name string) string {
+	if value := attachmentAuditHeader(request.Headers, name); value != "" {
+		return value
+	}
+	return attachmentAuditHeader(request.SecretHeaders, name)
+}
+
 func (a *attachmentLiveAudit) RoundTripHTTP(ctx context.Context, in connector.HTTPRequest) (connector.HTTPResponse, error) {
 	u, err := url.Parse(in.URL)
 	if err != nil {
@@ -117,12 +124,11 @@ func (a *attachmentLiveAudit) RoundTripHTTP(ctx context.Context, in connector.HT
 		}
 		if in.Method == http.MethodPost {
 			var ids []string
-			sum := sha256.Sum256(in.Body)
-			if !a.preflight[id] || a.hash == "" || hex.EncodeToString(sum[:]) != a.hash || json.Unmarshal([]byte(attachmentAuditHeader(in.Headers, "X-KB-Permission-Ids")), &ids) != nil || len(ids) != 1 || !strings.HasPrefix(ids[0], "scope:agent:attachment:") {
+			if !a.preflight[id] || a.hash == "" || in.ContentSHA256 != a.hash || in.ContentLength < 1 || json.Unmarshal([]byte(attachmentAuditRequestHeader(in, "X-KB-Permission-Ids")), &ids) != nil || len(ids) != 1 || !strings.HasPrefix(ids[0], "scope:agent:attachment:") {
 				a.mu.Unlock()
 				return connector.HTTPResponse{}, errors.New("unverified fixture upload")
 			}
-			request := attachmentAuditHeader(in.Headers, "X-KB-Request-ID")
+			request := attachmentAuditRequestHeader(in, "X-KB-Request-ID")
 			if request == "" || a.uploads != 0 {
 				a.mu.Unlock()
 				return connector.HTTPResponse{}, errors.New("duplicate or unscoped fixture upload")

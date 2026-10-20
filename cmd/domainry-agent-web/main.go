@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -17,21 +16,30 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/domainry/domainry-foundation/processhost"
 	productassembly "github.com/domainry/domainry-agent/internal/assembly/product"
 	webassembly "github.com/domainry/domainry-agent/internal/assembly/web"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	webhttp "github.com/domainry/domainry-agent/web"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	identitymodule "github.com/domainry/domainry-identity/module"
+	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
 func main() {
-	if err := run(); err != nil {
-		log.Fatal(err)
+	if run() != nil {
+		os.Exit(1)
 	}
 }
 
-func run() error {
+func run() (runErr error) {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	observability, err := processhost.Open(ctx, processhost.Config{ServiceName: "domainry-agent-web"})
+	if err != nil {
+		return err
+	}
+	defer func() { runErr = observability.Finish(context.Background(), nil, runErr) }()
 	externalOptions, err := externalIdentityOptions()
 	if err != nil {
 		return err
@@ -74,10 +82,21 @@ func run() error {
 	if _, err := os.Stat(filepath.Join(frontend, "index.html")); err != nil {
 		return fmt.Errorf("build the chat UI with npm --prefix frontend run build: %w", err)
 	}
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
 	runtimeID, workspaceID, applicationKey := env("AGENT_WEB_RUNTIME_ID", "agent-web"), env("AGENT_WEB_WORKSPACE_ID", "agent-workspace"), env("AGENT_WEB_APPLICATION_KEY", "domainry-agent-web")
 	agentOptions := agentmodule.OptionsFromEnvironment()
+	clamdAddress := strings.TrimSpace(os.Getenv("AGENT_KNOWLEDGE_CLAMD_ADDRESS"))
+	if clamdAddress != "" {
+		clamdTimeout, parseErr := time.ParseDuration(env("AGENT_KNOWLEDGE_CLAMD_TIMEOUT", "20m"))
+		if parseErr != nil {
+			return fmt.Errorf("AGENT_KNOWLEDGE_CLAMD_TIMEOUT is invalid: %w", parseErr)
+		}
+		agentOptions.ConversationOptions.DocumentSecurity, err = knowledgemodule.NewClamdDocumentSecurityScanner(env("AGENT_KNOWLEDGE_CLAMD_NETWORK", "tcp"), clamdAddress, clamdTimeout)
+		if err != nil {
+			return err
+		}
+	} else if strings.TrimSpace(os.Getenv("AGENT_KNOWLEDGE_CLAMD_NETWORK")) != "" || strings.TrimSpace(os.Getenv("AGENT_KNOWLEDGE_CLAMD_TIMEOUT")) != "" {
+		return errors.New("AGENT_KNOWLEDGE_CLAMD_ADDRESS is required when ClamAV options are configured")
+	}
 	application := identitysdk.ApplicationRef{WorkspaceID: identitysdk.WorkspaceID(workspaceID), ApplicationKey: identitysdk.ApplicationKey(applicationKey)}
 	sharedIdentity, err := productassembly.OpenSharedIdentityFromEnvironment(ctx, application)
 	if err != nil {
@@ -143,11 +162,14 @@ func run() error {
 	for pattern, handler := range host.CollaborationSetupRoutes() {
 		routes[pattern] = handler
 	}
+	for pattern, handler := range host.KnowledgeBrowserRoutes() {
+		routes[pattern] = handler
+	}
 	handler, err := webhttp.NewHandler(webhttp.Options{Identity: host.Identity, Agent: host.Agent, RuntimeID: runtimeID, WorkspaceID: workspaceID, ApplicationKey: applicationKey, Origin: origin, Model: agentOptions.ConversationModel, Files: os.DirFS(frontend), ModuleAdapters: adapters, NavigationFiles: navigation, ApplicationRoutes: routes})
 	if err != nil {
 		return err
 	}
-	server := &http.Server{Addr: address, Handler: handler, ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 30 * time.Second, WriteTimeout: 60 * time.Second, IdleTimeout: 60 * time.Second}
+	server := &http.Server{Addr: address, Handler: observability.Handler("public", handler), ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 30 * time.Second, WriteTimeout: 60 * time.Second, IdleTimeout: 60 * time.Second}
 	done := make(chan error, 1)
 	certificate, key := os.Getenv("AGENT_WEB_TLS_CERT"), os.Getenv("AGENT_WEB_TLS_KEY")
 	if (certificate == "") != (key == "") {
@@ -160,7 +182,7 @@ func run() error {
 			done <- server.ListenAndServe()
 		}
 	}()
-	fmt.Printf("Agent web: %s\nIdentity: %s\nSQLite: %s\n", origin, host.Identity.Descriptor().Mode, path)
+	observability.Started(ctx, map[string]any{"listener_group": "public", "identity_mode": host.Identity.Descriptor().Mode})
 	select {
 	case err := <-done:
 		if errors.Is(err, http.ErrServerClosed) {
@@ -168,6 +190,7 @@ func run() error {
 		}
 		return err
 	case <-ctx.Done():
+		observability.Stopping(context.Background(), map[string]any{"reason": "signal"})
 		shutdown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		return server.Shutdown(shutdown)

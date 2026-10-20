@@ -19,7 +19,7 @@ func TestPublishedMySQLMigrationChecksumsAreStable(t *testing.T) {
 	}{
 		1:  {"agent_foundation", "2141aae969604abac0886535dcea78bca5f35b24d8fa128b9bd99f0d4d1f50a5"},
 		2:  {"agent_conversations", "c4450988e29ac21188f02d2819c78437d96595b14d8a425a045afbcb91e15acb"},
-		3:  {"agent_conversation_execution", "35344c91e542b76af702336cb678dfd56c7e93e004a93c12093f245a06896030"},
+		3:  {"agent_conversation_execution", "0b0f1ce3dc9f1da141aeac8ff1c6b1f173b1ddaa755d3c3530a303e6e4b13652"},
 		4:  {"agent_conversation_interactions", "4b72cfdf094240387cecbebe3d9a4b035908e59fac3ba64c9063b5ff49a88290"},
 		15: {"agent_tasks", "1d8e7afd904fc73f8bea51e9a835ca14934839ef7e07cf26bb0c448b7bb6c59a"},
 		19: {"agent_conversation_capacity", "a2b3b7f72aba5eb8da92965c31e0d5bd87e795c526ceedd9c3043a1da24e492f"},
@@ -79,7 +79,7 @@ func TestModulePublishesOnlyAgentOwnedSchema(t *testing.T) {
 	if err := schemaownership.ValidateAll(tables); err != nil {
 		t.Fatal(err)
 	}
-	if len(tables) != 19 || !slices.Equal(OwnedTables(), schemaownership.Names(tables)) {
+	if len(tables) != 23 || !slices.Equal(OwnedTables(), schemaownership.Names(tables)) {
 		t.Fatalf("Agent schema ownership=%d tables=%v", len(tables), OwnedTables())
 	}
 	for _, table := range tables {

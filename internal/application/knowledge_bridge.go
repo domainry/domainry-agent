@@ -9,10 +9,12 @@ import (
 
 func knowledgeOptions(o ConversationOptions) knowledge.Options {
 	return knowledge.Options{
-		DocumentStorage: o.DocumentStorage, DocumentPoll: o.DocumentPoll,
+		DocumentStorage: o.DocumentStorage, DocumentSecurity: o.DocumentSecurity, DocumentPoll: o.DocumentPoll, DocumentWorkTimeout: o.DocumentWorkTimeout, DocumentUploadIdleTimeout: o.DocumentUploadIdleTimeout,
 		LibraryKnowledge: o.LibraryKnowledge, KnowledgeDatasources: o.KnowledgeDatasources,
 		LibraryAuthorizer:    o.LibraryAuthorizer,
 		SourceAuthorizer:     o.SourceAuthorizer,
+		PrincipalDirectory:   o.PrincipalDirectory,
+		AccessExplainer:      o.AccessExplainer,
 		AttachmentAuthorizer: o.AttachmentAuthorizer, AttachmentKnowledge: o.AttachmentKnowledge,
 		ArtifactStorage: o.ArtifactStorage, ArtifactExportTTL: o.ArtifactExportTTL,
 		PersonalAuthorizer: o.PersonalAuthorizer, Knowledge: o.Knowledge,

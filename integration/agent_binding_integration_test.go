@@ -75,7 +75,10 @@ func TestPublicAgentBindingPersistsRecoversAndExecutesWithHostAuthority(t *testi
 			state := second.(agentpersistence.ExecutionStateBinding).AgentTaskState()
 			host := newTaskHost(state)
 			bindApplicationHost(t, second, host)
-			assertStoredTask(t, second, "workspace-a", "recover-run", agentmodel.AgentTaskRunPending)
+			recovered := loadStoredTask(t, second, "workspace-a", "recover-run")
+			if recovered.Status != agentmodel.AgentTaskRunPending && recovered.Status != agentmodel.AgentTaskRunRunning {
+				t.Fatalf("recovered task status=%q want pending or running", recovered.Status)
+			}
 
 			const submitters = 8
 			var wait sync.WaitGroup

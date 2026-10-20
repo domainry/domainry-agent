@@ -33,7 +33,7 @@ test("a confirmed binding is one PUT and a lost response retries the same frozen
     assert.deepEqual(requests[0], requests[1]);
     assert.equal(requests[0].method, "PUT");
     assert.deepEqual(requests[0].body, pending);
-    assert.equal(requests[0].url, `/agent/knowledge-libraries/${library}/source`);
+    assert.equal(requests[0].url, `/knowledge/libraries/${library}/source`);
     for (const bad of [{ id: library, datasource_key: "wrong" }, { id: "wrong", datasource_key: "approved" }]) {
       globalThis.fetch = async () => Response.json({ revision: 5, documents_configured: true, knowledge_configured: true, ...bad });
       await assert.rejects(bindLibrarySource(library, pending, signal), (e: unknown) => e instanceof ApiError && e.code.endsWith("datasource_response_invalid"));

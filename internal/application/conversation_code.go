@@ -96,28 +96,20 @@ func (s *ConversationService) executeConversationCode(ctx context.Context, claim
 	return agentsdk.ConversationToolResult{Status: "completed", Content: content}, nil
 }
 
-func (s *ConversationService) reauthorizeConversationCodeResults(ctx context.Context, claim persistence.ConversationClaim, step int, parentCallID string, parentResult agentsdk.ConversationToolResult, current map[string]conversationCompiledTool) error {
-	if parentResult.Status != "completed" {
+func validateConversationCodeReceipt(parent persistence.ConversationToolExecution, children []persistence.ConversationToolExecution) error {
+	if parent.Result == nil || parent.Result.Status != "completed" {
 		return nil
 	}
 	var recorded agentsdk.ConversationCodeResult
-	if json.Unmarshal(parentResult.Content, &recorded) != nil || recorded.Dispatches < 0 {
+	if json.Unmarshal(parent.Result.Content, &recorded) != nil || recorded.Dispatches < 0 {
 		return conversationFailure("conflict", "tool_result_invalid")
-	}
-	children, err := s.repo.(persistence.ConversationCodeExecutionRepository).ExecutionSubtools(ctx, claim, step, parentCallID)
-	if err != nil {
-		return err
 	}
 	if len(children) != recorded.Dispatches {
 		return conversationFailure("conflict", "tool_result_invalid")
 	}
-	seen := map[string]bool{}
 	for index, child := range children {
-		if child.ParentCallID != parentCallID || child.DispatchIndex != index || child.State != "completed" || child.Result == nil {
+		if child.ParentCallID != parent.Call.ID || child.Step != parent.Step || child.DispatchIndex != index || child.State != "completed" || child.Result == nil {
 			return conversationFailure("conflict", "tool_result_invalid")
-		}
-		if err = s.authorizeConversationRecord(ctx, claim.Run.ConversationID, claim.Run.ID, child, claim.Authority, current, seen, claim.Run.ConversationID); err != nil {
-			return err
 		}
 	}
 	return nil

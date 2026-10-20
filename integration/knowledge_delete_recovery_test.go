@@ -18,8 +18,11 @@ type noLibraryDeleteRecoverySource struct {
 func (s noDeleteRecoverySource) KnowledgeDocumentAccessPolicySHA256() string {
 	return s.ManagedKnowledgeDocumentSource.(agentsdk.KnowledgeDocumentAccessPolicySource).KnowledgeDocumentAccessPolicySHA256()
 }
-func (s noDeleteRecoverySource) KnowledgeDocumentMaxBytes() int64 {
-	return s.ManagedKnowledgeDocumentSource.(agentsdk.KnowledgeDocumentSizeLimitSource).KnowledgeDocumentMaxBytes()
+func (s noDeleteRecoverySource) KnowledgeDocumentIndexMaximumBytes() int64 {
+	return s.ManagedKnowledgeDocumentSource.(agentsdk.KnowledgeDocumentIndexLimitSource).KnowledgeDocumentIndexMaximumBytes()
+}
+func (s noDeleteRecoverySource) KnowledgeDocumentFormats() []agentsdk.KnowledgeDocumentFormat {
+	return s.ManagedKnowledgeDocumentSource.(agentsdk.KnowledgeDocumentFormatSource).KnowledgeDocumentFormats()
 }
 
 type noAttachmentDeleteRecovery struct {

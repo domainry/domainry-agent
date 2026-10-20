@@ -9,7 +9,8 @@ import { AttachmentIndexPanel } from "./AttachmentIndexPanel";
 import { request } from "./api.ts";
 import { describeError } from "./errors.ts";
 import { sessionScope } from "./session.ts";
-import { attachmentAccept, attachmentHash, attachmentLabel, attachmentMaxBytes, attachmentPath, parsePendingAttachment, readAttachment, updateAttachmentPage, uploadAttachment, type Attachment, type AttachmentPage, type PendingAttachment } from "./attachment-state.ts";
+import { attachmentAccept, attachmentHash, attachmentLabel, attachmentMaxBytes, attachmentPath, parsePendingAttachment, updateAttachmentPage, uploadAttachment, type Attachment, type AttachmentPage, type PendingAttachment } from "./attachment-state.ts";
+import { canPreviewFilename, downloadPreviewFile } from "./file-preview-state.ts";
 
 export function AttachmentDialog({ conversationID, archived, onClose, onOpenLibrary }: { conversationID: string; archived: boolean; onClose: () => void; onOpenLibrary: () => void }) {
   const storageKey = `agent-attachment-upload:${sessionScope()}:${conversationID}`;
@@ -19,7 +20,7 @@ export function AttachmentDialog({ conversationID, archived, onClose, onOpenLibr
   const [detailRefresh,setDetailRefresh]=useState(0),[indexBusy,setIndexBusy]=useState(false);
   const [selectedID, setSelectedID] = useState(""), [selected, setSelected] = useState<Attachment | null>(null);
   const [busy, setBusy] = useState(false), [loading, setLoading] = useState(true);
-  const [error, setError] = useState(""), [notice, setNotice] = useState(""), [preview, setPreview] = useState<string | null>(null);
+  const [error, setError] = useState(""), [notice, setNotice] = useState("");
   const [filePreview, setFilePreview] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const requestController = useRef<AbortController | null>(null), fileInput = useRef<HTMLInputElement>(null), lock = useRef(false);
@@ -36,7 +37,7 @@ export function AttachmentDialog({ conversationID, archived, onClose, onOpenLibr
     setPage(previous=>updateAttachmentPage(previous,result,pageCursor.current,add));
   },[]);
   useEffect(() => {
-    const reload = () => { if (!lock.current && !saveLock.current && !indexLock.current) { setPreview(null); if(selection.current)setDetailRefresh(n=>n+1);else setRefresh(n => n + 1); } };
+    const reload = () => { if (!lock.current && !saveLock.current && !indexLock.current) { if(selection.current)setDetailRefresh(n=>n+1);else setRefresh(n => n + 1); } };
     window.addEventListener("focus", reload);
     return () => { window.removeEventListener("focus", reload); requestController.current?.abort(); };
   }, []);
@@ -51,7 +52,7 @@ export function AttachmentDialog({ conversationID, archived, onClose, onOpenLibr
     if (!selectedID) return;
     if(selectedFromResponse.current?.id===selectedID){selectedFromResponse.current=null;return;}
     const controller = new AbortController();
-    request<Attachment>(attachmentPath(conversationID, selectedID), "GET", undefined, controller.signal).then(result => { if (!controller.signal.aborted) applyAttachment(result); }).catch(failure => { if (!controller.signal.aborted) {setSelected(null);setPreview(null);setFilePreview(false);setError(describeError(failure));} });
+    request<Attachment>(attachmentPath(conversationID, selectedID), "GET", undefined, controller.signal).then(result => { if (!controller.signal.aborted) applyAttachment(result); }).catch(failure => { if (!controller.signal.aborted) {setSelected(null);setFilePreview(false);setError(describeError(failure));} });
     return () => controller.abort();
   }, [conversationID, selectedID, detailRefresh,applyAttachment]);
   useEffect(()=>setDeleting(false),[selectedID]);
@@ -87,42 +88,28 @@ export function AttachmentDialog({ conversationID, archived, onClose, onOpenLibr
     selectedFromResponse.current=selectedID===result.id?null:result;setSelectedID(result.id);applyAttachment(result,true);
     setNotice("文件已私有保存，可预览、下载或另存到资料库。");
   }
-  async function openFile(signal: AbortSignal, previewOnly: boolean) {
+  async function download(signal: AbortSignal) {
     if (!selected) return;
-    setPreview(null);
-    const blob = await readAttachment(selected, signal);
-    if (signal.aborted) return;
-    if (previewOnly) {
-      let text: string;
-      try { text = new TextDecoder("utf-8", { fatal: true }).decode(await blob.arrayBuffer()); }
-      catch { setError("此文件不是 UTF-8 文本，请下载原文件查看。"); return; }
-      if (/[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(text)) { setError("此文件含二进制内容，请下载原文件查看。"); return; }
-      setPreview(text.slice(0, 65536));
-      if (text.length > 65536) setNotice("预览显示前 65,536 个字符，完整内容请下载查看。");
-    } else {
-      const url = URL.createObjectURL(blob), link = document.createElement("a");
-      link.href = url; link.download = selected.filename; link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setNotice(`已发起原文件下载：${selected.filename}`);
-    }
+    try { await downloadPreviewFile({ kind: "attachment", conversationID, id: selected.id }, selected.filename, signal, { bytes: selected.bytes, sha256: selected.sha256 }); }
+    catch (failure) { if (failure instanceof DOMException && failure.name === "AbortError") return; throw failure; }
+    setNotice(`已发起原文件下载：${selected.filename}`);
   }
   async function remove(signal: AbortSignal) {
     if (!selected) return;
     const result = await request<Attachment>(`${attachmentPath(conversationID, selected.id)}?expected_revision=${selected.revision}`, "DELETE", undefined, signal);
     if (signal.aborted) return;
     if(result.state==="deleted"){setSelectedID("");setSelected(null);}else applyAttachment(result);
-    setPage(previous=>({...previous,items:previous.items.filter(item=>item.id!==result.id)}));setPreview(null);setDeleting(false);
+    setPage(previous=>({...previous,items:previous.items.filter(item=>item.id!==result.id)}));setDeleting(false);
     setNotice(result.state === "deleted" ? "附件已删除。" : "附件已停止访问，原文件正在后台清理。");
   }
-  const textPreview = selected && (selected.content_type.startsWith("text/") || selected.content_type === "application/json");
   const readable = selected && ["stored", "indexing", "ready", "failed", "needs_reconcile"].includes(selected.state);
   return <Dialog open onOpenChange={open => { if (!open) onClose(); }}><DialogContent className="attachment-dialog"><DialogHeader><DialogTitle>会话附件</DialogTitle><DialogDescription>文件仅属于当前用户的这段会话。关闭窗口不删除附件；上传成功不代表已经可以检索。</DialogDescription></DialogHeader>
     <div className="attachment-upload"><label htmlFor="attachment-file">选择附件</label><Input ref={fileInput} id="attachment-file" type="file" accept={attachmentAccept} disabled={blocked || archived} onChange={event => { setFile(event.target.files?.[0] || null); setError(""); }} /><p>PNG、JPEG、GIF、WebP、PDF、Word、Excel、TXT、Markdown、CSV、TSV、JSON · 每个文件最多 16 MiB</p><Button disabled={!file || blocked || archived} onClick={() => void perform(upload)}><Upload size={16} />{busy ? "正在处理…" : pending ? "重试上传" : "上传并私有保存"}</Button>{archived && <p>会话已归档，恢复会话后可以上传。</p>}</div>
     {pending && <div className="memory-operation"><p>上次上传待确认：{pending.filename}。刷新后请重新选择同一个文件重试。</p><Button variant="ghost" size="sm" disabled={blocked} onClick={() => { try { clearPending(); setNotice("已结束重试。已经传到服务器的附件仍可在下方管理。"); } catch { setError("无法清除本地重试记录。"); } }}>结束这次上传重试</Button></div>}
     {error && <p role="alert" className="error-text">{error}</p>}{notice && <p role="status" className="subtle">{notice}</p>}
     <div className="attachment-list-heading"><strong>已保存的附件</strong><Button variant="ghost" size="sm" disabled={blocked || loading} onClick={() => setRefresh(n => n + 1)}><RefreshCw size={14} />刷新列表</Button></div>
-    {loading ? <p className="subtle">正在读取附件…</p> : page.items.length === 0 ? <p className="subtle">这段会话还没有可显示的附件。</p> : <div className="attachment-list">{page.items.map(item => <Button key={item.id} variant={selectedID === item.id ? "secondary" : "outline"} disabled={blocked} onClick={() => { selectedFromResponse.current=null;setSelectedID(item.id);setDetailRefresh(n=>n+1);setPreview(null);setError(""); }}><FileText size={18} /><span><strong>{item.filename}</strong><small>{attachmentLabel(item.state)} · {(item.bytes / 1024).toFixed(1)} KiB</small></span></Button>)}</div>}
+    {loading ? <p className="subtle">正在读取附件…</p> : page.items.length === 0 ? <p className="subtle">这段会话还没有可显示的附件。</p> : <div className="attachment-list">{page.items.map(item => <Button key={item.id} variant={selectedID === item.id ? "secondary" : "outline"} disabled={blocked} onClick={() => { selectedFromResponse.current=null;setSelectedID(item.id);setDetailRefresh(n=>n+1);setError(""); }}><FileText size={18} /><span><strong>{item.filename}</strong><small>{attachmentLabel(item.state)} · {(item.bytes / 1024).toFixed(1)} KiB</small></span></Button>)}</div>}
     {(cursors.length > 1 || !page.complete) && <div className="interaction-actions"><Button variant="outline" size="sm" disabled={blocked || loading || cursors.length === 1} onClick={() => setCursors(values => values.slice(0, -1))}>上一页</Button><Button variant="outline" size="sm" disabled={blocked || loading || !page.next_after} onClick={() => setCursors(values => [...values, page.next_after!])}>下一页</Button></div>}
-    {filePreview && selected && readable && <FilePreviewDialog target={{ kind: "attachment", conversationID, id: selected.id }} title={selected.filename} onClose={() => setFilePreview(false)} />}{selected && <section className="artifact-detail" aria-label="附件详情"><h3>{selected.filename}</h3><p className="subtle">仅当前会话可见 · {attachmentLabel(selected.state)}</p>{selected.state === "stored" && <p>原文件仅限当前会话，可在线预览、下载或另存到资料库。</p>}{selected.error_code && !selected.indexing?.requested && <p className="error-text">处理未完成；原文件如已保存，可尝试下载。</p>}<AttachmentIndexPanel key={`index:${selected.id}`} attachment={selected} disabled={busy||saving} onChange={applyAttachment} onBusyChange={onIndexBusy} /><div className="interaction-actions">{["pdf", "docx", "xlsx"].includes(selected.filename.split(".").at(-1)?.toLowerCase() || "") && <Button variant="outline" disabled={blocked || !readable} onClick={() => setFilePreview(true)}>预览原文件</Button>}{textPreview && <Button variant="outline" disabled={blocked || !readable} onClick={() => void perform(signal => openFile(signal, true))}>预览文本</Button>}<Button variant="outline" disabled={blocked || !readable} onClick={() => void perform(signal => openFile(signal, false))}><Download size={15} />下载原文件</Button><Button variant="ghost" disabled={blocked || selected.state === "deleting"} onClick={() => setDeleting(true)}><Trash2 size={15} />删除附件</Button></div>{readable && <AttachmentLibrarySave key={`library:${selected.id}`} attachment={selected} disabled={busy||indexBusy} onBusyChange={onSaveBusy} onOpenLibrary={onOpenLibrary} />}{!textPreview && !["pdf", "docx", "xlsx"].includes(selected.filename.split(".").at(-1)?.toLowerCase() || "") && <p className="subtle">此格式暂不支持在线预览，可下载原文件查看。</p>}{deleting && <div className="memory-operation"><p>删除“{selected.filename}”？附件会立即停止访问，并清理原文件。</p><div className="interaction-actions"><Button variant="destructive" disabled={blocked} onClick={() => void perform(remove)}>确认删除附件</Button><Button variant="outline" disabled={blocked} onClick={() => setDeleting(false)}>保留附件</Button></div></div>}{preview !== null && <pre className="attachment-text" aria-label="附件文本预览">{preview}</pre>}</section>}
+    {filePreview && selected && readable && <FilePreviewDialog target={{ kind: "attachment", conversationID, id: selected.id }} title={selected.filename} expected={{ bytes: selected.bytes, sha256: selected.sha256 }} onClose={() => setFilePreview(false)} />}{selected && <section className="artifact-detail" aria-label="附件详情"><h3>{selected.filename}</h3><p className="subtle">仅当前会话可见 · {attachmentLabel(selected.state)}</p>{selected.state === "stored" && <p>原文件仅限当前会话，可在线预览、下载或另存到资料库。</p>}{selected.error_code && !selected.indexing?.requested && <p className="error-text">处理未完成；原文件如已保存，可尝试下载。</p>}<AttachmentIndexPanel key={`index:${selected.id}`} attachment={selected} disabled={busy||saving} onChange={applyAttachment} onBusyChange={onIndexBusy} /><div className="interaction-actions">{canPreviewFilename(selected.filename) && <Button variant="outline" disabled={blocked || !readable} onClick={() => setFilePreview(true)}>预览原文件</Button>}<Button variant="outline" disabled={blocked || !readable} onClick={() => void perform(download)}><Download size={15} />下载原文件</Button><Button variant="ghost" disabled={blocked || selected.state === "deleting"} onClick={() => setDeleting(true)}><Trash2 size={15} />删除附件</Button></div>{readable && <AttachmentLibrarySave key={`library:${selected.id}`} attachment={selected} disabled={busy||indexBusy} onBusyChange={onSaveBusy} onOpenLibrary={onOpenLibrary} />}{!canPreviewFilename(selected.filename) && <p className="subtle">旧版 Word / Excel 暂不支持在线预览，可下载原文件查看。</p>}{deleting && <div className="memory-operation"><p>删除“{selected.filename}”？附件会立即停止访问，并清理原文件。</p><div className="interaction-actions"><Button variant="destructive" disabled={blocked} onClick={() => void perform(remove)}>确认删除附件</Button><Button variant="outline" disabled={blocked} onClick={() => setDeleting(false)}>保留附件</Button></div></div>}</section>}
   </DialogContent></Dialog>;
 }

@@ -1,6 +1,8 @@
 package module
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -21,6 +23,47 @@ type conversationAdapter struct {
 	runtimeID string
 	mux       *http.ServeMux
 	routes    []modulehttp.Route
+}
+
+type knowledgeDocumentChunkUploader interface {
+	UploadKnowledgeDocumentChunk(context.Context, string, agentsdk.KnowledgeDocumentUploadChunk, agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocumentUploadProgress, error)
+}
+
+type knowledgeDocumentDownloader interface {
+	DownloadKnowledgeDocument(context.Context, string, string, agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocumentDownload, error)
+}
+
+const knowledgeDocumentTransferTimeout = 2 * time.Hour
+
+func validFileSHA256(value string) bool {
+	if len(value) != 64 {
+		return false
+	}
+	for _, character := range value {
+		if character < '0' || (character > '9' && character < 'a') || character > 'f' {
+			return false
+		}
+	}
+	return true
+}
+
+func parseUploadContentRange(value string) (start, end, total int64, ok bool) {
+	if !strings.HasPrefix(value, "bytes ") {
+		return 0, 0, 0, false
+	}
+	rangeAndTotal := strings.Split(strings.TrimPrefix(value, "bytes "), "/")
+	if len(rangeAndTotal) != 2 {
+		return 0, 0, 0, false
+	}
+	bounds := strings.Split(rangeAndTotal[0], "-")
+	if len(bounds) != 2 {
+		return 0, 0, 0, false
+	}
+	start, startErr := strconv.ParseInt(bounds[0], 10, 64)
+	end, endErr := strconv.ParseInt(bounds[1], 10, 64)
+	total, totalErr := strconv.ParseInt(rangeAndTotal[1], 10, 64)
+	ok = startErr == nil && endErr == nil && totalErr == nil && start >= 0 && end >= start && total > end
+	return
 }
 
 func NewConversationAdapter(service agentsdk.ConversationService, runtimeID string) (modulehttp.Adapter, error) {
@@ -162,6 +205,32 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 				writeCode(w, 400, "agent.conversation."+fileKind+"_type_unsupported")
 				return
 			}
+			if op == "documents_upload" {
+				_ = http.NewResponseController(w).SetReadDeadline(time.Now().Add(knowledgeDocumentTransferTimeout))
+				documents, ok := s.service.(knowledgeDocumentChunkUploader)
+				sha256, chunkSHA256 := r.Header.Get("X-Agent-File-SHA256"), r.Header.Get("X-Agent-Chunk-SHA256")
+				if !ok {
+					writeCode(w, 503, "agent.conversation.document_chunk_upload_unavailable")
+					return
+				}
+				start, end, total, rangeOK := parseUploadContentRange(r.Header.Get("Content-Range"))
+				chunkBytes := end - start + 1
+				if !rangeOK || total > agentsdk.KnowledgeDocumentMaximumBytes || chunkBytes < 1 || chunkBytes > agentsdk.KnowledgeDocumentUploadChunkBytes || r.ContentLength != chunkBytes {
+					writeCode(w, 413, "agent.conversation.document_size_invalid")
+					return
+				}
+				if !validFileSHA256(sha256) || !validFileSHA256(chunkSHA256) {
+					writeCode(w, 400, "agent.conversation.document_content_mismatch")
+					return
+				}
+				progress, err := documents.UploadKnowledgeDocumentChunk(r.Context(), in.LibraryID, agentsdk.KnowledgeDocumentUploadChunk{ClientID: q.Get("client_id"), Filename: q.Get("filename"), Bytes: total, SHA256: sha256, Offset: start, ChunkBytes: chunkBytes, ChunkSHA256: chunkSHA256, Content: http.MaxBytesReader(w, r.Body, agentsdk.KnowledgeDocumentUploadChunkBytes)}, in.Authority)
+				if err != nil {
+					writeError(w, err)
+					return
+				}
+				writeJSON(w, http.StatusOK, progress)
+				return
+			}
 			if r.ContentLength > agentsdk.ConversationAttachmentMaxBytes {
 				writeCode(w, 413, "agent.conversation."+fileKind+"_size_invalid")
 				return
@@ -171,11 +240,7 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 				writeCode(w, 413, "agent.conversation."+fileKind+"_size_invalid")
 				return
 			}
-			if op == "documents_upload" {
-				in.DocumentUpload = agentsdk.KnowledgeDocumentUpload{ClientID: q.Get("client_id"), Filename: q.Get("filename"), Data: raw}
-			} else {
-				in.AttachmentUpload = agentsdk.ConversationAttachmentUpload{ClientID: q.Get("client_id"), Filename: q.Get("filename"), Data: raw}
-			}
+			in.AttachmentUpload = agentsdk.ConversationAttachmentUpload{ClientID: q.Get("client_id"), Filename: q.Get("filename"), Data: raw}
 		}
 		switch op {
 		case "provenance_publish":
@@ -295,6 +360,22 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			s.stream(w, r, in)
 			return
 		}
+		if op == "documents_download" {
+			_ = http.NewResponseController(w).SetWriteDeadline(time.Now().Add(knowledgeDocumentTransferTimeout))
+			documents, ok := s.service.(knowledgeDocumentDownloader)
+			if !ok {
+				writeCode(w, 503, "agent.conversation.document_stream_unavailable")
+				return
+			}
+			download, err := documents.DownloadKnowledgeDocument(r.Context(), in.LibraryID, in.DocumentID, in.Authority)
+			if err != nil {
+				writeError(w, err)
+				return
+			}
+			defer download.Content.Close()
+			serveOriginalFileStream(w, r, download.Document.Filename, download.Document.ContentType, download.Document.SHA256, download.Content)
+			return
+		}
 		result, err := agentapplication.InvokeConversation(r.Context(), s.service, op, in)
 		if err != nil {
 			writeError(w, err)
@@ -337,30 +418,7 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 				writeCode(w, 500, "agent.conversation.attachment_download_invalid")
 				return
 			}
-			w.Header().Set("Content-Type", "application/octet-stream")
-			w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": download.Attachment.Filename}))
-			w.Header().Set("X-Agent-File-SHA256", download.Attachment.SHA256)
-			w.Header().Set("Content-Length", strconv.Itoa(len(download.Data)))
-			w.Header().Set("X-Content-Type-Options", "nosniff")
-			w.Header().Set("Cache-Control", "private, no-store")
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write(download.Data)
-			return
-		}
-		if op == "documents_download" {
-			download, ok := result.(agentsdk.KnowledgeDocumentDownload)
-			if !ok {
-				writeCode(w, 500, "agent.conversation.document_download_invalid")
-				return
-			}
-			w.Header().Set("Content-Type", "application/octet-stream")
-			w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": download.Document.Filename}))
-			w.Header().Set("X-Agent-File-SHA256", download.Document.SHA256)
-			w.Header().Set("Content-Length", strconv.Itoa(len(download.Data)))
-			w.Header().Set("X-Content-Type-Options", "nosniff")
-			w.Header().Set("Cache-Control", "private, no-store")
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write(download.Data)
+			serveOriginalFile(w, r, download.Attachment.Filename, download.Attachment.SHA256, download.Data)
 			return
 		}
 		status := 200
@@ -369,6 +427,33 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		}
 		writeJSON(w, status, result)
 	}
+}
+
+// serveOriginalFile keeps the bounded attachment path intact. Knowledge
+// documents use serveOriginalFileStream so ranges are read from storage rather
+// than from a second in-memory copy.
+func serveOriginalFile(w http.ResponseWriter, r *http.Request, filename, sha256 string, data []byte) {
+	serveOriginalFileStream(w, r, filename, "", sha256, bytes.NewReader(data))
+}
+
+func serveOriginalFileStream(w http.ResponseWriter, r *http.Request, filename, contentType, sha256 string, content io.ReadSeeker) {
+	// Keep originals opaque at the HTTP boundary. Viewers choose a parser from
+	// the authorized filename. Only the fixed audio/video MIME allowlist is
+	// served inline; active document types remain downloads even when their
+	// stored metadata carries a browser-executable MIME type.
+	disposition := "attachment"
+	if strings.HasPrefix(contentType, "audio/") || strings.HasPrefix(contentType, "video/") {
+		w.Header().Set("Content-Type", contentType)
+		disposition = "inline"
+	} else {
+		w.Header().Set("Content-Type", "application/octet-stream")
+	}
+	w.Header().Set("Content-Disposition", mime.FormatMediaType(disposition, map[string]string{"filename": filename}))
+	w.Header().Set("X-Agent-File-SHA256", sha256)
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("Cache-Control", "private, no-store")
+	w.Header().Set("Accept-Ranges", "bytes")
+	http.ServeContent(w, r, filename, time.Time{}, content)
 }
 func (s *conversationAdapter) stream(w http.ResponseWriter, r *http.Request, in agentsdk.ConversationRPCRequest) {
 	// Authorize and read before committing headers. SSE is a read-only durable

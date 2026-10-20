@@ -104,9 +104,11 @@ func OptionsFromEnvironment() Options {
 		taskAPIKey = os.Getenv("AGENT_PROVIDER_API_KEY")
 	}
 	conversation := ConversationOptions{
-		RunPlanningTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_PLANNING_TIMEOUT"),
-		ContextBytes:       positiveEnvironmentInteger("AGENT_CONVERSATION_CONTEXT_BYTES"),
-		Workers:            positiveEnvironmentInteger("AGENT_CONVERSATION_WORKERS"), MaxParallelTools: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_PARALLEL_TOOLS"),
+		RunPlanningTimeout:        positiveEnvironmentDuration("AGENT_CONVERSATION_PLANNING_TIMEOUT"),
+		DocumentWorkTimeout:       positiveEnvironmentDuration("AGENT_KNOWLEDGE_DOCUMENT_WORK_TIMEOUT"),
+		DocumentUploadIdleTimeout: positiveEnvironmentDuration("AGENT_KNOWLEDGE_DOCUMENT_UPLOAD_IDLE_TIMEOUT"),
+		ContextBytes:              positiveEnvironmentInteger("AGENT_CONVERSATION_CONTEXT_BYTES"),
+		Workers:                   positiveEnvironmentInteger("AGENT_CONVERSATION_WORKERS"), MaxParallelTools: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_PARALLEL_TOOLS"),
 		MaxQueuedPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_USER"), MaxQueuedPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE"),
 		MaxRunningPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_RUNNING_PER_USER"), MaxRunningPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE"),
 		RunTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_RUN_TIMEOUT"), ExternalCallTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT"),
@@ -506,7 +508,14 @@ func (b *binding) AgentInteractiveState() agentpersistence.AgentInteractiveState
 	return b.interactive
 }
 func (b *binding) HTTPAdapters() []modulehttp.Adapter {
-	return append([]modulehttp.Adapter(nil), b.adapters...)
+	b.assemblyMu.Lock()
+	adapters := append([]modulehttp.Adapter(nil), b.adapters...)
+	knowledgeBinding := b.knowledgeBinding
+	b.assemblyMu.Unlock()
+	if provider, ok := knowledgeBinding.(interface{ HTTPAdapters() []modulehttp.Adapter }); ok {
+		adapters = append(adapters, provider.HTTPAdapters()...)
+	}
+	return adapters
 }
 func (b *binding) AuthorizationActions() ([]actioncontract.ActionDefinition, error) {
 	definitions, err := agentsdk.AgentAuthorizationActions()
@@ -517,11 +526,25 @@ func (b *binding) AuthorizationActions() ([]actioncontract.ActionDefinition, err
 	adapters := append([]modulehttp.Adapter(nil), b.adapters...)
 	conversationToolActions := cloneActionDefinitions(b.conversationToolActions)
 	applicationHostBound := b.applicationHostBound
+	knowledgeBinding := b.knowledgeBinding
 	b.assemblyMu.Unlock()
 	definitions, err = mergeAuthorizationActions(definitions, conversationToolActions)
 	if err != nil {
 		return nil, err
 	}
+	if provider, ok := knowledgeBinding.(interface {
+		AuthorizationActions() ([]actioncontract.ActionDefinition, error)
+	}); ok {
+		knowledgeActions, knowledgeErr := provider.AuthorizationActions()
+		if knowledgeErr != nil {
+			return nil, knowledgeErr
+		}
+		definitions, err = mergeAuthorizationActions(definitions, knowledgeActions)
+		if err != nil {
+			return nil, err
+		}
+	}
+	adapters = b.HTTPAdapters()
 	mounted := map[string]bool{}
 	for _, adapter := range adapters {
 		for _, route := range adapter.Routes() {

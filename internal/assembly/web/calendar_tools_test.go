@@ -300,7 +300,7 @@ func TestCalendarProductIdentityConversationAndRestart(t *testing.T) {
 	f.partial.Store(false)
 	setting := settingList(t, b)[calendar.EventOperationKey]
 	b.call("PUT", "/tools/preferences/"+calendar.EventOperationKey, accountJSON(tools.ToolSettingInput{Enabled: false, ExpectedRevision: setting.Revision, ToolVersion: setting.Version}), 200)
-	assertCalendarHidden(t, b, conversation)
+	assertCalendarHistory(t, b, conversation)
 	f.close()
 	f.open()
 	b.handler = f.boundary("http://127.0.0.1:8091", files)
@@ -308,7 +308,7 @@ func TestCalendarProductIdentityConversationAndRestart(t *testing.T) {
 	if settingList(t, b)[calendar.EventOperationKey].Enabled {
 		t.Fatal("restart lost disabled preference")
 	}
-	assertCalendarHidden(t, b, conversation)
+	assertCalendarHistory(t, b, conversation)
 	b.call("PUT", "/tools/preferences/"+calendar.EventOperationKey, accountJSON(tools.ToolSettingInput{Enabled: true, ExpectedRevision: 1, ToolVersion: setting.Version}), 200)
 	if got := calendarAnswer(t, b, conversation); got != answer {
 		t.Fatalf("restored result changed %s", got)
@@ -323,7 +323,7 @@ func TestCalendarProductIdentityConversationAndRestart(t *testing.T) {
 			}
 			return out
 		})
-		assertCalendarHidden(t, b, conversation)
+		assertCalendarHistory(t, b, conversation)
 		b.call("POST", "/app/product/account-setup", `{}`, 200)
 		if calendarAnswer(t, b, conversation) != answer {
 			t.Fatal("permission restoration did not restore source")
@@ -398,7 +398,7 @@ func TestCalendarProductIdentityConversationAndRestart(t *testing.T) {
 	if readErr != nil || len(afterRejectedTasks.Items) != len(beforeRejectedTasks.Items) || f.modelCalls.Load() != beforeRejectedModelCalls {
 		t.Fatalf("revoked scheduled task crossed acceptance: before=%d after=%d model=%d/%d err=%v", len(beforeRejectedTasks.Items), len(afterRejectedTasks.Items), beforeRejectedModelCalls, f.modelCalls.Load(), readErr)
 	}
-	assertCalendarHidden(t, b, conversation)
+	assertCalendarHistory(t, b, conversation)
 	before := f.vendorCalls.Load()
 	if got := calendarRun(t, b, "读取日历"); strings.Contains(got, "CALENDAR-BODY") {
 		t.Fatal("revoked source reached model")
@@ -442,20 +442,20 @@ func calendarAnswer(t *testing.T, b *browser, conversation string) string {
 	}
 	return ""
 }
-func assertCalendarHidden(t *testing.T, b *browser, conversation string) {
+func assertCalendarHistory(t *testing.T, b *browser, conversation string) {
 	t.Helper()
 	page := accountDecode[sdk.ConversationMessagePage](t, b.call("GET", "/agent/conversations/"+conversation+"/messages", "", 200))
 	found := false
 	for _, m := range page.Items {
-		if m.Role == "assistant" {
+		if m.Role == "assistant" && strings.Contains(m.Content, "CALENDAR-BODY") {
 			found = true
-			if m.AccessError == "" || strings.Contains(m.Content, "CALENDAR-BODY") {
-				t.Fatalf("retained calendar result exposed %+v", m)
+			if m.AccessError != "" {
+				t.Fatalf("owner's calendar history was rewritten %+v", m)
 			}
 		}
 	}
 	if !found {
-		t.Fatal("missing retained message")
+		t.Fatal("missing retained calendar answer")
 	}
 }
 

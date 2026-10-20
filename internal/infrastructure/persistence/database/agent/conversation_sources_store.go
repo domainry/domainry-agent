@@ -30,6 +30,16 @@ func (s *ConversationStore) ConversationSourceAuthority(ctx context.Context, ref
 var _ persistence.ConversationSourceAuthorityRepository = (*ConversationStore)(nil)
 
 func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref agentsdk.ConversationRunReference, a agentsdk.ConversationAuthority) (persistence.ConversationSourceSnapshot, error) {
+	return s.conversationSnapshot(ctx, ref, a, false)
+}
+
+// Explicit trajectory/fork reads need exact frozen requests and responses.
+// They must not silently use the minimal authorization/source projection.
+func (s *ConversationStore) ConversationExecutionSnapshot(ctx context.Context, ref agentsdk.ConversationRunReference, a agentsdk.ConversationAuthority) (persistence.ConversationSourceSnapshot, error) {
+	return s.conversationSnapshot(ctx, ref, a, true)
+}
+
+func (s *ConversationStore) conversationSnapshot(ctx context.Context, ref agentsdk.ConversationRunReference, a agentsdk.ConversationAuthority, exact bool) (persistence.ConversationSourceSnapshot, error) {
 	var out persistence.ConversationSourceSnapshot
 	if err := conversationAuthority(a); err != nil {
 		return out, err
@@ -45,7 +55,11 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 		out.Run = row.Run
 		out.Authority = row.Authority
 		predicate := query.And(conversationScope(a, ref.ConversationID), query.Equal("run_id", ref.RunID))
-		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(predicate, query.Equal("item_kind", conversationItemModelInput))).Build()
+		inputColumn := "source_context_json"
+		if exact {
+			inputColumn = "payload_json"
+		}
+		q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationStepInputTable).Columns(inputColumn).Where(query.And(predicate, query.Equal("step_no", -1))).Build()
 		if err != nil {
 			return err
 		}
@@ -56,14 +70,17 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 			if err = unmarshalDurableJSON(raw, out.Input); err != nil {
 				return err
 			}
+			if err = s.restoreModelInputSources(ctx, tx, query.And(predicate, query.Equal("step_no", -1)), out.Input); err != nil {
+				return err
+			}
 		} else if !errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
-		stepPredicate := predicate
+		stepPredicate := query.And(predicate, query.GreaterThanOrEqual("step_no", 0))
 		if ref.BeforeStep > 0 {
 			stepPredicate = query.And(stepPredicate, query.LessThan("step_no", ref.BeforeStep))
 		}
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("step_no", "payload_json").Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindStep), stepPredicate)).OrderBy(query.Ascending("step_no")).Limit(257).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationStepInputTable).Columns("step_no", "source_context_json").Where(stepPredicate).OrderBy(query.Ascending("step_no")).Limit(257).Build()
 		if err != nil {
 			return err
 		}
@@ -74,25 +91,42 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 		defer stepRows.Close()
 		for stepRows.Next() {
 			var number int
-			var step persistence.ConversationExecutionStep
+			var sourceContext executionSourceContext
 			if len(out.Steps) >= 256 {
 				return conversationError("unavailable", "source_limit_exceeded")
 			}
 			if err = stepRows.Scan(&number, &raw); err != nil {
 				return err
 			}
-			if err = unmarshalDurableJSON(raw, &step); err != nil {
+			if err = unmarshalDurableJSON(raw, &sourceContext); err != nil {
 				return err
 			}
-			out.Steps = append(out.Steps, step)
-			if step.Input.Context != nil {
-				out.StepContexts = append(out.StepContexts, persistence.ConversationStepContext{Step: number, Context: step.Input.Context, Messages: step.Input.Messages})
+			projected, err := sourceContext.stepContext(number)
+			if err != nil {
+				return err
+			}
+			out.Steps = append(out.Steps, persistence.ConversationExecutionStep{Number: number, Input: agentsdk.ConversationStepRequest{Context: projected.Context, Messages: projected.Messages}})
+			if projected.Context != nil {
+				out.StepContexts = append(out.StepContexts, projected)
 			}
 		}
 		if err = stepRows.Err(); err != nil {
 			return err
 		}
 		stepRows.Close()
+		if exact {
+			for index, projected := range out.Steps {
+				var step persistence.ConversationExecutionStep
+				found, err := s.readFrozenExecutionStep(ctx, tx, query.And(predicate, query.Equal("step_no", projected.Number)), &step)
+				if err != nil {
+					return err
+				}
+				if !found {
+					return conversationError("conflict", "step_input_conflict")
+				}
+				out.Steps[index] = step
+			}
+		}
 		if row.Run.AssistantMessageID != "" {
 			q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(query.And(conversationItemScope(a, ref.ConversationID, conversationItemMessage), query.Equal("reference_id", row.Run.AssistantMessageID), query.Equal("run_id", ref.RunID))).Build()
 			if err != nil {
@@ -107,7 +141,7 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 			}
 			out.FinalMessage = &message
 		}
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("payload_json").Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindTool), predicate)).OrderBy(query.Ascending("step_no"), query.Ascending("call_key")).Limit(65).Build()
+		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationToolCallTable).Columns("payload_json").Where(predicate).OrderBy(query.Ascending("step_no"), query.Ascending("call_key")).Limit(65).Build()
 		if err != nil {
 			return err
 		}
@@ -159,29 +193,8 @@ func (s *ConversationStore) ConversationSourceSnapshot(ctx context.Context, ref 
 			return err
 		}
 		peers.Close()
-		q, args, err = query.NewSelectBuilder(s.store.Renderer(), conversationRunStepTable).Columns("step_no", "payload_json").Where(query.And(conversationRunStepKindPredicate(conversationRunStepKindSources), predicate)).OrderBy(query.Ascending("step_no")).Limit(257).Build()
-		if err != nil {
-			return err
-		}
-		sources, err := tx.QueryContext(ctx, q, args...)
-		if err != nil {
-			return err
-		}
-		defer sources.Close()
-		for sources.Next() {
-			var value persistence.ConversationStepSources
-			if err = sources.Scan(&value.Step, &raw); err != nil {
-				return err
-			}
-			if err = unmarshalDurableJSON(raw, &value.Sources); err != nil {
-				return err
-			}
-			if len(out.StepSources) >= 256 || len(value.Sources) > 64 {
-				return conversationError("unavailable", "source_limit_exceeded")
-			}
-			out.StepSources = append(out.StepSources, value)
-		}
-		return sources.Err()
+		out.StepSources, err = s.readStepSourceEdges(ctx, tx, query.And(predicate, query.GreaterThanOrEqual("step_no", 0)))
+		return err
 	})
 	if err == nil {
 		err = s.projectConversationRunAudit(ctx, &out.Run, a)

@@ -19,12 +19,16 @@ func (s *ConversationService) UploadKnowledgeDocument(ctx context.Context, libra
 	return s.knowledgeService().UploadKnowledgeDocument(ctx, library, in, a)
 }
 
-func (s *ConversationService) UploadKnowledgeDocumentForSource(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUpload, source agentsdk.KnowledgeDocumentSourceAccess, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
-	return s.knowledgeService().UploadKnowledgeDocumentForSource(ctx, library, in, source, a)
+func (s *ConversationService) UploadKnowledgeDocumentChunk(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUploadChunk, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocumentUploadProgress, error) {
+	service, ok := s.knowledgeService().(agentsdk.KnowledgeDocumentChunkUploadService)
+	if !ok {
+		return agentsdk.KnowledgeDocumentUploadProgress{}, &agentsdk.Error{Class: "unavailable", Code: "agent.conversation.document_chunk_upload_unavailable"}
+	}
+	return service.UploadKnowledgeDocumentChunk(ctx, library, in, a)
 }
 
-func (s *ConversationService) uploadKnowledgeDocument(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUpload, origin *persistence.KnowledgeAttachmentOrigin, documentOrigin *persistence.KnowledgeDocumentOrigin, recheck func() error, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
-	return s.knowledgeService().UploadDocumentContent(ctx, library, in, origin, documentOrigin, recheck, a)
+func (s *ConversationService) UploadKnowledgeDocumentForSource(ctx context.Context, library string, in agentsdk.KnowledgeDocumentUpload, source agentsdk.KnowledgeDocumentSourceAccess, a agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
+	return s.knowledgeService().UploadKnowledgeDocumentForSource(ctx, library, in, source, a)
 }
 
 func (s *ConversationService) knowledgeDocumentRecord(ctx context.Context, repo persistence.KnowledgeDocumentRepository, library, id string, a agentsdk.ConversationAuthority) (persistence.KnowledgeDocumentRecord, error) {
