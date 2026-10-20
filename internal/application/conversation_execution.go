@@ -979,14 +979,16 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 				"updated_at":   time.Now().UTC(),
 			})
 		})
+		invoke := s.options.ToolHost.InvokeConversationTool
 		if replayed && (record.State == "uncertain" || frozen.Idempotency == "reconcile") {
-			result, err = s.options.ToolHost.ReconcileConversationTool(toolCtx, request)
-		} else {
-			result, err = s.options.ToolHost.InvokeConversationTool(toolCtx, request)
+			invoke = s.options.ToolHost.ReconcileConversationTool
 		}
+		result, err = invokeConversationToolWithRetry(toolCtx, frozen.Effect, func() (agentsdk.ConversationToolResult, error) {
+			return invoke(toolCtx, request)
+		})
 		cancel()
 		if err != nil {
-			code := "tool_failed"
+			code := conversationToolFailureCode(err)
 			if resultAuthorizationFailed(err) {
 				code = conversationModelFailureCode(err, "tool_access_denied")
 				resultAuthorizationErr = conversationFailure("forbidden", code)
@@ -1049,6 +1051,65 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 		return agentsdk.ConversationToolResult{}, s.waitConversation(ctx, claim, persistence.ConversationWait{Step: step.Number, CallID: call.ID, Kind: "reconciliation", Question: "外部操作的结果尚未确认。继续时将查询实际结果，已完成的操作不会重新执行。"})
 	}
 	return result, nil
+}
+
+func invokeConversationToolWithRetry(ctx context.Context, effect string, invoke func() (agentsdk.ConversationToolResult, error)) (agentsdk.ConversationToolResult, error) {
+	var result agentsdk.ConversationToolResult
+	var err error
+	for attempt := 0; attempt < 8; attempt++ {
+		result, err = invoke()
+		if err == nil || effect != "read" || !conversationToolRetryable(ctx, err) {
+			return result, err
+		}
+		timer := time.NewTimer(time.Duration(attempt+1) * 5 * time.Millisecond)
+		select {
+		case <-ctx.Done():
+			if !timer.Stop() {
+				<-timer.C
+			}
+			return result, ctx.Err()
+		case <-timer.C:
+		}
+	}
+	return result, err
+}
+
+func conversationToolRetryable(ctx context.Context, err error) bool {
+	if err == nil || ctx.Err() != nil {
+		return false
+	}
+	var agentError *agentsdk.Error
+	if errors.As(err, &agentError) {
+		class := strings.ToLower(strings.TrimSpace(agentError.Class))
+		return agentError.Retryable || class == "unavailable" || class == "rate_limited"
+	}
+	var toolError *toolsdk.Error
+	if errors.As(err, &toolError) {
+		class := strings.ToLower(strings.TrimSpace(toolError.Class))
+		return toolError.Retryable || class == "unavailable" || class == "rate_limited"
+	}
+	var kind interface{ ApplicationErrorKind() string }
+	if errors.As(err, &kind) {
+		value := strings.ToLower(strings.TrimSpace(kind.ApplicationErrorKind()))
+		return value == "unavailable" || value == "rate_limited"
+	}
+	return false
+}
+
+var conversationToolErrorCodePattern = regexp.MustCompile(`^[a-z][a-z0-9_.-]{0,127}$`)
+
+func conversationToolFailureCode(err error) string {
+	if errors.Is(err, context.DeadlineExceeded) {
+		return "tool_timeout"
+	}
+	var coded interface{ ErrorCode() string }
+	if errors.As(err, &coded) {
+		code := strings.ToLower(strings.TrimSpace(coded.ErrorCode()))
+		if conversationToolErrorCodePattern.MatchString(code) {
+			return code
+		}
+	}
+	return "tool_failed"
 }
 
 func conversationRunPlanRejectableProgressError(err error) bool {
