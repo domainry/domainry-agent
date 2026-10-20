@@ -12,6 +12,7 @@ import (
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-foundation/apperror"
 	"github.com/domainry/domainry-foundation/requestcontext"
+	"github.com/domainry/domainry-foundation/telemetry"
 	identity "github.com/domainry/domainry-identity-sdk"
 	knowledgesdk "github.com/domainry/domainry-knowledge-sdk"
 )
@@ -91,6 +92,7 @@ func SetupRoutes(binding identity.Binding, runtime string, authorize func(contex
 }
 
 func writeSetupError(w http.ResponseWriter, status int, code string) {
+	telemetry.RecordHTTPStatusError(w, status, code)
 	if status < 400 {
 		status = 500
 	}

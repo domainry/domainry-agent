@@ -9,6 +9,7 @@ import (
 	"unicode/utf8"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/telemetry"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
 
@@ -135,6 +136,7 @@ func writeKnowledgeBrowserFailure(w http.ResponseWriter, err error) {
 }
 
 func writeKnowledgeBrowserError(w http.ResponseWriter, status int, code string) {
+	telemetry.RecordHTTPStatusError(w, status, code)
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-store")
 	w.WriteHeader(status)

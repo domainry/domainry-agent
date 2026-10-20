@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/telemetry"
 )
 
 // Preserve domain failures through the repository RPC boundary. A quota or
@@ -32,6 +33,7 @@ func writeRepositoryError(w http.ResponseWriter, err error) {
 			code, class, retryable = failure.Code, failure.Class, failure.Retryable
 		}
 	}
+	telemetry.RecordHTTPStatusError(w, status, code)
 	writeJSON(w, status, struct {
 		Code      string `json:"code"`
 		Class     string `json:"class"`

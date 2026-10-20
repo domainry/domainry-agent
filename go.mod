@@ -6,7 +6,7 @@ require (
 	github.com/domainry/domainry-agent-sdk v0.1.41
 	github.com/domainry/domainry-connector-sdk v0.1.9
 	github.com/domainry/domainry-connectors v0.1.13
-	github.com/domainry/domainry-foundation v0.2.2
+	github.com/domainry/domainry-foundation v0.2.5
 	github.com/domainry/domainry-identity v0.2.46
 	github.com/domainry/domainry-identity-bridge v0.1.12
 	github.com/domainry/domainry-identity-sdk v0.1.23
@@ -73,7 +73,7 @@ require (
 require (
 	github.com/domainry/domainry-todo v0.1.18
 	github.com/domainry/domainry-tools v0.1.17
-	github.com/domainry/domainry-tools-sdk v0.1.17
+	github.com/domainry/domainry-tools-sdk v0.1.18
 )
 
 require (

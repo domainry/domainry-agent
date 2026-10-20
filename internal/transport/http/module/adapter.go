@@ -14,6 +14,7 @@ import (
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
 	"github.com/domainry/domainry-foundation/modulehttp"
+	"github.com/domainry/domainry-foundation/telemetry"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
 
@@ -371,10 +372,12 @@ func writeError(w http.ResponseWriter, err error) {
 			status = http.StatusServiceUnavailable
 		}
 	}
+	telemetry.RecordHTTPStatusError(w, status, code)
 	writeJSON(w, status, map[string]string{"code": code})
 }
 
 func writeCode(w http.ResponseWriter, status int, code string) {
+	telemetry.RecordHTTPStatusError(w, status, code)
 	writeJSON(w, status, map[string]string{"code": code})
 }
 
