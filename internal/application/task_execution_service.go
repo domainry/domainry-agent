@@ -19,6 +19,7 @@ import (
 	"github.com/domainry/domainry-agent/internal/definition"
 	"github.com/domainry/domainry-agent/internal/execution"
 	"github.com/domainry/domainry-foundation/apperror"
+	"github.com/domainry/domainry-foundation/logging"
 	workerplatform "github.com/domainry/domainry-foundation/worker"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
@@ -373,6 +374,7 @@ func (s *TaskExecutionService) executeClaim(parent context.Context, claim agentp
 	default:
 	}
 	if executeErr != nil {
+		logging.RecordFailure(parent, "agent_task_provider_failed", executeErr, logging.Failure{Stage: "task_provider", Dependency: "task_runner"})
 		if len(run.Attempts) > 0 {
 			run.Attempts[len(run.Attempts)-1].ExternalRunID = externalRunID
 		}

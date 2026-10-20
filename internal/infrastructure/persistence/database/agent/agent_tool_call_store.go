@@ -17,6 +17,17 @@ import (
 var _ agentpersistence.AgentToolCallLedger = (*AgentTaskRunStore)(nil)
 
 func (s *AgentTaskRunStore) BeginAgentToolCall(ctx context.Context, start agentpersistence.AgentToolCallStart) (string, int, error) {
+	var ref string
+	var count int
+	err := retryAgentTaskStoreTransient(ctx, s.store.IsTransientError, func() error {
+		var attemptErr error
+		ref, count, attemptErr = s.beginAgentToolCallOnce(ctx, start)
+		return attemptErr
+	})
+	return ref, count, err
+}
+
+func (s *AgentTaskRunStore) beginAgentToolCallOnce(ctx context.Context, start agentpersistence.AgentToolCallStart) (string, int, error) {
 	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return "", 0, err
@@ -88,6 +99,12 @@ func (s *AgentTaskRunStore) BeginAgentToolCall(ctx context.Context, start agentp
 }
 
 func (s *AgentTaskRunStore) FinishAgentToolCall(ctx context.Context, finish agentpersistence.AgentToolCallFinish) error {
+	return retryAgentTaskStoreTransient(ctx, s.store.IsTransientError, func() error {
+		return s.finishAgentToolCallOnce(ctx, finish)
+	})
+}
+
+func (s *AgentTaskRunStore) finishAgentToolCallOnce(ctx context.Context, finish agentpersistence.AgentToolCallFinish) error {
 	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return err
@@ -154,6 +171,25 @@ func (s *AgentTaskRunStore) FinishAgentToolCall(ctx context.Context, finish agen
 		return agentError("conflict", "agent.task.tool_fence_rejected")
 	}
 	return tx.Commit()
+}
+
+func retryAgentTaskStoreTransient(ctx context.Context, isTransient func(error) bool, operation func() error) error {
+	var lastErr error
+	for attempt := 0; attempt < 16; attempt++ {
+		if err := operation(); err == nil {
+			return nil
+		} else if isTransient == nil || !isTransient(err) {
+			return err
+		} else {
+			lastErr = err
+		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(time.Duration(attempt+1) * time.Millisecond):
+		}
+	}
+	return fmt.Errorf("agent task store transient retry exhausted: %w", lastErr)
 }
 
 // A per-run execution budget does not replenish by retrying the same call.

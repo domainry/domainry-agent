@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -11,9 +12,10 @@ import (
 )
 
 type taskStateRepositoryStub struct {
-	current agentmodel.AgentTaskRun
-	claim   agentpersistence.AgentTaskClaim
-	saved   agentmodel.AgentTaskRun
+	current                     agentmodel.AgentTaskRun
+	claim                       agentpersistence.AgentTaskClaim
+	saved                       agentmodel.AgentTaskRun
+	terminalConflictAfterCommit bool
 }
 
 func (s *taskStateRepositoryStub) Create(_ context.Context, run agentmodel.AgentTaskRun) (agentmodel.AgentTaskRun, bool, error) {
@@ -41,6 +43,10 @@ func (s *taskStateRepositoryStub) SaveWaitingApproval(_ context.Context, run age
 	return nil
 }
 func (s *taskStateRepositoryStub) SaveTerminalOverride(_ context.Context, run agentmodel.AgentTaskRun, _ int64) error {
+	if s.terminalConflictAfterCommit {
+		s.current = run
+		return errors.New("concurrent terminal revision")
+	}
 	s.current, s.saved = run, run
 	return nil
 }
@@ -106,6 +112,19 @@ func TestTaskStateServiceRejectsOperationsForMissingRuns(t *testing.T) {
 	}
 	if _, err := service.OverrideOutput(t.Context(), "workspace-1", "missing", map[string]any{"status": "resolved"}, actor, "operator evidence", audit); executionErrorCode(err) != "agent.task.not_found" {
 		t.Fatalf("missing override error=%v", err)
+	}
+}
+
+func TestTaskStateServiceAcceptsConcurrentWorkflowDeliveryCommit(t *testing.T) {
+	run := agentmodel.AgentTaskRun{
+		ID: "run-1", WorkspaceID: "workspace-1", Status: agentmodel.AgentTaskRunSucceeded, Revision: 4,
+		Reconciliation: agentmodel.AgentTaskReconciliation{Required: true, State: "workflow_callback_pending"},
+	}
+	repository := &taskStateRepositoryStub{current: run, terminalConflictAfterCommit: true}
+	service := NewTaskStateServiceWithClock(repository, time.Now)
+	delivered, err := service.MarkWorkflowCompletionDelivered(t.Context(), run.WorkspaceID, run.ID)
+	if err != nil || delivered.Reconciliation.Required || delivered.Reconciliation.State != "workflow_callback_delivered" {
+		t.Fatalf("delivered=%#v err=%v", delivered, err)
 	}
 }
 

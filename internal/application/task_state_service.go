@@ -275,6 +275,10 @@ func (s *TaskStateService) MarkWorkflowCompletionDelivered(ctx context.Context, 
 	run.Reconciliation.LastCheckedAt = &now
 	run.UpdatedAt, run.Revision = now, run.Revision+1
 	if err := s.repository.SaveTerminalOverride(ctx, run, expectedRevision); err != nil {
+		latest, found, getErr := s.Get(ctx, workspaceID, runID)
+		if getErr == nil && found && latest.Status.Terminal() && !latest.Reconciliation.Required && latest.Reconciliation.State == "workflow_callback_delivered" {
+			return latest, nil
+		}
 		return agentmodel.AgentTaskRun{}, err
 	}
 	return run, nil

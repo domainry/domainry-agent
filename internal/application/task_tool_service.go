@@ -69,6 +69,7 @@ func (s *TaskToolService) Invoke(ctx context.Context, request TaskToolInvocation
 		Authorization: authorization,
 	})
 	if err != nil {
+		logging.RecordFailure(ctx, "agent_tool_begin_failed", err, logging.Failure{Stage: "tool_call_begin", Dependency: "tool_ledger"})
 		return TaskToolResult{}, err
 	}
 	hostResult, err := s.host.InvokeTaskTool(ctx, modulehost.TaskToolRequest{
@@ -81,12 +82,14 @@ func (s *TaskToolService) Invoke(ctx context.Context, request TaskToolInvocation
 	if err != nil {
 		finishErr := s.finishToolCall(ctx, run, result, callRef, err)
 		if finishErr != nil {
+			logging.RecordFailure(ctx, "agent_tool_finish_failed", finishErr, logging.Failure{Stage: "tool_call_finish", Dependency: "tool_ledger"})
 			return TaskToolResult{}, finishErr
 		}
 		return result, err
 	}
 	if result.Status != "proposal_required" {
 		if err := s.finishToolCall(ctx, run, result, callRef, nil); err != nil {
+			logging.RecordFailure(ctx, "agent_tool_finish_failed", err, logging.Failure{Stage: "tool_call_finish", Dependency: "tool_ledger"})
 			return TaskToolResult{}, err
 		}
 		return result, nil
