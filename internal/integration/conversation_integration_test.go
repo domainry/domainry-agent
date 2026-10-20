@@ -19,9 +19,8 @@ import (
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
+	agentserver "github.com/domainry/domainry-agent/internal/transport/http/saas"
 	agentmodule "github.com/domainry/domainry-agent/module"
-	agentremote "github.com/domainry/domainry-agent/remote"
-	agentserver "github.com/domainry/domainry-agent/saas"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
@@ -370,7 +369,7 @@ func TestConversationModuleSaaSAndBrowserSurface(t *testing.T) {
 				}
 				httpServer := httptest.NewServer(server.Handler())
 				defer httpServer.Close()
-				binding, err = agentremote.NewFactory(agentremote.Options{BaseURL: httpServer.URL, APIKey: "secret", Client: httpServer.Client()}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, saasRuntimeHost(a.RuntimeID))
+				binding, err = agentmodule.NewSaaSFactory(agentmodule.SaaSOptions{BaseURL: httpServer.URL, APIKey: "secret", Client: httpServer.Client()}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, saasRuntimeHost(a.RuntimeID))
 				forged := httptest.NewRequest("POST", "/agent/v1/conversations/list", strings.NewReader(`{"authority":{"known":true,"runtime_id":"another","workspace_id":"workspace","user_id":"user"}}`))
 				forged.Header.Set("Authorization", "Bearer secret")
 				response := httptest.NewRecorder()

@@ -32,7 +32,7 @@ docs/                 设计与验证资料
 ## 使用方式
 
 - 进程内集成使用 `module.NewFactory`。
-- 远程集成使用 `remote.NewFactory`。
+- SaaS 远程集成使用 `module.NewSaaSFactory`。
 - 独立服务使用 `saas.New`，命令入口为 `go run ./cmd/domainry-agent`。
 
 依赖统一使用已发布的 Go module 版本；仓库不依赖 `go.work` 或本地目录替换。

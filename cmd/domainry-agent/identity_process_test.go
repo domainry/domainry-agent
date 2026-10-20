@@ -19,8 +19,8 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
-	agentremote "github.com/domainry/domainry-agent/remote"
-	agentserver "github.com/domainry/domainry-agent/saas"
+	agentserver "github.com/domainry/domainry-agent/internal/transport/http/saas"
+	agentmodule "github.com/domainry/domainry-agent/module"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	identityremote "github.com/domainry/domainry-identity-sdk/remote"
 )
@@ -196,7 +196,7 @@ func TestSaaSConversationAgainstRealIdentityProcess(t *testing.T) {
 	current.Store(server)
 	agentHTTP := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { current.Load().Handler().ServeHTTP(w, r) }))
 	defer agentHTTP.Close()
-	remote, err := agentremote.NewFactory(agentremote.Options{BaseURL: agentHTTP.URL, APIKey: "agent-service-key", Client: agentHTTP.Client()}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime"}, executableRuntime("runtime"))
+	remote, err := agentmodule.NewSaaSFactory(agentmodule.SaaSOptions{BaseURL: agentHTTP.URL, APIKey: "agent-service-key", Client: agentHTTP.Client()}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime"}, executableRuntime("runtime"))
 	if err != nil {
 		t.Fatal(err)
 	}

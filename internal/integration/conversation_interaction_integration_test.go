@@ -14,8 +14,8 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent/internal/application"
-	agentremote "github.com/domainry/domainry-agent/remote"
-	agentserver "github.com/domainry/domainry-agent/saas"
+	agentserver "github.com/domainry/domainry-agent/internal/transport/http/saas"
+	agentmodule "github.com/domainry/domainry-agent/module"
 )
 
 func waitConversationState(t *testing.T, s agentsdk.ConversationService, id, runID, status string) agentsdk.ConversationRun {
@@ -338,7 +338,7 @@ func TestConversationInteractionRemoteRoundTrip(t *testing.T) {
 	}
 	upstream := httptest.NewServer(server.Handler())
 	defer upstream.Close()
-	binding, err := agentremote.NewFactory(agentremote.Options{BaseURL: upstream.URL, APIKey: "interaction-test-secret", Client: upstream.Client()}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, saasRuntimeHost(a.RuntimeID))
+	binding, err := agentmodule.NewSaaSFactory(agentmodule.SaaSOptions{BaseURL: upstream.URL, APIKey: "interaction-test-secret", Client: upstream.Client()}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, saasRuntimeHost(a.RuntimeID))
 	if err != nil {
 		t.Fatal(err)
 	}

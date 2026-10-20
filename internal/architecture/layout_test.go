@@ -18,7 +18,7 @@ func TestRootDirectoryContainsOnlyModuleEntrypoints(t *testing.T) {
 	}
 	allowed := map[string]bool{
 		"cmd": true, "docs": true, "internal": true,
-		"module": true, "remote": true, "saas": true,
+		"module": true,
 	}
 	for _, entry := range entries {
 		if !entry.IsDir() || strings.HasPrefix(entry.Name(), ".") {

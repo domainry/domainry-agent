@@ -1,4 +1,5 @@
-package module
+// Package moduleassembly owns the embedded Agent composition.
+package moduleassembly
 
 import (
 	"context"

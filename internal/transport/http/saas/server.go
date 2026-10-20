@@ -1,3 +1,4 @@
+// Package saas exposes the HTTP server for a standalone Agent deployment.
 package saas
 
 import (

@@ -16,9 +16,8 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
+	agentserver "github.com/domainry/domainry-agent/internal/transport/http/saas"
 	agentmodule "github.com/domainry/domainry-agent/module"
-	agentremote "github.com/domainry/domainry-agent/remote"
-	agentserver "github.com/domainry/domainry-agent/saas"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
@@ -63,7 +62,7 @@ func TestConversationModelToPersistedBrowserStreamAndDisconnectReplay(t *testing
 				}
 				saas := httptest.NewServer(server.Handler())
 				defer saas.Close()
-				binding, err = agentremote.NewFactory(agentremote.Options{BaseURL: saas.URL, APIKey: "service-key", Client: saas.Client()}).OpenSaaS(ctx, agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, saasRuntimeHost(a.RuntimeID))
+				binding, err = agentmodule.NewSaaSFactory(agentmodule.SaaSOptions{BaseURL: saas.URL, APIKey: "service-key", Client: saas.Client()}).OpenSaaS(ctx, agentsdk.ApplicationRef{RuntimeID: a.RuntimeID}, saasRuntimeHost(a.RuntimeID))
 			}
 			if err != nil {
 				t.Fatal(err)

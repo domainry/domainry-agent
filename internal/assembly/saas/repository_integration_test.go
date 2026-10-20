@@ -1,4 +1,4 @@
-package remote
+package saas
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	agentstate "github.com/domainry/domainry-agent-sdk/state"
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
-	server "github.com/domainry/domainry-agent/saas"
+	server "github.com/domainry/domainry-agent/internal/transport/http/saas"
 	_ "modernc.org/sqlite"
 )
 

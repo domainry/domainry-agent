@@ -14,7 +14,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
-	agentremote "github.com/domainry/domainry-agent/remote"
+	agentmodule "github.com/domainry/domainry-agent/module"
 )
 
 type executableRuntime string
@@ -96,7 +96,7 @@ func TestSaaSConversationExecutableRevalidatesCurrentIdentity(t *testing.T) {
 			defer closeService()
 			httpServer := httptest.NewServer(server.Handler())
 			defer httpServer.Close()
-			binding, err := agentremote.NewFactory(agentremote.Options{BaseURL: httpServer.URL, APIKey: "agent-service-key", Client: httpServer.Client()}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime"}, executableRuntime("runtime"))
+			binding, err := agentmodule.NewSaaSFactory(agentmodule.SaaSOptions{BaseURL: httpServer.URL, APIKey: "agent-service-key", Client: httpServer.Client()}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime"}, executableRuntime("runtime"))
 			if err != nil {
 				t.Fatal(err)
 			}

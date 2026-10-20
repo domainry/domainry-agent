@@ -1,4 +1,4 @@
-package remote
+package saas
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentcontracttest "github.com/domainry/domainry-agent-sdk/contracttest"
-	server "github.com/domainry/domainry-agent/saas"
+	server "github.com/domainry/domainry-agent/internal/transport/http/saas"
 	"github.com/domainry/domainry-foundation/requestcontext"
 	"github.com/domainry/domainry-foundation/telemetry"
 	"go.opentelemetry.io/otel"

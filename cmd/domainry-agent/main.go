@@ -20,7 +20,7 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
-	server "github.com/domainry/domainry-agent/saas"
+	server "github.com/domainry/domainry-agent/internal/transport/http/saas"
 	"github.com/domainry/domainry-foundation/logging"
 	"github.com/domainry/domainry-foundation/processhost"
 	identityremote "github.com/domainry/domainry-identity-sdk/remote"

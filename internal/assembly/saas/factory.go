@@ -1,4 +1,4 @@
-package remote
+package saas
 
 import (
 	"bytes"
@@ -195,7 +195,7 @@ func newClient(options Options) *client {
 	if httpClient == nil {
 		httpClient = &http.Client{Timeout: timeout}
 	}
-	return &client{baseURL: strings.TrimRight(strings.TrimSpace(options.BaseURL), "/"), apiKey: strings.TrimSpace(options.APIKey), http: telemetry.InstrumentHTTPClient(httpClient, "github.com/domainry/domainry-agent/remote")}
+	return &client{baseURL: strings.TrimRight(strings.TrimSpace(options.BaseURL), "/"), apiKey: strings.TrimSpace(options.APIKey), http: telemetry.InstrumentHTTPClient(httpClient, "github.com/domainry/domainry-agent/internal/assembly/saas")}
 }
 func (c *client) descriptor(ctx context.Context) (agentsdk.Descriptor, error) {
 	var value agentsdk.Descriptor

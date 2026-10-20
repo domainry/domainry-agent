@@ -26,9 +26,8 @@ import (
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
 	agentprovider "github.com/domainry/domainry-agent/internal/infrastructure/provider"
+	agentserver "github.com/domainry/domainry-agent/internal/transport/http/saas"
 	agentmodule "github.com/domainry/domainry-agent/module"
-	agentremote "github.com/domainry/domainry-agent/remote"
-	agentserver "github.com/domainry/domainry-agent/saas"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
@@ -253,7 +252,7 @@ func (h *bindingHarness) open(t *testing.T) agentsdk.Binding {
 	if h.mode == agentsdk.DeploymentModeModule {
 		binding, err = newAgentModuleFactory(agentmodule.Options{BaseURL: h.external.url(), APIKey: providerAPIKey, AgentID: 41, Timeout: 10 * time.Second, Client: h.external.client()}).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime-integration"}, h.moduleHost)
 	} else {
-		binding, err = agentremote.NewFactory(agentremote.Options{BaseURL: h.remoteURL, APIKey: "saas-api-secret", Timeout: 10 * time.Second, Client: h.remoteHTTP}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime-integration"}, saasRuntimeHost("runtime-integration"))
+		binding, err = agentmodule.NewSaaSFactory(agentmodule.SaaSOptions{BaseURL: h.remoteURL, APIKey: "saas-api-secret", Timeout: 10 * time.Second, Client: h.remoteHTTP}).OpenSaaS(t.Context(), agentsdk.ApplicationRef{RuntimeID: "runtime-integration"}, saasRuntimeHost("runtime-integration"))
 	}
 	if err != nil {
 		t.Fatal(err)

@@ -1,4 +1,4 @@
-package remote
+package saas
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
-	server "github.com/domainry/domainry-agent/saas"
+	server "github.com/domainry/domainry-agent/internal/transport/http/saas"
 )
 
 type participantGrantService struct {
