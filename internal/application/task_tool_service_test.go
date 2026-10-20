@@ -2,6 +2,8 @@ package application
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -27,8 +29,9 @@ func (s *taskToolStateStub) MarkWorkflowCompletionDelivered(context.Context, str
 }
 
 type taskToolLedgerStub struct {
-	start  agentpersistence.AgentToolCallStart
-	finish agentpersistence.AgentToolCallFinish
+	start            agentpersistence.AgentToolCallStart
+	finish           agentpersistence.AgentToolCallFinish
+	finishContextErr error
 }
 
 func (s *taskToolLedgerStub) BeginAgentToolCall(_ context.Context, start agentpersistence.AgentToolCallStart) (string, int, error) {
@@ -36,8 +39,9 @@ func (s *taskToolLedgerStub) BeginAgentToolCall(_ context.Context, start agentpe
 	return "agent_tool_task-1_1", 1, nil
 }
 
-func (s *taskToolLedgerStub) FinishAgentToolCall(_ context.Context, finish agentpersistence.AgentToolCallFinish) error {
+func (s *taskToolLedgerStub) FinishAgentToolCall(ctx context.Context, finish agentpersistence.AgentToolCallFinish) error {
 	s.finish = finish
+	s.finishContextErr = ctx.Err()
 	return nil
 }
 
@@ -49,6 +53,7 @@ type taskToolHostStub struct {
 	completionErr               error
 	authorization               *modulehost.TaskAuthorization
 	authorizationErr            error
+	invoke                      func(context.Context, modulehost.TaskToolRequest) (modulehost.TaskToolResult, error)
 	authorizationCalls, invokes int
 }
 
@@ -65,9 +70,12 @@ func (h *taskToolHostStub) AuthorizeTask(_ context.Context, in modulehost.TaskAu
 func (taskToolHostStub) IssueTaskCredential(context.Context, modulehost.TaskCredentialRequest) (string, error) {
 	return "", nil
 }
-func (s *taskToolHostStub) InvokeTaskTool(_ context.Context, request modulehost.TaskToolRequest) (modulehost.TaskToolResult, error) {
+func (s *taskToolHostStub) InvokeTaskTool(ctx context.Context, request modulehost.TaskToolRequest) (modulehost.TaskToolResult, error) {
 	s.request = request
 	s.invokes++
+	if s.invoke != nil {
+		return s.invoke(ctx, request)
+	}
 	return s.result, s.err
 }
 func (s *taskToolHostStub) CompleteWorkflowTask(_ context.Context, completion modulehost.WorkflowTaskCompletion) error {
@@ -105,6 +113,37 @@ func TestTaskToolServiceRequiresAgentOwnedLedger(t *testing.T) {
 	service := NewTaskToolService(&taskToolStateStub{}, nil, &taskToolHostStub{})
 	if _, err := service.Invoke(t.Context(), TaskToolInvocation{}); errorCode(err, "") != "agent.tool.gateway_unavailable" {
 		t.Fatalf("error=%v", err)
+	}
+}
+
+func TestTaskToolServicePersistsFailedReceiptAfterInvocationContextCancellation(t *testing.T) {
+	state := &taskToolStateStub{run: agentmodel.AgentTaskRun{
+		ID: "task-1", WorkspaceID: "workspace-1", TaskKey: "review", TaskVersion: "1", Status: agentmodel.AgentTaskRunRunning,
+		Lease: agentmodel.AgentTaskLease{Owner: "worker-1", FencingToken: 3},
+	}}
+	ledger := &taskToolLedgerStub{}
+	ctx, cancel := context.WithCancel(t.Context())
+	host := &taskToolHostStub{invoke: func(context.Context, modulehost.TaskToolRequest) (modulehost.TaskToolResult, error) {
+		cancel()
+		return modulehost.TaskToolResult{}, context.Canceled
+	}}
+	_, err := NewTaskToolService(state, ledger, host).Invoke(ctx, TaskToolInvocation{
+		WorkspaceID: "workspace-1", TaskRunID: "task-1", Tool: agentsdk.AgentToolQueryRecords,
+	})
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("error=%v", err)
+	}
+	if ledger.finish.CallRef == "" || ledger.finish.Status != "failed" || ledger.finishContextErr != nil {
+		t.Fatalf("terminal receipt=%#v context_error=%v", ledger.finish, ledger.finishContextErr)
+	}
+}
+
+func TestProviderRetryableRecognizesWrappedContextFailures(t *testing.T) {
+	if !providerRetryable(agentsdk.TaskResult{}, fmt.Errorf("tool failed: %w", context.DeadlineExceeded)) {
+		t.Fatal("wrapped task deadline was treated as terminal")
+	}
+	if providerRetryable(agentsdk.TaskResult{}, errors.New("invalid task input")) {
+		t.Fatal("non-transient task failure was treated as retryable")
 	}
 }
 

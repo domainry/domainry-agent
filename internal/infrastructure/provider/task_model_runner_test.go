@@ -11,6 +11,11 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 )
 
+type retryableTaskToolError struct{ kind string }
+
+func (e retryableTaskToolError) Error() string                { return e.kind }
+func (e retryableTaskToolError) ApplicationErrorKind() string { return e.kind }
+
 type recordingTaskModel struct {
 	request agentsdk.ConversationModelRequest
 }
@@ -92,6 +97,37 @@ func TestModelTaskRunnerFailsClosedWhenReadGatewayOrObjectScopeIsMissing(t *test
 	})
 	if result, err := runner.Start(t.Context(), request); err == nil || result.ErrorCode != "agent.task.local_tool_object_denied" || called {
 		t.Fatalf("out-of-scope task read result=%+v called=%t err=%v", result, called, err)
+	}
+}
+
+func TestModelTaskRunnerClassifiesOnlyTransientLocalToolFailuresAsRetryable(t *testing.T) {
+	request := agentsdk.TaskRequest{
+		TaskRunID: "task-1", WorkspaceID: "workspace-1", IdempotencyKey: "task-idempotency", ExecutionCredential: "current-task-credential",
+		Task:         agentsdk.AgentTaskDefinition{Instruction: "Read a record.", OutputSchema: map[string]any{"type": "object"}, ExecutionLimits: agentsdk.AgentExecutionLimits{MaxSteps: 2, MaxToolCalls: 1, MaxInputBytes: 1024, MaxOutputBytes: 4096}},
+		AllowedTools: []string{agentsdk.AgentToolGetRecord}, AllowedObjects: []string{"meeting"},
+	}
+	for _, test := range []struct {
+		name      string
+		err       error
+		retryable bool
+	}{
+		{name: "deadline", err: context.DeadlineExceeded, retryable: true},
+		{name: "wrapped deadline", err: fmt.Errorf("read failed: %w", context.DeadlineExceeded), retryable: true},
+		{name: "unavailable", err: retryableTaskToolError{kind: "unavailable"}, retryable: true},
+		{name: "rate limited", err: retryableTaskToolError{kind: "rate_limited"}, retryable: true},
+		{name: "forbidden", err: retryableTaskToolError{kind: "forbidden"}, retryable: false},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			model := &taskReadModel{calls: []agentsdk.ConversationToolCall{{ID: "call", Name: agentsdk.AgentToolGetRecord, Arguments: `{"object_key":"meeting","record_id":"meeting-1"}`}}}
+			runner := NewModelTaskRunner(model)
+			runner.BindToolInvoker(func(context.Context, agentsdk.TaskRequest, agentsdk.ConversationToolCall, map[string]any) (any, error) {
+				return nil, test.err
+			})
+			result, err := runner.Start(t.Context(), request)
+			if err == nil || result.ErrorCode != "agent.task.local_tool_failed" || result.Retryable != test.retryable {
+				t.Fatalf("result=%+v err=%v", result, err)
+			}
+		})
 	}
 }
 

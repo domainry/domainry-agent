@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"slices"
@@ -97,7 +98,7 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 				}
 				value, invokeErr := invoke(ctx, request, call, input)
 				if invokeErr != nil {
-					return taskModelFailure("tool", "agent.task.local_tool_failed", false), invokeErr
+					return taskModelFailure("tool", "agent.task.local_tool_failed", taskLocalToolRetryable(invokeErr)), invokeErr
 				}
 				encoded, encodeErr := json.Marshal(value)
 				if encodeErr != nil || len(encoded) > maxTaskToolOutputBytes {
@@ -111,6 +112,24 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 		}
 	}
 	return taskModelFailure("provider_contract", "agent.task.local_tool_budget_exceeded", false), fmt.Errorf("Agent task read tool step budget exceeded")
+}
+
+func taskLocalToolRetryable(err error) bool {
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		return true
+	}
+	var agentError *agentsdk.Error
+	if errors.As(err, &agentError) && agentError.Retryable {
+		return true
+	}
+	var classified interface{ ApplicationErrorKind() string }
+	if errors.As(err, &classified) {
+		switch strings.TrimSpace(classified.ApplicationErrorKind()) {
+		case "unavailable", "rate_limited":
+			return true
+		}
+	}
+	return false
 }
 
 // Each stream step is a separate provider request. Preserve total usage for

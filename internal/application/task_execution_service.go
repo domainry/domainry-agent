@@ -838,7 +838,7 @@ func containsString(values []string, target string) bool {
 }
 
 func providerRetryable(result agentsdk.TaskResult, err error) bool {
-	return result.Retryable || err == context.Canceled || err == context.DeadlineExceeded
+	return result.Retryable || errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded)
 }
 
 func errorCode(err error, fallback string) string {

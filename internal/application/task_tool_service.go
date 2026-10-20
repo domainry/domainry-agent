@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"strings"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
@@ -120,7 +121,13 @@ func (s *TaskToolService) finishToolCall(ctx context.Context, run agentmodel.Age
 	if cause != nil {
 		status, code = "failed", errorCode(cause, "agent.tool.failed")
 	}
-	return s.ledger.FinishAgentToolCall(ctx, agentpersistence.AgentToolCallFinish{
+	// Once BeginAgentToolCall has durably reserved budget, its terminal receipt
+	// must survive request cancellation and provider/tool deadlines. Otherwise a
+	// timed-out read remains permanently "running" and hides the actual failure
+	// from retry and workflow diagnostics.
+	receiptCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
+	defer cancel()
+	return s.ledger.FinishAgentToolCall(receiptCtx, agentpersistence.AgentToolCallFinish{
 		WorkspaceID: run.WorkspaceID, TaskRunID: run.ID, CallRef: callRef, Status: status, ErrorCode: code,
 		Owner: run.Lease.Owner, FencingToken: run.Lease.FencingToken,
 		Evidence: map[string]any{"output_hash": stableHash(map[string]any{"output": result.Output, "proposal": result.Proposal})}, Authorization: result.Authorization,
