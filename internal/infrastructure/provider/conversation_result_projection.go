@@ -36,7 +36,11 @@ func projectModelToolContent(content string, definition agentsdk.ConversationToo
 	for _, key := range schema.Hidden {
 		delete(result, key)
 	}
-	envelope["content"], _ = json.Marshal(result)
+	projected, err := json.Marshal(result)
+	if err != nil {
+		return "", fmt.Errorf("encode projected tool result content: %w", err)
+	}
+	envelope["content"] = projected
 	encoded, err := json.Marshal(envelope)
 	return string(encoded), err
 }

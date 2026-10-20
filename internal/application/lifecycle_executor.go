@@ -68,7 +68,11 @@ func (e LifecycleExecutor) ProcessBatch(ctx context.Context, job lifecyclemodel.
 		}
 		raw := candidate.Payload
 		if len(raw) == 0 {
-			raw, _ = json.Marshal(map[string]any{"workspace_id": job.WorkspaceID, "kind": candidate.State.Kind, "state_key": candidate.State.Key, "user_id": candidate.State.UserID, "role_key": candidate.State.RoleKey, "payload_json": json.RawMessage(candidate.State.Payload), "updated_at": candidate.State.UpdatedAt})
+			raw, err = json.Marshal(map[string]any{"workspace_id": job.WorkspaceID, "kind": candidate.State.Kind, "state_key": candidate.State.Key, "user_id": candidate.State.UserID, "role_key": candidate.State.RoleKey, "payload_json": json.RawMessage(candidate.State.Payload), "updated_at": candidate.State.UpdatedAt})
+			if err != nil {
+				result.Failed++
+				return result, err
+			}
 		}
 		archived, archiveErr := e.archives.ArchivePayload(ctx, "agent", job, policy, resourceType, resourceID, raw)
 		if archiveErr != nil {
