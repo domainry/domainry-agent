@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-agent/server"
+	server "github.com/domainry/domainry-agent/saas"
 )
 
 type remotePublicationService struct {

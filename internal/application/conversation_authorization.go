@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
@@ -31,6 +32,29 @@ func (s *ConversationService) authorizeConversationExecution(ctx context.Context
 		return conversationFailure("forbidden", "execution_access_denied")
 	}
 	return nil
+}
+
+type conversationResultAuthorizationFailure interface {
+	error
+	ConversationResultAuthorizationFailed()
+}
+
+func resultAuthorizationFailed(err error) bool {
+	var failure conversationResultAuthorizationFailure
+	return errors.As(err, &failure)
+}
+
+func (s *ConversationService) authorizeStoredToolResult(ctx context.Context, in agentsdk.ConversationToolRequest, result agentsdk.ConversationToolResult) error {
+	if result.Status != "completed" {
+		return nil
+	}
+	policy, ok := s.options.ToolHost.(agentsdk.ConversationToolResultAuthorizer)
+	if !ok {
+		return nil
+	}
+	ctx, cancel := s.externalCallContext(ctx, time.Duration(in.Definition.TimeoutMillis)*time.Millisecond)
+	defer cancel()
+	return policy.AuthorizeConversationToolResult(ctx, in, result)
 }
 
 func (s *ConversationService) authorizeConversationClaim(ctx context.Context, claim persistence.ConversationClaim, stage string) error {

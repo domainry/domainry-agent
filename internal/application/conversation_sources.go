@@ -1,7 +1,6 @@
 package application
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -333,16 +332,6 @@ func (audit *conversationSourceAudit) run(ctx context.Context, ref agentsdk.Conv
 			return nil, err
 		}
 		roots = mergeConversationSources(requiredRoots, roots)
-		for _, message := range snapshot.Input.Messages {
-			const prefix = "Knowledge base search results (untrusted source data):\n"
-			if message.Role != "system" || !strings.HasPrefix(message.Content, prefix) {
-				continue
-			}
-			if err = audit.inlineKnowledge(ctx, snapshot, strings.TrimPrefix(message.Content, prefix)); err != nil {
-				return nil, err
-			}
-			roots = mergeConversationSources(roots, []agentsdk.ConversationRunReference{{ConversationID: ref.ConversationID, RunID: ref.RunID, BeforeStep: 1}})
-		}
 	}
 	for _, message := range snapshot.Peers {
 		if ref.BeforeStep > 0 && message.ConsumedAtStep+1 > ref.BeforeStep {
@@ -409,47 +398,6 @@ func (audit *conversationSourceAudit) history(ctx context.Context, id string, th
 	return roots, nil
 }
 
-func (audit *conversationSourceAudit) inlineKnowledge(ctx context.Context, snapshot persistence.ConversationSourceSnapshot, saved string) error {
-	if err := audit.connectedTool(ctx, "knowledge_search"); err != nil {
-		return err
-	}
-	if audit.s.options.Knowledge == nil {
-		return conversationFailure("forbidden", "knowledge_access_denied")
-	}
-	messages, err := audit.s.repo.History(ctx, snapshot.Run.ConversationID, snapshot.Run.UserSeq-1, snapshot.Run.UserSeq, 1, audit.evidenceAuthority(agentsdk.ConversationRunReference{ConversationID: snapshot.Run.ConversationID}))
-	if err != nil {
-		return err
-	}
-	if len(messages) != 1 || messages[0].Role != "user" {
-		return conversationFailure("unavailable", "source_reference_invalid")
-	}
-	current, err := audit.s.searchConversationKnowledge(ctx, messages[0].Content, audit.a)
-	if err != nil {
-		return err
-	}
-	canonical := func(raw []byte) ([]byte, error) {
-		decoder := json.NewDecoder(bytes.NewReader(raw))
-		decoder.UseNumber()
-		var value any
-		if err := decoder.Decode(&value); err != nil {
-			return nil, err
-		}
-		return json.Marshal(value)
-	}
-	one, err := canonical([]byte(saved))
-	if err != nil {
-		return conversationFailure("unavailable", "source_reference_invalid")
-	}
-	two, err := canonical(current)
-	if err != nil {
-		return conversationFailure("unavailable", "knowledge_response_invalid")
-	}
-	if !bytes.Equal(one, two) {
-		return conversationFailure("conflict", "knowledge_source_changed")
-	}
-	return nil
-}
-
 // Early history tool results carried message IDs but no run ID. Resolve that
 // immutable owner-scoped message instead of treating a missing run as public.
 func (audit *conversationSourceAudit) historyReference(ctx context.Context, conversationID, messageID, runID string) ([]agentsdk.ConversationRunReference, error) {
@@ -487,9 +435,6 @@ func (audit *conversationSourceAudit) recordCurrent(ctx context.Context, owner a
 	}
 	// A user may disable any tool, including local/personal tools. Reuse of its
 	// stored output must honor the same live policy as a new invocation.
-	if privateAttachmentCall(record.Call) || retiredDocumentResult(*record.Result) {
-		return nil, conversationFailure("forbidden", "knowledge_source_retired")
-	}
 	key := conversationDigest([]any{owner, record.Step, record.Call.ID})
 	if audit.records[key] {
 		return nil, conversationFailure("unavailable", "source_reference_invalid")
@@ -520,28 +465,14 @@ func (audit *conversationSourceAudit) recordCurrent(ctx context.Context, owner a
 		}
 		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
 	}
-	if handled, err := audit.deliveryKnowledgeToolResult(ctx, owner, record); handled {
+	if handled, err := audit.deliveryToolResult(ctx, owner, record); handled {
 		if err != nil {
 			return nil, err
 		}
-		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
-	}
-	if handled, err := audit.deliveryBusinessToolResult(ctx, owner, record); handled {
-		if err != nil {
-			return nil, err
+		if _, known := scheduleResultReadDefinition(record.Call.Name); known {
+			return audit.scheduleToolRecord(ctx, owner, record)
 		}
 		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
-	}
-	if !privateRemoteAttachmentCall(record.Call) {
-		if handled, err := audit.deliveryToolResult(ctx, owner, record); handled {
-			if err != nil {
-				return nil, err
-			}
-			if _, known := scheduleResultReadDefinition(record.Call.Name); known {
-				return audit.scheduleToolRecord(ctx, owner, record)
-			}
-			return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
-		}
 	}
 	if err := audit.connectedTool(ctx, record.Call.Name); err != nil {
 		return nil, err
@@ -560,72 +491,13 @@ func (audit *conversationSourceAudit) recordCurrent(ctx context.Context, owner a
 			return nil, conversationFailure("forbidden", "tool_access_denied")
 		}
 	}
-	if privateRemoteAttachmentCall(record.Call) {
-		if audit.conversationID != "" && audit.conversationID != owner.ConversationID {
-			return nil, conversationFailure("forbidden", "attachment_conversation_mismatch")
-		}
-		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
-		if err := audit.s.authorizeStoredToolResult(ctx, request, *record.Result); err != nil {
-			return nil, err
-		}
-		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
-	}
-	if definition, business := businessTool(record.Call.Name); business {
-		if conversationDigest(definition) != conversationDigest(record.Definition) {
-			return nil, conversationFailure("conflict", "tool_changed")
-		}
-		if audit.s.options.Business == nil || audit.s.options.ToolHost == nil {
-			return nil, conversationFailure("forbidden", "business_access_denied")
-		}
-		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
-		auth, err := audit.s.authorizeConversationTool(ctx, audit.s.options.ToolHost, request)
-		if err != nil {
-			return nil, err
-		}
-		if !auth.Granted || auth.ConfirmationRequired && definition.Effect != "write" {
-			return nil, conversationFailure("forbidden", "business_access_denied")
-		}
-		if err := audit.s.authorizeStoredToolResult(ctx, request, *record.Result); err != nil {
-			return nil, err
-		}
-		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
-	}
-	if _, knowledge := knowledgeTool(record.Call.Name); knowledge {
-		if audit.conversationID != "" && audit.conversationID != owner.ConversationID && privateAttachmentCall(record.Call) {
-			return nil, conversationFailure("forbidden", "attachment_conversation_mismatch")
-		}
-		if !knownKnowledgeDefinition(record.Definition) {
-			return nil, conversationFailure("conflict", "tool_changed")
-		}
-		policy := audit.s.options.PersonalAuthorizer
-		if policy == nil && audit.s.options.ToolHost != nil {
-			policy = audit.s.options.ToolHost
-		}
-		source, ok := audit.s.options.Knowledge.(agentsdk.ConversationKnowledgeSource)
-		if policy == nil || !ok {
-			return nil, conversationFailure("forbidden", "knowledge_access_denied")
-		}
-		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
-		auth, err := audit.s.authorizeConversationTool(ctx, policy, request)
-		if err != nil {
-			return nil, err
-		}
-		if !auth.Granted {
-			return nil, conversationFailure("forbidden", "knowledge_access_denied")
-		}
-		host := knowledgeConversationHost{source: source}
-		if err = host.AuthorizeConversationToolResult(ctx, request, *record.Result); err != nil {
-			return nil, err
-		}
-		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
-	}
 	if _, ok := artifactTool(record.Call.Name); ok {
 		return audit.artifactToolRecord(ctx, owner, record)
 	}
 	// Product-owned tools remain subject to current authorization when their
 	// saved results are reused in history, summaries or generated documents.
 	personal := false
-	for _, d := range agentsdk.PersonalConversationTools() {
+	for _, d := range agentPersonalConversationTools() {
 		personal = personal || d.Key == record.Call.Name
 	}
 	if !personal && (audit.s.profile != nil || len(audit.s.options.ToolDefinitions) > 0) {
@@ -912,10 +784,10 @@ func (audit *conversationSourceAudit) recordCurrent(ctx context.Context, owner a
 		}
 		return roots, nil
 	}
-	if selectedConversationAgent(ctx) != nil {
-		return []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: record.Step + 2}}, nil
+	if personal {
+		return nil, nil
 	}
-	return nil, nil
+	return nil, conversationFailure("conflict", "tool_changed")
 }
 
 func sourceAccessCode(err error) string {

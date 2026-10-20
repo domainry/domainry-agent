@@ -114,11 +114,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 	if err != nil {
 		return nil, err
 	}
-	attachments, err := conversationAttachmentMigration(renderer)
-	if err != nil {
-		return nil, err
-	}
-	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, artifacts, attachments, tasks, capacity, collaboration, subjectsBinding, sourceReleases, contractPublications, workBudgets, forks, improvements, memories}, nil
+	return []modulehost.SchemaMigration{{Version: SchemaVersion, Name: "agent_foundation", Statements: statements}, conversation, execution, interactions, artifacts, tasks, capacity, collaboration, subjectsBinding, sourceReleases, contractPublications, workBudgets, forks, improvements, memories}, nil
 }
 
 func runtimeStateTable(renderer modulehost.Dialect) *ormschema.TableBuilder {

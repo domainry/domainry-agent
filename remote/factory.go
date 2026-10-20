@@ -18,6 +18,7 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent-sdk/saashost"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
+	"github.com/domainry/domainry-agent/internal/capability"
 	agentcomposition "github.com/domainry/domainry-agent/internal/composition"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
 	actioncontract "github.com/domainry/domainry-foundation/action"
@@ -139,7 +140,7 @@ func (b *binding) HTTPAdapters() []modulehttp.Adapter {
 	return append([]modulehttp.Adapter(nil), b.adapters...)
 }
 func (*binding) AuthorizationActions() ([]actioncontract.ActionDefinition, error) {
-	return agentsdk.AgentAuthorizationActions()
+	return capability.AuthorizationActions()
 }
 func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
 	if !b.descriptor.HasCapability(agentsdk.CapabilityTaskStart) && !b.descriptor.HasCapability(agentsdk.CapabilityInteractiveRun) {
@@ -311,7 +312,7 @@ func (c *client) call(ctx context.Context, method, path string, payload any, key
 	}
 	defer response.Body.Close()
 	responseLimit := maxResponseBytes
-	if (path == "/agent/v1/conversations/attachments_download" || path == "/agent/v1/conversations/documents_download") && response.StatusCode/100 == 2 {
+	if path == "/agent/v1/conversations/attachments_download" && response.StatusCode/100 == 2 {
 		responseLimit = 24 << 20
 	}
 	raw, err := io.ReadAll(io.LimitReader(response.Body, int64(responseLimit)+1))

@@ -2,7 +2,6 @@ package module
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -17,6 +16,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
+	"github.com/domainry/domainry-agent/internal/capability"
 	agentcomposition "github.com/domainry/domainry-agent/internal/composition"
 	agentinfra "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
@@ -29,29 +29,13 @@ import (
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
-	knowledgecontract "github.com/domainry/domainry-knowledge-sdk/contract"
-	knowledgemodulehost "github.com/domainry/domainry-knowledge-sdk/modulehost"
-	knowledgeprovider "github.com/domainry/domainry-knowledge-sdk/provider"
-	knowledgesaashost "github.com/domainry/domainry-knowledge-sdk/saashost"
 	lifecyclecontract "github.com/domainry/domainry-lifecycle-sdk/contract"
-	todocontract "github.com/domainry/domainry-todo-sdk/contract"
-	todomodulehost "github.com/domainry/domainry-todo-sdk/modulehost"
-	todosaashost "github.com/domainry/domainry-todo-sdk/saashost"
 )
 
 type ConversationOptions = agentapplication.ConversationOptions
 type ConversationModelConfig = provider.ConversationModelConfig
-type KnowledgeConfig = provider.KnowledgeConfig
-type KnowledgeResponseMapping = provider.KnowledgeResponseMapping
-type KnowledgeCitationMapping = provider.KnowledgeCitationMapping
 
 type Options struct {
-	AttachmentKnowledge                                    []KnowledgeConfig
-	AttachmentKnowledgeBindingsJSON                        string
-	KnowledgeDatasources                                   []KnowledgeDatasourceConfig
-	KnowledgeDatasourcesJSON                               string
-	KnowledgeLibraries                                     []KnowledgeLibraryConfig
-	KnowledgeLibraryBindingsJSON                           string
 	ConversationEnabled                                    bool
 	ConversationTimezone                                   string
 	ConversationBaseURL                                    string
@@ -81,12 +65,6 @@ type Options struct {
 	TaskModelDefaultReasoningEffort                        string
 	TaskModelProvider                                      agentsdk.ConversationModel
 	TaskAttachmentStorage                                  agentsdk.TaskAttachmentStorage
-	Knowledge                                              KnowledgeConfig
-	KnowledgeFactory                                       knowledgemodulehost.Factory
-	KnowledgeSaaSFactory                                   knowledgesaashost.Factory
-	KnowledgeProviderFactory                               knowledgeprovider.Factory
-	TodoFactory                                            todomodulehost.Factory
-	TodoSaaSFactory                                        todosaashost.Factory
 }
 
 func OptionsFromEnvironment() Options {
@@ -104,20 +82,15 @@ func OptionsFromEnvironment() Options {
 		taskAPIKey = os.Getenv("AGENT_PROVIDER_API_KEY")
 	}
 	conversation := ConversationOptions{
-		RunPlanningTimeout:        positiveEnvironmentDuration("AGENT_CONVERSATION_PLANNING_TIMEOUT"),
-		DocumentWorkTimeout:       positiveEnvironmentDuration("AGENT_KNOWLEDGE_DOCUMENT_WORK_TIMEOUT"),
-		DocumentUploadIdleTimeout: positiveEnvironmentDuration("AGENT_KNOWLEDGE_DOCUMENT_UPLOAD_IDLE_TIMEOUT"),
-		ContextBytes:              positiveEnvironmentInteger("AGENT_CONVERSATION_CONTEXT_BYTES"),
-		Workers:                   positiveEnvironmentInteger("AGENT_CONVERSATION_WORKERS"), MaxParallelTools: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_PARALLEL_TOOLS"),
+		RunPlanningTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_PLANNING_TIMEOUT"),
+		ContextBytes:       positiveEnvironmentInteger("AGENT_CONVERSATION_CONTEXT_BYTES"),
+		Workers:            positiveEnvironmentInteger("AGENT_CONVERSATION_WORKERS"), MaxParallelTools: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_PARALLEL_TOOLS"),
 		MaxQueuedPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_USER"), MaxQueuedPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_QUEUED_PER_WORKSPACE"),
 		MaxRunningPerUser: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_RUNNING_PER_USER"), MaxRunningPerWorkspace: positiveEnvironmentInteger("AGENT_CONVERSATION_MAX_RUNNING_PER_WORKSPACE"),
 		RunTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_RUN_TIMEOUT"), ExternalCallTimeout: positiveEnvironmentDuration("AGENT_CONVERSATION_EXTERNAL_CALL_TIMEOUT"),
 		MaxModelAttempts: positiveEnvironmentInteger("AGENT_CONVERSATION_MODEL_MAX_ATTEMPTS"), ModelRetryBaseDelay: positiveEnvironmentDuration("AGENT_CONVERSATION_MODEL_RETRY_BASE_DELAY"), ModelRetryMaxDelay: positiveEnvironmentDuration("AGENT_CONVERSATION_MODEL_RETRY_MAX_DELAY"),
 	}
 	return Options{
-		AttachmentKnowledgeBindingsJSON:         os.Getenv("AGENT_ATTACHMENT_KNOWLEDGE_BINDINGS"),
-		KnowledgeDatasourcesJSON:                os.Getenv("AGENT_KNOWLEDGE_DATASOURCES"),
-		KnowledgeLibraryBindingsJSON:            os.Getenv("AGENT_KNOWLEDGE_LIBRARY_BINDINGS"),
 		ConversationEnabled:                     strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_CONVERSATION_ENABLED")), "true"),
 		BaseURL:                                 os.Getenv("AGENT_HTTP_BASE_URL"),
 		APIKey:                                  os.Getenv("AGENT_HTTP_API_KEY"),
@@ -152,7 +125,6 @@ func OptionsFromEnvironment() Options {
 		TaskModelDisableProtocolContinuation:    strings.EqualFold(strings.TrimSpace(os.Getenv("AGENT_TASK_MODEL_PROTOCOL_CONTINUATION")), "false"),
 		TaskModelReasoningEfforts:               taskEfforts,
 		TaskModelDefaultReasoningEffort:         os.Getenv("AGENT_TASK_MODEL_REASONING_EFFORT"),
-		Knowledge:                               provider.KnowledgeConfigFromEnvironment(),
 	}
 }
 
@@ -202,22 +174,6 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	}
 	if host.Database() == nil || host.Dialect() == nil || host.Migrations() == nil {
 		return nil, fmt.Errorf("Agent Module persistence host is incomplete")
-	}
-	localKnowledge := f.options.KnowledgeFactory != nil
-	remoteKnowledge := f.options.KnowledgeSaaSFactory != nil
-	if localKnowledge == remoteKnowledge {
-		return nil, fmt.Errorf("Agent Module requires exactly one Knowledge module or SaaS factory")
-	}
-	localTodo := f.options.TodoFactory != nil
-	remoteTodo := f.options.TodoSaaSFactory != nil
-	if localTodo == remoteTodo {
-		return nil, fmt.Errorf("Agent Module requires exactly one Todo module or SaaS factory")
-	}
-	if localKnowledge && f.options.KnowledgeProviderFactory == nil {
-		return nil, fmt.Errorf("Agent Module local Knowledge requires a provider factory")
-	}
-	if remoteKnowledge && f.localKnowledgeProviderConfigured() {
-		return nil, fmt.Errorf("Agent Module SaaS Knowledge cannot use Agent-local Knowledge provider configuration")
 	}
 	if _, err := sharedoperation.Open(ctx, host.Database(), sharedoperation.AdaptDialect(host.Dialect()), host.Migrations()); err != nil {
 		return nil, err
@@ -329,54 +285,6 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		}
 		conversationRepository = agentstore.NewConversationStore(store)
 	}
-	var knowledgeRuntime knowledgecontract.Runtime
-	if localKnowledge {
-		knowledgeBinding, openErr := f.options.KnowledgeFactory.OpenModule(ctx, knowledgecontract.ApplicationRef{RuntimeID: app.RuntimeID}, agentstore.NewKnowledgeModuleHost(conversationRepository, host.Migrations()))
-		if openErr != nil {
-			return nil, fmt.Errorf("open Knowledge module: %w", openErr)
-		}
-		binding.knowledgeBinding = knowledgeBinding
-		if err := conversationRepository.BindKnowledge(knowledgeBinding); err != nil {
-			return nil, err
-		}
-		knowledgeRuntime = knowledgeBinding.Runtime()
-	} else {
-		knowledgeBinding, openErr := f.options.KnowledgeSaaSFactory.OpenSaaS(ctx, knowledgecontract.ApplicationRef{RuntimeID: app.RuntimeID})
-		if openErr != nil {
-			return nil, fmt.Errorf("open Knowledge SaaS: %w", openErr)
-		}
-		binding.knowledgeSaaSBinding = knowledgeBinding
-		if err := conversationRepository.BindRemoteKnowledge(knowledgeBinding.Runtime()); err != nil {
-			return nil, err
-		}
-		knowledgeRuntime = knowledgeBinding.Runtime()
-	}
-	var todoLifecycle lifecyclecontract.SubjectExecutionHandler
-	if localTodo {
-		todoBinding, openErr := f.options.TodoFactory.OpenModule(ctx, todocontract.ApplicationRef{RuntimeID: app.RuntimeID}, agentstore.NewTodoModuleHost(conversationRepository, host.Migrations()))
-		if openErr != nil {
-			return nil, fmt.Errorf("open Todo module: %w", openErr)
-		}
-		binding.todoBinding = todoBinding
-		if err := conversationRepository.BindTodo(todoBinding); err != nil {
-			return nil, err
-		}
-		todoLifecycle = todoBinding.SubjectLifecycle()
-	} else {
-		todoBinding, openErr := f.options.TodoSaaSFactory.OpenSaaS(ctx, todocontract.ApplicationRef{RuntimeID: app.RuntimeID})
-		if openErr != nil {
-			return nil, fmt.Errorf("open Todo SaaS: %w", openErr)
-		}
-		binding.todoSaaSBinding = todoBinding
-		if err := todoBinding.BindSourceAuthorizer(conversationRepository.AuthorizeRemoteTodoSource); err != nil {
-			return nil, fmt.Errorf("bind Todo SaaS source authorizer: %w", err)
-		}
-		if err := conversationRepository.BindRemoteTodo(todoBinding.Todos(), todoBinding.Mutations()); err != nil {
-			return nil, err
-		}
-		todoLifecycle = todoBinding.SubjectLifecycle()
-	}
-	conversationOptions.KnowledgeRuntime = knowledgeRuntime
 	if !deferConversations && conversationOptions.ToolHost == nil {
 		if authorizer, ok := host.(agentsdk.ConversationToolAuthorizer); ok {
 			if _, capable := conversationModel.(agentsdk.ConversationAgentModel); capable {
@@ -390,34 +298,8 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if !deferConversations && conversationOptions.ToolHost != nil && conversationOptions.ToolAvailability == nil {
 		conversationOptions.ToolAvailability, _ = host.(agentsdk.ConversationToolAvailability)
 	}
-	if f.options.Knowledge.Configured() {
-		if conversationOptions.Knowledge != nil {
-			return nil, fmt.Errorf("configure only one conversation knowledge source")
-		}
-		f.options.Knowledge.RuntimeID = app.RuntimeID
-		knowledge, err := f.options.KnowledgeProviderFactory.NewSource(f.options.Knowledge)
-		if err != nil {
-			return nil, err
-		}
-		conversationOptions.Knowledge = knowledge
-	}
-	if err := assembleLibraryKnowledge(&conversationOptions, f.options.KnowledgeLibraries, f.options.KnowledgeLibraryBindingsJSON, f.options.Knowledge, app.RuntimeID, f.options.KnowledgeProviderFactory); err != nil {
-		return nil, err
-	}
-	if err := assembleKnowledgeDatasources(&conversationOptions, f.options.KnowledgeDatasources, f.options.KnowledgeDatasourcesJSON, app.RuntimeID, f.options.KnowledgeProviderFactory); err != nil {
-		return nil, err
-	}
-	if err := assembleAttachmentKnowledge(&conversationOptions, f.options.AttachmentKnowledge, f.options.AttachmentKnowledgeBindingsJSON, app.RuntimeID, f.options.KnowledgeProviderFactory); err != nil {
-		return nil, err
-	}
-	for _, attachment := range conversationOptions.AttachmentKnowledge {
-		if attachment.Knowledge == nil {
-			return nil, fmt.Errorf("invalid attachment knowledge binding")
-		}
-	}
 	binding.lifecycleSubjects = []lifecyclecontract.SubjectExecutionHandler{
 		agentstore.NewSubjectLifecycle(store, app.RuntimeID),
-		todoLifecycle,
 	}
 	if f.ConversationEnabled() {
 		assembly := &conversationAssembly{repository: conversationRepository, model: conversationModel, runtimeID: app.RuntimeID, timezone: f.options.ConversationTimezone, options: conversationOptions}
@@ -451,10 +333,6 @@ type binding struct {
 	runs                    agentpersistence.AgentTaskRunRepository
 	lifecycle               agentpersistence.AgentLifecycleRepository
 	lifecycleSubjects       []lifecyclecontract.SubjectExecutionHandler
-	knowledgeBinding        knowledgemodulehost.ModuleBinding
-	knowledgeSaaSBinding    knowledgesaashost.Binding
-	todoBinding             todomodulehost.ModuleBinding
-	todoSaaSBinding         todosaashost.Binding
 	dialogState             agentsdk.AgentDialogStateService
 	taskState               agentpersistence.AgentTaskStateService
 	interactive             agentpersistence.AgentInteractiveStateService
@@ -500,16 +378,11 @@ func (b *binding) AgentInteractiveState() agentpersistence.AgentInteractiveState
 }
 func (b *binding) HTTPAdapters() []modulehttp.Adapter {
 	b.assemblyMu.Lock()
-	adapters := append([]modulehttp.Adapter(nil), b.adapters...)
-	knowledgeBinding := b.knowledgeBinding
-	b.assemblyMu.Unlock()
-	if provider, ok := knowledgeBinding.(interface{ HTTPAdapters() []modulehttp.Adapter }); ok {
-		adapters = append(adapters, provider.HTTPAdapters()...)
-	}
-	return adapters
+	defer b.assemblyMu.Unlock()
+	return append([]modulehttp.Adapter(nil), b.adapters...)
 }
 func (b *binding) AuthorizationActions() ([]actioncontract.ActionDefinition, error) {
-	definitions, err := agentsdk.AgentAuthorizationActions()
+	definitions, err := capability.AuthorizationActions()
 	if err != nil {
 		return nil, err
 	}
@@ -517,23 +390,10 @@ func (b *binding) AuthorizationActions() ([]actioncontract.ActionDefinition, err
 	adapters := append([]modulehttp.Adapter(nil), b.adapters...)
 	conversationToolActions := cloneActionDefinitions(b.conversationToolActions)
 	applicationHostBound := b.applicationHostBound
-	knowledgeBinding := b.knowledgeBinding
 	b.assemblyMu.Unlock()
 	definitions, err = mergeAuthorizationActions(definitions, conversationToolActions)
 	if err != nil {
 		return nil, err
-	}
-	if provider, ok := knowledgeBinding.(interface {
-		AuthorizationActions() ([]actioncontract.ActionDefinition, error)
-	}); ok {
-		knowledgeActions, knowledgeErr := provider.AuthorizationActions()
-		if knowledgeErr != nil {
-			return nil, knowledgeErr
-		}
-		definitions, err = mergeAuthorizationActions(definitions, knowledgeActions)
-		if err != nil {
-			return nil, err
-		}
 	}
 	adapters = b.HTTPAdapters()
 	mounted := map[string]bool{}
@@ -666,40 +526,7 @@ func (b *binding) Close(ctx context.Context) error {
 		b.taskExecution.Close()
 	}
 	var err error
-	if b.todoBinding != nil {
-		err = errors.Join(err, b.todoBinding.Close(ctx))
-		b.todoBinding = nil
-	}
-	if b.todoSaaSBinding != nil {
-		err = errors.Join(err, b.todoSaaSBinding.Close(ctx))
-		b.todoSaaSBinding = nil
-	}
-	if b.knowledgeBinding != nil {
-		err = errors.Join(err, b.knowledgeBinding.Close(ctx))
-		b.knowledgeBinding = nil
-	}
-	if b.knowledgeSaaSBinding != nil {
-		err = errors.Join(err, b.knowledgeSaaSBinding.Close(ctx))
-		b.knowledgeSaaSBinding = nil
-	}
 	return err
-}
-
-func (f *Factory) localKnowledgeProviderConfigured() bool {
-	return f.options.KnowledgeProviderFactory != nil ||
-		f.options.Knowledge.Configured() ||
-		len(f.options.KnowledgeLibraries) > 0 ||
-		strings.TrimSpace(f.options.KnowledgeLibraryBindingsJSON) != "" ||
-		len(f.options.KnowledgeDatasources) > 0 ||
-		strings.TrimSpace(f.options.KnowledgeDatasourcesJSON) != "" ||
-		len(f.options.AttachmentKnowledge) > 0 ||
-		strings.TrimSpace(f.options.AttachmentKnowledgeBindingsJSON) != "" ||
-		f.options.ConversationOptions.Knowledge != nil ||
-		len(f.options.ConversationOptions.LibraryKnowledge) > 0 ||
-		f.options.ConversationOptions.KnowledgeDatasources != nil ||
-		len(f.options.ConversationOptions.AttachmentKnowledge) > 0 ||
-		f.options.ConversationOptions.ArtifactStorage != nil ||
-		f.options.ConversationOptions.DocumentStorage != nil
 }
 
 var _ agentsdk.Factory = (*Factory)(nil)

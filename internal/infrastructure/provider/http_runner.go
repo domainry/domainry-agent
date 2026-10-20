@@ -13,7 +13,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-agent/definition"
+	"github.com/domainry/domainry-agent/internal/definition"
 )
 
 const maxResponseBytes = 2 << 20

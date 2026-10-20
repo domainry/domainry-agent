@@ -12,7 +12,7 @@ import (
 func historyResultReadDefinition(key string) (sdk.ConversationToolDefinition, bool) {
 	switch key {
 	case "history_search", "history_read", "execution_read", "tool_result_read":
-		for _, definition := range sdk.PersonalConversationTools() {
+		for _, definition := range agentPersonalConversationTools() {
 			if definition.Key == key {
 				return definition, true
 			}

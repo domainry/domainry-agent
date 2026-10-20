@@ -192,8 +192,8 @@ func (audit *conversationSourceAudit) collaborationResult(ctx context.Context, d
 		return conversationFailure("forbidden", "collaboration_access_denied")
 	}
 	for _, message := range d.Messages {
-		if err := audit.s.checkSharedDocuments(ctx, message.Documents, audit.a); err != nil {
-			return err
+		if len(message.Documents) > 0 {
+			return conversationFailure("conflict", "agent_message_documents_unsupported")
 		}
 	}
 	return nil

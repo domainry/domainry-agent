@@ -16,11 +16,11 @@ import (
 
 func personalResultReadDefinition(key string, version ...string) (sdk.ConversationToolDefinition, bool) {
 	switch key {
-	case "calculate", "time_now", "ask_user", "memory_search", "memory_save", "memory_forget", "todo_list", "todo_get", "todo_create", "todo_update", "todo_delete":
+	case "calculate", "time_now", "ask_user", "memory_search", "memory_save", "memory_forget":
 		if len(version) > 0 {
 			return sdk.PersonalConversationToolDefinition(key, version[0])
 		}
-		for _, definition := range sdk.PersonalConversationTools() {
+		for _, definition := range agentPersonalConversationTools() {
 			if definition.Key == key {
 				return definition, true
 			}
@@ -43,7 +43,7 @@ func decodePersonalReceipt(raw []byte, value any) error {
 	return nil
 }
 
-// Personal outputs are owned by Agent/Todo, not opaque external tool results.
+// Personal outputs are owned by Agent, not opaque external tool results.
 // This path exists only inside an authorized delivery source audit and never
 // supplies a worker lease or an execution confirmation to a tool host.
 func (audit *conversationSourceAudit) deliveryPersonalToolResult(ctx context.Context, owner sdk.ConversationRunReference, record persistence.ConversationToolExecution) (bool, error) {
@@ -82,7 +82,7 @@ func (audit *conversationSourceAudit) deliveryPersonalToolResult(ctx context.Con
 	case "memory_search", "memory_save", "memory_forget":
 		err = audit.readPersonalMemoryReceipt(ctx, record)
 	default:
-		err = audit.readPersonalTodoReceipt(ctx, record)
+		return false, nil
 	}
 	if err == nil {
 		err = ctx.Err()

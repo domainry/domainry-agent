@@ -64,9 +64,6 @@ func (s *ConversationService) authorizeOwnedExecutionSnapshot(ctx context.Contex
 	if recipient == conversationID {
 		return nil
 	}
-	if privateAttachmentCall(source.Call) || privateRemoteAttachmentCall(source.Call) {
-		return conversationFailure("forbidden", "attachment_conversation_mismatch")
-	}
 	return s.authorizeCollaborationConversation(ctx, conversationID, "execution_read", a)
 }
 
@@ -75,9 +72,6 @@ func (s *ConversationService) authorizeConversationRecord(ctx context.Context, c
 	// Reading a committed result is not executing its original tool again.
 	if recipient == conversationID {
 		return nil
-	}
-	if recipient != "" && recipient != conversationID && (privateAttachmentCall(source.Call) || privateRemoteAttachmentCall(source.Call)) {
-		return conversationFailure("forbidden", "attachment_conversation_mismatch")
 	}
 	if recipient != conversationID {
 		if err := s.authorizeCollaborationConversation(ctx, conversationID, "execution_read", a); err != nil {

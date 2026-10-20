@@ -802,12 +802,6 @@ func (s *ConversationStore) finishExecutionToolReceipt(ctx context.Context, tx *
 	preview := historyPrefix(string(result.Content), 2048)
 	var citations []agentsdk.ConversationCitation
 	citations = append(citations, toolCitations...)
-	if result.Status == "completed" && (out.Call.Name == "knowledge_search" || out.Call.Name == "knowledge_read" || out.Call.Name == "knowledge_extract" || out.Call.Name == "attachment_search" || out.Call.Name == "attachment_read") {
-		var evidence agentsdk.ConversationKnowledgeResult
-		if unmarshalDurableJSON(result.Content, &evidence) == nil {
-			citations = append(citations, evidence.Citations...)
-		}
-	}
 	if err = s.event(ctx, tx, &row, "tool."+out.State, map[string]any{"step": number, "call_id": callID, "tool": out.Call.Name, "status": result.Status, "effect": out.Definition.Effect, "completion": result.Completion, "error_code": result.ErrorCode, "resource_id": result.ResourceID, "result_preview": preview, "result_reference": reference, "result_truncated": len(preview) < len(result.Content), "citations": citations, "attempt": row.Run.Attempt, "parent_call_id": out.ParentCallID, "dispatch_index": out.DispatchIndex}); err != nil {
 		return err
 	}

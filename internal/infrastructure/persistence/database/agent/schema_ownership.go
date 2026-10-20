@@ -8,9 +8,8 @@ const (
 )
 
 // SchemaOwnership is the source-owned contract for every physical table
-// created by SchemaMigrations. Shared Foundation, Knowledge and Todo tables are
-// deliberately excluded because their owning packages publish their own
-// contracts.
+// created by SchemaMigrations. Shared Foundation and product-module tables are
+// deliberately excluded because their owning packages publish their own contracts.
 func SchemaOwnership() []schemaownership.Table {
 	return []schemaownership.Table{
 		{
@@ -168,18 +167,6 @@ func SchemaOwnership() []schemaownership.Table {
 			RetentionClass: schemaownership.RetentionUserErase, PrimaryKey: []string{"owner_key", "client_key"},
 			BoundedQueryPath: "owner plus exact idempotency client digest",
 			DeletionPolicy:   "artifact retention and subject erasure remove mutation receipts",
-		},
-		{
-			Name: attachmentIndexJobTable, Owner: MigrationOwner, WorkspaceScope: schemaownership.ScopeExplicitMixed,
-			RetentionClass: schemaownership.RetentionTechnicalTTL, PrimaryKey: []string{"owner_key", "attachment_id"},
-			BoundedQueryPath: "owner/attachment identity or runtime due-work lease index",
-			DeletionPolicy:   "successful deletion removes the work row; conversation deletion and subject erasure remove remaining work",
-		},
-		{
-			Name: attachmentKnowledgeSourceTable, Owner: MigrationOwner, WorkspaceScope: schemaownership.ScopeExplicitMixed,
-			RetentionClass: schemaownership.RetentionProduct, PrimaryKey: []string{"scope_key"},
-			BoundedQueryPath: "exact runtime/workspace scope digest or globally unique source identity",
-			DeletionPolicy:   "the workspace source registration remains while its private attachment knowledge binding is managed",
 		},
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	"github.com/domainry/domainry-agent/definition"
+	"github.com/domainry/domainry-agent/internal/definition"
 	"sort"
 	"strconv"
 	"strings"

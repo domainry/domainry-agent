@@ -20,12 +20,10 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
-	"github.com/domainry/domainry-agent/server"
-	knowledgehttpapi "github.com/domainry/domainry-connectors/providers/knowledge_base/http_api"
+	server "github.com/domainry/domainry-agent/saas"
 	"github.com/domainry/domainry-foundation/logging"
 	"github.com/domainry/domainry-foundation/processhost"
 	identityremote "github.com/domainry/domainry-identity-sdk/remote"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "modernc.org/sqlite"
 )
@@ -153,9 +151,7 @@ func openService(store *agentstore.Store) (*server.Server, func(), error) {
 	}
 	runtimeID := strings.TrimSpace(os.Getenv("AGENT_SAAS_RUNTIME_ID"))
 	modelConfig := provider.ConversationModelConfigFromEnvironment()
-	knowledgeConfig := provider.KnowledgeConfigFromEnvironment()
-	knowledgeConfig.RuntimeID = runtimeID
-	if runtimeID == "" && (modelConfig.Configured() || knowledgeConfig.Configured()) {
+	if runtimeID == "" && modelConfig.Configured() {
 		return nil, closeService, errors.New("AGENT_SAAS_RUNTIME_ID is required for conversations")
 	}
 	if runtimeID != "" {
@@ -167,10 +163,6 @@ func openService(store *agentstore.Store) (*server.Server, func(), error) {
 			}
 			model = configured
 		}
-		knowledge, err := knowledgemodule.NewKnowledge(knowledgeConfig, knowledgehttpapi.New)
-		if err != nil {
-			return nil, closeService, err
-		}
 		identity, err := saashost.OpenConversationIdentity(context.Background(), runtimeID, identityremote.ConfigFromEnvironment())
 		if err != nil {
 			return nil, closeService, err
@@ -181,9 +173,6 @@ func openService(store *agentstore.Store) (*server.Server, func(), error) {
 			return nil, closeService, err
 		}
 		options.ExecutionAuthorizer = identity
-		if knowledge != nil {
-			options.Knowledge = knowledge
-		}
 		conversations, err := conversationassembly.NewService(agentstore.NewConversationStore(store), model, runtimeID, options)
 		if err != nil {
 			_ = identity.Close(context.Background())

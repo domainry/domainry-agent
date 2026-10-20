@@ -1,39 +1,13 @@
 package agent
 
 import (
-	"context"
-	"encoding/json"
 	"strings"
 	"testing"
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	persistence "github.com/domainry/domainry-agent-sdk/persistence"
-	todocontract "github.com/domainry/domainry-todo-sdk/contract"
-	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
-
-type remoteTodoMutationStub struct {
-	calls    int
-	effects  int
-	receipts map[string]todocontract.MutationResult
-}
-
-func (stub *remoteTodoMutationStub) ApplyMutation(_ context.Context, mutation todocontract.Mutation, _ toolsdk.Authority) (todocontract.MutationResult, error) {
-	stub.calls++
-	if receipt, ok := stub.receipts[mutation.Key]; ok {
-		return receipt, nil
-	}
-	stub.effects++
-	receipt := todocontract.MutationResult{ResourceID: "remote-todo", Content: json.RawMessage(`{"id":"remote-todo"}`)}
-	stub.receipts[mutation.Key] = receipt
-	return receipt, nil
-}
-
-func (stub *remoteTodoMutationStub) MutationReceipt(_ context.Context, mutation todocontract.Mutation, _ toolsdk.Authority) (todocontract.MutationResult, bool, error) {
-	receipt, ok := stub.receipts[mutation.Key]
-	return receipt, ok, nil
-}
 
 func personalMutationFixture(t *testing.T, repo *ConversationStore, key, name, arguments string, scoped bool) (persistence.ConversationClaim, agentsdk.ConversationToolRequest) {
 	t.Helper()
@@ -44,10 +18,13 @@ func personalMutationFixture(t *testing.T, repo *ConversationStore, key, name, a
 	}
 	send := agentsdk.ConversationSend{ClientMessageID: "send", Message: "请处理指定的个人事项"}
 	if scoped {
-		send.WriteScope = &agentsdk.ConversationWriteScope{PersonalMemory: !strings.HasPrefix(name, "todo_") && !strings.HasPrefix(name, "artifact_") && name != "task_start", PersonalTodos: strings.HasPrefix(name, "todo_"), PersonalArtifacts: strings.HasPrefix(name, "artifact_"), BackgroundTasks: name == "task_start"}
+		send.WriteScope = &agentsdk.ConversationWriteScope{
+			PersonalMemory:    strings.HasPrefix(name, "memory_"),
+			PersonalArtifacts: strings.HasPrefix(name, "artifact_"),
+			BackgroundTasks:   name == "task_start",
+		}
 	}
-	_, err = repo.Enqueue(t.Context(), c.ID, send, a)
-	if err != nil {
+	if _, err = repo.Enqueue(t.Context(), c.ID, send, a); err != nil {
 		t.Fatal(err)
 	}
 	claim, found, err := repo.Claim(t.Context(), a.RuntimeID, "memory-worker", time.Minute)
@@ -55,7 +32,7 @@ func personalMutationFixture(t *testing.T, repo *ConversationStore, key, name, a
 		t.Fatal("claim", err)
 	}
 	var definition agentsdk.ConversationToolDefinition
-	for _, tool := range append(agentsdk.PersonalConversationTools(), agentsdk.ArtifactConversationTools()...) {
+	for _, tool := range append(agentPersonalToolDefinitions(), agentsdk.ArtifactConversationTools()...) {
 		if tool.Key == name {
 			definition = tool
 		}
@@ -74,111 +51,6 @@ func personalMutationFixture(t *testing.T, repo *ConversationStore, key, name, a
 		t.Fatal(err)
 	}
 	return claim, agentsdk.ConversationToolRequest{Authority: a, ConversationID: c.ID, RunID: claim.Run.ID, Step: 0, Call: call, Definition: definition, IdempotencyKey: ledger.IdempotencyKey, LeaseOwner: claim.Owner, Fence: claim.Fence}
-}
-
-func TestPersonalTodoBatchEffectReceiptAndEventAreAtomic(t *testing.T) {
-	store, _ := openAgentStore(t)
-	repo := newTestConversationStore(t, store)
-	claim, request := personalMutationFixture(t, repo, "todo-atomic", "todo_create", `{"items":[{"title":"访谈","timezone":"Asia/Shanghai"},{"title":"费用","description":"必须持久保存的完整说明","timezone":"Asia/Shanghai"},{"title":"周报","timezone":"Asia/Shanghai"}]}`, true)
-	// Fail after every item has been inserted. Neither a partial batch nor a
-	// completed receipt may survive if the corresponding event did not commit.
-	_, err := store.Database().ExecContext(t.Context(), `CREATE TRIGGER fail_todo_receipt BEFORE INSERT ON _agent_conversation_items WHEN NEW.item_kind = 'run_event' AND CAST(NEW.payload_json AS TEXT) LIKE '%tool.completed%' BEGIN SELECT RAISE(ABORT, 'injected todo receipt failure'); END`)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err = repo.ApplyPersonalTool(t.Context(), request); err == nil {
-		t.Fatal("injected failure was ignored")
-	}
-	page, err := repo.Todos(t.Context(), agentsdk.ConversationTodoQuery{}, request.Authority)
-	if err != nil || len(page.Items) != 0 {
-		t.Fatal("partial batch committed", err)
-	}
-	ledger, err := repo.ExecutionTools(t.Context(), claim, 0)
-	if err != nil || len(ledger) != 1 || ledger[0].State != "started" {
-		t.Fatal("receipt survived rollback", err)
-	}
-	if _, err = store.Database().ExecContext(t.Context(), `DROP TRIGGER fail_todo_receipt`); err != nil {
-		t.Fatal(err)
-	}
-	result, err := repo.ApplyPersonalTool(t.Context(), request)
-	if err != nil || result.Status != "completed" {
-		t.Fatal("create batch", result.Status, err)
-	}
-	repo = newTestConversationStore(t, store)
-	replayed, err := repo.ApplyPersonalTool(t.Context(), request)
-	if err != nil || conversationHash(result) != conversationHash(replayed) {
-		t.Fatal("durable batch receipt changed", err)
-	}
-	if err = repo.FinishExecutionTool(t.Context(), claim, 0, request.Call.ID, result); err != nil {
-		t.Fatal(err)
-	}
-	page, err = repo.Todos(t.Context(), agentsdk.ConversationTodoQuery{}, request.Authority)
-	if err != nil || len(page.Items) != 3 {
-		t.Fatal("batch duplicated on replay", err)
-	}
-	if page.Items[1].Description != "必须持久保存的完整说明" || strings.Contains(string(result.Content), "必须持久保存的完整说明") {
-		t.Fatal("full content must persist while model receives bounded summaries")
-	}
-	events, err := repo.Events(t.Context(), request.ConversationID, request.RunID, 0, 100, request.Authority)
-	if err != nil {
-		t.Fatal(err)
-	}
-	completed := 0
-	for _, event := range events.Items {
-		if event.Type == "tool.completed" {
-			completed++
-		}
-	}
-	if completed != 1 {
-		t.Fatalf("completion events=%d", completed)
-	}
-	if err = repo.DeleteTodo(t.Context(), page.Items[0].ID, agentsdk.ConversationTodoDelete{ClientID: "delete-after-tool", ExpectedRevision: 1}, request.Authority); err != nil {
-		t.Fatal(err)
-	}
-	if _, err = repo.ApplyPersonalTool(t.Context(), request); err != nil {
-		t.Fatal(err)
-	}
-	page, err = repo.Todos(t.Context(), agentsdk.ConversationTodoQuery{}, request.Authority)
-	if err != nil || len(page.Items) != 2 || page.Items[0].Position != 2 {
-		t.Fatal("old batch replay resurrected deleted item", err)
-	}
-}
-
-func TestRemoteTodoEffectRecoversAfterAgentReceiptFailure(t *testing.T) {
-	store, _ := openAgentStore(t)
-	repo := newTestConversationStore(t, store)
-	remote := &remoteTodoMutationStub{receipts: map[string]todocontract.MutationResult{}}
-	repo.todoTransactions = nil
-	repo.todoMutations = remote
-	claim, request := personalMutationFixture(t, repo, "todo-remote-recovery", "todo_create", `{"items":[{"title":"访谈","timezone":"Asia/Shanghai"}]}`, true)
-	_, err := store.Database().ExecContext(t.Context(), `CREATE TRIGGER fail_remote_todo_receipt BEFORE INSERT ON _agent_conversation_items WHEN NEW.item_kind = 'run_event' AND CAST(NEW.payload_json AS TEXT) LIKE '%tool.completed%' BEGIN SELECT RAISE(ABORT, 'injected remote receipt failure'); END`)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err = repo.ApplyPersonalTool(t.Context(), request); err == nil {
-		t.Fatal("injected Agent receipt failure was ignored")
-	}
-	if remote.calls != 1 || remote.effects != 1 {
-		t.Fatalf("remote calls=%d effects=%d", remote.calls, remote.effects)
-	}
-	ledger, err := repo.ExecutionTools(t.Context(), claim, 0)
-	if err != nil || len(ledger) != 1 || ledger[0].State != "started" {
-		t.Fatal("Agent ledger committed despite receipt failure", err)
-	}
-	if _, err = store.Database().ExecContext(t.Context(), `DROP TRIGGER fail_remote_todo_receipt`); err != nil {
-		t.Fatal(err)
-	}
-	result, err := repo.ApplyPersonalTool(t.Context(), request)
-	if err != nil || result.Status != "completed" || result.ResourceID != "remote-todo" {
-		t.Fatalf("remote replay result=%+v error=%v", result, err)
-	}
-	if remote.calls != 2 || remote.effects != 1 {
-		t.Fatalf("remote replay calls=%d effects=%d", remote.calls, remote.effects)
-	}
-	replayed, err := repo.ApplyPersonalTool(t.Context(), request)
-	if err != nil || conversationHash(replayed) != conversationHash(result) || remote.calls != 2 || remote.effects != 1 {
-		t.Fatalf("durable Agent receipt replayed remote effect: result=%+v calls=%d effects=%d error=%v", replayed, remote.calls, remote.effects, err)
-	}
 }
 
 func TestPersonalMemoryEffectReceiptAndEventAreAtomic(t *testing.T) {

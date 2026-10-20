@@ -15,10 +15,6 @@ func (conversationRuntimeHostStub) ConversationAuthorizer() agentsdk.Conversatio
 	return nil
 }
 
-func (conversationRuntimeHostStub) ConversationBusinessSource() agentsdk.ConversationBusinessSource {
-	return nil
-}
-
 func (host conversationRuntimeHostStub) ConversationCodeRuntime() agentsdk.ConversationCodeRuntime {
 	return host.code
 }

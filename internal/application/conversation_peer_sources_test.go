@@ -27,7 +27,7 @@ func (privatePeerSources) ConversationPeerInbox(context.Context, string, sdk.Con
 	return []sdk.ConversationAgentMessage{{ID: "message", Content: "private contents", Source: &sdk.ConversationRunReference{ConversationID: "private-source", RunID: "source-run"}}}, nil
 }
 func (privatePeerSources) ConversationSourceSnapshot(context.Context, sdk.ConversationRunReference, sdk.ConversationAuthority) (persistence.ConversationSourceSnapshot, error) {
-	d := sdk.AttachmentConversationTools()[0]
+	d := sdk.ConversationToolDefinition{Key: "private_file_read", Version: "1", Effect: "read"}
 	return persistence.ConversationSourceSnapshot{Run: sdk.ConversationRun{ID: "source-run", ConversationID: "private-source"}, Calls: []persistence.ConversationToolExecution{{Step: 0, Call: sdk.ConversationToolCall{ID: "private-read", Name: d.Key, Arguments: `{}`}, Definition: d, State: "completed", Result: &sdk.ConversationToolResult{Status: "completed", Content: json.RawMessage(`{"text":"private contents"}`)}}}}, nil
 }
 func TestPeerMessagesAndDeliveriesDoNotSharePrivateAttachmentsImplicitly(t *testing.T) {
@@ -35,7 +35,7 @@ func TestPeerMessagesAndDeliveriesDoNotSharePrivateAttachmentsImplicitly(t *test
 	a := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
 	claim := persistence.ConversationClaim{Authority: a, Run: sdk.ConversationRun{ID: "receiver-run", ConversationID: "receiver"}}
 	input, err := s.appendConversationPeerInbox(t.Context(), claim, sdk.ConversationStepRequest{})
-	if err == nil || !strings.Contains(err.Error(), "attachment_conversation_mismatch") || len(input.Messages) != 0 || len(input.InboxMessageIDs) != 0 {
+	if err == nil || !strings.Contains(err.Error(), "tool_changed") || len(input.Messages) != 0 || len(input.InboxMessageIDs) != 0 {
 		t.Fatalf("private message reached recipient: %+v %v", input, err)
 	}
 	d := sdk.ConversationDelegationDetail{ConversationDelegation: sdk.ConversationDelegation{ID: "delegation", ConversationID: "private-source"}, Task: &sdk.ConversationTaskDetail{ConversationTaskSummary: sdk.ConversationTaskSummary{ExecutionRunID: "source-run", Result: &sdk.ConversationTaskResult{Preview: "private contents"}}}}
@@ -48,7 +48,7 @@ func TestPeerMessagesAndDeliveriesDoNotSharePrivateAttachmentsImplicitly(t *test
 	}
 	host := collaborationToolHost{service: s}
 	err = host.AuthorizeConversationToolResult(t.Context(), sdk.ConversationToolRequest{Authority: a, ConversationID: "receiver", RunID: "receiver-run", Call: sdk.ConversationToolCall{ID: "get", Name: "delegation_get", Arguments: `{"id":"delegation"}`}, Definition: definition}, sdk.ConversationToolResult{Status: "completed", ResourceID: "delegation", Content: raw})
-	if err == nil || !strings.Contains(err.Error(), "attachment_conversation_mismatch") {
+	if err == nil || !strings.Contains(err.Error(), "tool_changed") {
 		t.Fatalf("private delivery escaped into recipient: %v", err)
 	}
 }
@@ -71,7 +71,7 @@ func TestPeerDependencySnapshotsRecheckSourceBeforeModelAndSharing(t *testing.T)
 		s.validateDependencySources(t.Context(), []sdk.ConversationDependencyInput{{DelegationID: "upstream", BriefVersion: 1}}, "receiver", a),
 		s.checkRunSources(t.Context(), sdk.ConversationRunReference{ConversationID: "receiver", RunID: "receiver-run"}, a),
 	} {
-		if err == nil || !strings.Contains(err.Error(), "attachment_conversation_mismatch") {
+		if err == nil || !strings.Contains(err.Error(), "tool_changed") {
 			t.Fatalf("private dependency reached new execution: %v", err)
 		}
 	}
@@ -84,7 +84,7 @@ func TestPeerDependencySnapshotsRecheckSourceBeforeModelAndSharing(t *testing.T)
 		}
 	}
 	err := (&collaborationToolHost{service: s}).AuthorizeConversationToolResult(t.Context(), sdk.ConversationToolRequest{Authority: a, ConversationID: "receiver", RunID: "receiver-run", Call: sdk.ConversationToolCall{ID: "get", Name: "delegation_get", Arguments: `{"id":"delegation"}`}, Definition: definition}, sdk.ConversationToolResult{Status: "completed", ResourceID: "delegation", Content: raw})
-	if err == nil || !strings.Contains(err.Error(), "attachment_conversation_mismatch") {
+	if err == nil || !strings.Contains(err.Error(), "tool_changed") {
 		t.Fatalf("private dependency escaped via tool result: %v", err)
 	}
 }
@@ -107,7 +107,7 @@ func TestPeerStructuredInputSourceCannotBeSharedImplicitly(t *testing.T) {
 		s.validateDependencySources(t.Context(), []sdk.ConversationDependencyInput{{DelegationID: "upstream", BriefVersion: 1, Fields: []string{"input"}}}, "receiver", a),
 		s.checkRunSources(t.Context(), sdk.ConversationRunReference{ConversationID: "receiver", RunID: "receiver-run"}, a),
 	} {
-		if err == nil || !strings.Contains(err.Error(), "attachment_conversation_mismatch") {
+		if err == nil || !strings.Contains(err.Error(), "tool_changed") {
 			t.Fatalf("private structured input source escaped: %v", err)
 		}
 	}
@@ -124,7 +124,7 @@ func TestPeerStructuredInputSourceCannotBeSharedImplicitly(t *testing.T) {
 	} {
 		raw, _ := json.Marshal(sdk.ConversationDelegationDetail{ConversationDelegation: d})
 		err := (&collaborationToolHost{service: s}).AuthorizeConversationToolResult(t.Context(), sdk.ConversationToolRequest{Authority: a, ConversationID: "receiver", RunID: "receiver-run", Call: sdk.ConversationToolCall{ID: "get", Name: "delegation_get", Arguments: `{"id":"delegation"}`}, Definition: definition}, sdk.ConversationToolResult{Status: "completed", ResourceID: "delegation", Content: raw})
-		if err == nil || !strings.Contains(err.Error(), "attachment_conversation_mismatch") {
+		if err == nil || !strings.Contains(err.Error(), "tool_changed") {
 			t.Fatalf("private typed data escaped through tool result: %v", err)
 		}
 	}
@@ -151,7 +151,7 @@ func TestPeerTransferRechecksOriginalEffectsAndDecisionSources(t *testing.T) {
 			s.checkHandoffSources(t.Context(), handoff, a, "receiver"),
 			s.checkRunSources(t.Context(), sdk.ConversationRunReference{ConversationID: "receiver", RunID: "receiver-run"}, a),
 		} {
-			if err == nil || !strings.Contains(err.Error(), "attachment_conversation_mismatch") {
+			if err == nil || !strings.Contains(err.Error(), "tool_changed") {
 				t.Fatalf("transfer exposed private source to a new recipient: %v", err)
 			}
 		}
@@ -168,7 +168,7 @@ func TestPeerTransferRechecksOriginalEffectsAndDecisionSources(t *testing.T) {
 		} {
 			raw, _ := json.Marshal(detail)
 			err := (&collaborationToolHost{service: s}).AuthorizeConversationToolResult(t.Context(), sdk.ConversationToolRequest{Authority: a, ConversationID: "receiver", RunID: "receiver-run", Definition: definition, Call: sdk.ConversationToolCall{ID: "get", Name: "delegation_get", Arguments: `{"id":"delegation"}`}}, sdk.ConversationToolResult{Status: "completed", ResourceID: "delegation", Content: raw})
-			if err == nil || !strings.Contains(err.Error(), "attachment_conversation_mismatch") {
+			if err == nil || !strings.Contains(err.Error(), "tool_changed") {
 				t.Fatalf("transfer history escaped through tool result: %v", err)
 			}
 		}
@@ -182,7 +182,7 @@ func (revokedTransferHistorySources) ConversationAgreementHistory(context.Contex
 }
 func (revokedTransferHistorySources) ConversationSourceSnapshot(_ context.Context, ref sdk.ConversationRunReference, _ sdk.ConversationAuthority) (persistence.ConversationSourceSnapshot, error) {
 	if ref.ConversationID == "revoked" {
-		return persistence.ConversationSourceSnapshot{}, conversationFailure("forbidden", "knowledge_access_denied")
+		return persistence.ConversationSourceSnapshot{}, conversationFailure("forbidden", "source_access_denied")
 	}
 	return persistence.ConversationSourceSnapshot{Run: sdk.ConversationRun{ID: ref.RunID, ConversationID: ref.ConversationID}}, nil
 }
@@ -190,7 +190,7 @@ func TestPeerTransferDecisionHistoryRechecksCurrentAccess(t *testing.T) {
 	s := &ConversationService{runtimeID: "runtime", repo: revokedTransferHistorySources{}, options: ConversationOptions{CollaborationAuthorizer: allowCollaborationTestPolicy{}}}
 	a := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
 	out, err := s.ConversationAgreementHistory(t.Context(), "delegation", 0, a)
-	if err == nil || !strings.Contains(err.Error(), "knowledge_access_denied") || len(out.Items) != 0 {
+	if err == nil || !strings.Contains(err.Error(), "source_access_denied") || len(out.Items) != 0 {
 		t.Fatalf("old brief permission exposed revoked decision: %+v %v", out, err)
 	}
 }
@@ -207,7 +207,7 @@ func (p verificationPeerSources) ConversationDeliveryHistory(context.Context, st
 }
 
 func (verificationPeerSources) ConversationSourceSnapshot(_ context.Context, ref sdk.ConversationRunReference, _ sdk.ConversationAuthority) (persistence.ConversationSourceSnapshot, error) {
-	return persistence.ConversationSourceSnapshot{}, conversationFailure("forbidden", "knowledge_access_denied")
+	return persistence.ConversationSourceSnapshot{}, conversationFailure("forbidden", "source_access_denied")
 }
 
 func TestPeerVerificationHistoryRechecksReviewAndEveryReceiptSource(t *testing.T) {
@@ -221,7 +221,7 @@ func TestPeerVerificationHistoryRechecksReviewAndEveryReceiptSource(t *testing.T
 	} {
 		s := &ConversationService{runtimeID: "runtime", repo: verificationPeerSources{history: sdk.ConversationDeliveryHistory{Items: []sdk.ConversationDeliveryRecord{record}}}, options: ConversationOptions{CollaborationAuthorizer: allowCollaborationTestPolicy{}}}
 		out, err := s.ConversationDeliveryHistory(t.Context(), "delegation", 0, a)
-		if err == nil || !strings.Contains(err.Error(), "knowledge_access_denied") || len(out.Items) != 0 {
+		if err == nil || !strings.Contains(err.Error(), "source_access_denied") || len(out.Items) != 0 {
 			t.Fatalf("revoked receipt/review disclosed %+v %v", out, err)
 		}
 	}

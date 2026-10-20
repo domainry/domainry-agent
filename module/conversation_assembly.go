@@ -8,6 +8,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent/internal/application"
+	"github.com/domainry/domainry-agent/internal/capability"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
 	actioncontract "github.com/domainry/domainry-foundation/action"
 )
@@ -41,7 +42,7 @@ type conversationAssembly struct {
 	options             ConversationOptions
 }
 
-func bindHostExecutionRuntimes(options *ConversationOptions, model agentsdk.ConversationModel, host modulehost.ConversationApplicationHost) {
+func bindHostExecutionRuntimes(options *ConversationOptions, model agentsdk.ConversationModel, host any) {
 	if options == nil || host == nil {
 		return
 	}
@@ -64,12 +65,6 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 	if host != nil {
 		if options.PersonalAuthorizer == nil {
 			options.PersonalAuthorizer = host.ConversationAuthorizer()
-		}
-		if options.LibraryAuthorizer == nil {
-			options.LibraryAuthorizer, _ = host.ConversationAuthorizer().(agentsdk.KnowledgeLibraryAuthorizer)
-		}
-		if options.SourceAuthorizer == nil {
-			options.SourceAuthorizer, _ = host.ConversationAuthorizer().(agentsdk.KnowledgeDocumentSourceAuthorizer)
 		}
 		if options.AttachmentAuthorizer == nil {
 			options.AttachmentAuthorizer, _ = host.ConversationAuthorizer().(agentsdk.ConversationAttachmentAuthorizer)
@@ -110,7 +105,7 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 			if err != nil {
 				return fmt.Errorf("compile host conversation tool authorization: %w", err)
 			}
-			staticActions, staticErr := agentsdk.AgentAuthorizationActions()
+			staticActions, staticErr := capability.AuthorizationActions()
 			if staticErr != nil {
 				return staticErr
 			}
@@ -130,13 +125,10 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 				}
 			}
 			// Runtime advertises optional execution worlds independently of this
-			// Agent's model. A management-only conversation surface (for example
-			// Knowledge libraries) must not inherit an unusable code Runtime: code
+			// Agent's model. A management-only conversation surface must not
+			// inherit an unusable code Runtime: code
 			// and coding execution both require a tool-capable model and ToolHost.
 			bindHostExecutionRuntimes(&options, a.model, host)
-			if options.Business == nil {
-				options.Business = host.ConversationBusinessSource()
-			}
 		}
 	}
 	if a.model != nil && options.ExecutionAuthorizer == nil {

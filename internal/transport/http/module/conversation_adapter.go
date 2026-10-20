@@ -2,7 +2,6 @@ package module
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,6 +13,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
+	"github.com/domainry/domainry-agent/internal/capability"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
@@ -25,58 +25,18 @@ type conversationAdapter struct {
 	routes    []modulehttp.Route
 }
 
-type knowledgeDocumentChunkUploader interface {
-	UploadKnowledgeDocumentChunk(context.Context, string, agentsdk.KnowledgeDocumentUploadChunk, agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocumentUploadProgress, error)
-}
-
-type knowledgeDocumentDownloader interface {
-	DownloadKnowledgeDocument(context.Context, string, string, agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocumentDownload, error)
-}
-
-const knowledgeDocumentTransferTimeout = 2 * time.Hour
-
-func validFileSHA256(value string) bool {
-	if len(value) != 64 {
-		return false
-	}
-	for _, character := range value {
-		if character < '0' || (character > '9' && character < 'a') || character > 'f' {
-			return false
-		}
-	}
-	return true
-}
-
-func parseUploadContentRange(value string) (start, end, total int64, ok bool) {
-	if !strings.HasPrefix(value, "bytes ") {
-		return 0, 0, 0, false
-	}
-	rangeAndTotal := strings.Split(strings.TrimPrefix(value, "bytes "), "/")
-	if len(rangeAndTotal) != 2 {
-		return 0, 0, 0, false
-	}
-	bounds := strings.Split(rangeAndTotal[0], "-")
-	if len(bounds) != 2 {
-		return 0, 0, 0, false
-	}
-	start, startErr := strconv.ParseInt(bounds[0], 10, 64)
-	end, endErr := strconv.ParseInt(bounds[1], 10, 64)
-	total, totalErr := strconv.ParseInt(rangeAndTotal[1], 10, 64)
-	ok = startErr == nil && endErr == nil && totalErr == nil && start >= 0 && end >= start && total > end
-	return
-}
-
 func NewConversationAdapter(service agentsdk.ConversationService, runtimeID string) (modulehttp.Adapter, error) {
 	if service == nil || runtimeID == "" {
 		return nil, fmt.Errorf("conversation service and trusted runtime identity are required")
 	}
 	s := &conversationAdapter{service: service, runtimeID: runtimeID, mux: http.NewServeMux()}
-	actions, err := agentsdk.AgentAuthorizationActions()
+	actions, err := capability.AuthorizationActions()
 	if err != nil {
 		return nil, err
 	}
 	for _, action := range actions {
-		if !strings.HasPrefix(action.Key, agentsdk.ConversationActionPrefix) {
+		operation := strings.TrimPrefix(action.Key, agentsdk.ConversationActionPrefix)
+		if !strings.HasPrefix(action.Key, agentsdk.ConversationActionPrefix) || !capability.ConversationOperationSupported(operation) {
 			continue
 		}
 		route, err := modulehttp.RouteFromAction(action)
@@ -105,15 +65,6 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		principal := identity.Principal
 		in := agentsdk.ConversationRPCRequest{Authority: agentsdk.ConversationAuthority{Known: principal.Known, RuntimeID: s.runtimeID, WorkspaceID: principal.WorkspaceID, UserID: principal.UserID, RoleKey: principal.RoleKey}, ConversationID: r.PathValue("conversationID"), RunID: r.PathValue("runID"), MemoryID: r.PathValue("memoryID")}
 		q := r.URL.Query()
-		if op == "libraries_sources" || op == "libraries_bind_source" {
-			for key, values := range q {
-				if op != "libraries_sources" || (key != "after" && key != "limit") || len(values) != 1 {
-					writeCode(w, 400, "agent.conversation.datasource_query_invalid")
-					return
-				}
-			}
-		}
-		in.TodoID = r.PathValue("todoID")
 		in.TaskID = r.PathValue("taskID")
 		in.AgentID = r.PathValue("agentID")
 		in.SkillKey = r.PathValue("skillKey")
@@ -123,11 +74,6 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		in.DelegationID = r.PathValue("delegationID")
 		in.ArtifactID = r.PathValue("artifactID")
 		in.ArtifactExportID = r.PathValue("exportID")
-		in.LibraryID = r.PathValue("libraryID")
-		in.LibraryUserID = r.PathValue("userID")
-		in.LibraryAfter = q.Get("after")
-		in.DocumentID = r.PathValue("documentID")
-		in.DocumentAfter = q.Get("after")
 		in.AttachmentID = r.PathValue("attachmentID")
 		in.AttachmentAfter = q.Get("after")
 		var parseErr error
@@ -143,19 +89,6 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			return n
 		}
 		in.Revision = number("expected_revision")
-		if op == "attachments_index" || op == "attachments_check_index" {
-			if len(q) != 1 || len(q["expected_revision"]) != 1 || in.Revision < 1 {
-				writeCode(w, 400, "agent.conversation.attachment_index_request_invalid")
-				return
-			}
-			if r.Body != nil {
-				data, err := io.ReadAll(io.LimitReader(r.Body, 1))
-				if err != nil || len(data) != 0 {
-					writeCode(w, 400, "agent.conversation.attachment_index_request_invalid")
-					return
-				}
-			}
-		}
 		in.AfterSeq = number("after_seq")
 		in.Limit = int(number("limit"))
 		in.ArtifactVersion = number("version")
@@ -173,7 +106,6 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			}
 		}
 		in.Query = agentsdk.ConversationQuery{Search: q.Get("search"), BeforeID: q.Get("before_id"), IncludeArchived: archived, Limit: in.Limit, BindingKind: q.Get("binding_kind"), BindingKey: q.Get("binding_key")}
-		in.TodoQuery = agentsdk.ConversationTodoQuery{Query: q.Get("query"), Status: q.Get("status"), SourceConversationID: q.Get("source_conversation_id"), BatchID: q.Get("batch_id"), Cursor: q.Get("cursor"), Limit: in.Limit}
 		in.TaskQuery = agentsdk.ConversationTaskQuery{Query: q.Get("query"), Status: q.Get("status"), SourceConversationID: q.Get("source_conversation_id"), Cursor: q.Get("cursor"), Limit: in.Limit}
 		in.ArtifactQuery = agentsdk.ConversationArtifactQuery{Query: q.Get("query"), SourceConversationID: q.Get("source_conversation_id"), Cursor: q.Get("cursor"), Limit: in.Limit}
 		in.Messages = agentsdk.ConversationMessageQuery{BeforeSeq: number("before_seq"), AfterSeq: in.AfterSeq, Limit: in.Limit}
@@ -189,11 +121,8 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			return
 		}
 		var body any
-		if op == "attachments_upload" || op == "documents_upload" {
+		if op == "attachments_upload" {
 			fileKind := "attachment"
-			if op == "documents_upload" {
-				fileKind = "document"
-			}
 			for key, values := range q {
 				if (key != "client_id" && key != "filename") || len(values) != 1 {
 					writeCode(w, 400, "agent.conversation.request_invalid")
@@ -203,32 +132,6 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			mediaType, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
 			if err != nil || mediaType != "application/octet-stream" {
 				writeCode(w, 400, "agent.conversation."+fileKind+"_type_unsupported")
-				return
-			}
-			if op == "documents_upload" {
-				_ = http.NewResponseController(w).SetReadDeadline(time.Now().Add(knowledgeDocumentTransferTimeout))
-				documents, ok := s.service.(knowledgeDocumentChunkUploader)
-				sha256, chunkSHA256 := r.Header.Get("X-Agent-File-SHA256"), r.Header.Get("X-Agent-Chunk-SHA256")
-				if !ok {
-					writeCode(w, 503, "agent.conversation.document_chunk_upload_unavailable")
-					return
-				}
-				start, end, total, rangeOK := parseUploadContentRange(r.Header.Get("Content-Range"))
-				chunkBytes := end - start + 1
-				if !rangeOK || total > agentsdk.KnowledgeDocumentMaximumBytes || chunkBytes < 1 || chunkBytes > agentsdk.KnowledgeDocumentUploadChunkBytes || r.ContentLength != chunkBytes {
-					writeCode(w, 413, "agent.conversation.document_size_invalid")
-					return
-				}
-				if !validFileSHA256(sha256) || !validFileSHA256(chunkSHA256) {
-					writeCode(w, 400, "agent.conversation.document_content_mismatch")
-					return
-				}
-				progress, err := documents.UploadKnowledgeDocumentChunk(r.Context(), in.LibraryID, agentsdk.KnowledgeDocumentUploadChunk{ClientID: q.Get("client_id"), Filename: q.Get("filename"), Bytes: total, SHA256: sha256, Offset: start, ChunkBytes: chunkBytes, ChunkSHA256: chunkSHA256, Content: http.MaxBytesReader(w, r.Body, agentsdk.KnowledgeDocumentUploadChunkBytes)}, in.Authority)
-				if err != nil {
-					writeError(w, err)
-					return
-				}
-				writeJSON(w, http.StatusOK, progress)
 				return
 			}
 			if r.ContentLength > agentsdk.ConversationAttachmentMaxBytes {
@@ -271,18 +174,6 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			body = &in.DelegationUpdate
 		case "delegations_message":
 			body = &in.AgentMessage
-		case "libraries_bind_source":
-			body = &in.LibrarySourceWrite
-		case "documents_transfer":
-			body = &in.DocumentTransfer
-		case "documents_import_attachment":
-			body = &in.DocumentImport
-		case "libraries_create":
-			body = &in.LibraryCreate
-		case "libraries_update":
-			body = &in.LibraryUpdate
-		case "libraries_set_member":
-			body = &in.LibraryMemberWrite
 		case "create":
 			body = &in.Create
 		case "update":
@@ -315,12 +206,6 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 			body = &in.DeliveryArtifactRead
 		case "memories_write":
 			body = &in.Memory
-		case "todos_create":
-			body = &in.TodoCreate
-		case "todos_update":
-			body = &in.TodoUpdate
-		case "todos_delete":
-			body = &in.TodoDelete
 		case "tasks_update":
 			body = &in.TaskAgreementUpdate
 		case "tasks_completion_review":
@@ -358,22 +243,6 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		}
 		if op == "stream" {
 			s.stream(w, r, in)
-			return
-		}
-		if op == "documents_download" {
-			_ = http.NewResponseController(w).SetWriteDeadline(time.Now().Add(knowledgeDocumentTransferTimeout))
-			documents, ok := s.service.(knowledgeDocumentDownloader)
-			if !ok {
-				writeCode(w, 503, "agent.conversation.document_stream_unavailable")
-				return
-			}
-			download, err := documents.DownloadKnowledgeDocument(r.Context(), in.LibraryID, in.DocumentID, in.Authority)
-			if err != nil {
-				writeError(w, err)
-				return
-			}
-			defer download.Content.Close()
-			serveOriginalFileStream(w, r, download.Document.Filename, download.Document.ContentType, download.Document.SHA256, download.Content)
 			return
 		}
 		result, err := agentapplication.InvokeConversation(r.Context(), s.service, op, in)
@@ -424,16 +293,12 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		status := 200
 		if op == "send" {
 			status = 202
-		} else if op == "documents_import_attachment" {
-			status = 201
 		}
 		writeJSON(w, status, result)
 	}
 }
 
-// serveOriginalFile keeps the bounded attachment path intact. Knowledge
-// documents use serveOriginalFileStream so ranges are read from storage rather
-// than from a second in-memory copy.
+// serveOriginalFile keeps the bounded attachment path intact.
 func serveOriginalFile(w http.ResponseWriter, r *http.Request, filename, sha256 string, data []byte) {
 	serveOriginalFileStream(w, r, filename, "", sha256, bytes.NewReader(data))
 }

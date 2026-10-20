@@ -463,8 +463,8 @@ func (s *ConversationService) projectConversationDelegationContent(ctx context.C
 	}
 	for i := range out.Messages {
 		m := &out.Messages[i]
-		if e := s.checkSharedDocuments(ctx, m.Documents, a); e != nil {
-			m.Content = "共享资料当前不可访问或版本已变化，请重新核对资料引用。"
+		if len(m.Documents) > 0 {
+			m.Content = "消息包含当前 Agent 不支持的外部资料引用。"
 			m.Documents, m.DocumentsOmitted = nil, true
 		}
 		if m.Source != nil {
@@ -797,6 +797,9 @@ func (s *ConversationService) SendConversationAgentMessage(ctx context.Context, 
 	if !conversationKey(in.ClientID) || !conversationKey(in.ToAgentID) || !conversationText(in.Content, 8192, true) || in.BriefVersion < 1 {
 		return out, conversationFailure("bad_request", "agent_message_invalid")
 	}
+	if len(in.Documents) > 0 {
+		return out, conversationFailure("bad_request", "agent_message_documents_unsupported")
+	}
 	repo, err := s.collaborationRepository()
 	if err != nil {
 		return out, err
@@ -809,14 +812,6 @@ func (s *ConversationService) SendConversationAgentMessage(ctx context.Context, 
 	}
 	if err = s.authorizeCollaboration(ctx, "communicate", &d, a); err != nil {
 		return out, err
-	}
-	if len(in.Documents) > 0 {
-		if err = s.authorizeCollaboration(ctx, "share", &d, a); err != nil {
-			return out, err
-		}
-		if err = s.checkSharedDocuments(ctx, in.Documents, a); err != nil {
-			return out, err
-		}
 	}
 	if d.OwnerUserID != "" && d.OwnerUserID != a.UserID && !delegationExecutor(d, a) {
 		if err = s.validateAgentSharingSubjects(ctx, a, []string{d.OwnerUserID}); err != nil {

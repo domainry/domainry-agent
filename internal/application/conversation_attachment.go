@@ -81,11 +81,13 @@ func (s *ConversationService) UploadAttachment(ctx context.Context, conversation
 	if _, err := s.attachmentAccess(ctx, "attachments_upload", a); err != nil {
 		cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
 		defer cancel()
-		_, _ = repo.TransitionAttachment(cleanupCtx, record.Attachment.ID, record.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "deleting"}, a)
-		s.wakeAttachmentIndex()
+		if deleting, transitionErr := repo.TransitionAttachment(cleanupCtx, record.Attachment.ID, record.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "deleting"}, a); transitionErr == nil {
+			_ = repo.DeleteAttachmentContent(cleanupCtx, record.Attachment.ID, a)
+			_, _ = repo.TransitionAttachment(cleanupCtx, record.Attachment.ID, deleting.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "deleted"}, a)
+		}
 		return zero, err
 	}
-	return s.attachmentIndexView(ctx, record, a), nil
+	return s.attachmentView(record.Attachment), nil
 }
 
 func (s *ConversationService) attachmentView(item agentsdk.ConversationAttachment) agentsdk.ConversationAttachment {
@@ -128,7 +130,7 @@ func (s *ConversationService) Attachment(ctx context.Context, conversationID, id
 	if err != nil {
 		return agentsdk.ConversationAttachment{}, err
 	}
-	return s.attachmentIndexView(ctx, record, a), nil
+	return s.attachmentView(record.Attachment), nil
 }
 
 func (s *ConversationService) DownloadAttachment(ctx context.Context, conversationID, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationAttachmentDownload, error) {
@@ -178,7 +180,7 @@ func (s *ConversationService) DeleteAttachment(ctx context.Context, conversation
 		return zero, err
 	}
 	if record.Attachment.State == "deleted" {
-		return s.attachmentIndexView(ctx, record, a), nil
+		return s.attachmentView(record.Attachment), nil
 	}
 	if record.Attachment.State != "deleting" {
 		record, err = repo.TransitionAttachment(ctx, id, expected, persistence.ConversationAttachmentTransition{State: "deleting"}, a)
@@ -186,10 +188,14 @@ func (s *ConversationService) DeleteAttachment(ctx context.Context, conversation
 			return zero, err
 		}
 	}
-	s.wakeAttachmentIndex()
-	// The durable worker owns physical cleanup. The immediate result confirms
-	// revoked Access and honestly reports that cleanup is still pending.
-	return s.attachmentIndexView(ctx, record, a), nil
+	if err = repo.DeleteAttachmentContent(ctx, id, a); err != nil {
+		return zero, err
+	}
+	record, err = repo.TransitionAttachment(ctx, id, record.Attachment.Revision, persistence.ConversationAttachmentTransition{State: "deleted"}, a)
+	if err != nil {
+		return zero, err
+	}
+	return s.attachmentView(record.Attachment), nil
 }
 
 var _ agentsdk.ConversationAttachmentService = (*ConversationService)(nil)

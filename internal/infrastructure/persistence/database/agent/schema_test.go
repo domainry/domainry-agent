@@ -12,15 +12,15 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 16 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
+			if len(migrations) != 15 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
 				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
 			byVersion := map[uint]string{}
 			for _, migration := range migrations {
 				byVersion[migration.Version] = strings.Join(migration.Statements, "\n")
 			}
-			if attachments := byVersion[7]; !strings.Contains(attachments, attachmentIndexJobTable) || !strings.Contains(attachments, attachmentKnowledgeSourceTable) {
-				t.Fatal("Agent attachment ownership migration v7 is missing")
+			if _, found := byVersion[7]; found {
+				t.Fatal("retired attachment indexing migration v7 remains")
 			}
 			if _, found := byVersion[8]; found {
 				t.Fatal("retired private attachment cleanup migration v8 remains")
@@ -141,17 +141,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if strings.Contains(joinedAll, "_agent_document_parses") {
 				t.Fatal("retired document parse table remains in fresh Agent schema")
 			}
-			for _, foreign := range []string{"_agent_user_todos", "_agent_todo_mutations"} {
-				if strings.Contains(joinedAll, foreign) {
-					t.Fatalf("Agent migration still owns Todo table %s", foreign)
-				}
-			}
-			for _, foreign := range []string{"_knowledge_conversation_artifacts", "_knowledge_conversation_artifact_versions", "_knowledge_libraries", "_knowledge_library_members", "_knowledge_documents", "_knowledge_sources", "_knowledge_document_jobs", "_knowledge_attachment_index_jobs"} {
-				if strings.Contains(joinedAll, foreign) {
-					t.Fatalf("Agent migration still owns Knowledge table %s", foreign)
-				}
-			}
-			for _, retired := range []string{"_agent_artifact_exports", "_agent_conversation_attachments", "_agent_attachment_cleanup", "_agent_subject_erasure_receipts", "_todo_subject_erasure_receipts", "_knowledge_subject_erasure_receipts"} {
+			for _, retired := range []string{"_agent_artifact_exports", "_agent_conversation_attachments", "_agent_attachment_cleanup", "_agent_subject_erasure_receipts"} {
 				if strings.Contains(joinedAll, retired) {
 					t.Fatalf("Agent migration still owns retired table %s", retired)
 				}

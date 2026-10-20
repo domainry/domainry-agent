@@ -172,84 +172,6 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 		}
 		return reader.ReadResult(ctx, r.ConversationID, r.RunID, r.ResultRead, a)
 	}
-	if op == "libraries_sources" || op == "libraries_bind_source" {
-		sources, ok := s.(agentsdk.KnowledgeDatasourceService)
-		if !ok {
-			return nil, conversationFailure("unavailable", "datasources_unavailable")
-		}
-		if op == "libraries_sources" {
-			return sources.KnowledgeLibrarySources(ctx, r.LibraryID, r.LibraryAfter, r.Limit, a)
-		}
-		return sources.BindKnowledgeLibrarySource(ctx, r.LibraryID, r.LibrarySourceWrite, a)
-	}
-	if op == "documents_transfer" {
-		transfer, ok := s.(agentsdk.KnowledgeDocumentTransferService)
-		if !ok {
-			return nil, conversationFailure("unavailable", "document_transfer_unavailable")
-		}
-		return transfer.TransferKnowledgeDocument(ctx, r.LibraryID, r.DocumentTransfer, a)
-	}
-	if op == "documents_import_attachment" {
-		importer, ok := s.(agentsdk.KnowledgeAttachmentImportService)
-		if !ok {
-			return nil, conversationFailure("unavailable", "document_import_unavailable")
-		}
-		return importer.ImportConversationAttachment(ctx, r.LibraryID, r.DocumentImport, a)
-	}
-	if op == "documents_retry" {
-		retry, ok := s.(agentsdk.KnowledgeDocumentRetryService)
-		if !ok {
-			return nil, conversationFailure("unavailable", "document_retry_unavailable")
-		}
-		return retry.RetryKnowledgeDocument(ctx, r.LibraryID, r.DocumentID, r.Revision, a)
-	}
-	if op == "documents_reindex" {
-		reindex, ok := s.(agentsdk.KnowledgeDocumentReindexService)
-		if !ok {
-			return nil, conversationFailure("unavailable", "document_reindex_unavailable")
-		}
-		return reindex.ReindexKnowledgeDocument(ctx, r.LibraryID, r.DocumentID, r.Revision, a)
-	}
-	if strings.HasPrefix(op, "libraries_") {
-		libraries, ok := s.(agentsdk.KnowledgeLibraryService)
-		if !ok {
-			return nil, conversationFailure("unavailable", "libraries_unavailable")
-		}
-		switch op {
-		case "libraries_create":
-			return libraries.CreateKnowledgeLibrary(ctx, r.LibraryCreate, a)
-		case "libraries_list":
-			return libraries.KnowledgeLibraries(ctx, r.LibraryAfter, r.Limit, a)
-		case "libraries_get":
-			return libraries.KnowledgeLibrary(ctx, r.LibraryID, a)
-		case "libraries_update":
-			return libraries.UpdateKnowledgeLibrary(ctx, r.LibraryID, r.LibraryUpdate, a)
-		case "libraries_members":
-			return libraries.KnowledgeLibraryMembers(ctx, r.LibraryID, r.LibraryAfter, r.Limit, a)
-		case "libraries_set_member":
-			return libraries.SetKnowledgeLibraryMember(ctx, r.LibraryID, r.LibraryUserID, r.LibraryMemberWrite, a)
-		case "libraries_remove_member":
-			return libraries.RemoveKnowledgeLibraryMember(ctx, r.LibraryID, r.LibraryUserID, r.Revision, a)
-		}
-	}
-	if strings.HasPrefix(op, "documents_") {
-		documents, ok := s.(agentsdk.KnowledgeDocumentService)
-		if !ok {
-			return nil, conversationFailure("unavailable", "documents_unavailable")
-		}
-		switch op {
-		case "documents_upload":
-			return documents.UploadKnowledgeDocument(ctx, r.LibraryID, r.DocumentUpload, a)
-		case "documents_list":
-			return documents.KnowledgeDocuments(ctx, r.LibraryID, r.DocumentAfter, r.Limit, a)
-		case "documents_get":
-			return documents.KnowledgeDocument(ctx, r.LibraryID, r.DocumentID, a)
-		case "documents_download":
-			return documents.DownloadKnowledgeDocument(ctx, r.LibraryID, r.DocumentID, a)
-		case "documents_delete":
-			return documents.DeleteKnowledgeDocument(ctx, r.LibraryID, r.DocumentID, r.Revision, a)
-		}
-	}
 	if strings.HasPrefix(op, "attachments_") {
 		attachments, ok := s.(agentsdk.ConversationAttachmentService)
 		if !ok {
@@ -258,18 +180,6 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 		switch op {
 		case "attachments_upload":
 			return attachments.UploadAttachment(ctx, r.ConversationID, r.AttachmentUpload, a)
-		case "attachments_index":
-			indexing, ok := s.(agentsdk.ConversationAttachmentIndexService)
-			if !ok {
-				return nil, conversationFailure("unavailable", "attachment_index_unavailable")
-			}
-			return indexing.IndexAttachment(ctx, r.ConversationID, r.AttachmentID, r.Revision, a)
-		case "attachments_check_index":
-			checking, ok := s.(agentsdk.ConversationAttachmentIndexCheckService)
-			if !ok {
-				return nil, conversationFailure("unavailable", "attachment_index_unavailable")
-			}
-			return checking.CheckAttachmentIndex(ctx, r.ConversationID, r.AttachmentID, r.Revision, a)
 		case "attachments_list":
 			return attachments.Attachments(ctx, r.ConversationID, r.AttachmentAfter, r.Limit, a)
 		case "attachments_get":
@@ -300,25 +210,6 @@ func InvokeConversation(ctx context.Context, s agentsdk.ConversationService, op 
 			return artifacts.ExportArtifact(ctx, r.ArtifactID, r.ArtifactExport, a)
 		case "artifacts_download":
 			return artifacts.DownloadArtifact(ctx, r.ArtifactExportID, a)
-		}
-	}
-	if strings.HasPrefix(op, "todos_") {
-		todos, ok := s.(agentsdk.ConversationTodoService)
-		if !ok {
-			return nil, conversationFailure("unavailable", "todos_unavailable")
-		}
-		switch op {
-		case "todos_list":
-			return todos.Todos(ctx, r.TodoQuery, a)
-		case "todos_get":
-			return todos.Todo(ctx, r.TodoID, a)
-		case "todos_create":
-			return todos.CreateTodos(ctx, r.TodoCreate, a)
-		case "todos_update":
-			return todos.UpdateTodo(ctx, r.TodoID, r.TodoUpdate, a)
-		case "todos_delete":
-			err := todos.DeleteTodo(ctx, r.TodoID, r.TodoDelete, a)
-			return map[string]bool{"deleted": err == nil}, err
 		}
 	}
 	if strings.HasPrefix(op, "tasks_") {

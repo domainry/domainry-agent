@@ -183,7 +183,7 @@ func TestDeliveredHistoryAndExecutionReadOriginalSourcesWithoutReaderTools(t *te
 				}
 				repo.missingMessage = false
 			}
-			attachment := sdk.AttachmentConversationTools()[0]
+			attachment := sdk.ConversationToolDefinition{Key: "private_file_read", Version: "1", Effect: "read"}
 			repo.snapshot.Calls = []persistence.ConversationToolExecution{{Step: 0, Definition: attachment, Call: sdk.ConversationToolCall{ID: "private", Name: attachment.Key, Arguments: `{}`}, State: "completed", Result: &sdk.ConversationToolResult{Status: "completed", Content: json.RawMessage(`{"text":"private attachment"}`)}}}
 			if err := read(); err == nil {
 				t.Fatal("wrapped source shared private attachment")

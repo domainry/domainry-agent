@@ -85,7 +85,7 @@ func TestProductSourceReadMemoReusesOverlappingPrefixesOnlyWithinOneAudit(t *tes
 func TestProductSourceReadMemoExcludesWritesAndCoreTools(t *testing.T) {
 	s := &ConversationService{}
 	audit := s.sourceAudit(sdk.ConversationAuthority{})
-	for _, definition := range append(sdk.PersonalConversationTools(), sdk.ConversationToolDefinition{Key: "crm_write", Effect: "write"}) {
+	for _, definition := range append(agentPersonalConversationTools(), sdk.ConversationToolDefinition{Key: "crm_write", Effect: "write"}) {
 		s.options.ToolDefinitions = []sdk.ConversationToolDefinition{definition}
 		record := persistence.ConversationToolExecution{State: "completed", Definition: definition, Call: sdk.ConversationToolCall{Name: definition.Key}, Result: &sdk.ConversationToolResult{Status: "completed"}}
 		if audit.memoizedProductRead(record) {

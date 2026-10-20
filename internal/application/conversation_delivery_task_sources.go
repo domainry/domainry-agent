@@ -11,7 +11,7 @@ import (
 func taskResultReadDefinition(key string) (sdk.ConversationToolDefinition, bool) {
 	switch key {
 	case "task_start", "task_get", "task_list", "task_cancel", "task_resume", "task_update", "task_review":
-		for _, definition := range sdk.PersonalConversationTools() {
+		for _, definition := range agentPersonalConversationTools() {
 			if definition.Key == key {
 				return definition, true
 			}

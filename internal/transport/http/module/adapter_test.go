@@ -13,7 +13,8 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
-	agenttestsupport "github.com/domainry/domainry-agent/testsupport"
+	"github.com/domainry/domainry-agent/internal/capability"
+	agenttestsupport "github.com/domainry/domainry-agent/internal/testsupport"
 	"github.com/domainry/domainry-foundation/modulehttp"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
@@ -182,17 +183,12 @@ func TestFullSurfaceIsAnExactProjectionOfTheCompleteActionManifest(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	actions, err := agentsdk.AgentAuthorizationActions()
+	actions, err := capability.AuthorizationActions()
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(actions) == 0 || len(adapter.Routes()) != 23 {
 		t.Fatalf("actions=%d routes=%d", len(actions), len(adapter.Routes()))
-	}
-	for _, action := range actions {
-		if strings.HasPrefix(action.Key, "knowledge.") || action.HTTP != nil && strings.HasPrefix(action.HTTP.RouteTemplate, "/knowledge/") {
-			t.Fatalf("Agent manifest republished Knowledge-owned Action: %+v", action)
-		}
 	}
 	conversation, err := NewConversationAdapter(conversationSurfaceStub{}, "runtime")
 	if err != nil {
@@ -324,90 +320,6 @@ func actionRequestIdentity(actionKey string) identitysdk.RequestIdentity {
 
 // The projection check needs metadata only; invocation is covered separately.
 type conversationSurfaceStub struct{ agentsdk.ConversationService }
-
-type seekContent struct{ *strings.Reader }
-
-func (*seekContent) Close() error { return nil }
-
-type conversationDocumentStreamStub struct {
-	agentsdk.ConversationService
-	authority agentsdk.ConversationAuthority
-	library   string
-	document  string
-	clientID  string
-	filename  string
-	bytes     int64
-	offset    int64
-	chunkHash string
-	sha256    string
-	content   string
-}
-
-func (stub *conversationDocumentStreamStub) DownloadKnowledgeDocument(_ context.Context, library, document string, authority agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocumentDownload, error) {
-	stub.library, stub.document, stub.authority = library, document, authority
-	return agentsdk.KnowledgeDocumentDownload{Document: agentsdk.KnowledgeDocument{ID: document, LibraryID: library, Filename: "guide.pdf", SHA256: strings.Repeat("a", 64), Bytes: 25}, Content: &seekContent{strings.NewReader("shared immutable original")}}, nil
-}
-
-func (stub *conversationDocumentStreamStub) UploadKnowledgeDocument(_ context.Context, library string, input agentsdk.KnowledgeDocumentUpload, authority agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocument, error) {
-	raw, err := io.ReadAll(input.Content)
-	if err != nil {
-		return agentsdk.KnowledgeDocument{}, err
-	}
-	stub.library, stub.clientID, stub.filename, stub.bytes, stub.sha256, stub.content, stub.authority = library, input.ClientID, input.Filename, input.Bytes, input.SHA256, string(raw), authority
-	return agentsdk.KnowledgeDocument{ID: "kdoc_" + strings.Repeat("b", 32), LibraryID: library, Filename: input.Filename, SHA256: input.SHA256, Bytes: input.Bytes, State: "queued"}, nil
-}
-
-func (stub *conversationDocumentStreamStub) UploadKnowledgeDocumentChunk(_ context.Context, library string, input agentsdk.KnowledgeDocumentUploadChunk, authority agentsdk.ConversationAuthority) (agentsdk.KnowledgeDocumentUploadProgress, error) {
-	raw, err := io.ReadAll(input.Content)
-	if err != nil {
-		return agentsdk.KnowledgeDocumentUploadProgress{}, err
-	}
-	stub.library, stub.clientID, stub.filename, stub.bytes, stub.offset, stub.chunkHash, stub.sha256, stub.content, stub.authority = library, input.ClientID, input.Filename, input.Bytes, input.Offset, input.ChunkSHA256, input.SHA256, string(raw), authority
-	document := agentsdk.KnowledgeDocument{ID: "kdoc_" + strings.Repeat("b", 32), LibraryID: library, Filename: input.Filename, SHA256: input.SHA256, Bytes: input.Bytes, State: "queued"}
-	return agentsdk.KnowledgeDocumentUploadProgress{NextOffset: input.Bytes, Complete: true, Document: &document}, nil
-}
-
-func TestAgentHTTPDoesNotRepublishKnowledgeDocumentUpload(t *testing.T) {
-	service := &conversationDocumentStreamStub{}
-	adapter, err := NewConversationAdapter(service, "runtime-owner")
-	if err != nil {
-		t.Fatal(err)
-	}
-	hash := strings.Repeat("a", 64)
-	request := httptest.NewRequest(http.MethodPost, "/agent/knowledge-libraries/lib_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/documents?client_id=upload-1&filename=guide.pdf", strings.NewReader("immutable original"))
-	request.Header.Set("Content-Type", "application/octet-stream")
-	request.Header.Set("Content-Range", "bytes 0-17/18")
-	request.Header.Set("X-Agent-File-SHA256", hash)
-	request.Header.Set("X-Agent-Chunk-SHA256", strings.Repeat("b", 64))
-	request = request.WithContext(identitysdk.WithRequestIdentity(request.Context(), identitysdk.RequestIdentity{Principal: identitysdk.Principal{Known: true, WorkspaceID: "workspace-a", UserID: "editor-a", RoleKey: "editor"}}))
-	response := httptest.NewRecorder()
-	adapter.Handler().ServeHTTP(response, request)
-	if response.Code != http.StatusNotFound {
-		t.Fatalf("status=%d body=%s", response.Code, response.Body.String())
-	}
-	if service.library != "" || service.clientID != "" || service.content != "" {
-		t.Fatalf("retired Agent route reached Knowledge service: %+v", service)
-	}
-}
-
-func TestAgentHTTPDoesNotRepublishKnowledgeDocumentDownload(t *testing.T) {
-	service := &conversationDocumentStreamStub{}
-	adapter, err := NewConversationAdapter(service, "runtime-owner")
-	if err != nil {
-		t.Fatal(err)
-	}
-	request := httptest.NewRequest(http.MethodGet, "/agent/knowledge-libraries/lib_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/documents/kdoc_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/content", nil)
-	request.Header.Set("Range", "bytes=7-15")
-	request = request.WithContext(identitysdk.WithRequestIdentity(request.Context(), identitysdk.RequestIdentity{Principal: identitysdk.Principal{Known: true, WorkspaceID: "workspace-a", UserID: "reader-a", RoleKey: "reader"}}))
-	response := httptest.NewRecorder()
-	adapter.Handler().ServeHTTP(response, request)
-	if response.Code != http.StatusNotFound {
-		t.Fatalf("status=%d headers=%v body=%q", response.Code, response.Header(), response.Body.String())
-	}
-	if service.library != "" || service.document != "" {
-		t.Fatalf("retired Agent route reached Knowledge service: library=%q document=%q", service.library, service.document)
-	}
-}
 
 type conversationProvenanceSurfaceStub struct {
 	agentsdk.ConversationService

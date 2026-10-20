@@ -10,7 +10,7 @@ import (
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	agentdefinition "github.com/domainry/domainry-agent/definition"
+	agentdefinition "github.com/domainry/domainry-agent/internal/definition"
 )
 
 type capabilityFeedbackRepository struct {

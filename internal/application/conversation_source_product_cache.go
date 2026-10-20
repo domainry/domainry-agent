@@ -51,19 +51,13 @@ func (audit *conversationSourceAudit) memoizedProductRead(record persistence.Con
 	}
 	// Core tools have their own provenance, release and traversal semantics.
 	// Restrict this memo to exact source-owned registered product contracts.
-	if _, ok := businessTool(record.Call.Name); ok {
-		return false
-	}
-	if _, ok := knowledgeTool(record.Call.Name); ok {
-		return false
-	}
 	if _, ok := artifactTool(record.Call.Name); ok {
 		return false
 	}
 	if _, ok := scheduleResultReadDefinition(record.Call.Name); ok {
 		return false
 	}
-	for _, definition := range sdk.PersonalConversationTools() {
+	for _, definition := range agentPersonalConversationTools() {
 		if definition.Key == record.Call.Name {
 			return false
 		}

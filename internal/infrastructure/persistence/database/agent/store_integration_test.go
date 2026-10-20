@@ -19,12 +19,8 @@ import (
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
-	knowledgecontract "github.com/domainry/domainry-knowledge-sdk/contract"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
 	"github.com/domainry/domainry-orm/migration"
-	todocontract "github.com/domainry/domainry-todo-sdk/contract"
-	todomodule "github.com/domainry/domainry-todo/module"
 	_ "modernc.org/sqlite"
 )
 
@@ -82,28 +78,6 @@ func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 			}
 		}
 	}
-	todoMigrations, err := todomodule.SchemaMigrations(dialect.WithSchema(""))
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, migration := range todoMigrations {
-		for _, statement := range migration.Statements {
-			if _, err = database.ExecContext(t.Context(), statement); err != nil {
-				t.Fatal(err)
-			}
-		}
-	}
-	knowledgeMigrations, err := knowledgemodule.SchemaMigrations(dialect.WithSchema(""))
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, migration := range knowledgeMigrations {
-		for _, statement := range migration.Statements {
-			if _, err = database.ExecContext(t.Context(), statement); err != nil {
-				t.Fatal(err)
-			}
-		}
-	}
 	artifactMigration, err := sharedartifact.SchemaMigrationForDialect(dialect.WithSchema(""))
 	if err != nil {
 		t.Fatal(err)
@@ -138,28 +112,7 @@ func (testModuleRegistrar) ApplyOwnedMigrations(context.Context, string, []migra
 
 func newTestConversationStore(t *testing.T, store *Store) *ConversationStore {
 	t.Helper()
-	repository := NewConversationStore(store)
-	registrar := testModuleRegistrar{}
-	knowledge, err := knowledgemodule.NewFactory().OpenModule(t.Context(), knowledgecontract.ApplicationRef{RuntimeID: "runtime"}, NewKnowledgeModuleHost(repository, registrar))
-	if err != nil {
-		t.Fatal(err)
-	}
-	todo, err := todomodule.NewFactory().OpenModule(t.Context(), todocontract.ApplicationRef{RuntimeID: "runtime"}, NewTodoModuleHost(repository, registrar))
-	if err != nil {
-		_ = knowledge.Close(t.Context())
-		t.Fatal(err)
-	}
-	if err = repository.BindKnowledge(knowledge); err != nil {
-		t.Fatal(err)
-	}
-	if err = repository.BindTodo(todo); err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		_ = todo.Close(context.Background())
-		_ = knowledge.Close(context.Background())
-	})
-	return repository
+	return NewConversationStore(store)
 }
 
 func applyOperationMigrations(t *testing.T, database *sql.DB, dialect sharedoperation.Dialect) {

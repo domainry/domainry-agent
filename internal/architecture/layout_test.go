@@ -11,6 +11,25 @@ import (
 	"testing"
 )
 
+func TestRootDirectoryContainsOnlyModuleEntrypoints(t *testing.T) {
+	entries, err := os.ReadDir("../..")
+	if err != nil {
+		t.Fatal(err)
+	}
+	allowed := map[string]bool{
+		"cmd": true, "docs": true, "internal": true,
+		"module": true, "remote": true, "saas": true,
+	}
+	for _, entry := range entries {
+		if !entry.IsDir() || strings.HasPrefix(entry.Name(), ".") {
+			continue
+		}
+		if !allowed[entry.Name()] {
+			t.Errorf("root directory %q is not a public module entrypoint", entry.Name())
+		}
+	}
+}
+
 // Applications own policy and orchestration. Concrete storage, transports and
 // other service implementations belong behind SDK contracts and composition.
 func TestApplicationDoesNotImportAdaptersOrOtherServiceImplementations(t *testing.T) {
@@ -166,7 +185,7 @@ func TestLifecycleOwnershipDoesNotCrossDomainTables(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, foreign := range []string{"_agent_user_todos", "_agent_todo_mutations", "_agent_attachments", "_knowledge_"} {
+	for _, foreign := range []string{"_agent_attachments"} {
 		if strings.Contains(string(subject), foreign) {
 			t.Errorf("Agent subject lifecycle reaches another owner's table %q", foreign)
 		}

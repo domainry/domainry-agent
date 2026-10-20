@@ -82,7 +82,7 @@ func (audit *conversationSourceAudit) artifactToolResult(ctx context.Context, ow
 	}
 	var roots []agentsdk.ConversationRunReference
 	check := func(meta agentsdk.ConversationArtifact) (persistence.ConversationArtifactRecord, error) {
-		// Knowledge owns current read authorization and owner-scoped access;
+		// Agent owns current artifact authorization and owner-scoped access;
 		// reading never acquires a mutation lease or repeats the operation.
 		reader, err := audit.s.artifactAccess(ctx, audit.a, "artifact_read", map[string]any{"id": meta.ID, "version": meta.Version})
 		if err != nil {
@@ -203,7 +203,7 @@ func (audit *conversationSourceAudit) artifactToolResult(ctx context.Context, ow
 		}
 	}
 	// Preserve this exact access dependency in summaries and derived replies,
-	// including owner-created content without an underlying knowledge source.
+	// including owner-created content without an underlying product source.
 	if owner.ConversationID != "" && owner.RunID != "" {
 		roots = mergeConversationSources(roots, []agentsdk.ConversationRunReference{{ConversationID: owner.ConversationID, RunID: owner.RunID, BeforeStep: execution.Step + 2}})
 	}

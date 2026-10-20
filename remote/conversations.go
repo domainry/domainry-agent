@@ -123,30 +123,3 @@ func (c *conversationClient) Respond(ctx context.Context, id, run string, respon
 }
 
 var _ agentsdk.ConversationInteractionService = (*conversationClient)(nil)
-
-func (c *conversationClient) Todos(ctx context.Context, in agentsdk.ConversationTodoQuery, a agentsdk.ConversationAuthority) (agentsdk.ConversationTodoPage, error) {
-	var out agentsdk.ConversationTodoPage
-	err := c.call(ctx, "todos_list", agentsdk.ConversationRPCRequest{Authority: a, TodoQuery: in}, &out)
-	return out, err
-}
-func (c *conversationClient) Todo(ctx context.Context, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationTodo, error) {
-	var out agentsdk.ConversationTodo
-	err := c.call(ctx, "todos_get", agentsdk.ConversationRPCRequest{Authority: a, TodoID: id}, &out)
-	return out, err
-}
-func (c *conversationClient) CreateTodos(ctx context.Context, in agentsdk.ConversationTodoCreate, a agentsdk.ConversationAuthority) (agentsdk.ConversationTodoBatch, error) {
-	var out agentsdk.ConversationTodoBatch
-	err := c.call(ctx, "todos_create", agentsdk.ConversationRPCRequest{Authority: a, TodoCreate: in}, &out)
-	return out, err
-}
-func (c *conversationClient) UpdateTodo(ctx context.Context, id string, in agentsdk.ConversationTodoUpdate, a agentsdk.ConversationAuthority) (agentsdk.ConversationTodo, error) {
-	var out agentsdk.ConversationTodo
-	err := c.call(ctx, "todos_update", agentsdk.ConversationRPCRequest{Authority: a, TodoID: id, TodoUpdate: in}, &out)
-	return out, err
-}
-func (c *conversationClient) DeleteTodo(ctx context.Context, id string, in agentsdk.ConversationTodoDelete, a agentsdk.ConversationAuthority) error {
-	var out map[string]bool
-	return c.call(ctx, "todos_delete", agentsdk.ConversationRPCRequest{Authority: a, TodoID: id, TodoDelete: in}, &out)
-}
-
-var _ agentsdk.ConversationTodoService = (*conversationClient)(nil)

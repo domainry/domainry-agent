@@ -6,8 +6,8 @@ import (
 	"github.com/domainry/domainry-foundation/schemaownership"
 )
 
-// SchemaOwnership returns only Agent-owned physical tables. Shared Foundation,
-// Knowledge and Todo tables remain registered by their source-owning modules.
+// SchemaOwnership returns only Agent-owned physical tables. Shared Foundation
+// and product-module tables remain registered by their source-owning modules.
 func SchemaOwnership() []schemaownership.Table { return agentstore.SchemaOwnership() }
 
 func OwnedTables() []string { return schemaownership.Names(SchemaOwnership()) }

@@ -12,12 +12,12 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	persistence "github.com/domainry/domainry-agent-sdk/persistence"
+	"github.com/domainry/domainry-agent/internal/capability"
 )
 
 type PersonalConversationHost struct {
 	artifacts  *ConversationService
 	tasks      *ConversationService
-	knowledge  ConversationKnowledge
 	repo       persistence.ConversationRepository
 	history    persistence.ConversationHistoryRepository
 	authorizer agentsdk.ConversationToolAuthorizer
@@ -42,7 +42,7 @@ func NewPersonalConversationHost(repo persistence.ConversationRepository, author
 
 func (h *PersonalConversationHost) ConversationTools(ctx context.Context, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationToolDefinition, error) {
 	out := []agentsdk.ConversationToolDefinition{}
-	for _, definition := range append(agentsdk.PersonalConversationTools(), agentsdk.ArtifactConversationTools()...) {
+	for _, definition := range append(agentPersonalConversationTools(), agentsdk.ArtifactConversationTools()...) {
 		if !h.supportsPersonalTool(definition) {
 			continue
 		}
@@ -73,7 +73,7 @@ func (h *PersonalConversationHost) AuthorizeConversationTool(ctx context.Context
 	}
 	// The supplied definition is trusted only after matching source registration.
 	known := false
-	for _, definition := range append(agentsdk.PersonalConversationTools(), agentsdk.ArtifactConversationTools()...) {
+	for _, definition := range append(agentPersonalConversationTools(), agentsdk.ArtifactConversationTools()...) {
 		if conversationDigest(in.Definition) == conversationDigest(definition) {
 			known = true
 			break
@@ -194,11 +194,6 @@ func (h *PersonalConversationHost) supportsPersonalTool(definition agentsdk.Conv
 	if definition.Key == "tool_result_read" {
 		_, ok := h.repo.(persistence.ConversationResultRepository)
 		return ok
-	}
-	if strings.HasPrefix(definition.Key, "todo_") {
-		if _, ok := h.repo.(persistence.ConversationTodoRepository); !ok {
-			return false
-		}
 	}
 	if definition.Key == "ask_user" || definition.Effect == "write" {
 		if !h.supportsConversationInteractions() {
@@ -372,50 +367,8 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 			return agentsdk.ConversationToolResult{}, err
 		}
 		return personalToolResult(map[string]any{"task": compactConversationTask(task)})
-	case "memory_save", "memory_forget", "todo_create", "todo_update", "todo_delete":
+	case "memory_save", "memory_forget":
 		return h.repo.(persistence.ConversationPersonalMutationRepository).ApplyPersonalTool(ctx, in)
-	case "todo_get":
-		var args struct {
-			ID string `json:"id"`
-		}
-		_ = json.Unmarshal([]byte(in.Call.Arguments), &args)
-		item, err := h.repo.(persistence.ConversationTodoRepository).Todo(ctx, args.ID, in.Authority)
-		if err != nil {
-			return agentsdk.ConversationToolResult{}, err
-		}
-		return personalToolResult(item)
-	case "todo_list":
-		var args struct {
-			Query   string `json:"query"`
-			Status  string `json:"status"`
-			Scope   string `json:"scope"`
-			BatchID string `json:"batch_id"`
-			Cursor  string `json:"cursor"`
-			Limit   int    `json:"limit"`
-		}
-		_ = json.Unmarshal([]byte(in.Call.Arguments), &args)
-		query := agentsdk.ConversationTodoQuery{Query: args.Query, Status: args.Status, BatchID: args.BatchID, Cursor: args.Cursor, Limit: args.Limit}
-		if args.Scope == "current_conversation" {
-			if in.ConversationID == "" {
-				return personalToolFailure("todo_conversation_required"), nil
-			}
-			query.SourceConversationID = in.ConversationID
-		}
-		page, err := h.repo.(persistence.ConversationTodoRepository).Todos(ctx, query, in.Authority)
-		if err != nil {
-			return agentsdk.ConversationToolResult{}, err
-		}
-		if len(page.Items) == 0 && (args.Query != "" || args.Scope == "current_conversation" || args.BatchID != "") {
-			scope := "all"
-			if args.Scope == "current_conversation" {
-				scope = args.Scope
-			}
-			return personalToolResult(struct {
-				agentsdk.ConversationTodoPage
-				Lookup map[string]any `json:"lookup"`
-			}{page, map[string]any{"query": args.Query, "scope": scope, "batch_id": args.BatchID, "status": args.Status, "match_fields": []string{"title", "description"}, "match_mode": "literal_substring", "note": "These results apply only to the supplied filters. Project and conversation names are not searched. A filtered empty page does not mean no todos exist; original titles or batch IDs may be found in available history, or by listing without the query. A current_conversation scope excludes work created in other conversations."}})
-		}
-		return personalToolResult(page)
 	case "time_now":
 		var args timeutil.Input
 		_ = json.Unmarshal([]byte(in.Call.Arguments), &args)
@@ -548,6 +501,10 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		return personalToolResult(map[string]any{"items": found, "complete": complete, "next_cursor": next})
 	}
 	return personalToolFailure("tool_unavailable"), nil
+}
+
+func agentPersonalConversationTools() []agentsdk.ConversationToolDefinition {
+	return capability.ConversationTools()
 }
 
 func (h *PersonalConversationHost) ReconcileConversationTool(ctx context.Context, in agentsdk.ConversationToolRequest) (agentsdk.ConversationToolResult, error) {

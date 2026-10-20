@@ -20,7 +20,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	agentremote "github.com/domainry/domainry-agent/remote"
-	agentserver "github.com/domainry/domainry-agent/server"
+	agentserver "github.com/domainry/domainry-agent/saas"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	identityremote "github.com/domainry/domainry-identity-sdk/remote"
 )

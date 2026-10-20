@@ -18,10 +18,8 @@ func TestOptionsFromEnvironmentLoadsConversationCapacityLimits(t *testing.T) {
 	t.Setenv("AGENT_CONVERSATION_MODEL_MAX_ATTEMPTS", "4")
 	t.Setenv("AGENT_CONVERSATION_MODEL_RETRY_BASE_DELAY", "100ms")
 	t.Setenv("AGENT_CONVERSATION_MODEL_RETRY_MAX_DELAY", "12s")
-	t.Setenv("AGENT_KNOWLEDGE_DOCUMENT_WORK_TIMEOUT", "75m")
-	t.Setenv("AGENT_KNOWLEDGE_DOCUMENT_UPLOAD_IDLE_TIMEOUT", "36h")
 	options := OptionsFromEnvironment().ConversationOptions
-	if options.ContextBytes != 8388608 || options.Workers != 4 || options.MaxParallelTools != 3 || options.MaxQueuedPerUser != 9 || options.MaxQueuedPerWorkspace != 90 || options.MaxRunningPerUser != 2 || options.MaxRunningPerWorkspace != 4 || options.RunTimeout != 6*time.Minute || options.ExternalCallTimeout != 50*time.Second || options.MaxModelAttempts != 4 || options.ModelRetryBaseDelay != 100*time.Millisecond || options.ModelRetryMaxDelay != 12*time.Second || options.DocumentWorkTimeout != 75*time.Minute || options.DocumentUploadIdleTimeout != 36*time.Hour {
+	if options.ContextBytes != 8388608 || options.Workers != 4 || options.MaxParallelTools != 3 || options.MaxQueuedPerUser != 9 || options.MaxQueuedPerWorkspace != 90 || options.MaxRunningPerUser != 2 || options.MaxRunningPerWorkspace != 4 || options.RunTimeout != 6*time.Minute || options.ExternalCallTimeout != 50*time.Second || options.MaxModelAttempts != 4 || options.ModelRetryBaseDelay != 100*time.Millisecond || options.ModelRetryMaxDelay != 12*time.Second {
 		t.Fatalf("options=%+v", options)
 	}
 	t.Setenv("AGENT_CONVERSATION_WORKERS", "invalid")

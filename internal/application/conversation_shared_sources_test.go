@@ -63,16 +63,6 @@ func TestSourceReleaseUsesProducerOnlyForImmutableEvidenceAndKeepsActualDataRead
 	if handled, err := audit.deliveryPersonalToolResult(ctx, owner, record); !handled || err != nil || repo.reads != 1 || audit.a != reader {
 		t.Fatal("released calculation was not independently checked with the real reader", handled, err, repo.reads)
 	}
-	// An authenticated private Todo receipt does not release the producer's Todo.
-	item := sdk.ConversationTodo{ID: "private", Title: "Producer private data", Revision: 1, Status: "open", Timezone: "Asia/Shanghai", SourceConversationID: "producer", SourceRunID: "run", CreatedAt: now, UpdatedAt: now}
-	definition, _ = personalResultReadDefinition("todo_get")
-	raw, _ = json.Marshal(item)
-	record.Definition, record.Call.Name, record.Call.Arguments = definition, "todo_get", `{"id":"private"}`
-	record.Result = &sdk.ConversationToolResult{Status: "completed", Content: raw}
-	repo.record, repo.todos = record, map[string]sdk.ConversationTodo{item.ID: item}
-	if handled, err := audit.deliveryPersonalToolResult(ctx, owner, record); !handled || err == nil {
-		t.Fatal("source release inherited producer's private data permission", handled, err)
-	}
 	policy.deniedRole = producer.RoleKey
 	if err := audit.authorizeReleasedSourceRead(ctx); !collaborationDenied(err) {
 		t.Fatal("revoked producer sharing permission survived", err)

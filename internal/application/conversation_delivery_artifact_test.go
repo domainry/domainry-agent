@@ -38,10 +38,10 @@ func TestDeliveryArtifactResourceMustOccurInAnArtifactReceipt(t *testing.T) {
 			if deliveryArtifactMatches(record, in) != (key == "artifact_export") {
 				t.Fatal("artifact receipt implicitly released an export")
 			}
-			record.Call.Name = "business_query"
+			record.Call.Name = "external_query"
 			in.ExportID = ""
 			if deliveryArtifactMatches(record, in) {
-				t.Fatal("business data with an artifact-shaped field released Knowledge")
+				t.Fatal("unrelated data with an artifact-shaped field released an artifact")
 			}
 		})
 	}

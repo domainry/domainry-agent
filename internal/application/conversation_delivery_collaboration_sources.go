@@ -7,7 +7,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/persistence"
 )
 
-// A released business/knowledge result can depend on the same delegation's
+// A released product result can depend on the same delegation's
 // working context. Validate that context using current collaboration/source
 // rights without requiring permission to run its communication/mutation tool.
 // The normal typed traversal still checks every nested source. This permission

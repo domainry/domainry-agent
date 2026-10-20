@@ -37,7 +37,7 @@ func TestPeerOutcomeInspectionCompositionNeverFallsBackToInvocation(t *testing.T
 	probe := &outcomeProbe{}
 	in := sdk.ConversationToolRequest{Definition: sdk.ConversationToolDefinition{Key: "write"}, IdempotencyKey: "original", OutcomeInspectionToken: "fenced-original"}
 	wrap := func(h sdk.ConversationToolHost) sdk.ConversationToolHost {
-		return &profileToolHost{allowed: map[string]bool{"write": true}, base: &extensionInteractionHost{ConversationToolHost: &collaborationToolHost{ConversationToolHost: &assemblyConfirmationHost{ConversationToolHost: &knowledgeConversationHost{base: &attachmentKnowledgeHost{base: &businessConversationHost{base: h}}}}}}}
+		return &profileToolHost{allowed: map[string]bool{"write": true}, base: &extensionInteractionHost{ConversationToolHost: &collaborationToolHost{ConversationToolHost: &assemblyConfirmationHost{ConversationToolHost: h}}}}
 	}
 	if _, err := inspectOutcome(t.Context(), wrap(probe), in); err == nil {
 		t.Fatal("unsupported host reported an outcome")

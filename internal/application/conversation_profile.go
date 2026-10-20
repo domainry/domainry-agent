@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	sdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-agent/definition"
+	"github.com/domainry/domainry-agent/internal/definition"
 	"slices"
 	"time"
 )
@@ -20,19 +20,12 @@ func (s *ConversationService) configureProfile() error {
 	if s.options.Agent == nil {
 		return nil
 	}
-	available := append(sdk.PersonalConversationTools(), sdk.ArtifactConversationTools()...)
+	available := append(agentPersonalConversationTools(), sdk.ArtifactConversationTools()...)
 	if s.options.CodeRuntime == nil || s.options.CodingRuntime == nil {
 		available = slices.DeleteFunc(available, func(definition sdk.ConversationToolDefinition) bool {
 			return s.options.CodeRuntime == nil && definition.Key == sdk.ConversationCodeToolKey || s.options.CodingRuntime == nil && sdk.IsConversationCodingTool(definition.Key)
 		})
 	}
-	available = append(available, sdk.KnowledgeConversationTools()...)
-	available = append(available, sdk.AttachmentConversationTools()...)
-	available = append(available, sdk.KnowledgeLibraryCatalogTool(), sdk.KnowledgeExtractionTool())
-	available = append(available, sdk.BusinessConversationTools()...)
-	available = append(available, sdk.BusinessRelationConversationTools()...)
-	available = append(available, sdk.BusinessActionConversationTools()...)
-	available = append(available, sdk.BusinessWorkflowConversationTools()...)
 	available = append(available, s.options.ToolDefinitions...)
 	keys := []string{}
 	for _, d := range available {

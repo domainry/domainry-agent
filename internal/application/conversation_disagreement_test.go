@@ -82,7 +82,7 @@ func TestPeerDisagreementContextAndHistoryRetainSourceBoundaries(t *testing.T) {
 	if err = s.checkRunSources(t.Context(), sdk.ConversationRunReference{ConversationID: "receiver", RunID: "receiver-run", BeforeStep: 1}, a); err != nil {
 		t.Fatal("later context tainted earlier boundary", err)
 	}
-	if err = s.checkRunSources(t.Context(), sdk.ConversationRunReference{ConversationID: "receiver", RunID: "receiver-run", BeforeStep: 2}, a); err == nil || !strings.Contains(err.Error(), "attachment_conversation_mismatch") {
+	if err = s.checkRunSources(t.Context(), sdk.ConversationRunReference{ConversationID: "receiver", RunID: "receiver-run", BeforeStep: 2}, a); err == nil || !strings.Contains(err.Error(), "tool_changed") {
 		t.Fatal("consumed context lost source access", err)
 	}
 	ctx := context.WithValue(t.Context(), conversationPeerRequestKey{}, conversationPeerRequest{ConversationID: "receiver"})

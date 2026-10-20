@@ -10,7 +10,6 @@ import (
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/artifact"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	knowledge "github.com/domainry/domainry-knowledge/module"
 	tools "github.com/domainry/domainry-tools-sdk"
 )
 
@@ -61,7 +60,7 @@ func (p *deliveryArtifactPolicy) ConversationToolAvailable(ctx context.Context, 
 	return !p.disabled[key], ctx.Err()
 }
 
-func TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions(t *testing.T) {
+func TestDeliveryArtifactsUseArtifactReadAccessAndExactSavedVersions(t *testing.T) {
 	for _, key := range []string{"artifact_create", "artifact_edit", "artifact_export", "artifact_read", "artifact_list", "artifact_versions"} {
 		t.Run(key, func(t *testing.T) {
 			a := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "user"}
@@ -73,7 +72,7 @@ func TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions(t *testing
 			meta := sdk.ConversationArtifact{ID: "art_" + strings.Repeat("a", 32), Version: 2, Title: "成果", Kind: "markdown", Bytes: len(body), SHA256: hash}
 			repo := &deliveryArtifactRepository{authority: a, record: persistence.ConversationArtifactRecord{Artifact: meta, Body: body, Sources: &sdk.ConversationSources{Version: 1}}}
 			policy := &deliveryArtifactPolicy{denied: map[string]bool{"artifact_create": true, "artifact_edit": true, "artifact_export": true}, disabled: map[string]bool{}}
-			s := &ConversationService{runtimeID: a.RuntimeID, repo: repo, options: ConversationOptions{KnowledgeRuntime: knowledge.NewServiceRuntime(repo), PersonalAuthorizer: policy, ToolAvailability: policy, CollaborationAuthorizer: fixedCollaborationTestPolicy{"view", "delivery_read"}}}
+			s := &ConversationService{runtimeID: a.RuntimeID, repo: repo, options: ConversationOptions{PersonalAuthorizer: policy, ToolAvailability: policy, CollaborationAuthorizer: fixedCollaborationTestPolicy{"view", "delivery_read"}}}
 			// Deliberately empty producer profile: viewing the released resource
 			// must not require the producer's old execution configuration.
 			host := &deliveryReadTestHost{}
@@ -115,10 +114,10 @@ func TestDeliveryArtifactsUseKnowledgeReadAccessAndExactSavedVersions(t *testing
 			ctx = deliverySourceContext(ctx, "released")
 			read := func() error { _, e := s.sourceAudit(a).record(ctx, owner, record); return e }
 			if err := read(); err != nil {
-				t.Fatal("Knowledge read grant did not release saved result", err)
+				t.Fatal("artifact read grant did not release saved result", err)
 			}
 			if host.reads != 0 || host.executionChecks != 0 {
-				t.Fatal("artifact bypassed Knowledge or checked producer execution")
+				t.Fatal("artifact bypassed read authorization or checked producer execution")
 			}
 			found := false
 			for _, request := range policy.requests {

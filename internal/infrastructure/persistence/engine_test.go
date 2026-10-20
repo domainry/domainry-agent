@@ -51,18 +51,6 @@ func TestEnsureSchemaUsesOneOwnerAwareLedgerForFoundationAndAgent(t *testing.T) 
 			t.Fatalf("table %s count=%d err=%v", table, count, err)
 		}
 	}
-	for _, table := range []string{"_agent_user_todos", "_knowledge_libraries", "_knowledge_library_members", "_knowledge_documents", "_knowledge_sources", "_knowledge_document_jobs"} {
-		var count int
-		if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 0 {
-			t.Fatalf("nested module table %s count=%d err=%v", table, count, err)
-		}
-	}
-	for _, retired := range []string{"_agent_owner_operation_receipts", "_agent_collaboration_mutations", "_agent_todo_mutations"} {
-		var count int
-		if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, retired).Scan(&count); err != nil || count != 0 {
-			t.Fatalf("retired Knowledge table %s count=%d err=%v", retired, count, err)
-		}
-	}
 	for _, table := range []string{"_agent_skill_definitions", "_agent_definitions", "_agent_task_definitions", "_agent_entrypoint_definitions", "_agent_service_principal_definitions"} {
 		var count int
 		if err := database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 0 {

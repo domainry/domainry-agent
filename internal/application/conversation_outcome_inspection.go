@@ -31,16 +31,6 @@ func (h *assemblyConfirmationHost) InspectConversationToolOutcome(ctx context.Co
 func (h *extensionInteractionHost) InspectConversationToolOutcome(ctx context.Context, in sdk.ConversationToolRequest) (sdk.ConversationToolResult, error) {
 	return inspectOutcome(ctx, h.ConversationToolHost, in)
 }
-func (h *knowledgeConversationHost) InspectConversationToolOutcome(ctx context.Context, in sdk.ConversationToolRequest) (sdk.ConversationToolResult, error) {
-	return inspectOutcome(ctx, h.base, in)
-}
-func (h *attachmentKnowledgeHost) InspectConversationToolOutcome(ctx context.Context, in sdk.ConversationToolRequest) (sdk.ConversationToolResult, error) {
-	return inspectOutcome(ctx, h.base, in)
-}
-func (h *businessConversationHost) InspectConversationToolOutcome(ctx context.Context, in sdk.ConversationToolRequest) (sdk.ConversationToolResult, error) {
-	return inspectOutcome(ctx, h.base, in)
-}
-
 func (s *ConversationService) inspectDelegationOutcome(ctx context.Context, d sdk.ConversationDelegation, in sdk.ConversationDelegationUpdate, a sdk.ConversationAuthority) (sdk.ConversationDelegationDetail, error) {
 	var out sdk.ConversationDelegationDetail
 	if in.Inspection == nil || in.Inspection.Step < 0 || in.Inspection.Step >= 256 {

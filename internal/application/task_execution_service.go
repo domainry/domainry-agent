@@ -16,7 +16,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
-	"github.com/domainry/domainry-agent/definition"
+	"github.com/domainry/domainry-agent/internal/definition"
 	"github.com/domainry/domainry-agent/internal/execution"
 	"github.com/domainry/domainry-foundation/apperror"
 	workerplatform "github.com/domainry/domainry-foundation/worker"

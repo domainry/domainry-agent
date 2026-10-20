@@ -244,7 +244,7 @@ func (s *ConversationService) projectParticipantDelegation(ctx context.Context, 
 		}
 		for i := range out.Messages {
 			m := &out.Messages[i]
-			denied := s.checkSharedDocuments(ctx, m.Documents, a) != nil
+			denied := len(m.Documents) > 0
 			if m.Source != nil && s.checkRunSources(ctx, *m.Source, a) != nil {
 				denied = true
 			}

@@ -17,35 +17,15 @@ import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
-	knowledgehttpapi "github.com/domainry/domainry-connectors/providers/knowledge_base/http_api"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	shareddefinition "github.com/domainry/domainry-foundation/definition"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	sharedsubjectlifecycle "github.com/domainry/domainry-foundation/subjectlifecycle"
 	sharedworkerscope "github.com/domainry/domainry-foundation/workerscope"
-	knowledgecontract "github.com/domainry/domainry-knowledge-sdk/contract"
-	knowledgeprovider "github.com/domainry/domainry-knowledge-sdk/provider"
-	knowledgesaashost "github.com/domainry/domainry-knowledge-sdk/saashost"
-	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	ormdialect "github.com/domainry/domainry-orm/dialect"
-	todocontract "github.com/domainry/domainry-todo-sdk/contract"
-	todosaashost "github.com/domainry/domainry-todo-sdk/saashost"
-	todomodule "github.com/domainry/domainry-todo/module"
 	_ "modernc.org/sqlite"
 	"testing"
 )
-
-type knowledgeSaaSFactoryStub struct{}
-
-func (knowledgeSaaSFactoryStub) OpenSaaS(context.Context, knowledgecontract.ApplicationRef) (knowledgesaashost.Binding, error) {
-	return nil, fmt.Errorf("not opened")
-}
-
-type todoSaaSFactoryStub struct{}
-
-func (todoSaaSFactoryStub) OpenSaaS(context.Context, todocontract.ApplicationRef) (todosaashost.Binding, error) {
-	return nil, fmt.Errorf("not opened")
-}
 
 type host struct {
 	runtimeID      string
@@ -58,69 +38,7 @@ type host struct {
 }
 
 func testFactory(options Options) *Factory {
-	options.KnowledgeFactory = knowledgemodule.NewFactory()
-	options.KnowledgeProviderFactory = knowledgemodule.NewProviderFactory(knowledgehttpapi.New)
-	options.TodoFactory = todomodule.NewFactory()
 	return NewFactory(options)
-}
-
-func testKnowledgeProviderFactory() knowledgeprovider.Factory {
-	return knowledgemodule.NewProviderFactory(knowledgehttpapi.New)
-}
-
-func testKnowledgeSource(config KnowledgeConfig) (knowledgeprovider.Source, error) {
-	return testKnowledgeProviderFactory().NewSource(config)
-}
-
-func testAttachmentKnowledgeSource(config KnowledgeConfig, runtimeID string) (agentsdk.ConversationAttachmentKnowledge, error) {
-	return newAttachmentKnowledge(config, runtimeID, testKnowledgeProviderFactory())
-}
-
-func TestModuleRejectsMixedOrIncompleteDependencyTopologies(t *testing.T) {
-	tests := []struct {
-		name    string
-		options Options
-		want    string
-	}{
-		{
-			name: "knowledge module and SaaS",
-			options: Options{
-				KnowledgeFactory:         knowledgemodule.NewFactory(),
-				KnowledgeSaaSFactory:     knowledgeSaaSFactoryStub{},
-				KnowledgeProviderFactory: testKnowledgeProviderFactory(),
-				TodoFactory:              todomodule.NewFactory(),
-			},
-			want: "exactly one Knowledge",
-		},
-		{
-			name: "todo module and SaaS",
-			options: Options{
-				KnowledgeFactory:         knowledgemodule.NewFactory(),
-				KnowledgeProviderFactory: testKnowledgeProviderFactory(),
-				TodoFactory:              todomodule.NewFactory(),
-				TodoSaaSFactory:          todoSaaSFactoryStub{},
-			},
-			want: "exactly one Todo",
-		},
-		{
-			name: "SaaS with local provider",
-			options: Options{
-				KnowledgeSaaSFactory:     knowledgeSaaSFactoryStub{},
-				KnowledgeProviderFactory: testKnowledgeProviderFactory(),
-				TodoSaaSFactory:          todoSaaSFactoryStub{},
-			},
-			want: "cannot use Agent-local Knowledge provider",
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			host := newHost(t, "dependency-topology-"+strings.ReplaceAll(test.name, " ", "-"))
-			_, err := NewFactory(test.options).OpenModule(t.Context(), agentsdk.ApplicationRef{RuntimeID: host.runtimeID}, host)
-			if err == nil || !strings.Contains(err.Error(), test.want) {
-				t.Fatalf("error=%v want=%q", err, test.want)
-			}
-		})
-	}
 }
 
 func TestModuleMigrationCreatesUnifiedAgentTablesAndIndexes(t *testing.T) {
@@ -192,7 +110,7 @@ func (h *host) ArtifactContentWriter() sharedartifact.ContentWriter { return h.c
 func (*host) Driver() string                                        { return "sqlite" }
 func (*host) Schema() string                                        { return "" }
 func (h *host) ApplyOwnedMigrations(ctx context.Context, owner string, migrations []modulehost.SchemaMigration) error {
-	if owner != "agent" && owner != sharedartifact.MigrationOwner && owner != shareddefinition.MigrationOwner && owner != sharedoperation.MigrationOwner && owner != sharedsubjectlifecycle.MigrationOwner && owner != sharedworkerscope.MigrationOwner && owner != todomodule.MigrationOwner && owner != knowledgemodule.MigrationOwner {
+	if owner != "agent" && owner != sharedartifact.MigrationOwner && owner != shareddefinition.MigrationOwner && owner != sharedoperation.MigrationOwner && owner != sharedsubjectlifecycle.MigrationOwner && owner != sharedworkerscope.MigrationOwner {
 		return &agentsdk.Error{Code: "wrong_owner", Message: owner}
 	}
 	h.owners = append(h.owners, owner)
@@ -231,24 +149,24 @@ func TestModuleDescriptor(t *testing.T) {
 	if b.Descriptor().Mode != agentsdk.DeploymentModeModule {
 		t.Fatalf("descriptor=%+v", b.Descriptor())
 	}
-	if len(host.applied) != 16 {
+	if len(host.applied) != 15 {
 		t.Fatalf("Agent migrations=%d", len(host.applied))
 	}
-	for _, owner := range []string{sharedoperation.MigrationOwner, sharedworkerscope.MigrationOwner, sharedsubjectlifecycle.MigrationOwner, todomodule.MigrationOwner, knowledgemodule.MigrationOwner, agentstore.MigrationOwner} {
+	for _, owner := range []string{sharedoperation.MigrationOwner, sharedworkerscope.MigrationOwner, sharedsubjectlifecycle.MigrationOwner, agentstore.MigrationOwner} {
 		if !slices.Contains(host.owners, owner) {
 			t.Fatalf("module migration owner %q missing from %v", owner, host.owners)
 		}
 	}
-	for _, table := range []string{sharedoperation.TableName, sharedworkerscope.TableName, "_subject_requests", "_subject_steps", "_agent_user_todos", "_knowledge_libraries", "_knowledge_library_members", "_knowledge_documents", "_knowledge_sources", "_knowledge_document_jobs"} {
+	for _, table := range []string{sharedoperation.TableName, sharedworkerscope.TableName, "_subject_requests", "_subject_steps"} {
 		var count int
 		if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, table).Scan(&count); err != nil || count != 1 {
 			t.Fatalf("module-owned table %s count=%d err=%v", table, count, err)
 		}
 	}
-	for _, retired := range []string{"_agent_document_parses", "_agent_owner_operation_receipts", "_agent_collaboration_mutations", "_agent_todo_mutations"} {
+	for _, retired := range []string{"_agent_document_parses", "_agent_owner_operation_receipts", "_agent_collaboration_mutations"} {
 		var count int
 		if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?`, retired).Scan(&count); err != nil || count != 0 {
-			t.Fatalf("retired Knowledge table %s count=%d err=%v", retired, count, err)
+			t.Fatalf("retired Agent table %s count=%d err=%v", retired, count, err)
 		}
 	}
 	for _, table := range []string{shareddefinition.TableName, shareddefinition.VersionTableName} {
@@ -275,7 +193,7 @@ func TestModuleDescriptor(t *testing.T) {
 	for _, handler := range subjects.LifecycleSubjectHandlers() {
 		owners = append(owners, handler.Owner(t.Context()))
 	}
-	if strings.Join(owners, ",") != "agent,todo" {
+	if strings.Join(owners, ",") != "agent" {
 		t.Fatalf("subject lifecycle owners=%v", owners)
 	}
 	ctx := agentsdk.WithAuthorizedServiceAction(t.Context(), agentsdk.ActionAgentTaskExecutionStart, agentsdk.AgentRuntimeServiceAudience)

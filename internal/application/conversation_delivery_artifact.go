@@ -24,7 +24,7 @@ func (s *ConversationService) authorizedDeliveryArtifact(ctx context.Context, id
 
 // Source validation happens before this projection. Matching only artifact
 // tools prevents a business response with an "artifact" field from releasing
-// unrelated Knowledge resources.
+// unrelated product resources.
 func deliveryArtifactMatches(record persistence.ConversationToolExecution, in sdk.ConversationDeliveryArtifactRead) bool {
 	if _, ok := artifactTool(record.Call.Name); !ok || record.Result == nil {
 		return false

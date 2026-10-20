@@ -17,61 +17,19 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
-	knowledgecontract "github.com/domainry/domainry-knowledge-sdk/contract"
-	knowledgemodulehost "github.com/domainry/domainry-knowledge-sdk/modulehost"
 	"github.com/domainry/domainry-orm/query"
-	todocontract "github.com/domainry/domainry-todo-sdk/contract"
-	todomodulehost "github.com/domainry/domainry-todo-sdk/modulehost"
 )
 
 type ConversationStore struct {
 	store *Store
 
-	artifactStore    sharedartifact.ManagedStore
-	artifactContent  sharedartifact.ContentStore
-	artifactWriter   sharedartifact.ContentWriter
-	knowledgeRuntime knowledgecontract.Runtime
-	todos            todocontract.TodoService
-	todoMutations    todocontract.MutationService
-	todoTransactions todomodulehost.TransactionalMutator
+	artifactStore   sharedartifact.ManagedStore
+	artifactContent sharedartifact.ContentStore
+	artifactWriter  sharedartifact.ContentWriter
 
 	capacityMu         sync.RWMutex
 	capacityConfigured bool
 	capacityLimits     agentsdk.ConversationExecutionLimits
-}
-
-func (s *ConversationStore) BindKnowledge(binding knowledgemodulehost.ModuleBinding) error {
-	if binding == nil || binding.Runtime() == nil {
-		return errors.New("Knowledge module binding is incomplete")
-	}
-	s.knowledgeRuntime = binding.Runtime()
-	return nil
-}
-
-func (s *ConversationStore) BindRemoteKnowledge(runtime knowledgecontract.Runtime) error {
-	if runtime == nil {
-		return errors.New("Knowledge SaaS binding is incomplete")
-	}
-	s.knowledgeRuntime = runtime
-	return nil
-}
-
-func (s *ConversationStore) KnowledgeRuntime() knowledgecontract.Runtime { return s.knowledgeRuntime }
-
-func (s *ConversationStore) BindTodo(binding todomodulehost.ModuleBinding) error {
-	if binding == nil || binding.Todos() == nil || binding.Mutations() == nil {
-		return errors.New("Todo module binding is incomplete")
-	}
-	s.todos, s.todoMutations, s.todoTransactions = binding.Todos(), binding.Mutations(), binding.Mutations()
-	return nil
-}
-
-func (s *ConversationStore) BindRemoteTodo(todos todocontract.TodoService, mutations todocontract.MutationService) error {
-	if todos == nil || mutations == nil {
-		return errors.New("Todo SaaS binding is incomplete")
-	}
-	s.todos, s.todoMutations, s.todoTransactions = todos, mutations, nil
-	return nil
 }
 
 func NewConversationStore(s *Store) *ConversationStore {

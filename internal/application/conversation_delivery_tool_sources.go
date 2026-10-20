@@ -11,8 +11,8 @@ import (
 )
 
 // Only a service-authorized delivery projection can use the independent
-// source read policy. Local knowledge, private files and collaboration tools
-// retain their own reference traversal and are not treated as opaque outputs.
+// source read policy. Agent-owned artifacts and collaboration tools retain
+// their own reference traversal and are not treated as opaque outputs.
 func (audit *conversationSourceAudit) deliveryToolResult(ctx context.Context, owner sdk.ConversationRunReference, record persistence.ConversationToolExecution) (bool, error) {
 	scope := releasedSourcePurpose(ctx)
 	if scope == "" {
@@ -23,16 +23,10 @@ func (audit *conversationSourceAudit) deliveryToolResult(ctx context.Context, ow
 			return handled, err
 		}
 	}
-	if _, local := knowledgeTool(record.Call.Name); local {
-		return false, nil
-	}
 	if _, local := artifactTool(record.Call.Name); local {
 		return false, nil
 	}
-	if _, local := businessTool(record.Call.Name); local {
-		return false, nil
-	}
-	for _, definition := range sdk.PersonalConversationTools() {
+	for _, definition := range agentPersonalConversationTools() {
 		if definition.Key == record.Call.Name {
 			return false, nil
 		}

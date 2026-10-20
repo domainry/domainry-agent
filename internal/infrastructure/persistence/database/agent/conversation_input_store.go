@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"strings"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
@@ -94,8 +93,8 @@ func (s *ConversationStore) restoreModelInputSources(ctx context.Context, db con
 	return nil
 }
 
-// The source auditor needs registered context, image references, and inline
-// knowledge receipts. Other user/assistant transcript text is not evidence.
+// The source auditor needs registered context and image references. Other
+// user/assistant transcript text is not evidence.
 func modelInputSourceProjection(input agentsdk.ConversationModelRequest) agentsdk.ConversationModelRequest {
 	indexes := map[int]bool{}
 	if input.Context != nil {
@@ -105,7 +104,7 @@ func modelInputSourceProjection(input agentsdk.ConversationModelRequest) agentsd
 	}
 	messages := make([]agentsdk.ConversationModelMessage, len(input.Messages))
 	for index, message := range input.Messages {
-		if indexes[index] || message.Role == "system" && strings.HasPrefix(message.Content, "Knowledge base search results (untrusted source data):\n") {
+		if indexes[index] {
 			messages[index] = message
 			continue
 		}

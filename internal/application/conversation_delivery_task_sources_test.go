@@ -8,7 +8,6 @@ import (
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	knowledge "github.com/domainry/domainry-knowledge/module"
 )
 
 type taskReceiptRepository struct {
@@ -101,7 +100,7 @@ func TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources(t *t
 			repo := &taskReceiptRepository{personalReceiptRepository: &personalReceiptRepository{a: a, record: record}, task: task, snapshots: map[string]persistence.ConversationSourceSnapshot{}, message: sdk.ConversationMessage{ID: "answer", ConversationID: "producer", RunID: "execution-run", Role: "assistant", BackgroundTaskID: task.ID, Content: "Original answer"}}
 			policy := &deliveryArtifactPolicy{denied: map[string]bool{key: true}, disabled: map[string]bool{}}
 			executor := &deliveryReadTestHost{}
-			s := &ConversationService{runtimeID: a.RuntimeID, repo: repo, options: ConversationOptions{KnowledgeRuntime: knowledge.NewServiceRuntime(repo), ToolHost: &profileToolHost{base: executor, allowed: map[string]bool{}}, ToolAvailability: policy, PersonalAuthorizer: policy, CollaborationAuthorizer: fixedCollaborationTestPolicy{"view", "delivery_read", "execution_read"}}}
+			s := &ConversationService{runtimeID: a.RuntimeID, repo: repo, options: ConversationOptions{ToolHost: &profileToolHost{base: executor, allowed: map[string]bool{}}, ToolAvailability: policy, PersonalAuthorizer: policy, CollaborationAuthorizer: fixedCollaborationTestPolicy{"view", "delivery_read", "execution_read"}}}
 			owner := sdk.ConversationRunReference{ConversationID: "producer", RunID: "run"}
 			base := context.WithValue(t.Context(), conversationAgentContextKey{}, &sdk.ConversationAgentSnapshot{})
 			ctx := deliverySourceContext(base, "released")
@@ -160,7 +159,7 @@ func TestTaskDeliveryReceiptsSeparateControlsFromCurrentExecutionAndSources(t *t
 					t.Fatal("changed original answer accepted")
 				}
 				repo.message.Content = "Original answer"
-				attachment := sdk.AttachmentConversationTools()[0]
+				attachment := sdk.ConversationToolDefinition{Key: "private_file_read", Version: "1", Effect: "read"}
 				repo.snapshots["execution-run"] = persistence.ConversationSourceSnapshot{Calls: []persistence.ConversationToolExecution{{Step: 0, Call: sdk.ConversationToolCall{ID: "private", Name: attachment.Key, Arguments: `{}`}, Definition: attachment, State: "completed", Result: &sdk.ConversationToolResult{Status: "completed", Content: json.RawMessage(`{"text":"private"}`)}}}}
 				if err := read(); err == nil {
 					t.Fatal("task preview shared private attachment")

@@ -4,15 +4,15 @@ go 1.26.0
 
 require (
 	github.com/codeck-backend/kb-search-api v0.0.0
-	github.com/domainry/domainry-connector-sdk v0.1.0
-	github.com/domainry/domainry-identity-sdk v0.1.4
+	github.com/domainry/domainry-connector-sdk v0.1.11
+	github.com/domainry/domainry-identity-sdk v0.1.27
 	github.com/domainry/domainry-knowledge v0.0.0
-	github.com/domainry/domainry-notification-sdk v0.1.0
-	github.com/domainry/domainry-orm v0.1.30
+	github.com/domainry/domainry-notification-sdk v0.1.16
+	github.com/domainry/domainry-orm v0.1.33
 	github.com/domainry/domainry-report v0.0.0
-	github.com/domainry/domainry-report-sdk v0.1.6
+	github.com/domainry/domainry-report-sdk v0.1.21
 	github.com/domainry/domainry-tools v0.0.0
-	github.com/domainry/domainry-tools-sdk v0.0.0
+	github.com/domainry/domainry-tools-sdk v0.1.19
 	github.com/gin-gonic/gin v1.11.0
 	modernc.org/sqlite v1.57.0
 )

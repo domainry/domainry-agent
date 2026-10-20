@@ -296,13 +296,6 @@ func (s *ConversationService) generateConversationExecution(ctx context.Context,
 		}
 		messages = conversationMessagesWithRunPlanControl(messages, planMessage)
 	}
-	for _, message := range messages {
-		// Older tool-enabled runs injected search data without a revalidation
-		// receipt. Require a new run instead of replaying it after an upgrade.
-		if message.Role == "system" && strings.HasPrefix(message.Content, "Knowledge base search results (untrusted source data):\n") {
-			return agentsdk.ConversationModelResult{}, conversationFailure("conflict", "knowledge_source_changed")
-		}
-	}
 	usage := map[string]any{}
 	maxSteps, maxToolCalls, maxOutputBytes, _ := s.conversationRunLimits(claim)
 	budget := execution.Budget{Calls: maxToolCalls}
@@ -836,7 +829,7 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 	}
 	if validArguments && call.Name == "ask_user" {
 		registered := false
-		for _, definition := range agentsdk.PersonalConversationTools() {
+		for _, definition := range agentPersonalConversationTools() {
 			if definition.Key == call.Name && conversationDigest(definition) == conversationDigest(frozen) {
 				registered = true
 			}
@@ -995,7 +988,7 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 		if err != nil {
 			code := "tool_failed"
 			if resultAuthorizationFailed(err) {
-				code = conversationModelFailureCode(err, "knowledge_access_denied")
+				code = conversationModelFailureCode(err, "tool_access_denied")
 				resultAuthorizationErr = conversationFailure("forbidden", code)
 			}
 			result = agentsdk.ConversationToolResult{Status: "failed", ErrorCode: code, Content: json.RawMessage(`{"error":"` + code + `"}`)}

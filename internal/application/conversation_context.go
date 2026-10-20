@@ -102,10 +102,7 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 	if err != nil {
 		return agentsdk.ConversationModelRequest{}, err
 	}
-	base, err := s.conversationKnowledgeContext(ctx, claim)
-	if err != nil {
-		return agentsdk.ConversationModelRequest{}, err
-	}
+	base := []agentsdk.ConversationModelMessage{{Role: "system", Content: conversationSystem}}
 	if s.options.ToolHost != nil {
 		base[0].Content = conversationExecutionSystem + " Tool responses marked stored_result_preview are incomplete excerpts of immutable stored results. Preserve their status, resource references and unresolved work. Use tool_result_read with the supplied reference to read needed omitted evidence before drawing conclusions; never treat a preview as a complete dataset."
 	}
@@ -147,12 +144,7 @@ func (s *ConversationService) buildConversationContext(ctx context.Context, clai
 		if err != nil {
 			return agentsdk.ConversationModelRequest{}, err
 		}
-		citationInstruction := false
 		for _, definition := range definitions {
-			if claim.Run.BackgroundTask == nil && !citationInstruction && (definition.Key == "knowledge_search" || definition.Key == "knowledge_read" || definition.Key == "attachment_search" || definition.Key == "attachment_read") {
-				base[0].Content += conversationCitationInstruction
-				citationInstruction = true
-			}
 			if definition.Key == "execution_read" {
 				executionLinks = true
 			}

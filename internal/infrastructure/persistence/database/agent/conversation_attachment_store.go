@@ -14,30 +14,18 @@ import (
 	"unicode"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	knowledgeartifact "github.com/domainry/domainry-agent-sdk/artifact"
+	agentartifact "github.com/domainry/domainry-agent-sdk/artifact"
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
-	"github.com/domainry/domainry-orm/query"
 )
 
 const attachmentArtifactKind = "attachment"
 
 type attachmentArtifactMetadata struct {
-	RequestSHA256 string                                    `json:"request_sha256"`
-	Visibility    string                                    `json:"visibility"`
-	State         string                                    `json:"state"`
-	Revision      int64                                     `json:"revision"`
-	IndexStatus   string                                    `json:"index_status,omitempty"`
-	ErrorCode     string                                    `json:"error_code,omitempty"`
-	Source        *persistence.ConversationAttachmentSource `json:"source,omitempty"`
-	Index         *persistence.ConversationAttachmentIndex  `json:"index,omitempty"`
-}
-
-// attachmentScope remains the exact owner/job predicate used by the
-// retained index-work table. Core attachment metadata no longer has an
-// Agent-private SQL table.
-func attachmentScope(a agentsdk.ConversationAuthority, id string) query.Predicate {
-	return query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("attachment_id", id))
+	RequestSHA256 string `json:"request_sha256"`
+	Visibility    string `json:"visibility"`
+	State         string `json:"state"`
+	Revision      int64  `json:"revision"`
 }
 
 func attachmentDeleted(state string) bool { return state == "deleting" || state == "deleted" }
@@ -48,7 +36,7 @@ var attachmentErrorCodePattern = regexp.MustCompile(`^[a-z][a-z0-9_.]{0,127}$`)
 
 func attachmentArtifactStatus(state string) (sharedartifact.Status, bool) {
 	switch state {
-	case "stored", "indexing", "ready", "failed", "needs_reconcile":
+	case "stored":
 		return sharedartifact.StatusAvailable, true
 	case "deleting":
 		return sharedartifact.StatusExpired, true
@@ -68,20 +56,14 @@ func decodeAttachmentArtifact(value sharedartifact.Artifact, conversationID stri
 	if !valid || value.Status != expectedStatus || value.ScanStatus != sharedartifact.ScanNotRequired || !personalMemoryKey(conversationID) || value.SizeBytes < 1 || value.SizeBytes > agentsdk.ConversationAttachmentMaxBytes || !artifactSHA(value.ContentSHA256) {
 		return persistence.ConversationAttachmentRecord{}, conversationError("unavailable", "attachment_metadata_invalid")
 	}
-	if (metadata.Source == nil) != (metadata.Index == nil) {
-		return persistence.ConversationAttachmentRecord{}, conversationError("unavailable", "attachment_metadata_invalid")
-	}
-	if metadata.ErrorCode != "" && !attachmentErrorCodePattern.MatchString(metadata.ErrorCode) || metadata.State == "failed" && metadata.ErrorCode == "" || metadata.State != "failed" && metadata.State != "needs_reconcile" && metadata.State != "deleting" && metadata.ErrorCode != "" {
-		return persistence.ConversationAttachmentRecord{}, conversationError("unavailable", "attachment_metadata_invalid")
-	}
 	return persistence.ConversationAttachmentRecord{
 		Attachment: agentsdk.ConversationAttachment{
 			ID: value.ID, ConversationID: conversationID, Filename: value.Filename,
 			ContentType: value.MediaType, Bytes: value.SizeBytes, SHA256: value.ContentSHA256,
 			Visibility: metadata.Visibility, State: metadata.State, Revision: metadata.Revision,
-			IndexStatus: metadata.IndexStatus, ErrorCode: metadata.ErrorCode, CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
+			CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
 		},
-		RequestSHA256: metadata.RequestSHA256, Source: metadata.Source, Index: metadata.Index,
+		RequestSHA256: metadata.RequestSHA256,
 	}, nil
 }
 
@@ -89,7 +71,6 @@ func attachmentMetadata(record persistence.ConversationAttachmentRecord) ([]byte
 	return json.Marshal(attachmentArtifactMetadata{
 		RequestSHA256: record.RequestSHA256, Visibility: record.Attachment.Visibility,
 		State: record.Attachment.State, Revision: record.Attachment.Revision,
-		IndexStatus: record.Attachment.IndexStatus, ErrorCode: record.Attachment.ErrorCode, Source: record.Source, Index: record.Index,
 	})
 }
 
@@ -225,7 +206,7 @@ func (s *ConversationStore) ReserveAttachment(ctx context.Context, in persistenc
 	if err = conversationAuthority(a); err != nil {
 		return out, err
 	}
-	if !validAttachmentReserve(in) || int64(len(in.Content)) != in.Bytes || knowledgeartifact.Hash(in.Content) != in.SHA256 {
+	if !validAttachmentReserve(in) || int64(len(in.Content)) != in.Bytes || agentartifact.Hash(in.Content) != in.SHA256 {
 		return out, conversationError("bad_request", "attachment_invalid")
 	}
 	if err = s.sharedArtifactsReady(); err != nil {
@@ -396,9 +377,6 @@ func (s *ConversationStore) TransitionAttachment(ctx context.Context, id string,
 			return conversationError("conflict", "revision_conflict")
 		}
 		from := previous.Attachment.State
-		if previous.Index != nil && in.State != "deleting" {
-			return conversationError("conflict", "attachment_index_managed")
-		}
 		allowed := in.State == "deleting" && !attachmentDeleted(from) || from == "deleting" && in.State == "deleted"
 		if !allowed || in.ErrorCode != "" && !attachmentErrorCodePattern.MatchString(in.ErrorCode) || (in.State == "failed") != (in.ErrorCode != "") {
 			return conversationError("conflict", "attachment_transition_invalid")
@@ -414,13 +392,6 @@ func (s *ConversationStore) TransitionAttachment(ctx context.Context, id string,
 		out = previous
 		if txErr = s.saveAttachmentRecord(ctx, tx, out, expected, a); txErr != nil {
 			return txErr
-		}
-		if in.State == "deleting" {
-			return s.queueAttachmentIndexWork(ctx, tx, out, a)
-		}
-		if in.State == "deleted" {
-			statement, args, buildErr := query.NewDeleteBuilder(s.store.Renderer(), attachmentIndexJobTable).Where(attachmentScope(a, id)).Build()
-			return conversationExec(ctx, tx, statement, args, buildErr)
 		}
 		return nil
 	})
@@ -447,7 +418,7 @@ func (s *ConversationStore) AttachmentContent(ctx context.Context, id string, a 
 	if err != nil {
 		return nil, err
 	}
-	if int64(len(raw)) != value.SizeBytes || knowledgeartifact.Hash(raw) != value.ContentSHA256 {
+	if int64(len(raw)) != value.SizeBytes || agentartifact.Hash(raw) != value.ContentSHA256 {
 		return nil, conversationError("unavailable", "attachment_content_mismatch")
 	}
 	current, found, err := s.artifactStore.ByID(ctx, value.WorkspaceID, value.ID)
@@ -478,8 +449,9 @@ func (s *ConversationStore) DeleteAttachmentContent(ctx context.Context, id stri
 	return err
 }
 
-// Called in the parent deletion transaction. The Artifact metadata transition
-// and durable cleanup/index job commit with the conversation deletion receipt.
+// Called in the parent deletion transaction. Attachments are Agent-owned raw
+// files, so conversation deletion removes their content directly; there is no
+// external indexing lifecycle to coordinate.
 func (s *ConversationStore) deleteConversationAttachments(ctx context.Context, tx *sql.Tx, conversationID string, a agentsdk.ConversationAuthority) (int64, error) {
 	if s == nil || s.artifactStore == nil {
 		return 0, nil
@@ -488,28 +460,28 @@ func (s *ConversationStore) deleteConversationAttachments(ctx context.Context, t
 	if err != nil {
 		return 0, err
 	}
-	var queued int64
+	var deleted int64
 	for _, item := range items {
 		record, decodeErr := decodeAttachmentArtifact(item, conversationID)
 		if decodeErr != nil {
-			return queued, decodeErr
+			return deleted, decodeErr
 		}
 		if attachmentDeleted(record.Attachment.State) {
 			continue
 		}
+		if err = s.artifactContent.Delete(ctx, item.WorkspaceID, item.StorageReference); err != nil && !errors.Is(err, sharedartifact.ErrContentNotFound) {
+			return deleted, err
+		}
 		expected := record.Attachment.Revision
-		record.Attachment.State, record.Attachment.ErrorCode = "deleting", ""
+		record.Attachment.State, record.Attachment.ErrorCode = "deleted", ""
 		record.Attachment.Revision++
 		record.Attachment.UpdatedAt = time.Now().UTC().Truncate(time.Millisecond)
 		if err = s.saveAttachmentRecord(ctx, tx, record, expected, a); err != nil {
-			return queued, err
+			return deleted, err
 		}
-		if err = s.queueAttachmentIndexWork(ctx, tx, record, a); err != nil {
-			return queued, err
-		}
-		queued++
+		deleted++
 	}
-	return queued, nil
+	return deleted, nil
 }
 
 var _ persistence.ConversationAttachmentRepository = (*ConversationStore)(nil)
