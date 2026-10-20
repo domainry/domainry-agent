@@ -1,5 +1,5 @@
 import { conversationPath } from "./api.ts";
-import { ApiError } from "./errors.ts";
+import { ApiError, apiErrorFromResponse } from "./errors.ts";
 import { sessionFetch, sessionScope } from "./session.ts";
 
 export const attachmentMaxBytes = 16 * 1024 * 1024;
@@ -30,7 +30,7 @@ export async function attachmentHash(data: ArrayBuffer) {
   return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", data)), n => n.toString(16).padStart(2, "0")).join("");
 }
 async function checked(response: Response) {
-  if (!response.ok) { const data = await response.json().catch(() => ({})); throw new ApiError(typeof data.code === "string" ? data.code : "request_failed", response.status); }
+  if (!response.ok) throw await apiErrorFromResponse(response);
   return response;
 }
 export async function uploadAttachment(conversationID: string, file: File, pending: PendingAttachment, signal: AbortSignal): Promise<Attachment> {

@@ -87,7 +87,7 @@ func TestConversationCapacityThroughIdentityHTTPAndSQLiteRestart(t *testing.T) {
 	}
 	second := send(secondConversation, "queued", "fast provider", 202)
 	rejected := browser.call("POST", "/agent/conversations/"+rejectedConversation.ID+"/messages", `{"client_message_id":"rejected","message":"queue overflow"}`, 429)
-	if rejected.Body.String() != "{\"code\":\"agent.conversation.user_queue_full\"}\n" {
+	if rejected.Body.String() != "{\"code\":\"agent.conversation.user_queue_full\",\"message\":\"agent.conversation.user_queue_full\",\"request_id\":\"\"}\n" {
 		t.Fatalf("quota response=%s", rejected.Body.String())
 	}
 	wait := func(conversation agentsdk.Conversation, run agentsdk.ConversationRun) agentsdk.ConversationRun {

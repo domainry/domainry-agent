@@ -331,36 +331,11 @@ func (c *client) call(ctx context.Context, method, path string, payload any, key
 			}
 		}
 		var failure struct {
-			Code, Message, Class string
-			Retryable            *bool
+			Code, Message string
 		}
 		_ = json.Unmarshal(raw, &failure)
 		if failure.Code != "" {
-			// New repository responses preserve a validated class and an explicit
-			// retry decision; older endpoints retain their existing fallback.
-			classStatus := map[string]int{"bad_request": 400, "forbidden": 403, "not_found": 404, "conflict": 409, "rate_limited": 429, "unavailable": 503, "internal": 500}
-			if status, known := classStatus[failure.Class]; known && status == response.StatusCode && failure.Retryable != nil {
-				return &agentsdk.Error{Class: failure.Class, Code: failure.Code, Retryable: *failure.Retryable}
-			}
-			if strings.HasPrefix(failure.Code, "agent.conversation.") {
-				class := "internal"
-				switch response.StatusCode {
-				case 400:
-					class = "bad_request"
-				case 403:
-					class = "forbidden"
-				case 404:
-					class = "not_found"
-				case 409:
-					class = "conflict"
-				case 429:
-					class = "rate_limited"
-				case 503:
-					class = "unavailable"
-				}
-				return &agentsdk.Error{Class: class, Code: failure.Code}
-			}
-			return &agentsdk.Error{Class: "saas_http", Code: failure.Code, Message: failure.Message, Retryable: response.StatusCode == http.StatusTooManyRequests || response.StatusCode >= 500}
+			return &agentsdk.Error{Class: agentHTTPErrorClass(response.StatusCode), Code: failure.Code, Message: failure.Message, Retryable: response.StatusCode >= 500}
 		}
 		return &agentsdk.Error{Class: "saas_http", Code: fmt.Sprintf("agent.saas.http_%d", response.StatusCode), Message: fmt.Sprintf("Agent SaaS returned HTTP %d", response.StatusCode), Retryable: response.StatusCode == http.StatusTooManyRequests || response.StatusCode >= 500}
 	}
@@ -368,6 +343,25 @@ func (c *client) call(ctx context.Context, method, path string, payload any, key
 		return fmt.Errorf("decode Agent SaaS response: %w", err)
 	}
 	return nil
+}
+
+func agentHTTPErrorClass(status int) string {
+	switch status {
+	case http.StatusBadRequest, http.StatusUnprocessableEntity, http.StatusRequestEntityTooLarge:
+		return "bad_request"
+	case http.StatusUnauthorized, http.StatusForbidden:
+		return "forbidden"
+	case http.StatusNotFound:
+		return "not_found"
+	case http.StatusConflict, http.StatusPreconditionFailed:
+		return "conflict"
+	case http.StatusTooManyRequests:
+		return "rate_limited"
+	case http.StatusBadGateway, http.StatusServiceUnavailable, http.StatusGatewayTimeout:
+		return "unavailable"
+	default:
+		return "internal"
+	}
 }
 
 var _ agentsdk.Factory = (*Factory)(nil)

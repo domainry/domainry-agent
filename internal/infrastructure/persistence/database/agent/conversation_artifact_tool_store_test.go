@@ -29,7 +29,7 @@ func TestArtifactToolEffectResultAndEventCommitTogether(t *testing.T) {
 			if name == "artifact_export" {
 				var err error
 				err = repo.transaction(t.Context(), func(tx *sql.Tx) error {
-					original, err = repo.knowledgeArtifacts.SaveArtifactInTransaction(t.Context(), tx, artifactWrite(t, "original", "", 0, "周报", "正文"), conversationTestAuthority())
+					original, err = repo.saveArtifact(t.Context(), tx, artifactWrite(t, "original", "", 0, "周报", "正文"), conversationTestAuthority())
 					return err
 				})
 				if err != nil {
@@ -60,7 +60,7 @@ func TestArtifactToolEffectResultAndEventCommitTogether(t *testing.T) {
 			}
 			var count int
 			if name == "artifact_create" {
-				err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _knowledge_conversation_artifact_versions`).Scan(&count)
+				err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _agent_artifact_versions`).Scan(&count)
 			} else {
 				err = store.Database().QueryRowContext(t.Context(), `SELECT COUNT(*) FROM _artifacts WHERE owner='agent' AND kind='generated'`).Scan(&count)
 			}

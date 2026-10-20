@@ -12,6 +12,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
+	"github.com/domainry/domainry-foundation/logging"
 )
 
 type AnalysisQuery struct {
@@ -74,7 +75,9 @@ func (s *AnalysisService) Query(ctx context.Context, request AnalysisQuery) (map
 	}
 	if request.DryRun || request.SQL != "" || objectKey == "" {
 		event := "agent_analysis_query_validated"
-		_ = s.audit.AppendAgentAudit(ctx, modulehost.AuditRequest{Event: event, ObjectKey: objectKey, Summary: "Agent analysis query validated", Principal: request.Principal, Metadata: metadata})
+		if err := s.audit.AppendAgentAudit(ctx, modulehost.AuditRequest{Event: event, ObjectKey: objectKey, Summary: "Agent analysis query validated", Principal: request.Principal, Metadata: metadata}); err != nil {
+			logging.RecordFailure(ctx, "agent_audit_append_failed", err, logging.Failure{Stage: "analysis_audit_append", Dependency: "audit"})
+		}
 		scopeNote := "Validated with the current workspace, role, and visible schema. Raw SQL execution remains disabled until a permission-aware executor is bound."
 		htmlFragment := analysisValidationHTML(request.Intent, queryRef, reportKey, scopeNote) + analysisProposalHTML(suggestion)
 		return analysisResponse("validated", "gateway_validation", request.Principal, queryRef, objectKey, reportKey, masked, suggestion, htmlFragment, scopeNote, event, nil, 0, false), nil
@@ -84,7 +87,9 @@ func (s *AnalysisService) Query(ctx context.Context, request AnalysisQuery) (map
 		return nil, err
 	}
 	event := "agent_analysis_query_executed"
-	_ = s.audit.AppendAgentAudit(ctx, modulehost.AuditRequest{Event: event, ObjectKey: objectKey, Summary: "Agent analysis query executed through scoped record APIs", Principal: request.Principal, Metadata: metadata})
+	if err := s.audit.AppendAgentAudit(ctx, modulehost.AuditRequest{Event: event, ObjectKey: objectKey, Summary: "Agent analysis query executed through scoped record APIs", Principal: request.Principal, Metadata: metadata}); err != nil {
+		logging.RecordFailure(ctx, "agent_audit_append_failed", err, logging.Failure{Stage: "analysis_audit_append", Dependency: "audit"})
+	}
 	scopeNote := "Result rows were read through generated record APIs using the current principal, data scope, and field visibility."
 	htmlFragment := analysisReportHTML(request.Intent, queryRef, objectKey, reportKey, page.Items, scopeNote) + analysisProposalHTML(suggestion)
 	return analysisResponse("completed", "scoped_record_query", request.Principal, queryRef, objectKey, reportKey, masked, suggestion, htmlFragment, scopeNote, event, page.Items, page.Total, page.HasNext), nil

@@ -1,4 +1,4 @@
-import { ApiError } from "./errors.ts";
+import { ApiError, apiErrorFromResponse } from "./errors.ts";
 
 export type AppSession = {
   mode: "local" | "identity";
@@ -40,9 +40,8 @@ export async function sessionLock<T>(action: () => Promise<T>): Promise<T> {
 
 export async function sessionJSON<T>(path: string, method = "GET", body?: unknown): Promise<T> {
   const response = await fetch(path, { method, credentials: "same-origin", headers: body === undefined ? undefined : { "Content-Type": "application/json", "Idempotency-Key": crypto.randomUUID() }, body: body === undefined ? undefined : JSON.stringify(body) });
-  const data = response.status === 204 ? undefined : await response.json().catch(() => ({}));
-  if (!response.ok) throw new ApiError(typeof data?.code === "string" ? data.code : "request_failed", response.status);
-  return data as T;
+  if (!response.ok) throw await apiErrorFromResponse(response);
+  return (response.status === 204 ? undefined : await response.json()) as T;
 }
 
 export async function restoreSession(requiredScope?: string): Promise<AppSession> {
@@ -87,8 +86,8 @@ export async function sessionFetch(path: string, init: RequestInit): Promise<Res
   }
   if (generation !== started) throw new ApiError("agent.web.identity_changed", 409);
   if (response.status === 409 && expected?.mode === "identity") {
-    const data = await response.clone().json().catch(() => ({}));
-    if (data.code === "agent.web.identity_changed") window.dispatchEvent(new Event("agent-session-expired"));
+    const error = await apiErrorFromResponse(response.clone());
+    if (error.code === "agent.web.identity_changed") window.dispatchEvent(new Event("agent-session-expired"));
   }
   return response;
 }

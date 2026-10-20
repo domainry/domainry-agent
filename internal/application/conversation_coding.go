@@ -6,6 +6,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
+	"github.com/domainry/domainry-foundation/logging"
 )
 
 type conversationCodingAuthorizer struct{ s *ConversationService }
@@ -71,6 +72,8 @@ func (s *ConversationService) executeConversationCoding(ctx context.Context, req
 
 func (s *ConversationService) closeConversationCodingScope(ctx context.Context, a agentsdk.ConversationAuthority, conversationID, runID string) {
 	if s.options.CodingRuntime != nil {
-		_ = s.options.CodingRuntime.CloseConversationCodingScope(ctx, conversationCodingScope(a, conversationID, runID))
+		if err := s.options.CodingRuntime.CloseConversationCodingScope(ctx, conversationCodingScope(a, conversationID, runID)); err != nil {
+			logging.RecordFailure(ctx, "agent_coding_scope_close_failed", err, logging.Failure{Stage: "coding_scope_close", Dependency: "coding_runtime"})
+		}
 	}
 }

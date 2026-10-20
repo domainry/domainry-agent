@@ -5,6 +5,6 @@ import (
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 )
 
-func newKnowledgeWithOfficialAdapter(config knowledgemodule.KnowledgeConfig) (*knowledgemodule.Knowledge, error) {
+func newKnowledgeWithOfficialAdapter(config knowledgemodule.KnowledgeConfig) (*knowledgemodule.KnowledgeProvider, error) {
 	return knowledgemodule.NewKnowledge(config, knowledgehttpapi.New)
 }

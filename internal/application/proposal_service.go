@@ -7,6 +7,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
+	"github.com/domainry/domainry-foundation/logging"
 )
 
 // ProposalService owns proposal normalization, decision CAS, approval
@@ -174,10 +175,12 @@ func (s *ProposalService) appendAudit(ctx context.Context, event string, proposa
 	if s == nil || s.audit == nil {
 		return
 	}
-	_ = s.audit.AppendAgentAudit(ctx, modulehost.AuditRequest{
+	if err := s.audit.AppendAgentAudit(ctx, modulehost.AuditRequest{
 		Event: event, ObjectKey: "agent_proposal", RecordID: proposal.ProposalID, Summary: strings.ReplaceAll(event, "_", " "),
 		Principal: principal, Metadata: cloneTaskMap(metadata),
-	})
+	}); err != nil {
+		logging.RecordFailure(ctx, "agent_audit_append_failed", err, logging.Failure{Stage: "proposal_audit_append", Dependency: "audit"})
+	}
 }
 
 func (s *ProposalService) decideCAS(ctx context.Context, proposal agentsdk.AgentProposal, decision, reason string, metadata, execution map[string]any, principal modulehost.Principal) (agentsdk.AgentProposal, error) {

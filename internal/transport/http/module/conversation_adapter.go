@@ -424,6 +424,8 @@ func (s *conversationAdapter) handle(op string) http.HandlerFunc {
 		status := 200
 		if op == "send" {
 			status = 202
+		} else if op == "documents_import_attachment" {
+			status = 201
 		}
 		writeJSON(w, status, result)
 	}

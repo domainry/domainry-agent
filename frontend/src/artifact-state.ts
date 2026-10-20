@@ -1,4 +1,4 @@
-import { ApiError } from "./errors.ts";
+import { ApiError, apiErrorFromResponse } from "./errors.ts";
 import { sessionFetch, sessionScope } from "./session.ts";
 
 export type Artifact = { id: string; version: number; title: string; kind: "markdown" | "table" | "chart"; sha256: string; bytes: number; source_conversation_id?: string; source_run_id?: string; created_at: string; updated_at: string };
@@ -25,8 +25,7 @@ export async function downloadArtifact(value: ArtifactExport, source?:{path:stri
   const scope = sessionScope();
   const response = await sessionFetch(source?.path||`/agent/artifact-exports/${encodeURIComponent(value.id)}/download`, { method: source?"POST":"GET", credentials: "same-origin", cache: "no-store", ...(source?{headers:{"Content-Type":"application/json"},body:JSON.stringify(source.body),signal:source.signal}:{}) });
   if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new ApiError(typeof data.code === "string" ? data.code : "request_failed", response.status);
+    throw await apiErrorFromResponse(response);
   }
   const blob = await response.blob();
   const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", await blob.arrayBuffer())), n => n.toString(16).padStart(2, "0")).join("");

@@ -3,6 +3,7 @@ package product
 import (
 	"encoding/json"
 	"errors"
+	"github.com/domainry/domainry-foundation/httpresponse"
 	identity "github.com/domainry/domainry-identity-sdk"
 	"github.com/domainry/domainry-knowledge-sdk/contract"
 	sdk "github.com/domainry/domainry-tools-sdk"
@@ -23,12 +24,12 @@ func RecordRoutes(runtime string, adapters ...*toolsmodule.RecordAdapter) http.H
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/app/product/records/"), "/")
 		if len(parts) < 1 || len(parts) > 2 {
-			http.NotFound(w, r)
+			httpresponse.WriteError(w, r, httpresponse.Failure{Status: http.StatusNotFound, Code: "product.route_not_found"})
 			return
 		}
 		a := catalog[parts[0]]
 		if a == nil {
-			http.NotFound(w, r)
+			httpresponse.WriteError(w, r, httpresponse.Failure{Status: http.StatusNotFound, Code: "product.route_not_found"})
 			return
 		}
 		identity, ok := identity.RequestIdentityFromContext(r.Context())
@@ -44,7 +45,7 @@ func RecordRoutes(runtime string, adapters ...*toolsmodule.RecordAdapter) http.H
 		if r.Method == "POST" && len(parts) == 1 {
 			op = "save"
 		} else if r.Method != "GET" {
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			httpresponse.WriteError(w, r, httpresponse.Failure{Status: http.StatusMethodNotAllowed, Code: "product.method_not_allowed"})
 			return
 		}
 		var def sdk.Definition
@@ -118,7 +119,5 @@ func productError(w http.ResponseWriter, err error) {
 			status = 409
 		}
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(map[string]string{"code": code})
+	httpresponse.WriteError(w, nil, httpresponse.Failure{Status: status, Code: code, Cause: err})
 }

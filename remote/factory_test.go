@@ -223,7 +223,7 @@ func TestRemoteClientPreservesStructuredAndGenericHTTPErrors(t *testing.T) {
 
 	_, err = client.descriptor(t.Context())
 	var generic *agentsdk.Error
-	if !errors.As(err, &generic) || generic.Class != "saas_http" || generic.Code != "agent.saas.overloaded" || generic.Message != "temporarily unavailable" || !generic.Retryable {
+	if !errors.As(err, &generic) || generic.Class != "unavailable" || generic.Code != "agent.saas.overloaded" || generic.Message != "temporarily unavailable" || !generic.Retryable {
 		t.Fatalf("generic error=%+v", generic)
 	}
 }

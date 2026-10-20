@@ -176,8 +176,9 @@ func TestPeerSharedDocumentsUseExplicitKnowledgeCopyAndCurrentReadPermission(t *
 	libraryPath := "/knowledge/libraries/" + library.ID
 	b.call("PUT", libraryPath+"/source", `{"datasource_key":"source","expected_revision":1}`, 200)
 	importBody := accountJSON(sdk.KnowledgeAttachmentImport{ClientID: "explicit-copy", ConversationID: source.ID, AttachmentID: attachment.ID, ExpectedRevision: attachment.Revision})
-	doc := accountDecode[sdk.KnowledgeDocument](t, b.call("POST", libraryPath+"/documents/import-attachment", importBody, 201))
-	if replay := accountDecode[sdk.KnowledgeDocument](t, b.call("POST", libraryPath+"/documents/import-attachment", importBody, 201)); replay.ID != doc.ID {
+	importPath := "/agent/knowledge-libraries/" + library.ID + "/documents/import-attachment"
+	doc := accountDecode[sdk.KnowledgeDocument](t, b.call("POST", importPath, importBody, 201))
+	if replay := accountDecode[sdk.KnowledgeDocument](t, b.call("POST", importPath, importBody, 201)); replay.ID != doc.ID {
 		t.Fatal("import repeated copied file")
 	}
 	docPath := libraryPath + "/documents/" + doc.ID

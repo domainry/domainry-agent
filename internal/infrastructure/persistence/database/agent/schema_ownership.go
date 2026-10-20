@@ -151,6 +151,36 @@ func SchemaOwnership() []schemaownership.Table {
 			BoundedQueryPath: "owner/memory identity ordered by immutable revision",
 			DeletionPolicy:   "memory history is removed with explicit memory deletion or subject erasure",
 		},
+		{
+			Name: "_agent_artifacts", Owner: MigrationOwner, WorkspaceScope: schemaownership.ScopeExplicitMixed,
+			RetentionClass: schemaownership.RetentionUserErase, PrimaryKey: []string{"owner_key", "artifact_id"},
+			BoundedQueryPath: "owner plus artifact identity or bounded owner creation cursor",
+			DeletionPolicy:   "explicit artifact deletion, conversation lifecycle and subject erasure remove the artifact head",
+		},
+		{
+			Name: "_agent_artifact_versions", Owner: MigrationOwner, WorkspaceScope: schemaownership.ScopeExplicitMixed,
+			RetentionClass: schemaownership.RetentionUserErase, PrimaryKey: []string{"owner_key", "artifact_id", "version"},
+			BoundedQueryPath: "owner/artifact identity plus bounded descending immutable version history",
+			DeletionPolicy:   "artifact deletion and subject erasure remove immutable versions",
+		},
+		{
+			Name: "_agent_artifact_mutations", Owner: MigrationOwner, WorkspaceScope: schemaownership.ScopeExplicitMixed,
+			RetentionClass: schemaownership.RetentionUserErase, PrimaryKey: []string{"owner_key", "client_key"},
+			BoundedQueryPath: "owner plus exact idempotency client digest",
+			DeletionPolicy:   "artifact retention and subject erasure remove mutation receipts",
+		},
+		{
+			Name: attachmentIndexJobTable, Owner: MigrationOwner, WorkspaceScope: schemaownership.ScopeExplicitMixed,
+			RetentionClass: schemaownership.RetentionTechnicalTTL, PrimaryKey: []string{"owner_key", "attachment_id"},
+			BoundedQueryPath: "owner/attachment identity or runtime due-work lease index",
+			DeletionPolicy:   "successful deletion removes the work row; conversation deletion and subject erasure remove remaining work",
+		},
+		{
+			Name: attachmentKnowledgeSourceTable, Owner: MigrationOwner, WorkspaceScope: schemaownership.ScopeExplicitMixed,
+			RetentionClass: schemaownership.RetentionProduct, PrimaryKey: []string{"scope_key"},
+			BoundedQueryPath: "exact runtime/workspace scope digest or globally unique source identity",
+			DeletionPolicy:   "the workspace source registration remains while its private attachment knowledge binding is managed",
+		},
 	}
 }
 

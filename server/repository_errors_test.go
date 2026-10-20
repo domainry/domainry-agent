@@ -9,25 +9,22 @@ import (
 	"testing"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/httpresponse"
 )
 
 func TestRepositoryErrorsPreservePolicyFailuresWithoutDriverDetails(t *testing.T) {
 	for _, sample := range []struct {
-		class     string
-		status    int
-		retryable bool
+		class  string
+		status int
 	}{
-		{"bad_request", 400, false}, {"forbidden", 403, false}, {"not_found", 404, false},
-		{"conflict", 409, false}, {"rate_limited", 429, false}, {"unavailable", 503, true},
+		{"bad_request", 400}, {"forbidden", 403}, {"not_found", 404},
+		{"conflict", 409}, {"rate_limited", 429}, {"unavailable", 503},
 	} {
 		t.Run(sample.class, func(t *testing.T) {
 			response := httptest.NewRecorder()
-			writeRepositoryError(response, fmt.Errorf("private driver wrapper: %w", &agentsdk.Error{Class: sample.class, Code: "agent.task.example", Message: "private driver detail", Retryable: sample.retryable}))
-			var result struct {
-				Code, Class string
-				Retryable   *bool
-			}
-			if json.Unmarshal(response.Body.Bytes(), &result) != nil || response.Code != sample.status || result.Code != "agent.task.example" || result.Class != sample.class || result.Retryable == nil || *result.Retryable != sample.retryable {
+			writeRepositoryError(response, fmt.Errorf("private driver wrapper: %w", &agentsdk.Error{Class: sample.class, Code: "agent.task.example", Message: "private driver detail"}))
+			var result httpresponse.ErrorResponse
+			if json.Unmarshal(response.Body.Bytes(), &result) != nil || response.Code != sample.status || result.Code != "agent.task.example" || result.Message == "" {
 				t.Fatalf("status=%d body=%s", response.Code, response.Body.String())
 			}
 			if strings.Contains(response.Body.String(), "private") {

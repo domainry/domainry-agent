@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	agentmodulehost "github.com/domainry/domainry-agent-sdk/modulehost"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
 	knowledgemodulehost "github.com/domainry/domainry-knowledge-sdk/modulehost"
 	ormdriver "github.com/domainry/domainry-orm/driver"
@@ -18,20 +17,20 @@ import (
 // Knowledge. Knowledge opens and owns its own persistence behind the binding.
 type KnowledgeModuleHost struct {
 	conversation *ConversationStore
-	migrations   agentmodulehost.MigrationRegistrar
+	migrations   knowledgemodulehost.MigrationRegistrar
 }
 
-func NewKnowledgeModuleHost(conversation *ConversationStore, migrations agentmodulehost.MigrationRegistrar) *KnowledgeModuleHost {
+func NewKnowledgeModuleHost(conversation *ConversationStore, migrations knowledgemodulehost.MigrationRegistrar) *KnowledgeModuleHost {
 	return &KnowledgeModuleHost{conversation: conversation, migrations: migrations}
 }
 
-func (host *KnowledgeModuleHost) Database() agentmodulehost.Database {
+func (host *KnowledgeModuleHost) Database() knowledgemodulehost.Database {
 	return host.conversation.store.Database()
 }
-func (host *KnowledgeModuleHost) Dialect() agentmodulehost.Dialect {
+func (host *KnowledgeModuleHost) Dialect() knowledgemodulehost.Dialect {
 	return host.conversation.store.Renderer()
 }
-func (host *KnowledgeModuleHost) Migrations() agentmodulehost.MigrationRegistrar {
+func (host *KnowledgeModuleHost) Migrations() knowledgemodulehost.MigrationRegistrar {
 	return host.migrations
 }
 func (host *KnowledgeModuleHost) Profile() ormdriver.Profile {

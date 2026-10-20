@@ -90,7 +90,7 @@ type ConversationOptions struct {
 	ToolAvailability                                           agentsdk.ConversationToolAvailability
 	FollowUpPublisher                                          agentsdk.ConversationFollowUpPublisher
 	MaxSteps, MaxToolCalls, MaxArgumentBytes, MaxParallelTools int
-	Knowledge                                                  ConversationKnowledge
+	Knowledge                                                  any
 	KnowledgeBytes                                             int
 	ContextSources                                             []agentsdk.ConversationContextSource
 	ContextBytes, MaxInputBytes, MaxOutputBytes, SummaryBytes  int
@@ -167,7 +167,7 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	if options.CollaborationAuthorizer == nil {
 		options.CollaborationAuthorizer, _ = options.ToolHost.(agentsdk.ConversationCollaborationAuthorizer)
 	}
-	if err := validateAttachmentKnowledge(&options); err != nil {
+	if err := validateAttachmentKnowledge(repo, &options); err != nil {
 		return nil, err
 	}
 	applyConversationContextDefault(&options)
@@ -266,17 +266,30 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 			return nil, fmt.Errorf("library knowledge retrieval requires a tool-capable conversation host")
 		}
 	}
+	var preparedKnowledge knowledge.Knowledge
 	if options.KnowledgeRuntime != nil {
 		prepared, err := options.KnowledgeRuntime.Prepare(runtimeID, knowledgeOptions(options))
 		if err != nil {
 			return nil, err
 		}
-		options.Knowledge = prepared
+		preparedKnowledge = prepared
+		if prepared == nil {
+			options.Knowledge = nil
+		} else {
+			options.Knowledge = AdaptCanonicalKnowledge(prepared)
+		}
+	} else if source, ok := options.Knowledge.(knowledge.Knowledge); ok {
+		options.Knowledge = AdaptCanonicalKnowledge(source)
+	}
+	if options.Knowledge != nil {
+		if _, ok := options.Knowledge.(ConversationKnowledge); !ok {
+			return nil, fmt.Errorf("conversation knowledge source does not implement the Agent retrieval boundary")
+		}
 	}
 	var personalHost *PersonalConversationHost
 	if personal, ok := options.ToolHost.(*PersonalConversationHost); ok {
 		copy := *personal
-		copy.knowledge = options.Knowledge
+		copy.knowledge, _ = options.Knowledge.(ConversationKnowledge)
 		personalHost = &copy
 		options.ToolHost = &copy
 	}
@@ -420,7 +433,13 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 			return nil, err
 		}
 	}
-	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, wake: make(chan struct{}, options.Workers), taskWake: make(chan struct{}, 1), followUpWake: make(chan struct{}, 1), active: map[string]conversationActive{}, lifecycleExtensions: lifecycleExtensions, lifecycleManifest: lifecycleManifest}
+	var knowledgeModule knowledge.Service
+	if options.KnowledgeRuntime != nil {
+		moduleOptions := knowledgeOptions(options)
+		moduleOptions.Knowledge = preparedKnowledge
+		knowledgeModule = options.KnowledgeRuntime.NewService(runtimeID, moduleOptions)
+	}
+	s := &ConversationService{repo: repo, model: model, runtimeID: runtimeID, owner: hex.EncodeToString(b[:]), options: options, knowledgeModule: knowledgeModule, wake: make(chan struct{}, options.Workers), taskWake: make(chan struct{}, 1), followUpWake: make(chan struct{}, 1), active: map[string]conversationActive{}, lifecycleExtensions: lifecycleExtensions, lifecycleManifest: lifecycleManifest}
 	if options.RunPlanningModel != nil {
 		if _, err := describeConversationModel("planning", options.RunPlanningModel); err != nil {
 			return nil, fmt.Errorf("invalid conversation planning model: %w", err)
@@ -476,6 +495,18 @@ func NewConversationService(repo agentpersistence.ConversationRepository, model 
 	s.lifetime = ctx
 	if options.AttachmentAuthorizer != nil || options.DocumentStorage != nil {
 		s.knowledgeService().Start(ctx)
+	}
+	if s.attachmentIndexWorkerEnabled() {
+		poll := options.DocumentPoll
+		if poll <= 0 {
+			poll = time.Second
+		}
+		done := workerplatform.StartWakeableAdaptiveLoop(ctx, workerplatform.Identity{Owner: "agent", Name: "attachment-index"}, poll, 30*time.Second, s.attachmentIndexWake, s.attachmentIndexWorkerTick)
+		s.wg.Add(1)
+		go func() {
+			defer s.wg.Done()
+			<-done
+		}()
 	}
 	if interactions, ok := repo.(agentpersistence.ConversationInteractionRepository); ok {
 		s.wg.Add(1)
@@ -595,7 +626,11 @@ func (s *ConversationService) authorizeConversationTool(ctx context.Context, aut
 func (s *ConversationService) searchConversationKnowledge(ctx context.Context, query string, authority agentsdk.ConversationAuthority) (json.RawMessage, error) {
 	callCtx, cancel := s.externalCallContext(ctx, 30*time.Second)
 	defer cancel()
-	result, err := s.options.Knowledge.Search(callCtx, query, authority)
+	source, ok := s.options.Knowledge.(ConversationKnowledge)
+	if !ok || source == nil {
+		return nil, conversationFailure("unavailable", "knowledge_unavailable")
+	}
+	result, err := source.Search(callCtx, query, authority)
 	if callCtx.Err() != nil && ctx.Err() == nil {
 		return nil, conversationFailure("unavailable", "knowledge_timeout")
 	}
@@ -698,11 +733,6 @@ func (s *ConversationService) Delete(ctx context.Context, id string, revision in
 	}
 	if err != nil {
 		return err
-	}
-	if owner, ok := s.knowledgeService().(knowledge.ConversationReferenceLifecycle); ok {
-		if _, err = owner.DeleteConversationReferencesForRequest(ctx, requestID, id, a); err != nil {
-			return err
-		}
 	}
 	s.wakeAttachmentIndex()
 	return nil
@@ -1101,6 +1131,7 @@ func conversationModelFailureCode(err error, fallback string) string {
 	var failure *agentsdk.Error
 	if errors.As(err, &failure) {
 		code := strings.TrimPrefix(failure.Code, "agent.conversation.")
+		code = strings.TrimPrefix(code, "knowledge.")
 		switch code {
 		case "execution_access_denied", "execution_authorization_unavailable", "collaboration_access_denied", "collaboration_authorization_unavailable":
 			return code

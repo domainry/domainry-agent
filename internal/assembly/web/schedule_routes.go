@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/domainry/domainry-foundation/telemetry"
+	"github.com/domainry/domainry-foundation/httpresponse"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	toolsdk "github.com/domainry/domainry-tools-sdk"
 	toolmodule "github.com/domainry/domainry-tools/module"
@@ -209,8 +209,5 @@ func writeScheduleToolError(w http.ResponseWriter, err error) {
 }
 
 func writeScheduleError(w http.ResponseWriter, status int, code string) {
-	telemetry.RecordHTTPStatusError(w, status, code)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(map[string]string{"code": code})
+	httpresponse.WriteError(w, nil, httpresponse.Failure{Status: status, Code: code})
 }

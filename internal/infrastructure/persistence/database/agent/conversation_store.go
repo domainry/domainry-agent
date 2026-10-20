@@ -27,15 +27,13 @@ import (
 type ConversationStore struct {
 	store *Store
 
-	artifactStore      sharedartifact.ManagedStore
-	artifactContent    sharedartifact.ContentStore
-	artifactWriter     sharedartifact.ContentWriter
-	knowledgeArtifacts knowledgemodulehost.ArtifactTransactions
-	knowledgeMutations knowledgecontract.ArtifactMutationService
-	knowledgeRuntime   knowledgecontract.Runtime
-	todos              todocontract.TodoService
-	todoMutations      todocontract.MutationService
-	todoTransactions   todomodulehost.TransactionalMutator
+	artifactStore    sharedartifact.ManagedStore
+	artifactContent  sharedartifact.ContentStore
+	artifactWriter   sharedartifact.ContentWriter
+	knowledgeRuntime knowledgecontract.Runtime
+	todos            todocontract.TodoService
+	todoMutations    todocontract.MutationService
+	todoTransactions todomodulehost.TransactionalMutator
 
 	capacityMu         sync.RWMutex
 	capacityConfigured bool
@@ -43,20 +41,18 @@ type ConversationStore struct {
 }
 
 func (s *ConversationStore) BindKnowledge(binding knowledgemodulehost.ModuleBinding) error {
-	if binding == nil || binding.Runtime() == nil || binding.ArtifactTransactions() == nil {
+	if binding == nil || binding.Runtime() == nil {
 		return errors.New("Knowledge module binding is incomplete")
 	}
 	s.knowledgeRuntime = binding.Runtime()
-	s.knowledgeArtifacts = binding.ArtifactTransactions()
-	s.knowledgeMutations = nil
 	return nil
 }
 
-func (s *ConversationStore) BindRemoteKnowledge(runtime knowledgecontract.Runtime, mutations knowledgecontract.ArtifactMutationService) error {
-	if runtime == nil || mutations == nil {
+func (s *ConversationStore) BindRemoteKnowledge(runtime knowledgecontract.Runtime) error {
+	if runtime == nil {
 		return errors.New("Knowledge SaaS binding is incomplete")
 	}
-	s.knowledgeRuntime, s.knowledgeMutations, s.knowledgeArtifacts = runtime, mutations, nil
+	s.knowledgeRuntime = runtime
 	return nil
 }
 
@@ -148,10 +144,6 @@ func conversationHash(v any) string {
 	b, _ := json.Marshal(v)
 	h := sha256.Sum256(b)
 	return hex.EncodeToString(h[:])
-}
-func artifactSHA(value string) bool {
-	raw, err := hex.DecodeString(value)
-	return err == nil && len(raw) == 32 && strings.ToLower(value) == value
 }
 func conversationJSON(v any) []byte { b, _ := marshalDurableJSON(v); return b }
 func conversationAPIJSON(v any) []byte {
@@ -505,6 +497,9 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 		}
 		if linked > 0 {
 			return conversationError("conflict", "conversation_has_delegations")
+		}
+		if _, err = s.deleteConversationAttachments(ctx, tx, id, a); err != nil {
+			return err
 		}
 		q, args, e = query.NewDeleteBuilder(s.store.Renderer(), "_agent_conversations").Where(query.And(conversationScope(a, id), query.Equal("revision", revision))).Build()
 		if err = conversationCAS(ctx, tx, q, args, e); err != nil {

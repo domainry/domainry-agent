@@ -396,18 +396,55 @@ export function errorMessage(code?: string, status?: number) {
   if (status === 400) return "提交内容不符合要求，请检查后重试。";
   return "操作未完成，请稍后重试。";
 }
-export class ApiError extends Error {
+
+export type HTTPErrorResponse = {
   code: string;
-  status?: number;
-  conflict?: { current_draft_revision: number; base_published_version: number; current_content_sha256: string; current_updated_at: string };
-  constructor(code: string, status?: number, conflict?: { current_draft_revision: number; base_published_version: number; current_content_sha256: string; current_updated_at: string }) {
-    super(errorMessage(code, status));
+  message: string;
+  params?: Record<string, string>;
+  request_id: string;
+};
+
+export function parseHTTPErrorResponse(value: unknown): HTTPErrorResponse | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const record = value as Record<string, unknown>;
+  if (typeof record.code !== "string" || !record.code.trim() || typeof record.message !== "string" || !record.message.trim() || typeof record.request_id !== "string") return null;
+  if (record.params !== undefined && (!record.params || typeof record.params !== "object" || Array.isArray(record.params) || Object.values(record.params).some(item => typeof item !== "string"))) return null;
+  return {
+    code: record.code,
+    message: record.message,
+    ...(record.params === undefined ? {} : { params: record.params as Record<string, string> }),
+    request_id: record.request_id,
+  };
+}
+
+export class ApiError extends Error {
+  readonly code: string;
+  readonly status?: number;
+  readonly params?: Record<string, string>;
+  readonly requestID: string;
+
+  constructor(
+    code: string,
+    status?: number,
+    message?: string,
+    params?: Record<string, string>,
+    requestID = "",
+  ) {
+    super(message?.trim() || errorMessage(code, status));
     this.name = "ApiError";
     this.code = code;
     this.status = status;
-    this.conflict = conflict;
+    this.params = params;
+    this.requestID = requestID;
   }
 }
+
+export async function apiErrorFromResponse(response: Response): Promise<ApiError> {
+  const value = parseHTTPErrorResponse(await response.json().catch(() => undefined));
+  if (!value) return new ApiError("request_failed", response.status);
+  return new ApiError(value.code, response.status, value.message, value.params, value.request_id);
+}
+
 export function describeError(error: unknown): string {
   if (error instanceof ApiError) return error.message;
   if (error instanceof TypeError) return messages.network_error;

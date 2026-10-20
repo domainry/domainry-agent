@@ -374,7 +374,7 @@ func testKnowledgeDocumentsIdentityHTTP(t *testing.T, dynamic, extract bool) {
 			"revoke_extract":             func() { grant("knowledge_extract") },
 			"revoke_document_download":   func() { grant(knowledgesdk.ActionDocumentsDownload) },
 			"revoke_document_list":       func() { grant(knowledgesdk.ActionDocumentsList) },
-			"revoke_document_import":     func() { grant(knowledgesdk.ActionDocumentsImportAttachment) },
+			"revoke_document_import":     func() { grant(knowledgesdk.ActionDocumentsUpload) },
 			"revoke_document_transfer":   func() { grant(knowledgesdk.ActionDocumentsTransfer) },
 			"revoke_attachment_download": func() { grant("attachments_download") },
 			"restore_documents":          func() { grant("") },

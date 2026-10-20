@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,14 +14,16 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-foundation/processhost"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
+	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
 	saashost "github.com/domainry/domainry-agent/internal/assembly/saas"
 	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	"github.com/domainry/domainry-agent/server"
 	knowledgehttpapi "github.com/domainry/domainry-connectors/providers/knowledge_base/http_api"
+	"github.com/domainry/domainry-foundation/logging"
+	"github.com/domainry/domainry-foundation/processhost"
 	identityremote "github.com/domainry/domainry-identity-sdk/remote"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -41,7 +43,16 @@ func run() (runErr error) {
 	if err != nil {
 		return err
 	}
-	defer func() { runErr = observability.Finish(context.Background(), nil, runErr) }()
+	started := false
+	startupFailure := logging.Failure{Stage: "configuration_validate"}
+	defer func() {
+		if !started && runErr != nil {
+			observability.StartFailed(context.Background(), runErr, startupFailure)
+			runErr = errors.Join(runErr, observability.Close(context.Background(), nil))
+			return
+		}
+		runErr = observability.Finish(context.Background(), nil, runErr)
+	}()
 	driver := strings.ToLower(strings.TrimSpace(os.Getenv("AGENT_SAAS_DB_DRIVER")))
 	if driver == "" {
 		driver = "sqlite"
@@ -57,6 +68,7 @@ func run() (runErr error) {
 	if driver == "postgres" || driver == "postgresql" {
 		sqlDriver = "pgx"
 	}
+	startupFailure = logging.Failure{Stage: "database_initialize", Dependency: "agent_database"}
 	database, err := sql.Open(sqlDriver, dsn)
 	if err != nil {
 		return err
@@ -81,6 +93,7 @@ func run() (runErr error) {
 	if err != nil {
 		return err
 	}
+	startupFailure = logging.Failure{Stage: "module_assembly"}
 	service, closeService, err := openService(store)
 	if err != nil {
 		return err
@@ -91,8 +104,14 @@ func run() (runErr error) {
 		address = ":8090"
 	}
 	httpServer := &http.Server{Addr: address, Handler: observability.Handler("public", service.Handler()), ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 130 * time.Second, WriteTimeout: 130 * time.Second, IdleTimeout: 60 * time.Second}
+	startupFailure = logging.Failure{Stage: "listener_bind", Dependency: "public_listener"}
+	listener, err := net.Listen("tcp", address)
+	if err != nil {
+		return err
+	}
 	result := make(chan error, 1)
-	go func() { result <- httpServer.ListenAndServe() }()
+	go func() { result <- httpServer.Serve(listener) }()
+	started = true
 	observability.Started(ctx, map[string]any{"listener_group": "public"})
 	select {
 	case err := <-result:

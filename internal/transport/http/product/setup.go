@@ -11,8 +11,8 @@ import (
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-foundation/apperror"
+	"github.com/domainry/domainry-foundation/httpresponse"
 	"github.com/domainry/domainry-foundation/requestcontext"
-	"github.com/domainry/domainry-foundation/telemetry"
 	identity "github.com/domainry/domainry-identity-sdk"
 	knowledgesdk "github.com/domainry/domainry-knowledge-sdk"
 )
@@ -28,7 +28,7 @@ func SetupRoutes(binding identity.Binding, runtime string, authorize func(contex
 		}
 		current, ok := identity.RequestIdentityFromContext(r.Context())
 		if !ok {
-			http.Error(w, "unauthorized", 401)
+			httpresponse.WriteError(w, r, httpresponse.Failure{Status: http.StatusUnauthorized, Code: "product.login_required"})
 			return
 		}
 		if r.Method == "GET" {
@@ -42,7 +42,7 @@ func SetupRoutes(binding identity.Binding, runtime string, authorize func(contex
 			return
 		}
 		if r.Method != "POST" {
-			w.WriteHeader(405)
+			httpresponse.WriteError(w, r, httpresponse.Failure{Status: http.StatusMethodNotAllowed, Code: "product.method_not_allowed"})
 			return
 		}
 		permissions := []identity.ProjectRolePermission{}
@@ -91,14 +91,11 @@ func SetupRoutes(binding identity.Binding, runtime string, authorize func(contex
 	})
 }
 
-func writeSetupError(w http.ResponseWriter, status int, code string) {
-	telemetry.RecordHTTPStatusError(w, status, code)
+func writeSetupError(w http.ResponseWriter, r *http.Request, status int, code string) {
 	if status < 400 {
 		status = 500
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(map[string]string{"code": code})
+	httpresponse.WriteError(w, r, httpresponse.Failure{Status: status, Code: code})
 }
 
 // PermissionSetup is an explicit administrator action over a host-selected list.
@@ -107,7 +104,7 @@ func PermissionSetup(binding identity.Binding, key string, grants []identity.Pro
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		current, ok := identity.RequestIdentityFromContext(r.Context())
 		if !ok {
-			writeSetupError(w, 401, "product.login_required")
+			writeSetupError(w, r, 401, "product.login_required")
 			return
 		}
 		if r.Method == "GET" {
@@ -136,7 +133,7 @@ func PermissionSetup(binding identity.Binding, key string, grants []identity.Pro
 			return
 		}
 		if r.Method != "POST" {
-			w.WriteHeader(405)
+			httpresponse.WriteError(w, r, httpresponse.Failure{Status: http.StatusMethodNotAllowed, Code: "product.method_not_allowed"})
 			return
 		}
 		initializeAdministratorPermissions(w, r, binding, key, grants)
@@ -146,12 +143,12 @@ func PermissionSetup(binding identity.Binding, key string, grants []identity.Pro
 func initializeAdministratorPermissions(w http.ResponseWriter, r *http.Request, binding identity.Binding, key string, grants []identity.ProjectRolePermission) {
 	current, ok := identity.RequestIdentityFromContext(r.Context())
 	if !ok {
-		writeSetupError(w, 401, "product.login_required")
+		writeSetupError(w, r, 401, "product.login_required")
 		return
 	}
 	publisher, ok := binding.(identity.ProjectRolePermissionBundlePublisher)
 	if !ok {
-		writeSetupError(w, 503, "product.setup_unavailable")
+		writeSetupError(w, r, 503, "product.setup_unavailable")
 		return
 	}
 	assignments, err := binding.Projection().ListUserRoleAssignments(requestcontext.WithWorkspaceID(r.Context(), current.Principal.WorkspaceID), identity.UserRoleAssignmentQuery{UserID: identity.SubjectID(current.Principal.UserID)})
@@ -164,7 +161,7 @@ func initializeAdministratorPermissions(w http.ResponseWriter, r *http.Request, 
 		admin = admin || a.RoleID == "admin"
 	}
 	if !admin {
-		writeSetupError(w, 403, "product.administrator_required")
+		writeSetupError(w, r, 403, "product.administrator_required")
 		return
 	}
 	_, err = publisher.PublishProjectRolePermissionBundle(r.Context(), identity.ProjectRolePermissionBundleRequest{
@@ -197,7 +194,7 @@ func initializeAdministratorPermissions(w http.ResponseWriter, r *http.Request, 
 				status = http.StatusServiceUnavailable
 			}
 		}
-		writeSetupError(w, status, "product.setup_failed")
+		writeSetupError(w, r, status, "product.setup_failed")
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")

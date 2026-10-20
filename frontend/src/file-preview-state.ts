@@ -6,7 +6,7 @@ import {
   type FilePreviewLocation,
   type FilePreviewSource,
 } from "@domainry/knowledge-ui";
-import { ApiError } from "./errors.ts";
+import { ApiError, apiErrorFromResponse } from "./errors.ts";
 import { sessionFetch, sessionScope } from "./session.ts";
 import { attachmentPath } from "./attachment-state.ts";
 import { documentPath } from "./knowledge-document-state.ts";
@@ -46,8 +46,7 @@ export function filePreviewSource(target: FileTarget, filename: string, expected
       const scope = sessionScope();
       const response = await sessionFetch(path, { method: "GET", credentials: "same-origin", cache: "no-store", headers: range ? { Range: range } : undefined, signal });
       if (!response.ok && response.status !== 206) {
-        const data = await response.clone().json().catch(() => ({})) as { code?: string };
-        throw new ApiError(data.code || "request_failed", response.status);
+        throw await apiErrorFromResponse(response);
       }
       if (scope !== sessionScope()) throw new ApiError("agent.web.identity_changed", 409);
       const headers = new Headers(response.headers);

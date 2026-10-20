@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { formatLocalDateTime } from "./time.ts";
 import { CalendarClock, RefreshCw, Sparkles, Trash2 } from "lucide-react";
 import { request } from "./api.ts";
-import { ApiError } from "./errors.ts";
+import { ApiError, apiErrorFromResponse } from "./errors.ts";
 import { sessionFetch } from "./session.ts";
 import { scheduleStatusLabel, scheduleTriggerLabel, scheduleUpdateBody, type ScheduleOutput, type SchedulePlan } from "./schedule-state.ts";
 import { Button } from "./components/ui/button";
@@ -29,8 +29,8 @@ async function writeSchedule(path: string, method: string, body: unknown, key: s
     if (error instanceof ApiError) throw error;
     throw new ApiError("network_error");
   }
-  const value = await response.json().catch(() => ({}));
-  if (!response.ok) throw new ApiError(typeof value?.code === "string" ? value.code : "request_failed", response.status);
+  if (!response.ok) throw await apiErrorFromResponse(response);
+  const value = await response.json();
   return value as ScheduleOutput;
 }
 

@@ -1,4 +1,4 @@
-import { ApiError } from "./errors.ts";
+import { ApiError, apiErrorFromResponse } from "./errors.ts";
 import { sessionFetch, sessionScope } from "./session.ts";
 import { attachmentAccept, attachmentHash, type PendingAttachment } from "./attachment-state.ts";
 import type { KnowledgeDocument, KnowledgeDocumentPage, KnowledgeLibrary } from "@domainry/knowledge-ui";
@@ -36,7 +36,7 @@ export function documentStatusDetail(doc: KnowledgeDocument) {
   return "处理尚未完成，请查看状态提示；关闭窗口不会删除已经保存的文件。";
 }
 async function checked(response: Response) {
-  if (!response.ok) { const data = await response.json().catch(() => ({})); throw new ApiError(typeof data.code === "string" ? data.code : "request_failed", response.status); }
+  if (!response.ok) throw await apiErrorFromResponse(response);
   return response;
 }
 function checkedDocument(value: KnowledgeDocument, library: string, pending?: PendingDocument) {

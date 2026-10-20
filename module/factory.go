@@ -330,7 +330,6 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 		conversationRepository = agentstore.NewConversationStore(store)
 	}
 	var knowledgeRuntime knowledgecontract.Runtime
-	var knowledgeLifecycle lifecyclecontract.SubjectExecutionHandler
 	if localKnowledge {
 		knowledgeBinding, openErr := f.options.KnowledgeFactory.OpenModule(ctx, knowledgecontract.ApplicationRef{RuntimeID: app.RuntimeID}, agentstore.NewKnowledgeModuleHost(conversationRepository, host.Migrations()))
 		if openErr != nil {
@@ -347,11 +346,10 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 			return nil, fmt.Errorf("open Knowledge SaaS: %w", openErr)
 		}
 		binding.knowledgeSaaSBinding = knowledgeBinding
-		if err := conversationRepository.BindRemoteKnowledge(knowledgeBinding.Runtime(), knowledgeBinding.ArtifactMutations()); err != nil {
+		if err := conversationRepository.BindRemoteKnowledge(knowledgeBinding.Runtime()); err != nil {
 			return nil, err
 		}
 		knowledgeRuntime = knowledgeBinding.Runtime()
-		knowledgeLifecycle = knowledgeBinding.SubjectLifecycle()
 	}
 	var todoLifecycle lifecyclecontract.SubjectExecutionHandler
 	if localTodo {
@@ -417,16 +415,9 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 			return nil, fmt.Errorf("invalid attachment knowledge binding")
 		}
 	}
-	if localKnowledge {
-		knowledgeLifecycle = binding.knowledgeBinding.SubjectLifecycle(knowledgecontract.Options{
-			ArtifactStorage: conversationOptions.ArtifactStorage,
-			DocumentStorage: conversationOptions.DocumentStorage,
-		})
-	}
 	binding.lifecycleSubjects = []lifecyclecontract.SubjectExecutionHandler{
 		agentstore.NewSubjectLifecycle(store, app.RuntimeID),
 		todoLifecycle,
-		knowledgeLifecycle,
 	}
 	if f.ConversationEnabled() {
 		assembly := &conversationAssembly{repository: conversationRepository, model: conversationModel, runtimeID: app.RuntimeID, timezone: f.options.ConversationTimezone, options: conversationOptions}

@@ -476,6 +476,40 @@ test("HTTP, network and malformed successful responses retain distinct safe erro
   }
 });
 
+test("HTTP errors accept only the canonical flat error response", async () => {
+  const original = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => new Response(JSON.stringify({
+      code: "agent.conversation.revision_conflict",
+      message: "请刷新后重试。",
+      params: { current_revision: "7" },
+      request_id: "request-7",
+    }), { status: 409, headers: { "Content-Type": "application/json" } });
+    await assert.rejects(
+      request("/agent/conversations"),
+      (error: unknown) => error instanceof ApiError
+        && error.code === "agent.conversation.revision_conflict"
+        && error.message === "请刷新后重试。"
+        && error.params?.current_revision === "7"
+        && error.requestID === "request-7",
+    );
+
+    globalThis.fetch = async () => new Response(JSON.stringify({
+      code: "legacy.error",
+      detail: "private legacy detail",
+      conflict: { current_revision: 8 },
+    }), { status: 409, headers: { "Content-Type": "application/json" } });
+    await assert.rejects(
+      request("/agent/conversations"),
+      (error: unknown) => error instanceof ApiError
+        && error.code === "request_failed"
+        && !error.message.includes("private legacy detail"),
+    );
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
 const accountA: AppSession = { mode: "identity", scope: "runtime/workspace/A", runtime_id: "runtime", workspace_id: "workspace", user_id: "A", name: "A", must_change_password: false, ready: true, model: "test" };
 
 test("refresh retries the same scoped request once and never replays a mutation under another account", async () => {

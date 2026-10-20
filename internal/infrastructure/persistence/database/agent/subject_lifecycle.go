@@ -43,7 +43,8 @@ var agentSubjectOwnerTables = []string{
 	conversationStepInputTable, conversationToolCallTable, conversationStepSourceTable, conversationToolCatalogTable,
 	conversationItemTable, agentRunTable, conversationTaskTable, "_agent_conversations", conversationForkTable,
 	conversationCapabilityFeedbackTable, conversationImprovementCandidateTable, conversationCapabilityConfigTable,
-	conversationMemoryChangeTable, "_agent_user_memories",
+	conversationMemoryChangeTable, "_agent_user_memories", "_agent_artifact_mutations", "_agent_artifact_versions",
+	"_agent_artifacts", attachmentIndexJobTable,
 }
 
 func agentSubjectOwnerPredicate(table, owner string) query.Predicate {

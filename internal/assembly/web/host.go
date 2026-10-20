@@ -10,6 +10,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
+	"github.com/domainry/domainry-agent/internal/infrastructure/artifactstorage"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/base"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/artifactkernel"
@@ -75,7 +76,7 @@ type Host struct {
 	application              identitysdk.ApplicationRef
 	registrar                *webhost.Registrar
 	knowledgePermissions     map[string]string
-	artifactFiles            *knowledgemodule.ArtifactFiles
+	artifactFiles            *artifactstorage.Files
 	sharedArtifactFiles      *artifactkernel.ContentFiles
 	documentFiles            *knowledgemodule.DocumentFiles
 	external                 bool
@@ -243,7 +244,7 @@ func Open(ctx context.Context, options Options) (_ *Host, resultErr error) {
 		options.Agent.Knowledge.AuthorizeWorkspace = h.authorizeKnowledgeWorkspace
 	}
 	if options.Agent.KnowledgeSaaSFactory == nil && options.Agent.ConversationOptions.ArtifactStorage == nil {
-		h.artifactFiles, err = knowledgemodule.NewArtifactFiles(path + ".artifacts")
+		h.artifactFiles, err = artifactstorage.NewFiles(path + ".artifacts")
 		if err != nil {
 			return nil, fmt.Errorf("open artifact storage: %w", err)
 		}

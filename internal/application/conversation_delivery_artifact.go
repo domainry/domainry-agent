@@ -6,7 +6,6 @@ import (
 
 	sdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/persistence"
-	knowledge "github.com/domainry/domainry-knowledge-sdk/contract"
 )
 
 func (s *ConversationService) authorizedDeliveryArtifact(ctx context.Context, id string, in sdk.ConversationDeliveryArtifactRead, a sdk.ConversationAuthority) (context.Context, error) {
@@ -78,11 +77,7 @@ func (s *ConversationService) DownloadConversationDeliveryArtifact(ctx context.C
 	if err != nil {
 		return sdk.ConversationArtifactDownload{}, err
 	}
-	reader, ok := s.knowledgeService().(knowledge.ArtifactExportReader)
-	if !ok {
-		return sdk.ConversationArtifactDownload{}, conversationFailure("unavailable", "artifact_export_read_unavailable")
-	}
-	return reader.ReadArtifactExport(ctx, in.ExportID, a)
+	return s.downloadArtifact(ctx, in.ExportID, a, false)
 }
 
 var _ sdk.ConversationDeliveryArtifactReader = (*ConversationService)(nil)

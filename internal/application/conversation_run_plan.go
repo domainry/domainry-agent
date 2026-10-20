@@ -12,6 +12,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	persistence "github.com/domainry/domainry-agent-sdk/persistence"
+	"github.com/domainry/domainry-foundation/logging"
 	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
 
@@ -233,7 +234,9 @@ func (s *ConversationService) ensureConversationRunPlan(ctx context.Context, cla
 		if errors.As(err, &invalid) {
 			data["validation_reason"] = invalid.reason
 		}
-		_ = s.repo.AppendEvent(context.WithoutCancel(ctx), claim, "run.planning.failed", data)
+		if appendErr := s.repo.AppendEvent(context.WithoutCancel(ctx), claim, "run.planning.failed", data); appendErr != nil {
+			logging.RecordFailure(ctx, "agent_plan_event_append_failed", appendErr, logging.Failure{Stage: "planning_failure_append", Dependency: "conversation_repository"})
+		}
 		return claim, err
 	}
 	normalized, err := normalizeConversationRunPlan(plan, time.Now().UTC())

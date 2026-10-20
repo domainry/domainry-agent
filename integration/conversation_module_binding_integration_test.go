@@ -285,7 +285,9 @@ func TestConversationOnlyBindingRecoversWithAuthorizationAndSharedBudget(t *test
 				t.Fatal(err)
 			}
 			service := opened.(agentsdk.ConversationBinding).Conversations()
-			if got := len(opened.(modulehttp.Provider).HTTPAdapters()); got != beforeAdapters+1 {
+			// Binding the application host publishes both the Agent conversation
+			// adapter and the canonical Knowledge adapter prepared for that service.
+			if got := len(opened.(modulehttp.Provider).HTTPAdapters()); got != beforeAdapters+2 {
 				t.Fatalf("adapters: %d", got)
 			}
 			if err = binder.BindConversationHost(ports); err == nil {

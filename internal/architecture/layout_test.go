@@ -184,8 +184,8 @@ func TestLifecycleOwnershipDoesNotCrossDomainTables(t *testing.T) {
 	if end < 0 {
 		t.Fatal("conversation deletion implementation end was not found")
 	}
-	if strings.Contains(text[start:start+end], "deleteConversationAttachments") {
-		t.Fatal("Agent conversation deletion crossed into Knowledge persistence")
+	if !strings.Contains(text[start:start+end], "deleteConversationAttachments") {
+		t.Fatal("Agent conversation deletion did not queue its owned attachment cleanup")
 	}
 }
 

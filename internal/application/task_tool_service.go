@@ -9,6 +9,7 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-agent/internal/execution"
+	"github.com/domainry/domainry-foundation/logging"
 )
 
 type TaskToolInvocation struct {
@@ -90,14 +91,18 @@ func (s *TaskToolService) Invoke(ctx context.Context, request TaskToolInvocation
 		return result, nil
 	}
 	if s.proposals == nil {
-		_ = s.finishToolCall(ctx, run, result, callRef, unavailable("agent.tool.proposal_unavailable"))
+		if finishErr := s.finishToolCall(ctx, run, result, callRef, unavailable("agent.tool.proposal_unavailable")); finishErr != nil {
+			logging.RecordFailure(ctx, "agent_tool_finish_failed", finishErr, logging.Failure{Stage: "tool_call_finish", Dependency: "tool_ledger"})
+		}
 		return TaskToolResult{}, unavailable("agent.tool.proposal_unavailable")
 	}
 	principal := current.Principal
 	principal.CorrelationID = run.CorrelationID
 	proposal, err := s.proposals.CreateHostDraft(ctx, result.Proposal, principal)
 	if err != nil {
-		_ = s.finishToolCall(ctx, run, result, callRef, err)
+		if finishErr := s.finishToolCall(ctx, run, result, callRef, err); finishErr != nil {
+			logging.RecordFailure(ctx, "agent_tool_finish_failed", finishErr, logging.Failure{Stage: "tool_call_finish", Dependency: "tool_ledger"})
+		}
 		return TaskToolResult{}, err
 	}
 	result.Proposal = proposal

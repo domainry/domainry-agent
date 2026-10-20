@@ -11,8 +11,8 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
+	"github.com/domainry/domainry-foundation/httpresponse"
 	"github.com/domainry/domainry-foundation/modulehttp"
-	"github.com/domainry/domainry-foundation/telemetry"
 )
 
 const maxRequestBytes = 2 << 20
@@ -252,11 +252,8 @@ func decodeLimit(r *http.Request, out any, limit int64) error {
 	return nil
 }
 func writeJSON(w http.ResponseWriter, status int, value any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(value)
+	httpresponse.WriteJSON(w, status, value)
 }
 func writeError(w http.ResponseWriter, status int, code, message string) {
-	telemetry.RecordHTTPStatusError(w, status, code)
-	writeJSON(w, status, map[string]string{"code": code, "message": message})
+	httpresponse.WriteError(w, nil, httpresponse.Failure{Status: status, Code: code, Message: message})
 }

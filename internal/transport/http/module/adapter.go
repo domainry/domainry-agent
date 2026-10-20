@@ -13,8 +13,8 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
+	"github.com/domainry/domainry-foundation/httpresponse"
 	"github.com/domainry/domainry-foundation/modulehttp"
-	"github.com/domainry/domainry-foundation/telemetry"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
 
@@ -340,16 +340,14 @@ func decode(w http.ResponseWriter, r *http.Request, value any) bool {
 	decoder := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<20))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(value); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"code": "backend.request.invalid_json"})
+		httpresponse.WriteError(w, r, httpresponse.Failure{Status: http.StatusBadRequest, Code: "backend.request.invalid_json", Cause: err})
 		return false
 	}
 	return true
 }
 
 func writeJSON(w http.ResponseWriter, status int, value any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(value)
+	httpresponse.WriteJSON(w, status, value)
 }
 
 func writeError(w http.ResponseWriter, err error) {
@@ -372,13 +370,11 @@ func writeError(w http.ResponseWriter, err error) {
 			status = http.StatusServiceUnavailable
 		}
 	}
-	telemetry.RecordHTTPStatusError(w, status, code, err)
-	writeJSON(w, status, map[string]string{"code": code})
+	httpresponse.WriteError(w, nil, httpresponse.Failure{Status: status, Code: code, Cause: err})
 }
 
 func writeCode(w http.ResponseWriter, status int, code string) {
-	telemetry.RecordHTTPStatusError(w, status, code)
-	writeJSON(w, status, map[string]string{"code": code})
+	httpresponse.WriteError(w, nil, httpresponse.Failure{Status: status, Code: code})
 }
 
 func sessionLimit(raw string) int {

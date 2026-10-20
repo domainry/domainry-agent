@@ -1,4 +1,4 @@
-import { ApiError } from "./errors.ts";
+import { ApiError, apiErrorFromResponse } from "./errors.ts";
 import { sessionFetch, sessionScope } from "./session.ts";
 import { applyExecutionEvent, executionEventNames, type ContextView, type ExecutionEvent, type StepView } from "./execution-state.ts";
 import { applyInteractionEvent, interactionEventNames, waiting, type Interaction } from "./interaction-state.ts";
@@ -142,25 +142,12 @@ export async function request<T>(
     if (error instanceof ApiError) throw error;
     throw new ApiError("network_error");
   }
+  if (!response.ok) throw await apiErrorFromResponse(response);
   let data: unknown;
   try {
     data = await response.json();
   } catch {
-    if (response.ok) throw new ApiError("response_unreadable", response.status);
-    data = {};
-  }
-  if (!response.ok) {
-    const code =
-      typeof data === "object" &&
-      data !== null &&
-      "code" in data &&
-      typeof data.code === "string"
-        ? data.code
-        : "request_failed";
-    const conflict = typeof data === "object" && data !== null && "conflict" in data && typeof data.conflict === "object" && data.conflict !== null
-      ? data.conflict as { current_draft_revision: number; base_published_version: number; current_content_sha256: string; current_updated_at: string }
-      : undefined;
-    throw new ApiError(code, response.status, conflict);
+    throw new ApiError("response_unreadable", response.status);
   }
   return data as T;
 }
@@ -179,14 +166,7 @@ export async function exportConversationTrajectory(id: string, runId: string, si
     if (error instanceof ApiError) throw error;
     throw new ApiError("network_error");
   }
-  if (!response.ok) {
-    let code = "request_failed";
-    try {
-      const value = await response.json() as { code?: string };
-      if (value.code) code = value.code;
-    } catch { /* use the generic code */ }
-    throw new ApiError(code, response.status);
-  }
+  if (!response.ok) throw await apiErrorFromResponse(response);
   const disposition = response.headers.get("Content-Disposition") || "";
   const encoded = disposition.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
   const quoted = disposition.match(/filename="([^"]+)"/i)?.[1];

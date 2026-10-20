@@ -73,7 +73,7 @@ func testKnowledgeSource(config KnowledgeConfig) (knowledgeprovider.Source, erro
 }
 
 func testAttachmentKnowledgeSource(config KnowledgeConfig, runtimeID string) (agentsdk.ConversationAttachmentKnowledge, error) {
-	return testKnowledgeProviderFactory().NewAttachmentSource(config, runtimeID)
+	return newAttachmentKnowledge(config, runtimeID, testKnowledgeProviderFactory())
 }
 
 func TestModuleRejectsMixedOrIncompleteDependencyTopologies(t *testing.T) {
@@ -231,7 +231,7 @@ func TestModuleDescriptor(t *testing.T) {
 	if b.Descriptor().Mode != agentsdk.DeploymentModeModule {
 		t.Fatalf("descriptor=%+v", b.Descriptor())
 	}
-	if len(host.applied) != 14 {
+	if len(host.applied) != 16 {
 		t.Fatalf("Agent migrations=%d", len(host.applied))
 	}
 	for _, owner := range []string{sharedoperation.MigrationOwner, sharedworkerscope.MigrationOwner, sharedsubjectlifecycle.MigrationOwner, todomodule.MigrationOwner, knowledgemodule.MigrationOwner, agentstore.MigrationOwner} {
@@ -275,7 +275,7 @@ func TestModuleDescriptor(t *testing.T) {
 	for _, handler := range subjects.LifecycleSubjectHandlers() {
 		owners = append(owners, handler.Owner(t.Context()))
 	}
-	if strings.Join(owners, ",") != "agent,todo,knowledge" {
+	if strings.Join(owners, ",") != "agent,todo" {
 		t.Fatalf("subject lifecycle owners=%v", owners)
 	}
 	ctx := agentsdk.WithAuthorizedServiceAction(t.Context(), agentsdk.ActionAgentTaskExecutionStart, agentsdk.AgentRuntimeServiceAudience)

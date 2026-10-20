@@ -5,14 +5,14 @@ import (
 	"net/http"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	"github.com/domainry/domainry-foundation/telemetry"
+	"github.com/domainry/domainry-foundation/httpresponse"
 )
 
 // Preserve domain failures through the repository RPC boundary. A quota or
 // stale fence is not a transient database failure; raw database/host error
 // text must not become a client-visible response.
 func writeRepositoryError(w http.ResponseWriter, err error) {
-	status, code, class, retryable := http.StatusInternalServerError, "agent.saas.repository_failed", "internal", false
+	status, code := http.StatusInternalServerError, "agent.saas.repository_failed"
 	var failure *agentsdk.Error
 	if errors.As(err, &failure) {
 		switch failure.Class {
@@ -30,13 +30,8 @@ func writeRepositoryError(w http.ResponseWriter, err error) {
 			status = http.StatusServiceUnavailable
 		}
 		if status != http.StatusInternalServerError {
-			code, class, retryable = failure.Code, failure.Class, failure.Retryable
+			code = failure.Code
 		}
 	}
-	telemetry.RecordHTTPStatusError(w, status, code, err)
-	writeJSON(w, status, struct {
-		Code      string `json:"code"`
-		Class     string `json:"class"`
-		Retryable bool   `json:"retryable"`
-	}{code, class, retryable})
+	httpresponse.WriteError(w, nil, httpresponse.Failure{Status: status, Code: code, Cause: err})
 }

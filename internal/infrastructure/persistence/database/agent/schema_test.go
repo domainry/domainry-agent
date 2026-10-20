@@ -12,15 +12,15 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 14 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
+			if len(migrations) != 16 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
 				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
 			byVersion := map[uint]string{}
 			for _, migration := range migrations {
 				byVersion[migration.Version] = strings.Join(migration.Statements, "\n")
 			}
-			if _, found := byVersion[7]; found {
-				t.Fatal("retired private attachment migration v7 remains")
+			if attachments := byVersion[7]; !strings.Contains(attachments, attachmentIndexJobTable) || !strings.Contains(attachments, attachmentKnowledgeSourceTable) {
+				t.Fatal("Agent attachment ownership migration v7 is missing")
 			}
 			if _, found := byVersion[8]; found {
 				t.Fatal("retired private attachment cleanup migration v8 remains")

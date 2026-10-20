@@ -16,11 +16,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/domainry/domainry-foundation/processhost"
 	productassembly "github.com/domainry/domainry-agent/internal/assembly/product"
 	webassembly "github.com/domainry/domainry-agent/internal/assembly/web"
 	agentmodule "github.com/domainry/domainry-agent/module"
 	webhttp "github.com/domainry/domainry-agent/web"
+	"github.com/domainry/domainry-foundation/logging"
+	"github.com/domainry/domainry-foundation/processhost"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	identitymodule "github.com/domainry/domainry-identity/module"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
@@ -39,7 +40,16 @@ func run() (runErr error) {
 	if err != nil {
 		return err
 	}
-	defer func() { runErr = observability.Finish(context.Background(), nil, runErr) }()
+	started := false
+	startupFailure := logging.Failure{Stage: "configuration_validate"}
+	defer func() {
+		if !started && runErr != nil {
+			observability.StartFailed(context.Background(), runErr, startupFailure)
+			runErr = errors.Join(runErr, observability.Close(context.Background(), nil))
+			return
+		}
+		runErr = observability.Finish(context.Background(), nil, runErr)
+	}()
 	externalOptions, err := externalIdentityOptions()
 	if err != nil {
 		return err
@@ -134,6 +144,7 @@ func run() (runErr error) {
 	options.ReportTools = true
 	options.AnalysisTools = true
 	options.WebConnectionKey = env("INTEGRATION_WEB_CONNECTION_KEY", "")
+	startupFailure = logging.Failure{Stage: "product_initialize"}
 	host, err := webassembly.Open(ctx, options)
 	if err != nil {
 		return err
@@ -175,13 +186,19 @@ func run() (runErr error) {
 	if (certificate == "") != (key == "") {
 		return errors.New("both AGENT_WEB_TLS_CERT and AGENT_WEB_TLS_KEY are required for TLS")
 	}
+	startupFailure = logging.Failure{Stage: "listener_bind", Dependency: "public_listener"}
+	listener, err := net.Listen("tcp", address)
+	if err != nil {
+		return err
+	}
 	go func() {
 		if certificate != "" {
-			done <- server.ListenAndServeTLS(certificate, key)
+			done <- server.ServeTLS(listener, certificate, key)
 		} else {
-			done <- server.ListenAndServe()
+			done <- server.Serve(listener)
 		}
 	}()
+	started = true
 	observability.Started(ctx, map[string]any{"listener_group": "public", "identity_mode": host.Identity.Descriptor().Mode})
 	select {
 	case err := <-done:

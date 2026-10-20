@@ -181,7 +181,7 @@ func (a *attachmentLiveAudit) RoundTripHTTP(ctx context.Context, in connector.HT
 	return out, nil
 }
 
-func (a *attachmentLiveAudit) readSource(ids []string) (*knowledgemodule.Knowledge, agentsdk.ConversationAuthority, error) {
+func (a *attachmentLiveAudit) readSource(ids []string) (*knowledgemodule.KnowledgeProvider, agentsdk.ConversationAuthority, error) {
 	c := a.config
 	c.Transport = a
 	c.WorkspaceID = "attachment-visibility-probe"
