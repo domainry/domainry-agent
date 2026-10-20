@@ -266,7 +266,7 @@ func verifyRecordProduct(t *testing.T, newProduct func() (webhost.Product, error
 		t.Fatalf("Agent-to-Todo integration missing: %+v", todos)
 	}
 	call("POST", "/agent/todos", map[string]any{"client_id": "office-todo", "items": []any{map[string]string{"title": "跟进业务记录", "timezone": "Asia/Shanghai"}}}, 200)
-	call("GET", "/agent/knowledge-libraries", nil, 200)
+	call("GET", "/knowledge/libraries", nil, 200)
 	h.Close(context.Background())
 	h = open()
 	cookies = map[string]*http.Cookie{}
