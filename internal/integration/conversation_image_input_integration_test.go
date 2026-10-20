@@ -14,7 +14,7 @@ import (
 	"testing"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
+	conversationassembly "github.com/domainry/domainry-agent/internal/composition/conversation"
 )
 
 const imageInputPNG = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="

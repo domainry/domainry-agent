@@ -19,10 +19,8 @@ Agent 自己负责：
 
 ```text
 cmd/domainry-agent/   独立进程入口
-internal/             Agent 内部应用、装配、基础设施、传输和测试
+internal/             Agent 内部应用、共享组合、部署装配、基础设施、传输和测试
 module/               进程内 Module 门面
-remote/               SaaS 客户端门面
-saas/                 独立服务端协议
 docs/                 设计与验证资料
 ```
 
@@ -33,6 +31,6 @@ docs/                 设计与验证资料
 
 - 进程内集成使用 `module.NewFactory`。
 - SaaS 远程集成使用 `module.NewSaaSFactory`。
-- 独立服务使用 `saas.New`，命令入口为 `go run ./cmd/domainry-agent`。
+- 独立服务命令入口为 `go run ./cmd/domainry-agent`。
 
 依赖统一使用已发布的 Go module 版本；仓库不依赖 `go.work` 或本地目录替换。

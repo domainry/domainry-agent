@@ -2,7 +2,7 @@ package moduleassembly
 
 import (
 	"fmt"
-	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
+	conversationassembly "github.com/domainry/domainry-agent/internal/composition/conversation"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"

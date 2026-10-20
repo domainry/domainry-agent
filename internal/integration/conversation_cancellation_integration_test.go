@@ -3,7 +3,7 @@ package integration_test
 import (
 	"context"
 	"fmt"
-	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
+	conversationassembly "github.com/domainry/domainry-agent/internal/composition/conversation"
 	"sync"
 	"sync/atomic"
 	"testing"

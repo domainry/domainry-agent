@@ -2,7 +2,7 @@ package integration_test
 
 import (
 	"context"
-	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
+	conversationassembly "github.com/domainry/domainry-agent/internal/composition/conversation"
 	"strings"
 	"testing"
 

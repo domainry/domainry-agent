@@ -10,7 +10,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
-	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
+	conversationassembly "github.com/domainry/domainry-agent/internal/composition/conversation"
 )
 
 func waitConversationForAuthority(t *testing.T, service agentsdk.ConversationService, conversationID, runID string, authority agentsdk.ConversationAuthority) agentsdk.ConversationRun {

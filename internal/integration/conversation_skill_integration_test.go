@@ -11,7 +11,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	application "github.com/domainry/domainry-agent/internal/application"
-	conversationassembly "github.com/domainry/domainry-agent/internal/assembly/conversation"
+	conversationassembly "github.com/domainry/domainry-agent/internal/composition/conversation"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 )
 

@@ -30,6 +30,22 @@ func TestRootDirectoryContainsOnlyModuleEntrypoints(t *testing.T) {
 	}
 }
 
+func TestAssemblyContainsOnlyDeploymentModes(t *testing.T) {
+	entries, err := os.ReadDir("../assembly")
+	if err != nil {
+		t.Fatal(err)
+	}
+	allowed := map[string]bool{"module": true, "saas": true}
+	for _, entry := range entries {
+		if strings.HasPrefix(entry.Name(), ".") {
+			continue
+		}
+		if !entry.IsDir() || !allowed[entry.Name()] {
+			t.Errorf("internal/assembly contains non-deployment entry %q", entry.Name())
+		}
+	}
+}
+
 // Applications own policy and orchestration. Concrete storage, transports and
 // other service implementations belong behind SDK contracts and composition.
 func TestApplicationDoesNotImportAdaptersOrOtherServiceImplementations(t *testing.T) {
@@ -151,7 +167,7 @@ func TestModuleUsesTaggedDependencies(t *testing.T) {
 // Account business protocols belong in Connector SDK / Tools adapters. The
 // execution and artifact orchestration must stay generic as families are added.
 func TestExecutionDoesNotDependOnAccountBusinessProtocols(t *testing.T) {
-	for _, root := range []string{"../application", "../execution", "../assembly/conversation"} {
+	for _, root := range []string{"../application", "../execution", "../composition/conversation"} {
 		err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
 				return err
