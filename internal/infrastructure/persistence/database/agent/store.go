@@ -16,7 +16,7 @@ import (
 	ormdriver "github.com/domainry/domainry-orm/driver"
 )
 
-func agentError(class, code string) error {
+func agentError(class agentsdk.ErrorClass, code string) error {
 	return &agentsdk.Error{Class: class, Code: code, Message: code, Retryable: class == "rate_limited"}
 }
 

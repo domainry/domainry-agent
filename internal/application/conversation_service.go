@@ -447,7 +447,7 @@ func (s *ConversationService) ConversationExecutionCapacity(ctx context.Context,
 	}
 	return repo.ConversationExecutionCapacity(ctx, a)
 }
-func conversationFailure(class, code string) error {
+func conversationFailure(class agentsdk.ErrorClass, code string) error {
 	return &agentsdk.Error{Class: class, Code: "agent.conversation." + code}
 }
 func (s *ConversationService) authorize(a agentsdk.ConversationAuthority) error {

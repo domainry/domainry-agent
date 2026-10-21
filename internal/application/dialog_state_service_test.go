@@ -152,7 +152,7 @@ func TestDialogStateServiceFailsClosedWithoutAuthorityOrRepository(t *testing.T)
 	assertDialogStateError(t, err, "bad_request", "agent_dialog.session_id_required")
 }
 
-func assertDialogStateError(t *testing.T, err error, class, code string) {
+func assertDialogStateError(t *testing.T, err error, class agentsdk.ErrorClass, code string) {
 	t.Helper()
 	var value *agentsdk.Error
 	if !errors.As(err, &value) || value.Class != class || value.ErrorCode() != code {

@@ -1080,12 +1080,12 @@ func conversationToolRetryable(ctx context.Context, err error) bool {
 	}
 	var agentError *agentsdk.Error
 	if errors.As(err, &agentError) {
-		class := strings.ToLower(strings.TrimSpace(agentError.Class))
+		class := strings.ToLower(strings.TrimSpace(string(agentError.Class)))
 		return agentError.Retryable || class == "unavailable" || class == "rate_limited"
 	}
 	var toolError *toolsdk.Error
 	if errors.As(err, &toolError) {
-		class := strings.ToLower(strings.TrimSpace(toolError.Class))
+		class := strings.ToLower(strings.TrimSpace(string(toolError.Class)))
 		return toolError.Retryable || class == "unavailable" || class == "rate_limited"
 	}
 	var kind interface{ ApplicationErrorKind() string }

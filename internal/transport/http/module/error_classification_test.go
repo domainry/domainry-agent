@@ -18,7 +18,11 @@ func (capture *classificationCapture) RecordError(kind, code string) {
 }
 
 func TestAgentErrorClassificationMatrix(t *testing.T) {
-	tests := []struct{ class, code, kind string }{
+	tests := []struct {
+		class agentsdk.ErrorClass
+		code  string
+		kind  string
+	}{
 		{"unavailable", "agent.database_unavailable", "unavailable"},
 		{"unavailable", "agent.dependency_unavailable", "unavailable"},
 		{"conflict", "agent.task_fence_rejected", "conflict"},

@@ -108,7 +108,7 @@ func conversationAPIJSON(v any) []byte {
 	b, _ := json.Marshal(v)
 	return b
 }
-func conversationError(class, code string) error {
+func conversationError(class agentsdk.ErrorClass, code string) error {
 	return &agentsdk.Error{Class: class, Code: "agent.conversation." + code}
 }
 func conversationAuthority(a agentsdk.ConversationAuthority) error {

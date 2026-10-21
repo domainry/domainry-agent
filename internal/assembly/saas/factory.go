@@ -326,7 +326,7 @@ func (c *client) call(ctx context.Context, method, path string, payload any, key
 		_ = json.Unmarshal(raw, out)
 		if task, ok := out.(*agentsdk.TaskResult); ok && strings.TrimSpace(task.ErrorCode) != "" {
 			return &agentsdk.Error{
-				Class:     strings.TrimSpace(task.ErrorClass),
+				Class:     agentsdk.ErrorClass(strings.TrimSpace(task.ErrorClass)),
 				Code:      strings.TrimSpace(task.ErrorCode),
 				Retryable: task.Retryable || response.StatusCode == http.StatusTooManyRequests || response.StatusCode >= 500,
 			}
@@ -338,7 +338,7 @@ func (c *client) call(ctx context.Context, method, path string, payload any, key
 		if failure.Code != "" {
 			return &agentsdk.Error{Class: agentHTTPErrorClass(response.StatusCode), Code: failure.Code, Message: failure.Message, Retryable: response.StatusCode >= 500}
 		}
-		return &agentsdk.Error{Class: "saas_http", Code: fmt.Sprintf("agent.saas.http_%d", response.StatusCode), Message: fmt.Sprintf("Agent SaaS returned HTTP %d", response.StatusCode), Retryable: response.StatusCode == http.StatusTooManyRequests || response.StatusCode >= 500}
+		return &agentsdk.Error{Class: agentsdk.ErrorClassInternal, Code: fmt.Sprintf("agent.saas.http_%d", response.StatusCode), Message: fmt.Sprintf("Agent SaaS returned HTTP %d", response.StatusCode), Retryable: response.StatusCode == http.StatusTooManyRequests || response.StatusCode >= 500}
 	}
 	if err := json.Unmarshal(raw, out); err != nil {
 		return fmt.Errorf("decode Agent SaaS response: %w", err)
@@ -346,22 +346,22 @@ func (c *client) call(ctx context.Context, method, path string, payload any, key
 	return nil
 }
 
-func agentHTTPErrorClass(status int) string {
+func agentHTTPErrorClass(status int) agentsdk.ErrorClass {
 	switch status {
 	case http.StatusBadRequest, http.StatusUnprocessableEntity, http.StatusRequestEntityTooLarge:
-		return "bad_request"
+		return agentsdk.ErrorClassBadRequest
 	case http.StatusUnauthorized, http.StatusForbidden:
-		return "forbidden"
+		return agentsdk.ErrorClassForbidden
 	case http.StatusNotFound:
-		return "not_found"
+		return agentsdk.ErrorClassNotFound
 	case http.StatusConflict, http.StatusPreconditionFailed:
-		return "conflict"
+		return agentsdk.ErrorClassConflict
 	case http.StatusTooManyRequests:
-		return "rate_limited"
+		return agentsdk.ErrorClassRateLimited
 	case http.StatusBadGateway, http.StatusServiceUnavailable, http.StatusGatewayTimeout:
-		return "unavailable"
+		return agentsdk.ErrorClassUnavailable
 	default:
-		return "internal"
+		return agentsdk.ErrorClassInternal
 	}
 }
 

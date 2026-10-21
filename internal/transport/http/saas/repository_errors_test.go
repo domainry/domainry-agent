@@ -14,13 +14,13 @@ import (
 
 func TestRepositoryErrorsPreservePolicyFailuresWithoutDriverDetails(t *testing.T) {
 	for _, sample := range []struct {
-		class  string
+		class  agentsdk.ErrorClass
 		status int
 	}{
 		{"bad_request", 400}, {"forbidden", 403}, {"not_found", 404},
 		{"conflict", 409}, {"rate_limited", 429}, {"unavailable", 503},
 	} {
-		t.Run(sample.class, func(t *testing.T) {
+		t.Run(string(sample.class), func(t *testing.T) {
 			response := httptest.NewRecorder()
 			writeRepositoryError(response, fmt.Errorf("private driver wrapper: %w", &agentsdk.Error{Class: sample.class, Code: "agent.task.example", Message: "private driver detail"}))
 			var result httpresponse.ErrorResponse

@@ -869,8 +869,8 @@ func errorClass(err error, fallback string) string {
 		return strings.TrimSpace(fallback)
 	}
 	var structured *agentsdk.Error
-	if errors.As(err, &structured) && strings.TrimSpace(structured.Class) != "" {
-		return strings.TrimSpace(structured.Class)
+	if errors.As(err, &structured) && strings.TrimSpace(string(structured.Class)) != "" {
+		return strings.TrimSpace(string(structured.Class))
 	}
 	return strings.TrimSpace(fallback)
 }

@@ -328,11 +328,13 @@ func contextString(value map[string]any, key string) string {
 	return text
 }
 
-func sdkError(class, code string) error { return &agentsdk.Error{Class: class, Code: code} }
-func badRequest(code string) error      { return sdkError("bad_request", code) }
-func forbidden(code string) error       { return sdkError("forbidden", code) }
-func notFound(code string) error        { return sdkError("not_found", code) }
-func conflict(code string) error        { return sdkError("conflict", code) }
-func unavailable(code string) error     { return sdkError("unavailable", code) }
+func sdkError(class agentsdk.ErrorClass, code string) error {
+	return &agentsdk.Error{Class: class, Code: code}
+}
+func badRequest(code string) error  { return sdkError("bad_request", code) }
+func forbidden(code string) error   { return sdkError("forbidden", code) }
+func notFound(code string) error    { return sdkError("not_found", code) }
+func conflict(code string) error    { return sdkError("conflict", code) }
+func unavailable(code string) error { return sdkError("unavailable", code) }
 
 var _ agentsdk.AgentDialogStateService = (*DialogStateService)(nil)
