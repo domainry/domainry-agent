@@ -67,7 +67,7 @@ var _ agentsdk.ConversationExecutionAuthorizer = (*ConversationIdentity)(nil)
 // unavailable, so they cannot be mistaken for a successful policy lookup.
 func subjectResolutionDenied(err error) bool {
 	var boundary *identitysdk.Error
-	if !errors.As(err, &boundary) || boundary.StatusCode != 403 && boundary.StatusCode != 404 {
+	if !errors.As(err, &boundary) || boundary.Class != identitysdk.ErrorClassForbidden && boundary.Class != identitysdk.ErrorClassNotFound {
 		return false
 	}
 	switch boundary.Code {
