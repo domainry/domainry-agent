@@ -40,7 +40,7 @@ func (s SubjectLifecycle) authority(workspaceID, subjectID string) (agentsdk.Con
 var agentSubjectOwnerTables = []string{
 	conversationContractPublicationTable, conversationSourceReleaseTable, conversationAgentMessageTable, conversationPeerLinkTable,
 	"_agent_conversation_interactions", conversationRunStepTable,
-	conversationStepInputTable, conversationToolCallTable, conversationStepSourceTable, conversationToolCatalogTable,
+	conversationStepInputTable, conversationToolCallTable, conversationToolCatalogTable,
 	conversationItemTable, agentRunTable, conversationTaskTable, "_agent_conversations", conversationForkTable,
 	conversationCapabilityFeedbackTable, conversationImprovementCandidateTable, conversationCapabilityConfigTable,
 	conversationMemoryChangeTable, "_agent_user_memories", "_agent_artifact_mutations", "_agent_artifact_versions",
@@ -70,10 +70,14 @@ func agentSubjectOwnerPredicate(table, owner string) query.Predicate {
 func agentSubjectIndexedTables() map[string][]string {
 	return map[string][]string{
 		conversationDelegationSubjectTable: {"owner_key", "delegation_id", "execution_owner_key", "source_authority_json", "execution_authority_json", "created_at"},
+		conversationStepSourceTable:        {"owner_key", "conversation_id", "run_id", "step_no", "source_no", "source_conversation_id", "source_run_id", "before_step"},
 	}
 }
 
 func agentSubjectIndexPredicate(table, owner string) query.Predicate {
+	if table == conversationStepSourceTable {
+		return query.Equal("owner_key", owner)
+	}
 	return query.Or(query.Equal("owner_key", owner), query.Equal("execution_owner_key", owner))
 }
 

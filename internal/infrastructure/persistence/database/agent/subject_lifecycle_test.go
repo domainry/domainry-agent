@@ -34,6 +34,18 @@ func TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	for _, fixture := range []struct {
+		authority agentsdk.ConversationAuthority
+		root      string
+		source    string
+	}{
+		{authority: a, root: alice.ID, source: "alice-step-source-only"},
+		{authority: b, root: bob.ID, source: "bob-step-source-only"},
+	} {
+		if _, err = db.ExecContext(t.Context(), `INSERT INTO _agent_step_sources(owner_key,conversation_id,run_id,step_no,source_no,source_conversation_id,source_run_id,before_step) VALUES(?,?,?,?,?,?,?,?)`, conversationOwner(fixture.authority), fixture.root, "subject-export-run", int64(0), int64(0), fixture.source, "subject-export-source-run", int64(0)); err != nil {
+			t.Fatal(err)
+		}
+	}
 	if _, err = repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{ID: "prefs:alice.v1", Title: "Alice preference", Content: "private", Enabled: true}, a); err != nil {
 		t.Fatal(err)
 	}
@@ -43,7 +55,7 @@ func TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly(t *testing.T) {
 		t.Fatalf("preview=%s err=%v", preview, err)
 	}
 	exported, err := lifecycle.ExportSubjectForRequest(t.Context(), "export", a.WorkspaceID, a.UserID)
-	if err != nil || !bytes.Contains(exported, []byte("Alice execution secret")) || bytes.Contains(exported, []byte("Bob execution secret")) {
+	if err != nil || !bytes.Contains(exported, []byte("Alice execution secret")) || !bytes.Contains(exported, []byte("alice-step-source-only")) || bytes.Contains(exported, []byte("Bob execution secret")) || bytes.Contains(exported, []byte("bob-step-source-only")) {
 		t.Fatalf("export=%s err=%v", exported, err)
 	}
 	if _, err = lifecycle.EraseSubjectForRequest(t.Context(), "held", a.WorkspaceID, a.UserID, []lifecyclemodel.LegalHold{{ID: "hold"}}); err == nil {
