@@ -8,12 +8,12 @@ import (
 
 func TestConversationToolSourceAttachmentsComeOnlyFromFrozenDirectUserImages(t *testing.T) {
 	direct := &sdk.ConversationImageReference{
-		ConversationID: "conversation-1", AttachmentID: "att_0123456789abcdef0123456789abcdef",
+		ConversationID: "conversation-1", AttachmentID: "art_0123456789abcdef0123456789abcdef",
 		Filename: "card.png", ContentType: "image/png", Bytes: 42,
 		SHA256: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", Revision: 2,
 	}
 	derived := *direct
-	derived.AttachmentID = "att_abcdef0123456789abcdef0123456789"
+	derived.AttachmentID = "art_abcdef0123456789abcdef0123456789"
 	derived.Source = &sdk.ConversationRunReference{ConversationID: "source-conversation", RunID: "source-run"}
 	messages := []sdk.ConversationStepMessage{
 		{Role: "assistant", ContentBlocks: []sdk.ConversationContentBlock{{Type: "image", Image: direct}}},

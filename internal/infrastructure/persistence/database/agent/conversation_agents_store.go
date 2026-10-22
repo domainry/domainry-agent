@@ -29,7 +29,7 @@ func (s *ConversationStore) collaborationReplay(ctx context.Context, tx *sql.Tx,
 
 func (s *ConversationStore) collaborationReceipt(ctx context.Context, a agentsdk.ConversationAuthority, key string, request any, out any) (bool, error) {
 	command := agentOperationCommand("agent.collaboration_mutation", "agent.collaboration.mutate", key, request, a)
-	receipt, found, err := s.store.operations.Get(ctx, sharedoperation.ManagedIdentity{ID: command.ID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind})
+	receipt, found, err := s.store.operations.Get(ctx, sharedoperation.ManagedIdentity{OperationID: command.OperationID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind})
 	if err != nil || !found {
 		return false, err
 	}
@@ -44,7 +44,7 @@ func (s *ConversationStore) collaborationReceipt(ctx context.Context, a agentsdk
 
 func (s *ConversationStore) saveCollaborationMutation(ctx context.Context, tx *sql.Tx, a agentsdk.ConversationAuthority, key string, request, result any) error {
 	command := agentOperationCommand("agent.collaboration_mutation", "agent.collaboration.mutate", key, request, a)
-	return s.store.operations.Complete(sharedoperation.WithExecutor(ctx, tx), sharedoperation.Completion{ID: command.ID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind, IdempotencyKey: command.IdempotencyKey, RequestFingerprint: command.RequestFingerprint, Result: json.RawMessage(conversationJSON(result)), CompletedAt: time.Now().UTC()})
+	return s.store.operations.Complete(sharedoperation.WithExecutor(ctx, tx), sharedoperation.Completion{OperationID: command.OperationID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind, IdempotencyKey: command.IdempotencyKey, RequestFingerprint: command.RequestFingerprint, Result: json.RawMessage(conversationJSON(result)), CompletedAt: time.Now().UTC()})
 }
 
 func (s *ConversationStore) ownedConversationAgent(ctx context.Context, db conversationDB, id string, a agentsdk.ConversationAuthority) (agentsdk.ConversationAgent, error) {

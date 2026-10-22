@@ -11,6 +11,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/artifact"
 	"github.com/domainry/domainry-agent-sdk/persistence"
+	"github.com/domainry/domainry-foundation/entityid"
 	"github.com/domainry/domainry-orm/query"
 )
 
@@ -147,7 +148,11 @@ func (s *ConversationStore) saveArtifact(ctx context.Context, tx *sql.Tx, in per
 		}
 	}
 	if in.ExpectedVersion == 0 {
-		out.Artifact.ID = "art_" + conversationHash([]string{conversationOwner(a), in.ClientID})[:32]
+		artifactID, err := entityid.Derive("agart", "agent.conversation-artifact", conversationOwner(a), in.ClientID)
+		if err != nil {
+			return out, err
+		}
+		out.Artifact.ID = artifactID
 		out.Artifact.CreatedAt = now
 		statement, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_artifacts").Projections(query.Project(query.CountAll())).Where(query.Equal("owner_key", conversationOwner(a))).Build()
 		if err != nil {

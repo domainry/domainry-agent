@@ -15,17 +15,19 @@ import (
 )
 
 type conversationTaskRow struct {
+	id          int64
 	task        agentsdk.ConversationTask
 	authority   agentsdk.ConversationAuthority
 	requestHash string
 	schedule    *agentsdk.ConversationTaskScheduleRef
 }
 
-var conversationTaskColumns = []string{"payload_json", "authority_json", "request_hash", "scheduled_plan_id", "scheduler_run_id", "scheduled_for"}
+var conversationTaskColumns = []string{"id", "payload_json", "authority_json", "request_hash", "scheduled_plan_id", "scheduler_run_id", "scheduled_for"}
 
 type conversationTaskCursor struct {
-	Owner, Query, ID string
-	Created, Cutoff  int64
+	Owner, Query    string
+	ID              int64
+	Created, Cutoff int64
 }
 
 func scanConversationTask(row interface{ Scan(...any) error }) (conversationTaskRow, error) {
@@ -33,7 +35,7 @@ func scanConversationTask(row interface{ Scan(...any) error }) (conversationTask
 	var raw, authority []byte
 	var planID, schedulerRunID sql.NullString
 	var scheduledFor sql.NullInt64
-	if err := row.Scan(&raw, &authority, &out.requestHash, &planID, &schedulerRunID, &scheduledFor); err != nil {
+	if err := row.Scan(&out.id, &raw, &authority, &out.requestHash, &planID, &schedulerRunID, &scheduledFor); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return out, conversationError("not_found", "task_not_found")
 		}
@@ -508,10 +510,10 @@ func (s *ConversationStore) ConversationTasks(ctx context.Context, in agentsdk.C
 	filters := []query.Predicate{conversationTaskKindPredicate(conversationTaskKindTask), query.Equal("owner_key", owner), query.LessThanOrEqual("created_at", cursor.Cutoff)}
 	if in.Cursor != "" {
 		raw, err := base64.RawURLEncoding.DecodeString(in.Cursor)
-		if err != nil || unmarshalDurableJSON(raw, &cursor) != nil || cursor.Owner != owner || cursor.Query != hash || !personalMemoryKey(cursor.ID) || cursor.Created < 1 || cursor.Cutoff < cursor.Created {
+		if err != nil || unmarshalDurableJSON(raw, &cursor) != nil || cursor.Owner != owner || cursor.Query != hash || cursor.ID < 1 || cursor.Created < 1 || cursor.Cutoff < cursor.Created {
 			return out, conversationError("bad_request", "task_cursor_invalid")
 		}
-		filters = append(filters, query.Or(query.LessThan("created_at", cursor.Created), query.And(query.Equal("created_at", cursor.Created), query.LessThan("task_id", cursor.ID))))
+		filters = append(filters, query.Or(query.LessThan("created_at", cursor.Created), query.And(query.Equal("created_at", cursor.Created), query.LessThan("id", cursor.ID))))
 	}
 	if in.Status != "" {
 		filters = append(filters, query.Equal("status", in.Status))
@@ -519,7 +521,7 @@ func (s *ConversationStore) ConversationTasks(ctx context.Context, in agentsdk.C
 	if in.SourceConversationID != "" {
 		filters = append(filters, query.Equal("source_conversation_id", in.SourceConversationID))
 	}
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(filters...)).OrderBy(query.Descending("created_at"), query.Descending("task_id")).Limit(301).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationTaskTable).Columns(conversationTaskColumns...).Where(query.And(filters...)).OrderBy(query.Descending("created_at"), query.Descending("id")).Limit(301).Build()
 	if err != nil {
 		return out, err
 	}
@@ -539,7 +541,7 @@ func (s *ConversationStore) ConversationTasks(ctx context.Context, in agentsdk.C
 			return out, scanErr
 		}
 		scanned++
-		cursor.ID, cursor.Created = row.task.ID, row.task.CreatedAt.UnixMilli()
+		cursor.ID, cursor.Created = row.id, row.task.CreatedAt.UnixMilli()
 		if strings.Contains(strings.ToLower(row.task.Goal), strings.ToLower(in.Query)) {
 			out.Items = append(out.Items, row.task)
 		}

@@ -14,7 +14,8 @@ import (
 )
 
 type historyCursor struct {
-	Owner, Query, Before string
+	Owner, Query string
+	Before       int64
 }
 
 func historyPrefix(text string, limit int) string {
@@ -70,16 +71,16 @@ func (s *ConversationStore) SearchHistory(ctx context.Context, in agentsdk.Conve
 	if in.Cursor != "" {
 		raw, err := base64.RawURLEncoding.DecodeString(in.Cursor)
 		var cursor historyCursor
-		if err != nil || unmarshalDurableJSON(raw, &cursor) != nil || cursor.Owner != owner || cursor.Query != hash || len(cursor.Before) > 96 || cursor.Before == "" {
+		if err != nil || unmarshalDurableJSON(raw, &cursor) != nil || cursor.Owner != owner || cursor.Query != hash || cursor.Before < 1 {
 			return out, conversationError("bad_request", "history_cursor_invalid")
 		}
-		predicate = query.And(predicate, query.LessThan("reference_id", cursor.Before))
+		predicate = query.And(predicate, query.LessThan("id", cursor.Before))
 	}
 	predicate = query.And(predicate, query.Equal("item_kind", conversationItemMessage))
 	// The typed item journal stores original message content in an opaque JSON
 	// payload. Scan bounded keyset pages instead of searching JSON encodings or
 	// silently claiming that a capped scan searched the whole user's history.
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("payload_json").Where(predicate).OrderBy(query.Descending("reference_id")).Limit(301).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).Columns("id", "payload_json").Where(predicate).OrderBy(query.Descending("id")).Limit(301).Build()
 	if err != nil {
 		return out, err
 	}
@@ -89,7 +90,7 @@ func (s *ConversationStore) SearchHistory(ctx context.Context, in agentsdk.Conve
 	}
 	defer rows.Close()
 	scanned := 0
-	last := ""
+	last := int64(0)
 	more := false
 	needle := strings.ToLower(in.Query)
 	for rows.Next() {
@@ -97,16 +98,17 @@ func (s *ConversationStore) SearchHistory(ctx context.Context, in agentsdk.Conve
 			more = true
 			break
 		}
+		var physicalID int64
 		var raw []byte
 		var message agentsdk.ConversationMessage
-		if err = rows.Scan(&raw); err != nil {
+		if err = rows.Scan(&physicalID, &raw); err != nil {
 			return out, err
 		}
 		if err = unmarshalDurableJSON(raw, &message); err != nil {
 			return out, err
 		}
 		scanned++
-		last = message.ID
+		last = physicalID
 		if !after.IsZero() && message.CreatedAt.Before(after) || !before.IsZero() && !message.CreatedAt.Before(before) || !strings.Contains(strings.ToLower(message.Content), needle) {
 			continue
 		}

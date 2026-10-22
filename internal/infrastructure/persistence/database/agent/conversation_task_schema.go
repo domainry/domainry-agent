@@ -26,7 +26,7 @@ func conversationTaskPredicate(owner, taskID string) query.Predicate {
 }
 
 func conversationTaskMigration(d modulehost.Dialect) (modulehost.SchemaMigration, error) {
-	table := ormschema.NewTable(d, conversationTaskTable).IfNotExists().Columns(
+	table := ormschema.NewTableWithRequiredColumns(d, conversationTaskTable, physicalID()).IfNotExists().Columns(
 		required("record_kind", ormschema.TextKey(32)),
 		required("owner_key", ormschema.TextKey(64)),
 		// task_id is the kind-local identity: task ID, follow-up plan ID or
@@ -53,17 +53,17 @@ func conversationTaskMigration(d modulehost.Dialect) (modulehost.SchemaMigration
 		required("created_at", ormschema.BigInt()),
 		required("updated_at", ormschema.BigInt()),
 		required("payload_json", ormschema.LongText()),
-	).PrimaryKey("record_kind", "owner_key", "task_id").Unique("record_kind", "owner_key", "source_conversation_id", "source_run_id", "request_hash")
+	).PrimaryKey("id").Unique("record_kind", "owner_key", "task_id").Unique("record_kind", "owner_key", "source_conversation_id", "source_run_id", "request_hash")
 	statement, _, err := table.Build()
 	if err != nil {
 		return modulehost.SchemaMigration{}, err
 	}
-	taskIndex, _, err := ormschema.NewIndex(d, "idx_agent_task_claim_v15", conversationTaskTable).Columns("record_kind", "runtime_id", "status", "created_at", "task_id").Build()
+	taskIndex, _, err := ormschema.NewIndex(d, "idx_agent_task_claim_v15", conversationTaskTable).Columns("record_kind", "runtime_id", "status", "created_at", "id").Build()
 	if err != nil {
 		return modulehost.SchemaMigration{}, err
 	}
 	followUpIndex, _, err := ormschema.NewIndex(d, "idx_agent_task_follow_up_claim_v15", conversationTaskTable).
-		Columns("record_kind", "runtime_id", "status", "next_attempt_at", "lease_expires_at", "created_at", "task_id").Build()
+		Columns("record_kind", "runtime_id", "status", "next_attempt_at", "lease_expires_at", "created_at", "id").Build()
 	if err != nil {
 		return modulehost.SchemaMigration{}, err
 	}

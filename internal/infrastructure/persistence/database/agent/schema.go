@@ -118,12 +118,12 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 }
 
 func runtimeStateTable(renderer modulehost.Dialect) *ormschema.TableBuilder {
-	return ormschema.NewTable(renderer, "_agent_runtime_states").IfNotExists().Columns(
+	return ormschema.NewTableWithRequiredColumns(renderer, "_agent_runtime_states", physicalID()).IfNotExists().Columns(
 		required("kind", ormschema.TextKey(255)), required("state_key", ormschema.TextKey(255)),
 		required("workspace_id", ormschema.TextKey(255)), required("user_id", ormschema.TextKey(255)),
 		required("role_key", ormschema.TextKey(255)), required("payload_json", ormschema.LongText()),
 		required("updated_at", ormschema.BigInt()),
-	).PrimaryKey("workspace_id", "kind", "state_key")
+	).PrimaryKey("id").Unique("workspace_id", "kind", "state_key")
 }
 
 const (
@@ -138,7 +138,7 @@ const (
 // table. run_kind and scope_key keep each run family's identity, idempotency,
 // claim and lifecycle semantics isolated even though storage is shared.
 func agentRunTableBuilder(renderer modulehost.Dialect) *ormschema.TableBuilder {
-	return ormschema.NewTable(renderer, agentRunTable).IfNotExists().Columns(
+	return ormschema.NewTableWithRequiredColumns(renderer, agentRunTable, physicalID()).IfNotExists().Columns(
 		required("run_kind", ormschema.TextKey(32)),
 		required("scope_key", ormschema.TextKey(191)),
 		required("workspace_id", ormschema.TextKey(agentRunIndexKeyLength)),
@@ -164,11 +164,15 @@ func agentRunTableBuilder(renderer modulehost.Dialect) *ormschema.TableBuilder {
 		required("payload_json", ormschema.LongText()),
 		required("created_at", ormschema.BigInt()),
 		required("updated_at", ormschema.BigInt()),
-	).PrimaryKey("run_kind", "scope_key", "run_id").Unique("run_kind", "scope_key", "idempotency_key")
+	).PrimaryKey("id").Unique("run_kind", "scope_key", "run_id").Unique("run_kind", "scope_key", "idempotency_key")
 }
 
 func required(name string, kind ormschema.ColumnType) ormschema.ColumnDefinition {
 	return ormschema.Column(name, kind).NotNull()
+}
+
+func physicalID() ormschema.ColumnDefinition {
+	return ormschema.Column("id", ormschema.BigInt()).NotNull().AutoIncrement()
 }
 
 func optional(name string, kind ormschema.ColumnType) ormschema.ColumnDefinition {

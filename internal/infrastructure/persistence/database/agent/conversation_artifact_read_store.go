@@ -13,8 +13,9 @@ import (
 )
 
 type artifactCursor struct {
-	Owner, Query, ID string
-	Created, Cutoff  int64
+	Owner, Query    string
+	ID              int64
+	Created, Cutoff int64
 }
 
 func (s *ConversationStore) Artifacts(ctx context.Context, in agentsdk.ConversationArtifactQuery, a agentsdk.ConversationAuthority) (agentsdk.ConversationArtifactPage, error) {
@@ -35,16 +36,16 @@ func (s *ConversationStore) Artifacts(ctx context.Context, in agentsdk.Conversat
 	filters := []query.Predicate{query.Equal("owner_key", owner)}
 	if in.Cursor != "" {
 		raw, err := base64.RawURLEncoding.DecodeString(in.Cursor)
-		if err != nil || json.Unmarshal(raw, &cursor) != nil || cursor.Owner != owner || cursor.Query != hash || !personalMemoryKey(cursor.ID) || cursor.Created < 1 || cursor.Cutoff < cursor.Created {
+		if err != nil || json.Unmarshal(raw, &cursor) != nil || cursor.Owner != owner || cursor.Query != hash || cursor.ID < 1 || cursor.Created < 1 || cursor.Cutoff < cursor.Created {
 			return out, conversationError("bad_request", "artifact_cursor_invalid")
 		}
-		filters = append(filters, query.Or(query.LessThan("created_at", cursor.Created), query.And(query.Equal("created_at", cursor.Created), query.LessThan("artifact_id", cursor.ID))))
+		filters = append(filters, query.Or(query.LessThan("created_at", cursor.Created), query.And(query.Equal("created_at", cursor.Created), query.LessThan("id", cursor.ID))))
 	}
 	filters = append(filters, query.LessThanOrEqual("created_at", cursor.Cutoff))
 	if in.SourceConversationID != "" {
 		filters = append(filters, query.Equal("source_conversation_id", in.SourceConversationID))
 	}
-	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_artifacts").Columns("payload_json").Where(query.And(filters...)).OrderBy(query.Descending("created_at"), query.Descending("artifact_id")).Limit(301).Build()
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_artifacts").Columns("id", "payload_json").Where(query.And(filters...)).OrderBy(query.Descending("created_at"), query.Descending("id")).Limit(301).Build()
 	if err != nil {
 		return out, err
 	}
@@ -59,16 +60,17 @@ func (s *ConversationStore) Artifacts(ctx context.Context, in agentsdk.Conversat
 			out.Complete = false
 			break
 		}
+		var physicalID int64
 		var raw []byte
 		var item agentsdk.ConversationArtifact
-		if err = rows.Scan(&raw); err != nil {
+		if err = rows.Scan(&physicalID, &raw); err != nil {
 			return out, err
 		}
 		if err = unmarshalDurableJSON(raw, &item); err != nil {
 			return out, err
 		}
 		scanned++
-		cursor.ID, cursor.Created = item.ID, item.CreatedAt.UnixMilli()
+		cursor.ID, cursor.Created = physicalID, item.CreatedAt.UnixMilli()
 		if strings.Contains(strings.ToLower(item.Title), strings.ToLower(in.Query)) {
 			out.Items = append(out.Items, item)
 		}

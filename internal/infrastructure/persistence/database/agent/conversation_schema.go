@@ -28,9 +28,9 @@ func conversationMigration(d modulehost.Dialect) (modulehost.SchemaMigration, er
 	text := func(n string) ormschema.ColumnDefinition { return required(n, ormschema.LongText()) }
 	number := func(n string) ormschema.ColumnDefinition { return required(n, ormschema.BigInt()) }
 	tables := []*ormschema.TableBuilder{
-		ormschema.NewTable(d, "_agent_conversations").IfNotExists().Columns(scope(), id("conversation_id"), id("client_id"), text("request_hash"), required("binding_kind", ormschema.TextKey(96)), required("binding_key", ormschema.TextKey(96)), required("binding_hash", ormschema.TextKey(96)), text("title"), number("updated_at"), number("archived"), number("revision"), text("payload_json")).PrimaryKey("owner_key", "conversation_id").Unique("owner_key", "client_id").Unique("owner_key", "binding_hash"),
-		ormschema.NewTable(d, conversationItemTable).IfNotExists().Columns(scope(), id("conversation_id"), required("item_kind", ormschema.TextKey(32)), required("item_key", ormschema.TextKey(191)), required("reference_id", ormschema.TextKey(191)), ormschema.Column("subject_id", ormschema.TextKey(191)), id("run_id"), number("seq"), ormschema.Column("search_text", ormschema.LongText()), text("payload_json")).PrimaryKey("owner_key", "conversation_id", "item_kind", "item_key").Unique("owner_key", "item_kind", "reference_id"),
-		ormschema.NewTable(d, "_agent_user_memories").IfNotExists().Columns(scope(), id("memory_id"), number("revision"), text("payload_json")).PrimaryKey("owner_key", "memory_id"),
+		ormschema.NewTableWithRequiredColumns(d, "_agent_conversations", physicalID()).IfNotExists().Columns(scope(), id("conversation_id"), id("client_id"), text("request_hash"), required("binding_kind", ormschema.TextKey(96)), required("binding_key", ormschema.TextKey(96)), required("binding_hash", ormschema.TextKey(96)), text("title"), number("updated_at"), number("archived"), number("revision"), text("payload_json")).PrimaryKey("id").Unique("conversation_id").Unique("owner_key", "client_id").Unique("owner_key", "binding_hash"),
+		ormschema.NewTableWithRequiredColumns(d, conversationItemTable, physicalID()).IfNotExists().Columns(scope(), id("conversation_id"), required("item_kind", ormschema.TextKey(32)), required("item_key", ormschema.TextKey(191)), required("reference_id", ormschema.TextKey(191)), ormschema.Column("subject_id", ormschema.TextKey(191)), id("run_id"), number("seq"), ormschema.Column("search_text", ormschema.LongText()), text("payload_json")).PrimaryKey("id").Unique("owner_key", "conversation_id", "item_kind", "item_key").Unique("owner_key", "item_kind", "reference_id"),
+		ormschema.NewTableWithRequiredColumns(d, "_agent_user_memories", physicalID()).IfNotExists().Columns(scope(), id("memory_id"), number("revision"), text("payload_json")).PrimaryKey("id").Unique("owner_key", "memory_id"),
 	}
 	m := modulehost.SchemaMigration{Version: 2, Name: "agent_conversations"}
 	for _, table := range tables {
@@ -65,7 +65,7 @@ func conversationMigration(d modulehost.Dialect) (modulehost.SchemaMigration, er
 		return m, err
 	}
 	m.Statements = append(m.Statements, sql)
-	sql, _, err = ormschema.NewIndex(d, "idx_agent_conversation_list_v2", "_agent_conversations").Columns("owner_key", "archived", "updated_at", "conversation_id").Build()
+	sql, _, err = ormschema.NewIndex(d, "idx_agent_conversation_list_v2", "_agent_conversations").Columns("owner_key", "archived", "updated_at", "id").Build()
 	if err != nil {
 		return m, err
 	}

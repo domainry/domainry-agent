@@ -3,12 +3,12 @@ module github.com/domainry/domainry-agent
 go 1.26.0
 
 require (
-	github.com/domainry/domainry-agent-sdk v0.1.51
-	github.com/domainry/domainry-foundation v0.2.11
-	github.com/domainry/domainry-identity-sdk v0.1.31
-	github.com/domainry/domainry-lifecycle-sdk v0.1.26
-	github.com/domainry/domainry-orm v0.1.33
-	github.com/domainry/domainry-tools-sdk v0.1.22
+	github.com/domainry/domainry-agent-sdk v0.1.52
+	github.com/domainry/domainry-foundation v0.2.12
+	github.com/domainry/domainry-identity-sdk v0.1.32
+	github.com/domainry/domainry-lifecycle-sdk v0.1.27
+	github.com/domainry/domainry-orm v0.1.34
+	github.com/domainry/domainry-tools-sdk v0.1.23
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3
 	golang.org/x/sys v0.47.0
@@ -19,9 +19,9 @@ require (
 	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/domainry/domainry-integration-sdk v0.1.20 // indirect
-	github.com/domainry/domainry-knowledge-sdk v0.1.22 // indirect
-	github.com/domainry/domainry-report-sdk v0.1.23 // indirect
+	github.com/domainry/domainry-integration-sdk v0.1.21 // indirect
+	github.com/domainry/domainry-knowledge-sdk v0.1.24 // indirect
+	github.com/domainry/domainry-report-sdk v0.1.24 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect

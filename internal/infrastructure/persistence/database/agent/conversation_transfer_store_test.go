@@ -32,7 +32,7 @@ func TestTransferReceiptLookupDoesNotClaimMissingMutation(t *testing.T) {
 		t.Fatalf("missing receipt lookup: found=%v err=%v", found, err)
 	}
 	command := agentOperationCommand("agent.collaboration_mutation", "agent.collaboration.mutate", transferMutationKey(d.ID, in.ClientID), in, a)
-	if _, found, err := repo.store.operations.Get(t.Context(), sharedoperation.ManagedIdentity{ID: command.ID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind}); err != nil || found {
+	if _, found, err := repo.store.operations.Get(t.Context(), sharedoperation.ManagedIdentity{OperationID: command.OperationID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind}); err != nil || found {
 		t.Fatalf("receipt lookup wrote operation: found=%v err=%v", found, err)
 	}
 }

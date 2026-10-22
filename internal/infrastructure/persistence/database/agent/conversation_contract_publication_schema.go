@@ -8,8 +8,8 @@ import (
 const conversationContractPublicationTable = "_agent_contract_publications"
 
 func conversationContractPublicationMigration(d modulehost.Dialect) (modulehost.SchemaMigration, error) {
-	statement, _, err := ormschema.NewTable(d, conversationContractPublicationTable).IfNotExists().Columns(
+	statement, _, err := ormschema.NewTableWithRequiredColumns(d, conversationContractPublicationTable, physicalID()).IfNotExists().Columns(
 		required("owner_key", ormschema.TextKey(64)), required("delegation_id", ormschema.TextKey(96)), required("revision", ormschema.BigInt()), required("payload_json", ormschema.LongText()),
-	).PrimaryKey("owner_key", "delegation_id", "revision").Build()
+	).PrimaryKey("id").Unique("owner_key", "delegation_id", "revision").Build()
 	return modulehost.SchemaMigration{Version: 29, Name: "agent_contract_publications", Statements: []string{statement}}, err
 }

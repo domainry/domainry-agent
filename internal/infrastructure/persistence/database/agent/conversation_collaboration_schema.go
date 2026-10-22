@@ -21,7 +21,7 @@ func conversationCollaborationMigration(d modulehost.Dialect) (modulehost.Schema
 		// old family-specific uniqueness without making unrelated empty headers
 		// collide: agent/delegation ID for grants and participants, conversation
 		// ID for delegations, and agent ID for peer instances.
-		ormschema.NewTable(d, conversationPeerLinkTable).IfNotExists().Columns(
+		ormschema.NewTableWithRequiredColumns(d, conversationPeerLinkTable, physicalID()).IfNotExists().Columns(
 			required("link_kind", ormschema.TextKey(32)),
 			required("owner_key", ormschema.TextKey(64)),
 			required("link_id", ormschema.TextKey(96)),
@@ -36,14 +36,14 @@ func conversationCollaborationMigration(d modulehost.Dialect) (modulehost.Schema
 			required("created_at", ormschema.BigInt()).DefaultValue(0),
 			required("updated_at", ormschema.BigInt()).DefaultValue(0),
 			required("payload_json", ormschema.LongText()).DefaultValue("{}"),
-		).PrimaryKey("link_kind", "owner_key", "link_id", "peer_key").Unique("link_kind", "owner_key", "scope_key", "peer_key"),
-		ormschema.NewTable(d, conversationAgentMessageTable).IfNotExists().Columns(
+		).PrimaryKey("id").Unique("link_kind", "owner_key", "link_id", "peer_key").Unique("link_kind", "owner_key", "scope_key", "peer_key"),
+		ormschema.NewTableWithRequiredColumns(d, conversationAgentMessageTable, physicalID()).IfNotExists().Columns(
 			required("runtime_id", ormschema.TextKey(255)), required("authority_json", ormschema.LongText()), required("agent_json", ormschema.LongText()),
 			required("owner_key", ormschema.TextKey(64)), required("message_id", ormschema.TextKey(96)),
 			required("delegation_id", ormschema.TextKey(96)), required("conversation_id", ormschema.TextKey(96)),
 			required("created_at", ormschema.BigInt()), required("consumed_run_id", ormschema.TextKey(96)),
 			required("payload_json", ormschema.LongText()),
-		).PrimaryKey("owner_key", "message_id"),
+		).PrimaryKey("id").Unique("owner_key", "message_id"),
 	}
 	for _, table := range tables {
 		statement, _, err := table.Build()

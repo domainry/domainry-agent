@@ -1,7 +1,9 @@
 github.com/domainry/domainry-connector-sdk v0.1.11/go.mod h1:TgWTYJ6LVgXILFDcb6gyKj3E7IANX+OtGWQ6B8419vQ=
+github.com/domainry/domainry-connector-sdk v0.1.12/go.mod h1:TgWTYJ6LVgXILFDcb6gyKj3E7IANX+OtGWQ6B8419vQ=
 github.com/domainry/domainry-identity-sdk v0.1.27/go.mod h1:ImpiE6QGINPbI9a2oE0GhS+bHNvbQbERATx59tbdSew=
 github.com/domainry/domainry-notification-sdk v0.1.16/go.mod h1:jIN0RGmO7l5ctxuoEkJDFIYCgeMVUOXl0BqG32msCfw=
 github.com/domainry/domainry-orm v0.1.33/go.mod h1:gB/ooN737tsBYHbeHqCpngEprvdvZKp0Zygtzv+IPJY=
 github.com/domainry/domainry-report-sdk v0.1.21/go.mod h1:i367iAzhlraUBWj6AdpzW9tFexZNe8DOttfqitE4ylc=
+github.com/domainry/domainry-report-sdk v0.1.22/go.mod h1:lrCTTlGAZI+uLXgROnZV8ns3rb0iSZEi3kob/mEe7kA=
 github.com/gin-gonic/gin v1.11.0/go.mod h1:+iq/FyxlGzII0KHiBGjuNn4UNENUlKbGlNmc+W50Dls=
 modernc.org/sqlite v1.57.0/go.mod h1:yCJ2cmAaIkHQ25oXWrF8H4O1lIfPYPR26yCEDj2P3pQ=

@@ -31,9 +31,9 @@ func NewInteractiveState(repository agentpersistence.AgentInteractiveRunReposito
 	if clock != nil {
 		now = clock.Now
 	}
-	var newID func() string
+	var newID func() (string, error)
 	if ids != nil {
-		newID = ids.NewID
+		newID = func() (string, error) { return ids.NewID(), nil }
 	}
 	return application.NewInteractiveStateServiceWithRuntime(repository, now, newID)
 }

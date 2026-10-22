@@ -9,7 +9,7 @@ import (
 
 func storedImageBlock() agentsdk.ConversationContentBlock {
 	return agentsdk.ConversationContentBlock{Type: "image", Image: &agentsdk.ConversationImageReference{
-		AttachmentID: "att_0123456789abcdef0123456789abcdef", ConversationID: "conv_one", Filename: "proof.png",
+		AttachmentID: "art_0123456789abcdef0123456789abcdef", ConversationID: "conv_one", Filename: "proof.png",
 		ContentType: "image/png", Bytes: 68, SHA256: strings.Repeat("a", 64), Revision: 1, Detail: "auto",
 	}}
 }

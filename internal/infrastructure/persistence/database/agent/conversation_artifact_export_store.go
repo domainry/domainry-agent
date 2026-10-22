@@ -14,6 +14,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/artifact"
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
+	"github.com/domainry/domainry-foundation/entityid"
 )
 
 const generatedArtifactKind = "generated"
@@ -128,7 +129,10 @@ func (s *ConversationStore) saveArtifactExport(ctx context.Context, tx *sql.Tx, 
 		}
 	}
 
-	value.ID = "exp_" + conversationHash([]string{conversationOwner(a), in.ClientID})[:32]
+	value.ID, err = entityid.Derive("art", "agent.generated-artifact-export", conversationOwner(a), in.ClientID)
+	if err != nil {
+		return nil, err
+	}
 	value.CreatedAt = time.Now().UTC().Truncate(time.Millisecond)
 	value.ExpiresAt = value.CreatedAt.Add(time.Duration(in.TTLSeconds) * time.Second)
 	metadata, err := json.Marshal(generatedArtifactMetadata{
@@ -146,7 +150,8 @@ func (s *ConversationStore) saveArtifactExport(ctx context.Context, tx *sql.Tx, 
 		if err == nil {
 			return
 		}
-		current, found, readErr := s.artifactStore.ByID(context.WithoutCancel(ctx), a.WorkspaceID, value.ID)
+		cleanupContext := sharedartifact.WithExecutor(context.WithoutCancel(ctx), tx)
+		current, found, readErr := s.artifactStore.ByID(cleanupContext, a.WorkspaceID, value.ID)
 		if readErr == nil && (!found || current.StorageReference != info.Reference) {
 			_ = s.artifactContent.Delete(context.WithoutCancel(ctx), a.WorkspaceID, info.Reference)
 		}
@@ -157,7 +162,7 @@ func (s *ConversationStore) saveArtifactExport(ctx context.Context, tx *sql.Tx, 
 
 	artifactContext := sharedartifact.WithExecutor(ctx, tx)
 	registered, _, err := s.artifactStore.Register(artifactContext, sharedartifact.Artifact{
-		ID: value.ID, WorkspaceID: a.WorkspaceID, Owner: sharedartifact.OwnerAgent, Kind: generatedArtifactKind,
+		ArtifactID: value.ID, WorkspaceID: a.WorkspaceID, Owner: sharedartifact.OwnerAgent, Kind: generatedArtifactKind,
 		IdempotencyKey: generatedArtifactIdempotencyKey(a, in.ClientID), CreatedBy: a.UserID,
 		Filename: value.Filename, MediaType: value.ContentType, ContentSHA256: value.SHA256,
 		SizeBytes: int64(value.Bytes), StorageReference: info.Reference,
@@ -257,7 +262,7 @@ func (s *ConversationStore) RecordArtifactDownload(ctx context.Context, id strin
 				updatedAt = value.UpdatedAt.Add(time.Nanosecond)
 			}
 			changed, err := s.artifactStore.Update(artifactContext, sharedartifact.Mutation{
-				WorkspaceID: value.WorkspaceID, ID: value.ID, Owner: value.Owner, Kind: value.Kind,
+				WorkspaceID: value.WorkspaceID, ArtifactID: value.ArtifactID, Owner: value.Owner, Kind: value.Kind,
 				ExpectedStatus: value.Status, ExpectedScanStatus: value.ScanStatus, ExpectedUpdatedAt: value.UpdatedAt,
 				Status: value.Status, ScanStatus: value.ScanStatus, ExpiresAt: value.ExpiresAt,
 				Metadata: raw, UpdatedAt: updatedAt,
@@ -307,7 +312,7 @@ func generatedArtifactExport(value sharedartifact.Artifact) (agentsdk.Conversati
 		lastDownloadedAt = &value
 	}
 	return agentsdk.ConversationArtifactExport{
-		ID: value.ID, ArtifactID: metadata.ArtifactID, Version: metadata.Version, Format: metadata.Format,
+		ID: value.ArtifactID, ArtifactID: metadata.ArtifactID, Version: metadata.Version, Format: metadata.Format,
 		Filename: value.Filename, ContentType: value.MediaType, SHA256: value.ContentSHA256, Bytes: int(value.SizeBytes),
 		FormulaGuarded: metadata.FormulaGuarded, CreatedAt: value.CreatedAt, ExpiresAt: value.ExpiresAt,
 		Downloads: metadata.Downloads, LastDownloadedAt: lastDownloadedAt,
@@ -315,7 +320,7 @@ func generatedArtifactExport(value sharedartifact.Artifact) (agentsdk.Conversati
 }
 
 func sameGeneratedArtifactRequest(value sharedartifact.Artifact, expected agentsdk.ConversationArtifactExport, a agentsdk.ConversationAuthority) bool {
-	if !generatedArtifactOwnedBy(value, a) || value.ID != expected.ID || value.Filename != expected.Filename || value.MediaType != expected.ContentType || value.ContentSHA256 != expected.SHA256 || value.SizeBytes != int64(expected.Bytes) || !value.ExpiresAt.Equal(expected.ExpiresAt) {
+	if !generatedArtifactOwnedBy(value, a) || value.ArtifactID != expected.ID || value.Filename != expected.Filename || value.MediaType != expected.ContentType || value.ContentSHA256 != expected.SHA256 || value.SizeBytes != int64(expected.Bytes) || !value.ExpiresAt.Equal(expected.ExpiresAt) {
 		return false
 	}
 	actual, err := generatedArtifactExport(value)
@@ -324,7 +329,7 @@ func sameGeneratedArtifactRequest(value sharedartifact.Artifact, expected agents
 
 func (s *ConversationStore) bindGeneratedArtifactSubject(ctx context.Context, value sharedartifact.Artifact, a agentsdk.ConversationAuthority) error {
 	_, _, err := s.artifactStore.Bind(ctx, sharedartifact.Binding{
-		ID: value.ID + ":subject", WorkspaceID: value.WorkspaceID, ArtifactID: value.ID,
+		WorkspaceID: value.WorkspaceID, ArtifactID: value.ArtifactID,
 		Owner: sharedartifact.OwnerAgent, Kind: sharedartifact.BindingSubject,
 		ResourceType: "agent_user", ResourceID: a.UserID, CreatedAt: value.CreatedAt,
 	})
@@ -341,7 +346,7 @@ func (s *ConversationStore) bindGeneratedArtifactConversation(ctx context.Contex
 		return err
 	}
 	_, _, err = s.artifactStore.Bind(ctx, sharedartifact.Binding{
-		ID: value.ID + ":conversation", WorkspaceID: value.WorkspaceID, ArtifactID: value.ID,
+		WorkspaceID: value.WorkspaceID, ArtifactID: value.ArtifactID,
 		Owner: sharedartifact.OwnerAgent, Kind: sharedartifact.BindingConversation,
 		ResourceType: "agent_conversation", ResourceID: conversationID, Metadata: raw, CreatedAt: value.CreatedAt,
 	})
@@ -349,7 +354,7 @@ func (s *ConversationStore) bindGeneratedArtifactConversation(ctx context.Contex
 }
 
 func (s *ConversationStore) requireGeneratedArtifactSubjectBinding(ctx context.Context, db conversationDB, value sharedartifact.Artifact, a agentsdk.ConversationAuthority) error {
-	bindings, err := s.artifactStore.Bindings(sharedartifact.WithExecutor(ctx, db), value.WorkspaceID, value.ID)
+	bindings, err := s.artifactStore.Bindings(sharedartifact.WithExecutor(ctx, db), value.WorkspaceID, value.ArtifactID)
 	if err != nil {
 		return err
 	}

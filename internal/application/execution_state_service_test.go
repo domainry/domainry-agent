@@ -156,11 +156,11 @@ func (s *interactiveStateRepositoryStub) CommitInteractiveTaskHandoff(_ context.
 func TestInteractiveStateServiceOwnsIdentityIsolationAndHandoff(t *testing.T) {
 	now := time.Date(2026, 8, 31, 10, 0, 0, 0, time.UTC)
 	repository := &interactiveStateRepositoryStub{updated: true}
-	service := NewInteractiveStateServiceWithRuntime(repository, func() time.Time { return now }, func() string { return "nonce" })
+	service := NewInteractiveStateServiceWithRuntime(repository, func() time.Time { return now }, func() (string, error) { return "irun_nonce", nil })
 	authority := agentpersistence.AgentInteractiveAuthority{Known: true, WorkspaceID: "workspace-1", UserID: "user-1", RoleKey: "operator", AuthorizationRevision: "auth-1"}
 	global := agentsdk.GlobalContext{ContextRevision: "context-1", EntrypointKey: "assistant.global", AgentKey: "reviewer", RouteKey: "customer.detail", Principal: agentsdk.PrincipalReference{WorkspaceID: authority.WorkspaceID, UserID: authority.UserID, RoleKey: authority.RoleKey, AuthorizationRevision: authority.AuthorizationRevision}}
 	created, replayed, err := service.Create(t.Context(), agentmodel.AgentInteractiveRun{SessionID: "session-1", IdempotencyKey: "message-1", Context: global}, authority)
-	if err != nil || replayed || created.ID != "interactive_run_nonce" || created.Authorization.AuthorizationRevision != "auth-1" {
+	if err != nil || replayed || created.ID != "irun_nonce" || created.Authorization.AuthorizationRevision != "auth-1" {
 		t.Fatalf("created=%#v replayed=%v err=%v", created, replayed, err)
 	}
 	revoked := authority

@@ -21,7 +21,7 @@ const (
 	conversationReferencesMaxBytes = 64 * 1024
 )
 
-var conversationImageAttachmentID = regexp.MustCompile(`^att_[a-f0-9]{32}$`)
+var conversationImageAttachmentID = regexp.MustCompile(`^art_[a-f0-9]{32}$`)
 
 func conversationImageType(value string) bool {
 	switch value {

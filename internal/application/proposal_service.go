@@ -7,6 +7,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
+	"github.com/domainry/domainry-foundation/entityid"
 	"github.com/domainry/domainry-foundation/logging"
 )
 
@@ -35,7 +36,11 @@ func (s *ProposalService) CreateHostDraft(ctx context.Context, raw any, principa
 	proposalID := firstProposalString(draft, "proposal_id")
 	if proposalID == "" {
 		hash := stableHash(map[string]any{"workspace_id": principal.WorkspaceID, "reference": reference, "idempotency_key": idempotencyKey, "proposed": proposed})
-		proposalID = "agent-proposal-" + hash[:24]
+		var err error
+		proposalID, err = entityid.Derive("proposal", "agent.host-draft", principal.WorkspaceID, principal.UserID, principal.RoleKey, hash)
+		if err != nil {
+			return agentsdk.AgentProposal{}, err
+		}
 	}
 	return s.Create(ctx, CreateProposalRequest{
 		ProposalID: proposalID, Title: firstProposalString(draft, "title"), Summary: firstProposalString(draft, "summary"),
@@ -58,8 +63,18 @@ func (s *ProposalService) Create(ctx context.Context, request CreateProposalRequ
 	if s == nil || s.state == nil {
 		return agentsdk.AgentProposal{}, unavailable("agent.dialog_state.unavailable")
 	}
+	if strings.TrimSpace(request.ProposalID) == "" {
+		var err error
+		request.ProposalID, err = entityid.New("proposal")
+		if err != nil {
+			return agentsdk.AgentProposal{}, fmt.Errorf("generate Agent proposal ID: %w", err)
+		}
+	}
 	proposed := s.NormalizeGuardedWrite(ctx, cloneTaskMap(request.Proposed), request.Principal)
 	metadata := cloneTaskMap(request.Metadata)
+	if metadata == nil {
+		metadata = map[string]any{}
+	}
 	metadata["proposal_id"], metadata["title"] = strings.TrimSpace(request.ProposalID), strings.TrimSpace(request.Title)
 	metadata["source"], metadata["reference"] = strings.TrimSpace(request.Source), strings.TrimSpace(request.Reference)
 	metadata["requesting_user"], metadata["service_role"], metadata["automation_user"] = request.Principal.UserID, "agent_service_user", "agent_automation"

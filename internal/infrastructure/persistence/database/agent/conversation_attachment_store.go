@@ -9,6 +9,7 @@ import (
 	"mime"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
@@ -17,6 +18,7 @@ import (
 	agentartifact "github.com/domainry/domainry-agent-sdk/artifact"
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
+	"github.com/domainry/domainry-foundation/entityid"
 )
 
 const attachmentArtifactKind = "attachment"
@@ -58,7 +60,7 @@ func decodeAttachmentArtifact(value sharedartifact.Artifact, conversationID stri
 	}
 	return persistence.ConversationAttachmentRecord{
 		Attachment: agentsdk.ConversationAttachment{
-			ID: value.ID, ConversationID: conversationID, Filename: value.Filename,
+			ID: value.ArtifactID, ConversationID: conversationID, Filename: value.Filename,
 			ContentType: value.MediaType, Bytes: value.SizeBytes, SHA256: value.ContentSHA256,
 			Visibility: metadata.Visibility, State: metadata.State, Revision: metadata.Revision,
 			CreatedAt: value.CreatedAt, UpdatedAt: value.UpdatedAt,
@@ -79,13 +81,13 @@ func attachmentArtifactOwnedBy(value sharedartifact.Artifact, a agentsdk.Convers
 }
 
 func (s *ConversationStore) attachmentConversationBinding(ctx context.Context, db conversationDB, value sharedartifact.Artifact, a agentsdk.ConversationAuthority) (string, error) {
-	bindings, err := s.artifactStore.Bindings(sharedartifact.WithExecutor(ctx, db), value.WorkspaceID, value.ID)
+	bindings, err := s.artifactStore.Bindings(sharedartifact.WithExecutor(ctx, db), value.WorkspaceID, value.ArtifactID)
 	if err != nil {
 		return "", err
 	}
 	subject, conversation := false, ""
 	for _, binding := range bindings {
-		if binding.Owner != sharedartifact.OwnerAgent || binding.ArtifactID != value.ID {
+		if binding.Owner != sharedartifact.OwnerAgent || binding.ArtifactID != value.ArtifactID {
 			continue
 		}
 		switch {
@@ -212,7 +214,10 @@ func (s *ConversationStore) ReserveAttachment(ctx context.Context, in persistenc
 	if err = s.sharedArtifactsReady(); err != nil {
 		return out, err
 	}
-	id := "att_" + conversationHash([]string{conversationOwner(a), in.ConversationID, in.ClientID})[:32]
+	id, err := entityid.Derive("art", "agent.conversation-attachment", conversationOwner(a), in.ConversationID, in.ClientID)
+	if err != nil {
+		return out, err
+	}
 	digest := conversationHash(in)
 	if current, readErr := s.attachmentRecord(ctx, s.store.Database(), id, a); readErr == nil {
 		if current.RequestSHA256 != digest || current.Attachment.ConversationID != in.ConversationID {
@@ -261,7 +266,7 @@ func (s *ConversationStore) ReserveAttachment(ctx context.Context, in persistenc
 		}
 		artifactContext := sharedartifact.WithExecutor(ctx, tx)
 		value := sharedartifact.Artifact{
-			ID: id, WorkspaceID: a.WorkspaceID, Owner: sharedartifact.OwnerAgent, Kind: attachmentArtifactKind,
+			ArtifactID: id, WorkspaceID: a.WorkspaceID, Owner: sharedartifact.OwnerAgent, Kind: attachmentArtifactKind,
 			IdempotencyKey: conversationHash([]string{"agent-attachment", conversationOwner(a), in.ConversationID, in.ClientID}), CreatedBy: a.UserID,
 			Filename: in.Filename, MediaType: in.ContentType, ContentSHA256: in.SHA256, SizeBytes: in.Bytes, StorageReference: info.Reference,
 			Status: sharedartifact.StatusAvailable, ScanStatus: sharedartifact.ScanNotRequired,
@@ -278,8 +283,8 @@ func (s *ConversationStore) ReserveAttachment(ctx context.Context, in persistenc
 			return conversationError("conflict", "idempotency_conflict")
 		}
 		for _, binding := range []sharedartifact.Binding{
-			{ID: id + ":subject", WorkspaceID: a.WorkspaceID, ArtifactID: id, Owner: sharedartifact.OwnerAgent, Kind: sharedartifact.BindingSubject, ResourceType: "agent_user", ResourceID: a.UserID, CreatedAt: now},
-			{ID: id + ":conversation", WorkspaceID: a.WorkspaceID, ArtifactID: id, Owner: sharedartifact.OwnerAgent, Kind: sharedartifact.BindingConversation, ResourceType: "agent_conversation", ResourceID: in.ConversationID, CreatedAt: now},
+			{WorkspaceID: a.WorkspaceID, ArtifactID: id, Owner: sharedartifact.OwnerAgent, Kind: sharedartifact.BindingSubject, ResourceType: "agent_user", ResourceID: a.UserID, CreatedAt: now},
+			{WorkspaceID: a.WorkspaceID, ArtifactID: id, Owner: sharedartifact.OwnerAgent, Kind: sharedartifact.BindingConversation, ResourceType: "agent_conversation", ResourceID: in.ConversationID, CreatedAt: now},
 		} {
 			if _, _, bindErr := s.artifactStore.Bind(artifactContext, binding); bindErr != nil {
 				return bindErr
@@ -303,7 +308,19 @@ func (s *ConversationStore) Attachments(ctx context.Context, conversationID, aft
 	if limit == 0 {
 		limit = 20
 	}
-	if limit < 1 || limit > 50 || after != "" && !personalMemoryKey(after) {
+	afterID := int64(0)
+	if after != "" {
+		var parseErr error
+		if strings.TrimSpace(after) != after {
+			parseErr = errors.New("attachment cursor contains surrounding whitespace")
+		} else {
+			afterID, parseErr = strconv.ParseInt(after, 10, 64)
+		}
+		if parseErr != nil || afterID < 1 {
+			return out, conversationError("bad_request", "attachment_query_invalid")
+		}
+	}
+	if limit < 1 || limit > 50 {
 		return out, conversationError("bad_request", "attachment_query_invalid")
 	}
 	items, err := s.attachmentArtifactsForConversation(ctx, s.store.Database(), conversationID, a)
@@ -311,8 +328,9 @@ func (s *ConversationStore) Attachments(ctx context.Context, conversationID, aft
 		return out, err
 	}
 	sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID })
+	lastID := int64(0)
 	for _, item := range items {
-		if item.ID <= after || item.Status == sharedartifact.StatusDeleted || item.Status == sharedartifact.StatusExpired {
+		if item.ID <= afterID || item.Status == sharedartifact.StatusDeleted || item.Status == sharedartifact.StatusExpired {
 			continue
 		}
 		record, decodeErr := decodeAttachmentArtifact(item, conversationID)
@@ -321,10 +339,11 @@ func (s *ConversationStore) Attachments(ctx context.Context, conversationID, aft
 		}
 		if len(out.Items) == limit {
 			out.Complete = false
-			out.NextAfter = out.Items[len(out.Items)-1].ID
+			out.NextAfter = strconv.FormatInt(lastID, 10)
 			break
 		}
 		out.Items = append(out.Items, record.Attachment)
+		lastID = item.ID
 	}
 	return out, nil
 }
@@ -350,7 +369,7 @@ func (s *ConversationStore) saveAttachmentRecord(ctx context.Context, tx *sql.Tx
 		updatedAt = value.UpdatedAt.Add(time.Nanosecond)
 	}
 	changed, err := s.artifactStore.Update(sharedartifact.WithExecutor(ctx, tx), sharedartifact.Mutation{
-		WorkspaceID: value.WorkspaceID, ID: value.ID, Owner: value.Owner, Kind: value.Kind,
+		WorkspaceID: value.WorkspaceID, ArtifactID: value.ArtifactID, Owner: value.Owner, Kind: value.Kind,
 		ExpectedStatus: value.Status, ExpectedScanStatus: value.ScanStatus, ExpectedUpdatedAt: value.UpdatedAt,
 		Status: status, ScanStatus: sharedartifact.ScanNotRequired, ExpiresAt: value.ExpiresAt,
 		Metadata: metadata, UpdatedAt: updatedAt,
@@ -421,7 +440,7 @@ func (s *ConversationStore) AttachmentContent(ctx context.Context, id string, a 
 	if int64(len(raw)) != value.SizeBytes || agentartifact.Hash(raw) != value.ContentSHA256 {
 		return nil, conversationError("unavailable", "attachment_content_mismatch")
 	}
-	current, found, err := s.artifactStore.ByID(ctx, value.WorkspaceID, value.ID)
+	current, found, err := s.artifactStore.ByID(ctx, value.WorkspaceID, value.ArtifactID)
 	if err != nil {
 		return nil, err
 	}

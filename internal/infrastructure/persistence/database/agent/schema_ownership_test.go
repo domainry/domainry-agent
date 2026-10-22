@@ -42,12 +42,24 @@ func TestSchemaOwnershipMatchesEveryFreshAgentTableAndPrimaryKey(t *testing.T) {
 		if !found {
 			t.Fatalf("Agent table %s has ownership but no canonical DDL", table.Name)
 		}
+		if !slices.Equal(table.PrimaryKey, []string{"id"}) {
+			t.Fatalf("Agent table %s physical primary key=%v want [id]", table.Name, table.PrimaryKey)
+		}
+		if !strings.Contains(statement, `"id" INTEGER PRIMARY KEY AUTOINCREMENT`) {
+			t.Fatalf("Agent table %s has no SQLite BIGINT physical auto-increment ID: %s", table.Name, statement)
+		}
 		quoted := make([]string, len(table.PrimaryKey))
 		for index, column := range table.PrimaryKey {
 			quoted[index] = `"` + column + `"`
 		}
 		if primaryKey := "PRIMARY KEY (" + strings.Join(quoted, ", ") + ")"; !strings.Contains(statement, primaryKey) {
-			t.Fatalf("Agent table %s ownership primary key %v does not match DDL: %s", table.Name, table.PrimaryKey, statement)
+			inlinePrimaryKey := len(table.PrimaryKey) == 1 && table.PrimaryKey[0] == "id" && strings.Contains(statement, `"id" INTEGER PRIMARY KEY AUTOINCREMENT`)
+			if !inlinePrimaryKey {
+				t.Fatalf("Agent table %s ownership primary key %v does not match DDL: %s", table.Name, table.PrimaryKey, statement)
+			}
+		}
+		if table.Kind == schemaownership.KindEntity && !strings.Contains(statement, `UNIQUE ("`+table.EntityIDColumn+`")`) {
+			t.Fatalf("Agent entity table %s has no unique business ID %s: %s", table.Name, table.EntityIDColumn, statement)
 		}
 	}
 }
@@ -66,7 +78,7 @@ func TestSchemaOwnershipReturnsIndependentValues(t *testing.T) {
 func TestEveryOwnerScopedUserEraseTableParticipatesInSubjectErasure(t *testing.T) {
 	indexed := agentSubjectIndexedTables()
 	for _, table := range SchemaOwnership() {
-		if table.RetentionClass != schemaownership.RetentionUserErase || len(table.PrimaryKey) == 0 || table.PrimaryKey[0] != "owner_key" {
+		if table.RetentionClass != schemaownership.RetentionUserErase || table.Name == "_agent_runtime_states" {
 			continue
 		}
 		if !slices.Contains(agentSubjectOwnerTables, table.Name) {

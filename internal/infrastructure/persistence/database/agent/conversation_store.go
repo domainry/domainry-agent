@@ -2,7 +2,6 @@ package agent
 
 import (
 	"context"
-	"crypto/rand"
 	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
@@ -16,6 +15,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	sharedartifact "github.com/domainry/domainry-foundation/artifact"
+	"github.com/domainry/domainry-foundation/entityid"
 	sharedoperation "github.com/domainry/domainry-foundation/operation"
 	"github.com/domainry/domainry-orm/query"
 )
@@ -92,11 +92,14 @@ type conversationDB interface {
 }
 
 func conversationID(prefix string) string {
-	var b [16]byte
-	if _, err := rand.Read(b[:]); err != nil {
+	value, err := entityid.New(strings.TrimSuffix(prefix, "_"))
+	if err != nil {
 		panic(err)
 	}
-	return prefix + hex.EncodeToString(b[:])
+	return value
+}
+func derivedConversationID(namespace string, parts ...string) (string, error) {
+	return entityid.Derive("conv", namespace, parts...)
 }
 func conversationHash(v any) string {
 	b, _ := json.Marshal(v)
@@ -322,12 +325,13 @@ func (s *ConversationStore) List(ctx context.Context, in agentsdk.ConversationQu
 	}
 	if in.BeforeID != "" {
 		raw, e := base64.RawURLEncoding.DecodeString(in.BeforeID)
-		stamp, id, ok := strings.Cut(string(raw), ":")
+		stamp, physicalIDText, ok := strings.Cut(string(raw), ":")
 		n, parseErr := strconv.ParseInt(stamp, 10, 64)
-		if e != nil || !ok || parseErr != nil || id == "" {
+		physicalID, physicalIDErr := strconv.ParseInt(physicalIDText, 10, 64)
+		if e != nil || !ok || parseErr != nil || physicalIDErr != nil || physicalID < 1 {
 			return out, conversationError("bad_request", "cursor_invalid")
 		}
-		p = append(p, query.Or(query.LessThan("updated_at", n), query.And(query.Equal("updated_at", n), query.LessThan("conversation_id", id))))
+		p = append(p, query.Or(query.LessThan("updated_at", n), query.And(query.Equal("updated_at", n), query.LessThan("id", physicalID))))
 	}
 	if in.Search != "" {
 		normalized := strings.ToLower(strings.Join(strings.Fields(in.Search), " "))
@@ -351,7 +355,7 @@ func (s *ConversationStore) List(ctx context.Context, in agentsdk.ConversationQu
 		p = append(p, query.Equal("binding_kind", in.BindingKind), query.Equal("binding_key", in.BindingKey))
 	}
 	limit := conversationLimit(in.Limit)
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversations").Columns("payload_json").Where(query.And(p...)).OrderBy(query.Descending("updated_at"), query.Descending("conversation_id")).Limit(limit + 1).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_conversations").Columns("id", "payload_json").Where(query.And(p...)).OrderBy(query.Descending("updated_at"), query.Descending("id")).Limit(limit + 1).Build()
 	if err != nil {
 		return out, err
 	}
@@ -363,9 +367,10 @@ func (s *ConversationStore) List(ctx context.Context, in agentsdk.ConversationQu
 	n := 0
 	last := ""
 	for rows.Next() {
+		var physicalID int64
 		var raw []byte
 		var c agentsdk.Conversation
-		if err = rows.Scan(&raw); err != nil {
+		if err = rows.Scan(&physicalID, &raw); err != nil {
 			return out, err
 		}
 		if err = unmarshalDurableJSON(raw, &c); err != nil {
@@ -376,7 +381,7 @@ func (s *ConversationStore) List(ctx context.Context, in agentsdk.ConversationQu
 			out.NextCursor = last
 			break
 		}
-		last = base64.RawURLEncoding.EncodeToString([]byte(strconv.FormatInt(c.UpdatedAt.UnixMilli(), 10) + ":" + c.ID))
+		last = base64.RawURLEncoding.EncodeToString([]byte(strconv.FormatInt(c.UpdatedAt.UnixMilli(), 10) + ":" + strconv.FormatInt(physicalID, 10)))
 		out.Items = append(out.Items, c)
 	}
 	return out, rows.Err()
@@ -486,7 +491,7 @@ func (s *ConversationStore) DeleteForRequest(ctx context.Context, requestID, id 
 			return err
 		}
 		receipt, _ = marshalDurableJSON(map[string]any{"request_id": requestID, "conversation_id": id, "revision": revision, "completed_at": time.Now().UTC()})
-		return s.store.operations.Complete(sharedoperation.WithExecutor(ctx, tx), sharedoperation.Completion{ID: command.ID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind, IdempotencyKey: command.IdempotencyKey, RequestFingerprint: command.RequestFingerprint, Result: receipt, CompletedAt: time.Now().UTC()})
+		return s.store.operations.Complete(sharedoperation.WithExecutor(ctx, tx), sharedoperation.Completion{OperationID: command.OperationID, Scope: command.Scope, Owner: command.Owner, Kind: command.Kind, IdempotencyKey: command.IdempotencyKey, RequestFingerprint: command.RequestFingerprint, Result: receipt, CompletedAt: time.Now().UTC()})
 	})
 	return receipt, err
 }

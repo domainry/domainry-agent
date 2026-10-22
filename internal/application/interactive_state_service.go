@@ -2,8 +2,6 @@ package application
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/hex"
 	"fmt"
 	"strings"
 	"sync"
@@ -11,12 +9,13 @@ import (
 
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
+	"github.com/domainry/domainry-foundation/entityid"
 )
 
 type InteractiveStateService struct {
 	repository agentpersistence.AgentInteractiveRunRepository
 	now        func() time.Time
-	newID      func() string
+	newID      func() (string, error)
 	metricsMu  sync.Mutex
 	metrics    interactiveStateMetrics
 }
@@ -30,7 +29,7 @@ func NewInteractiveStateService(repository agentpersistence.AgentInteractiveRunR
 	return &InteractiveStateService{repository: repository, now: time.Now, newID: newInteractiveRunID}
 }
 
-func NewInteractiveStateServiceWithRuntime(repository agentpersistence.AgentInteractiveRunRepository, now func() time.Time, newID func() string) *InteractiveStateService {
+func NewInteractiveStateServiceWithRuntime(repository agentpersistence.AgentInteractiveRunRepository, now func() time.Time, newID func() (string, error)) *InteractiveStateService {
 	service := NewInteractiveStateService(repository)
 	if now != nil {
 		service.now = now
@@ -53,7 +52,11 @@ func (s *InteractiveStateService) Create(ctx context.Context, run agentmodel.Age
 		return agentmodel.AgentInteractiveRun{}, false, forbidden("agent.interactive.context_denied")
 	}
 	now := s.now().UTC()
-	run.ID = "interactive_run_" + s.newID()
+	var err error
+	run.ID, err = s.newID()
+	if err != nil {
+		return agentmodel.AgentInteractiveRun{}, false, fmt.Errorf("generate Agent interactive run ID: %w", err)
+	}
 	run.SessionID, run.WorkspaceID = strings.TrimSpace(run.SessionID), workspaceID
 	run.UserID, run.RoleKey = strings.TrimSpace(authority.UserID), strings.TrimSpace(authority.RoleKey)
 	run.RouteKey, run.AgentKey = strings.TrimSpace(run.Context.RouteKey), strings.TrimSpace(run.Context.AgentKey)
@@ -220,12 +223,8 @@ func interactiveAuthorizationStale(run agentmodel.AgentInteractiveRun, authority
 	return stored != "" && current != "" && stored != current
 }
 
-func newInteractiveRunID() string {
-	var raw [16]byte
-	if _, err := rand.Read(raw[:]); err == nil {
-		return hex.EncodeToString(raw[:])
-	}
-	return fmt.Sprintf("%d", time.Now().UTC().UnixNano())
+func newInteractiveRunID() (string, error) {
+	return entityid.New("irun")
 }
 
 var _ agentpersistence.AgentInteractiveStateService = (*InteractiveStateService)(nil)

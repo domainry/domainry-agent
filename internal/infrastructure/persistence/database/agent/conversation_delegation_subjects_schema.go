@@ -8,10 +8,10 @@ import (
 const conversationDelegationSubjectTable = "_agent_delegation_subjects"
 
 func conversationDelegationSubjectsMigration(d modulehost.Dialect) (modulehost.SchemaMigration, error) {
-	table, _, err := orm.NewTable(d, conversationDelegationSubjectTable).IfNotExists().Columns(
+	table, _, err := orm.NewTableWithRequiredColumns(d, conversationDelegationSubjectTable, physicalID()).IfNotExists().Columns(
 		required("owner_key", orm.TextKey(64)), required("delegation_id", orm.TextKey(96)),
 		required("execution_owner_key", orm.TextKey(64)), required("source_authority_json", orm.LongText()), required("execution_authority_json", orm.LongText()), required("created_at", orm.BigInt()),
-	).PrimaryKey("owner_key", "delegation_id").Build()
+	).PrimaryKey("id").Unique("owner_key", "delegation_id").Build()
 	if err != nil {
 		return modulehost.SchemaMigration{}, err
 	}

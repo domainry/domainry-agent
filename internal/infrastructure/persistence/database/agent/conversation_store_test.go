@@ -3,9 +3,12 @@ package agent
 import (
 	"context"
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -207,6 +210,12 @@ func TestConversationAtomicIdempotencyAndOwnerIsolation(t *testing.T) {
 	first, err := repo.List(ctx, agentsdk.ConversationQuery{Limit: 1}, a)
 	if err != nil || first.NextCursor == "" {
 		t.Fatal(err, "missing cursor")
+	}
+	rawCursor, decodeErr := base64.RawURLEncoding.DecodeString(first.NextCursor)
+	_, physicalIDText, found := strings.Cut(string(rawCursor), ":")
+	physicalID, parseErr := strconv.ParseInt(physicalIDText, 10, 64)
+	if decodeErr != nil || !found || parseErr != nil || physicalID < 1 || physicalIDText == first.Items[0].ID {
+		t.Fatalf("conversation cursor does not carry a physical id: cursor=%q business_id=%q", first.NextCursor, first.Items[0].ID)
 	}
 	second, err := repo.List(ctx, agentsdk.ConversationQuery{Limit: 1, BeforeID: first.NextCursor}, a)
 	if err != nil || len(second.Items) != 1 || second.Items[0].ID == first.Items[0].ID {

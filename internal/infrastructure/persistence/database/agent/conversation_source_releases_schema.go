@@ -8,9 +8,9 @@ import (
 const conversationSourceReleaseTable = "_agent_source_releases"
 
 func conversationSourceReleasesMigration(d modulehost.Dialect) (modulehost.SchemaMigration, error) {
-	table, _, err := orm.NewTable(d, conversationSourceReleaseTable).IfNotExists().Columns(
+	table, _, err := orm.NewTableWithRequiredColumns(d, conversationSourceReleaseTable, physicalID()).IfNotExists().Columns(
 		required("owner_key", orm.TextKey(64)), required("release_id", orm.TextKey(64)), required("producer_key", orm.TextKey(64)), required("delegation_id", orm.TextKey(96)), required("conversation_id", orm.TextKey(255)), required("run_id", orm.TextKey(255)), required("before_step", orm.BigInt()), required("payload_json", orm.LongText()),
-	).PrimaryKey("owner_key", "release_id").Build()
+	).PrimaryKey("id").Unique("owner_key", "release_id").Build()
 	if err != nil {
 		return modulehost.SchemaMigration{}, err
 	}

@@ -9,7 +9,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 )
 
-var storedConversationImageID = regexp.MustCompile(`^att_[a-f0-9]{32}$`)
+var storedConversationImageID = regexp.MustCompile(`^art_[a-f0-9]{32}$`)
 
 func validStoredConversationReferences(references []agentsdk.ConversationReference) bool {
 	if len(references) > 32 {

@@ -17,21 +17,21 @@ func TestPublishedMySQLMigrationChecksumsAreStable(t *testing.T) {
 		name     string
 		checksum string
 	}{
-		1:  {"agent_foundation", "2141aae969604abac0886535dcea78bca5f35b24d8fa128b9bd99f0d4d1f50a5"},
-		2:  {"agent_conversations", "c4450988e29ac21188f02d2819c78437d96595b14d8a425a045afbcb91e15acb"},
-		3:  {"agent_conversation_execution", "0b0f1ce3dc9f1da141aeac8ff1c6b1f173b1ddaa755d3c3530a303e6e4b13652"},
-		4:  {"agent_conversation_interactions", "4b72cfdf094240387cecbebe3d9a4b035908e59fac3ba64c9063b5ff49a88290"},
-		6:  {"agent_conversation_artifacts", "b3dcbebb58225461c86b924b117985fd92f0798edf2d1b5525370d94a2a20bf3"},
-		15: {"agent_tasks", "1d8e7afd904fc73f8bea51e9a835ca14934839ef7e07cf26bb0c448b7bb6c59a"},
+		1:  {"agent_foundation", "7f255d0945e22a86e75f7d843aeb594a6d0d9b272a2937da3056075a2119e72f"},
+		2:  {"agent_conversations", "80b46ed628e1c3d717a5c1dcc097d33b0eca8d7ac9e9eab7f3630421833b33e4"},
+		3:  {"agent_conversation_execution", "e7f1643c49043577fbe0cd868d906fec9b37ce8903735d8ea91d094c144b9616"},
+		4:  {"agent_conversation_interactions", "73e3972bd8208cc5b0163bfb9b9d8e7298e54cbf87f69faec7965b91f6e9a65f"},
+		6:  {"agent_conversation_artifacts", "bafb59a10077ce1e992d1d0a3d5dd69ad761bdb08d17e15766a1f30e1cba8d4b"},
+		15: {"agent_tasks", "7354b6bc51069285d48a714fd929e4fd610c402c09bcead51c07a38261acd8cd"},
 		19: {"agent_conversation_capacity", "a2b3b7f72aba5eb8da92965c31e0d5bd87e795c526ceedd9c3043a1da24e492f"},
-		20: {"agent_peer_collaboration", "590823a71232d116063f1db64cae70d9677aa4ad8c8990e1140aefa13ed347e9"},
-		27: {"delegation_execution_subjects", "13c80cbe4bfcc2a100ef1ca7b0d77e3a02ff9754b8bd32442cda8636551ea44a"},
-		28: {"delegation_source_releases", "1d5d4b08d77bc39386f9fe999ac30d69e457c426e2d1e1cd22e2fce1cda38ebb"},
-		29: {"agent_contract_publications", "4c20800a59d397f10b6183ee1ac7add774e0e95776eca3fd388d77ae6a6d06d6"},
-		30: {"agent_conversation_work_budget", "040ba0412480ede97af7c19491bc38508cf5944674592eee4edc7866d6e21a73"},
-		34: {"agent_conversation_forks", "c5a8d8542d838db0d4930702c3caddb04b0dc627436fb07e86eb622dfe8b455f"},
-		35: {"agent_capability_improvements", "8328d2b6ed5a2040e29a6f00a0cf37b4c3ef5eff8cc6fce09b38c1a057102ee8"},
-		36: {"agent_scoped_memories", "94b4328adced03f2f3b1dc436591ed0b27a532775bf33bc83baf879ace9d4e2d"},
+		20: {"agent_peer_collaboration", "815626f43477ee32f65d51ef4e416623fa8687f7cb2023d3b4a4b9afa607de28"},
+		27: {"delegation_execution_subjects", "673d55f4d86fb359f2656ea0b0299e69a7c435b64138a68f3df56fe0ee130a42"},
+		28: {"delegation_source_releases", "3eeeaa199442d4d5a70a746cf41c09ba94cf68e82cf3f8e7cf73bf60df0a4ab1"},
+		29: {"agent_contract_publications", "9694df4aba9b7e1f238c70ae96e2311ce900808b8151f8468f400e39be1dd651"},
+		30: {"agent_conversation_work_budget", "cd6e2fe17d3533595c496b9eb6a4cb3d377a2b7aa1277baebf4dedd42c1dd68a"},
+		34: {"agent_conversation_forks", "f8846555ef552729c7bc205bb82945a952d24d77a3b28e32e5fca6ee03d1b92f"},
+		35: {"agent_capability_improvements", "aa59492e161822849191eb960c800129d55f85a673ee3bd479c25f5e93762e71"},
+		36: {"agent_scoped_memories", "df24af04cafa726686981cc62aa49a88052a7d69058ee25a689a356bf7afc275"},
 	}
 	migrations, err := SchemaMigrations("mysql", "")
 	if err != nil {

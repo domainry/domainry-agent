@@ -2,8 +2,6 @@ package application
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"strings"
@@ -14,6 +12,7 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-agent/internal/execution"
+	"github.com/domainry/domainry-foundation/entityid"
 )
 
 type InteractiveExecutionDependencies struct {
@@ -22,7 +21,7 @@ type InteractiveExecutionDependencies struct {
 	Host      agentmodulehost.InteractiveHost
 	Proposals *ProposalService
 	Now       func() time.Time
-	NewID     func() string
+	NewID     func() (string, error)
 	WakeTask  func(context.Context, string, string)
 }
 
@@ -35,7 +34,7 @@ type InteractiveExecutionService struct {
 	host      agentmodulehost.InteractiveHost
 	proposals *ProposalService
 	now       func() time.Time
-	newID     func() string
+	newID     func() (string, error)
 	wakeTask  func(context.Context, string, string)
 }
 
@@ -166,9 +165,13 @@ func (s *InteractiveExecutionService) handoffTask(ctx context.Context, run agent
 		return s.fail(ctx, run, result, err)
 	}
 	now := s.now().UTC()
+	taskID, err := s.newID()
+	if err != nil {
+		return s.fail(ctx, run, result, fmt.Errorf("generate Agent task run ID: %w", err))
+	}
 	maxAttempts := 1
 	task := agentmodel.AgentTaskRun{
-		ID: "agent_task_" + s.newID(), WorkspaceID: run.WorkspaceID, InteractiveRunID: run.ID,
+		ID: taskID, WorkspaceID: run.WorkspaceID, InteractiveRunID: run.ID,
 		TaskKey: authorization.Task.Key, TaskVersion: authorization.Task.Version,
 		Status: agentmodel.AgentTaskRunPending, Identity: authorization.Identity, Input: cloneTaskMap(route.Input),
 		MaxAttempts: maxAttempts, TimeoutSeconds: authorization.Task.ExecutionLimits.TimeoutSeconds,
@@ -324,10 +327,6 @@ func interactiveExecutionErrorCode(err error, fallback string) string {
 	return strings.TrimSpace(fallback)
 }
 
-func newAgentExecutionID() string {
-	var raw [16]byte
-	if _, err := rand.Read(raw[:]); err == nil {
-		return hex.EncodeToString(raw[:])
-	}
-	return fmt.Sprintf("%d", time.Now().UTC().UnixNano())
+func newAgentExecutionID() (string, error) {
+	return entityid.New("trun")
 }

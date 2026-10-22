@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	"database/sql"
+	"strconv"
 	"time"
 
 	sdk "github.com/domainry/domainry-agent-sdk"
@@ -180,7 +181,10 @@ func (s *ConversationStore) TransferConversationDelegation(ctx context.Context, 
 		}
 		now := time.Now().UTC().Truncate(time.Millisecond)
 		number := int64(len(assignments) + 1)
-		conversationID := "conv_" + conversationHash([]any{id, "assignment", number})[:32]
+		conversationID, err := derivedConversationID("agent.delegation-assignment-conversation", id, strconv.FormatInt(number, 10))
+		if err != nil {
+			return err
+		}
 		task := in.Task
 		task.ID = "task_" + conversationHash([]any{id, "assignment", number})[:32]
 		task.Agent, task.DelegationID, task.ExecutionConversationID = &in.Agent, id, conversationID

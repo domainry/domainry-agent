@@ -140,7 +140,7 @@ func TestSaaSConversationAgainstRealIdentityProcess(t *testing.T) {
 		if active {
 			action = "enable"
 		}
-		request, err := http.NewRequestWithContext(t.Context(), "POST", issuer+"/identity/users/"+owner.User.ID+"/"+action, strings.NewReader(`{}`))
+		request, err := http.NewRequestWithContext(t.Context(), "POST", issuer+"/identity/users/"+owner.User.UserID+"/"+action, strings.NewReader(`{}`))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -202,7 +202,7 @@ func TestSaaSConversationAgainstRealIdentityProcess(t *testing.T) {
 	}
 	defer remote.Close(context.Background())
 	service := remote.(agentsdk.ConversationBinding).Conversations()
-	a := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: owner.User.ID, RoleKey: owner.DefaultRole}
+	a := agentsdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: owner.User.UserID, RoleKey: owner.DefaultRole}
 	c, err := service.Create(t.Context(), agentsdk.ConversationCreate{ClientID: "real-identity"}, a)
 	if err != nil {
 		t.Fatal(err)

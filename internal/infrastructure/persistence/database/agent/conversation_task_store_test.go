@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -268,6 +269,11 @@ func TestConversationTasksOwnerScopedFiltersAndStableCursor(t *testing.T) {
 	first, err := repo.ConversationTasks(t.Context(), agentsdk.ConversationTaskQuery{Query: "alpha", Status: agentsdk.ConversationTaskStatusCompleted, Limit: 1}, authority)
 	if err != nil || len(first.Items) != 1 || first.Items[0].ID != "task_03" || first.Complete || first.NextCursor == "" {
 		t.Fatalf("first page=%+v err=%v", first, err)
+	}
+	rawCursor, err := base64.RawURLEncoding.DecodeString(first.NextCursor)
+	var decodedCursor conversationTaskCursor
+	if err != nil || unmarshalDurableJSON(rawCursor, &decodedCursor) != nil || decodedCursor.ID < 1 {
+		t.Fatalf("task cursor does not carry a physical id: cursor=%q decoded=%+v err=%v", first.NextCursor, decodedCursor, err)
 	}
 	second, err := repo.ConversationTasks(t.Context(), agentsdk.ConversationTaskQuery{Query: "alpha", Status: agentsdk.ConversationTaskStatusCompleted, Limit: 1, Cursor: first.NextCursor}, authority)
 	if err != nil || len(second.Items) != 1 || second.Items[0].ID != "task_01" || !second.Complete || second.NextCursor != "" {

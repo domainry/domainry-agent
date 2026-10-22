@@ -58,7 +58,7 @@ func TestAgentSubjectLifecycleErasesOwnedExecutionGraphOnly(t *testing.T) {
 	if err != nil || !bytes.Contains(exported, []byte("Alice execution secret")) || !bytes.Contains(exported, []byte("alice-step-source-only")) || bytes.Contains(exported, []byte("Bob execution secret")) || bytes.Contains(exported, []byte("bob-step-source-only")) {
 		t.Fatalf("export=%s err=%v", exported, err)
 	}
-	if _, err = lifecycle.EraseSubjectForRequest(t.Context(), "held", a.WorkspaceID, a.UserID, []lifecyclemodel.LegalHold{{ID: "hold"}}); err == nil {
+	if _, err = lifecycle.EraseSubjectForRequest(t.Context(), "held", a.WorkspaceID, a.UserID, []lifecyclemodel.LegalHold{{HoldID: "hold"}}); err == nil {
 		t.Fatal("legal hold did not block Agent erasure")
 	}
 	receipt, err := lifecycle.EraseSubjectForRequest(t.Context(), "erase-alice", a.WorkspaceID, a.UserID, nil)

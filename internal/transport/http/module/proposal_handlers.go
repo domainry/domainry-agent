@@ -2,9 +2,7 @@ package module
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
@@ -37,8 +35,7 @@ func (s *adapter) createProposal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	proposal, err := s.proposals.Create(r.Context(), agentapplication.CreateProposalRequest{
-		ProposalID: "agent_proposal_" + strconv.FormatInt(time.Now().UTC().UnixNano(), 36),
-		Title:      payload.Title, Summary: payload.Summary, Source: payload.Source, Reference: payload.Reference,
+		Title: payload.Title, Summary: payload.Summary, Source: payload.Source, Reference: payload.Reference,
 		Proposed: cloneMap(payload.Proposed), Metadata: metadata, Principal: principal,
 	})
 	if err != nil {

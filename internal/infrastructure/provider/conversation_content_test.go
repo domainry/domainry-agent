@@ -24,7 +24,7 @@ func TestConversationImageInputUsesNativeProtocolBlocksWithoutLeakingReferences(
 	}
 	digest := sha256.Sum256(data)
 	image := &agentsdk.ConversationImageReference{
-		AttachmentID:   "att_0123456789abcdef0123456789abcdef",
+		AttachmentID:   "art_0123456789abcdef0123456789abcdef",
 		ConversationID: "conv_private_source",
 		Filename:       "pixel.png",
 		ContentType:    "image/png",

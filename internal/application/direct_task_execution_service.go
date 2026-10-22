@@ -11,6 +11,7 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
+	"github.com/domainry/domainry-foundation/entityid"
 )
 
 type DirectTaskExecutionRequest struct {
@@ -70,7 +71,10 @@ func (s *DirectTaskExecutionService) Start(ctx context.Context, request DirectTa
 			resolved = append(resolved, attachment)
 		}
 	}
-	runID := directTaskRunID(request.Principal, request.IdempotencyKey)
+	runID, err := directTaskRunID(request.Principal, request.IdempotencyKey)
+	if err != nil {
+		return agentmodel.AgentTaskRun{}, false, err
+	}
 	attachments := make([]agentsdk.TaskAttachment, 0, len(resolved))
 	for index, source := range resolved {
 		attachment := cloneTaskAttachment(source, true)
@@ -96,9 +100,8 @@ func (s *DirectTaskExecutionService) Start(ctx context.Context, request DirectTa
 	return run, replayed, nil
 }
 
-func directTaskRunID(principal modulehost.Principal, key string) string {
-	digest := sha256.Sum256([]byte(strings.Join([]string{principal.WorkspaceID, principal.UserID, strings.TrimSpace(key)}, "\x00")))
-	return "agent_task_" + hex.EncodeToString(digest[:16])
+func directTaskRunID(principal modulehost.Principal, key string) (string, error) {
+	return entityid.Derive("trun", "agent.direct-task-run", principal.WorkspaceID, principal.UserID, key)
 }
 
 func directTaskAttachmentID(runID string, index int) string {

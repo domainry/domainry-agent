@@ -221,7 +221,10 @@ func (s *ConversationStore) CreateConversationDelegation(ctx context.Context, in
 		}
 		now := time.Now().UTC().Truncate(time.Millisecond)
 		id := "delegation_" + conversationHash([]string{conversationOwner(a), in.Request.ClientID})[:32]
-		conversationID := "conv_" + conversationHash(id)[:32]
+		conversationID, err := derivedConversationID("agent.delegation-conversation", conversationOwner(a), in.Request.ClientID)
+		if err != nil {
+			return err
+		}
 		task := in.Task
 		task.ID, task.Status, task.CreatedAt, task.UpdatedAt = "task_"+conversationHash(id)[:32], agentsdk.ConversationTaskStatusQueued, now, now
 		task.Agent, task.DelegationID, task.ExecutionConversationID = &in.Agent, id, conversationID
