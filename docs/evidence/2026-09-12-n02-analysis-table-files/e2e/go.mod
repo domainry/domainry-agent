@@ -4,16 +4,16 @@ go 1.26.0
 
 require (
 	github.com/codeck-backend/kb-search-api v0.0.41
-	github.com/domainry/domainry-connector-sdk v0.1.14
-	github.com/domainry/domainry-connectors v0.1.20
-	github.com/domainry/domainry-identity-sdk v0.1.34
-	github.com/domainry/domainry-knowledge v0.1.60
-	github.com/domainry/domainry-notification-sdk v0.1.20
+	github.com/domainry/domainry-connector-sdk v0.1.15
+	github.com/domainry/domainry-connectors v0.1.21
+	github.com/domainry/domainry-identity-sdk v0.1.35
+	github.com/domainry/domainry-knowledge v0.1.61
+	github.com/domainry/domainry-notification-sdk v0.1.21
 	github.com/domainry/domainry-orm v0.1.34
-	github.com/domainry/domainry-report v0.1.40
-	github.com/domainry/domainry-report-sdk v0.1.25
-	github.com/domainry/domainry-tools v0.1.30
-	github.com/domainry/domainry-tools-sdk v0.1.24
+	github.com/domainry/domainry-report v0.1.41
+	github.com/domainry/domainry-report-sdk v0.1.26
+	github.com/domainry/domainry-tools v0.1.31
+	github.com/domainry/domainry-tools-sdk v0.1.25
 	github.com/gin-gonic/gin v1.11.0
 	modernc.org/sqlite v1.57.0
 )
@@ -48,11 +48,11 @@ require (
 	github.com/cloudwego/base64x v0.1.6 // indirect
 	github.com/codeck-backend/common-utils v1.0.92 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
-	github.com/domainry/domainry-foundation v0.2.13 // indirect
-	github.com/domainry/domainry-integration-sdk v0.1.22 // indirect
-	github.com/domainry/domainry-knowledge-sdk v0.1.25 // indirect
-	github.com/domainry/domainry-metadata-sdk v0.1.15 // indirect
-	github.com/domainry/domainry-scheduler-sdk v0.1.22 // indirect
+	github.com/domainry/domainry-foundation v0.2.14 // indirect
+	github.com/domainry/domainry-integration-sdk v0.1.23 // indirect
+	github.com/domainry/domainry-knowledge-sdk v0.1.26 // indirect
+	github.com/domainry/domainry-metadata-sdk v0.1.16 // indirect
+	github.com/domainry/domainry-scheduler-sdk v0.1.23 // indirect
 	github.com/donnie4w/go-logger v0.28.0 // indirect
 	github.com/donnie4w/gofer v0.1.8 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
