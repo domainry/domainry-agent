@@ -356,7 +356,7 @@ func newBinding(r *provider.Runner, taskRunner agentsdk.TaskRunner, store *agent
 	return &binding{runner: r, taskExecution: agentapplication.NewTaskExecutionService(taskState, taskRunner, ""), definitions: repositories.DefinitionRepository(), state: state, runs: runs, lifecycle: repositories.AgentLifecycleRepository(), dialogState: agentapplication.NewDialogStateService(state), taskState: taskState, interactive: agentapplication.NewInteractiveStateService(interactiveRuns), mode: m}
 }
 func (b *binding) Descriptor() agentsdk.Descriptor {
-	descriptor := agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: b.mode, Capabilities: []string{agentsdk.CapabilityTaskStart, agentsdk.CapabilityTaskPoll, agentsdk.CapabilityTaskCancel, agentsdk.CapabilityInteractiveRun, "dialog.state", "execution.state", "structured_output", "usage", "tool_callback", agentsdk.CapabilityLifecycleExecute}}
+	descriptor := agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV2, Mode: b.mode, Capabilities: []string{agentsdk.CapabilityTaskStart, agentsdk.CapabilityTaskPoll, agentsdk.CapabilityTaskCancel, agentsdk.CapabilityInteractiveRun, "dialog.state", "execution.state", "structured_output", "usage", "tool_callback", agentsdk.CapabilityLifecycleExecute}}
 	if b.conversations != nil {
 		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityConversationV1)
 	}

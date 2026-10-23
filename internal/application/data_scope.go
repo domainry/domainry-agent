@@ -12,7 +12,7 @@ import (
 // ResolveDataAuthorization requires the functional grant and data policy for
 // the same exact permission key. Agent persists only the resulting closed
 // owner/organization boundary; arbitrary policy predicates fail closed.
-func ResolveDataAuthorization(principal identitysdk.Principal, permissionKey string, now time.Time, requestID, correlationID, causationID string) (dataaccess.Authorization, error) {
+func ResolveDataAuthorization(principal identitysdk.Principal, permissionKey string, now time.Time, requestID, causationID string) (dataaccess.Authorization, error) {
 	denied := func() (dataaccess.Authorization, error) {
 		return dataaccess.Authorization{}, forbidden("agent.authorization.action_denied")
 	}
@@ -30,7 +30,7 @@ func ResolveDataAuthorization(principal identitysdk.Principal, permissionKey str
 		Principal: modulehost.Principal{
 			Known: true, WorkspaceID: strings.TrimSpace(principal.WorkspaceID), UserID: strings.TrimSpace(principal.UserID),
 			RoleKey: strings.TrimSpace(principal.RoleKey), AuthorizationRevision: strings.TrimSpace(principal.AuthorizationRevision),
-			AuthorizedActionKey: permissionKey, RequestID: strings.TrimSpace(requestID), CorrelationID: strings.TrimSpace(correlationID), CausationID: strings.TrimSpace(causationID),
+			AuthorizedActionKey: permissionKey, RequestID: strings.TrimSpace(requestID), CausationID: strings.TrimSpace(causationID),
 		},
 		PermissionKey: permissionKey,
 	}

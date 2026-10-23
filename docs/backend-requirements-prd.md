@@ -19,13 +19,13 @@ No frontend source is present or in scope.
 | ID | Requirement | Owner | Acceptance evidence |
 | --- | --- | --- | --- |
 | AGENT-OWN-001 | Public Agent, Skill, task, route, context, handoff, and execution contracts have one declaration in `domainry-agent-sdk`. | Agent SDK | declaration-boundary tests and repository search |
-| AGENT-OWN-002 | Agent task runs, interactive runs, dialog state, transitions, claims, leases, tool-call ledger, and provider-run correlation are Agent-owned aggregates/repositories. | Agent | package-boundary tests and Runtime consumer compilation |
+| AGENT-OWN-002 | Agent task runs, interactive runs, dialog state, transitions, claims, leases, tool-call ledger, and provider-run identity are Agent-owned aggregates/repositories. | Agent | package-boundary tests and Runtime consumer compilation |
 | AGENT-OWN-003 | Embedded Module persistence uses the host database, SQL dialect, transaction boundary, migration lock, and sole `_schema_migrations` ledger through the host migration registrar. | Agent Module + Runtime host | migration/store integration tests |
 | AGENT-OWN-004 | Agent SaaS persists the same Agent-owned state in its own database and never accesses the Runtime database. | Agent SaaS | restart/idempotency and isolation tests |
 | AGENT-OWN-005 | Persistence DDL/DML uses `github.com/domainry/domainry-orm`; raw SQL is allowed only where the ORM lacks an equivalent and carries local justification plus dialect tests. | Agent | dependency and dialect tests |
 | AGENT-OWN-006 | Runtime retains Workflow state, current authorization, concrete host effects, Host adapters and composition only; it must not redeclare or persist Agent-owned state. | Runtime | ownership-boundary tests and full Runtime tests |
 | AGENT-OWN-007 | Every `/agent/*` product endpoint and typed route declaration is owned by the Agent source Adapter. Runtime only mounts and governs that Adapter. | Agent + Runtime host | Adapter contract, route-registration, route-absence and generated static API-document tests |
-| AGENT-OWN-008 | Workflow dispatch and completion use an asynchronous state-first protocol: Runtime receives `accepted`, Agent later commits terminal state then invokes an idempotent Runtime callback; neither side performs synchronous reentry or a cross-owner transaction. | Agent + Runtime Workflow | deterministic-correlation, callback replay and ownership tests |
+| AGENT-OWN-008 | Workflow dispatch and completion use an asynchronous state-first protocol: Runtime receives `accepted`, Agent later commits terminal state then invokes an idempotent Runtime callback; neither side performs synchronous reentry or a cross-owner transaction. | Agent + Runtime Workflow | deterministic task identity, callback replay and ownership tests |
 
 ## 3. State and invariants
 
@@ -33,7 +33,7 @@ Agent task and interactive-run identifiers remain opaque and workspace-scoped. S
 
 ## 4. Transaction and failure behavior
 
-Each state transition and its Agent-owned evidence commits atomically in the selected Agent repository. Runtime business effects remain behind Host Ports and are not committed inside an Agent database transaction. Runtime Workflow transactions contain only Workflow state; they neither insert Agent tasks nor publish Agent task mutations. Deterministic task identity makes a retried dispatch replay the same Agent Start. Agent commits terminal state before the idempotent Workflow completion callback and retries an unacknowledged callback through reconciliation. Cancellation is idempotent. Lost responses and uncertain provider starts reconcile through durable provider-run correlation rather than issuing an unguarded second start.
+Each state transition and its Agent-owned evidence commits atomically in the selected Agent repository. Runtime business effects remain behind Host Ports and are not committed inside an Agent database transaction. Runtime Workflow transactions contain only Workflow state; they neither insert Agent tasks nor publish Agent task mutations. Deterministic task identity makes a retried dispatch replay the same Agent Start. Agent commits terminal state before the idempotent Workflow completion callback and retries an unacknowledged callback through reconciliation. Cancellation is idempotent. Lost responses and uncertain provider starts reconcile through the durable provider run ID rather than issuing an unguarded second start.
 
 ## 5. Security and data scope
 

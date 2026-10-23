@@ -87,7 +87,7 @@ func (s *DirectTaskExecutionService) Start(ctx context.Context, request DirectTa
 		Input: cloneTaskMap(request.Input), Attachments: attachments,
 		AllowedObjects: append([]string(nil), authorization.Evidence.AllowedObjects...), AllowedActions: append([]string(nil), authorization.Evidence.AllowedActions...),
 		AllowedOutcomes: append([]string(nil), authorization.Evidence.AllowedOutcomes...), AllowedTools: append([]string(nil), authorization.Evidence.AllowedTools...),
-		CorrelationID: request.Principal.CorrelationID, IdempotencyKey: request.IdempotencyKey, MaxAttempts: maxAttempts,
+		IdempotencyKey: request.IdempotencyKey, MaxAttempts: maxAttempts,
 	}
 	if timeout := authorization.Task.ExecutionLimits.TimeoutSeconds; timeout > 0 {
 		command.Deadline = s.now().UTC().Add(time.Duration(timeout) * time.Second)

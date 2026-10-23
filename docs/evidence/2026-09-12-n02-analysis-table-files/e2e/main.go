@@ -22,6 +22,7 @@ import (
 	"github.com/codeck-backend/kb-search-api/pkg/requestctx"
 	searchtypes "github.com/codeck-backend/kb-search-api/pkg/types"
 	connector "github.com/domainry/domainry-connector-sdk"
+	connectorknowledge "github.com/domainry/domainry-connectors/providers/knowledge_base/http_api"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 	knowledgemodule "github.com/domainry/domainry-knowledge/module"
 	notificationmodel "github.com/domainry/domainry-notification-sdk/contract"
@@ -251,7 +252,7 @@ func (*reportHost) ReportClock() func() time.Time {
 }
 func (*reportHost) ResolveReportSubject(_ context.Context, authority reportmodel.ReportAuthority) (reportmodel.ReportSubject, error) {
 	if authority.AccessToken != "e2e-user" {
-		return reportmodel.ReportSubject{}, &reportsdk.Error{StatusCode: 401, Code: "auth.token_invalid"}
+		return reportmodel.ReportSubject{}, &reportsdk.Error{Class: reportsdk.ErrorClassForbidden, Code: "auth.token_invalid"}
 	}
 	permission := reportsdk.ActionReportQueryExecute
 	separator := len("report.query")
@@ -323,7 +324,7 @@ func main() {
 	knowledge, err := knowledgemodule.NewKnowledge(knowledgemodule.KnowledgeConfig{
 		BaseURL: server.URL, APIKey: "e2e-secret", TeamID: a.TenantID, KBID: a.KBID,
 		WorkspaceID: "workspace", RuntimeID: "e2e-runtime", AnalysisDocumentIDs: []string{a.DocID}, Client: server.Client(),
-	})
+	}, connectorknowledge.New)
 	if err != nil {
 		panic(err)
 	}

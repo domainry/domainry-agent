@@ -213,7 +213,7 @@ func (s *ProposalService) resolveApprovalPrincipal(ctx context.Context, proposal
 	if !principal.Known || strings.TrimSpace(principal.WorkspaceID) != strings.TrimSpace(proposal.WorkspaceID) || strings.TrimSpace(principal.UserID) != strings.TrimSpace(proposal.UserID) || strings.TrimSpace(principal.RoleKey) != strings.TrimSpace(proposal.Role) {
 		return modulehost.Principal{}, forbidden("agent.authorization.approval_principal_revoked")
 	}
-	principal.RequestID, principal.CorrelationID, principal.CausationID = requestPrincipal.RequestID, requestPrincipal.CorrelationID, requestPrincipal.CausationID
+	principal.RequestID, principal.CausationID = requestPrincipal.RequestID, requestPrincipal.CausationID
 	return principal, nil
 }
 

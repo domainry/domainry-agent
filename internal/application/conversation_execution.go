@@ -768,7 +768,7 @@ func (s *ConversationService) executeConversationToolWithParent(ctx context.Cont
 	if err != nil {
 		return agentsdk.ConversationToolResult{}, err
 	}
-	request := agentsdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, CorrelationID: claim.Run.ID, Step: step.Number, Call: call, Definition: frozen, LeaseOwner: claim.Owner, Fence: claim.Fence, SourceAttachments: sourceAttachments}
+	request := agentsdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, Step: step.Number, Call: call, Definition: frozen, LeaseOwner: claim.Owner, Fence: claim.Fence, SourceAttachments: sourceAttachments}
 	interaction, hasInteraction, err := s.toolInteraction(ctx, claim, step.Number, call, frozen)
 	if err != nil {
 		return agentsdk.ConversationToolResult{}, err

@@ -95,7 +95,7 @@ func (s *InteractiveExecutionService) Execute(ctx context.Context, request Inter
 	run, replayed, err := s.state.Create(ctx, agentmodel.AgentInteractiveRun{
 		SessionID: request.SessionID, EntrypointKey: authorized.Context.EntrypointKey,
 		AgentKey: authorized.Context.AgentKey, Context: authorized.Context,
-		CorrelationID: authorized.Principal.CorrelationID, IdempotencyKey: request.IdempotencyKey,
+		IdempotencyKey: request.IdempotencyKey,
 	}, interactiveAuthority(authorized.Principal))
 	if err != nil {
 		return InteractiveExecutionResult{}, err
@@ -176,7 +176,7 @@ func (s *InteractiveExecutionService) handoffTask(ctx context.Context, run agent
 		Status: agentmodel.AgentTaskRunPending, Identity: authorization.Identity, Input: cloneTaskMap(route.Input),
 		MaxAttempts: maxAttempts, TimeoutSeconds: authorization.Task.ExecutionLimits.TimeoutSeconds,
 		MaxToolCalls: agentTaskMaxToolCalls(authorization.Task.ExecutionLimits.MaxToolCalls), MaxCostUnits: agentTaskCostBudgetUnits(authorization.Task.ExecutionLimits.CostBudget),
-		IdempotencyKey: run.ID + ":" + route.IdempotencyKey, CorrelationID: run.CorrelationID,
+		IdempotencyKey: run.ID + ":" + route.IdempotencyKey,
 		Evidence: agentmodel.AgentTaskExecutionEvidence{
 			TaskVersion: authorization.Task.Version, AgentKey: authorization.Task.AgentKey,
 			Authorization: []agentmodel.AgentAuthorizationEvidence{authorization.Evidence},
@@ -247,7 +247,7 @@ func (s *InteractiveExecutionService) invokeTool(ctx context.Context, run agentm
 	started := s.now().UTC()
 	hostResult, err := s.host.InvokeInteractiveTool(ctx, agentmodulehost.InteractiveToolInvocationRequest{
 		Context: run.Context, Principal: authorized.Principal, RunID: run.ID, SessionID: run.SessionID,
-		EntrypointKey: run.EntrypointKey, RouteKey: run.RouteKey, CorrelationID: run.CorrelationID,
+		EntrypointKey: run.EntrypointKey, RouteKey: run.RouteKey,
 		Route: route, IdempotencyKey: route.IdempotencyKey,
 	})
 	if err != nil {

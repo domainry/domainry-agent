@@ -96,7 +96,7 @@ func (s *ConversationService) authorizeConversationRecord(ctx context.Context, c
 	if conversationDigest(definition.definition) != conversationDigest(source.Definition) {
 		return conversationFailure("conflict", "tool_changed")
 	}
-	auth, err := s.authorizeConversationTool(ctx, s.executionToolAuthorizer(source.Call.Name), agentsdk.ConversationToolRequest{Authority: a, ConversationID: conversationID, RunID: runID, CorrelationID: runID, Step: source.Step, Call: source.Call, Definition: source.Definition})
+	auth, err := s.authorizeConversationTool(ctx, s.executionToolAuthorizer(source.Call.Name), agentsdk.ConversationToolRequest{Authority: a, ConversationID: conversationID, RunID: runID, Step: source.Step, Call: source.Call, Definition: source.Definition})
 	if err != nil {
 		return err
 	}
@@ -104,7 +104,7 @@ func (s *ConversationService) authorizeConversationRecord(ctx context.Context, c
 		return conversationFailure("forbidden", "tool_access_denied")
 	}
 	if source.Result != nil {
-		if err = s.authorizeStoredToolResult(ctx, agentsdk.ConversationToolRequest{Authority: a, ConversationID: conversationID, RunID: runID, CorrelationID: runID, Step: source.Step, Call: source.Call, Definition: source.Definition}, *source.Result); err != nil {
+		if err = s.authorizeStoredToolResult(ctx, agentsdk.ConversationToolRequest{Authority: a, ConversationID: conversationID, RunID: runID, Step: source.Step, Call: source.Call, Definition: source.Definition}, *source.Result); err != nil {
 			return err
 		}
 	}

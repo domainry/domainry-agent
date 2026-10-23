@@ -6,6 +6,7 @@ import (
 
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
+	"github.com/domainry/domainry-foundation/requestcontext"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
 
@@ -95,8 +96,7 @@ func proposalPrincipal(r *http.Request) (modulehost.Principal, bool) {
 	return modulehost.Principal{
 		Known: true, WorkspaceID: strings.TrimSpace(identity.Principal.WorkspaceID), UserID: strings.TrimSpace(identity.Principal.UserID),
 		RoleKey: strings.TrimSpace(identity.Principal.RoleKey), AuthorizationRevision: strings.TrimSpace(identity.Principal.AuthorizationRevision),
-		RequestID: strings.TrimSpace(r.Header.Get("X-Request-ID")), CorrelationID: strings.TrimSpace(r.Header.Get("X-Correlation-ID")),
-		CausationID: strings.TrimSpace(r.Header.Get("X-Causation-ID")),
+		RequestID: requestcontext.RequestID(r.Context()),
 	}, true
 }
 

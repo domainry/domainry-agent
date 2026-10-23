@@ -64,8 +64,8 @@ func TestConversationRunDetailProjectsBoundedAuditMetricsUsageAndDurations(t *te
 	if err != nil {
 		t.Fatal(err)
 	}
-	if detail.CorrelationID != run.ID || detail.StartedAt == nil || detail.CompletedAt == nil || detail.DurationMilliseconds < 1 || detail.QueueDurationMilliseconds < 1 || !detail.AuditComplete {
-		t.Fatalf("timing/correlation detail=%+v", detail)
+	if detail.StartedAt == nil || detail.CompletedAt == nil || detail.DurationMilliseconds < 1 || detail.QueueDurationMilliseconds < 1 || !detail.AuditComplete {
+		t.Fatalf("timing detail=%+v", detail)
 	}
 	if detail.Metrics.Steps != 1 || detail.Metrics.ModelCalls != 1 || detail.Metrics.ToolCalls != 1 || detail.Metrics.ToolAttempts != 1 || detail.Metrics.AuthorizationChecks != 1 {
 		t.Fatalf("metrics=%+v", detail.Metrics)

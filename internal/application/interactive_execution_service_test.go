@@ -56,7 +56,7 @@ func TestInteractiveExecutionOwnsToolBudgetAndEvidence(t *testing.T) {
 	}}
 	service := NewInteractiveExecutionService(InteractiveExecutionDependencies{State: state, Host: host, Now: func() time.Time { return now }})
 	run := agentmodel.AgentInteractiveRun{
-		ID: "interactive-1", WorkspaceID: "workspace-1", SessionID: "session-1", EntrypointKey: "assistant", RouteKey: "workspace.customer", CorrelationID: "correlation-1",
+		ID: "interactive-1", WorkspaceID: "workspace-1", SessionID: "session-1", EntrypointKey: "assistant", RouteKey: "workspace.customer",
 		Context: agentsdk.GlobalContext{ContextRevision: "context-1", ObjectKey: "customer"}, Status: agentmodel.AgentInteractiveRunRunning,
 	}
 	authorized := modulehost.InteractiveAuthorization{

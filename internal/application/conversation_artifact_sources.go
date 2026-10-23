@@ -49,7 +49,7 @@ func (audit *conversationSourceAudit) artifactToolResult(ctx context.Context, ow
 	if policy == nil {
 		return nil, conversationFailure("unavailable", "artifacts_unavailable")
 	}
-	request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: execution.Step, Call: execution.Call, Definition: definition}
+	request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, Step: execution.Step, Call: execution.Call, Definition: definition}
 	var err error
 	if !deliveryRead {
 		decision, err := audit.s.authorizeConversationTool(ctx, policy, request)

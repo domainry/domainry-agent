@@ -125,7 +125,7 @@ func (s *Server) authorizeServiceAction(actionKey string, next http.Handler) htt
 	})
 }
 func (s *Server) descriptor(w http.ResponseWriter, _ *http.Request) {
-	descriptor := agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: agentsdk.DeploymentModeSaaS, Capabilities: []string{}}
+	descriptor := agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV2, Mode: agentsdk.DeploymentModeSaaS, Capabilities: []string{}}
 	if s.config.Runner != nil {
 		descriptor.Capabilities = append(descriptor.Capabilities, agentsdk.CapabilityTaskStart, agentsdk.CapabilityTaskPoll, agentsdk.CapabilityTaskCancel)
 	}

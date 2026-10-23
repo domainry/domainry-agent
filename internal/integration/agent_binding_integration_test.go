@@ -577,7 +577,7 @@ func taskRequest(runID, workspaceID string, maxAttempts int) agentsdk.TaskReques
 		TaskRunID: runID, ProcessID: "process-" + runID, NodeInstanceID: "node-" + runID, WorkspaceID: workspaceID,
 		Task: taskDefinition("review"), Identity: identity, Input: map[string]any{"record_id": "customer-1"},
 		AllowedObjects: []string{"customer"}, AllowedOutcomes: []string{"success"}, AllowedTools: []string{agentsdk.AgentToolQueryRecords},
-		ExecutionCredential: callerCredential, CorrelationID: "correlation-" + runID, IdempotencyKey: "command-" + runID,
+		ExecutionCredential: callerCredential, IdempotencyKey: "command-" + runID,
 		MaxAttempts: maxAttempts, Deadline: time.Now().UTC().Add(10 * time.Second),
 	}
 }

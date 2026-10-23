@@ -504,7 +504,7 @@ func (audit *conversationSourceAudit) recordCurrent(ctx context.Context, owner a
 		if audit.s.options.ToolHost == nil {
 			return nil, conversationFailure("forbidden", "tool_access_denied")
 		}
-		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
+		request := agentsdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition}
 		auth, err := audit.s.authorizeConversationTool(ctx, audit.s.options.ToolHost, request)
 		if err != nil {
 			return nil, err

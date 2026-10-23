@@ -141,7 +141,7 @@ func (s *ConversationService) prepareConversationTaskStart(ctx context.Context, 
 			}
 		}
 		auth, authErr := s.authorizeConversationTool(ctx, s.options.ToolHost, agentsdk.ConversationToolRequest{
-			Authority: authority, ConversationID: conversationID, RunID: sourceRunID, CorrelationID: sourceRunID,
+			Authority: authority, ConversationID: conversationID, RunID: sourceRunID,
 			Call: agentsdk.ConversationToolCall{Name: key}, Definition: tool.definition,
 		})
 		if authErr != nil {

@@ -101,7 +101,6 @@ func (s *TaskToolService) Invoke(ctx context.Context, request TaskToolInvocation
 		return TaskToolResult{}, unavailable("agent.tool.proposal_unavailable")
 	}
 	principal := current.Principal
-	principal.CorrelationID = run.CorrelationID
 	proposal, err := s.proposals.CreateHostDraft(ctx, result.Proposal, principal)
 	if err != nil {
 		if finishErr := s.finishToolCall(ctx, run, result, callRef, err); finishErr != nil {

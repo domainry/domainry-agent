@@ -122,7 +122,7 @@ func (s *ConversationService) Respond(ctx context.Context, id, runID string, res
 		if conversationDigest(tool.definition) != i.DefinitionHash || conversationDigest(i.Arguments) != i.ArgumentsHash {
 			return agentsdk.ConversationRun{}, conversationFailure("conflict", "tool_changed")
 		}
-		auth, err := s.authorizeConversationTool(ctx, s.options.ToolHost, agentsdk.ConversationToolRequest{Authority: a, ConversationID: id, RunID: runID, CorrelationID: runID, Step: i.Step, Call: agentsdk.ConversationToolCall{ID: i.CallID, Name: i.Tool, Arguments: i.Arguments}, Definition: tool.definition})
+		auth, err := s.authorizeConversationTool(ctx, s.options.ToolHost, agentsdk.ConversationToolRequest{Authority: a, ConversationID: id, RunID: runID, Step: i.Step, Call: agentsdk.ConversationToolCall{ID: i.CallID, Name: i.Tool, Arguments: i.Arguments}, Definition: tool.definition})
 		if err != nil {
 			return agentsdk.ConversationRun{}, err
 		}

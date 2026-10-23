@@ -108,7 +108,6 @@ func auditDuration(started map[string]time.Time, key string, completed time.Time
 }
 
 func (s *ConversationStore) projectConversationRunAudit(ctx context.Context, run *agentsdk.ConversationRun, a agentsdk.ConversationAuthority) error {
-	run.CorrelationID = run.ID
 	run.Metrics = agentsdk.ConversationRunMetrics{Steps: len(run.Steps)}
 	run.Audit = []agentsdk.ConversationRunAuditEvent{}
 	run.Compactions = []agentsdk.ConversationCompactionNotice{}

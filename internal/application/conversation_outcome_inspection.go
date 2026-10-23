@@ -57,7 +57,6 @@ func (s *ConversationService) inspectDelegationOutcome(ctx context.Context, d sd
 		return s.projectConversationDelegation(ctx, d, a)
 	}
 	request := inspection.Request
-	request.CorrelationID = inspection.Run.CorrelationID
 	// Inspect the frozen Agent's tool scope without upgrading its configuration
 	// or enabling execution. Current action and source access are checked below.
 	ctx = context.WithValue(ctx, conversationAgentContextKey{}, inspection.Run.Agent)

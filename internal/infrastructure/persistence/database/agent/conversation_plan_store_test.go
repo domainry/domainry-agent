@@ -79,7 +79,7 @@ func applyPlanVersion(t *testing.T, repo *ConversationStore, claim persistence.C
 	if mutate != nil {
 		mutate(&plan)
 	}
-	request := sdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, CorrelationID: claim.Run.ID, LeaseOwner: claim.Owner, Fence: claim.Fence, Step: number, Call: call, Definition: definition, IdempotencyKey: ledger.IdempotencyKey}
+	request := sdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, LeaseOwner: claim.Owner, Fence: claim.Fence, Step: number, Call: call, Definition: definition, IdempotencyKey: ledger.IdempotencyKey}
 	return repo.ApplyConversationTaskPlanTool(t.Context(), request, plan)
 }
 

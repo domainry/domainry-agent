@@ -17,7 +17,7 @@ func authorizeTaskRun(ctx context.Context, host modulehost.TaskHost, run agentmo
 	}
 	authorization, err := host.AuthorizeTask(ctx, modulehost.TaskAuthorizationRequest{
 		TaskRunID: run.ID, WorkspaceID: run.WorkspaceID, ProcessID: run.ProcessID, NodeInstanceID: run.NodeInstanceID,
-		TaskKey: run.TaskKey, TaskVersion: run.TaskVersion, Identity: run.Identity, CorrelationID: run.CorrelationID,
+		TaskKey: run.TaskKey, TaskVersion: run.TaskVersion, Identity: run.Identity,
 		PreviousEvidence: append([]agentmodel.AgentAuthorizationEvidence(nil), run.Evidence.Authorization...),
 	})
 	if err != nil {

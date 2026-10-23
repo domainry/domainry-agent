@@ -62,7 +62,7 @@ func (audit *conversationSourceAudit) deliveryToolResult(ctx context.Context, ow
 	}
 	// Preserve the original operation identity for source-owned receipt checks,
 	// without handing a reader any worker lease or execution confirmation.
-	request := sdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, CorrelationID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition, IdempotencyKey: record.IdempotencyKey}
+	request := sdk.ConversationToolRequest{Authority: audit.a, ConversationID: owner.ConversationID, RunID: owner.RunID, Step: record.Step, Call: record.Call, Definition: record.Definition, IdempotencyKey: record.IdempotencyKey}
 	if producer := audit.evidenceAuthority(owner); producer.UserID != audit.a.UserID || producer.RoleKey != audit.a.RoleKey {
 		request.ResultProducer = &producer
 	}

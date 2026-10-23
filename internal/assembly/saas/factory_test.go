@@ -12,7 +12,6 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentcontracttest "github.com/domainry/domainry-agent-sdk/contracttest"
 	server "github.com/domainry/domainry-agent/internal/transport/http/saas"
-	"github.com/domainry/domainry-foundation/requestcontext"
 	"github.com/domainry/domainry-foundation/telemetry"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/trace"
@@ -99,7 +98,7 @@ func TestSaaSFactoryValidatesDescriptorAndRunsProtocol(t *testing.T) {
 	}
 }
 
-func TestSaaSFactoryPropagatesTraceAndCorrelationWithoutRequestIdentity(t *testing.T) {
+func TestSaaSFactoryPropagatesOneTraceIdentityWithoutBusinessCorrelation(t *testing.T) {
 	provider := trace.NewTracerProvider()
 	previousProvider := otel.GetTracerProvider()
 	otel.SetTracerProvider(provider)
@@ -113,21 +112,20 @@ func TestSaaSFactoryPropagatesTraceAndCorrelationWithoutRequestIdentity(t *testi
 		if len(traceparent) != 55 || traceparent[3:35] != "4bf92f3577b34da6a3ce929d0e0e4736" {
 			t.Fatalf("traceparent=%q", traceparent)
 		}
-		if got := request.Header.Get(telemetry.CorrelationIDHeader); got != "correlation-a" {
+		if got := request.Header.Get("X-Correlation-ID"); got != "" {
 			t.Fatalf("correlation id=%q", got)
 		}
-		if got := request.Header.Get(telemetry.RequestIDHeader); got != "" {
-			t.Fatalf("request id crossed service boundary: %q", got)
+		if got := request.Header.Get(telemetry.RequestIDHeader); got != "4bf92f3577b34da6a3ce929d0e0e4736" {
+			t.Fatalf("request/trace alias=%q", got)
 		}
 		response.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(response).Encode(agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV1, Mode: agentsdk.DeploymentModeSaaS, Capabilities: []string{agentsdk.CapabilityInteractiveRun}})
+		_ = json.NewEncoder(response).Encode(agentsdk.Descriptor{ProtocolVersion: agentsdk.ProtocolVersionV2, Mode: agentsdk.DeploymentModeSaaS, Capabilities: []string{agentsdk.CapabilityInteractiveRun}})
 	}))
 	t.Cleanup(service.Close)
 
 	traceID, _ := apiTrace.TraceIDFromHex("4bf92f3577b34da6a3ce929d0e0e4736")
 	spanID, _ := apiTrace.SpanIDFromHex("00f067aa0ba902b7")
 	ctx := apiTrace.ContextWithSpanContext(t.Context(), apiTrace.NewSpanContext(apiTrace.SpanContextConfig{TraceID: traceID, SpanID: spanID, TraceFlags: apiTrace.FlagsSampled}))
-	ctx = requestcontext.WithCorrelationID(ctx, "correlation-a")
 	if _, err := NewFactory(Options{BaseURL: service.URL, APIKey: "secret", Client: service.Client()}).OpenSaaS(ctx, agentsdk.ApplicationRef{RuntimeID: "runtime"}, newRemoteHost(t, "runtime")); err != nil {
 		t.Fatal(err)
 	}

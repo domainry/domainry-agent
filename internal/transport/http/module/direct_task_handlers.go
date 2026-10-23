@@ -13,6 +13,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
+	"github.com/domainry/domainry-foundation/requestcontext"
 	identitysdk "github.com/domainry/domainry-identity-sdk"
 )
 
@@ -133,8 +134,7 @@ func (s *adapter) startPrincipalTaskRun(w http.ResponseWriter, r *http.Request) 
 		TaskKey: metadata.TaskKey, TaskVersion: metadata.TaskVersion, Input: metadata.Input, Attachments: attachments, AttachmentSources: sources, IdempotencyKey: idempotencyKey,
 		Principal: modulehost.Principal{
 			Known: true, WorkspaceID: strings.TrimSpace(principal.WorkspaceID), UserID: strings.TrimSpace(principal.UserID), RoleKey: strings.TrimSpace(principal.RoleKey),
-			AuthorizationRevision: strings.TrimSpace(principal.AuthorizationRevision), RequestID: strings.TrimSpace(r.Header.Get("X-Request-ID")),
-			CorrelationID: strings.TrimSpace(r.Header.Get("X-Correlation-ID")), CausationID: strings.TrimSpace(r.Header.Get("X-Causation-ID")),
+			AuthorizationRevision: strings.TrimSpace(principal.AuthorizationRevision), RequestID: requestcontext.RequestID(r.Context()),
 		},
 	})
 	if err != nil {

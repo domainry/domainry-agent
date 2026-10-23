@@ -62,7 +62,7 @@ func applyTaskCompletion(t *testing.T, repo *ConversationStore, claim persistenc
 	}
 	source := sdk.ConversationRunReference{ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, BeforeStep: step + 1}
 	prepared := sdk.ConversationTaskCompletionRecord{Revision: submit.ExpectedRevision + 1, Kind: "agent_assessment", Submission: sdk.ConversationTaskCompletionSubmission{AgreementRevision: submit.AgreementRevision, Summary: submit.Summary, Data: submit.Data, Conditions: submit.Conditions, Artifacts: submit.Artifacts, Source: &source}}
-	request := sdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, CorrelationID: claim.Run.ID, LeaseOwner: claim.Owner, Fence: claim.Fence, Step: step, Call: call, Definition: definition, IdempotencyKey: ledger.IdempotencyKey}
+	request := sdk.ConversationToolRequest{Authority: claim.Authority, ConversationID: claim.Run.ConversationID, RunID: claim.Run.ID, LeaseOwner: claim.Owner, Fence: claim.Fence, Step: step, Call: call, Definition: definition, IdempotencyKey: ledger.IdempotencyKey}
 	result, err := repo.ApplyConversationTaskCompletionTool(t.Context(), request, prepared)
 	if err != nil {
 		t.Fatal(err)

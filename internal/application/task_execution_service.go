@@ -161,7 +161,6 @@ func (s *TaskExecutionService) StartRun(ctx context.Context, request agentsdk.Ta
 		MaxAttempts: maxAttempts, TimeoutSeconds: timeoutSeconds,
 		MaxToolCalls: agentTaskMaxToolCalls(request.Task.ExecutionLimits.MaxToolCalls), MaxCostUnits: agentTaskCostBudgetUnits(request.Task.ExecutionLimits.CostBudget),
 		IdempotencyKey: strings.TrimSpace(request.IdempotencyKey),
-		CorrelationID:  strings.TrimSpace(request.CorrelationID),
 		Evidence: agentmodel.AgentTaskExecutionEvidence{
 			TaskVersion: request.Task.Version, AgentKey: request.Task.AgentKey,
 			Authorization: []agentmodel.AgentAuthorizationEvidence{{
@@ -409,7 +408,7 @@ func (s *TaskExecutionService) runProvider(ctx context.Context, run agentmodel.A
 		AllowedActions:      append([]string(nil), authorization.Evidence.AllowedActions...),
 		AllowedOutcomes:     append([]string(nil), authorization.Evidence.AllowedOutcomes...),
 		AllowedTools:        append([]string(nil), authorization.AllowedTools...),
-		ExecutionCredential: credential, CorrelationID: run.CorrelationID, IdempotencyKey: run.IdempotencyKey,
+		ExecutionCredential: credential, IdempotencyKey: run.IdempotencyKey,
 	}
 	if run.TimeoutSeconds > 0 {
 		request.Deadline = time.Now().UTC().Add(time.Duration(run.TimeoutSeconds) * time.Second)
