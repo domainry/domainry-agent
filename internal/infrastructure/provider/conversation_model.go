@@ -16,6 +16,7 @@ import (
 	"unicode/utf8"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/telemetry"
 )
 
 const (
@@ -146,7 +147,7 @@ func NewConversationModel(c ConversationModelConfig) (*ConversationModel, error)
 	// sensitive header in net/http's built-in redirect policy).
 	client := *c.Client
 	client.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
-	c.Client = &client
+	c.Client = telemetry.InstrumentHTTPClientWithOptions(&client, "domainry.agent.conversation_model", telemetry.HTTPClientInstrumentationOptions{DisableDiagnosticContent: true})
 	return &ConversationModel{config: c}, nil
 }
 func (m *ConversationModel) request(ctx context.Context, in agentsdk.ConversationModelRequest, stream bool) (*http.Response, error) {
@@ -218,6 +219,7 @@ func (m *ConversationModel) sendConversationPayload(ctx context.Context, payload
 	if err != nil {
 		return nil, err
 	}
+	ctx = telemetry.WithHTTPClientOperation(ctx, "agent.conversation_model.generate")
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, m.config.URL, bytes.NewReader(raw))
 	if err != nil {
 		return nil, err

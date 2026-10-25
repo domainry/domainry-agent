@@ -2,9 +2,9 @@ package sqlite
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/base"
+	"github.com/domainry/domainry-foundation/telemetry"
 	ormsqlite "github.com/domainry/domainry-orm/sqlite"
 	_ "modernc.org/sqlite"
 	"os"
@@ -41,7 +41,7 @@ func OpenConnection(ctx context.Context, options base.ConnectionOptions) (_ *bas
 	if err != nil {
 		return nil, err
 	}
-	c.DB, err = sql.Open("sqlite", dsn)
+	c.DB, err = telemetry.OpenObservedSQL("sqlite", dsn, "runtime", nil)
 	if err != nil {
 		return nil, err
 	}

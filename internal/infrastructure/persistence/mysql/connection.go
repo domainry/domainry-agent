@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/domainry/domainry-agent/internal/infrastructure/persistence/base"
+	"github.com/domainry/domainry-foundation/telemetry"
 	"github.com/domainry/domainry-orm/migration"
 	mysqldriver "github.com/go-sql-driver/mysql"
 	"time"
@@ -42,7 +43,7 @@ func OpenConnection(ctx context.Context, options base.ConnectionOptions) (_ *bas
 		return nil, fmt.Errorf("invalid MySQL connector configuration")
 	}
 	// Domainry's MySQL modules use the DSN database and an empty schema name.
-	c := &base.Connection{DB: sql.OpenDB(connector), Driver: "mysql"}
+	c := &base.Connection{DB: sql.OpenDB(telemetry.WrapSQLConnector(connector, "runtime", nil)), Driver: "mysql"}
 	defer func() {
 		if resultErr != nil {
 			c.Close()

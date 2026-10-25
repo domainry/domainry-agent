@@ -14,6 +14,7 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent/internal/definition"
+	"github.com/domainry/domainry-foundation/telemetry"
 )
 
 const maxResponseBytes = 2 << 20
@@ -32,6 +33,7 @@ func New(config Config) *Runner {
 	if config.Client == nil {
 		config.Client = &http.Client{Timeout: config.Timeout}
 	}
+	config.Client = telemetry.InstrumentHTTPClientWithOptions(config.Client, "domainry.agent.provider_runner", telemetry.HTTPClientInstrumentationOptions{DisableDiagnosticContent: true})
 	return &Runner{config: config}
 }
 
@@ -116,6 +118,7 @@ func (r *Runner) call(ctx context.Context, method, path string, payload any, key
 	return result, decodeErr
 }
 func (r *Runner) request(ctx context.Context, method, path string, payload any, key string) ([]byte, int, error) {
+	ctx = telemetry.WithHTTPClientOperation(ctx, "agent.provider_runner.request")
 	var body io.Reader
 	if payload != nil {
 		raw, err := json.Marshal(payload)

@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/domainry/domainry-agent-sdk v0.1.54
-	github.com/domainry/domainry-foundation v0.2.14
+	github.com/domainry/domainry-foundation v0.2.16
 	github.com/domainry/domainry-identity-sdk v0.1.35
 	github.com/domainry/domainry-lifecycle-sdk v0.1.29
 	github.com/domainry/domainry-orm v0.1.34

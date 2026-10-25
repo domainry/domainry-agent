@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"net"
 	"net/http"
@@ -15,14 +14,15 @@ import (
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentapplication "github.com/domainry/domainry-agent/internal/application"
-	conversationassembly "github.com/domainry/domainry-agent/internal/composition/conversation"
 	saashost "github.com/domainry/domainry-agent/internal/assembly/saas"
+	conversationassembly "github.com/domainry/domainry-agent/internal/composition/conversation"
 	agentpersistence "github.com/domainry/domainry-agent/internal/infrastructure/persistence"
 	agentstore "github.com/domainry/domainry-agent/internal/infrastructure/persistence/database/agent"
 	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	server "github.com/domainry/domainry-agent/internal/transport/http/saas"
 	"github.com/domainry/domainry-foundation/logging"
 	"github.com/domainry/domainry-foundation/processhost"
+	"github.com/domainry/domainry-foundation/telemetry"
 	identityremote "github.com/domainry/domainry-identity-sdk/remote"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "modernc.org/sqlite"
@@ -67,7 +67,7 @@ func run() (runErr error) {
 		sqlDriver = "pgx"
 	}
 	startupFailure = logging.Failure{Stage: "database_initialize", Dependency: "agent_database"}
-	database, err := sql.Open(sqlDriver, dsn)
+	database, err := telemetry.OpenObservedSQL(sqlDriver, dsn, "runtime", nil)
 	if err != nil {
 		return err
 	}
