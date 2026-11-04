@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/requestcontext"
 )
 
 type retryableTaskToolError struct{ kind string }
@@ -17,7 +18,9 @@ func (e retryableTaskToolError) Error() string                { return e.kind }
 func (e retryableTaskToolError) ApplicationErrorKind() string { return e.kind }
 
 type recordingTaskModel struct {
-	request agentsdk.ConversationModelRequest
+	request     agentsdk.ConversationModelRequest
+	workspaceID string
+	actorID     string
 }
 
 type taskReadModel struct {
@@ -131,8 +134,10 @@ func TestModelTaskRunnerClassifiesOnlyTransientLocalToolFailuresAsRetryable(t *t
 	}
 }
 
-func (m *recordingTaskModel) GenerateConversation(_ context.Context, request agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
+func (m *recordingTaskModel) GenerateConversation(ctx context.Context, request agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
 	m.request = request
+	m.workspaceID = requestcontext.WorkspaceID(ctx)
+	m.actorID = requestcontext.ActorID(ctx)
 	return agentsdk.ConversationModelResult{
 		Content: `{"title":"采购合同","kind":"document"}`,
 		Model:   "vision-test-model",
@@ -151,6 +156,7 @@ func TestModelTaskRunnerSendsImageAndPDFAsNativeModelInputs(t *testing.T) {
 	result, err := runner.Start(t.Context(), agentsdk.TaskRequest{
 		TaskRunID:      "run-1",
 		WorkspaceID:    "workspace-1",
+		Identity:       agentsdk.ExecutionIdentity{Execution: agentsdk.PrincipalReference{UserID: "user-1"}},
 		IdempotencyKey: "request-1",
 		Input:          map[string]any{"document_type": "contract"},
 		Task: agentsdk.AgentTaskDefinition{
@@ -170,6 +176,9 @@ func TestModelTaskRunnerSendsImageAndPDFAsNativeModelInputs(t *testing.T) {
 	}
 	if result.Status != agentsdk.ProviderRunCompleted || result.Output["title"] != "采购合同" || result.Model != "vision-test-model" {
 		t.Fatalf("unexpected task result: %+v", result)
+	}
+	if model.workspaceID != "workspace-1" || model.actorID != "user-1" {
+		t.Fatalf("task model execution scope = %q/%q", model.workspaceID, model.actorID)
 	}
 	if len(model.request.Messages) != 2 {
 		t.Fatalf("expected system and user messages, got %+v", model.request.Messages)

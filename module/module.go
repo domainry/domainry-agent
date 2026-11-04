@@ -3,8 +3,10 @@
 package module
 
 import (
+	agentsdk "github.com/domainry/domainry-agent-sdk"
 	moduleassembly "github.com/domainry/domainry-agent/internal/assembly/module"
 	saasassembly "github.com/domainry/domainry-agent/internal/assembly/saas"
+	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 )
 
 type ConversationOptions = moduleassembly.ConversationOptions
@@ -16,6 +18,13 @@ type Factory = moduleassembly.Factory
 func OptionsFromEnvironment() Options { return moduleassembly.OptionsFromEnvironment() }
 
 func NewFactory(options Options) *Factory { return moduleassembly.NewFactory(options) }
+
+// NewConversationModel creates Agent's protocol adapter for an embedding
+// product that resolves the endpoint and model through its own governed model
+// catalog. The product remains responsible for credentials and routing.
+func NewConversationModel(config ConversationModelConfig) (agentsdk.ConversationModel, error) {
+	return provider.NewConversationModel(config)
+}
 
 type SaaSOptions = saasassembly.Options
 type SaaSFactory = saasassembly.Factory

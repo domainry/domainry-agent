@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-foundation/requestcontext"
 )
 
 // ModelTaskRunner executes durable Agent tasks directly against the configured
@@ -43,6 +44,8 @@ func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskReques
 	if r == nil || r.model == nil {
 		return taskModelFailure("configuration", "agent.task.model_unavailable", false), fmt.Errorf("Agent task model is unavailable")
 	}
+	ctx = requestcontext.WithWorkspaceID(ctx, request.WorkspaceID)
+	ctx = requestcontext.WithActorID(ctx, request.Identity.Execution.UserID)
 	input, err := json.Marshal(request.Input)
 	if err != nil {
 		return taskModelFailure("request_contract", "agent.task.input_invalid", false), err
