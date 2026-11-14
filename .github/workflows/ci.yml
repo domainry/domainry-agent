@@ -35,8 +35,8 @@ jobs:
           go test -race
           ./internal/integration
           ./module
-          ./remote
-          ./saas
+          ./internal/assembly/module
+          ./internal/assembly/saas
           ./internal/application
           ./internal/infrastructure/provider
           ./internal/infrastructure/persistence/database/agent

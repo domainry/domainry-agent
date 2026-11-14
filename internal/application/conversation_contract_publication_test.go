@@ -83,8 +83,8 @@ func contractPublicationServiceFixture() (*ConversationService, *contractPublica
 
 func TestContractPublicationIndexPreviewAndCommitUseOriginalAndRecheckCurrentPermission(t *testing.T) {
 	s, r, policy, a, original := contractPublicationServiceFixture()
-	without := *s
-	without.repo = contractPublicationWithoutProvenance{ConversationRepository: r, ConversationCollaborationRepository: r, ConversationDelegationExecutionRepository: r, ConversationContractPublicationRepository: r}
+	without := &ConversationService{runtimeID: s.runtimeID, options: s.options,
+		repo: contractPublicationWithoutProvenance{ConversationRepository: r, ConversationCollaborationRepository: r, ConversationDelegationExecutionRepository: r, ConversationContractPublicationRepository: r}}
 	if out, err := without.PreviewConversationContractPublication(t.Context(), r.d.ID, sdk.ConversationContractPublicationRequest{AgreementRevision: 1}, a); err == nil || out.Agreement.Brief.Goal != "" {
 		t.Fatal("missing original source ports exposed unverified content", out, err)
 	}

@@ -74,8 +74,8 @@ func TestDeliveryPublicationPreviewAndCommitRecheckCanonicalHistoryAndCurrentSou
 	r := &publicationTestRepository{sameUserRoleSourceGraph: sameUserRoleSourceGraph{snapshots: map[string]persistence.ConversationSourceSnapshot{root.RunID: {Authority: original}}, reads: map[string][]sdk.ConversationAuthority{}}, issuer: issuer, executor: a, records: map[int64]sdk.ConversationDeliveryRecord{7: record}, d: sdk.ConversationDelegation{ID: "delegation", OwnerUserID: issuer.UserID, ExecutionSubject: executionSubject(a), Status: "accepted_delivery", Revision: 9}}
 	policy := &executionBindingTestPolicy{deniedRole: "revoked"}
 	s := &ConversationService{runtimeID: a.RuntimeID, repo: r, options: ConversationOptions{CollaborationAuthorizer: policy}}
-	without := *s
-	without.repo = publicationWithoutProvenance{ConversationRepository: r, ConversationCollaborationRepository: r, ConversationDelegationExecutionRepository: r, ConversationDeliveryPublicationRepository: r, ConversationDeliveryVerificationRepository: r}
+	without := &ConversationService{runtimeID: s.runtimeID, options: s.options,
+		repo: publicationWithoutProvenance{ConversationRepository: r, ConversationCollaborationRepository: r, ConversationDelegationExecutionRepository: r, ConversationDeliveryPublicationRepository: r, ConversationDeliveryVerificationRepository: r}}
 	if out, err := without.PreviewConversationDeliveryPublication(t.Context(), r.d.ID, sdk.ConversationDeliveryPublicationRequest{DeliveryRevision: 7}, a); err == nil || out.Record.Delivery.Summary != "" {
 		t.Fatal("missing private provenance ports exposed an unverified original", out, err)
 	}
