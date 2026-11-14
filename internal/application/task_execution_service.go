@@ -365,6 +365,15 @@ func (s *TaskExecutionService) executeClaim(parent context.Context, claim agentp
 	go s.heartbeat(executionContext, run, claim.Lease, stopHeartbeat, heartbeatErrors, cancel)
 	result, externalRunID, executeErr := s.runProvider(executionContext, run, authorization, credential)
 	close(stopHeartbeat)
+	// Billed model steps remain evidence even when generation or the final
+	// output contract fails. Do not discard an attempted format correction's
+	// usage simply because no business result may be accepted.
+	if result.Model != "" {
+		run.Evidence.Model = result.Model
+	}
+	if len(result.Usage) != 0 {
+		run.Evidence.Usage = cloneTaskMap(result.Usage)
+	}
 	select {
 	case heartbeatErr := <-heartbeatErrors:
 		if heartbeatErr != nil {

@@ -10,6 +10,7 @@ import (
 	"io"
 	"strings"
 	"sync"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-foundation/requestcontext"
@@ -43,6 +44,16 @@ func (r *ModelTaskRunner) BindToolInvoker(invoke ModelTaskToolInvoker) {
 func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskRequest) (agentsdk.TaskResult, error) {
 	if r == nil || r.model == nil {
 		return taskModelFailure("configuration", "agent.task.model_unavailable", false), fmt.Errorf("Agent task model is unavailable")
+	}
+	if !request.Deadline.IsZero() {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithDeadline(ctx, request.Deadline)
+		defer cancel()
+	}
+	if seconds := request.Task.ExecutionLimits.TimeoutSeconds; seconds > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, time.Duration(seconds)*time.Second)
+		defer cancel()
 	}
 	ctx = requestcontext.WithWorkspaceID(ctx, request.WorkspaceID)
 	ctx = requestcontext.WithActorID(ctx, request.Identity.Execution.UserID)
@@ -95,18 +106,40 @@ func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskReques
 	if len(request.AllowedTools) != 0 {
 		return r.startWithAuthorizedReadTools(ctx, request, modelRequest)
 	}
+	if err := ctx.Err(); err != nil {
+		return taskModelProviderFailure(err), err
+	}
 	result, err := r.model.GenerateConversation(ctx, modelRequest)
 	if err != nil {
 		return taskModelProviderFailure(err), err
 	}
-	output, err := decodeTaskModelOutput(result.Content, maxOutputBytes)
-	if err != nil {
-		return taskModelFailure("provider_contract", "agent.task.model_output_invalid", false), err
+	usage := aggregateTaskUsage(map[string]any{}, result.Usage)
+	output, decodeErr := decodeTaskModelOutput(result.Content, maxOutputBytes)
+	if decodeErr != nil && request.Task.ExecutionLimits.MaxSteps > 1 && ctx.Err() == nil && taskFormatRecoverable(result.Content, maxOutputBytes) {
+		modelRequest.Messages = append(modelRequest.Messages, agentsdk.ConversationModelMessage{Role: "assistant", Content: result.Content}, agentsdk.ConversationModelMessage{Role: "user", Content: taskFormatCorrection})
+		modelRequest.IdempotencyKey = request.IdempotencyKey + ":format:1"
+		previousModel := result.Model
+		result, err = r.model.GenerateConversation(ctx, modelRequest)
+		if err != nil {
+			failure := taskModelProviderFailure(err)
+			failure.Model = previousModel
+			failure.Usage = aggregateTaskUsage(usage, failure.Usage)
+			failure.Usage["task_format_recovery_attempts"] = 1
+			return failure, err
+		}
+		usage = aggregateTaskUsage(usage, result.Usage)
+		usage["task_format_recovery_attempts"] = 1
+		output, decodeErr = decodeTaskModelOutput(result.Content, maxOutputBytes)
+	}
+	if decodeErr != nil {
+		failure := taskModelFailure("provider_contract", "agent.task.model_output_invalid", false)
+		failure.Model, failure.Usage = result.Model, usage
+		return failure, decodeErr
 	}
 	digest := sha256.Sum256([]byte(request.WorkspaceID + "\x00" + request.TaskRunID + "\x00" + request.IdempotencyKey))
 	return agentsdk.TaskResult{
 		ExternalRunID: "model_task_" + hex.EncodeToString(digest[:16]), Status: agentsdk.ProviderRunCompleted,
-		Outcome: "success", Output: output, RawEvidence: []byte(result.Content), Model: result.Model, Usage: result.Usage,
+		Outcome: "success", Output: output, RawEvidence: []byte(result.Content), Model: result.Model, Usage: usage,
 	}, nil
 }
 
