@@ -138,6 +138,19 @@ func (s *AgentTaskRunStore) finishAgentToolCallOnce(ctx context.Context, finish 
 		if item.FinishedAt != nil {
 			return nil
 		}
+		if finish.Knowledge != nil {
+			if finish.Status != "executed" || (item.Tool != agentsdk.AgentToolKnowledgeSearch && item.Tool != agentsdk.AgentToolKnowledgeRead) || finish.Knowledge.Validate() != nil {
+				return agentError("bad_request", "agent.task.knowledge_evidence_invalid")
+			}
+			operation := "search"
+			if item.Tool == agentsdk.AgentToolKnowledgeRead {
+				operation = "fetch"
+			}
+			if finish.Knowledge.Operation != operation {
+				return agentError("bad_request", "agent.task.knowledge_evidence_invalid")
+			}
+			item.Knowledge = finish.Knowledge.Clone()
+		}
 		item.Status, item.ErrorCode, item.FinishedAt = finish.Status, finish.ErrorCode, &now
 		item.DurationMilliseconds = now.Sub(item.StartedAt).Milliseconds()
 		item.OutputHash = strings.TrimSpace(fmt.Sprint(finish.Evidence["output_hash"]))

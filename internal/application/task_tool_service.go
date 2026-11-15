@@ -19,6 +19,7 @@ type TaskToolInvocation struct {
 }
 
 type TaskToolResult struct {
+	knowledge     *agentmodel.AgentTaskKnowledgeEvidence
 	Status        string                                `json:"status"`
 	Tool          string                                `json:"tool"`
 	CallRef       string                                `json:"call_ref"`
@@ -79,6 +80,14 @@ func (s *TaskToolService) Invoke(ctx context.Context, request TaskToolInvocation
 		IdempotencyKey: strings.TrimSpace(request.IdempotencyKey), PreviousEvidence: append(append([]agentmodel.AgentAuthorizationEvidence(nil), run.Evidence.Authorization...), current.Evidence),
 	})
 	result := TaskToolResult{Status: hostResult.Status, Tool: hostResult.Tool, CallRef: callRef, Output: hostResult.Output, Proposal: hostResult.Proposal, Authorization: hostResult.Authorization}
+	if err == nil {
+		result.knowledge, err = taskKnowledgeReceipt(request, hostResult)
+		if err != nil {
+			result.Status = "failed"
+			result.Output = nil
+			result.Proposal = nil
+		}
+	}
 	if err != nil {
 		finishErr := s.finishToolCall(ctx, run, result, callRef, err)
 		if finishErr != nil {
@@ -130,6 +139,7 @@ func (s *TaskToolService) finishToolCall(ctx context.Context, run agentmodel.Age
 	receiptCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
 	defer cancel()
 	return s.ledger.FinishAgentToolCall(receiptCtx, agentpersistence.AgentToolCallFinish{
+		Knowledge:   result.knowledge.Clone(),
 		WorkspaceID: run.WorkspaceID, TaskRunID: run.ID, CallRef: callRef, Status: status, ErrorCode: code,
 		Owner: run.Lease.Owner, FencingToken: run.Lease.FencingToken,
 		Evidence: map[string]any{"output_hash": stableHash(map[string]any{"output": result.Output, "proposal": result.Proposal})}, Authorization: result.Authorization,

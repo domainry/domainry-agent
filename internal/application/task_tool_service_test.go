@@ -163,7 +163,7 @@ func TestTaskExecutionNotifiesWorkflowAfterAgentTerminalState(t *testing.T) {
 	state.run = run
 	// The worker's local run predates fenced tool writes; the persisted run is
 	// the completion ledger. Database SaveRunning merges those writes at commit.
-	state.run.Evidence = agentmodel.AgentTaskExecutionEvidence{Model: "actual-model", ToolInvocationRefs: []string{"tool-1"}, ToolInvocations: []agentmodel.AgentTaskToolInvocationEvidence{{Ref: "tool-1", Tool: agentsdk.AgentToolGetRecord, Status: "executed", InputHash: "input", OutputHash: "output"}}}
+	state.run.Evidence = agentmodel.AgentTaskExecutionEvidence{Model: "actual-model", ToolInvocationRefs: []string{"tool-1"}, ToolInvocations: []agentmodel.AgentTaskToolInvocationEvidence{{Ref: "tool-1", Tool: agentsdk.AgentToolKnowledgeSearch, Status: "executed", InputHash: "input", OutputHash: "output", Knowledge: taskKnowledgeFixture()}}}
 	if err := service.notifyWorkflow(t.Context(), run); err != nil {
 		t.Fatal(err)
 	}
@@ -173,7 +173,7 @@ func TestTaskExecutionNotifiesWorkflowAfterAgentTerminalState(t *testing.T) {
 	if !state.marked {
 		t.Fatal("Agent callback delivery was not recorded after Runtime acknowledgement")
 	}
-	if len(host.completion.Evidence.ToolInvocations) != 1 || host.completion.Evidence.ToolInvocations[0].OutputHash != "output" || host.completion.Evidence.Model != "actual-model" {
+	if len(host.completion.Evidence.ToolInvocations) != 1 || host.completion.Evidence.ToolInvocations[0].OutputHash != "output" || host.completion.Evidence.Model != "actual-model" || host.completion.Evidence.ToolInvocations[0].Knowledge == nil || host.completion.Evidence.ToolInvocations[0].Knowledge.Citations[0].DocumentID != "doc-a" {
 		t.Fatal("callback lost committed ledger", host.completion.Evidence)
 	}
 }
