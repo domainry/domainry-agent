@@ -303,7 +303,10 @@ func TestConversationCodeModeEnforcesToolDeadlineAndRecordsFailure(t *testing.T)
 		}
 		return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: "代码执行超时"}, FinishReason: "stop", Model: "tool-model"}, nil
 	}
-	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: host, CodeRuntime: runtime, MaxToolCalls: 4, ExternalCallTimeout: 25 * time.Millisecond})
+	// The same limit covers model calls and code execution. Allow scheduling and
+	// receipt persistence to finish before the deliberately blocking code call;
+	// the assertions below still require the code timeout and failed receipt.
+	service, err := conversationassembly.NewService(repo, model, conversationAuthority().RuntimeID, application.ConversationOptions{ToolHost: host, PersonalAuthorizer: host, CodeRuntime: runtime, MaxToolCalls: 4, ExternalCallTimeout: 500 * time.Millisecond})
 	if err != nil {
 		t.Fatal(err)
 	}

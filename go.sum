@@ -11,6 +11,8 @@ github.com/dlclark/regexp2 v1.11.0 h1:G/nrcoOa7ZXlpoa/91N3X7mM3r8eIlMBBJZvsz/mxK
 github.com/dlclark/regexp2 v1.11.0/go.mod h1:DHkYz0B9wPfa6wondMfaivmHpzrQ3v9q8cnmRbL6yW8=
 github.com/domainry/domainry-agent-sdk v0.1.57 h1:jGEipuDfV5dFFo8hSRKSc9/qP5ZH8kmxY5Vep/5ZRE8=
 github.com/domainry/domainry-agent-sdk v0.1.57/go.mod h1:URFptGQbXabEq+Sl2/NjO6OD+JH40s5i3dCrKxP5vrI=
+github.com/domainry/domainry-agent-sdk v0.1.58 h1:sDZ0BF8mr2l7nnwTcjACDAhgHz5SyZ9+f+UYi9kOq6g=
+github.com/domainry/domainry-agent-sdk v0.1.58/go.mod h1:URFptGQbXabEq+Sl2/NjO6OD+JH40s5i3dCrKxP5vrI=
 github.com/domainry/domainry-foundation v0.2.21 h1:eTCRzZ/mBTpkJctPdsflbIA7KF4MS3UgB4sv+KYxqhA=
 github.com/domainry/domainry-foundation v0.2.21/go.mod h1:gWwPHYvr28OkDqiLnQVCn18YyYd7zZUSVv0d/Q2VjG4=
 github.com/domainry/domainry-identity-sdk v0.1.45 h1:TvvAPyUuA5h8WpRNDZwxBoCROkDO29TGhChNGlZC/Fw=
