@@ -161,6 +161,9 @@ func TestTaskExecutionNotifiesWorkflowAfterAgentTerminalState(t *testing.T) {
 		Reconciliation: agentmodel.AgentTaskReconciliation{Required: true, State: "workflow_callback_pending"},
 	}
 	state.run = run
+	// The worker's local run predates fenced tool writes; the persisted run is
+	// the completion ledger. Database SaveRunning merges those writes at commit.
+	state.run.Evidence = agentmodel.AgentTaskExecutionEvidence{Model: "actual-model", ToolInvocationRefs: []string{"tool-1"}, ToolInvocations: []agentmodel.AgentTaskToolInvocationEvidence{{Ref: "tool-1", Tool: agentsdk.AgentToolGetRecord, Status: "executed", InputHash: "input", OutputHash: "output"}}}
 	if err := service.notifyWorkflow(t.Context(), run); err != nil {
 		t.Fatal(err)
 	}
@@ -169,6 +172,52 @@ func TestTaskExecutionNotifiesWorkflowAfterAgentTerminalState(t *testing.T) {
 	}
 	if !state.marked {
 		t.Fatal("Agent callback delivery was not recorded after Runtime acknowledgement")
+	}
+	if len(host.completion.Evidence.ToolInvocations) != 1 || host.completion.Evidence.ToolInvocations[0].OutputHash != "output" || host.completion.Evidence.Model != "actual-model" {
+		t.Fatal("callback lost committed ledger", host.completion.Evidence)
+	}
+}
+
+type taskCallbackReadState struct {
+	taskToolStateStub
+	err   error
+	found bool
+}
+
+func (s *taskCallbackReadState) Get(context.Context, string, string) (agentmodel.AgentTaskRun, bool, error) {
+	return s.run, s.found, s.err
+}
+
+func TestTaskWorkflowCallbackDoesNotAcknowledgeMissingOrForeignCommittedState(t *testing.T) {
+	for _, mode := range []string{"missing", "read error", "running", "foreign workspace", "foreign process", "foreign node", "foreign task"} {
+		t.Run(mode, func(t *testing.T) {
+			run := agentmodel.AgentTaskRun{ID: "run", WorkspaceID: "workspace", ProcessID: "process", NodeInstanceID: "node", TaskKey: "task", TaskVersion: "1", Status: agentmodel.AgentTaskRunFailed}
+			s := &taskCallbackReadState{taskToolStateStub: taskToolStateStub{run: run}, found: true}
+			switch mode {
+			case "missing":
+				s.found = false
+			case "read error":
+				s.err = errors.New("storage unavailable")
+			case "running":
+				s.run.Status = agentmodel.AgentTaskRunRunning
+			case "foreign workspace":
+				s.run.WorkspaceID = "other"
+			case "foreign process":
+				s.run.ProcessID = "other"
+			case "foreign node":
+				s.run.NodeInstanceID = "other"
+			case "foreign task":
+				s.run.TaskKey = "other"
+			}
+			h := &taskToolHostStub{}
+			service := NewTaskExecutionService(s, nil, "worker")
+			if err := service.BindHost(h); err != nil {
+				t.Fatal(err)
+			}
+			if err := service.notifyWorkflow(t.Context(), run); err == nil || s.marked || h.completion.TaskRunID != "" {
+				t.Fatal("invalid ledger delivered or acknowledged", err)
+			}
+		})
 	}
 }
 

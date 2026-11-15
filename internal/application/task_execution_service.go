@@ -702,7 +702,22 @@ func (s *TaskExecutionService) notifyWorkflow(ctx context.Context, run agentmode
 	if host == nil || run.ProcessID == "" || !run.Status.Terminal() {
 		return nil
 	}
-	err := host.CompleteWorkflowTask(ctx, modulehost.WorkflowTaskCompletion{
+	if s.state == nil {
+		return unavailable("agent.task.repository_unavailable")
+	}
+	// Tool calls commit independently under the task fence. SaveRunning merges
+	// their ledger into storage, but its caller's value can still predate those
+	// commits. Notify from the authoritative terminal run, on success, failure,
+	// cancellation and reconciliation alike; never acknowledge a stale snapshot.
+	committed, found, err := s.state.Get(ctx, run.WorkspaceID, run.ID)
+	if err != nil {
+		return err
+	}
+	if !found || committed.ID != run.ID || committed.WorkspaceID != run.WorkspaceID || committed.ProcessID != run.ProcessID || committed.NodeInstanceID != run.NodeInstanceID || committed.TaskKey != run.TaskKey || committed.TaskVersion != run.TaskVersion || !committed.Status.Terminal() {
+		return unavailable("agent.task.workflow_completion_state_unavailable")
+	}
+	run = committed
+	err = host.CompleteWorkflowTask(ctx, modulehost.WorkflowTaskCompletion{
 		WorkspaceID: run.WorkspaceID, TaskRunID: run.ID, ProcessID: run.ProcessID, NodeInstanceID: run.NodeInstanceID,
 		TaskKey: run.TaskKey, TaskVersion: run.TaskVersion, Identity: run.Identity,
 		Status: string(run.Status), Outcome: run.Outcome, Output: cloneTaskMap(run.Output), ErrorCode: run.LastErrorCode, Evidence: run.Evidence,
