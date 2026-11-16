@@ -13,6 +13,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	"github.com/domainry/domainry-agent/internal/execution"
 	"github.com/domainry/domainry-foundation/requestcontext"
 )
 
@@ -65,6 +66,10 @@ func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskReques
 	if err != nil {
 		return taskModelFailure("request_contract", "agent.task.output_schema_invalid", false), err
 	}
+	compiled, err := execution.CompileSchema(schema)
+	if err != nil {
+		return taskModelFailure("request_contract", "agent.task.output_schema_invalid", false), err
+	}
 	system := strings.TrimSpace(request.Task.Instruction) + "\n\nReturn exactly one JSON object and no Markdown or explanation. The JSON must match this schema:\n" + string(schema)
 	user := "Task input:\n" + string(input)
 	blocks := []agentsdk.ConversationContentBlock{{Type: "text", Text: user}}
@@ -88,6 +93,19 @@ func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskReques
 	if maxOutputBytes <= 0 {
 		maxOutputBytes = 64 << 10
 	}
+	validateOutput := func(content string) (map[string]any, error) {
+		output, decodeErr := decodeTaskModelOutput(content, maxOutputBytes)
+		if decodeErr != nil {
+			return nil, decodeErr
+		}
+		if execution.ValidateJSON(compiled, []byte(content)) != nil {
+			// Keep the decoded object only in this execution so a single schema
+			// correction can use the original facts. Never expose validator text
+			// containing model values as instructions or durable error details.
+			return output, fmt.Errorf("Agent task model JSON does not match the output schema")
+		}
+		return output, nil
+	}
 	modelRequest := agentsdk.ConversationModelRequest{
 		Messages: []agentsdk.ConversationModelMessage{
 			{Role: "system", Content: system},
@@ -104,7 +122,7 @@ func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskReques
 		modelRequest.ModelIdentity = source.ConversationModelIdentity()
 	}
 	if len(request.AllowedTools) != 0 {
-		return r.startWithAuthorizedReadTools(ctx, request, modelRequest)
+		return r.startWithAuthorizedReadTools(ctx, request, modelRequest, validateOutput)
 	}
 	if err := ctx.Err(); err != nil {
 		return taskModelProviderFailure(err), err
@@ -114,8 +132,9 @@ func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskReques
 		return taskModelProviderFailure(err), err
 	}
 	usage := aggregateTaskUsage(map[string]any{}, result.Usage)
-	output, decodeErr := decodeTaskModelOutput(result.Content, maxOutputBytes)
-	if decodeErr != nil && request.Task.ExecutionLimits.MaxSteps > 1 && ctx.Err() == nil && taskFormatRecoverable(result.Content, maxOutputBytes) {
+	output, decodeErr := validateOutput(result.Content)
+	if decodeErr != nil && request.Task.ExecutionLimits.MaxSteps > 1 && ctx.Err() == nil && (output != nil || taskFormatRecoverable(result.Content, maxOutputBytes)) {
+		schemaCorrection := output != nil
 		modelRequest.Messages = append(modelRequest.Messages, agentsdk.ConversationModelMessage{Role: "assistant", Content: result.Content}, agentsdk.ConversationModelMessage{Role: "user", Content: taskFormatCorrection})
 		modelRequest.IdempotencyKey = request.IdempotencyKey + ":format:1"
 		previousModel := result.Model
@@ -125,11 +144,17 @@ func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskReques
 			failure.Model = previousModel
 			failure.Usage = aggregateTaskUsage(usage, failure.Usage)
 			failure.Usage["task_format_recovery_attempts"] = 1
+			if schemaCorrection {
+				failure.Usage["task_output_schema_recovery_attempts"] = 1
+			}
 			return failure, err
 		}
 		usage = aggregateTaskUsage(usage, result.Usage)
 		usage["task_format_recovery_attempts"] = 1
-		output, decodeErr = decodeTaskModelOutput(result.Content, maxOutputBytes)
+		if schemaCorrection {
+			usage["task_output_schema_recovery_attempts"] = 1
+		}
+		output, decodeErr = validateOutput(result.Content)
 	}
 	if decodeErr != nil {
 		failure := taskModelFailure("provider_contract", "agent.task.model_output_invalid", false)

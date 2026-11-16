@@ -94,7 +94,7 @@ func TestModelTaskFormatRecoveryKeepsSourceLedgerAndUsesOneRemainingStep(t *test
 		t.Fatalf("recovery changed the step budget or exposed tools: %+v", last)
 	}
 	prior := model.steps[1].Messages
-	if len(last.Messages) != len(prior)+2 || !reflect.DeepEqual(last.Messages[:len(prior)], prior) || !reflect.DeepEqual(last.Messages[len(prior)], invalid.Message) {
+	if len(last.Messages) != len(prior)+2 || !reflect.DeepEqual(last.Messages[1:len(prior)], prior[1:]) || !reflect.DeepEqual(last.Messages[len(prior)], invalid.Message) || strings.Split(last.Messages[0].Content, "HOST EXECUTION BUDGET:")[0] != strings.Split(prior[0].Content, "HOST EXECUTION BUDGET:")[0] {
 		t.Fatal("recovery lost source messages or opaque provider continuation")
 	}
 	if last.Messages[len(last.Messages)-1].Role != "user" || !strings.Contains(last.Messages[len(last.Messages)-1].Content, "JSON") {

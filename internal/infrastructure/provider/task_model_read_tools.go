@@ -18,7 +18,7 @@ import (
 
 const maxTaskToolOutputBytes = 128 << 10
 
-func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, request agentsdk.TaskRequest, base agentsdk.ConversationModelRequest) (taskResult agentsdk.TaskResult, taskErr error) {
+func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, request agentsdk.TaskRequest, base agentsdk.ConversationModelRequest, validateOutput func(string) (map[string]any, error)) (taskResult agentsdk.TaskResult, taskErr error) {
 	model, ok := r.model.(agentsdk.ConversationAgentModel)
 	r.mu.RLock()
 	invoke := r.invokeTool
@@ -48,6 +48,7 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 	modelName := ""
 	formatRecovery := false
 	formatAttempts := 0
+	schemaCorrection := false
 	defer func() {
 		taskResult.Usage = usage
 		if taskResult.Model == "" {
@@ -55,6 +56,9 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 		}
 		if formatAttempts != 0 {
 			taskResult.Usage["task_format_recovery_attempts"] = formatAttempts
+			if schemaCorrection {
+				taskResult.Usage["task_output_schema_recovery_attempts"] = formatAttempts
+			}
 		}
 	}()
 	seenCallIDs := map[string]bool{}
@@ -71,8 +75,16 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 		if formatRecovery {
 			formatAttempts++
 		}
+		// Counts come from executed calls, not model estimates or tool-call
+		// batches. Keep source history intact and refresh only system context.
+		stepMessages := slices.Clone(messages)
+		availableCalls := maxCalls - toolCalls
+		if formatRecovery {
+			availableCalls = 0
+		}
+		stepMessages[0].Content += fmt.Sprintf("\n\nHOST EXECUTION BUDGET: read_calls_used=%d; read_calls_remaining=%d; model_steps_remaining_including_this=%d. A batch of N tool calls consumes N reads. Reserve the last model step for the final JSON. Never claim a limit is exhausted when these counts show remaining capacity. This budget does not grant additional tool or object authority.", toolCalls, availableCalls, maxSteps-step)
 		result, modelErr := model.StreamConversationStep(ctx, agentsdk.ConversationStepRequest{
-			Messages: messages, Tools: stepTools, ModelIdentity: model.ConversationModelIdentity(), ModelCapabilities: base.ModelCapabilities,
+			Messages: stepMessages, Tools: stepTools, ModelIdentity: model.ConversationModelIdentity(), ModelCapabilities: base.ModelCapabilities,
 			IdempotencyKey: fmt.Sprintf("%s:step:%d", request.IdempotencyKey, step),
 			MaxOutputBytes: maxOutput, MaxArgumentBytes: min(maxOutput, 16<<10), MaxToolCalls: remainingCalls,
 		}, func(agentsdk.ConversationModelEvent) error { return nil })
@@ -93,9 +105,10 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 			if toolCalls == 0 {
 				return taskModelFailure("provider_contract", "agent.task.source_not_read", false), fmt.Errorf("Agent task model did not read source records")
 			}
-			output, decodeErr := decodeTaskModelOutput(result.Message.Content, maxOutput)
+			output, decodeErr := validateOutput(result.Message.Content)
 			if decodeErr != nil {
-				if !formatRecovery && step+1 < maxSteps && ctx.Err() == nil && taskFormatRecoverable(result.Message.Content, maxOutput) {
+				if !formatRecovery && step+1 < maxSteps && ctx.Err() == nil && (output != nil || taskFormatRecoverable(result.Message.Content, maxOutput)) {
+					schemaCorrection = output != nil
 					messages = append(messages, result.Message, agentsdk.ConversationStepMessage{Role: "user", Content: taskFormatCorrection})
 					formatRecovery = true
 					continue
