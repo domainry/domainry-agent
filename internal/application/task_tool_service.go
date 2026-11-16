@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	agentsdk "github.com/domainry/domainry-agent-sdk"
 	"github.com/domainry/domainry-agent-sdk/modulehost"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
@@ -66,7 +65,7 @@ func (s *TaskToolService) Invoke(ctx context.Context, request TaskToolInvocation
 	callRef, _, err := s.ledger.BeginAgentToolCall(ctx, agentpersistence.AgentToolCallStart{
 		WorkspaceID: run.WorkspaceID, ProcessID: run.ProcessID, TaskRunID: run.ID,
 		Tool: tool, InputHash: stableHash(request.Input), Owner: run.Lease.Owner, FencingToken: run.Lease.FencingToken,
-		MaxToolCalls: agentTaskMaxToolCalls(run.MaxToolCalls), CostUnits: agentToolCostUnits(tool), MaxCostUnits: agentTaskMaxCostUnits(run.MaxCostUnits),
+		MaxToolCalls: agentTaskMaxToolCalls(run.MaxToolCalls), CostUnits: execution.TaskToolCostUnits(tool), MaxCostUnits: agentTaskMaxCostUnits(run.MaxCostUnits),
 		Authorization: authorization,
 	})
 	if err != nil {
@@ -157,27 +156,5 @@ func agentTaskMaxCostUnits(value int) int {
 	if value > 0 {
 		return value
 	}
-	return 20
-}
-
-func agentTaskCostBudgetUnits(budget string) int {
-	switch strings.ToLower(strings.TrimSpace(budget)) {
-	case "low":
-		return 5
-	case "high":
-		return 50
-	default:
-		return 20
-	}
-}
-
-func agentToolCostUnits(tool string) int {
-	switch strings.TrimSpace(tool) {
-	case agentsdk.AgentToolInvokeAction:
-		return 5
-	case agentsdk.AgentToolQueryRecords:
-		return 2
-	default:
-		return 1
-	}
+	return execution.TaskCostBudgetUnits("")
 }

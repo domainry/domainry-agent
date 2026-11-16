@@ -175,7 +175,7 @@ func (s *InteractiveExecutionService) handoffTask(ctx context.Context, run agent
 		TaskKey: authorization.Task.Key, TaskVersion: authorization.Task.Version,
 		Status: agentmodel.AgentTaskRunPending, Identity: authorization.Identity, Input: cloneTaskMap(route.Input),
 		MaxAttempts: maxAttempts, TimeoutSeconds: authorization.Task.ExecutionLimits.TimeoutSeconds,
-		MaxToolCalls: agentTaskMaxToolCalls(authorization.Task.ExecutionLimits.MaxToolCalls), MaxCostUnits: agentTaskCostBudgetUnits(authorization.Task.ExecutionLimits.CostBudget),
+		MaxToolCalls: agentTaskMaxToolCalls(authorization.Task.ExecutionLimits.MaxToolCalls), MaxCostUnits: execution.TaskCostBudgetUnits(authorization.Task.ExecutionLimits.CostBudget),
 		IdempotencyKey: run.ID + ":" + route.IdempotencyKey,
 		Evidence: agentmodel.AgentTaskExecutionEvidence{
 			TaskVersion: authorization.Task.Version, AgentKey: authorization.Task.AgentKey,
@@ -228,7 +228,7 @@ func (s *InteractiveExecutionService) invokeTool(ctx context.Context, run agentm
 	if route.RouteType == agentsdk.AgentRouteProposal {
 		tool = agentsdk.AgentToolInvokeAction
 	}
-	costUnits := agentToolCostUnits(tool)
+	costUnits := execution.TaskToolCostUnits(tool)
 	usedCost := 0
 	for _, invocation := range run.ToolInvocations {
 		var err error
@@ -237,7 +237,7 @@ func (s *InteractiveExecutionService) invokeTool(ctx context.Context, run agentm
 			return agentmodel.AgentInteractiveRun{}, interactiveToolInvocationResult{}, sdkError("rate_limited", "agent.task.cost_budget_exceeded")
 		}
 	}
-	_, err := (execution.Budget{Calls: agentTaskMaxToolCalls(authorized.Agent.ExecutionLimits.MaxToolCalls), Cost: agentTaskCostBudgetUnits(authorized.Agent.ExecutionLimits.CostBudget)}).Reserve(execution.Usage{Calls: run.ToolCallCount, Cost: usedCost}, execution.Usage{Calls: 1, Cost: costUnits})
+	_, err := (execution.Budget{Calls: agentTaskMaxToolCalls(authorized.Agent.ExecutionLimits.MaxToolCalls), Cost: execution.TaskCostBudgetUnits(authorized.Agent.ExecutionLimits.CostBudget)}).Reserve(execution.Usage{Calls: run.ToolCallCount, Cost: usedCost}, execution.Usage{Calls: 1, Cost: costUnits})
 	if err == execution.ErrCallLimit {
 		return agentmodel.AgentInteractiveRun{}, interactiveToolInvocationResult{}, sdkError("rate_limited", "agent.task.tool_call_limit")
 	}

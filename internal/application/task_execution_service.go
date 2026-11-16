@@ -159,7 +159,7 @@ func (s *TaskExecutionService) StartRun(ctx context.Context, request agentsdk.Ta
 		ProcessID: strings.TrimSpace(request.ProcessID), NodeInstanceID: strings.TrimSpace(request.NodeInstanceID), TaskKey: strings.TrimSpace(request.Task.Key), TaskVersion: strings.TrimSpace(request.Task.Version),
 		Status: agentmodel.AgentTaskRunPending, Identity: request.Identity, Input: cloneTaskMap(request.Input), Attachments: attachments,
 		MaxAttempts: maxAttempts, TimeoutSeconds: timeoutSeconds,
-		MaxToolCalls: agentTaskMaxToolCalls(request.Task.ExecutionLimits.MaxToolCalls), MaxCostUnits: agentTaskCostBudgetUnits(request.Task.ExecutionLimits.CostBudget),
+		MaxToolCalls: agentTaskMaxToolCalls(request.Task.ExecutionLimits.MaxToolCalls), MaxCostUnits: execution.TaskCostBudgetUnits(request.Task.ExecutionLimits.CostBudget),
 		IdempotencyKey: strings.TrimSpace(request.IdempotencyKey),
 		Evidence: agentmodel.AgentTaskExecutionEvidence{
 			TaskVersion: request.Task.Version, AgentKey: request.Task.AgentKey,
@@ -422,6 +422,15 @@ func (s *TaskExecutionService) runProvider(ctx context.Context, run agentmodel.A
 	if run.TimeoutSeconds > 0 {
 		request.Deadline = time.Now().UTC().Add(time.Duration(run.TimeoutSeconds) * time.Second)
 	}
+	usedCost := 0
+	for _, call := range run.Evidence.ToolInvocations {
+		var costErr error
+		usedCost, costErr = execution.AddCost(usedCost, call.CostUnits)
+		if costErr != nil {
+			return agentsdk.TaskResult{}, "", costErr
+		}
+	}
+	ctx = execution.WithTaskBudget(ctx, execution.TaskBudget{Limit: execution.Budget{Calls: agentTaskMaxToolCalls(run.MaxToolCalls), Cost: agentTaskMaxCostUnits(run.MaxCostUnits)}, Used: execution.Usage{Calls: run.ToolCallCount, Cost: usedCost}})
 	result, err := s.provider.Start(ctx, request)
 	externalRunID := strings.TrimSpace(result.ExternalRunID)
 	if err != nil {

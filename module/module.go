@@ -12,6 +12,10 @@ import (
 type ConversationOptions = moduleassembly.ConversationOptions
 type ConversationModelConfig = moduleassembly.ConversationModelConfig
 
+type TaskReadCompletionPolicy = provider.TaskReadCompletionPolicy
+type TaskReadCompletionInput = provider.TaskReadCompletionInput
+type TaskReadCompletionCheck = provider.TaskReadCompletionCheck
+
 type Options = moduleassembly.Options
 type Factory = moduleassembly.Factory
 
