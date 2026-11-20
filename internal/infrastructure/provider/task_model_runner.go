@@ -13,6 +13,7 @@ import (
 	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	agentmodulehost "github.com/domainry/domainry-agent-sdk/modulehost"
 	"github.com/domainry/domainry-agent/internal/execution"
 	"github.com/domainry/domainry-foundation/requestcontext"
 )
@@ -25,12 +26,18 @@ type ModelTaskRunner struct {
 	model      agentsdk.ConversationModel
 	mu         sync.RWMutex
 	invokeTool ModelTaskToolInvoker
+	publish    ModelTaskEventPublisher
 }
 
 // ModelTaskToolInvoker stays on the Agent application boundary. The model may
 // propose arguments, but only the current task credential and host authorize
 // and execute a read; credentials and authorization evidence never reach it.
 type ModelTaskToolInvoker func(context.Context, agentsdk.TaskRequest, agentsdk.ConversationToolCall, map[string]any) (any, error)
+
+// ModelTaskEventPublisher connects the runner's actual execution loop to the
+// embedding Runtime host. It is not model telemetry: every event represents a
+// step the runner accepted or an actual tool invocation it performed.
+type ModelTaskEventPublisher func(context.Context, agentmodulehost.TaskRuntimeEvent) error
 
 func NewModelTaskRunner(model agentsdk.ConversationModel) *ModelTaskRunner {
 	return &ModelTaskRunner{model: model}
@@ -40,6 +47,31 @@ func (r *ModelTaskRunner) BindToolInvoker(invoke ModelTaskToolInvoker) {
 	r.mu.Lock()
 	r.invokeTool = invoke
 	r.mu.Unlock()
+}
+
+func (r *ModelTaskRunner) BindEventPublisher(publish ModelTaskEventPublisher) {
+	r.mu.Lock()
+	r.publish = publish
+	r.mu.Unlock()
+}
+
+func (r *ModelTaskRunner) publishEvent(ctx context.Context, request agentsdk.TaskRequest, event agentmodulehost.TaskRuntimeEvent) error {
+	r.mu.RLock()
+	publish := r.publish
+	r.mu.RUnlock()
+	if publish == nil {
+		return nil
+	}
+	event.WorkspaceID = request.WorkspaceID
+	event.TaskRunID = request.TaskRunID
+	event.ProcessID = request.ProcessID
+	event.NodeInstanceID = request.NodeInstanceID
+	event.TaskKey = request.Task.Key
+	event.TaskVersion = request.Task.Version
+	if event.OccurredAt == 0 {
+		event.OccurredAt = time.Now().UnixMilli()
+	}
+	return publish(ctx, event)
 }
 
 func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskRequest) (agentsdk.TaskResult, error) {
@@ -127,9 +159,21 @@ func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskReques
 	if err := ctx.Err(); err != nil {
 		return taskModelProviderFailure(err), err
 	}
+	if err := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+		Type: agentmodulehost.TaskRuntimeEventModelStarted, Status: "running", Step: 0,
+		IdempotencyKey: request.IdempotencyKey + ":model:0:started",
+	}); err != nil {
+		return taskModelFailure("event", "agent.task.event_publication_failed", false), err
+	}
 	result, err := r.model.GenerateConversation(ctx, modelRequest)
 	if err != nil {
 		return taskModelProviderFailure(err), err
+	}
+	if err := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+		Type: agentmodulehost.TaskRuntimeEventDecision, Status: "completed", Step: 0, FinishReason: "stop",
+		IdempotencyKey: request.IdempotencyKey + ":model:0:decision",
+	}); err != nil {
+		return taskModelFailure("event", "agent.task.event_publication_failed", false), err
 	}
 	usage := aggregateTaskUsage(map[string]any{}, result.Usage)
 	output, decodeErr := validateOutput(result.Content)
@@ -138,6 +182,12 @@ func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskReques
 		modelRequest.Messages = append(modelRequest.Messages, agentsdk.ConversationModelMessage{Role: "assistant", Content: result.Content}, agentsdk.ConversationModelMessage{Role: "user", Content: taskFormatCorrection})
 		modelRequest.IdempotencyKey = request.IdempotencyKey + ":format:1"
 		previousModel := result.Model
+		if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+			Type: agentmodulehost.TaskRuntimeEventModelStarted, Status: "running", Step: 1,
+			IdempotencyKey: request.IdempotencyKey + ":model:1:started",
+		}); eventErr != nil {
+			return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
+		}
 		result, err = r.model.GenerateConversation(ctx, modelRequest)
 		if err != nil {
 			failure := taskModelProviderFailure(err)
@@ -148,6 +198,12 @@ func (r *ModelTaskRunner) Start(ctx context.Context, request agentsdk.TaskReques
 				failure.Usage["task_output_schema_recovery_attempts"] = 1
 			}
 			return failure, err
+		}
+		if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+			Type: agentmodulehost.TaskRuntimeEventDecision, Status: "completed", Step: 1, FinishReason: "stop",
+			IdempotencyKey: request.IdempotencyKey + ":model:1:decision",
+		}); eventErr != nil {
+			return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
 		}
 		usage = aggregateTaskUsage(usage, result.Usage)
 		usage["task_format_recovery_attempts"] = 1

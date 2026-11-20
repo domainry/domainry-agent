@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	agentmodulehost "github.com/domainry/domainry-agent-sdk/modulehost"
 	"github.com/domainry/domainry-agent/internal/execution"
 )
 
@@ -109,9 +110,16 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 		}
 		costJSON, _ := json.Marshal(costs)
 		stepMessages[0].Content += fmt.Sprintf("\n\nHOST EXECUTION BUDGET: read_calls_used=%d; read_calls_remaining=%d; model_steps_remaining_including_this=%d; cost_units_used=%d; cost_units_remaining=%d; max_cost_units=%d; tool_cost_units=%s. Calls, model steps and cost units are separate simultaneous limits. A batch of N tool calls consumes N reads and the sum of their costs. Reserve the last model step for final JSON. Never claim a limit is exhausted when these counts show remaining capacity. This budget grants no additional tool or object authority.", toolCalls, availableCalls, maxSteps-step, costUsed, budget.Limit.Cost-costUsed, budget.Limit.Cost, costJSON)
+		stepKey := fmt.Sprintf("%s:step:%d", request.IdempotencyKey, step)
+		if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+			Type: agentmodulehost.TaskRuntimeEventModelStarted, Status: "running", Step: step,
+			IdempotencyKey: stepKey + ":model:started",
+		}); eventErr != nil {
+			return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
+		}
 		result, modelErr := model.StreamConversationStep(ctx, agentsdk.ConversationStepRequest{
 			Messages: stepMessages, Tools: stepTools, ModelIdentity: model.ConversationModelIdentity(), ModelCapabilities: base.ModelCapabilities,
-			IdempotencyKey: fmt.Sprintf("%s:step:%d", request.IdempotencyKey, step),
+			IdempotencyKey: stepKey,
 			MaxOutputBytes: maxOutput, MaxArgumentBytes: min(maxOutput, 16<<10), MaxToolCalls: remainingCalls,
 		}, func(agentsdk.ConversationModelEvent) error { return nil })
 		if modelErr != nil {
@@ -136,6 +144,12 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 			}
 			if toolCalls == budget.Used.Calls {
 				return taskModelFailure("provider_contract", "agent.task.source_not_read", false), fmt.Errorf("Agent task model did not read source records")
+			}
+			if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+				Type: agentmodulehost.TaskRuntimeEventDecision, Status: "completed", Step: step, FinishReason: result.FinishReason,
+				IdempotencyKey: stepKey + ":decision",
+			}); eventErr != nil {
+				return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
 			}
 			output, decodeErr := validateOutput(result.Message.Content)
 			if decodeErr != nil {
@@ -194,12 +208,17 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 			if _, err := budget.Limit.Reserve(execution.Usage{Calls: toolCalls, Cost: costUsed}, execution.Usage{Calls: len(result.Message.ToolCalls), Cost: batchCost}); err != nil {
 				return taskModelFailure("provider_contract", "agent.task.local_tool_budget_exceeded", false), err
 			}
-			messages = append(messages, result.Message)
+			type preparedToolCall struct {
+				call  agentsdk.ConversationToolCall
+				input map[string]any
+			}
+			prepared := make([]preparedToolCall, 0, len(result.Message.ToolCalls))
+			runtimeCalls := make([]agentmodulehost.TaskRuntimeToolCall, 0, len(result.Message.ToolCalls))
+			batchCallIDs := map[string]bool{}
 			for _, call := range result.Message.ToolCalls {
-				if call.ID == "" || seenCallIDs[call.ID] || !slices.Contains(request.AllowedTools, call.Name) {
+				if call.ID == "" || seenCallIDs[call.ID] || batchCallIDs[call.ID] || !slices.Contains(request.AllowedTools, call.Name) {
 					return taskModelFailure("provider_contract", "agent.task.local_tool_denied", false), fmt.Errorf("Agent task model called an unauthorized tool")
 				}
-				seenCallIDs[call.ID] = true
 				input, decodeErr := decodeTaskToolArguments(call.Arguments, request.Task.ExecutionLimits.MaxInputBytes)
 				if decodeErr != nil {
 					return taskModelFailure("provider_contract", "agent.task.local_tool_input_invalid", false), decodeErr
@@ -209,13 +228,45 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 				if !known || metadata.RequiresAllowedObjects && !slices.Contains(request.AllowedObjects, objectKey) {
 					return taskModelFailure("provider_contract", "agent.task.local_tool_object_denied", false), fmt.Errorf("Agent task model requested an unauthorized object")
 				}
+				batchCallIDs[call.ID] = true
+				prepared = append(prepared, preparedToolCall{call: call, input: input})
+				runtimeCalls = append(runtimeCalls, agentmodulehost.TaskRuntimeToolCall{Tool: call.Name, CallID: call.ID, Input: input})
+			}
+			if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+				Type: agentmodulehost.TaskRuntimeEventDecision, Status: "completed", Step: step, FinishReason: result.FinishReason,
+				IdempotencyKey: stepKey + ":decision", ToolCalls: runtimeCalls,
+			}); eventErr != nil {
+				return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
+			}
+			messages = append(messages, result.Message)
+			for _, pending := range prepared {
+				call, input := pending.call, pending.input
+				seenCallIDs[call.ID] = true
+				if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+					Type: agentmodulehost.TaskRuntimeEventToolStarted, Status: "running", Step: step,
+					IdempotencyKey: stepKey + ":tool:" + call.ID + ":started", Tool: call.Name, CallID: call.ID, Input: input,
+				}); eventErr != nil {
+					return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
+				}
 				value, invokeErr := invoke(ctx, request, call, input)
 				if invokeErr != nil {
+					if eventErr := r.publishEvent(context.WithoutCancel(ctx), request, agentmodulehost.TaskRuntimeEvent{
+						Type: agentmodulehost.TaskRuntimeEventToolFailed, Status: "failed", Step: step,
+						IdempotencyKey: stepKey + ":tool:" + call.ID + ":failed", Tool: call.Name, CallID: call.ID, Input: input,
+					}); eventErr != nil {
+						return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
+					}
 					return taskModelFailure("tool", "agent.task.local_tool_failed", taskLocalToolRetryable(invokeErr)), invokeErr
 				}
 				encoded, encodeErr := json.Marshal(value)
 				if encodeErr != nil || len(encoded) > maxTaskToolOutputBytes {
 					return taskModelFailure("tool", "agent.task.local_tool_output_invalid", false), fmt.Errorf("Agent task read result is invalid or too large")
+				}
+				if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+					Type: agentmodulehost.TaskRuntimeEventToolCompleted, Status: "executed", Step: step,
+					IdempotencyKey: stepKey + ":tool:" + call.ID + ":completed", Tool: call.Name, CallID: call.ID, Input: input, Output: value,
+				}); eventErr != nil {
+					return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
 				}
 				messages = append(messages, agentsdk.ConversationStepMessage{Role: "tool", ToolCallID: call.ID, Content: string(encoded)})
 				toolCalls++

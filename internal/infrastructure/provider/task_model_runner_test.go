@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	agentmodulehost "github.com/domainry/domainry-agent-sdk/modulehost"
 	"github.com/domainry/domainry-foundation/requestcontext"
 )
 
@@ -52,6 +53,11 @@ func TestModelTaskRunnerUsesAuthorizedReadGatewayBeforeStructuredResult(t *testi
 	}}
 	runner := NewModelTaskRunner(model)
 	var invoked []string
+	var events []agentmodulehost.TaskRuntimeEvent
+	runner.BindEventPublisher(func(_ context.Context, event agentmodulehost.TaskRuntimeEvent) error {
+		events = append(events, event)
+		return nil
+	})
 	runner.BindToolInvoker(func(_ context.Context, request agentsdk.TaskRequest, call agentsdk.ConversationToolCall, input map[string]any) (any, error) {
 		if request.ExecutionCredential != "current-task-credential" || request.TaskRunID != "task-1" {
 			t.Fatalf("read gateway received wrong task authority: %+v", request)
@@ -79,6 +85,27 @@ func TestModelTaskRunnerUsesAuthorizedReadGatewayBeforeStructuredResult(t *testi
 	}
 	if got := model.steps[2].Messages; len(got) != 6 || got[3].Role != "tool" || got[3].ToolCallID != "call-message" || !strings.Contains(got[3].Content, "已授权的原文") || got[5].ToolCallID != "call-thread" {
 		t.Fatalf("task model did not receive ordered authorized tool results: %+v", got)
+	}
+	wantTypes := []string{
+		agentmodulehost.TaskRuntimeEventModelStarted, agentmodulehost.TaskRuntimeEventDecision,
+		agentmodulehost.TaskRuntimeEventToolStarted, agentmodulehost.TaskRuntimeEventToolCompleted,
+		agentmodulehost.TaskRuntimeEventModelStarted, agentmodulehost.TaskRuntimeEventDecision,
+		agentmodulehost.TaskRuntimeEventToolStarted, agentmodulehost.TaskRuntimeEventToolCompleted,
+		agentmodulehost.TaskRuntimeEventModelStarted, agentmodulehost.TaskRuntimeEventDecision,
+	}
+	if len(events) != len(wantTypes) {
+		t.Fatalf("runtime events=%+v", events)
+	}
+	for index, want := range wantTypes {
+		if events[index].Type != want || events[index].WorkspaceID != "workspace-1" || events[index].TaskRunID != "task-1" || events[index].IdempotencyKey == "" {
+			t.Fatalf("runtime event[%d]=%+v want type %q", index, events[index], want)
+		}
+	}
+	if events[1].FinishReason != "tool_calls" || len(events[1].ToolCalls) != 1 || events[1].ToolCalls[0].Input["record_id"] != "message-1" {
+		t.Fatalf("first accepted decision was not published: %+v", events[1])
+	}
+	if events[3].Output.(map[string]any)["body"] != "已授权的原文" || events[9].FinishReason != "stop" {
+		t.Fatalf("tool result or final decision missing: %+v", events)
 	}
 }
 
