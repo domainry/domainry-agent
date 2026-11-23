@@ -49,6 +49,12 @@ func (s *AgentTaskRunStore) Heartbeat(ctx context.Context, workspaceID, runID st
 }
 
 func (s *AgentTaskRunStore) SaveRunning(ctx context.Context, run agentmodel.AgentTaskRun, owner string, token int64) error {
+	return retryAgentTaskStoreTransient(ctx, s.store.IsTransientError, func() error {
+		return s.saveRunningOnce(ctx, run, owner, token)
+	})
+}
+
+func (s *AgentTaskRunStore) saveRunningOnce(ctx context.Context, run agentmodel.AgentTaskRun, owner string, token int64) error {
 	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return err
