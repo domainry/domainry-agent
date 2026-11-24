@@ -41,7 +41,7 @@ func (m *taskReadModel) StreamConversationStep(_ context.Context, request agents
 	m.steps = append(m.steps, request)
 	index := len(m.steps) - 1
 	if index < len(m.calls) {
-		return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", ToolCalls: []agentsdk.ConversationToolCall{m.calls[index]}}, FinishReason: "tool_calls", Model: "task-reader", Usage: map[string]any{"prompt_tokens": float64(10), "completion_tokens": float64(2), "prompt_tokens_details": map[string]any{"cached_tokens": float64(3)}}}, nil
+		return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: fmt.Sprintf("先核对第 %d 项授权来源，再继续判断。", index+1), ToolCalls: []agentsdk.ConversationToolCall{m.calls[index]}}, FinishReason: "tool_calls", Model: "task-reader", Usage: map[string]any{"prompt_tokens": float64(10), "completion_tokens": float64(2), "prompt_tokens_details": map[string]any{"cached_tokens": float64(3)}}}, nil
 	}
 	return agentsdk.ConversationStepResult{Message: agentsdk.ConversationStepMessage{Role: "assistant", Content: `{"source_hash":"source-hash","summary":"依据已授权来源"}`}, FinishReason: "stop", Model: "task-reader", Usage: map[string]any{"prompt_tokens": float64(20), "completion_tokens": float64(5)}}, nil
 }
@@ -103,6 +103,9 @@ func TestModelTaskRunnerUsesAuthorizedReadGatewayBeforeStructuredResult(t *testi
 	}
 	if events[1].FinishReason != "tool_calls" || len(events[1].ToolCalls) != 1 || events[1].ToolCalls[0].Input["record_id"] != "message-1" {
 		t.Fatalf("first accepted decision was not published: %+v", events[1])
+	}
+	if output, ok := events[1].Output.(map[string]any); !ok || output["public_text"] != "先核对第 1 项授权来源，再继续判断。" {
+		t.Fatalf("operator-visible model narration was not published: %+v", events[1])
 	}
 	if events[3].Output.(map[string]any)["body"] != "已授权的原文" || events[9].FinishReason != "stop" {
 		t.Fatalf("tool result or final decision missing: %+v", events)

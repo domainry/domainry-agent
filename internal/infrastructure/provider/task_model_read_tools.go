@@ -23,6 +23,17 @@ import (
 
 const maxTaskToolOutputBytes = 128 << 10
 
+// publicTaskDecisionOutput carries only assistant-authored, operator-visible
+// narration emitted alongside a tool-call decision. It deliberately excludes
+// the final structured JSON result and provider reasoning.
+func publicTaskDecisionOutput(content string) any {
+	content = strings.TrimSpace(content)
+	if content == "" {
+		return nil
+	}
+	return map[string]any{"public_text": content}
+}
+
 func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, request agentsdk.TaskRequest, base agentsdk.ConversationModelRequest, validateOutput func(string) (map[string]any, error)) (taskResult agentsdk.TaskResult, taskErr error) {
 	model, ok := r.model.(agentsdk.ConversationAgentModel)
 	r.mu.RLock()
@@ -241,7 +252,7 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 			}
 			if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
 				Type: agentmodulehost.TaskRuntimeEventDecision, Status: "completed", Step: step, FinishReason: result.FinishReason,
-				IdempotencyKey: stepKey + ":decision", ToolCalls: runtimeCalls,
+				IdempotencyKey: stepKey + ":decision", ToolCalls: runtimeCalls, Output: publicTaskDecisionOutput(result.Message.Content),
 			}); eventErr != nil {
 				return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
 			}
