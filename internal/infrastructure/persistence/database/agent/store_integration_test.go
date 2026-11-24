@@ -27,11 +27,16 @@ import (
 
 func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 	t.Helper()
-	database, err := sql.Open("sqlite", "file:"+t.Name()+"?mode=memory&cache=shared")
+	return openAgentStoreWithDSN(t, "file:"+t.Name()+"?mode=memory&cache=shared", 1)
+}
+
+func openAgentStoreWithDSN(t *testing.T, dsn string, maxConnections int) (*Store, *sql.DB) {
+	t.Helper()
+	database, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		t.Fatal(err)
 	}
-	database.SetMaxOpenConns(1)
+	database.SetMaxOpenConns(maxConnections)
 	t.Cleanup(func() { _ = database.Close() })
 	dialect, _ := ormdialect.New(ormdialect.SQLite)
 	applyOperationMigrations(t, database, dialect.WithSchema(""))

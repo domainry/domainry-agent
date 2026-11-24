@@ -417,6 +417,7 @@ func (s *TaskExecutionService) runProvider(ctx context.Context, run agentmodel.A
 		AllowedActions:      append([]string(nil), authorization.Evidence.AllowedActions...),
 		AllowedOutcomes:     append([]string(nil), authorization.Evidence.AllowedOutcomes...),
 		AllowedTools:        append([]string(nil), authorization.AllowedTools...),
+		ReadTools:           append([]agentsdk.ConversationToolDefinition(nil), authorization.ReadTools...),
 		ExecutionCredential: credential, IdempotencyKey: run.IdempotencyKey,
 	}
 	if run.TimeoutSeconds > 0 {

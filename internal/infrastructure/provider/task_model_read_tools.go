@@ -9,13 +9,16 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentmodulehost "github.com/domainry/domainry-agent-sdk/modulehost"
 	"github.com/domainry/domainry-agent/internal/execution"
+	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
 const maxTaskToolOutputBytes = 128 << 10
@@ -28,7 +31,7 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 	if !ok || invoke == nil || strings.TrimSpace(request.ExecutionCredential) == "" {
 		return taskModelFailure("configuration", "agent.task.local_tools_unavailable", false), fmt.Errorf("authorized Agent task read tools are unavailable")
 	}
-	tools, err := localTaskReadTools(request.AllowedTools)
+	tools, hostReads, err := localTaskReadTools(request.AllowedTools, request.ReadTools)
 	if err != nil {
 		return taskModelFailure("request_contract", "agent.task.local_tool_unsupported", false), err
 	}
@@ -225,8 +228,12 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 				}
 				objectKey, _ := input["object_key"].(string)
 				metadata, known := agentsdk.LookupAgentTool(call.Name)
-				if !known || metadata.RequiresAllowedObjects && !slices.Contains(request.AllowedObjects, objectKey) {
+				hostRead, hostOwned := hostReads[call.Name]
+				if (!known && !hostOwned) || (metadata.RequiresAllowedObjects && !slices.Contains(request.AllowedObjects, objectKey)) {
 					return taskModelFailure("provider_contract", "agent.task.local_tool_object_denied", false), fmt.Errorf("Agent task model requested an unauthorized object")
+				}
+				if hostOwned && execution.ValidateJSON(hostRead.input, []byte(call.Arguments)) != nil {
+					return taskModelFailure("provider_contract", "agent.task.local_tool_input_invalid", false), fmt.Errorf("Agent task arguments do not match the host tool schema")
 				}
 				batchCallIDs[call.ID] = true
 				prepared = append(prepared, preparedToolCall{call: call, input: input})
@@ -248,7 +255,12 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 				}); eventErr != nil {
 					return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
 				}
-				value, invokeErr := invoke(ctx, request, call, input)
+				callCtx, cancel := ctx, func() {}
+				if read, ok := hostReads[call.Name]; ok {
+					callCtx, cancel = context.WithTimeout(ctx, time.Duration(read.definition.TimeoutMillis)*time.Millisecond)
+				}
+				value, invokeErr := invoke(callCtx, request, call, input)
+				cancel()
 				if invokeErr != nil {
 					if eventErr := r.publishEvent(context.WithoutCancel(ctx), request, agentmodulehost.TaskRuntimeEvent{
 						Type: agentmodulehost.TaskRuntimeEventToolFailed, Status: "failed", Step: step,
@@ -259,7 +271,11 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 					return taskModelFailure("tool", "agent.task.local_tool_failed", taskLocalToolRetryable(invokeErr)), invokeErr
 				}
 				encoded, encodeErr := json.Marshal(value)
-				if encodeErr != nil || len(encoded) > maxTaskToolOutputBytes {
+				maxToolOutput := maxTaskToolOutputBytes
+				if read, ok := hostReads[call.Name]; ok {
+					maxToolOutput = read.definition.MaxOutputBytes
+				}
+				if encodeErr != nil || len(encoded) > maxToolOutput {
 					return taskModelFailure("tool", "agent.task.local_tool_output_invalid", false), fmt.Errorf("Agent task read result is invalid or too large")
 				}
 				if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
@@ -342,7 +358,38 @@ func numericTaskUsageValue(value any) (float64, bool) {
 	}
 }
 
-func localTaskReadTools(allowed []string) ([]agentsdk.ConversationToolDefinition, error) {
+type hostTaskReadTool struct {
+	definition agentsdk.ConversationToolDefinition
+	input      *jsonschema.Schema
+}
+
+var hostTaskReadToolName = regexp.MustCompile(`^[a-z][a-z0-9_]{0,63}$`)
+
+func localTaskReadTools(allowed []string, hostDefinitions []agentsdk.ConversationToolDefinition) ([]agentsdk.ConversationToolDefinition, map[string]hostTaskReadTool, error) {
+	host := make(map[string]hostTaskReadTool, len(hostDefinitions))
+	for _, definition := range hostDefinitions {
+		_, builtin := agentsdk.LookupAgentTool(definition.Key)
+		if builtin || !hostTaskReadToolName.MatchString(definition.Key) || !slices.Contains(allowed, definition.Key) ||
+			strings.TrimSpace(definition.Version) == "" || strings.TrimSpace(definition.Description) == "" ||
+			definition.Effect != "read" || (definition.Idempotency != "natural" && definition.Idempotency != "key") ||
+			definition.TimeoutMillis < 1 || definition.MaxOutputBytes < 1 || definition.MaxOutputBytes > maxTaskToolOutputBytes {
+			return nil, nil, fmt.Errorf("invalid authorized host task read definition")
+		}
+		if _, found := host[definition.Key]; found {
+			return nil, nil, fmt.Errorf("duplicate authorized host task read definition")
+		}
+		var shape struct {
+			Type string `json:"type"`
+		}
+		if json.Unmarshal(definition.InputSchema, &shape) != nil || shape.Type != "object" {
+			return nil, nil, fmt.Errorf("host task read requires an object input schema")
+		}
+		compiled, err := execution.CompileSchema(definition.InputSchema)
+		if err != nil {
+			return nil, nil, fmt.Errorf("invalid host task read input schema")
+		}
+		host[definition.Key] = hostTaskReadTool{definition: definition, input: compiled}
+	}
 	result := make([]agentsdk.ConversationToolDefinition, 0, len(allowed))
 	for _, key := range allowed {
 		var schema string
@@ -359,11 +406,16 @@ func localTaskReadTools(allowed []string) ([]agentsdk.ConversationToolDefinition
 			schema = `{"type":"object","additionalProperties":false,"properties":{"library_id":{"type":"string","minLength":1,"maxLength":96},"document_id":{"type":"string","minLength":1,"maxLength":255}},"required":["library_id","document_id"]}`
 			description = "Read a cited document in one Knowledge library under the current identity. A citation ID is not an access grant; the host checks current document access."
 		default:
-			return nil, fmt.Errorf("unsupported local Agent task tool %q", key)
+			read, found := host[key]
+			if !found {
+				return nil, nil, fmt.Errorf("unsupported local Agent task tool %q", key)
+			}
+			result = append(result, read.definition)
+			continue
 		}
 		result = append(result, agentsdk.ConversationToolDefinition{Key: key, Version: "1", Description: description, InputSchema: json.RawMessage(schema), OutputSchema: json.RawMessage(`{"type":"object"}`), Effect: "read", Idempotency: "natural", TimeoutMillis: 30000, MaxOutputBytes: maxTaskToolOutputBytes})
 	}
-	return result, nil
+	return result, host, nil
 }
 
 func decodeTaskToolArguments(raw string, maxBytes int) (map[string]any, error) {
