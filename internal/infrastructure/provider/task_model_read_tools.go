@@ -18,10 +18,97 @@ import (
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentmodulehost "github.com/domainry/domainry-agent-sdk/modulehost"
 	"github.com/domainry/domainry-agent/internal/execution"
+	toolsdk "github.com/domainry/domainry-tools-sdk"
 	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
 const maxTaskToolOutputBytes = 128 << 10
+
+type taskPublicTextStream struct {
+	runner    *ModelTaskRunner
+	ctx       context.Context
+	request   agentsdk.TaskRequest
+	step      int
+	stepKey   string
+	pending   []agentsdk.ConversationModelEvent
+	text      strings.Builder
+	public    bool
+	private   bool
+	published bool
+}
+
+func (s *taskPublicTextStream) publish(event agentsdk.ConversationModelEvent) error {
+	if event.Type != "text.delta" || event.Delta == "" {
+		return nil
+	}
+	if event.Offset != s.text.Len() {
+		return fmt.Errorf("Agent task model returned an invalid text offset")
+	}
+	s.text.WriteString(event.Delta)
+	if err := s.runner.publishEvent(s.ctx, s.request, agentmodulehost.TaskRuntimeEvent{
+		Type: agentmodulehost.TaskRuntimeEventTextDelta, Status: "streaming", Step: s.step,
+		IdempotencyKey: s.stepKey + ":text:" + strconv.Itoa(event.Offset),
+		Offset:         event.Offset,
+		Delta:          event.Delta,
+		Output:         map[string]any{"offset": event.Offset, "delta": event.Delta, "public_text": s.text.String()},
+	}); err != nil {
+		return err
+	}
+	s.published = true
+	return nil
+}
+
+func (s *taskPublicTextStream) accept(event agentsdk.ConversationModelEvent) error {
+	switch event.Type {
+	case "text.delta":
+		if s.private {
+			return nil
+		}
+		if !s.public {
+			s.pending = append(s.pending, event)
+			var preview strings.Builder
+			for _, pending := range s.pending {
+				preview.WriteString(pending.Delta)
+			}
+			prefix := strings.TrimLeft(preview.String(), " \t\r\n")
+			if prefix == "" {
+				return nil
+			}
+			// Task completion is one JSON object. Keep JSON-looking content
+			// private, while ordinary assistant narration can stream as soon as
+			// its first non-whitespace byte arrives instead of waiting for the
+			// later tool-call boundary.
+			if prefix[0] == '{' || prefix[0] == '[' {
+				s.private = true
+				s.pending = nil
+				return nil
+			}
+			s.public = true
+			for _, pending := range s.pending {
+				if err := s.publish(pending); err != nil {
+					return err
+				}
+			}
+			s.pending = nil
+			return nil
+		}
+		return s.publish(event)
+	case "tool.started":
+		// A tool-call preview is the authoritative fallback signal for a
+		// whitespace-only prefix. A JSON-looking completion remains private.
+		if s.public || s.private {
+			return nil
+		}
+		s.public = true
+		for _, pending := range s.pending {
+			if err := s.publish(pending); err != nil {
+				return err
+			}
+		}
+		s.pending = nil
+	}
+	return nil
+}
 
 // publicTaskDecisionOutput carries only assistant-authored, operator-visible
 // narration emitted alongside a tool-call decision. It deliberately excludes
@@ -131,11 +218,12 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 		}); eventErr != nil {
 			return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
 		}
+		publicStream := &taskPublicTextStream{runner: r, ctx: ctx, request: request, step: step, stepKey: stepKey}
 		result, modelErr := model.StreamConversationStep(ctx, agentsdk.ConversationStepRequest{
 			Messages: stepMessages, Tools: stepTools, ModelIdentity: model.ConversationModelIdentity(), ModelCapabilities: base.ModelCapabilities,
 			IdempotencyKey: stepKey,
 			MaxOutputBytes: maxOutput, MaxArgumentBytes: min(maxOutput, 16<<10), MaxToolCalls: remainingCalls,
-		}, func(agentsdk.ConversationModelEvent) error { return nil })
+		}, publicStream.accept)
 		if modelErr != nil {
 			failure := taskModelProviderFailure(modelErr)
 			usage = aggregateTaskUsage(usage, failure.Usage)
@@ -250,9 +338,16 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 				prepared = append(prepared, preparedToolCall{call: call, input: input})
 				runtimeCalls = append(runtimeCalls, agentmodulehost.TaskRuntimeToolCall{Tool: call.Name, CallID: call.ID, Input: input})
 			}
+			decisionOutput := publicTaskDecisionOutput(result.Message.Content)
+			if publicStream.published {
+				// Preserve an explicit marker so product hosts can suppress the
+				// fallback "continue" narration after the same text was already
+				// delivered incrementally.
+				decisionOutput = map[string]any{"public_streamed": true}
+			}
 			if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
 				Type: agentmodulehost.TaskRuntimeEventDecision, Status: "completed", Step: step, FinishReason: result.FinishReason,
-				IdempotencyKey: stepKey + ":decision", ToolCalls: runtimeCalls, Output: publicTaskDecisionOutput(result.Message.Content),
+				IdempotencyKey: stepKey + ":decision", ToolCalls: runtimeCalls, Output: decisionOutput,
 			}); eventErr != nil {
 				return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
 			}
@@ -270,6 +365,19 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 				if read, ok := hostReads[call.Name]; ok {
 					callCtx, cancel = context.WithTimeout(ctx, time.Duration(read.definition.TimeoutMillis)*time.Millisecond)
 				}
+				progressSequence := 0
+				callCtx = toolsdk.WithProgressReporter(callCtx, func(progressCtx context.Context, progress toolsdk.Progress) error {
+					progressSequence++
+					return r.publishEvent(progressCtx, request, agentmodulehost.TaskRuntimeEvent{
+						Type: agentmodulehost.TaskRuntimeEventToolProgress, Status: progress.Status, Step: step,
+						IdempotencyKey: fmt.Sprintf("%s:tool:%s:progress:%d", stepKey, call.ID, progressSequence),
+						Tool:           call.Name, CallID: call.ID, Input: input,
+						Output: map[string]any{
+							"progress_key": progress.Key,
+							"detail":       progress.Detail,
+						},
+					})
+				})
 				value, invokeErr := invoke(callCtx, request, call, input)
 				cancel()
 				if invokeErr != nil {
