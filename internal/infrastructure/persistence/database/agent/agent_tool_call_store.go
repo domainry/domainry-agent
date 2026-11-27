@@ -11,6 +11,7 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-agent/internal/execution"
+	ormdialect "github.com/domainry/domainry-orm/dialect"
 	"github.com/domainry/domainry-orm/query"
 )
 
@@ -33,22 +34,8 @@ func (s *AgentTaskRunStore) beginAgentToolCallOnce(ctx context.Context, start ag
 		return "", 0, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	queryValue, queryArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), agentRunTable, start.WorkspaceID).
-		Columns("payload_json", "status", "lease_owner", "fencing_token").Where(query.And(agentRunKindPredicate(agentRunKindTask), query.Equal("run_id", start.TaskRunID))).Limit(1).Build()
-	if buildErr != nil {
-		return "", 0, buildErr
-	}
-	var payload []byte
-	var status, owner string
-	var token int64
-	if err := tx.QueryRowContext(ctx, queryValue, queryArgs...).Scan(&payload, &status, &owner, &token); err != nil {
-		return "", 0, err
-	}
-	if status != string(agentmodel.AgentTaskRunRunning) || owner != start.Owner || token != start.FencingToken {
-		return "", 0, agentError("conflict", "agent.task.tool_fence_rejected")
-	}
-	var run agentmodel.AgentTaskRun
-	if err := unmarshalDurableJSON(payload, &run); err != nil {
+	run, err := s.loadToolLedgerForUpdate(ctx, tx, start.WorkspaceID, start.TaskRunID, start.Owner, start.FencingToken)
+	if err != nil {
 		return "", 0, err
 	}
 	usedCost := 0
@@ -110,22 +97,8 @@ func (s *AgentTaskRunStore) finishAgentToolCallOnce(ctx context.Context, finish 
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	queryValue, queryArgs, buildErr := query.NewWorkspaceSelectBuilder(s.store.Renderer(), agentRunTable, finish.WorkspaceID).
-		Columns("payload_json", "status", "lease_owner", "fencing_token").Where(query.And(agentRunKindPredicate(agentRunKindTask), query.Equal("run_id", finish.TaskRunID))).Limit(1).Build()
-	if buildErr != nil {
-		return buildErr
-	}
-	var payload []byte
-	var status, owner string
-	var token int64
-	if err := tx.QueryRowContext(ctx, queryValue, queryArgs...).Scan(&payload, &status, &owner, &token); err != nil {
-		return err
-	}
-	if status != string(agentmodel.AgentTaskRunRunning) || owner != finish.Owner || token != finish.FencingToken {
-		return agentError("conflict", "agent.task.tool_fence_rejected")
-	}
-	var run agentmodel.AgentTaskRun
-	if err := unmarshalDurableJSON(payload, &run); err != nil {
+	run, err := s.loadToolLedgerForUpdate(ctx, tx, finish.WorkspaceID, finish.TaskRunID, finish.Owner, finish.FencingToken)
+	if err != nil {
 		return err
 	}
 	now := time.Now().UTC()
@@ -184,6 +157,44 @@ func (s *AgentTaskRunStore) finishAgentToolCallOnce(ctx context.Context, finish 
 		return agentError("conflict", "agent.task.tool_fence_rejected")
 	}
 	return tx.Commit()
+}
+
+func (s *AgentTaskRunStore) loadToolLedgerForUpdate(ctx context.Context, tx *sql.Tx, workspaceID, runID, owner string, token int64) (agentmodel.AgentTaskRun, error) {
+	var run agentmodel.AgentTaskRun
+	var payload []byte
+	if s.store.Profile().Name() == ormdialect.SQLite {
+		// Acquire the writer before reading the ledger. A deferred SQLite read
+		// cannot wait for another writer when upgrading its snapshot to a write.
+		statement, args, err := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), agentRunTable, workspaceID).
+			SetExpression("updated_at", query.Column("updated_at")).
+			Where(agentTaskLeasePredicate(runID, owner, token)).Returning("payload_json").Build()
+		if err != nil {
+			return run, err
+		}
+		if err := tx.QueryRowContext(ctx, statement, args...).Scan(&payload); err != nil {
+			if err == sql.ErrNoRows {
+				return run, agentError("conflict", "agent.task.tool_fence_rejected")
+			}
+			return run, err
+		}
+	} else {
+		statement, args, err := query.NewWorkspaceSelectBuilder(s.store.Renderer(), agentRunTable, workspaceID).
+			Columns("payload_json", "status", "lease_owner", "fencing_token").
+			Where(query.And(agentRunKindPredicate(agentRunKindTask), query.Equal("run_id", runID))).Limit(1).Build()
+		if err != nil {
+			return run, err
+		}
+		var status, actualOwner string
+		var actualToken int64
+		if err := tx.QueryRowContext(ctx, statement, args...).Scan(&payload, &status, &actualOwner, &actualToken); err != nil {
+			return run, err
+		}
+		if status != string(agentmodel.AgentTaskRunRunning) || actualOwner != owner || actualToken != token {
+			return run, agentError("conflict", "agent.task.tool_fence_rejected")
+		}
+	}
+	err := unmarshalDurableJSON(payload, &run)
+	return run, err
 }
 
 func retryAgentTaskStoreTransient(ctx context.Context, isTransient func(error) bool, operation func() error) error {

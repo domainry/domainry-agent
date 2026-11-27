@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"path/filepath"
 	"strconv"
 	"sync"
@@ -26,11 +27,16 @@ import (
 
 func openAgentStore(t *testing.T) (*Store, *sql.DB) {
 	t.Helper()
-	database, err := sql.Open("sqlite", "file:"+t.Name()+"?mode=memory&cache=shared")
+	return openAgentStoreWithDSN(t, "file:"+t.Name()+"?mode=memory&cache=shared", 1)
+}
+
+func openAgentStoreWithDSN(t *testing.T, dsn string, maxConnections int) (*Store, *sql.DB) {
+	t.Helper()
+	database, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		t.Fatal(err)
 	}
-	database.SetMaxOpenConns(1)
+	database.SetMaxOpenConns(maxConnections)
 	t.Cleanup(func() { _ = database.Close() })
 	dialect, _ := ormdialect.New(ormdialect.SQLite)
 	applyOperationMigrations(t, database, dialect.WithSchema(""))
@@ -330,6 +336,52 @@ func TestAgentTaskStoreSerializesConcurrentClaimsAndTerminalTransitions(t *testi
 	stored, found, err := repository.Get(t.Context(), run.WorkspaceID, run.ID)
 	if err != nil || !found || stored.Status != agentmodel.AgentTaskRunSucceeded || stored.Outcome != "success" {
 		t.Fatalf("stored=%+v found=%v err=%v", stored, found, err)
+	}
+}
+
+type busyOnFirstTaskCommit struct {
+	*sql.DB
+	transactions int
+}
+
+func (db *busyOnFirstTaskCommit) BeginTx(ctx context.Context, options *sql.TxOptions) (*sql.Tx, error) {
+	db.transactions++
+	if db.transactions == 1 {
+		return nil, errors.New("database is locked")
+	}
+	return db.DB.BeginTx(ctx, options)
+}
+
+func TestAgentTaskStoreRetriesTransientResultCommitWithTheSameFence(t *testing.T) {
+	store, database := openAgentStore(t)
+	repository := NewAgentTaskRunStore(store)
+	now := time.Now().UTC()
+	run := agentmodel.AgentTaskRun{ID: "commit-once", WorkspaceID: "workspace-a", TaskKey: "review", TaskVersion: "1", Status: agentmodel.AgentTaskRunPending, IdempotencyKey: "commit-once", MaxAttempts: 2, CreatedAt: now, UpdatedAt: now}
+	if _, _, err := repository.Create(t.Context(), run); err != nil {
+		t.Fatal(err)
+	}
+	claim, found, err := repository.ClaimAgentTaskRun(t.Context(), run.WorkspaceID, run.ID, "worker", now, time.Minute)
+	if err != nil || !found {
+		t.Fatalf("claim found=%v err=%v", found, err)
+	}
+	result := claim.Run
+	completedAt := now.Add(time.Second)
+	result.Status = agentmodel.AgentTaskRunSucceeded
+	result.Outcome = "success"
+	result.Output = map[string]any{"summary": "already generated"}
+	result.UpdatedAt, result.CompletedAt = completedAt, &completedAt
+
+	busy := &busyOnFirstTaskCommit{DB: database}
+	repository.db = busy
+	if err := repository.SaveRunning(t.Context(), result, claim.Lease.Owner, claim.Lease.FencingToken); err != nil {
+		t.Fatalf("save completed result after contention: %v", err)
+	}
+	if busy.transactions != 2 {
+		t.Fatalf("expected two transactions, got %d", busy.transactions)
+	}
+	saved, found, err := repository.Get(t.Context(), run.WorkspaceID, run.ID)
+	if err != nil || !found || saved.Status != agentmodel.AgentTaskRunSucceeded || saved.Attempt != 1 || saved.Output["summary"] != "already generated" {
+		t.Fatalf("saved status=%s attempt=%d found=%v err=%v", saved.Status, saved.Attempt, found, err)
 	}
 }
 

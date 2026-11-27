@@ -9,15 +9,117 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
+	agentmodulehost "github.com/domainry/domainry-agent-sdk/modulehost"
 	"github.com/domainry/domainry-agent/internal/execution"
+	toolsdk "github.com/domainry/domainry-tools-sdk"
+	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
 const maxTaskToolOutputBytes = 128 << 10
+
+type taskPublicTextStream struct {
+	runner    *ModelTaskRunner
+	ctx       context.Context
+	request   agentsdk.TaskRequest
+	step      int
+	stepKey   string
+	pending   []agentsdk.ConversationModelEvent
+	text      strings.Builder
+	public    bool
+	private   bool
+	published bool
+}
+
+func (s *taskPublicTextStream) publish(event agentsdk.ConversationModelEvent) error {
+	if event.Type != "text.delta" || event.Delta == "" {
+		return nil
+	}
+	if event.Offset != s.text.Len() {
+		return fmt.Errorf("Agent task model returned an invalid text offset")
+	}
+	s.text.WriteString(event.Delta)
+	if err := s.runner.publishEvent(s.ctx, s.request, agentmodulehost.TaskRuntimeEvent{
+		Type: agentmodulehost.TaskRuntimeEventTextDelta, Status: "streaming", Step: s.step,
+		IdempotencyKey: s.stepKey + ":text:" + strconv.Itoa(event.Offset),
+		Offset:         event.Offset,
+		Delta:          event.Delta,
+		Output:         map[string]any{"offset": event.Offset, "delta": event.Delta, "public_text": s.text.String()},
+	}); err != nil {
+		return err
+	}
+	s.published = true
+	return nil
+}
+
+func (s *taskPublicTextStream) accept(event agentsdk.ConversationModelEvent) error {
+	switch event.Type {
+	case "text.delta":
+		if s.private {
+			return nil
+		}
+		if !s.public {
+			s.pending = append(s.pending, event)
+			var preview strings.Builder
+			for _, pending := range s.pending {
+				preview.WriteString(pending.Delta)
+			}
+			prefix := strings.TrimLeft(preview.String(), " \t\r\n")
+			if prefix == "" {
+				return nil
+			}
+			// Task completion is one JSON object. Keep JSON-looking content
+			// private, while ordinary assistant narration can stream as soon as
+			// its first non-whitespace byte arrives instead of waiting for the
+			// later tool-call boundary.
+			if prefix[0] == '{' || prefix[0] == '[' {
+				s.private = true
+				s.pending = nil
+				return nil
+			}
+			s.public = true
+			for _, pending := range s.pending {
+				if err := s.publish(pending); err != nil {
+					return err
+				}
+			}
+			s.pending = nil
+			return nil
+		}
+		return s.publish(event)
+	case "tool.started":
+		// A tool-call preview is the authoritative fallback signal for a
+		// whitespace-only prefix. A JSON-looking completion remains private.
+		if s.public || s.private {
+			return nil
+		}
+		s.public = true
+		for _, pending := range s.pending {
+			if err := s.publish(pending); err != nil {
+				return err
+			}
+		}
+		s.pending = nil
+	}
+	return nil
+}
+
+// publicTaskDecisionOutput carries only assistant-authored, operator-visible
+// narration emitted alongside a tool-call decision. It deliberately excludes
+// the final structured JSON result and provider reasoning.
+func publicTaskDecisionOutput(content string) any {
+	content = strings.TrimSpace(content)
+	if content == "" {
+		return nil
+	}
+	return map[string]any{"public_text": content}
+}
 
 func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, request agentsdk.TaskRequest, base agentsdk.ConversationModelRequest, validateOutput func(string) (map[string]any, error)) (taskResult agentsdk.TaskResult, taskErr error) {
 	model, ok := r.model.(agentsdk.ConversationAgentModel)
@@ -27,7 +129,7 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 	if !ok || invoke == nil || strings.TrimSpace(request.ExecutionCredential) == "" {
 		return taskModelFailure("configuration", "agent.task.local_tools_unavailable", false), fmt.Errorf("authorized Agent task read tools are unavailable")
 	}
-	tools, err := localTaskReadTools(request.AllowedTools)
+	tools, hostReads, err := localTaskReadTools(request.AllowedTools, request.ReadTools)
 	if err != nil {
 		return taskModelFailure("request_contract", "agent.task.local_tool_unsupported", false), err
 	}
@@ -109,11 +211,19 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 		}
 		costJSON, _ := json.Marshal(costs)
 		stepMessages[0].Content += fmt.Sprintf("\n\nHOST EXECUTION BUDGET: read_calls_used=%d; read_calls_remaining=%d; model_steps_remaining_including_this=%d; cost_units_used=%d; cost_units_remaining=%d; max_cost_units=%d; tool_cost_units=%s. Calls, model steps and cost units are separate simultaneous limits. A batch of N tool calls consumes N reads and the sum of their costs. Reserve the last model step for final JSON. Never claim a limit is exhausted when these counts show remaining capacity. This budget grants no additional tool or object authority.", toolCalls, availableCalls, maxSteps-step, costUsed, budget.Limit.Cost-costUsed, budget.Limit.Cost, costJSON)
+		stepKey := fmt.Sprintf("%s:step:%d", request.IdempotencyKey, step)
+		if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+			Type: agentmodulehost.TaskRuntimeEventModelStarted, Status: "running", Step: step,
+			IdempotencyKey: stepKey + ":model:started",
+		}); eventErr != nil {
+			return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
+		}
+		publicStream := &taskPublicTextStream{runner: r, ctx: ctx, request: request, step: step, stepKey: stepKey}
 		result, modelErr := model.StreamConversationStep(ctx, agentsdk.ConversationStepRequest{
 			Messages: stepMessages, Tools: stepTools, ModelIdentity: model.ConversationModelIdentity(), ModelCapabilities: base.ModelCapabilities,
-			IdempotencyKey: fmt.Sprintf("%s:step:%d", request.IdempotencyKey, step),
+			IdempotencyKey: stepKey,
 			MaxOutputBytes: maxOutput, MaxArgumentBytes: min(maxOutput, 16<<10), MaxToolCalls: remainingCalls,
-		}, func(agentsdk.ConversationModelEvent) error { return nil })
+		}, publicStream.accept)
 		if modelErr != nil {
 			failure := taskModelProviderFailure(modelErr)
 			usage = aggregateTaskUsage(usage, failure.Usage)
@@ -136,6 +246,12 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 			}
 			if toolCalls == budget.Used.Calls {
 				return taskModelFailure("provider_contract", "agent.task.source_not_read", false), fmt.Errorf("Agent task model did not read source records")
+			}
+			if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+				Type: agentmodulehost.TaskRuntimeEventDecision, Status: "completed", Step: step, FinishReason: result.FinishReason,
+				IdempotencyKey: stepKey + ":decision",
+			}); eventErr != nil {
+				return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
 			}
 			output, decodeErr := validateOutput(result.Message.Content)
 			if decodeErr != nil {
@@ -194,28 +310,98 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 			if _, err := budget.Limit.Reserve(execution.Usage{Calls: toolCalls, Cost: costUsed}, execution.Usage{Calls: len(result.Message.ToolCalls), Cost: batchCost}); err != nil {
 				return taskModelFailure("provider_contract", "agent.task.local_tool_budget_exceeded", false), err
 			}
-			messages = append(messages, result.Message)
+			type preparedToolCall struct {
+				call  agentsdk.ConversationToolCall
+				input map[string]any
+			}
+			prepared := make([]preparedToolCall, 0, len(result.Message.ToolCalls))
+			runtimeCalls := make([]agentmodulehost.TaskRuntimeToolCall, 0, len(result.Message.ToolCalls))
+			batchCallIDs := map[string]bool{}
 			for _, call := range result.Message.ToolCalls {
-				if call.ID == "" || seenCallIDs[call.ID] || !slices.Contains(request.AllowedTools, call.Name) {
+				if call.ID == "" || seenCallIDs[call.ID] || batchCallIDs[call.ID] || !slices.Contains(request.AllowedTools, call.Name) {
 					return taskModelFailure("provider_contract", "agent.task.local_tool_denied", false), fmt.Errorf("Agent task model called an unauthorized tool")
 				}
-				seenCallIDs[call.ID] = true
 				input, decodeErr := decodeTaskToolArguments(call.Arguments, request.Task.ExecutionLimits.MaxInputBytes)
 				if decodeErr != nil {
 					return taskModelFailure("provider_contract", "agent.task.local_tool_input_invalid", false), decodeErr
 				}
 				objectKey, _ := input["object_key"].(string)
 				metadata, known := agentsdk.LookupAgentTool(call.Name)
-				if !known || metadata.RequiresAllowedObjects && !slices.Contains(request.AllowedObjects, objectKey) {
+				hostRead, hostOwned := hostReads[call.Name]
+				if (!known && !hostOwned) || (metadata.RequiresAllowedObjects && !slices.Contains(request.AllowedObjects, objectKey)) {
 					return taskModelFailure("provider_contract", "agent.task.local_tool_object_denied", false), fmt.Errorf("Agent task model requested an unauthorized object")
 				}
-				value, invokeErr := invoke(ctx, request, call, input)
+				if hostOwned && execution.ValidateJSON(hostRead.input, []byte(call.Arguments)) != nil {
+					return taskModelFailure("provider_contract", "agent.task.local_tool_input_invalid", false), fmt.Errorf("Agent task arguments do not match the host tool schema")
+				}
+				batchCallIDs[call.ID] = true
+				prepared = append(prepared, preparedToolCall{call: call, input: input})
+				runtimeCalls = append(runtimeCalls, agentmodulehost.TaskRuntimeToolCall{Tool: call.Name, CallID: call.ID, Input: input})
+			}
+			decisionOutput := publicTaskDecisionOutput(result.Message.Content)
+			if publicStream.published {
+				// Preserve an explicit marker so product hosts can suppress the
+				// fallback "continue" narration after the same text was already
+				// delivered incrementally.
+				decisionOutput = map[string]any{"public_streamed": true}
+			}
+			if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+				Type: agentmodulehost.TaskRuntimeEventDecision, Status: "completed", Step: step, FinishReason: result.FinishReason,
+				IdempotencyKey: stepKey + ":decision", ToolCalls: runtimeCalls, Output: decisionOutput,
+			}); eventErr != nil {
+				return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
+			}
+			messages = append(messages, result.Message)
+			for _, pending := range prepared {
+				call, input := pending.call, pending.input
+				seenCallIDs[call.ID] = true
+				if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+					Type: agentmodulehost.TaskRuntimeEventToolStarted, Status: "running", Step: step,
+					IdempotencyKey: stepKey + ":tool:" + call.ID + ":started", Tool: call.Name, CallID: call.ID, Input: input,
+				}); eventErr != nil {
+					return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
+				}
+				callCtx, cancel := ctx, func() {}
+				if read, ok := hostReads[call.Name]; ok {
+					callCtx, cancel = context.WithTimeout(ctx, time.Duration(read.definition.TimeoutMillis)*time.Millisecond)
+				}
+				progressSequence := 0
+				callCtx = toolsdk.WithProgressReporter(callCtx, func(progressCtx context.Context, progress toolsdk.Progress) error {
+					progressSequence++
+					return r.publishEvent(progressCtx, request, agentmodulehost.TaskRuntimeEvent{
+						Type: agentmodulehost.TaskRuntimeEventToolProgress, Status: progress.Status, Step: step,
+						IdempotencyKey: fmt.Sprintf("%s:tool:%s:progress:%d", stepKey, call.ID, progressSequence),
+						Tool:           call.Name, CallID: call.ID, Input: input,
+						Output: map[string]any{
+							"progress_key": progress.Key,
+							"detail":       progress.Detail,
+						},
+					})
+				})
+				value, invokeErr := invoke(callCtx, request, call, input)
+				cancel()
 				if invokeErr != nil {
+					if eventErr := r.publishEvent(context.WithoutCancel(ctx), request, agentmodulehost.TaskRuntimeEvent{
+						Type: agentmodulehost.TaskRuntimeEventToolFailed, Status: "failed", Step: step,
+						IdempotencyKey: stepKey + ":tool:" + call.ID + ":failed", Tool: call.Name, CallID: call.ID, Input: input,
+					}); eventErr != nil {
+						return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
+					}
 					return taskModelFailure("tool", "agent.task.local_tool_failed", taskLocalToolRetryable(invokeErr)), invokeErr
 				}
 				encoded, encodeErr := json.Marshal(value)
-				if encodeErr != nil || len(encoded) > maxTaskToolOutputBytes {
+				maxToolOutput := maxTaskToolOutputBytes
+				if read, ok := hostReads[call.Name]; ok {
+					maxToolOutput = read.definition.MaxOutputBytes
+				}
+				if encodeErr != nil || len(encoded) > maxToolOutput {
 					return taskModelFailure("tool", "agent.task.local_tool_output_invalid", false), fmt.Errorf("Agent task read result is invalid or too large")
+				}
+				if eventErr := r.publishEvent(ctx, request, agentmodulehost.TaskRuntimeEvent{
+					Type: agentmodulehost.TaskRuntimeEventToolCompleted, Status: "executed", Step: step,
+					IdempotencyKey: stepKey + ":tool:" + call.ID + ":completed", Tool: call.Name, CallID: call.ID, Input: input, Output: value,
+				}); eventErr != nil {
+					return taskModelFailure("event", "agent.task.event_publication_failed", false), eventErr
 				}
 				messages = append(messages, agentsdk.ConversationStepMessage{Role: "tool", ToolCallID: call.ID, Content: string(encoded)})
 				toolCalls++
@@ -291,7 +477,38 @@ func numericTaskUsageValue(value any) (float64, bool) {
 	}
 }
 
-func localTaskReadTools(allowed []string) ([]agentsdk.ConversationToolDefinition, error) {
+type hostTaskReadTool struct {
+	definition agentsdk.ConversationToolDefinition
+	input      *jsonschema.Schema
+}
+
+var hostTaskReadToolName = regexp.MustCompile(`^[a-z][a-z0-9_]{0,63}$`)
+
+func localTaskReadTools(allowed []string, hostDefinitions []agentsdk.ConversationToolDefinition) ([]agentsdk.ConversationToolDefinition, map[string]hostTaskReadTool, error) {
+	host := make(map[string]hostTaskReadTool, len(hostDefinitions))
+	for _, definition := range hostDefinitions {
+		_, builtin := agentsdk.LookupAgentTool(definition.Key)
+		if builtin || !hostTaskReadToolName.MatchString(definition.Key) || !slices.Contains(allowed, definition.Key) ||
+			strings.TrimSpace(definition.Version) == "" || strings.TrimSpace(definition.Description) == "" ||
+			definition.Effect != "read" || (definition.Idempotency != "natural" && definition.Idempotency != "key") ||
+			definition.TimeoutMillis < 1 || definition.MaxOutputBytes < 1 || definition.MaxOutputBytes > maxTaskToolOutputBytes {
+			return nil, nil, fmt.Errorf("invalid authorized host task read definition")
+		}
+		if _, found := host[definition.Key]; found {
+			return nil, nil, fmt.Errorf("duplicate authorized host task read definition")
+		}
+		var shape struct {
+			Type string `json:"type"`
+		}
+		if json.Unmarshal(definition.InputSchema, &shape) != nil || shape.Type != "object" {
+			return nil, nil, fmt.Errorf("host task read requires an object input schema")
+		}
+		compiled, err := execution.CompileSchema(definition.InputSchema)
+		if err != nil {
+			return nil, nil, fmt.Errorf("invalid host task read input schema")
+		}
+		host[definition.Key] = hostTaskReadTool{definition: definition, input: compiled}
+	}
 	result := make([]agentsdk.ConversationToolDefinition, 0, len(allowed))
 	for _, key := range allowed {
 		var schema string
@@ -308,11 +525,16 @@ func localTaskReadTools(allowed []string) ([]agentsdk.ConversationToolDefinition
 			schema = `{"type":"object","additionalProperties":false,"properties":{"library_id":{"type":"string","minLength":1,"maxLength":96},"document_id":{"type":"string","minLength":1,"maxLength":255}},"required":["library_id","document_id"]}`
 			description = "Read a cited document in one Knowledge library under the current identity. A citation ID is not an access grant; the host checks current document access."
 		default:
-			return nil, fmt.Errorf("unsupported local Agent task tool %q", key)
+			read, found := host[key]
+			if !found {
+				return nil, nil, fmt.Errorf("unsupported local Agent task tool %q", key)
+			}
+			result = append(result, read.definition)
+			continue
 		}
 		result = append(result, agentsdk.ConversationToolDefinition{Key: key, Version: "1", Description: description, InputSchema: json.RawMessage(schema), OutputSchema: json.RawMessage(`{"type":"object"}`), Effect: "read", Idempotency: "natural", TimeoutMillis: 30000, MaxOutputBytes: maxTaskToolOutputBytes})
 	}
-	return result, nil
+	return result, host, nil
 }
 
 func decodeTaskToolArguments(raw string, maxBytes int) (map[string]any, error) {

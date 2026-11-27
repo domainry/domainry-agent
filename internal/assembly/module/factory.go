@@ -469,7 +469,8 @@ func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
 		return err
 	}
 	if b.localTaskModelRunner != nil {
-		tools := agentapplication.NewTaskToolService(b.taskState, ledger, host.TaskAgent())
+		taskHost := host.TaskAgent()
+		tools := agentapplication.NewTaskToolService(b.taskState, ledger, taskHost)
 		b.localTaskModelRunner.BindToolInvoker(func(ctx context.Context, request agentsdk.TaskRequest, call agentsdk.ConversationToolCall, input map[string]any) (any, error) {
 			result, invokeErr := tools.Invoke(ctx, agentapplication.TaskToolInvocation{
 				Credential: request.ExecutionCredential, WorkspaceID: request.WorkspaceID, TaskRunID: request.TaskRunID,
@@ -483,6 +484,9 @@ func (b *binding) BindApplicationHost(host modulehost.ApplicationHost) error {
 			}
 			return result.Output, nil
 		})
+		if events, ok := taskHost.(modulehost.TaskRuntimeEventHost); ok {
+			b.localTaskModelRunner.BindEventPublisher(events.PublishTaskRuntimeEvent)
+		}
 	}
 	if b.pendingConversations != nil {
 		if err := b.openConversations(b.pendingConversations, conversationHost); err != nil {
