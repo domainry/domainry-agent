@@ -263,6 +263,12 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 				}
 				return taskModelFailure("provider_contract", "agent.task.model_output_invalid", false), decodeErr
 			}
+			// A valid corrected payload completes the format-only phase. Required
+			// source-read policy may still reject that payload and request another
+			// authorized tool step; leaving formatRecovery set would permanently
+			// hide those tools and turn a recoverable missing read into a terminal
+			// agent.task.required_reads_incomplete error.
+			formatRecovery = false
 			if policy, found := r.model.(TaskReadCompletionPolicy); found {
 				// The policy receives source history but no execution credential.
 				// Copy the ledger so it cannot rewrite the native source messages.
@@ -282,7 +288,7 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 				if !check.Complete {
 					readCorrections++
 					pendingGroups = check.PendingGroups
-					if !formatRecovery && check.Instruction != "" && maxSteps-step-1 >= 2 && maxCalls > toolCalls && budget.Limit.Cost-costUsed >= execution.TaskToolCostUnits(agentsdk.AgentToolQueryRecords) && slices.Contains(request.AllowedTools, agentsdk.AgentToolQueryRecords) {
+					if check.Instruction != "" && maxSteps-step-1 >= 2 && maxCalls > toolCalls && budget.Limit.Cost-costUsed >= execution.TaskToolCostUnits(agentsdk.AgentToolQueryRecords) && slices.Contains(request.AllowedTools, agentsdk.AgentToolQueryRecords) {
 						messages = append(messages, result.Message, agentsdk.ConversationStepMessage{Role: "user", Content: "The final result was not accepted: required source reads are incomplete. Continue only through the currently authorized tools and the unchanged host budget. " + check.Instruction})
 						continue
 					}

@@ -60,6 +60,29 @@ func TestTaskCompletionGuardContinuesOnlyWithinExistingAuthorityAndBudgets(t *te
 	}
 }
 
+func TestTaskCompletionGuardCanContinueAfterFormatRecovery(t *testing.T) {
+	invalid := taskFormatReply(`{"summary":"partial",}`, 20)
+	m := &taskReadGuardModel{taskFormatModel: &taskFormatModel{results: []agentsdk.ConversationStepResult{
+		taskFormatRead(), invalid, taskFormatReply(`{"summary":"partial"}`, 30), taskNextRead(), taskFormatReply(`{"summary":"complete"}`, 40),
+	}}}
+	runner := NewModelTaskRunner(m)
+	reads := 0
+	runner.BindToolInvoker(func(context.Context, agentsdk.TaskRequest, agentsdk.ConversationToolCall, map[string]any) (any, error) {
+		reads++
+		return map[string]any{"items": []any{}, "has_next": false}, nil
+	})
+	request := taskFormatRequest()
+	request.AllowedTools = append(request.AllowedTools, agentsdk.AgentToolQueryRecords)
+	request.Task.ExecutionLimits.MaxSteps = 5
+	result, err := runner.Start(t.Context(), request)
+	if err != nil || result.Output["summary"] != "complete" || reads != 2 || len(m.steps) != 5 || result.Usage["task_format_recovery_attempts"] != 1 || result.Usage["task_read_completion_rejections"] != 1 {
+		t.Fatalf("result=%+v err=%v reads=%d steps=%d", result, err, reads, len(m.steps))
+	}
+	if len(m.steps[2].Tools) != 0 || len(m.steps[3].Tools) == 0 || !strings.Contains(m.steps[3].Messages[len(m.steps[3].Messages)-1].Content, "required source reads are incomplete") {
+		t.Fatalf("format recovery did not return to the authorized read phase: recovery_tools=%d continuation_tools=%d", len(m.steps[2].Tools), len(m.steps[3].Tools))
+	}
+}
+
 func TestTaskCompletionGuardNeverAcceptsPartialResultAtLimits(t *testing.T) {
 	for _, limitCalls := range []int{1, 4} {
 		m := &taskReadGuardModel{alwaysReject: true, taskFormatModel: &taskFormatModel{results: []agentsdk.ConversationStepResult{taskFormatRead(), taskFormatReply(`{"summary":"partial"}`, 20), taskFormatReply(`{"summary":"partial"}`, 20), taskFormatReply(`{"summary":"partial"}`, 20)}}}
