@@ -106,6 +106,39 @@ func waitConversation(t *testing.T, s agentsdk.ConversationService, id, run stri
 	return agentsdk.ConversationRun{}
 }
 
+func TestAutomaticMemorySourceIsTrustedAndCorrectionsRemainAuditable(t *testing.T) {
+	repo := conversationRepository(t)
+	authority := conversationAuthority()
+	created, err := repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{
+		ID: "automatic-preference", Kind: agentsdk.ConversationMemoryKindUserPreference, Title: "Response style", Content: "Be concise",
+		Status: agentsdk.AgentMemoryStatusCandidate, Scope: agentsdk.ConversationMemoryScope{Kind: agentsdk.ConversationMemoryScopeWorkspace}, Confidence: 0.9,
+		Source: &agentsdk.ConversationMemorySource{Kind: "automatic_candidate", ProviderKey: "conversation", SourceID: "run-source", SourceRevision: "1", URI: "conversation://source", CapturedAt: time.Now().UTC()},
+	}, authority)
+	if err != nil {
+		t.Fatal(err)
+	}
+	service, err := agentapplication.NewConversationService(repo, nil, authority.RuntimeID, conversationOptions())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(service.Close)
+
+	suppressed, err := service.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{
+		ID: created.ID, Kind: created.Kind, Title: created.Title, Content: created.Content, Enabled: created.Enabled, Status: created.Status, DoNotMention: true,
+		Scope: created.Scope, Confidence: created.Confidence, ExpectedRevision: created.Revision,
+	}, authority)
+	if err != nil || suppressed.Source == nil || suppressed.Source.Kind != "automatic_candidate" || suppressed.Source.ProviderKey != "conversation" || suppressed.Source.SourceID != "run-source" {
+		t.Fatalf("automatic provenance was not preserved: %+v err=%v", suppressed, err)
+	}
+	corrected, err := service.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{
+		ID: suppressed.ID, Kind: suppressed.Kind, Title: suppressed.Title, Content: "Use concise Chinese", Enabled: true, Status: agentsdk.AgentMemoryStatusActive,
+		DoNotMention: suppressed.DoNotMention, Scope: suppressed.Scope, Confidence: 1, CorrectionReason: "User corrected the preference", ExpectedRevision: suppressed.Revision,
+	}, authority)
+	if err != nil || corrected.Source == nil || corrected.Source.Kind != "user_correction" || corrected.Source.ProviderKey != "" || corrected.Correction == nil || corrected.Correction.PreviousRevision != suppressed.Revision {
+		t.Fatalf("user correction provenance was not recorded: %+v err=%v", corrected, err)
+	}
+}
+
 func TestConversationCompactionMemoryAndOriginalHistory(t *testing.T) {
 	repo := conversationRepository(t)
 	var mu sync.Mutex
@@ -117,6 +150,9 @@ func TestConversationCompactionMemoryAndOriginalHistory(t *testing.T) {
 		raw, _ := json.Marshal(in.Messages)
 		if len(raw) > 4096 {
 			return agentsdk.ConversationModelResult{}, fmt.Errorf("unbounded context: %d", len(raw))
+		}
+		if in.Purpose == "memory" {
+			return agentsdk.ConversationModelResult{Content: `{"candidates":[]}`, Model: "fake"}, nil
 		}
 		if in.Purpose == "summary" {
 			return agentsdk.ConversationModelResult{Content: `{"goal":"做项目","constraints":["用中文"],"facts":["项目代号 ALPHA-42"],"decisions":[],"open_items":["继续处理"]}`, Model: "fake"}, nil
@@ -167,8 +203,14 @@ func TestConversationCompactionMemoryAndOriginalHistory(t *testing.T) {
 		t.Fatalf("backward page %+v %v", backward, err)
 	}
 	mu.Lock()
-	last := requests[len(requests)-1]
-	first := requests[0]
+	replies := make([]agentsdk.ConversationModelRequest, 0, len(requests))
+	for _, request := range requests {
+		if request.Purpose == "reply" {
+			replies = append(replies, request)
+		}
+	}
+	last := replies[len(replies)-1]
+	first := replies[0]
 	mu.Unlock()
 	if len(first.Messages) != 3 || !strings.Contains(first.Messages[1].Content, "PREFERENCE_ONLY") || !strings.Contains(last.Messages[2].Content, "ALPHA-42") {
 		t.Fatalf("context missing memory or summary: first=%+v last=%+v", first, last)
@@ -331,6 +373,9 @@ func TestConversationWorkerRestartReusesFrozenInput(t *testing.T) {
 	}
 	recovered := make(chan agentsdk.ConversationModelRequest, 1)
 	model := conversationModelFunc(func(_ context.Context, r agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
+		if r.Purpose == "memory" {
+			return agentsdk.ConversationModelResult{Content: `{"candidates":[]}`}, nil
+		}
 		recovered <- r
 		return agentsdk.ConversationModelResult{Content: "done"}, nil
 	})

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	agentsdk "github.com/domainry/domainry-agent-sdk"
 	application "github.com/domainry/domainry-agent/internal/application"
@@ -27,7 +28,7 @@ func TestPersonalHostWithoutResponsePolicyDoesNotAdvertiseQuestions(t *testing.T
 		t.Fatal(err)
 	}
 	tools, err := host.ConversationTools(t.Context(), conversationAuthority())
-	if err != nil || len(tools) != 7 {
+	if err != nil || len(tools) != 8 {
 		t.Fatalf("read-only catalog: %d %v", len(tools), err)
 	}
 	for _, tool := range tools {
@@ -43,6 +44,53 @@ func TestPersonalHostWithoutResponsePolicyDoesNotAdvertiseQuestions(t *testing.T
 		if err != nil || auth.Granted {
 			t.Fatal("question authorized without response policy", err)
 		}
+	}
+}
+
+func TestPersonalMemorySummaryIsSourceBoundAndHidesSuppressedByDefault(t *testing.T) {
+	repo := conversationRepository(t)
+	a := conversationAuthority()
+	now := time.Now().UTC()
+	for _, memory := range []agentsdk.ConversationMemoryWrite{
+		{ID: "visible", Kind: agentsdk.ConversationMemoryKindUserPreference, Title: "Style", Content: "Lead with the conclusion", Enabled: true, Status: agentsdk.AgentMemoryStatusActive, Importance: 0.9},
+		{ID: "suppressed", Kind: agentsdk.ConversationMemoryKindUserPreference, Title: "Hidden", Content: "Do not surface", Enabled: true, Status: agentsdk.AgentMemoryStatusActive, DoNotMention: true, Importance: 1},
+	} {
+		memory.Scope = agentsdk.ConversationMemoryScope{Kind: agentsdk.ConversationMemoryScopeWorkspace}
+		memory.LastVerifiedAt = &now
+		if _, err := repo.WriteMemory(t.Context(), memory, a); err != nil {
+			t.Fatal(err)
+		}
+	}
+	host, err := application.NewPersonalConversationHost(repo, personalReadAuthorizer{}, "UTC")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var definition agentsdk.ConversationToolDefinition
+	for _, tool := range agentsdk.PersonalConversationTools() {
+		if tool.Key == "memory_summary" {
+			definition = tool
+		}
+	}
+	invoke := func(arguments string) agentsdk.AgentMemorySummary {
+		out, invokeErr := host.InvokeConversationTool(t.Context(), agentsdk.ConversationToolRequest{Authority: a, Definition: definition, Call: agentsdk.ConversationToolCall{Name: "memory_summary", Arguments: arguments}})
+		if invokeErr != nil || out.Status != "completed" {
+			t.Fatalf("summary failed: %+v %v", out, invokeErr)
+		}
+		var result struct {
+			Summary agentsdk.AgentMemorySummary `json:"summary"`
+		}
+		if unmarshalErr := json.Unmarshal(out.Content, &result); unmarshalErr != nil {
+			t.Fatal(unmarshalErr)
+		}
+		return result.Summary
+	}
+	visible := invoke(`{}`)
+	if visible.ItemCount != 1 || len(visible.Groups) != 1 || visible.Groups[0].Items[0].MemoryID != "visible" || visible.Groups[0].Items[0].Source.SourceRevision != "1" || visible.Revision == "" {
+		t.Fatalf("default summary=%+v", visible)
+	}
+	managed := invoke(`{"include_suppressed":true}`)
+	if managed.ItemCount != 2 || managed.Revision == visible.Revision {
+		t.Fatalf("management summary=%+v", managed)
 	}
 }
 

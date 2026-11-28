@@ -109,7 +109,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 				}
 			}
 			allRunDDL := strings.Join(append([]string{}, migrations[0].Statements...), "\n") + "\n" + conversationItems + "\n" + byVersion[19]
-			for _, fragment := range []string{"run_kind", "scope_key", "idempotency_key", "fencing_token", "idx_agent_run_task_claim_v1", "idx_agent_run_interactive_list_v1", "idx_agent_run_conversation_claim_v2", "idx_agent_run_conversation_capacity_v19"} {
+			for _, fragment := range []string{"run_kind", "scope_key", "idempotency_key", "fencing_token", "memory_candidate_state", "idx_agent_run_task_claim_v1", "idx_agent_run_interactive_list_v1", "idx_agent_run_memory_candidates_v1", "idx_agent_run_conversation_claim_v2", "idx_agent_run_conversation_capacity_v19"} {
 				if !strings.Contains(allRunDDL, fragment) {
 					t.Fatalf("missing unified Agent run field/index %s", fragment)
 				}

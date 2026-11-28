@@ -151,7 +151,7 @@ func NewConversationModel(c ConversationModelConfig) (*ConversationModel, error)
 	return &ConversationModel{config: c}, nil
 }
 func (m *ConversationModel) request(ctx context.Context, in agentsdk.ConversationModelRequest, stream bool) (*http.Response, error) {
-	if in.MaxOutputBytes < 1 || len(in.Messages) == 0 || (in.Purpose != "reply" && in.Purpose != "summary") {
+	if in.MaxOutputBytes < 1 || len(in.Messages) == 0 || (in.Purpose != "reply" && in.Purpose != "summary" && in.Purpose != "memory") {
 		return nil, fmt.Errorf("invalid conversation model request")
 	}
 	for _, message := range in.Messages {

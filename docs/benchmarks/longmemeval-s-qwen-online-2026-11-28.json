@@ -1,0 +1,160 @@
+{
+  "benchmark": "LongMemEval-S retrieval",
+  "dataset_source": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned",
+  "dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+  "dataset_bytes": 277383467,
+  "dataset_cases": 500,
+  "evaluated_cases": 470,
+  "skipped_abstention": 30,
+  "skipped_split": 0,
+  "split": "all",
+  "semantic_weight": 1,
+  "top_k": 10,
+  "modes": [
+    {
+      "mode": "domainry_precision_coverage_provider",
+      "description": "Fixed three-item blocks from the pinned semantic ranking and deterministic lexical ranking are interleaved for precision and independent coverage. The composition uses no question type or gold fields and passes through production policy gates and budgets.",
+      "cases": 470,
+      "candidate_recall_any": 0.9957446808510638,
+      "candidate_recall_all": 0.9808510638297873,
+      "average_candidates": 10,
+      "average_selected_items": 10,
+      "average_selected_bytes": 16255.772340425532,
+      "latency_p50_millis": 170.529,
+      "latency_p95_millis": 211.935,
+      "metrics": {
+        "@1": {
+          "recall_any": 0.9787234042553191,
+          "recall_all": 0.35319148936170214,
+          "evidence_recall": 0.6344680851063829,
+          "precision": 0.9787234042553191,
+          "mrr": 0.9787234042553191,
+          "ndcg": 0.9787234042553191
+        },
+        "@10": {
+          "recall_any": 0.9957446808510638,
+          "recall_all": 0.9808510638297873,
+          "evidence_recall": 0.9893617021276596,
+          "precision": 0.18723404255319198,
+          "mrr": 0.985531914893617,
+          "ndcg": 0.9757835416643305
+        },
+        "@3": {
+          "recall_any": 0.9914893617021276,
+          "recall_all": 0.8808510638297873,
+          "evidence_recall": 0.9487943262411349,
+          "precision": 0.5723404255319116,
+          "mrr": 0.9847517730496453,
+          "ndcg": 0.9689492701040426
+        },
+        "@5": {
+          "recall_any": 0.9936170212765958,
+          "recall_all": 0.9148936170212766,
+          "evidence_recall": 0.9652836879432626,
+          "precision": 0.3582978723404264,
+          "mrr": 0.9851773049645389,
+          "ndcg": 0.9665312366568157
+        }
+      },
+      "by_question_type_at_10": {
+        "knowledge-update": {
+          "recall_any": 1,
+          "recall_all": 0.9861111111111112,
+          "evidence_recall": 0.9930555555555556,
+          "precision": 0.19861111111111085,
+          "mrr": 1,
+          "ndcg": 0.9853665920882944
+        },
+        "multi-session": {
+          "recall_any": 1,
+          "recall_all": 0.9669421487603306,
+          "evidence_recall": 0.987603305785124,
+          "precision": 0.25702479338842943,
+          "mrr": 0.9823691460055097,
+          "ndcg": 0.9655480455307754
+        },
+        "single-session-assistant": {
+          "recall_any": 1,
+          "recall_all": 1,
+          "evidence_recall": 1,
+          "precision": 0.09999999999999994,
+          "mrr": 1,
+          "ndcg": 1
+        },
+        "single-session-preference": {
+          "recall_any": 0.9666666666666667,
+          "recall_all": 0.9666666666666667,
+          "evidence_recall": 0.9666666666666667,
+          "precision": 0.0966666666666667,
+          "mrr": 0.9277777777777778,
+          "ndcg": 0.9543643251190486
+        },
+        "single-session-user": {
+          "recall_any": 1,
+          "recall_all": 1,
+          "evidence_recall": 1,
+          "precision": 0.0999999999999999,
+          "mrr": 1,
+          "ndcg": 1
+        },
+        "temporal-reasoning": {
+          "recall_any": 0.9921259842519685,
+          "recall_all": 0.9763779527559056,
+          "evidence_recall": 0.984251968503937,
+          "precision": 0.21811023622047213,
+          "mrr": 0.9803149606299213,
+          "ndcg": 0.9622805251108881
+        }
+      }
+    }
+  ],
+  "started_at": "2026-11-28T06:45:15.902605Z",
+  "duration_millis": 84578,
+  "reproducibility_note": "Official abstention cases are excluded from retrieval scoring because they have no gold answer location. No LLM judge is used. Model-generated caches are content-addressed and created before the credential-free scoring process.",
+  "integrity": {
+    "dataset_hash_verified": true,
+    "gold_input_isolation": "retrievers receive longMemEvalRetrievalInput, which cannot represent answer, has_answer, or answer_session_ids",
+    "model_apis_used": true,
+    "retrieval_inputs": [
+      "question",
+      "question_date",
+      "haystack_session_ids",
+      "haystack_dates",
+      "turn_role",
+      "turn_content",
+      "pinned_query_rerank_cache"
+    ],
+    "semantic_cache_sha256": "61053d5db3020bba0e136ca348f7a613e4417ee68de7e122ab7674c03e695010",
+    "embedding_model": "qwen3.5-397b-a17b+text-embedding-v4+rrf+text-embedding-v4",
+    "embedding_revision": "service_configured+service_configured+service_configured",
+    "embedding_query_prefix": "precision_anchor_coverage_interleave_0.5000",
+    "embedding_granularity": "candidate_session_online_llm_rerank_split_merged",
+    "prefilter_cache_sha256": "3fa932dbdf3735ac5ecfe90980e0a252942cca441c31e75b360949fe7bb3503e",
+    "prefilter_sessions": 20,
+    "prefilter_turns": 3,
+    "source_cache_sha256": [
+      "32d10fdaf0c342cd94146b7e1fec19e7c988157f8d93e15aee8808db0517297b",
+      "b0ab9697d3fc0086e789515bbe7c16b81e04cd42b90b6aeee5b6ba8972e1b99e"
+    ],
+    "query_rewrite_cache_sha256": "70d57324b427c0a1ed2b877d08a37f271a203851b38aff0166ff5490bcd4fa24",
+    "query_rewrite_model": "qwen-plus",
+    "query_rewrite_revision": "service_configured",
+    "query_rewrite_request_mode": "question_only_openai_compatible+candidate_session_online_llm_rerank",
+    "semantic_cache_gold_fields_dropped": [
+      "answer",
+      "answer_session_ids",
+      "has_answer",
+      "question_id",
+      "question_type"
+    ],
+    "algorithm_version": "domainry-longmemeval-v5",
+    "go_version": "go1.27.1",
+    "goos": "darwin",
+    "goarch": "arm64",
+    "executable_sha256": "f6cfba5cd6a26ffda49cfc3b389f16eb2c3491dbaa1aa18ef06271124fc63bd6",
+    "environment_clean": true,
+    "environment_keys": [
+      "PATH"
+    ]
+  }
+}

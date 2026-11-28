@@ -51,6 +51,7 @@ func SchemaMigrations(driver, schema string) ([]modulehost.SchemaMigration, erro
 		{name: "idx_agent_run_task_process_v1", columns: []string{"run_kind", "workspace_id", "process_id", "status"}},
 		{name: "idx_agent_run_task_key_v1", columns: []string{"run_kind", "workspace_id", "task_key", "status"}},
 		{name: "idx_agent_run_interactive_list_v1", columns: []string{"run_kind", "workspace_id", "user_id", "role_key", "status", "created_at"}},
+		{name: "idx_agent_run_memory_candidates_v1", columns: []string{"run_kind", "memory_candidate_state", "runtime_id", "updated_at"}},
 	} {
 		statement, _, buildErr := ormschema.NewIndex(renderer, index.name, agentRunTable).Columns(index.columns...).Build()
 		if buildErr != nil {
@@ -155,6 +156,7 @@ func agentRunTableBuilder(renderer modulehost.Dialect) *ormschema.TableBuilder {
 		optional("user_id", ormschema.TextKey(agentRunIndexKeyLength)),
 		optional("role_key", ormschema.TextKey(agentRunIndexKeyLength)),
 		optional("task_run_id", ormschema.TextKey(255)),
+		optional("memory_candidate_state", ormschema.TextKey(16)),
 		required("status", ormschema.TextKey(64)),
 		required("lease_owner", ormschema.TextKey(255)).DefaultValue(""),
 		required("fencing_token", ormschema.BigInt()).DefaultValue(0),

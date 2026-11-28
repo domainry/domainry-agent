@@ -16,7 +16,36 @@ func ValidateTaskRequest(request agentsdk.TaskRequest) error {
 	if strings.TrimSpace(request.TaskRunID) == "" || strings.TrimSpace(request.WorkspaceID) == "" || strings.TrimSpace(request.IdempotencyKey) == "" {
 		return fmt.Errorf("Agent task execution identity is incomplete")
 	}
-	return ValidateTaskDefinition(request.Task)
+	if err := ValidateTaskDefinition(request.Task); err != nil {
+		return err
+	}
+	preference := request.MemoryPreference
+	switch strings.TrimSpace(preference.Mode) {
+	case "", agentsdk.AgentMemoryPreferenceInherit, agentsdk.AgentMemoryPreferenceDisabled, agentsdk.AgentMemoryPreferenceReferenceOnly, agentsdk.AgentMemoryPreferenceReferenceAndCreate:
+	default:
+		return fmt.Errorf("unsupported Agent memory preference %q", preference.Mode)
+	}
+	switch strings.TrimSpace(preference.RetrievalMode) {
+	case "", agentsdk.AgentMemoryRetrievalHybrid, agentsdk.AgentMemoryRetrievalLexical:
+	default:
+		return fmt.Errorf("unsupported Agent memory retrieval preference %q", preference.RetrievalMode)
+	}
+	if preference.ProjectOnly != (strings.TrimSpace(preference.ProjectID) != "") {
+		return fmt.Errorf("Agent project-only memory requires exactly one project ID")
+	}
+	if !request.Task.Memory.Enabled && (preference.ProjectOnly || strings.TrimSpace(preference.RetrievalMode) != "" || strings.TrimSpace(preference.Mode) != "" && preference.Mode != agentsdk.AgentMemoryPreferenceDisabled) {
+		return fmt.Errorf("Agent task memory preference exceeds the task policy")
+	}
+	if preference.Mode == agentsdk.AgentMemoryPreferenceDisabled && strings.TrimSpace(preference.RetrievalMode) != "" {
+		return fmt.Errorf("disabled Agent task memory cannot select a retrieval mode")
+	}
+	if preference.RetrievalMode == agentsdk.AgentMemoryRetrievalHybrid && request.Task.Memory.RetrievalMode != agentsdk.AgentMemoryRetrievalHybrid {
+		return fmt.Errorf("Agent task semantic retrieval exceeds the task policy")
+	}
+	if preference.Mode == agentsdk.AgentMemoryPreferenceReferenceAndCreate && request.Task.Memory.CandidateMode == agentsdk.AgentMemoryCandidateDisabled {
+		return fmt.Errorf("Agent task memory creation exceeds the task policy")
+	}
+	return nil
 }
 
 func ValidateTaskDefinition(task agentsdk.AgentTaskDefinition) error {
@@ -68,7 +97,40 @@ func ValidateTaskDefinition(task agentsdk.AgentTaskDefinition) error {
 			return fmt.Errorf("unsupported Agent task outcome %q", outcome)
 		}
 	}
+	if err := validateAgentMemoryPolicy(task.Memory); err != nil {
+		return err
+	}
 	return validateAgentExecutionLimits(task.ExecutionLimits)
+}
+
+func validateAgentMemoryPolicy(policy agentsdk.AgentMemoryPolicy) error {
+	zero := policy.ContractVersion == "" && !policy.Enabled && !policy.ReferenceSaved && !policy.ReferenceHistory && len(policy.ProviderKeys) == 0 && policy.RetrievalMode == "" && policy.CandidateMode == "" && policy.MaxItems == 0 && policy.MaxBytes == 0
+	if zero {
+		return nil
+	}
+	if !policy.Enabled {
+		return fmt.Errorf("disabled Agent memory policy must be empty")
+	}
+	if policy.ContractVersion != agentsdk.AgentMemoryPolicyVersion {
+		return fmt.Errorf("unsupported Agent memory policy contract %q", policy.ContractVersion)
+	}
+	if !policy.ReferenceSaved && !policy.ReferenceHistory && len(policy.ProviderKeys) == 0 {
+		return fmt.Errorf("Agent memory policy requires at least one read source")
+	}
+	switch policy.RetrievalMode {
+	case agentsdk.AgentMemoryRetrievalHybrid, agentsdk.AgentMemoryRetrievalLexical:
+	default:
+		return fmt.Errorf("unsupported Agent memory retrieval mode %q", policy.RetrievalMode)
+	}
+	switch policy.CandidateMode {
+	case agentsdk.AgentMemoryCandidateDisabled, agentsdk.AgentMemoryCandidateReview, agentsdk.AgentMemoryCandidatePersonal:
+	default:
+		return fmt.Errorf("unsupported Agent memory candidate mode %q", policy.CandidateMode)
+	}
+	if policy.MaxItems < 0 || policy.MaxItems > agentsdk.AgentMemoryMaxItems || policy.MaxBytes < 0 || policy.MaxBytes > agentsdk.AgentMemoryMaxBytes {
+		return fmt.Errorf("Agent memory policy budget is invalid")
+	}
+	return validateUniqueAgentValues(policy.ProviderKeys, "memory provider")
 }
 
 func ValidateSkillDefinition(skill agentsdk.SkillSchema) error {

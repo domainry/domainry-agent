@@ -453,7 +453,14 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		if err != nil {
 			return agentsdk.ConversationToolResult{}, err
 		}
-		conversationID, taskID := in.ConversationID, ""
+		conversationID, projectID, taskID, projectOnly := in.ConversationID, "", "", false
+		if conversationID != "" {
+			conversation, conversationErr := h.repo.Get(ctx, conversationID, in.Authority)
+			if conversationErr != nil {
+				return agentsdk.ConversationToolResult{}, conversationErr
+			}
+			projectID, projectOnly = conversation.MemoryPreference.ProjectID, conversation.MemoryPreference.ProjectOnly
+		}
 		if in.RunID != "" {
 			run, runErr := h.repo.Run(ctx, in.ConversationID, in.RunID, in.Authority)
 			if runErr != nil {
@@ -470,7 +477,7 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 			Scope, Snapshot, Query string
 			Offset                 int
 		}
-		cursor := memoryCursor{Scope: conversationDigest([]string{in.Authority.RuntimeID, in.Authority.WorkspaceID, in.Authority.UserID, conversationID, taskID}), Snapshot: conversationDigest(items), Query: conversationDigest([]any{args.Query, args.Kind, args.IncludeDisabled})}
+		cursor := memoryCursor{Scope: conversationDigest([]any{in.Authority.RuntimeID, in.Authority.WorkspaceID, in.Authority.UserID, projectID, conversationID, taskID, projectOnly}), Snapshot: conversationDigest(items), Query: conversationDigest([]any{args.Query, args.Kind, args.IncludeDisabled})}
 		if args.Cursor != "" {
 			raw, decodeErr := base64.RawURLEncoding.DecodeString(args.Cursor)
 			var previous memoryCursor
@@ -483,7 +490,7 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 		complete := true
 		for index := cursor.Offset; index < len(items); index++ {
 			item := items[index]
-			if !memoryApplicable(item, conversationID, taskID) || !item.Enabled && !args.IncludeDisabled || args.Kind != "" && item.Kind != args.Kind || !memoryLiteralMatch(item, args.Query) {
+			if !memoryApplicable(item, projectID, conversationID, taskID) || projectOnly && item.Scope.Kind != agentsdk.ConversationMemoryScopeProject || (!item.Enabled || item.Status != agentsdk.AgentMemoryStatusActive) && !args.IncludeDisabled || args.Kind != "" && item.Kind != args.Kind || !memoryLiteralMatch(item, args.Query) {
 				continue
 			}
 			if len(conversationJSONText(found))+len(conversationJSONText(item)) > in.Definition.MaxOutputBytes-1024 {
@@ -499,6 +506,35 @@ func (h *PersonalConversationHost) InvokeConversationTool(ctx context.Context, i
 			next = base64.RawURLEncoding.EncodeToString(raw)
 		}
 		return personalToolResult(map[string]any{"items": found, "complete": complete, "next_cursor": next})
+	case "memory_summary":
+		var args struct {
+			IncludePending    bool `json:"include_pending"`
+			IncludeSuppressed bool `json:"include_suppressed"`
+		}
+		_ = json.Unmarshal([]byte(in.Call.Arguments), &args)
+		memories, err := h.repo.Memories(ctx, in.Authority)
+		if err != nil {
+			return agentsdk.ConversationToolResult{}, err
+		}
+		projectID, taskID, projectOnly := "", "", false
+		if in.ConversationID != "" {
+			conversation, conversationErr := h.repo.Get(ctx, in.ConversationID, in.Authority)
+			if conversationErr != nil {
+				return agentsdk.ConversationToolResult{}, conversationErr
+			}
+			projectID, projectOnly = conversation.MemoryPreference.ProjectID, conversation.MemoryPreference.ProjectOnly
+		}
+		if in.RunID != "" {
+			run, runErr := h.repo.Run(ctx, in.ConversationID, in.RunID, in.Authority)
+			if runErr != nil {
+				return agentsdk.ConversationToolResult{}, runErr
+			}
+			if run.BackgroundTask != nil {
+				taskID = run.BackgroundTask.TaskID
+			}
+		}
+		summary := buildAgentMemorySummary(memories, projectID, in.ConversationID, taskID, projectOnly, args.IncludePending, args.IncludeSuppressed, h.now())
+		return personalToolResult(map[string]any{"summary": summary})
 	}
 	return personalToolFailure("tool_unavailable"), nil
 }

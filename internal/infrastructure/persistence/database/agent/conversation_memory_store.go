@@ -100,7 +100,7 @@ func (s *ConversationStore) Memories(ctx context.Context, a agentsdk.Conversatio
 	return s.memories(ctx, s.store.Database(), a)
 }
 func (s *ConversationStore) memories(ctx context.Context, db conversationDB, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationMemory, error) {
-	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_user_memories").Columns("payload_json").Where(query.Equal("owner_key", conversationOwner(a))).OrderBy(query.Ascending("memory_id")).Limit(33).Build()
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_user_memories").Columns("payload_json").Where(query.Equal("owner_key", conversationOwner(a))).OrderBy(query.Ascending("memory_id")).Limit(257).Build()
 	if err != nil {
 		return nil, err
 	}
@@ -134,6 +134,9 @@ func normalizeStoredConversationMemory(memory agentsdk.ConversationMemory) agent
 	if memory.AppliesTo == nil {
 		memory.AppliesTo = []string{}
 	}
+	if memory.Status == "" {
+		memory.Status = agentsdk.AgentMemoryStatusActive
+	}
 	return memory
 }
 
@@ -143,28 +146,44 @@ func storedMemoryInput(memory agentsdk.ConversationMemory) any {
 		source.CapturedAt = time.Time{}
 	}
 	return struct {
-		Kind        string                                 `json:"kind"`
-		Title       string                                 `json:"title"`
-		Content     string                                 `json:"content"`
-		Enabled     bool                                   `json:"enabled"`
-		Scope       agentsdk.ConversationMemoryScope       `json:"scope"`
-		AppliesTo   []string                               `json:"applies_to"`
-		Source      *agentsdk.ConversationMemorySource     `json:"source,omitempty"`
-		Correction  *agentsdk.ConversationMemoryCorrection `json:"correction,omitempty"`
-		Uncertainty string                                 `json:"uncertainty,omitempty"`
-	}{memory.Kind, memory.Title, memory.Content, memory.Enabled, memory.Scope, memory.AppliesTo, source, memory.Correction, memory.Uncertainty}
+		Kind           string                                 `json:"kind"`
+		Title          string                                 `json:"title"`
+		Content        string                                 `json:"content"`
+		Enabled        bool                                   `json:"enabled"`
+		Status         string                                 `json:"status"`
+		DoNotMention   bool                                   `json:"do_not_mention,omitempty"`
+		Scope          agentsdk.ConversationMemoryScope       `json:"scope"`
+		AppliesTo      []string                               `json:"applies_to"`
+		Source         *agentsdk.ConversationMemorySource     `json:"source,omitempty"`
+		Correction     *agentsdk.ConversationMemoryCorrection `json:"correction,omitempty"`
+		Uncertainty    string                                 `json:"uncertainty,omitempty"`
+		Importance     float64                                `json:"importance,omitempty"`
+		Confidence     float64                                `json:"confidence,omitempty"`
+		SupersedesID   string                                 `json:"supersedes_id,omitempty"`
+		ValidFrom      *time.Time                             `json:"valid_from,omitempty"`
+		ValidUntil     *time.Time                             `json:"valid_until,omitempty"`
+		LastVerifiedAt *time.Time                             `json:"last_verified_at,omitempty"`
+	}{memory.Kind, memory.Title, memory.Content, memory.Enabled, memory.Status, memory.DoNotMention, memory.Scope, memory.AppliesTo, source, memory.Correction, memory.Uncertainty, memory.Importance, memory.Confidence, memory.SupersedesID, memory.ValidFrom, memory.ValidUntil, memory.LastVerifiedAt}
 }
 
 func storedMemoryRequestMatches(memory agentsdk.ConversationMemory, in agentsdk.ConversationMemoryWrite) bool {
 	requested := agentsdk.ConversationMemory{
-		Kind:        in.Kind,
-		Title:       in.Title,
-		Content:     in.Content,
-		Enabled:     in.Enabled,
-		Scope:       in.Scope,
-		AppliesTo:   in.AppliesTo,
-		Source:      cloneStoredMemorySource(in.Source),
-		Uncertainty: in.Uncertainty,
+		Kind:           in.Kind,
+		Title:          in.Title,
+		Content:        in.Content,
+		Enabled:        in.Enabled,
+		Status:         in.Status,
+		DoNotMention:   in.DoNotMention,
+		Scope:          in.Scope,
+		AppliesTo:      in.AppliesTo,
+		Source:         cloneStoredMemorySource(in.Source),
+		Uncertainty:    in.Uncertainty,
+		Importance:     in.Importance,
+		Confidence:     in.Confidence,
+		SupersedesID:   in.SupersedesID,
+		ValidFrom:      cloneStoredTime(in.ValidFrom),
+		ValidUntil:     cloneStoredTime(in.ValidUntil),
+		LastVerifiedAt: cloneStoredTime(in.LastVerifiedAt),
 	}
 	current := memory
 	current.Correction = nil
@@ -196,6 +215,12 @@ func (s *ConversationStore) writeMemory(ctx context.Context, tx *sql.Tx, in agen
 	}
 	if in.Scope.Kind == "" {
 		in.Scope.Kind = agentsdk.ConversationMemoryScopeWorkspace
+	}
+	if in.Status == "" {
+		in.Status = agentsdk.AgentMemoryStatusActive
+	}
+	if in.SupersedesID == in.ID {
+		return conversationError("bad_request", "memory_invalid")
 	}
 	in.AppliesTo = normalizeStoredMemoryTopics(in.AppliesTo)
 	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_user_memories").Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("memory_id", in.ID))).Build()
@@ -233,7 +258,7 @@ func (s *ConversationStore) writeMemory(ctx context.Context, tx *sql.Tx, in agen
 		if err != nil {
 			return err
 		}
-		if len(items) >= 32 {
+		if len(items) >= 256 {
 			return conversationError("conflict", "memory_limit")
 		}
 		lookup, lookupArgs, lookupErr := query.NewSelectBuilder(s.store.Renderer(), conversationMemoryChangeTable).Projections(query.Project(query.CountAll())).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("memory_id", in.ID))).Build()
@@ -253,7 +278,7 @@ func (s *ConversationStore) writeMemory(ctx context.Context, tx *sql.Tx, in agen
 	if strings.TrimSpace(in.CorrectionReason) != "" {
 		correction = &agentsdk.ConversationMemoryCorrection{PreviousRevision: old.Revision, Reason: strings.TrimSpace(in.CorrectionReason)}
 	}
-	*out = agentsdk.ConversationMemory{ID: in.ID, Kind: in.Kind, Title: in.Title, Content: in.Content, Enabled: in.Enabled, Scope: in.Scope, AppliesTo: in.AppliesTo, Source: cloneStoredMemorySource(in.Source), Correction: correction, Uncertainty: in.Uncertainty, Revision: old.Revision + 1, CreatedAt: old.CreatedAt, UpdatedAt: now}
+	*out = agentsdk.ConversationMemory{ID: in.ID, Kind: in.Kind, Title: in.Title, Content: in.Content, Enabled: in.Enabled, Status: in.Status, DoNotMention: in.DoNotMention, Scope: in.Scope, AppliesTo: in.AppliesTo, Source: cloneStoredMemorySource(in.Source), Correction: correction, Uncertainty: in.Uncertainty, Importance: in.Importance, Confidence: in.Confidence, SupersedesID: in.SupersedesID, ValidFrom: cloneStoredTime(in.ValidFrom), ValidUntil: cloneStoredTime(in.ValidUntil), LastVerifiedAt: cloneStoredTime(in.LastVerifiedAt), Revision: old.Revision + 1, CreatedAt: old.CreatedAt, UpdatedAt: now}
 	if exists && conversationHash(storedMemoryInput(old)) == conversationHash(storedMemoryInput(*out)) {
 		*out = old
 		return nil
@@ -264,13 +289,51 @@ func (s *ConversationStore) writeMemory(ctx context.Context, tx *sql.Tx, in agen
 		if err = conversationExec(ctx, tx, q, args, err); err != nil {
 			return err
 		}
-		return s.appendMemoryChange(ctx, tx, a, "create", *out)
+		if err = s.appendMemoryChange(ctx, tx, a, "create", *out); err != nil {
+			return err
+		}
+		return s.supersedeMemory(ctx, tx, a, *out)
 	}
 	q, args, err = query.NewUpdateBuilder(s.store.Renderer(), "_agent_user_memories").Set("payload_json", conversationJSON(out)).Set("revision", out.Revision).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("memory_id", in.ID), query.Equal("revision", in.ExpectedRevision))).Build()
 	if err = conversationCAS(ctx, tx, q, args, err); err != nil {
 		return err
 	}
-	return s.appendMemoryChange(ctx, tx, a, "update", *out)
+	if err = s.appendMemoryChange(ctx, tx, a, "update", *out); err != nil {
+		return err
+	}
+	return s.supersedeMemory(ctx, tx, a, *out)
+}
+
+func (s *ConversationStore) supersedeMemory(ctx context.Context, tx *sql.Tx, a agentsdk.ConversationAuthority, replacement agentsdk.ConversationMemory) error {
+	if replacement.Status != agentsdk.AgentMemoryStatusActive || replacement.SupersedesID == "" {
+		return nil
+	}
+	q, args, err := query.NewSelectBuilder(s.store.Renderer(), "_agent_user_memories").Columns("payload_json").Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("memory_id", replacement.SupersedesID))).Build()
+	if err != nil {
+		return err
+	}
+	var raw []byte
+	if err = tx.QueryRowContext(ctx, q, args...).Scan(&raw); errors.Is(err, sql.ErrNoRows) {
+		return conversationError("conflict", "memory_supersedes_not_found")
+	} else if err != nil {
+		return err
+	}
+	var previous agentsdk.ConversationMemory
+	if err = unmarshalDurableJSON(raw, &previous); err != nil {
+		return err
+	}
+	previous = normalizeStoredConversationMemory(previous)
+	if previous.Status == agentsdk.AgentMemoryStatusSuperseded {
+		return nil
+	}
+	priorRevision := previous.Revision
+	previous.Status, previous.Enabled = agentsdk.AgentMemoryStatusSuperseded, false
+	previous.UpdatedAt, previous.Revision = time.Now().UTC().Truncate(time.Millisecond), priorRevision+1
+	q, args, err = query.NewUpdateBuilder(s.store.Renderer(), "_agent_user_memories").Set("payload_json", conversationJSON(previous)).Set("revision", previous.Revision).Where(query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("memory_id", previous.ID), query.Equal("revision", priorRevision))).Build()
+	if err = conversationCAS(ctx, tx, q, args, err); err != nil {
+		return err
+	}
+	return s.appendMemoryChange(ctx, tx, a, "supersede", previous)
 }
 
 func normalizeStoredMemoryTopics(values []string) []string {
@@ -292,6 +355,14 @@ func cloneStoredMemorySource(source *agentsdk.ConversationMemorySource) *agentsd
 		return nil
 	}
 	out := *source
+	return &out
+}
+
+func cloneStoredTime(value *time.Time) *time.Time {
+	if value == nil {
+		return nil
+	}
+	out := value.UTC()
 	return &out
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent/internal/application"
 	"github.com/domainry/domainry-agent/internal/capability"
+	"github.com/domainry/domainry-agent/internal/infrastructure/provider"
 	agenthttp "github.com/domainry/domainry-agent/internal/transport/http/module"
 	actioncontract "github.com/domainry/domainry-foundation/action"
 )
@@ -63,6 +64,16 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 	options := a.options
 	var boundToolActions []actioncontract.ActionDefinition
 	if host != nil {
+		if options.MemoryProvider == nil && len(options.MemoryProviders) == 0 {
+			if registry, ok := host.(agentsdk.MemoryContextProviderRegistry); ok {
+				options.MemoryProviders = append([]agentsdk.MemoryContextProvider(nil), registry.MemoryContextProviders()...)
+			} else {
+				options.MemoryProvider, _ = host.(agentsdk.MemoryContextProvider)
+			}
+		}
+		if ranker, ok := host.(agentsdk.MemoryContextRanker); ok {
+			options.MemoryRanker = ranker
+		}
 		if options.PersonalAuthorizer == nil {
 			options.PersonalAuthorizer = host.ConversationAuthorizer()
 		}
@@ -130,6 +141,9 @@ func (b *binding) openConversations(a *conversationAssembly, host modulehost.Con
 			// and coding execution both require a tool-capable model and ToolHost.
 			bindHostExecutionRuntimes(&options, a.model, host)
 		}
+	}
+	if options.MemoryRanker == nil && a.model != nil {
+		options.MemoryRanker = provider.NewModelMemoryContextRanker(a.model)
 	}
 	if a.model != nil && options.ExecutionAuthorizer == nil {
 		return fmt.Errorf("Agent conversation model requires current execution authorization")

@@ -165,8 +165,12 @@ func (s *ConversationService) completeConversationModelAttempt(ctx context.Conte
 }
 
 func (s *ConversationService) generateConversationSummary(ctx context.Context, claim persistence.ConversationClaim, step int, input agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
+	authorizationStage := "summary"
+	if input.Purpose == "memory" {
+		authorizationStage = "memory"
+	}
 	for {
-		if err := s.authorizeConversationClaim(ctx, claim, "summary"); err != nil {
+		if err := s.authorizeConversationClaim(ctx, claim, authorizationStage); err != nil {
 			return agentsdk.ConversationModelResult{}, err
 		}
 		hydrated, err := s.hydrateConversationModelRequest(ctx, claim, input)

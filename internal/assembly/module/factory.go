@@ -228,6 +228,12 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 			return nil, err
 		}
 	}
+	var taskMemoryRanker agentsdk.MemoryContextRanker
+	if ranker, ok := host.(agentsdk.MemoryContextRanker); ok {
+		taskMemoryRanker = ranker
+	} else if taskModel != nil {
+		taskMemoryRanker = provider.NewModelMemoryContextRanker(taskModel)
+	}
 	taskRunner := agentsdk.TaskRunner(runner)
 	var localTaskModelRunner *provider.ModelTaskRunner
 	if taskModel != nil {
@@ -262,6 +268,13 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if deferred, ok := host.(modulehost.DeferredConversationHost); ok {
 		deferConversations = deferred.DeferConversationHostBinding()
 	}
+	if conversationOptions.MemoryRanker == nil && !deferConversations {
+		if ranker, ok := host.(agentsdk.MemoryContextRanker); ok {
+			conversationOptions.MemoryRanker = ranker
+		} else if conversationModel != nil {
+			conversationOptions.MemoryRanker = provider.NewModelMemoryContextRanker(conversationModel)
+		}
+	}
 	if !deferConversations && conversationOptions.PersonalAuthorizer == nil {
 		conversationOptions.PersonalAuthorizer, _ = host.(agentsdk.ConversationToolAuthorizer)
 	}
@@ -271,7 +284,18 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 	if !deferConversations && conversationOptions.CollaborationAuthorizer == nil {
 		conversationOptions.CollaborationAuthorizer, _ = host.(agentsdk.ConversationCollaborationAuthorizer)
 	}
+	if !deferConversations && conversationOptions.MemoryProvider == nil && len(conversationOptions.MemoryProviders) == 0 {
+		if registry, ok := host.(agentsdk.MemoryContextProviderRegistry); ok {
+			conversationOptions.MemoryProviders = append([]agentsdk.MemoryContextProvider(nil), registry.MemoryContextProviders()...)
+		} else {
+			conversationOptions.MemoryProvider, _ = host.(agentsdk.MemoryContextProvider)
+		}
+	}
 	conversationRepository := agentstore.NewConversationStore(store)
+	binding.taskExecution.ConfigureMemoryRanker(taskMemoryRanker)
+	if err := binding.taskExecution.ConfigureMemory(agentapplication.NewDefaultMemoryContextProviders(conversationRepository, taskMemoryRanker), app.RuntimeID); err != nil {
+		return nil, err
+	}
 	artifactHost, artifactHosted := host.(modulehost.ArtifactHost)
 	if f.ConversationEnabled() && !artifactHosted {
 		return nil, fmt.Errorf("Agent conversations require Artifact content storage")
@@ -285,6 +309,9 @@ func (f *Factory) OpenModule(ctx context.Context, app agentsdk.ApplicationRef, h
 			return nil, err
 		}
 		conversationRepository = agentstore.NewConversationStore(store)
+		if err := binding.taskExecution.ConfigureMemory(agentapplication.NewDefaultMemoryContextProviders(conversationRepository, taskMemoryRanker), app.RuntimeID); err != nil {
+			return nil, err
+		}
 	}
 	if !deferConversations && conversationOptions.ToolHost == nil {
 		if authorizer, ok := host.(agentsdk.ConversationToolAuthorizer); ok {

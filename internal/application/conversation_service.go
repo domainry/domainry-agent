@@ -16,6 +16,7 @@ import (
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	"github.com/domainry/domainry-agent/internal/definition"
 	"github.com/domainry/domainry-agent/internal/execution"
+	"github.com/domainry/domainry-foundation/logging"
 	workerplatform "github.com/domainry/domainry-foundation/worker"
 	toolsdk "github.com/domainry/domainry-tools-sdk"
 )
@@ -73,6 +74,9 @@ type ConversationOptions struct {
 	CodingRuntime                                              agentsdk.ConversationCodingRuntime
 	ToolAvailability                                           agentsdk.ConversationToolAvailability
 	FollowUpPublisher                                          agentsdk.ConversationFollowUpPublisher
+	MemoryProvider                                             agentsdk.MemoryContextProvider
+	MemoryProviders                                            []agentsdk.MemoryContextProvider
+	MemoryRanker                                               agentsdk.MemoryContextRanker
 	MaxSteps, MaxToolCalls, MaxArgumentBytes, MaxParallelTools int
 	ContextSources                                             []agentsdk.ConversationContextSource
 	ContextBytes, MaxInputBytes, MaxOutputBytes, SummaryBytes  int
@@ -505,7 +509,7 @@ func (s *ConversationService) Create(ctx context.Context, in agentsdk.Conversati
 	if err := s.authorize(a); err != nil {
 		return agentsdk.Conversation{}, err
 	}
-	if !conversationKey(in.ClientID) || !conversationText(in.Title, 512, false) {
+	if !conversationKey(in.ClientID) || !conversationText(in.Title, 512, false) || !validConversationMemoryPreference(in.MemoryEnabled, in.MemoryPreference) {
 		return agentsdk.Conversation{}, conversationFailure("bad_request", "create_invalid")
 	}
 	if in.Binding != nil && (!conversationKey(in.Binding.Kind) || !conversationKey(in.Binding.Key)) {
@@ -572,11 +576,46 @@ func (s *ConversationService) Update(ctx context.Context, id string, in agentsdk
 	if in.ExpectedRevision < 1 || in.Title != nil && !conversationText(*in.Title, 512, true) {
 		return agentsdk.Conversation{}, conversationFailure("bad_request", "update_invalid")
 	}
+	if in.MemoryPreference != nil {
+		enabled := false
+		if in.MemoryEnabled != nil {
+			enabled = *in.MemoryEnabled
+		} else {
+			current, err := s.repo.Get(ctx, id, a)
+			if err != nil {
+				return agentsdk.Conversation{}, err
+			}
+			enabled = current.MemoryEnabled
+		}
+		if !validConversationMemoryPreference(enabled, *in.MemoryPreference) {
+			return agentsdk.Conversation{}, conversationFailure("bad_request", "update_invalid")
+		}
+	}
 	if in.Title != nil {
 		title := strings.TrimSpace(*in.Title)
 		in.Title = &title
 	}
 	return s.repo.Update(ctx, id, in, a)
+}
+
+func validConversationMemoryPreference(enabled bool, preference agentsdk.AgentMemoryPreference) bool {
+	switch strings.TrimSpace(preference.Mode) {
+	case "", agentsdk.AgentMemoryPreferenceInherit, agentsdk.AgentMemoryPreferenceDisabled, agentsdk.AgentMemoryPreferenceReferenceOnly, agentsdk.AgentMemoryPreferenceReferenceAndCreate:
+	default:
+		return false
+	}
+	switch strings.TrimSpace(preference.RetrievalMode) {
+	case "", agentsdk.AgentMemoryRetrievalHybrid, agentsdk.AgentMemoryRetrievalLexical:
+	default:
+		return false
+	}
+	if preference.ProjectOnly != (strings.TrimSpace(preference.ProjectID) != "") {
+		return false
+	}
+	if preference.Mode == agentsdk.AgentMemoryPreferenceDisabled && strings.TrimSpace(preference.RetrievalMode) != "" {
+		return false
+	}
+	return enabled || strings.TrimSpace(preference.RetrievalMode) == "" && (strings.TrimSpace(preference.Mode) == "" || preference.Mode == agentsdk.AgentMemoryPreferenceDisabled)
 }
 func (s *ConversationService) Delete(ctx context.Context, id string, revision int64, a agentsdk.ConversationAuthority) error {
 	if err := s.authorizeCollaborationConversation(ctx, id, "manage", a); err != nil {
@@ -819,12 +858,19 @@ func (s *ConversationService) DeleteMemory(ctx context.Context, id string, revis
 func (s *ConversationService) worker(ctx context.Context) {
 	defer s.wg.Done()
 	done := workerplatform.StartWakeableAdaptiveLoop(ctx, workerplatform.Identity{Owner: "agent", Name: "conversation_execution"}, s.options.Poll, max(30*time.Second, s.options.Poll*30), s.wake, func(tickCtx context.Context) (workerplatform.TickResult, error) {
+		result := workerplatform.TickResult{}
+		if recovered, recoveryErr := s.recoverConversationMemoryCandidates(tickCtx); recoveryErr != nil {
+			logging.RecordFailure(tickCtx, "conversation_memory_candidate_recovery_failed", recoveryErr, logging.Failure{Stage: "memory_candidate_recovery", Dependency: "conversation_repository"})
+		} else if recovered > 0 {
+			result.Worked, result.ProcessedCount = true, recovered
+		}
 		claim, ok, err := s.repo.Claim(tickCtx, s.runtimeID, s.owner, s.options.Lease)
 		if err != nil || !ok {
-			return workerplatform.TickResult{}, err
+			return result, err
 		}
 		err = s.execute(tickCtx, claim)
-		return workerplatform.TickResult{Worked: true, ProcessedCount: 1, Attempt: claim.Run.Attempt}, err
+		result.Worked, result.ProcessedCount, result.Attempt = true, result.ProcessedCount+1, claim.Run.Attempt
+		return result, err
 	})
 	<-done
 }
@@ -952,6 +998,9 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 			code = conversationModelFailureCode(err, "execution_authorization_unavailable")
 		}
 	}
+	if code == "" {
+		s.updateConversationMemory(ctx, claim, input, &result)
+	}
 	if ctx.Err() != nil {
 		code = "execution_interrupted"
 	}
@@ -968,11 +1017,26 @@ func (s *ConversationService) execute(parent context.Context, claim agentpersist
 	if finishErr := s.repo.Finish(finishCtx, claim, result, code); finishErr != nil {
 		return errors.Join(err, finishErr)
 	} else {
+		var recordedMemoryRun *agentsdk.ConversationRun
+		if result.Memory != nil && len(result.Memory.Candidates) != 0 {
+			receipts := s.submitCompletedConversationMemory(finishCtx, claim, result.Memory.Candidates)
+			if memoryRepo, ok := s.repo.(agentpersistence.ConversationMemoryEvidenceRepository); ok && len(receipts) != 0 {
+				if recorded, recordErr := memoryRepo.RecordConversationMemoryCandidateReceipts(finishCtx, claim.Run.ConversationID, claim.Run.ID, receipts, claim.Authority); recordErr == nil {
+					recordedMemoryRun = &recorded
+				} else {
+					logging.RecordFailure(finishCtx, "conversation_memory_candidate_receipts_failed", recordErr, logging.Failure{Stage: "memory_candidate_receipts", Dependency: "conversation_repository"})
+				}
+			}
+		}
 		s.closeConversationCodingScope(finishCtx, claim.Authority, claim.Run.ConversationID, claim.Run.ID)
 		s.signalConversationTasks()
 		s.signalConversationFollowUps()
 		finished := claim.Run
 		finished.Status, finished.ErrorCode, finished.Model, finished.Usage = "completed", code, result.Model, result.Usage
+		finished.Memory = result.Memory
+		if recordedMemoryRun != nil {
+			finished = *recordedMemoryRun
+		}
 		if code != "" {
 			finished.Status = "failed"
 		}

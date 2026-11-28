@@ -28,6 +28,35 @@ func historyPrefix(text string, limit int) string {
 	return text[:limit]
 }
 
+func historyMatchExcerpt(text, needle string, limit int) string {
+	if limit <= 0 || len(text) <= limit {
+		return text
+	}
+	position := strings.Index(strings.ToLower(text), strings.ToLower(needle))
+	if position < 0 {
+		return historyPrefix(text, limit)
+	}
+	start := max(0, position-limit/4)
+	end := min(len(text), start+limit)
+	if end == len(text) {
+		start = max(0, end-limit)
+	}
+	for start < len(text) && !utf8.RuneStart(text[start]) {
+		start++
+	}
+	for end > start && end < len(text) && !utf8.RuneStart(text[end]) {
+		end--
+	}
+	excerpt := strings.TrimSpace(text[start:end])
+	if start > 0 {
+		excerpt = "…" + excerpt
+	}
+	if end < len(text) {
+		excerpt += "…"
+	}
+	return excerpt
+}
+
 func (s *ConversationStore) SearchHistory(ctx context.Context, in agentsdk.ConversationHistorySearch, a agentsdk.ConversationAuthority) (agentsdk.ConversationHistorySearchResult, error) {
 	out := agentsdk.ConversationHistorySearchResult{Items: []agentsdk.ConversationHistoryHit{}}
 	if err := conversationAuthority(a); err != nil {
@@ -112,7 +141,7 @@ func (s *ConversationStore) SearchHistory(ctx context.Context, in agentsdk.Conve
 		if !after.IsZero() && message.CreatedAt.Before(after) || !before.IsZero() && !message.CreatedAt.Before(before) || !strings.Contains(strings.ToLower(message.Content), needle) {
 			continue
 		}
-		out.Items = append(out.Items, agentsdk.ConversationHistoryHit{ConversationID: message.ConversationID, MessageID: message.ID, RunID: message.RunID, Seq: message.Seq, Role: message.Role, Excerpt: historyPrefix(message.Content, 256), CreatedAt: message.CreatedAt})
+		out.Items = append(out.Items, agentsdk.ConversationHistoryHit{ConversationID: message.ConversationID, MessageID: message.ID, RunID: message.RunID, Seq: message.Seq, Role: message.Role, Excerpt: historyMatchExcerpt(message.Content, in.Query, 1024), CreatedAt: message.CreatedAt})
 	}
 	if err = rows.Err(); err != nil {
 		return out, err
@@ -122,6 +151,47 @@ func (s *ConversationStore) SearchHistory(ctx context.Context, in agentsdk.Conve
 		out.NextCursor = base64.RawURLEncoding.EncodeToString(conversationJSON(historyCursor{Owner: owner, Query: hash, Before: last}))
 	}
 	return out, nil
+}
+
+func (s *ConversationStore) RecentMemoryHistory(ctx context.Context, excludeConversationID string, limit int, a agentsdk.ConversationAuthority) ([]agentsdk.ConversationHistoryHit, error) {
+	if err := conversationAuthority(a); err != nil {
+		return nil, err
+	}
+	excludeConversationID = strings.TrimSpace(excludeConversationID)
+	if len(excludeConversationID) > 96 || limit < 1 || limit > 128 {
+		return nil, conversationError("bad_request", "history_query_invalid")
+	}
+	predicate := query.And(query.Equal("owner_key", conversationOwner(a)), query.Equal("item_kind", conversationItemMessage))
+	if excludeConversationID != "" {
+		predicate = query.And(predicate, query.NotEqual("conversation_id", excludeConversationID))
+	}
+	scanLimit := min(512, limit*4)
+	statement, args, err := query.NewSelectBuilder(s.store.Renderer(), conversationItemTable).
+		Columns("payload_json").Where(predicate).OrderBy(query.Descending("id")).Limit(scanLimit).Build()
+	if err != nil {
+		return nil, err
+	}
+	rows, err := s.store.Database().QueryContext(ctx, statement, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := make([]agentsdk.ConversationHistoryHit, 0, limit)
+	for rows.Next() && len(out) < limit {
+		var raw []byte
+		var message agentsdk.ConversationMessage
+		if err = rows.Scan(&raw); err != nil {
+			return nil, err
+		}
+		if err = unmarshalDurableJSON(raw, &message); err != nil {
+			return nil, err
+		}
+		if message.Role != "user" && message.Role != "assistant" || strings.TrimSpace(message.Content) == "" {
+			continue
+		}
+		out = append(out, agentsdk.ConversationHistoryHit{ConversationID: message.ConversationID, MessageID: message.ID, RunID: message.RunID, Seq: message.Seq, Role: message.Role, Excerpt: historyPrefix(message.Content, 256), CreatedAt: message.CreatedAt})
+	}
+	return out, rows.Err()
 }
 
 func (s *ConversationStore) HistoryMessage(ctx context.Context, conversationID, messageID string, a agentsdk.ConversationAuthority) (agentsdk.ConversationMessage, error) {

@@ -108,6 +108,9 @@ func (s *AgentTaskRunStore) List(ctx context.Context, workspaceID string, filter
 		}
 		predicates = append(predicates, query.In("status", values...))
 	}
+	if filter.MemoryCandidatesPending {
+		predicates = append(predicates, query.Equal("memory_candidate_state", memoryCandidateStatePending))
+	}
 	limit := filter.Limit
 	if limit <= 0 || limit > 500 {
 		limit = 100
@@ -207,3 +210,4 @@ func agentTaskExactlyOneRow(result sql.Result) (bool, error) {
 }
 
 var _ agentpersistence.AgentTaskRunRepository = (*AgentTaskRunStore)(nil)
+var _ agentpersistence.AgentTaskMemoryRepository = (*AgentTaskRunStore)(nil)

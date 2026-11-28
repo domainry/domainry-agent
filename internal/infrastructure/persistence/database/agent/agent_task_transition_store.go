@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 	"github.com/domainry/domainry-orm/query"
@@ -77,6 +78,9 @@ func (s *AgentTaskRunStore) saveRunningOnce(ctx context.Context, run agentmodel.
 	}
 
 	run.ToolCallCount = current.ToolCallCount
+	run.MemoryPreference = current.MemoryPreference
+	run.MemoryContext = current.MemoryContext
+	run.Evidence.Memory = mergeAgentMemoryEvidence(current.Evidence.Memory, run.Evidence.Memory)
 	run.Evidence.Authorization = mergeAgentAuthorizationEvidence(current.Evidence.Authorization, run.Evidence.Authorization)
 	run.Evidence.ToolInvocationRefs = current.Evidence.ToolInvocationRefs
 	run.Evidence.ToolInvocations = current.Evidence.ToolInvocations
@@ -89,7 +93,7 @@ func (s *AgentTaskRunStore) saveRunningOnce(ctx context.Context, run agentmodel.
 	}
 	next := timeMillis(run.NextAttemptAt)
 	statement, args, buildErr := query.NewWorkspaceUpdateBuilder(s.store.Renderer(), agentRunTable, run.WorkspaceID).
-		Set("status", string(run.Status)).Set("next_attempt_at", next).Set("payload_json", payload).Set("updated_at", run.UpdatedAt.UnixMilli()).
+		Set("status", string(run.Status)).Set("next_attempt_at", next).Set("memory_candidate_state", memoryCandidateState(run.Evidence.Memory)).Set("payload_json", payload).Set("updated_at", run.UpdatedAt.UnixMilli()).
 		Where(agentTaskLeasePredicate(run.ID, owner, token)).Build()
 	if buildErr != nil {
 		return buildErr
@@ -106,6 +110,29 @@ func (s *AgentTaskRunStore) saveRunningOnce(ctx context.Context, run agentmodel.
 		return agentError("conflict", "agent.task.terminal_fence_rejected")
 	}
 	return tx.Commit()
+}
+
+func mergeAgentMemoryEvidence(frozen, incoming *agentsdk.AgentMemoryEvidence) *agentsdk.AgentMemoryEvidence {
+	if frozen == nil && incoming == nil {
+		return nil
+	}
+	if frozen == nil {
+		out := *incoming
+		out.Candidates = append([]agentsdk.AgentMemoryCandidate(nil), incoming.Candidates...)
+		out.CandidateReceipts = append([]agentsdk.AgentMemoryCandidateReceipt(nil), incoming.CandidateReceipts...)
+		return &out
+	}
+	out := *frozen
+	out.Receipts = append([]agentsdk.MemoryContextReceipt(nil), frozen.Receipts...)
+	if incoming != nil {
+		out.Candidates = append([]agentsdk.AgentMemoryCandidate(nil), incoming.Candidates...)
+		if len(frozen.CandidateReceipts) == 0 {
+			out.CandidateReceipts = append([]agentsdk.AgentMemoryCandidateReceipt(nil), incoming.CandidateReceipts...)
+		} else {
+			out.CandidateReceipts = append([]agentsdk.AgentMemoryCandidateReceipt(nil), frozen.CandidateReceipts...)
+		}
+	}
+	return &out
 }
 
 func mergeAgentAuthorizationEvidence(current, incoming []agentmodel.AgentAuthorizationEvidence) []agentmodel.AgentAuthorizationEvidence {

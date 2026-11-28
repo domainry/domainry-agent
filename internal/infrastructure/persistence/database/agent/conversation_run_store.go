@@ -85,7 +85,7 @@ func (s *ConversationStore) saveRun(ctx context.Context, tx *sql.Tx, v, old conv
 		return conversationError("forbidden", "authority_invalid")
 	}
 	v.Run.UpdatedAt = time.Now().UTC()
-	q, args, err := query.NewUpdateBuilder(s.store.Renderer(), agentRunTable).Set("payload_json", conversationJSON(v.Run)).Set("authority_json", conversationJSON(v.Authority)).Set("status", v.Run.Status).Set("lease_owner", v.Owner).Set("fencing_token", v.Fence).Set("lease_expires_at", v.Expires).Set("event_seq", v.EventSeq).Set("updated_at", v.Run.UpdatedAt.UnixMilli()).Where(query.And(conversationRunScope(old.Authority, v.Run.ConversationID), query.Equal("run_id", v.Run.ID), query.Equal("fencing_token", old.Fence), query.Equal("status", old.Run.Status), query.Equal("event_seq", old.EventSeq))).Build()
+	q, args, err := query.NewUpdateBuilder(s.store.Renderer(), agentRunTable).Set("payload_json", conversationJSON(v.Run)).Set("authority_json", conversationJSON(v.Authority)).Set("status", v.Run.Status).Set("memory_candidate_state", memoryCandidateState(v.Run.Memory)).Set("lease_owner", v.Owner).Set("fencing_token", v.Fence).Set("lease_expires_at", v.Expires).Set("event_seq", v.EventSeq).Set("updated_at", v.Run.UpdatedAt.UnixMilli()).Where(query.And(conversationRunScope(old.Authority, v.Run.ConversationID), query.Equal("run_id", v.Run.ID), query.Equal("fencing_token", old.Fence), query.Equal("status", old.Run.Status), query.Equal("event_seq", old.EventSeq))).Build()
 	return conversationCAS(ctx, tx, q, args, err)
 }
 func (s *ConversationStore) event(ctx context.Context, tx *sql.Tx, v *conversationRunRow, kind string, data map[string]any) error {
@@ -376,6 +376,7 @@ func (s *ConversationStore) Finish(ctx context.Context, claim agentpersistence.C
 		v.Run.ErrorCode = code
 		v.Run.Model = result.Model
 		v.Run.Usage = result.Usage
+		v.Run.Memory = result.Memory
 		v.Owner = ""
 		v.Expires = 0
 		if code == "" {

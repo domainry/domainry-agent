@@ -1,0 +1,213 @@
+{
+  "benchmark": "LongMemEval-S retrieval",
+  "dataset_source": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned",
+  "dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+  "dataset_bytes": 277383467,
+  "dataset_cases": 500,
+  "evaluated_cases": 470,
+  "skipped_abstention": 30,
+  "top_k": 10,
+  "modes": [
+    {
+      "mode": "domainry_default_history",
+      "description": "Current built-in history provider: up to four paginated literal queries, then recent original user turns up to the 64-item rank budget; 256-byte excerpts and the production deterministic selector, without model-ranker scores.",
+      "cases": 470,
+      "candidate_recall_any": 0.9319148936170213,
+      "candidate_recall_all": 0.8212765957446808,
+      "average_candidates": 17.129787234042553,
+      "average_selected_items": 10,
+      "average_selected_bytes": 2198.7340425531916,
+      "latency_p50_millis": 0.929,
+      "latency_p95_millis": 1.665,
+      "metrics": {
+        "@1": {
+          "recall_any": 0.6425531914893617,
+          "recall_all": 0.15319148936170213,
+          "ndcg": 0.6425531914893617
+        },
+        "@10": {
+          "recall_any": 0.8702127659574468,
+          "recall_all": 0.7170212765957447,
+          "ndcg": 0.711367584181911
+        },
+        "@3": {
+          "recall_any": 0.7936170212765957,
+          "recall_all": 0.5531914893617021,
+          "ndcg": 0.6626246398350305
+        },
+        "@5": {
+          "recall_any": 0.851063829787234,
+          "recall_all": 0.6680851063829787,
+          "ndcg": 0.697922354950768
+        }
+      },
+      "by_question_type_at_10": {
+        "knowledge-update": {
+          "recall_any": 0.9583333333333334,
+          "recall_all": 0.9166666666666666,
+          "ndcg": 0.8459746625462397
+        },
+        "multi-session": {
+          "recall_any": 0.9173553719008265,
+          "recall_all": 0.5785123966942148,
+          "ndcg": 0.6976699798149086
+        },
+        "single-session-assistant": {
+          "recall_any": 0.6785714285714286,
+          "recall_all": 0.6785714285714286,
+          "ndcg": 0.5079733330463261
+        },
+        "single-session-preference": {
+          "recall_any": 0.43333333333333335,
+          "recall_all": 0.43333333333333335,
+          "ndcg": 0.2623071175445714
+        },
+        "single-session-user": {
+          "recall_any": 0.953125,
+          "recall_all": 0.953125,
+          "ndcg": 0.8845703116911405
+        },
+        "temporal-reasoning": {
+          "recall_any": 0.9212598425196851,
+          "recall_all": 0.7007874015748031,
+          "ndcg": 0.7565850486566956
+        }
+      }
+    },
+    {
+      "mode": "domainry_full_history_lexical",
+      "description": "All history sessions exposed by a source-owned provider, 4096-byte bounded projections, production lexical selector.",
+      "cases": 470,
+      "candidate_recall_any": 1,
+      "candidate_recall_all": 1,
+      "average_candidates": 47.67446808510638,
+      "average_selected_items": 7.493617021276596,
+      "average_selected_bytes": 28648.05744680851,
+      "latency_p50_millis": 2.304,
+      "latency_p95_millis": 3.613,
+      "metrics": {
+        "@1": {
+          "recall_any": 0.5829787234042553,
+          "recall_all": 0.19148936170212766,
+          "ndcg": 0.5829787234042553
+        },
+        "@10": {
+          "recall_any": 0.8893617021276595,
+          "recall_all": 0.6595744680851063,
+          "ndcg": 0.6853287675518489
+        },
+        "@3": {
+          "recall_any": 0.7978723404255319,
+          "recall_all": 0.49148936170212765,
+          "ndcg": 0.6291523565333584
+        },
+        "@5": {
+          "recall_any": 0.8468085106382979,
+          "recall_all": 0.6042553191489362,
+          "ndcg": 0.6627180109240128
+        }
+      },
+      "by_question_type_at_10": {
+        "knowledge-update": {
+          "recall_any": 0.9722222222222222,
+          "recall_all": 0.6944444444444444,
+          "ndcg": 0.6993173563338899
+        },
+        "multi-session": {
+          "recall_any": 0.9008264462809917,
+          "recall_all": 0.47107438016528924,
+          "ndcg": 0.6103814211925506
+        },
+        "single-session-assistant": {
+          "recall_any": 0.9642857142857143,
+          "recall_all": 0.9642857142857143,
+          "ndcg": 0.9360323839063014
+        },
+        "single-session-preference": {
+          "recall_any": 0.5666666666666667,
+          "recall_all": 0.5666666666666667,
+          "ndcg": 0.45554982917278186
+        },
+        "single-session-user": {
+          "recall_any": 0.765625,
+          "recall_all": 0.765625,
+          "ndcg": 0.6669393289739377
+        },
+        "temporal-reasoning": {
+          "recall_any": 0.937007874015748,
+          "recall_all": 0.6535433070866141,
+          "ndcg": 0.7018038874075736
+        }
+      }
+    },
+    {
+      "mode": "domainry_bm25_provider",
+      "description": "All sessions searched by a deterministic source-owned BM25 provider; normalized provider relevance then passes through production policy gates and budgets.",
+      "cases": 470,
+      "candidate_recall_any": 1,
+      "candidate_recall_all": 1,
+      "average_candidates": 47.67446808510638,
+      "average_selected_items": 7.5,
+      "average_selected_bytes": 28646.482978723405,
+      "latency_p50_millis": 2.226,
+      "latency_p95_millis": 3.444,
+      "metrics": {
+        "@1": {
+          "recall_any": 0.8021276595744681,
+          "recall_all": 0.2680851063829787,
+          "ndcg": 0.8021276595744681
+        },
+        "@10": {
+          "recall_any": 0.9446808510638298,
+          "recall_all": 0.7361702127659574,
+          "ndcg": 0.7911602956049354
+        },
+        "@3": {
+          "recall_any": 0.8893617021276595,
+          "recall_all": 0.6212765957446809,
+          "ndcg": 0.7570183547357036
+        },
+        "@5": {
+          "recall_any": 0.9191489361702128,
+          "recall_all": 0.6957446808510638,
+          "ndcg": 0.7768418130015469
+        }
+      },
+      "by_question_type_at_10": {
+        "knowledge-update": {
+          "recall_any": 1,
+          "recall_all": 0.7361111111111112,
+          "ndcg": 0.7994814895554088
+        },
+        "multi-session": {
+          "recall_any": 0.9586776859504132,
+          "recall_all": 0.5206611570247934,
+          "ndcg": 0.7176955200665452
+        },
+        "single-session-assistant": {
+          "recall_any": 1,
+          "recall_all": 1,
+          "ndcg": 1
+        },
+        "single-session-preference": {
+          "recall_any": 0.7666666666666667,
+          "recall_all": 0.7666666666666667,
+          "ndcg": 0.6522175271043444
+        },
+        "single-session-user": {
+          "recall_any": 0.875,
+          "recall_all": 0.875,
+          "ndcg": 0.8347629491942513
+        },
+        "temporal-reasoning": {
+          "recall_any": 0.952755905511811,
+          "recall_all": 0.7480314960629921,
+          "ndcg": 0.7751981039111474
+        }
+      }
+    }
+  ],
+  "started_at": "2026-11-28T02:15:36.564906Z",
+  "duration_millis": 7950,
+  "reproducibility_note": "Official abstention cases are excluded from retrieval scoring because they have no gold answer location. No LLM judge or model API is used."
+}

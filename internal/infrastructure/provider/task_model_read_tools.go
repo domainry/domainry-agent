@@ -290,8 +290,20 @@ func (r *ModelTaskRunner) startWithAuthorizedReadTools(ctx context.Context, requ
 				}
 				pendingGroups = 0
 			}
+			candidates, candidateUsage, candidateErr := r.extractTaskMemoryCandidates(ctx, request, output)
+			usage = aggregateTaskUsage(usage, candidateUsage)
+			if candidateErr != nil {
+				if ctx.Err() != nil {
+					failure := taskModelProviderFailure(ctx.Err())
+					failure.Model, failure.Usage = result.Model, usage
+					return failure, ctx.Err()
+				}
+				usage["memory_candidate_extraction_failed"] = 1
+			} else if len(candidates) != 0 {
+				usage["memory_candidates_extracted"] = len(candidates)
+			}
 			digest := sha256.Sum256([]byte(request.WorkspaceID + "\x00" + request.TaskRunID + "\x00" + request.IdempotencyKey))
-			return agentsdk.TaskResult{ExternalRunID: "model_task_" + hex.EncodeToString(digest[:16]), Status: agentsdk.ProviderRunCompleted, Outcome: "success", Output: output, RawEvidence: []byte(result.Message.Content), Model: result.Model, Usage: usage}, nil
+			return agentsdk.TaskResult{ExternalRunID: "model_task_" + hex.EncodeToString(digest[:16]), Status: agentsdk.ProviderRunCompleted, Outcome: "success", Output: output, RawEvidence: []byte(result.Message.Content), Model: result.Model, Usage: usage, MemoryCandidates: candidates}, nil
 		case "tool_calls":
 			if formatRecovery {
 				return taskModelFailure("provider_contract", "agent.task.model_output_invalid", false), fmt.Errorf("Agent task model returned tools during final format correction")

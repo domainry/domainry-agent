@@ -86,16 +86,24 @@ func (s *ConversationStore) applyLocalTool(ctx context.Context, in agentsdk.Conv
 func (s *ConversationStore) applyPersonalMemory(ctx context.Context, tx *sql.Tx, claim persistence.ConversationClaim, call persistence.ConversationToolExecution) (agentsdk.ConversationToolResult, error) {
 	var result agentsdk.ConversationToolResult
 	var args struct {
-		ID               string   `json:"id"`
-		Kind             string   `json:"kind"`
-		Title            string   `json:"title"`
-		Content          string   `json:"content"`
-		Enabled          bool     `json:"enabled"`
-		Scope            string   `json:"scope"`
-		AppliesTo        []string `json:"applies_to"`
-		Uncertainty      string   `json:"uncertainty"`
-		CorrectionReason string   `json:"correction_reason"`
-		ExpectedRevision int64    `json:"expected_revision"`
+		ID               string     `json:"id"`
+		Kind             string     `json:"kind"`
+		Title            string     `json:"title"`
+		Content          string     `json:"content"`
+		Enabled          bool       `json:"enabled"`
+		Status           string     `json:"status"`
+		DoNotMention     bool       `json:"do_not_mention"`
+		Scope            string     `json:"scope"`
+		AppliesTo        []string   `json:"applies_to"`
+		Uncertainty      string     `json:"uncertainty"`
+		Importance       float64    `json:"importance"`
+		Confidence       float64    `json:"confidence"`
+		SupersedesID     string     `json:"supersedes_id"`
+		ValidFrom        *time.Time `json:"valid_from"`
+		ValidUntil       *time.Time `json:"valid_until"`
+		LastVerifiedAt   *time.Time `json:"last_verified_at"`
+		CorrectionReason string     `json:"correction_reason"`
+		ExpectedRevision int64      `json:"expected_revision"`
 	}
 	if err := unmarshalDurableJSON([]byte(call.Call.Arguments), &args); err != nil {
 		return result, conversationError("bad_request", "memory_invalid")
@@ -115,15 +123,21 @@ func (s *ConversationStore) applyPersonalMemory(ctx context.Context, tx *sql.Tx,
 	if args.Scope == "" {
 		args.Scope = agentsdk.ConversationMemoryScopeWorkspace
 	}
+	if args.Status == "" {
+		args.Status = agentsdk.AgentMemoryStatusActive
+	}
 	args.Title = strings.TrimSpace(args.Title)
 	args.Content = strings.TrimSpace(args.Content)
 	args.Uncertainty = strings.TrimSpace(args.Uncertainty)
 	args.CorrectionReason = strings.TrimSpace(args.CorrectionReason)
 	args.AppliesTo = normalizeStoredMemoryTopics(args.AppliesTo)
-	if call.Call.Name != "memory_save" || !executionText(args.Title, 128, true) || !executionText(args.Content, 512, true) || !executionText(args.Uncertainty, 512, false) || !executionText(args.CorrectionReason, 512, false) || args.ExpectedRevision < 0 || args.ID != "" && (!personalMemoryKey(args.ID) || args.ExpectedRevision == 0) || args.ID == "" && args.ExpectedRevision != 0 || len(args.AppliesTo) > 16 {
+	if call.Call.Name != "memory_save" || !executionText(args.Title, 128, true) || !executionText(args.Content, 512, true) || !executionText(args.Uncertainty, 512, false) || !executionText(args.CorrectionReason, 512, false) || args.ExpectedRevision < 0 || args.ID != "" && (!personalMemoryKey(args.ID) || args.ExpectedRevision == 0) || args.ID == "" && args.ExpectedRevision != 0 || len(args.AppliesTo) > 16 || args.Importance < 0 || args.Importance > 1 || args.Confidence < 0 || args.Confidence > 1 || args.SupersedesID != "" && !personalMemoryKey(args.SupersedesID) || args.SupersedesID != "" && args.SupersedesID == args.ID || args.ValidFrom != nil && args.ValidUntil != nil && !args.ValidUntil.After(*args.ValidFrom) {
 		return result, conversationError("bad_request", "memory_invalid")
 	}
-	if args.Kind != agentsdk.ConversationMemoryKindUserPreference && args.Kind != agentsdk.ConversationMemoryKindProjectFact && args.Kind != agentsdk.ConversationMemoryKindTaskContext || args.Scope != agentsdk.ConversationMemoryScopeWorkspace && args.Scope != agentsdk.ConversationMemoryScopeConversation && args.Scope != agentsdk.ConversationMemoryScopeTask || args.Kind == agentsdk.ConversationMemoryKindTaskContext && args.Scope == agentsdk.ConversationMemoryScopeWorkspace {
+	if args.Status != agentsdk.AgentMemoryStatusActive && args.Status != agentsdk.AgentMemoryStatusRetracted {
+		return result, conversationError("bad_request", "memory_invalid")
+	}
+	if args.Kind != agentsdk.ConversationMemoryKindUserPreference && args.Kind != agentsdk.ConversationMemoryKindProjectFact && args.Kind != agentsdk.ConversationMemoryKindTaskContext || args.Scope != agentsdk.ConversationMemoryScopeWorkspace && args.Scope != agentsdk.ConversationMemoryScopeProject && args.Scope != agentsdk.ConversationMemoryScopeConversation && args.Scope != agentsdk.ConversationMemoryScopeTask || args.Kind == agentsdk.ConversationMemoryKindTaskContext && (args.Scope == agentsdk.ConversationMemoryScopeWorkspace || args.Scope == agentsdk.ConversationMemoryScopeProject) {
 		return result, conversationError("bad_request", "memory_scope_invalid")
 	}
 	for _, topic := range args.AppliesTo {
@@ -136,6 +150,12 @@ func (s *ConversationStore) applyPersonalMemory(ctx context.Context, tx *sql.Tx,
 	}
 	scope := agentsdk.ConversationMemoryScope{Kind: args.Scope}
 	switch args.Scope {
+	case agentsdk.ConversationMemoryScopeProject:
+		conversation, err := s.get(ctx, tx, claim.Run.ConversationID, claim.Authority)
+		if err != nil || conversation.MemoryPreference.ProjectID == "" {
+			return result, conversationError("bad_request", "memory_scope_invalid")
+		}
+		scope.ProjectID = conversation.MemoryPreference.ProjectID
 	case agentsdk.ConversationMemoryScopeConversation:
 		scope.ConversationID = claim.Run.ConversationID
 	case agentsdk.ConversationMemoryScopeTask:
@@ -152,7 +172,7 @@ func (s *ConversationStore) applyPersonalMemory(ctx context.Context, tx *sql.Tx,
 	if args.CorrectionReason != "" {
 		source.Kind = "user_correction"
 	}
-	in := agentsdk.ConversationMemoryWrite{ID: args.ID, Kind: args.Kind, Title: args.Title, Content: args.Content, Enabled: args.Enabled, Scope: scope, AppliesTo: args.AppliesTo, Source: &source, Uncertainty: args.Uncertainty, CorrectionReason: args.CorrectionReason, ExpectedRevision: args.ExpectedRevision}
+	in := agentsdk.ConversationMemoryWrite{ID: args.ID, Kind: args.Kind, Title: args.Title, Content: args.Content, Enabled: args.Enabled, Status: args.Status, DoNotMention: args.DoNotMention, Scope: scope, AppliesTo: args.AppliesTo, Source: &source, Uncertainty: args.Uncertainty, Importance: args.Importance, Confidence: args.Confidence, SupersedesID: args.SupersedesID, ValidFrom: cloneStoredTime(args.ValidFrom), ValidUntil: cloneStoredTime(args.ValidUntil), LastVerifiedAt: cloneStoredTime(args.LastVerifiedAt), CorrectionReason: args.CorrectionReason, ExpectedRevision: args.ExpectedRevision}
 	var memory agentsdk.ConversationMemory
 	if err := s.writeMemory(ctx, tx, in, claim.Authority, &memory, true); err != nil {
 		return result, err

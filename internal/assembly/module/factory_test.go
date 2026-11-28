@@ -55,7 +55,7 @@ func TestModuleMigrationCreatesUnifiedAgentTablesAndIndexes(t *testing.T) {
 	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='_agent_runs'`).Scan(&count); err != nil || count != 1 {
 		t.Fatalf("unified run table=%d err=%v", count, err)
 	}
-	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='index' AND name LIKE 'idx_agent_run_%'`).Scan(&count); err != nil || count != 7 {
+	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='index' AND name LIKE 'idx_agent_run_%'`).Scan(&count); err != nil || count != 8 {
 		t.Fatalf("unified run indexes=%d err=%v", count, err)
 	}
 	if err := host.database.QueryRowContext(t.Context(), `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name IN ('_agent_task_runs','_agent_interactive_runs','_agent_conversation_runs')`).Scan(&count); err != nil || count != 0 {

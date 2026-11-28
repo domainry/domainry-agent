@@ -26,12 +26,16 @@ type recordingTaskModel struct {
 }
 
 type taskReadModel struct {
-	steps  []agentsdk.ConversationStepRequest
-	calls  []agentsdk.ConversationToolCall
-	stream bool
+	steps        []agentsdk.ConversationStepRequest
+	calls        []agentsdk.ConversationToolCall
+	stream       bool
+	memoryResult string
 }
 
-func (*taskReadModel) GenerateConversation(context.Context, agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
+func (m *taskReadModel) GenerateConversation(_ context.Context, request agentsdk.ConversationModelRequest) (agentsdk.ConversationModelResult, error) {
+	if request.Purpose == "memory" && m.memoryResult != "" {
+		return agentsdk.ConversationModelResult{Content: m.memoryResult, Model: "task-reader", Usage: map[string]any{"prompt_tokens": float64(3)}}, nil
+	}
 	return agentsdk.ConversationModelResult{}, fmt.Errorf("tool-enabled task used one-shot generation")
 }
 
@@ -145,6 +149,49 @@ func TestModelTaskRunnerUsesAuthorizedReadGatewayBeforeStructuredResult(t *testi
 	}
 	if events[7].Output.(map[string]any)["body"] != "已授权的原文" || events[15].FinishReason != "stop" {
 		t.Fatalf("tool result or final decision missing: %+v", events)
+	}
+}
+
+func TestToolEnabledTaskExtractsMemoryWithoutRiskingBusinessCompletion(t *testing.T) {
+	memoryResult := `{"candidates":[{"kind":"user_preference","scope":"workspace","title":"Response style","content":"Use concise Chinese","applies_to":["responses"],"confidence":0.95}]}`
+	optionalRead := hostReadTestDefinition("find_optional_context", "Read optional context when needed.")
+	request := agentsdk.TaskRequest{
+		TaskRunID: "task-memory", WorkspaceID: "workspace-1", IdempotencyKey: "task-memory-key", ExecutionCredential: "credential",
+		Task: agentsdk.AgentTaskDefinition{
+			Instruction: "Return a summary.", OutputSchema: map[string]any{"type": "object"},
+			Memory:          agentsdk.AgentMemoryPolicy{ContractVersion: agentsdk.AgentMemoryPolicyVersion, Enabled: true, ReferenceSaved: true, RetrievalMode: agentsdk.AgentMemoryRetrievalHybrid, CandidateMode: agentsdk.AgentMemoryCandidatePersonal},
+			ExecutionLimits: agentsdk.AgentExecutionLimits{MaxSteps: 2, MaxToolCalls: 1, MaxOutputBytes: 4096},
+		},
+		AllowedTools: []string{optionalRead.Key}, ReadTools: []agentsdk.ConversationToolDefinition{optionalRead},
+	}
+	for _, tc := range []struct {
+		name             string
+		failMemoryEvents bool
+		wantCandidates   int
+	}{
+		{name: "candidate extracted", wantCandidates: 1},
+		{name: "candidate event failed", failMemoryEvents: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			model := &taskReadModel{memoryResult: memoryResult, calls: []agentsdk.ConversationToolCall{{ID: "optional-read", Name: optionalRead.Key, Arguments: `{"locator":"case-1"}`}}}
+			runner := NewModelTaskRunner(model)
+			runner.BindToolInvoker(func(context.Context, agentsdk.TaskRequest, agentsdk.ConversationToolCall, map[string]any) (any, error) {
+				return map[string]any{"summary": "optional context"}, nil
+			})
+			runner.BindEventPublisher(func(_ context.Context, event agentmodulehost.TaskRuntimeEvent) error {
+				if tc.failMemoryEvents && event.Step >= 2 {
+					return fmt.Errorf("memory audit unavailable")
+				}
+				return nil
+			})
+			result, err := runner.Start(t.Context(), request)
+			if err != nil || result.Status != agentsdk.ProviderRunCompleted || result.Output["summary"] != "依据已授权来源" || len(result.MemoryCandidates) != tc.wantCandidates {
+				t.Fatalf("result=%+v err=%v", result, err)
+			}
+			if tc.failMemoryEvents && result.Usage["memory_candidate_extraction_failed"] != 1 {
+				t.Fatalf("optional memory failure was not recorded: %+v", result.Usage)
+			}
+		})
 	}
 }
 

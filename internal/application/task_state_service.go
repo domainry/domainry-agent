@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	agentsdk "github.com/domainry/domainry-agent-sdk"
 	agentpersistence "github.com/domainry/domainry-agent-sdk/persistence"
 	agentmodel "github.com/domainry/domainry-agent-sdk/state"
 )
@@ -16,6 +17,35 @@ import (
 type TaskStateService struct {
 	repository agentpersistence.AgentTaskRunRepository
 	now        func() time.Time
+}
+
+func (s *TaskStateService) FreezeMemoryContext(ctx context.Context, run agentmodel.AgentTaskRun, owner string, token int64, snapshot agentsdk.MemoryContextSnapshot) (agentmodel.AgentTaskRun, error) {
+	if s == nil || s.repository == nil {
+		return agentmodel.AgentTaskRun{}, unavailable("agent.task.repository_unavailable")
+	}
+	repository, ok := s.repository.(agentpersistence.AgentTaskMemoryRepository)
+	owner = strings.TrimSpace(owner)
+	if !ok {
+		return agentmodel.AgentTaskRun{}, unavailable("agent.task.memory_state_unavailable")
+	}
+	if run.Status != agentmodel.AgentTaskRunRunning || !run.Lease.Matches(owner, token) || strings.TrimSpace(snapshot.ID) == "" || strings.TrimSpace(snapshot.ContentHash) == "" || snapshot.FrozenAt.IsZero() {
+		return agentmodel.AgentTaskRun{}, conflict("agent.task.memory_fence_rejected")
+	}
+	return repository.FreezeAgentTaskMemoryContext(ctx, run, owner, token, snapshot)
+}
+
+func (s *TaskStateService) RecordMemoryCandidateReceipts(ctx context.Context, run agentmodel.AgentTaskRun, receipts []agentsdk.AgentMemoryCandidateReceipt) (agentmodel.AgentTaskRun, error) {
+	if s == nil || s.repository == nil {
+		return agentmodel.AgentTaskRun{}, unavailable("agent.task.repository_unavailable")
+	}
+	repository, ok := s.repository.(agentpersistence.AgentTaskMemoryRepository)
+	if !ok {
+		return agentmodel.AgentTaskRun{}, unavailable("agent.task.memory_state_unavailable")
+	}
+	if !run.Status.Terminal() || run.Evidence.Memory == nil || len(run.Evidence.Memory.Candidates) == 0 || len(receipts) == 0 {
+		return agentmodel.AgentTaskRun{}, conflict("agent.task.memory_candidate_state_invalid")
+	}
+	return repository.SaveAgentTaskMemoryCandidateReceipts(ctx, run, receipts)
 }
 
 func NewTaskStateService(repository agentpersistence.AgentTaskRunRepository) *TaskStateService {

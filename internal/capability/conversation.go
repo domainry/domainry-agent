@@ -17,9 +17,10 @@ func ConversationTools() []agentsdk.ConversationToolDefinition {
 		{"calculate", "1"},
 		{"history_search", "1"},
 		{"history_read", "1"},
-		{"memory_search", "2"},
-		{"memory_save", "2"},
-		{"memory_forget", "2"},
+		{"memory_search", "3"},
+		{"memory_summary", "1"},
+		{"memory_save", "3"},
+		{"memory_forget", "3"},
 	} {
 		definition, found := agentsdk.PersonalConversationToolDefinition(item.key, item.version)
 		if found {

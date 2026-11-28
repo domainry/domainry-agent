@@ -245,3 +245,39 @@ func TestPersonalMemoryChangesRetainSourceCorrectionAndDeleteTombstone(t *testin
 		t.Fatalf("memory history=%v error=%v", operations, err)
 	}
 }
+
+func TestActivatingMemoryCandidateSupersedesPreviousRevisionAtomically(t *testing.T) {
+	store, _ := openAgentStore(t)
+	repo := newTestConversationStore(t, store)
+	a := conversationTestAuthority()
+	previous, err := repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{
+		ID: "preference:language:old", Kind: agentsdk.ConversationMemoryKindUserPreference, Title: "Language", Content: "Answer in English",
+		Enabled: true, Status: agentsdk.AgentMemoryStatusActive, Scope: agentsdk.ConversationMemoryScope{Kind: agentsdk.ConversationMemoryScopeWorkspace},
+	}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	candidate, err := repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{
+		ID: "preference:language:new", Kind: agentsdk.ConversationMemoryKindUserPreference, Title: "Language", Content: "Answer in Chinese",
+		Enabled: false, Status: agentsdk.AgentMemoryStatusCandidate, Scope: previous.Scope, SupersedesID: previous.ID,
+	}, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement, err := repo.WriteMemory(t.Context(), agentsdk.ConversationMemoryWrite{
+		ID: candidate.ID, Kind: candidate.Kind, Title: candidate.Title, Content: candidate.Content,
+		Enabled: true, Status: agentsdk.AgentMemoryStatusActive, Scope: candidate.Scope, SupersedesID: candidate.SupersedesID, ExpectedRevision: candidate.Revision,
+	}, a)
+	if err != nil || replacement.Status != agentsdk.AgentMemoryStatusActive {
+		t.Fatalf("replacement=%+v err=%v", replacement, err)
+	}
+	memories, err := repo.Memories(t.Context(), a)
+	if err != nil || len(memories) != 2 {
+		t.Fatalf("memories=%+v err=%v", memories, err)
+	}
+	byID := map[string]agentsdk.ConversationMemory{memories[0].ID: memories[0], memories[1].ID: memories[1]}
+	superseded := byID[previous.ID]
+	if superseded.Status != agentsdk.AgentMemoryStatusSuperseded || superseded.Enabled || superseded.Revision != previous.Revision+1 {
+		t.Fatalf("previous memory was not superseded atomically: %+v", superseded)
+	}
+}

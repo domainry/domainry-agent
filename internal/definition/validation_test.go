@@ -21,6 +21,29 @@ func TestValidateTaskRequest(t *testing.T) {
 	}
 }
 
+func TestValidateTaskMemoryRetrievalModeCanOnlyBeNarrowed(t *testing.T) {
+	request := validTaskRequest()
+	request.Task.Memory = agentsdk.AgentMemoryPolicy{
+		ContractVersion: agentsdk.AgentMemoryPolicyVersion,
+		Enabled:         true, ReferenceHistory: true, RetrievalMode: agentsdk.AgentMemoryRetrievalHybrid,
+		CandidateMode: agentsdk.AgentMemoryCandidateDisabled,
+	}
+	request.MemoryPreference.RetrievalMode = agentsdk.AgentMemoryRetrievalLexical
+	if err := ValidateTaskRequest(request); err != nil {
+		t.Fatalf("hybrid policy did not allow lexical preference: %v", err)
+	}
+	request.Task.Memory.RetrievalMode = agentsdk.AgentMemoryRetrievalLexical
+	request.MemoryPreference.RetrievalMode = agentsdk.AgentMemoryRetrievalHybrid
+	if err := ValidateTaskRequest(request); err == nil {
+		t.Fatal("lexical policy allowed semantic retrieval preference")
+	}
+	request.MemoryPreference.RetrievalMode = ""
+	request.Task.Memory.RetrievalMode = ""
+	if err := ValidateTaskRequest(request); err == nil {
+		t.Fatal("enabled memory policy accepted an unspecified retrieval mode")
+	}
+}
+
 func TestValidateInteractiveRequest(t *testing.T) {
 	request := agentsdk.InteractiveRequest{RunID: "run", SessionID: "session", IdempotencyKey: "key", Message: "hello", Context: agentsdk.GlobalContext{ContractVersion: agentsdk.GlobalAgentContextContractVersion, ContextRevision: "revision", EntrypointKey: "assistant", AgentKey: "assistant", Principal: agentsdk.PrincipalReference{WorkspaceID: "workspace", UserID: "user"}}, Candidates: []agentsdk.RouteCandidate{{RouteType: agentsdk.AgentRouteTask, TargetKey: "review"}}}
 	if err := ValidateInteractiveRequest(request); err != nil {

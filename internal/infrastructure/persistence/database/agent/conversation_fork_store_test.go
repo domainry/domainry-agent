@@ -11,7 +11,7 @@ import (
 
 func completedForkSource(t *testing.T, repo *ConversationStore, clientID string, authority agentsdk.ConversationAuthority) (agentsdk.Conversation, agentsdk.ConversationRun) {
 	t.Helper()
-	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: clientID, Title: "Source", MemoryEnabled: true}, authority)
+	conversation, err := repo.Create(t.Context(), agentsdk.ConversationCreate{ClientID: clientID, Title: "Source", MemoryEnabled: true, MemoryPreference: agentsdk.AgentMemoryPreference{RetrievalMode: agentsdk.AgentMemoryRetrievalLexical}}, authority)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,7 +65,7 @@ func TestConversationForkIsAtomicIdempotentAndOwnerScoped(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if child.ID == source.ID || child.Fork == nil || child.Fork.ConversationID != source.ID || child.Fork.RunID != run.ID || child.Fork.BoundaryEventSeq != run.LastEventSeq || child.ActiveRunID != "" || child.Revision != 1 || !child.MemoryEnabled {
+	if child.ID == source.ID || child.Fork == nil || child.Fork.ConversationID != source.ID || child.Fork.RunID != run.ID || child.Fork.BoundaryEventSeq != run.LastEventSeq || child.ActiveRunID != "" || child.Revision != 1 || !child.MemoryEnabled || child.MemoryPreference.RetrievalMode != agentsdk.AgentMemoryRetrievalLexical {
 		t.Fatalf("fork=%+v source=%+v run=%+v", child, source, run)
 	}
 	replayed, err := repo.ForkConversation(t.Context(), request, seed, authority)

@@ -1,0 +1,136 @@
+{
+  "benchmark": "LongMemEval-S retrieval",
+  "dataset_source": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned",
+  "dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+  "dataset_bytes": 277383467,
+  "dataset_cases": 500,
+  "evaluated_cases": 470,
+  "skipped_abstention": 30,
+  "skipped_split": 0,
+  "split": "all",
+  "semantic_weight": 0.5,
+  "top_k": 10,
+  "modes": [
+    {
+      "mode": "domainry_hybrid_turn_provider",
+      "description": "All user and assistant turns searched with a deterministic word, stem and character hybrid; session scores use both whole-session and best-turn evidence, while compact top-turn projections pass through production policy gates and budgets.",
+      "cases": 470,
+      "candidate_recall_any": 1,
+      "candidate_recall_all": 1,
+      "average_candidates": 47.67446808510638,
+      "average_selected_items": 10,
+      "average_selected_bytes": 24598.934042553192,
+      "latency_p50_millis": 93.502,
+      "latency_p95_millis": 117.244,
+      "metrics": {
+        "@1": {
+          "recall_any": 0.8914893617021277,
+          "recall_all": 0.30638297872340425,
+          "evidence_recall": 0.5701063829787233,
+          "precision": 0.8914893617021277,
+          "mrr": 0.8914893617021277,
+          "ndcg": 0.8914893617021277
+        },
+        "@10": {
+          "recall_any": 0.9702127659574468,
+          "recall_all": 0.8574468085106383,
+          "evidence_recall": 0.9197163120567377,
+          "precision": 0.16936170212765986,
+          "mrr": 0.9170111448834853,
+          "ndcg": 0.8701290554297418
+        },
+        "@3": {
+          "recall_any": 0.9361702127659575,
+          "recall_all": 0.7276595744680852,
+          "evidence_recall": 0.8350000000000001,
+          "precision": 0.4907801418439715,
+          "mrr": 0.9109929078014186,
+          "ndcg": 0.8417754609987876
+        },
+        "@5": {
+          "recall_any": 0.951063829787234,
+          "recall_all": 0.7957446808510639,
+          "evidence_recall": 0.8787234042553191,
+          "precision": 0.31787234042553236,
+          "mrr": 0.9142907801418441,
+          "ndcg": 0.8545133987960748
+        }
+      },
+      "by_question_type_at_10": {
+        "knowledge-update": {
+          "recall_any": 1,
+          "recall_all": 0.9583333333333334,
+          "evidence_recall": 0.9791666666666666,
+          "precision": 0.19583333333333308,
+          "mrr": 1,
+          "ndcg": 0.9379961480181653
+        },
+        "multi-session": {
+          "recall_any": 0.9834710743801653,
+          "recall_all": 0.71900826446281,
+          "evidence_recall": 0.8639118457300275,
+          "precision": 0.2190082644628097,
+          "mrr": 0.928866587957497,
+          "ndcg": 0.8033557454121254
+        },
+        "single-session-assistant": {
+          "recall_any": 1,
+          "recall_all": 1,
+          "evidence_recall": 1,
+          "precision": 0.09999999999999994,
+          "mrr": 1,
+          "ndcg": 1
+        },
+        "single-session-preference": {
+          "recall_any": 0.7666666666666667,
+          "recall_all": 0.7666666666666667,
+          "evidence_recall": 0.7666666666666667,
+          "precision": 0.07666666666666669,
+          "mrr": 0.5153174603174603,
+          "ndcg": 0.6096287445987338
+        },
+        "single-session-user": {
+          "recall_any": 1,
+          "recall_all": 1,
+          "evidence_recall": 1,
+          "precision": 0.0999999999999999,
+          "mrr": 0.9817708333333334,
+          "ndcg": 0.994233277399554
+        },
+        "temporal-reasoning": {
+          "recall_any": 0.9606299212598425,
+          "recall_all": 0.8188976377952756,
+          "evidence_recall": 0.899475065616798,
+          "precision": 0.19448818897637768,
+          "mrr": 0.8843269591301088,
+          "ndcg": 0.8370007567580332
+        }
+      }
+    }
+  ],
+  "started_at": "2026-11-28T06:45:15.902752Z",
+  "duration_millis": 47199,
+  "reproducibility_note": "Official abstention cases are excluded from retrieval scoring because they have no gold answer location. No LLM judge is used. Model-generated caches are content-addressed and created before the credential-free scoring process.",
+  "integrity": {
+    "dataset_hash_verified": true,
+    "gold_input_isolation": "retrievers receive longMemEvalRetrievalInput, which cannot represent answer, has_answer, or answer_session_ids",
+    "model_apis_used": false,
+    "retrieval_inputs": [
+      "question",
+      "question_date",
+      "haystack_session_ids",
+      "haystack_dates",
+      "turn_role",
+      "turn_content"
+    ],
+    "algorithm_version": "domainry-longmemeval-v5",
+    "go_version": "go1.27.1",
+    "goos": "darwin",
+    "goarch": "arm64",
+    "executable_sha256": "f6cfba5cd6a26ffda49cfc3b389f16eb2c3491dbaa1aa18ef06271124fc63bd6",
+    "environment_clean": true,
+    "environment_keys": [
+      "PATH"
+    ]
+  }
+}

@@ -39,6 +39,9 @@ type TaskExecutionService struct {
 	wakeups           chan taskLocator
 	attachmentStorage agentsdk.TaskAttachmentStorage
 	runtimeID         string
+	memoryProviders   []agentsdk.MemoryContextProvider
+	memoryRanker      agentsdk.MemoryContextRanker
+	memoryRuntimeID   string
 
 	mu     sync.RWMutex
 	host   modulehost.TaskHost
@@ -69,6 +72,36 @@ func (s *TaskExecutionService) ConfigureAttachments(storage agentsdk.TaskAttachm
 	}
 	s.attachmentStorage, s.runtimeID = storage, strings.TrimSpace(runtimeID)
 	return nil
+}
+
+// ConfigureMemory binds Agent-owned personal and conversation-history memory.
+// Product-owned project or business memory remains an optional provider on the
+// current TaskHost and is merged under the task's definition policy.
+func (s *TaskExecutionService) ConfigureMemory(providers []agentsdk.MemoryContextProvider, runtimeID string) error {
+	if s == nil || len(providers) == 0 || strings.TrimSpace(runtimeID) == "" {
+		return fmt.Errorf("Agent task memory provider is incomplete")
+	}
+	for _, provider := range providers {
+		if provider == nil {
+			return fmt.Errorf("Agent task memory provider is incomplete")
+		}
+	}
+	s.mu.Lock()
+	s.memoryProviders, s.memoryRuntimeID = append([]agentsdk.MemoryContextProvider(nil), providers...), strings.TrimSpace(runtimeID)
+	s.mu.Unlock()
+	return nil
+}
+
+// ConfigureMemoryRanker adds optional semantic relevance without changing
+// provider ownership or authorization. Ranking failure degrades to the
+// deterministic lexical selector and never fails an otherwise valid task.
+func (s *TaskExecutionService) ConfigureMemoryRanker(ranker agentsdk.MemoryContextRanker) {
+	if s == nil {
+		return
+	}
+	s.mu.Lock()
+	s.memoryRanker = ranker
+	s.mu.Unlock()
 }
 
 func (s *TaskExecutionService) BindHost(host modulehost.TaskHost) error {
@@ -158,7 +191,8 @@ func (s *TaskExecutionService) StartRun(ctx context.Context, request agentsdk.Ta
 		ID: strings.TrimSpace(request.TaskRunID), WorkspaceID: strings.TrimSpace(request.WorkspaceID),
 		ProcessID: strings.TrimSpace(request.ProcessID), NodeInstanceID: strings.TrimSpace(request.NodeInstanceID), TaskKey: strings.TrimSpace(request.Task.Key), TaskVersion: strings.TrimSpace(request.Task.Version),
 		Status: agentmodel.AgentTaskRunPending, Identity: request.Identity, Input: cloneTaskMap(request.Input), Attachments: attachments,
-		MaxAttempts: maxAttempts, TimeoutSeconds: timeoutSeconds,
+		MemoryPreference: request.MemoryPreference,
+		MaxAttempts:      maxAttempts, TimeoutSeconds: timeoutSeconds,
 		MaxToolCalls: agentTaskMaxToolCalls(request.Task.ExecutionLimits.MaxToolCalls), MaxCostUnits: execution.TaskCostBudgetUnits(request.Task.ExecutionLimits.CostBudget),
 		IdempotencyKey: strings.TrimSpace(request.IdempotencyKey),
 		Evidence: agentmodel.AgentTaskExecutionEvidence{
@@ -190,8 +224,8 @@ func sameTaskCommand(current, requested agentmodel.AgentTaskRun) bool {
 	if current.ID != requested.ID || current.TaskKey != requested.TaskKey || current.TaskVersion != requested.TaskVersion || current.IdempotencyKey != requested.IdempotencyKey || current.Identity.Initiator != requested.Identity.Initiator {
 		return false
 	}
-	left, leftErr := json.Marshal(map[string]any{"input": current.Input, "attachments": current.Attachments})
-	right, rightErr := json.Marshal(map[string]any{"input": requested.Input, "attachments": requested.Attachments})
+	left, leftErr := json.Marshal(map[string]any{"input": current.Input, "attachments": current.Attachments, "memory_preference": current.MemoryPreference})
+	right, rightErr := json.Marshal(map[string]any{"input": requested.Input, "attachments": requested.Attachments, "memory_preference": requested.MemoryPreference})
 	return leftErr == nil && rightErr == nil && string(left) == string(right)
 }
 
@@ -315,6 +349,16 @@ func (s *TaskExecutionService) processRecovery(ctx context.Context) (workerplatf
 		result.ProcessedCount++
 		result.Attempt = claim.Run.Attempt
 	}
+	pendingMemory, listErr := s.state.ListForWorker(ctx, scope, agentpersistence.AgentTaskRunFilter{MemoryCandidatesPending: true, Limit: 100})
+	if listErr != nil {
+		return result, listErr
+	}
+	for _, run := range pendingMemory {
+		if _, recovered := s.recoverTaskMemoryCandidates(ctx, run); recovered {
+			result.Worked = true
+			result.ProcessedCount++
+		}
+	}
 	terminal, listErr := s.state.ListForWorker(ctx, scope, agentpersistence.AgentTaskRunFilter{Statuses: []agentmodel.AgentTaskRunStatus{
 		agentmodel.AgentTaskRunSucceeded, agentmodel.AgentTaskRunManualReview, agentmodel.AgentTaskRunRejected,
 		agentmodel.AgentTaskRunNoResult, agentmodel.AgentTaskRunFailed, agentmodel.AgentTaskRunCancelled, agentmodel.AgentTaskRunDeadLetter,
@@ -346,6 +390,17 @@ func (s *TaskExecutionService) executeClaim(parent context.Context, claim agentp
 	authorization, err := authorizeTaskRun(parent, host, run)
 	if err != nil {
 		return errors.Join(err, s.failClaim(parent, run, claim.Lease, "authorization", errorCode(err, "agent.task.authorization_failed"), false))
+	}
+	memoryContext, err := s.resolveTaskMemoryContext(parent, run, authorization)
+	if err != nil {
+		return errors.Join(err, s.failClaim(parent, run, claim.Lease, "memory", errorCode(err, "agent.task.memory_resolution_failed"), false))
+	}
+	if memoryContext != nil {
+		run.MemoryContext = memoryContext
+		run.Evidence.Memory = &agentsdk.AgentMemoryEvidence{
+			SnapshotID: memoryContext.ID, ContentHash: memoryContext.ContentHash, ItemCount: len(memoryContext.Items),
+			Receipts: append([]agentsdk.MemoryContextReceipt(nil), memoryContext.Receipts...), Ranking: memoryContext.Ranking,
+		}
 	}
 	credential, err := host.IssueTaskCredential(parent, modulehost.TaskCredentialRequest{
 		WorkspaceID: run.WorkspaceID, ProcessID: run.ProcessID, TaskRunID: run.ID,
@@ -388,6 +443,20 @@ func (s *TaskExecutionService) executeClaim(parent context.Context, claim agentp
 		}
 		return errors.Join(executeErr, s.failClaim(parent, run, claim.Lease, "provider", valueOrDefault(result.ErrorCode, errorCode(executeErr, "agent.task.execution_failed")), providerRetryable(result, executeErr)))
 	}
+	if len(result.MemoryCandidates) != 0 && !validateTaskMemoryCandidates(result.MemoryCandidates, run, authorization.Task.Memory) {
+		logging.RecordFailure(parent, "agent_task_memory_candidates_invalid", fmt.Errorf("task provider returned invalid memory candidates"), logging.Failure{Stage: "memory_candidate_validation", Dependency: "task_runner"})
+		result.MemoryCandidates = nil
+		if result.Usage == nil {
+			result.Usage = map[string]any{}
+		}
+		result.Usage["memory_candidate_extraction_failed"] = 1
+	}
+	if len(result.MemoryCandidates) != 0 {
+		if run.Evidence.Memory == nil {
+			run.Evidence.Memory = &agentsdk.AgentMemoryEvidence{}
+		}
+		run.Evidence.Memory.Candidates = append([]agentsdk.AgentMemoryCandidate(nil), result.MemoryCandidates...)
+	}
 	completion, completionErr := taskCompletion(authorization, result, externalRunID, run.Evidence)
 	if completionErr != nil {
 		return errors.Join(completionErr, s.failClaim(parent, run, claim.Lease, "output_validation", errorCode(completionErr, "agent.task.output_invalid"), false))
@@ -398,6 +467,16 @@ func (s *TaskExecutionService) executeClaim(parent context.Context, claim agentp
 	completed, err := s.state.Complete(parent, run, claim.Lease.Owner, claim.Lease.FencingToken, completion)
 	if err != nil {
 		return err
+	}
+	if completed.Evidence.Memory != nil && len(completed.Evidence.Memory.Candidates) != 0 {
+		receipts := s.submitTaskMemoryCandidates(parent, completed, authorization, completed.Evidence.Memory.Candidates)
+		if memoryState, ok := s.state.(agentpersistence.AgentTaskMemoryStateService); ok && len(receipts) != 0 {
+			if recorded, recordErr := memoryState.RecordMemoryCandidateReceipts(parent, completed, receipts); recordErr == nil {
+				completed = recorded
+			} else {
+				logging.RecordFailure(parent, "agent_task_memory_receipts_failed", recordErr, logging.Failure{Stage: "memory_candidate_receipts", Dependency: "agent_state"})
+			}
+		}
 	}
 	if completed.ProcessID != "" {
 		return s.notifyWorkflow(parent, completed)
@@ -419,6 +498,7 @@ func (s *TaskExecutionService) runProvider(ctx context.Context, run agentmodel.A
 		AllowedTools:        append([]string(nil), authorization.AllowedTools...),
 		ReadTools:           append([]agentsdk.ConversationToolDefinition(nil), authorization.ReadTools...),
 		ExecutionCredential: credential, IdempotencyKey: run.IdempotencyKey,
+		MemoryPreference: run.MemoryPreference, MemoryContext: run.MemoryContext,
 	}
 	if run.TimeoutSeconds > 0 {
 		request.Deadline = time.Now().UTC().Add(time.Duration(run.TimeoutSeconds) * time.Second)

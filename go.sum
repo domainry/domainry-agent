@@ -9,8 +9,8 @@ github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dlclark/regexp2 v1.11.0 h1:G/nrcoOa7ZXlpoa/91N3X7mM3r8eIlMBBJZvsz/mxKI=
 github.com/dlclark/regexp2 v1.11.0/go.mod h1:DHkYz0B9wPfa6wondMfaivmHpzrQ3v9q8cnmRbL6yW8=
-github.com/domainry/domainry-agent-sdk v0.1.64 h1:8JjyPVYwgWLjFSllq8LoQohBcp1AbI73zTf2YlRkw1Q=
-github.com/domainry/domainry-agent-sdk v0.1.64/go.mod h1:R+CON4e9ct2W+GjWD0+qI7HdPe87Wz6UTX82BJQiozc=
+github.com/domainry/domainry-agent-sdk v0.1.65 h1:FPvGDVJNITVhOkV1X5IQSd1kc23SH0qOVDY/nzH3/RI=
+github.com/domainry/domainry-agent-sdk v0.1.65/go.mod h1:R+CON4e9ct2W+GjWD0+qI7HdPe87Wz6UTX82BJQiozc=
 github.com/domainry/domainry-connector-sdk v0.1.25 h1:rHcy68tLo1QaqqEOE377ReNuQwujJCf36UdvvVLVDp4=
 github.com/domainry/domainry-connector-sdk v0.1.25/go.mod h1:u3QMI5PqDxkZBQunhzODrLD93ap8ZDEbnBNF98GxnNU=
 github.com/domainry/domainry-foundation v0.2.29 h1:tXFxWk9Nx0UmizInWLRNQV7FrEZWRH3+Uq2QAIfRxH0=

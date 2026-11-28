@@ -272,7 +272,7 @@ func (s *ConversationStore) Create(ctx context.Context, in agentsdk.Conversation
 			if old.Archived {
 				return c, conversationError("conflict", "binding_archived")
 			}
-			if old.AgentID != in.AgentID || old.MemoryEnabled != in.MemoryEnabled {
+			if old.AgentID != in.AgentID || old.MemoryEnabled != in.MemoryEnabled || old.MemoryPreference != in.MemoryPreference {
 				return c, conversationError("conflict", "binding_conflict")
 			}
 			return old, nil
@@ -282,7 +282,7 @@ func (s *ConversationStore) Create(ctx context.Context, in agentsdk.Conversation
 	}
 	now := time.Now().UTC().Truncate(time.Millisecond)
 	titleOrigin, titleStatus := conversationTitleState(in.Title)
-	c = agentsdk.Conversation{ID: conversationID("conv_"), AgentID: in.AgentID, Title: in.Title, TitleOrigin: titleOrigin, TitleStatus: titleStatus, RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, UserID: a.UserID, MemoryEnabled: in.MemoryEnabled, Revision: 1, CreatedAt: now, UpdatedAt: now}
+	c = agentsdk.Conversation{ID: conversationID("conv_"), AgentID: in.AgentID, Title: in.Title, TitleOrigin: titleOrigin, TitleStatus: titleStatus, RuntimeID: a.RuntimeID, WorkspaceID: a.WorkspaceID, UserID: a.UserID, MemoryEnabled: in.MemoryEnabled, MemoryPreference: in.MemoryPreference, Revision: 1, CreatedAt: now, UpdatedAt: now}
 	if in.Binding != nil {
 		binding := *in.Binding
 		c.Binding = &binding
@@ -301,7 +301,7 @@ func (s *ConversationStore) Create(ctx context.Context, in agentsdk.Conversation
 		}
 		if in.Binding != nil {
 			if old, bindingErr := lookupBinding(); bindingErr == nil {
-				if old.Archived || old.AgentID != in.AgentID || old.MemoryEnabled != in.MemoryEnabled {
+				if old.Archived || old.AgentID != in.AgentID || old.MemoryEnabled != in.MemoryEnabled || old.MemoryPreference != in.MemoryPreference {
 					return c, conversationError("conflict", "binding_conflict")
 				}
 				return old, nil
@@ -409,6 +409,9 @@ func (s *ConversationStore) Update(ctx context.Context, id string, in agentsdk.C
 		}
 		if in.MemoryEnabled != nil {
 			c.MemoryEnabled = *in.MemoryEnabled
+		}
+		if in.MemoryPreference != nil {
+			c.MemoryPreference = *in.MemoryPreference
 		}
 		err = s.save(ctx, tx, c, c.Revision, a)
 		if err == nil {

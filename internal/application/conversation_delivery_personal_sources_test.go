@@ -43,7 +43,7 @@ func (r *personalReceiptRepository) Memories(_ context.Context, a sdk.Conversati
 }
 func TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools(t *testing.T) {
 	now := time.Date(2026, 9, 13, 1, 2, 3, 0, time.UTC)
-	mem := sdk.ConversationMemory{ID: "memory", Title: "Preference", Content: "Use exact source dates", Enabled: true, Revision: 1, CreatedAt: now, UpdatedAt: now}
+	mem := sdk.ConversationMemory{ID: "memory", Kind: sdk.ConversationMemoryKindUserPreference, Title: "Preference", Content: "Use exact source dates", Enabled: true, Status: sdk.AgentMemoryStatusActive, Scope: sdk.ConversationMemoryScope{Kind: sdk.ConversationMemoryScopeWorkspace}, AppliesTo: []string{}, Revision: 1, CreatedAt: now, UpdatedAt: now}
 	calc, _ := calculateConversation(calculationInput{Operation: "expression", Expression: "0.1 + 0.2"})
 	clock, _ := timeutil.Resolve(timeutil.Input{Relative: "tomorrow"}, now, time.UTC, "Asia/Shanghai")
 	for _, tc := range []struct {
@@ -54,14 +54,14 @@ func TestPersonalDeliveryReceiptsUseOriginalOwnerAndCurrentDataWithoutWriteTools
 		{"time_now", `{"relative_date":"tomorrow"}`, "", clock},
 		{"ask_user", `{"question":"Which quarter?"}`, "", map[string]string{"answer": "Second quarter", "interaction_id": "answered"}},
 		{"memory_search", `{}`, "", map[string]any{"items": []sdk.ConversationMemory{mem}, "complete": true, "next_cursor": ""}},
-		{"memory_save", `{"title":"Preference","content":"Use exact source dates","enabled":true,"expected_revision":0}`, mem.ID, map[string]any{"memory": mem}},
+		{"memory_save", `{"kind":"user_preference","title":"Preference","content":"Use exact source dates","enabled":true,"status":"active","scope":"workspace","expected_revision":0}`, mem.ID, map[string]any{"memory": mem}},
 		{"memory_forget", `{"id":"memory","expected_revision":1}`, mem.ID, map[string]any{"id": mem.ID, "deleted": true}},
 	} {
 		t.Run(tc.key, func(t *testing.T) {
 			a := sdk.ConversationAuthority{Known: true, RuntimeID: "runtime", WorkspaceID: "workspace", UserID: "reader"}
 			definition, _ := personalResultReadDefinition(tc.key)
 			if strings.HasPrefix(tc.key, "memory_") {
-				definition, _ = sdk.PersonalConversationToolDefinition(tc.key, "1")
+				definition, _ = sdk.PersonalConversationToolDefinition(tc.key, "3")
 			}
 			raw, _ := json.Marshal(tc.value)
 			record := persistence.ConversationToolExecution{State: "completed", Definition: definition, Call: sdk.ConversationToolCall{ID: "call", Name: tc.key, Arguments: tc.args}, Result: &sdk.ConversationToolResult{Status: "completed", ResourceID: tc.resource, Content: raw}, IdempotencyKey: "original", CreatedAt: now, UpdatedAt: now}
