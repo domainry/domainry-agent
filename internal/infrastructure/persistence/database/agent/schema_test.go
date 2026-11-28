@@ -12,7 +12,7 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(migrations) != 15 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 36 {
+			if len(migrations) != 16 || migrations[0].Version != SchemaVersion || migrations[len(migrations)-1].Version != 37 {
 				t.Fatalf("unexpected migration versions/count: %d", len(migrations))
 			}
 			byVersion := map[uint]string{}
@@ -27,6 +27,9 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 			}
 			if memories := byVersion[36]; !strings.Contains(memories, conversationMemoryChangeTable) || !strings.Contains(memories, "operation") || strings.Contains(memories, "_schema_migrations") {
 				t.Fatal("invalid scoped memory migration", memories)
+			}
+			if candidates := byVersion[37]; !strings.Contains(candidates, "ADD COLUMN") || !strings.Contains(candidates, "memory_candidate_state") || !strings.Contains(candidates, "idx_agent_run_memory_candidates_v37") {
+				t.Fatal("invalid governed memory candidate migration", candidates)
 			}
 			if forks := byVersion[34]; !strings.Contains(forks, conversationForkTable) || !strings.Contains(forks, "source_event_seq") || strings.Contains(forks, "_schema_migrations") {
 				t.Fatal("invalid conversation fork migration", forks)
@@ -108,8 +111,8 @@ func TestSchemaMigrationsExcludeSharedDefinitionsAndOwnRuntimeStateForAllDialect
 					t.Fatalf("retired Agent task schema remains: %s", retired)
 				}
 			}
-			allRunDDL := strings.Join(append([]string{}, migrations[0].Statements...), "\n") + "\n" + conversationItems + "\n" + byVersion[19]
-			for _, fragment := range []string{"run_kind", "scope_key", "idempotency_key", "fencing_token", "memory_candidate_state", "idx_agent_run_task_claim_v1", "idx_agent_run_interactive_list_v1", "idx_agent_run_memory_candidates_v1", "idx_agent_run_conversation_claim_v2", "idx_agent_run_conversation_capacity_v19"} {
+			allRunDDL := strings.Join(append([]string{}, migrations[0].Statements...), "\n") + "\n" + conversationItems + "\n" + byVersion[19] + "\n" + byVersion[37]
+			for _, fragment := range []string{"run_kind", "scope_key", "idempotency_key", "fencing_token", "memory_candidate_state", "idx_agent_run_task_claim_v1", "idx_agent_run_interactive_list_v1", "idx_agent_run_memory_candidates_v37", "idx_agent_run_conversation_claim_v2", "idx_agent_run_conversation_capacity_v19"} {
 				if !strings.Contains(allRunDDL, fragment) {
 					t.Fatalf("missing unified Agent run field/index %s", fragment)
 				}

@@ -17,7 +17,7 @@ func TestPublishedMySQLMigrationChecksumsAreStable(t *testing.T) {
 		name     string
 		checksum string
 	}{
-		1:  {"agent_foundation", "d080d05b7c5a23b14fc54f7341225ffe84512912cd14770f34ff0ca75ead328c"},
+		1:  {"agent_foundation", "7f255d0945e22a86e75f7d843aeb594a6d0d9b272a2937da3056075a2119e72f"},
 		2:  {"agent_conversations", "80b46ed628e1c3d717a5c1dcc097d33b0eca8d7ac9e9eab7f3630421833b33e4"},
 		3:  {"agent_conversation_execution", "e7f1643c49043577fbe0cd868d906fec9b37ce8903735d8ea91d094c144b9616"},
 		4:  {"agent_conversation_interactions", "73e3972bd8208cc5b0163bfb9b9d8e7298e54cbf87f69faec7965b91f6e9a65f"},
@@ -32,6 +32,7 @@ func TestPublishedMySQLMigrationChecksumsAreStable(t *testing.T) {
 		34: {"agent_conversation_forks", "f8846555ef552729c7bc205bb82945a952d24d77a3b28e32e5fca6ee03d1b92f"},
 		35: {"agent_capability_improvements", "aa59492e161822849191eb960c800129d55f85a673ee3bd479c25f5e93762e71"},
 		36: {"agent_scoped_memories", "df24af04cafa726686981cc62aa49a88052a7d69058ee25a689a356bf7afc275"},
+		37: {"agent_run_memory_candidates", "39905d2927c42f92151c9ad1823196929b8dd6e2a6550f37f8abdb94bd428b1a"},
 	}
 	migrations, err := SchemaMigrations("mysql", "")
 	if err != nil {

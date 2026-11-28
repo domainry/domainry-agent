@@ -149,7 +149,7 @@ func TestModuleDescriptor(t *testing.T) {
 	if b.Descriptor().Mode != agentsdk.DeploymentModeModule {
 		t.Fatalf("descriptor=%+v", b.Descriptor())
 	}
-	if len(host.applied) != 15 {
+	if len(host.applied) != 16 {
 		t.Fatalf("Agent migrations=%d", len(host.applied))
 	}
 	for _, owner := range []string{sharedoperation.MigrationOwner, sharedworkerscope.MigrationOwner, sharedsubjectlifecycle.MigrationOwner, agentstore.MigrationOwner} {
@@ -181,7 +181,7 @@ func TestModuleDescriptor(t *testing.T) {
 			t.Fatalf("private Agent Definition table %s count=%d err=%v", table, count, err)
 		}
 	}
-	if latest := host.applied[len(host.applied)-1]; latest.Version != 36 || latest.Name != "agent_scoped_memories" {
+	if latest := host.applied[len(host.applied)-1]; latest.Version != 37 || latest.Name != "agent_run_memory_candidates" {
 		t.Fatalf("Agent latest owned migration=%+v", latest)
 	}
 	contracttest.VerifyBinding(t, b, agentsdk.DeploymentModeModule)
